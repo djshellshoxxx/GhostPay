@@ -1,0 +1,304 @@
+{
+  "repo": "djshellshoxxx/GhostPay",
+  "captured_utc_date": "2026-11-21",
+  "reference_main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "historical_baseline": {
+    "path": "docs/consolidation/current-census-20261120/CENSUS.json",
+    "sha": "b77a4a0f7ad997f502df47eaf6fe2318ceb41d26",
+    "count": 392,
+    "reference_main": "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+  },
+  "inventory": {
+    "count": 418,
+    "pages": [
+      100,
+      100,
+      100,
+      100,
+      18,
+      0
+    ],
+    "baseline_names_missing": 0,
+    "added_since_baseline": 26
+  },
+  "cautions": [
+    "All 26 added names were fetched by exact commit SHA and compared against the pinned current main; 392 historical baseline names were reused without re-comparing each against the newer main.",
+    "GitHub compare file listing can truncate at 300 files; application count is incomplete when truncated.",
+    "Ahead-by is ancestry difference, not proof of unique functionality. Classification identifies review ownership; never bulk merge stacked branches.",
+    "Latest main check performed before the new test correction; no main merge or deployment."
+  ],
+  "delta": [
+    {
+      "name": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "head_sha": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+      "ahead_by": 3,
+      "behind_by": 42,
+      "files_returned": 3,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "focused_PR337_parent"
+    },
+    {
+      "name": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "head_sha": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+      "ahead_by": 5,
+      "behind_by": 42,
+      "files_returned": 4,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "receipt_identity_overlap_PR332_PR335"
+    },
+    {
+      "name": "automation/20261120T2036Z/bug/btc-preview-network",
+      "head_sha": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+      "ahead_by": 4,
+      "behind_by": 42,
+      "files_returned": 4,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "focused_PR338"
+    },
+    {
+      "name": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "head_sha": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "ahead_by": 71,
+      "behind_by": 42,
+      "files_returned": 196,
+      "app_paths_returned": 71,
+      "truncated": false,
+      "classification": "stacked_privacy_PR341"
+    },
+    {
+      "name": "automation/20261120/bug/btc-fee-floor-config",
+      "head_sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "ahead_by": 0,
+      "behind_by": 39,
+      "files_returned": 0,
+      "app_paths_returned": 0,
+      "truncated": false,
+      "classification": "ancestry_redundant_PR334_merged"
+    },
+    {
+      "name": "automation/20261120/bug/policy-review-revocation-r1",
+      "head_sha": "9a10d335d048b197e90d257a5322ff5d5260572d",
+      "ahead_by": 5,
+      "behind_by": 0,
+      "files_returned": 5,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "focused_PR345"
+    },
+    {
+      "name": "automation/20261121T0033Z/bug/router-duplicate-warning",
+      "head_sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "ahead_by": 4,
+      "behind_by": 0,
+      "files_returned": 4,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "focused_PR350"
+    },
+    {
+      "name": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "head_sha": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+      "ahead_by": 90,
+      "behind_by": 10,
+      "files_returned": 299,
+      "app_paths_returned": 83,
+      "truncated": false,
+      "classification": "multi_feature_stacked_PR349_semantic_review"
+    },
+    {
+      "name": "docs/ghostpay-coordination-ledger-20261120",
+      "head_sha": "f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7",
+      "ahead_by": 1,
+      "behind_by": 10,
+      "files_returned": 1,
+      "app_paths_returned": 0,
+      "truncated": false,
+      "classification": "docs_only_PR343"
+    },
+    {
+      "name": "evidence/ghostpay-continuation-r2-20261120",
+      "head_sha": "c2b575e945b71563e30a9bef162cf3fdc92181f0",
+      "ahead_by": 68,
+      "behind_by": 42,
+      "files_returned": 211,
+      "app_paths_returned": 69,
+      "truncated": false,
+      "classification": "stacked_evidence_requires_owner_mapping"
+    },
+    {
+      "name": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+      "head_sha": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+      "ahead_by": 1,
+      "behind_by": 39,
+      "files_returned": 17,
+      "app_paths_returned": 0,
+      "truncated": false,
+      "classification": "evidence_only_merged_parent_PR334"
+    },
+    {
+      "name": "evidence/ghostpay-idle-session-r2-20261120",
+      "head_sha": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "ahead_by": 97,
+      "behind_by": 42,
+      "files_returned": 266,
+      "app_paths_returned": 91,
+      "truncated": false,
+      "classification": "stacked_idle_session_evidence"
+    },
+    {
+      "name": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "head_sha": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "ahead_by": 4,
+      "behind_by": 42,
+      "files_returned": 6,
+      "app_paths_returned": 2,
+      "truncated": false,
+      "classification": "PR328_source_plus_qualification"
+    },
+    {
+      "name": "fix/ghostpay-backup-preflight-20261120-r2",
+      "head_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "ahead_by": 99,
+      "behind_by": 42,
+      "files_returned": 267,
+      "app_paths_returned": 93,
+      "truncated": false,
+      "classification": "stacked_PR331_PR333"
+    },
+    {
+      "name": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "head_sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "ahead_by": 463,
+      "behind_by": 76,
+      "files_returned": 300,
+      "app_paths_returned": 291,
+      "truncated": true,
+      "classification": "truncated_stack_PR336"
+    },
+    {
+      "name": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "head_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "ahead_by": 454,
+      "behind_by": 76,
+      "files_returned": 300,
+      "app_paths_returned": 291,
+      "truncated": true,
+      "classification": "truncated_stack_consent_PR348_parent"
+    },
+    {
+      "name": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "head_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+      "ahead_by": 10,
+      "behind_by": 42,
+      "files_returned": 5,
+      "app_paths_returned": 4,
+      "truncated": false,
+      "classification": "focused_PR339_parent_PR347"
+    },
+    {
+      "name": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "head_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "ahead_by": 103,
+      "behind_by": 42,
+      "files_returned": 300,
+      "app_paths_returned": 95,
+      "truncated": true,
+      "classification": "truncated_stack_PR335_overlap_PR332"
+    },
+    {
+      "name": "fix/ghostpay-request-file-async-20261120-r3",
+      "head_sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "ahead_by": 107,
+      "behind_by": 42,
+      "files_returned": 300,
+      "app_paths_returned": 75,
+      "truncated": true,
+      "classification": "truncated_stack_PR344"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "head_sha": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+      "ahead_by": 5,
+      "behind_by": 42,
+      "files_returned": 5,
+      "app_paths_returned": 4,
+      "truncated": false,
+      "classification": "focused_PR340_parent"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "head_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "ahead_by": 7,
+      "behind_by": 42,
+      "files_returned": 7,
+      "app_paths_returned": 5,
+      "truncated": false,
+      "classification": "stacked_PR342_test_fix_on_PR340"
+    },
+    {
+      "name": "integration/ghostpay-idle-session-20261120-r2",
+      "head_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "ahead_by": 96,
+      "behind_by": 42,
+      "files_returned": 239,
+      "app_paths_returned": 91,
+      "truncated": false,
+      "classification": "stacked_PR331_idle_session"
+    },
+    {
+      "name": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "head_sha": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+      "ahead_by": 12,
+      "behind_by": 42,
+      "files_returned": 23,
+      "app_paths_returned": 6,
+      "truncated": false,
+      "classification": "stacked_PR339_PR347_qualification"
+    },
+    {
+      "name": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "head_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+      "ahead_by": 11,
+      "behind_by": 42,
+      "files_returned": 15,
+      "app_paths_returned": 4,
+      "truncated": false,
+      "classification": "stacked_PR347_lint_repair"
+    },
+    {
+      "name": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "head_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "ahead_by": 455,
+      "behind_by": 76,
+      "files_returned": 300,
+      "app_paths_returned": 291,
+      "truncated": true,
+      "classification": "truncated_stack_PR348_tests"
+    },
+    {
+      "name": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "head_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "ahead_by": 241,
+      "behind_by": 84,
+      "files_returned": 300,
+      "app_paths_returned": 238,
+      "truncated": true,
+      "classification": "truncated_stack_PR346_recovery_tests"
+    }
+  ],
+  "regression": {
+    "parent_pr": 337,
+    "parent_sha": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+    "workflow_run": 44808355765,
+    "failed_job": 136574136501,
+    "failed_assertion": "apps/web/src/embedV2.test.ts:259",
+    "observed": "2816 tests passed, 1 failed, 1 skipped; old popup-blocked title assertion conflicts with noopener behavior",
+    "test_fix_commit": "40fbca0811dc135c3b9bdfaa385b6ab52d8be0db",
+    "test_file": "apps/web/src/embedV2.test.ts",
+    "local_repo_tests": "not run: GitHub DNS unavailable from local execution environment",
+    "release": "not authorized"
+  }
+}
