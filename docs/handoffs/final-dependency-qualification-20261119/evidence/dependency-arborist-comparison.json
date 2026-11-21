@@ -1,0 +1,232 @@
+[
+  {
+    "version": "11.9.0",
+    "forceActual": false,
+    "targets": [
+      {
+        "name": "@ghostpay/external-pools-privacypools",
+        "linkOverrides": true,
+        "targetOverrides": false
+      },
+      {
+        "name": "@ghostpay/web",
+        "linkOverrides": true,
+        "targetOverrides": false
+      }
+    ],
+    "invalid": [
+      {
+        "from": "node_modules/hardhat",
+        "name": "ws",
+        "rawSpec": "^7.4.6",
+        "spec": "^7.4.6",
+        "version": "8.21.0",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/jsonpath",
+        "name": "underscore",
+        "rawSpec": "1.13.6",
+        "spec": "1.13.6",
+        "version": "1.13.8",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "diff",
+        "rawSpec": "^7.0.0",
+        "spec": "^7.0.0",
+        "version": "8.0.3",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "glob",
+        "rawSpec": "^10.4.5",
+        "spec": "^10.4.5",
+        "version": "14.0.6",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "minimatch",
+        "rawSpec": "^9.0.5",
+        "spec": "^9.0.5",
+        "version": "11.0.8",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "serialize-javascript",
+        "rawSpec": "^6.0.2",
+        "spec": "^6.0.2",
+        "version": "7.1.4",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/solc",
+        "name": "tmp",
+        "rawSpec": "0.0.33",
+        "spec": "0.0.33",
+        "version": "0.2.7",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@0xbow/privacy-pools-core-sdk",
+        "name": "viem",
+        "rawSpec": "2.22.14",
+        "spec": "2.22.14",
+        "version": "2.57.19",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@solana/rpc-subscriptions-channel-websocket",
+        "name": "ws",
+        "rawSpec": "^8.21.3",
+        "spec": "^8.21.3",
+        "version": "8.21.0",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@zk-kit/utils/node_modules/ethers",
+        "name": "ws",
+        "rawSpec": "8.17.1",
+        "spec": "8.17.1",
+        "version": "8.21.0",
+        "error": "INVALID"
+      }
+    ]
+  },
+  {
+    "version": "11.9.0",
+    "forceActual": true,
+    "targets": [
+      {
+        "name": "@ghostpay/external-pools-privacypools",
+        "linkOverrides": true,
+        "targetOverrides": false
+      },
+      {
+        "name": "@ghostpay/web",
+        "linkOverrides": true,
+        "targetOverrides": false
+      }
+    ],
+    "invalid": [
+      {
+        "from": "node_modules/hardhat",
+        "name": "ws",
+        "rawSpec": "^7.4.6",
+        "spec": "^7.4.6",
+        "version": "8.21.0",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/jsonpath",
+        "name": "underscore",
+        "rawSpec": "1.13.6",
+        "spec": "1.13.6",
+        "version": "1.13.8",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "diff",
+        "rawSpec": "^7.0.0",
+        "spec": "^7.0.0",
+        "version": "8.0.3",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "glob",
+        "rawSpec": "^10.4.5",
+        "spec": "^10.4.5",
+        "version": "14.0.6",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "minimatch",
+        "rawSpec": "^9.0.5",
+        "spec": "^9.0.5",
+        "version": "11.0.8",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/mocha",
+        "name": "serialize-javascript",
+        "rawSpec": "^6.0.2",
+        "spec": "^6.0.2",
+        "version": "7.1.4",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/solc",
+        "name": "tmp",
+        "rawSpec": "0.0.33",
+        "spec": "0.0.33",
+        "version": "0.2.7",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@0xbow/privacy-pools-core-sdk",
+        "name": "viem",
+        "rawSpec": "2.22.14",
+        "spec": "2.22.14",
+        "version": "2.57.19",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@solana/rpc-subscriptions-channel-websocket",
+        "name": "ws",
+        "rawSpec": "^8.21.3",
+        "spec": "^8.21.3",
+        "version": "8.21.0",
+        "error": "INVALID"
+      },
+      {
+        "from": "node_modules/@zk-kit/utils/node_modules/ethers",
+        "name": "ws",
+        "rawSpec": "8.17.1",
+        "spec": "8.17.1",
+        "version": "8.21.0",
+        "error": "INVALID"
+      }
+    ]
+  },
+  {
+    "version": "10.9.8",
+    "forceActual": false,
+    "targets": [
+      {
+        "name": "@ghostpay/external-pools-privacypools",
+        "linkOverrides": true,
+        "targetOverrides": false
+      },
+      {
+        "name": "@ghostpay/web",
+        "linkOverrides": true,
+        "targetOverrides": false
+      }
+    ],
+    "invalid": []
+  },
+  {
+    "version": "10.9.8",
+    "forceActual": true,
+    "targets": [
+      {
+        "name": "@ghostpay/external-pools-privacypools",
+        "linkOverrides": true,
+        "targetOverrides": false
+      },
+      {
+        "name": "@ghostpay/web",
+        "linkOverrides": true,
+        "targetOverrides": false
+      }
+    ],
+    "invalid": []
+  }
+]

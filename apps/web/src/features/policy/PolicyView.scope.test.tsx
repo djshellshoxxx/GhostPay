@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
@@ -111,6 +112,7 @@ describe('policy deployment scope', () => {
     await screen.findByLabelText('Verified policy deployment');
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await screen.findByText(/Connected:/);
     await user.click(screen.getByLabelText(/Payee policy meta-address/));
     await user.paste(account('acct-001').metaAddress);
@@ -124,6 +126,7 @@ describe('policy deployment scope', () => {
       return original(args);
     };
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(waiting).toBe(true); });
     await user.clear(screen.getByLabelText('GhostPayPolicyRouter address'));
     await act(async () => { gate.resolve(await original({ method: 'eth_accounts' })); await gate.promise; });
@@ -157,9 +160,13 @@ describe('policy receive scope', () => {
     await user.click(screen.getByRole('button', { name: 'Scan for policy payments' }));
     await vi.waitFor(() => { expect(waiting).toBe(true); });
     act(importKeys);
+    expect(screen.queryByLabelText('Verified policy deployment')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Scan for policy payments' })).toBeNull();
+    const callsAfterRevocation = rpc.calls.length;
     await act(async () => { gate.resolve([]); await gate.promise; });
-    expect(await screen.findByText('Seller keys changed during this action. Try again.')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Continue scan' })).toBeNull();
+    expect(screen.queryByText(/new for your keys/)).toBeNull();
+    expect(rpc.calls).toHaveLength(callsAfterRevocation);
   });
 
   it('keeps the checked asset fixed while an account read is pending', async () => {

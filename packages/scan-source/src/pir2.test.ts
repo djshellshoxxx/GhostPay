@@ -1,6 +1,7 @@
 import { PirServer } from '@ghostpay/pir-two-server';
 import { describe, expect, it } from 'vitest';
 import { ScanSourceError } from './errors.js';
+import { createScanSource } from './create.js';
 import { createPir2Source } from './pir2.js';
 import { createRangeSource } from './range.js';
 import { CHAIN_HEAD, blockHash, buildShard, fakeBackend, pirTransport } from './testutil.js';
@@ -21,7 +22,7 @@ const servers = { 'pir-a.example.org': shard.pir, 'pir-b.example.net': new PirSe
 const REQ = { chainId: 31337, fromBlock: 1500n, toBlock: 1510n } as const;
 const mk = (o: Record<string, unknown> = {}, log: { url: string; bodyLen: number }[] = []) => {
   const t = pirTransport(servers, log);
-  return createPir2Source({ chainId: 31337, servers: ['https://pir-a.example.org', 'https://pir-b.example.net'], transport: [t, t], thirdSourceBlockHash: third, epoch: { pagesPerEpoch: 40 }, ...o });
+  return createPir2Source({ chainId: 31337, servers: ['https://pir-a.example.org', 'https://pir-b.example.net'], transport: [t, t], thirdSourceBlockHash: third, epoch: { pagesPerEpoch: 40 }, experimental: true, ...o });
 };
 
 describe('pir2 source', () => {
@@ -48,7 +49,7 @@ describe('pir2 source', () => {
   });
   it('clamps coverage to the shard and fails outside it', async () => {
     const s = buildShard();
-    const small = createPir2Source({ chainId: 31337, servers: ['https://a.example.org', 'https://b.example.net'], transport: [pirTransport({ 'a.example.org': s.pir }), pirTransport({ 'b.example.net': s.pir })], thirdSourceBlockHash: third, epoch: { pagesPerEpoch: 40 } });
+    const small = createPir2Source({ chainId: 31337, servers: ['https://a.example.org', 'https://b.example.net'], transport: [pirTransport({ 'a.example.org': s.pir }), pirTransport({ 'b.example.net': s.pir })], thirdSourceBlockHash: third, epoch: { pagesPerEpoch: 40 }, experimental: true });
     const r = await small.fetch({ chainId: 31337, fromBlock: 2900n, toBlock: 9000n });
     expect(r.coverage.toBlock).toBe(CHAIN_HEAD);
     expect(await codeOf(() => small.fetch({ chainId: 31337, fromBlock: 5000n, toBlock: 6000n }))).toBe('OUT_OF_RANGE');
@@ -96,12 +97,19 @@ describe('pir2 source', () => {
       expect((e as Error).message).not.toContain('secret');
     }
   });
+  it('is OFF by default: creating the source needs an explicit experimental: true', () => {
+    const base = { chainId: 31337, servers: ['https://pir-a.example.org', 'https://pir-b.example.net'] as [string, string], transport: [pirTransport({}), pirTransport({})] as const, thirdSourceBlockHash: third };
+    expect(() => createPir2Source(base)).toThrow(/experimental/);
+    expect(() => createPir2Source({ ...base, experimental: false })).toThrow(ScanSourceError);
+    expect(createPir2Source({ ...base, experimental: true }).kind).toBe('pir2');
+    expect(() => createScanSource({ mode: 'pir2', ...base })).toThrow(/experimental/);
+  });
   it('testnet and option guards; injected rand and abort signal accepted', async () => {
     expect(() => mk({ chainId: 1 })).toThrow(/testnet/);
     const src = mk();
     expect(await codeOf(() => src.fetch({ ...REQ, chainId: 1 }))).toBe('TESTNET_ONLY');
     expect(await codeOf(() => src.fetch({ ...REQ, chainId: 84532 }))).toBe('INVALID_ARGUMENT');
-    expect(() => createPir2Source({ chainId: 31337, servers: ['a', 'b', 'c'] as never, transport: [pirTransport({}), pirTransport({})], thirdSourceBlockHash: third })).toThrow(ScanSourceError);
+    expect(() => createPir2Source({ chainId: 31337, servers: ['a', 'b', 'c'] as never, transport: [pirTransport({}), pirTransport({})], thirdSourceBlockHash: third, experimental: true })).toThrow(ScanSourceError);
     const rand = (n: number): Uint8Array => new Uint8Array(n).map((_, i) => (i * 37 + 11) & 0xff);
     const r = await mk({ rand }).fetch(REQ, new AbortController().signal);
     expect(r.announcements.length).toBeGreaterThan(0);

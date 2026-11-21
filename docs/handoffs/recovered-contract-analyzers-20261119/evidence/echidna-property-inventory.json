@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "candidate": "c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a",
+  "observed_at": "2026-11-19T13:36:32.139600+00:00",
+  "inventory": [
+    {
+      "harness": "EchidnaRouter",
+      "path": "test/echidna/EchidnaRouter.sol",
+      "source_sha256": "dc3b7fbdba53b2883f5a32803641c253e808cc5eb3e25b1c1113a84bea62497c",
+      "required_passing_properties": [
+        "echidna_router_never_holds_tokens",
+        "echidna_fee_plus_net_eq_gross",
+        "echidna_native_fee_plus_net_eq_gross",
+        "echidna_fee_recipient_only_gets_bps"
+      ],
+      "required_falsified_canaries": [
+        "echidna_canary_erc20_success",
+        "echidna_canary_native_success",
+        "echidna_canary_buffer_success",
+        "echidna_canary_nonzero_fee"
+      ]
+    },
+    {
+      "harness": "EchidnaSweep",
+      "path": "test/echidna/EchidnaSweep.sol",
+      "source_sha256": "c8cfeb17cb51b1346a16db6f51bb8b86b2a96e9cdcc4a357de2f518aaef61788",
+      "required_passing_properties": [
+        "echidna_sweep_nonce_single_use",
+        "echidna_used_nonces_marked",
+        "echidna_relayer_never_holds_tokens",
+        "echidna_token_conservation"
+      ],
+      "required_falsified_canaries": [
+        "echidna_canary_sweep_success",
+        "echidna_canary_replay_blocked"
+      ]
+    },
+    {
+      "harness": "EchidnaPolicy",
+      "path": "test/echidna/EchidnaPolicy.sol",
+      "source_sha256": "4bef9da61c364790977c784edcf5599cdb5d851e199cff63fcc44ec8ecb14431",
+      "required_passing_properties": [
+        "echidna_funds_only_to_destination",
+        "echidna_destination_only_changes_via_timelock",
+        "echidna_timelocks_never_shortened",
+        "echidna_policy_immutable",
+        "echidna_rolling_window_cap"
+      ],
+      "required_falsified_canaries": [
+        "echidna_canary_request_ok",
+        "echidna_canary_exec_token",
+        "echidna_canary_exec_native",
+        "echidna_canary_dest_change",
+        "echidna_canary_cancel"
+      ]
+    }
+  ],
+  "note": "Static inventory only; running campaign output must still satisfy the unchanged runner for every listed property, canary and full call budget. A canary failure is required reachability evidence, never a safety-property success."
+}

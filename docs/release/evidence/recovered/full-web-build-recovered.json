@@ -1,0 +1,30 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "build",
+    "--workspace",
+    "@ghostpay/web"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:06:13.195851+00:00",
+  "source_commit": "4ce683bc7bda9c79631b629015082b1f6298751e",
+  "source_tree": "ed556cf8dfa69f99de1571b4e6da8b9c852928d1",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1536"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 49.729843854904175,
+  "finished_utc": "2026-11-19T13:07:02.925704+00:00",
+  "final_source_commit": "4ce683bc7bda9c79631b629015082b1f6298751e",
+  "final_status": "",
+  "log": "full-web-build-recovered.log.gz",
+  "uncompressed_bytes": 3317,
+  "uncompressed_sha256": "d05e7ed215836a38ae4535bf36fee0e2ac22de95b27c9da5a2ae90aa59fd8a5f",
+  "stored_bytes": 1428,
+  "stored_sha256": "f43a6f46a8e8d741197cd9b25182560a74592726d537240aa1ef005a98d03845"
+}

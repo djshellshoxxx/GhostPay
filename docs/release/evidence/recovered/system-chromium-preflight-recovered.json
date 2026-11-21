@@ -1,0 +1,29 @@
+{
+  "command": [
+    "node",
+    "--input-type=module",
+    "-e",
+    "import { chromium } from \"playwright\"; import { execFileSync } from \"node:child_process\"; const version = execFileSync(\"/usr/bin/chromium\",[\"--version\"],{encoding:\"utf8\"}).trim(); let browser; try { browser = await chromium.launch({executablePath:\"/usr/bin/chromium\",headless:true,timeout:15000}); const page = await browser.newPage(); await page.goto(\"about:blank\"); console.log(JSON.stringify({version,status:\"launch-passed\",scenarioAssertions:0})); } catch (error) { console.log(JSON.stringify({version,status:\"launch-failed\",error:String(error),scenarioAssertions:0})); process.exitCode=1; } finally { await browser?.close(); }"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:05:20.698911+00:00",
+  "source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "source_tree": "b0bfa31a8dea6872dbc6a16aa39150458e5a9616",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "status": "completed",
+  "exit_code": 1,
+  "duration_seconds": 1.501793622970581,
+  "finished_utc": "2026-11-19T13:05:22.200697+00:00",
+  "final_source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "final_status": "",
+  "log": "system-chromium-preflight-recovered.log.gz",
+  "uncompressed_bytes": 5209,
+  "uncompressed_sha256": "be608e6737465e08f89234bb34c79b968766906c858ede3d0465bac3160e0df7",
+  "stored_bytes": 1555,
+  "stored_sha256": "5bcb343465f62af53593c090dcdd01d2e7a47e892adc94e394b8c321f5d86464"
+}

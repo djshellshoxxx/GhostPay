@@ -1,0 +1,209 @@
+{
+  "main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "source": "bd024ca06cd3f55afcf0a4ba543f963eb6b0499b",
+  "merge_commit": "cf6b95bd6bc656975fc860ff333335a01e57cc90",
+  "merge_parents": [
+    "823f75b5a2dc5f68d44bdfb6d17341cec2d47579",
+    "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+  ],
+  "main_only_census_paths": [
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_0_11.json",
+      "blob": "1b70660b436fcd2c30afba609a2e0b167b15764b",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_110_123.json",
+      "blob": "da4c95aaed7929e26249c7e0e9fa0de0b4430b42",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_124_137.json",
+      "blob": "2af2b75fd3205223979ae29749f88d27e69127a1",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_12_25.json",
+      "blob": "28c4f2865b786bad2265d95bebb309deb24a6c26",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_138_144.json",
+      "blob": "13dc8e0b7af92905c6c74723c0775495bba54fac",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_145_158.json",
+      "blob": "36e6fe095d2d504d623d83f2fda7979d0fe87faa",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_159_172.json",
+      "blob": "f701717fd5468929bd52cd18a217e44fafc91744",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_173_186.json",
+      "blob": "cf79a786aca2f7d00d7be98f217a237f447e6499",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_187_200.json",
+      "blob": "af7f9d8ce3013f192684cb08e1e49dcf0a22e10e",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_201_214.json",
+      "blob": "567b2ffb51063c1df956d6fb85e1266d15cf72d7",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_215_228.json",
+      "blob": "a99ca17c14c2fe1ce3f90170b62f69b245e2f2b6",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_229_242.json",
+      "blob": "cb0a8aaf20f197efe680b35ae2e1d384f01df906",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_243_256.json",
+      "blob": "2efba684008aec0e5e85c15dd5743f186b864231",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_257_270.json",
+      "blob": "a7e8de743e80bd4a0441e0d4ab3b9ae7fc5b54e7",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_26_39.json",
+      "blob": "8c0d471208dfc87ad2885c68e040c27c61fbd411",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_271_284.json",
+      "blob": "7e7b180072ed4b5e3804191046ca90f1df4b90ef",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_285_298.json",
+      "blob": "3c098d781eb22f30d9c8f38451456e3b1ebce7f5",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_299_312.json",
+      "blob": "f3f52ddcdc48f0e47219dad8e88c358c95f93492",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_313_326.json",
+      "blob": "ab1d19ca73e16487fe86f2da9c31178b6d8e99ed",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_327_340.json",
+      "blob": "15a8803bb7bd6ab408a9ce34fd63caca88cb7f6c",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_341_354.json",
+      "blob": "50693e8f29c28198a6d817a120bf890b72f4e693",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_355_368.json",
+      "blob": "5d038c43041a99fb1a9f9494c5ac02443ac0b761",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_369_382.json",
+      "blob": "3db359992b93a136cc61177f3c3a0d72982d7829",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_383_396.json",
+      "blob": "ee3184b2126c2b9f67a852f35d2f269f2d5db907",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_397_410.json",
+      "blob": "3302a8d40e79bf05f76eaddb7feb0bd06de6e96b",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_40_53.json",
+      "blob": "0245e71afe7e7f27e3c34f04330f83feae349047",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_411_424.json",
+      "blob": "a878aa771329fb345d98b58825dac4e737f8e57f",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_425_432.json",
+      "blob": "d8bbc0c71dec8316beb13f02bfd230cf1bde802b",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_54_67.json",
+      "blob": "501aa7a6db71245891a264953b4f53e08032d32c",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_68_81.json",
+      "blob": "4b18c62a44524422034871fb4e6183dfa498468b",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_82_95.json",
+      "blob": "9bd673dbde6b7e590c68b46f49432df12814a436",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_COMPARE_R7_96_109.json",
+      "blob": "f609a994463baa56a744ed18599a02b2dfb7b569",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_DELTA_POST_R7_20261121.json",
+      "blob": "32559d428e1fb970c7a9eaffd7066543e7bb42b9",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_HEADS_R7_20261121.json",
+      "blob": "4e8f74ca095c9d48d09fd0a8453d3ff727f3a221",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_ROLLUP_R7_A.json",
+      "blob": "8828f6b8de764e122de021b9220e16fc9cd7143e",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_ROLLUP_R7_B.json",
+      "blob": "5bb685c83e9e5e859ccc01d3b6d7bc86a0bc396e",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/BRANCH_ROLLUP_R7_C.json",
+      "blob": "9256662dd28a56b6772e2e887b846186524223f6",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/GHOSTPAY_BRANCH_INVENTORY_20261121_R7.json",
+      "blob": "0b8fe8ec590ac311ed19532166ad3b3793abbbd9",
+      "preserved": true
+    },
+    {
+      "path": "docs/handoffs/GHOSTPAY_CONSOLIDATION_HANDOFF_R7_20261121.md",
+      "blob": "9995b9896b109f0234a05ee8f8933904c8abf9f3",
+      "preserved": true
+    }
+  ],
+  "application_changes_from_main_merge": [],
+  "ownership_resolution": "Retained historical source-labelled ownership span. All 773 current-main ownership lines remain in order; no removed or replaced current-main lines.",
+  "camera_source_equals_main": true
+}

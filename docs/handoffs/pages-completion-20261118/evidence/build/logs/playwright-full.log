@@ -1,0 +1,51 @@
+$ npm run test:e2e --workspace @ghostpay/web -- --max-failures=1 --workers=1 --output /workspace/scratch/4fa14be12559/analysis-build/artifacts/playwright-full-results
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=1536", "pages_node_cap": false}
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@0.1.0 test:e2e
+> playwright test --max-failures=1 --workers=1 --output /workspace/scratch/4fa14be12559/analysis-build/artifacts/playwright-full-results
+
+(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:31) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+[WebServer] failed to load config from /workspace/scratch/4fa14be12559/analysis-build/source/apps/web/vite.config.ts
+[WebServer] error during build:
+[WebServer] Error: GHOSTPAY_RELEASE_PUBKEYS: a public test key (its secret key is published) cannot verify manifests in a production build
+[WebServer]     at parseReleaseKeys (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/.vite-temp/vite.config.ts.timestamp-1795014824405-ef3e9718214a.mjs:82:141)
+[WebServer]     at file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/.vite-temp/vite.config.ts.timestamp-1795014824405-ef3e9718214a.mjs:348:21
+[WebServer]     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+[WebServer]     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+[WebServer]     at async loadConfigFromBundledFile (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/chunks/node.js:38173:12)
+[WebServer]     at async bundleAndLoadConfigFile (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/chunks/node.js:38019:21)
+[WebServer]     at async loadConfigFromFile (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/chunks/node.js:37979:42)
+[WebServer]     at async resolveConfig (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/chunks/node.js:37580:22)
+[WebServer]     at async createBuilder (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/chunks/node.js:35183:17)
+[WebServer]     at async CAC.<anonymous> (file:///workspace/scratch/4fa14be12559/analysis-build/source/node_modules/vite/dist/node/cli.js:778:19)
+[WebServer] npm error Lifecycle script `build` failed with error:
+[WebServer] npm error code 1
+[WebServer] npm error path /workspace/scratch/4fa14be12559/analysis-build/source/apps/web
+[WebServer] npm error workspace @ghostpay/web@0.1.0
+[WebServer] npm error location /workspace/scratch/4fa14be12559/analysis-build/source/apps/web
+[WebServer] npm error command failed
+[WebServer] npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+Error: Process from config.webServer was not able to start. Exit code: 1
+
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /workspace/scratch/4fa14be12559/analysis-build/source/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/4fa14be12559/analysis-build/source/apps/web
+npm error command failed
+npm error command sh -c playwright test --max-failures=1 --workers=1 --output /workspace/scratch/4fa14be12559/analysis-build/artifacts/playwright-full-results
+
+EXIT_CODE=1
+SECONDS=14.769

@@ -1,0 +1,150 @@
+{
+  "scope": [
+    "https://github.com/djshellshoxxx/GhostPay/issues/286",
+    "https://github.com/djshellshoxxx/GhostPay/issues/287"
+  ],
+  "excluded_future_issues": [
+    283,
+    284,
+    288
+  ],
+  "spec_commit": "bbcf71b79d4efd00892948faa833cb7d8f471406",
+  "published_baseline": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+  "v1_application_fixture_freeze": "bb9a97a1a85558ba8d1dbd0191d851d97d439fad",
+  "v11_application_fixture_freeze": "17c14695548c1e5d8f661ca551cf9c9ecc538d14",
+  "v11_complete_feature_ancestry_checkpoint": "e63915c534619ace24409321c9bf894e990de3bb",
+  "v11_ancestry_checkpoint_tree": "5ab360e2a972a0c3169e346fe60e44a66476769c",
+  "feature_heads": [
+    {
+      "release": "v1.0",
+      "feature": "masking",
+      "branch": "privacy/v1-masking-20261120",
+      "released_head": "1b758d298cad454b2392f40b040a37db024bb38b",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../masking-gen3.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.0",
+      "feature": "clipboard",
+      "branch": "privacy/v1-clipboard-20261120",
+      "released_head": "747c0c1eb479356c88db81d8cf829cf69e466152",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../clipboard-gen4.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.0",
+      "feature": "wallet-lock",
+      "branch": "privacy/v1-wallet-lock-20261120",
+      "released_head": "e5869da627d9e0c334824c1fd449f12950fccdee",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../wallet-gen3.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.0",
+      "feature": "history",
+      "branch": "privacy/v1-history-20261120",
+      "released_head": "ac0d131cdc3a47063919a340bfa6965b43845106",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../history-gen2.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.0",
+      "feature": "outputs",
+      "branch": "privacy/v1-outputs-20261120",
+      "released_head": "2ab229142899ea3dfccf12911942f672250a4552",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../outputs-gen2.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.1",
+      "feature": "address-reuse",
+      "branch": "privacy/v11-address-reuse-20261120",
+      "released_head": "cea09a495c381e38cd4f40cdae5025d3bf64f176",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../address-gen2.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.1",
+      "feature": "invoice-minimization",
+      "branch": "privacy/v11-invoice-minimization-20261120",
+      "released_head": "198eba5ad5e138d8b8348f81e1d90104960a82bc",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../invoice-gen2.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.1",
+      "feature": "wallet-disclosure",
+      "branch": "privacy/v11-wallet-disclosure-20261120",
+      "released_head": "ffac690096d6e267b136d5e35d242582587f12a7",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../disclosure-gen2.md",
+      "status": "implemented with focused acceptance"
+    },
+    {
+      "release": "v1.1",
+      "feature": "retention",
+      "branch": "privacy/v11-retention-20261120",
+      "released_head": "a01773e05c8051c7bda35a5384b68f9d5739a22a",
+      "current_candidate_contains_head_by_ancestry": true,
+      "latest_handoff": "../retention-gen3.md",
+      "status": "partial: completed screen previews only"
+    }
+  ],
+  "integrity": {
+    "all_nine_released_heads_are_ancestors": true,
+    "standalone_v1_is_ancestor": true,
+    "later_application_delta": [
+      "apps/web/src/features/btc/BtcView.test.tsx",
+      "apps/web/src/features/solana/SolanaView.test.tsx",
+      "apps/web/src/features/tron/TronView.test.tsx"
+    ],
+    "later_runtime_changes": false,
+    "fixture_blobs_match_released_clipboard_head": true,
+    "package_lock_contract_workflow_changes": false,
+    "local_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+  },
+  "qualification": {
+    "release_qualified": false,
+    "v11_focused": {
+      "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+      "files": 14,
+      "passed": 301,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": false
+    },
+    "clipboard_focused": {
+      "source": "6a71c69caac9b6c31e26e45bcea0651dd29398e4",
+      "files": 13,
+      "passed": 137,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": false
+    },
+    "v1_original_nocov": {
+      "source": "573901ee1c66624e57143526571a3fd76f52f264",
+      "files": 4,
+      "passed": 4,
+      "exit": 0
+    },
+    "v1_complete_coverage": "not completed; whole-process SIGKILLs and first native batch fixture failure retained; original fixture failures subsequently repaired with focused acceptance",
+    "type_lint_build": "final original passes not established; terminated commands retained",
+    "built_browser": "no test ran; original configured build exited137",
+    "hosted": "not run on unpublished candidates"
+  },
+  "publication": {
+    "remote_changes": false,
+    "automatic_review_rejected_spec_push": true,
+    "approval_still_needed_for_concrete_candidate_publication": true
+  },
+  "counting": "Focused generations and batches overlap. Do not sum counts into unique coverage.",
+  "receipts": "execution-receipts.json",
+  "log_index": "log-index.json"
+}

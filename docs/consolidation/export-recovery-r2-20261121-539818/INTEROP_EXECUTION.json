@@ -1,0 +1,23 @@
+{
+  "name": "application-interop",
+  "source": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "parent": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+  "cwd": "apps/web",
+  "argv": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/lib/paymentKeyExport.interop.test.ts",
+    "--maxWorkers=1"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-21T04:45:33.610968+00:00",
+  "elapsed_seconds": 5.774,
+  "exit_code": 0,
+  "test_blob": "48322f29d828f3fbdf4645c39a461e4044635a52",
+  "output_bytes": 215,
+  "output_sha256": "33888c321c30a226ce21197925dba9be87053b4733f4405bf519adba83e70efb",
+  "output": "\n RUN  v5.1.0 /workspace/scratch/539818ee134f/GhostPay-export-recovery/apps/web\n\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  20:45:34\n   Duration  5.18s (tests 68%, transform 21%, import 11%)\n\n",
+  "scope": "Complete exact donor interoperability file. Original Vitest configuration; no coverage option, test filter, timeout or assertion change. Focused run is not full coverage qualification."
+}

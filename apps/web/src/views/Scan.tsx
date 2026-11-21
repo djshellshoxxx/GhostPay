@@ -1,20 +1,32 @@
-import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { findChain, manifestDigest, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
+import { StealthExportArchive } from '../components/StealthExportArchive';
+import { StealthExportPayment } from '../components/StealthExportPayment';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
+import { createPaymentExportRpc } from '../lib/paymentExportRpc';
+import type { ExportRpc } from '../lib/paymentKeyExport';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { placeScanMatch, sharedRouterAddresses } from '../lib/scanMatches';
-import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
-import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
+import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan, SCAN_PRIVACY_KEY } from '../lib/scanPrivacy';
+import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, SCAN_LANES_KEY, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
+import { subscribeAppLock } from '../lib/appLock';
+import { revokePrivacyReveal } from '../lib/privacyMode';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+import { ScanStateError, type PrivateScanScope, type PrivateScanState, type PrivateScanVault } from '../lib/privateScanStore';
+import { openCurrentPrivateScanVault, subscribePrivateScanInvalidation } from '../lib/privateScanLifecycle';
+import { loadSettings, SETTINGS_KEY, type Settings } from '../lib/settings';
 import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
@@ -33,6 +45,7 @@ function useScanT(): T {
 
 // latestT.current('key') is not seen by scripts/i18n/extract.mjs; the keys translated through it in this file:
 // i18n-use: scan.error.reorg scan.error.observationLimit scan.announce.limit scan.announce.finished
+// i18n-use: scan.providerSeesPayments
 // i18n-use: scan.tag.saved scan.tags.unlocked scan.tags.deleted
 /** The translator of the latest render, for text produced after an await (a language change may have happened since). */
 function useLatestScanT(t: T): { readonly current: T } {
@@ -49,6 +62,42 @@ type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | 
 // i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
 const show = (m: ScanText, t: T): string => ('error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
+
+type PrivateScanStatus = 'loading' | 'notStarted' | 'interrupted' | 'scanning' | 'resuming' | 'paused' | 'completed' | 'failed' | 'invalidated';
+// i18n-use: scan.checkpoint.loading scan.checkpoint.notStarted scan.checkpoint.interrupted scan.checkpoint.scanning scan.checkpoint.resuming scan.checkpoint.paused scan.checkpoint.completed scan.checkpoint.failed scan.checkpoint.invalidated
+// i18n-use: scan.checkpoint.invalid scan.checkpoint.conflict scan.checkpoint.limit scan.checkpoint.unavailable scan.checkpoint.cleared
+const PRIVATE_SCAN_STATUS_KEYS = {
+  loading: 'scan.checkpoint.loading', notStarted: 'scan.checkpoint.notStarted', interrupted: 'scan.checkpoint.interrupted',
+  scanning: 'scan.checkpoint.scanning', resuming: 'scan.checkpoint.resuming', paused: 'scan.checkpoint.paused',
+  completed: 'scan.checkpoint.completed', failed: 'scan.checkpoint.failed', invalidated: 'scan.checkpoint.invalidated',
+} as const;
+
+function privateScanError(error: unknown): ScanText {
+  if (error instanceof ScanStateError) {
+    if (error.code === 'invalid') return msg('scan.checkpoint.invalid');
+    if (error.code === 'stale') return msg('scan.checkpoint.invalidated');
+    if (error.code === 'conflict') return msg('scan.checkpoint.conflict');
+    if (error.code === 'limit') return msg('scan.checkpoint.limit');
+  }
+  return msg('scan.checkpoint.unavailable');
+}
+
+/** Raw preference values stay in memory; a synchronous change invalidates pending work before React can rerender. */
+function scanPreferenceSnapshot(): string {
+  try {
+    const storage = browserStorage();
+    return JSON.stringify([SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY, WEB_NETWORK_SELECTION_KEY].map((key) => storage?.getItem(key) ?? null));
+  } catch { return ''; }
+}
+
+function currentScanSettings(fallback: Settings): Settings {
+  try {
+    const storage = browserStorage();
+    if (storage === undefined) return fallback;
+    storage.getItem(SETTINGS_KEY); // Read denial must not turn the selected in-memory endpoint into defaults.
+    return loadSettings(storage);
+  } catch { return fallback; }
+}
 
 // i18n-use: scan.privacySet.low scan.privacySet.medium scan.privacySet.high
 function describePrivacySet(a: AnonymitySet, t: T): string {
@@ -81,7 +130,7 @@ export function Scan(): ReactNode {
   const app = useApp();
   const services = useServices();
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
-  const [start, setStart] = useState('');
+  const [start, setStart] = useState(services.privateScanStore === undefined ? '' : '0');
   const [resume, setResume] = useState(true);
   const [deepScan, setDeepScan] = useState(false);
   const [running, setRunning] = useState(false);
@@ -92,19 +141,133 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  // Retain the verified scan endpoint for explicit exports, without retaining the scan's cancelled/expired authority.
+  const [scanRpc, setScanRpc] = useState<{ readonly scope: NonNullable<typeof scanOwner>; readonly rpc: ExportRpc } | undefined>(undefined);
   const [autoRescan, setAutoRescan] = useState(false);
+  // A queued timer must not mint fresh authority after revocation, even before React commits the stopped state.
+  const autoNetworkRevision = useRef<number | undefined>(undefined);
   // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
   const [autoWake, setAutoWake] = useState(0);
   const autoTick = useRef<() => void>(() => undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [privateRevision, setPrivateRevision] = useState(0);
+  const [privateStatus, setPrivateStatus] = useState<PrivateScanStatus>('loading');
+  const [privateData, setPrivateData] = useState<{ readonly context: string; readonly state: PrivateScanState | undefined } | undefined>(undefined);
+  const [privateFailure, setPrivateFailure] = useState<ScanText | undefined>(undefined);
+  const [privateLoading, setPrivateLoading] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const livePrivateContext = useRef<string | undefined>(undefined);
   const manifest = useManifest(chainId);
   const scanPrivacy = loadScanPrivacy(browserStorage());
   const scanLanes = loadScanLanes(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
-  const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
+  const currentScope = useRef({ chainId, keyId, signer: app.session?.signerPublicKey });
+  currentScope.current = { chainId, keyId, signer: app.session?.signerPublicKey };
+  const privateMode = services.privateScanStore !== undefined;
+  const configuredChain = findChain(chainId);
+  const selectedSettings = privateMode ? currentScanSettings(app.settings) : app.settings;
+  // Endpoint and policy choices are hashed locally; the journal never stores the endpoint or public seller ID in plaintext.
+  const configuration = bytesToHex(sha256(utf8ToBytes(JSON.stringify({
+    manifest: manifest?.status === 'loaded' ? manifestDigest(manifest.manifest) : '',
+    rpc: selectedSettings.rpcUrls[String(chainId)] ?? '', secondary: selectedSettings.rpcUrlsSecondary[String(chainId)] ?? '',
+    transport: scanPrivacy.transport, endpoint: scanPrivacy.endpoints[String(chainId)] ?? '', requireProxy: scanPrivacy.requireProxy,
+    source: scanPrivacy.source, indexer: scanPrivacy.indexerUrls[String(chainId)] ?? '', window: scanPrivacy.windowBlocks,
+    openLaneBudget: scanPrivacy.openLaneBudget, floodPerBlock: scanLanes.floodPerBlock, spamScoring: scanLanes.spamScoring,
+  }))));
+  const privateScope: PrivateScanScope | undefined = keyId === undefined || configuredChain === undefined || manifest?.status !== 'loaded'
+    ? undefined : { chainId, sellerKeyId: keyId, announcer: manifest.manifest.announcer, router: manifest.manifest.router, finalityDepth: configuredChain.finalityDepth, deep: deepScan, configuration };
+  const privateContext = privateScope === undefined ? undefined : `${keyId}:${String(chainId)}:${deepScan ? 'deep' : 'tag'}:${configuration}`;
+  livePrivateContext.current = privateContext;
+  const savedPrivateState = privateData?.context === privateContext ? privateData?.state : undefined;
+  const checkpoint = privateMode ? savedPrivateState?.cursor : keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
+  const privateReady = !privateMode || (privateContext !== undefined && privateData?.context === privateContext && !privateLoading && privateFailure === undefined);
   const ownsCurrentScope = scanOwner !== undefined && keyId !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session?.signerPublicKey;
   const autoArmed = autoRescan && !running && error === undefined && done !== undefined && ownsCurrentScope && checkpoint !== undefined;
+
+  useEffect(() => {
+    if (!privateMode) return undefined;
+    const changed = (): void => {
+      livePrivateContext.current = undefined;
+      abort.current?.abort();
+      setAutoRescan(false);
+      setPrivateRevision((revision) => revision + 1);
+    };
+    const onStorage = (event: StorageEvent): void => {
+      if (event.key === null || [SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY, WEB_NETWORK_SELECTION_KEY].includes(event.key)) changed();
+    };
+    window.addEventListener('storage', onStorage);
+    const unsubscribe = subscribePrivateScanInvalidation(changed);
+    return () => { window.removeEventListener('storage', onStorage); unsubscribe(); };
+  }, [privateMode]);
+
+  useEffect(() => {
+    if (!privateMode) return undefined;
+    return subscribeAppLock(() => {
+      // Stop an already-due timer synchronously, even when the sole seller-key copy must stay loaded.
+      autoTick.current = () => undefined;
+      setAutoRescan(false);
+      abort.current?.abort();
+    });
+  }, [privateMode]);
+
+  useEffect(() => {
+    const store = services.privateScanStore;
+    if (store === undefined) return undefined;
+    abort.current?.abort();
+    abort.current = undefined;
+    startingScope.current = undefined;
+    setRunning(false);
+    setAutoRescan(false);
+    setScanOwner(undefined);
+    app.setMatches([]);
+    setProgress(undefined);
+    setDone(undefined);
+    setError(undefined);
+    setPrivacyNote(undefined);
+    setRouterOnlyBlocks(undefined);
+    setLagNote(undefined);
+    setPrivateFailure(undefined);
+    setPrivateData(undefined);
+    setStart('0');
+    const context = privateContext;
+    const scope = privateScope;
+    if (context === undefined || scope === undefined || app.session === undefined) {
+      setPrivateLoading(false);
+      setPrivateStatus('notStarted');
+      return undefined;
+    }
+    let live = true;
+    let vault: PrivateScanVault | undefined;
+    const sessionGuard = captureSessionGuard();
+    const preferences = scanPreferenceSnapshot();
+    const guard = (): void => {
+      sessionGuard();
+      if (!live || livePrivateContext.current !== context || preferences !== scanPreferenceSnapshot()) throw new Error('scan-context-changed');
+    };
+    setPrivateLoading(true);
+    setPrivateStatus('loading');
+    void (async () => {
+      try {
+        vault = await openCurrentPrivateScanVault(scope, store, guard);
+        const state = await vault.load();
+        guard();
+        setPrivateData({ context, state });
+        setPrivateStatus(state === undefined ? 'notStarted' : 'interrupted');
+        if (state?.routerOnlyBlocks !== undefined) setRouterOnlyBlocks(state.routerOnlyBlocks);
+      } catch (cause) {
+        try { guard(); } catch { return; }
+        setPrivateData({ context, state: undefined });
+        setPrivateFailure(privateScanError(cause));
+        setPrivateStatus(cause instanceof ScanStateError && cause.code === 'invalid' ? 'invalidated' : 'failed');
+      } finally {
+        vault?.lock();
+        if (live) setPrivateLoading(false);
+      }
+    })();
+    return () => { live = false; vault?.lock(); abort.current?.abort(); };
+    // Scope fields are fully represented by privateContext; session identity changes even on identical-key replacement.
+  }, [app.session, app.setMatches, privateContext, privateRevision, services.privateScanStore]);
 
   useEffect(() => {
     if (!autoArmed) return undefined;
@@ -120,6 +283,7 @@ export function Scan(): ReactNode {
 
   useEffect(
     () => () => {
+      autoNetworkRevision.current = undefined;
       abort.current?.abort();
     },
     [],
@@ -128,11 +292,22 @@ export function Scan(): ReactNode {
   useEffect(() => subscribeSession(() => {
     // A revision change invalidates even a clear-and-restore of identical public keys.
     abort.current?.abort();
+    autoNetworkRevision.current = undefined;
+    setAutoRescan(false);
     app.setMatches([]);
     setScanOwner(undefined);
+    setScanRpc(undefined);
     setProgress(undefined);
     setDone(undefined);
   }), [app.setMatches]);
+
+  useEffect(() => services.network?.subscribe(() => {
+    autoNetworkRevision.current = undefined;
+    abort.current?.abort();
+    setAutoRescan(false);
+    setScanRpc(undefined);
+    setDone(undefined);
+  }), [services]);
 
   useEffect(() => {
     const scope = startingScope.current;
@@ -146,6 +321,7 @@ export function Scan(): ReactNode {
       abort.current?.abort();
       app.setMatches([]);
       setScanOwner(undefined);
+      setScanRpc(undefined);
     }
   }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
 
@@ -161,18 +337,22 @@ export function Scan(): ReactNode {
 
   const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
   const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
+  const exportRpc = scanMatchesCurrentScope && scanRpc?.scope === scanOwner && scanRpc.rpc.chainId === chainId ? scanRpc.rpc : undefined;
   const routerOnlyNote = routerOnlyBlocks === undefined ? undefined : describeRouterOnly(routerOnlyBlocks, t);
 
   const begin = (opts?: { readonly append: true }): void => {
-    if (keyId === undefined || abort.current !== undefined) return;
+    if (keyId === undefined || abort.current !== undefined || !privateReady || clearing) return;
     const sessionAtStart = app.session;
     if (sessionAtStart === undefined) return;
     // An automatic re-check only continues a clean scan of this exact scope from its checkpoint, and keeps its results.
     const append = opts?.append === true;
-    if (append && (!scanMatchesCurrentScope || checkpoint === undefined)) return;
-    const seed: readonly ScanMatch[] = append ? scopedMatches : [];
+    if (append && (!scanMatchesCurrentScope || checkpoint === undefined || autoNetworkRevision.current !== (services.network?.getRevision() ?? 0))) return;
+    const seed: readonly ScanMatch[] = append && !privateMode ? scopedMatches : [];
     const guardSession = captureSessionGuard();
+    const contextAtStart = privateContext;
+    const preferencesAtStart = scanPreferenceSnapshot();
     const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
+    const networkRevision = services.network?.getRevision() ?? 0;
     const ctl = new AbortController();
     abort.current = ctl;
     startingScope.current = scope;
@@ -182,31 +362,89 @@ export function Scan(): ReactNode {
     setPrivacyNote(undefined);
     setRouterOnlyBlocks(undefined);
     setLagNote(undefined);
-    if (!append) {
+    if (privateMode) setPrivateStatus(checkpoint !== undefined && (resume || append) ? 'resuming' : 'scanning');
+    if (!append || privateMode) {
       setScanOwner(undefined);
+      setScanRpc(undefined);
       app.setMatches([]);
     }
     const scopeKeysAreCurrent = (): boolean => {
-      try { guardSession(); return true; } catch { return false; }
+      try {
+        guardSession();
+        return !privateMode || (livePrivateContext.current === contextAtStart && scanPreferenceSnapshot() === preferencesAtStart);
+      } catch { return false; }
     };
-    const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeKeysAreCurrent();
+    const scopeStillSelected = (): boolean => scopeKeysAreCurrent() && (services.network?.getRevision() ?? 0) === networkRevision
+      && currentScope.current.chainId === scope.chainId && currentScope.current.keyId === scope.keyId && currentScope.current.signer === scope.signerPublicKey;
+    const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeStillSelected();
     const assertScopeCurrent = (): void => {
       if (ctl.signal.aborted) throw new Error('scan-aborted');
       if (!scopeIsCurrent()) throw new Error('scan-session-changed');
     };
+    // Cancellation releases the UI even if a setup/storage adapter does not settle. Every late result/rejection is
+    // observed, and scoped guards still prevent follow-up requests or commits from the abandoned operation.
+    const awaitCurrent = <Result,>(work: () => Promise<Result>, discard?: (value: Result) => void): Promise<Result> => {
+      assertScopeCurrent();
+      return new Promise<Result>((resolve, reject) => {
+        let settled = false;
+        const finish = (complete: () => void): void => {
+          if (settled) return;
+          settled = true;
+          ctl.signal.removeEventListener('abort', cancelled);
+          complete();
+        };
+        const cancelled = (): void => { finish(() => { reject(new DOMException('Scan cancelled', 'AbortError')); }); };
+        ctl.signal.addEventListener('abort', cancelled, { once: true });
+        void Promise.resolve().then(() => { assertScopeCurrent(); return work(); }).then((value) => {
+          if (settled) { discard?.(value); return; }
+          try { assertScopeCurrent(); }
+          catch (cause) { discard?.(value); finish(() => { reject(cause instanceof Error ? cause : new Error('scan-action-failed')); }); return; }
+          finish(() => { resolve(value); });
+        }, (cause: unknown) => { finish(() => { reject(cause instanceof Error ? cause : new Error('scan-action-failed')); }); });
+      });
+    };
     void (async () => {
+      let privateVault: PrivateScanVault | undefined;
+      const lockPrivateVault = (): void => { privateVault?.lock(); };
+      ctl.signal.addEventListener('abort', lockPrivateVault, { once: true });
       try {
         const chain = findChain(chainId);
         if (chain === undefined || manifest?.status !== 'loaded') throw new Error('manifest');
+        let savedState: PrivateScanState | undefined;
+        if (services.privateScanStore !== undefined && privateScope !== undefined) {
+          const store = services.privateScanStore;
+          const scanScope = privateScope;
+          privateVault = await awaitCurrent(() => openCurrentPrivateScanVault(scanScope, store, assertScopeCurrent), (vault) => { vault.lock(); });
+          const openedVault = privateVault;
+          savedState = await awaitCurrent(() => openedVault.load());
+          assertScopeCurrent();
+          if (contextAtStart !== undefined) setPrivateData({ context: contextAtStart, state: savedState });
+          setRouterOnlyBlocks(savedState?.routerOnlyBlocks);
+          // A manual rescan replaces the journal only when its first complete page commits. Invalid input,
+          // an unavailable node, cancellation or a failed page must leave the previous history recoverable.
+          if (!resume && !append) savedState = undefined;
+          setPrivateFailure(undefined);
+          setPrivateStatus(savedState !== undefined ? 'resuming' : 'scanning');
+        }
         // Spec 10: the scan path is planned first; a required private path that is missing blocks the scan, never downgrades.
         const privacy = loadScanPrivacy(browserStorage());
         const lanes = loadScanLanes(browserStorage());
         const plan = planScan(privacy, chain);
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
+        assertScopeCurrent();
+        const selectedRpc = (): Promise<RpcClient | undefined> => {
+          assertScopeCurrent();
+          if (!privateMode) return app.getRpc(chainId, { action: 'scan', signal: ctl.signal });
+          const endpoint = selectedSettings.rpcUrls[String(chainId)] ?? '';
+          if (endpoint === '') return Promise.resolve(undefined);
+          const authorization = services.network?.authorize({ action: 'scan', category: 'rpc', endpoint, network: { kind: 'evm', chainId }, signal: ctl.signal });
+          return services.createRpc(chain, endpoint, authorization).catch((error: unknown) => { authorization?.dispose(); throw error; });
+        };
+        const clients = await awaitCurrent(() => openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: selectedRpc, fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScopeCurrent, signal: ctl.signal, ...(services.network === undefined ? {} : { authorize: services.network.authorize }) }));
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
+          if (privateMode) setPrivateStatus('failed');
           return;
         }
         const rpc: RpcClient = clients.base;
@@ -215,33 +453,69 @@ export function Scan(): ReactNode {
         // Behind a required local proxy it is not contacted at all (it would be reached directly).
         let rpc2: RpcClient | undefined;
         try {
-          rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
+          if (plan.useSecondary) {
+            const endpoint = selectedSettings.rpcUrlsSecondary[String(chainId)] ?? '';
+            assertScopeCurrent();
+            if (privateMode && endpoint !== '') {
+              const authorization = services.network?.authorize({ action: 'scan', category: 'rpc', endpoint, network: { kind: 'evm', chainId }, signal: ctl.signal });
+              rpc2 = await awaitCurrent(() => services.createRpc(chain, endpoint, authorization).catch((error: unknown) => { authorization?.dispose(); throw error; }));
+            } else if (!privateMode) rpc2 = await awaitCurrent(() => app.getSecondaryRpc(chainId, { action: 'scan', signal: ctl.signal }));
+          }
         } catch {
           assertScopeCurrent();
           setError(msg('scan.error.secondRpc'));
+          if (privateMode) setPrivateStatus('failed');
           return;
         }
         assertScopeCurrent();
-        let cursor = resume || append ? checkpoint : undefined;
+        let cursor = resume || append ? privateMode ? savedState?.cursor : checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
             setError(msg('scan.error.startBlock'));
+            if (privateMode) setPrivateStatus('failed');
             return;
           }
           cursor = { nextBlock: BigInt(start.trim()) };
         }
-        const checked = await verifyManifestState(manifest, rpc);
+        const guardedManifestRpc: RpcClient = { ...rpc, request: (method, params) => awaitCurrent(() => rpc.request(method, params)) };
+        const checked = await awaitCurrent(() => verifyManifestState(manifest, guardedManifestRpc));
         assertScopeCurrent();
         if (checked.status !== 'loaded') {
           setError(msg('scan.error.manifestMismatch'));
+          if (privateMode) setPrivateStatus('failed');
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
-        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
+        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep, assertCurrent: assertScopeCurrent, signal: ctl.signal });
         assertScopeCurrent();
         setScanOwner(scope);
+        const exportEndpoint = plan.endpoint ?? selectedSettings.rpcUrls[String(chainId)];
+        if (exportEndpoint === undefined) throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+        setScanRpc({ scope, rpc: createPaymentExportRpc(chain, exportEndpoint, services, () => {
+          // A cancelled scan can retain valid matches. Its session, endpoint and policy still must be the same.
+          if (!scopeStillSelected() || scanPreferenceSnapshot() !== preferencesAtStart) throw new UserFacingError({ key: 'error.network.authorizationRefused' });
+        }) });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
+        let publishQueued = false;
+        const publishMatches = (): void => {
+          if (publishQueued) return;
+          publishQueued = true;
+          // The scanner emits a completed page synchronously. Coalesce that burst into one bounded UI copy.
+          queueMicrotask(() => {
+            publishQueued = false;
+            if (scopeIsCurrent()) app.setMatches([...found]);
+          });
+        };
+        let historyStart = savedState?.startBlock ?? cursor.nextBlock;
+        let historicalRouterOnly = [...(savedState?.routerOnlyBlocks ?? [])];
+        let currentRouterOnly: readonly bigint[] = [];
+        const allRouterOnly = (blocks: readonly bigint[]): bigint[] => [...new Set([...historicalRouterOnly, ...blocks])];
+        const publishRouterOnly = (blocks: readonly bigint[]): void => {
+          currentRouterOnly = blocks;
+          setRouterOnlyBlocks(allRouterOnly(blocks));
+        };
+        const persist = privateVault;
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
         const viewingKey = revealViewingKey();
         const res = await runScan({
@@ -253,19 +527,37 @@ export function Scan(): ReactNode {
           spamScoring: lanes.spamScoring,
           privacySetTransfers: lanes.privacySetTransfers,
           cursor,
-          spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
+          spendingPublicKeyHex: sessionAtStart.spendingPublicKey,
           keyId,
           deep: deepScan,
+          ...(privacy.bulkEvidence > 0 ? { bulkEvidence: privacy.bulkEvidence } : {}),
           ...(secondary === undefined ? {} : { secondaryClient: secondary }),
           viewingKey,
           createWorker: services.createScanWorker,
           signal: ctl.signal,
-          checkpoints: services.checkpoints,
+          assertCurrent: assertScopeCurrent,
+          ...(persist === undefined ? { checkpoints: services.checkpoints } : {
+            replayBlocks: [...new Set((savedState?.matches ?? []).map((match) => match.announcement.blockNumber))],
+            onCheckpoint: async (nextCursor, matches, narrowedBlocks) => {
+              assertScopeCurrent();
+              if (nextCursor.nextBlock < historyStart) historyStart = nextCursor.nextBlock;
+              const next: PrivateScanState = {
+                cursor: nextCursor, matches: [...matches], startBlock: historyStart,
+                routerOnlyBlocks: allRouterOnly(narrowedBlocks),
+              };
+              if ((next.routerOnlyBlocks?.length ?? 0) > 1000) throw new ScanStateError('limit');
+              await awaitCurrent(() => persist.save(next));
+              assertScopeCurrent();
+              if (contextAtStart !== undefined) setPrivateData({ context: contextAtStart, state: next });
+              publishRouterOnly(narrowedBlocks);
+            },
+          }),
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
             setProgress(nextProgress);
+            app.setMatches([...found]);
             // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
-            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyBlocks(nextProgress.routerOnlyBlocks);
+            if (nextProgress.routerOnlyBlocks !== undefined) publishRouterOnly(nextProgress.routerOnlyBlocks);
           },
           onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
@@ -278,6 +570,9 @@ export function Scan(): ReactNode {
           },
           onReorg: async (to, canonicalHash) => {
             if (!scopeIsCurrent()) return;
+            if (to < historyStart) historyStart = to;
+            historicalRouterOnly = historicalRouterOnly.filter((block) => block < to);
+            publishRouterOnly(currentRouterOnly.filter((block) => block < to));
             // Observations of this run, saved or not; only those whose block was replaced are tombstoned.
             const observed = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
             found = found.filter((m) => m.announcement.blockNumber < to);
@@ -306,16 +601,20 @@ export function Scan(): ReactNode {
               found.push(m);
             }
             else found[slot] = m;
-            app.setMatches([...found]);
+            publishMatches();
           },
         });
+        // An aborted run may have belonged to a now-replaced seller. It must not publish even terminal status.
+        if (!scopeStillSelected()) return;
         if (!ctl.signal.aborted) assertScopeCurrent();
+        app.setMatches([...found]);
         if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
         if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
         setPrivacyNote(res.telemetry?.anonymity);
-        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyBlocks(res.routerOnlyBlocks ?? []);
+        publishRouterOnly(res.routerOnlyBlocks ?? []);
         if (res.secondaryLag !== undefined) setLagNote(msg('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
         if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
+        if (privateMode) setPrivateStatus(ctl.signal.aborted ? 'paused' : res.discrepancies.length > 0 || (res.backlog ?? 0) > 0 || res.limitReached || res.cursor.nextBlock <= historyStart ? 'interrupted' : 'completed');
         const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: (resume || append) && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
         const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
         setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note]);
@@ -323,22 +622,90 @@ export function Scan(): ReactNode {
         if (ctl.signal.aborted) setAutoRescan(false);
         app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
       } catch (e) {
-        if (!scopeKeysAreCurrent()) return;
+        if (!scopeStillSelected()) return;
+        if (ctl.signal.aborted) {
+          setAutoRescan(false);
+          if (privateMode) setPrivateStatus('paused');
+          setDone([msg('scan.done.cancelledEarly')]);
+          return;
+        }
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
           if (e.message === 'scan-session-changed') setError(msg('scan.error.keysChanged'));
           else if (scopeKeysAreCurrent()) setDone([msg('scan.done.cancelledEarly')]);
           return;
         }
-        setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : { error: captureUserMessage(e) });
+        if (privateMode) setPrivateStatus(e instanceof ScanStateError && (e.code === 'invalid' || e.code === 'stale') ? 'invalidated' : 'failed');
+        if (privateMode && e instanceof ScanStateError) setPrivateFailure(privateScanError(e));
+        else setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : { error: captureUserMessage(e) });
       } finally {
-        if (abort.current === ctl) abort.current = undefined;
+        ctl.signal.removeEventListener('abort', lockPrivateVault);
+        privateVault?.lock();
+        if (abort.current === ctl) {
+          abort.current = undefined;
+          setRunning(false);
+          // A quick cached run can start and finish in one React batch; explicitly re-arm the one-shot timer.
+          setAutoWake((wake) => wake + 1);
+        }
         if (startingScope.current === scope) startingScope.current = undefined;
-        setRunning(false);
       }
     })();
   };
 
-  autoTick.current = () => { begin({ append: true }); };
+  autoTick.current = () => { if (autoRescan) begin({ append: true }); };
+
+  const clearCheckpoint = (): void => {
+    if (running || clearing || keyId === undefined) return;
+    if (services.privateScanStore === undefined) {
+      services.checkpoints.clear(chainId, keyId);
+      setResume(false);
+      app.announce(t('scan.checkpointCleared'));
+      return;
+    }
+    const scope = privateScope;
+    const context = privateContext;
+    if (scope === undefined || context === undefined) return;
+    const store = services.privateScanStore;
+    const sessionGuard = captureSessionGuard();
+    const preferences = scanPreferenceSnapshot();
+    const guard = (): void => {
+      sessionGuard();
+      if (livePrivateContext.current !== context || preferences !== scanPreferenceSnapshot()) throw new Error('scan-context-changed');
+    };
+    setClearing(true);
+    setAutoRescan(false);
+    void (async () => {
+      let vault: PrivateScanVault | undefined;
+      try {
+        vault = await openCurrentPrivateScanVault(scope, store, guard);
+        try { await vault.load(); } catch (cause) {
+          if (!(cause instanceof ScanStateError && (cause.code === 'invalid' || cause.code === 'limit'))) throw cause;
+          // Forget compares against the exact corrupt record observed; another tab's replacement is never deleted.
+        }
+        guard();
+        await vault.forget();
+        guard();
+        setPrivateData({ context, state: undefined });
+        setPrivateFailure(undefined);
+        setError(undefined);
+        setDone(undefined);
+        setProgress(undefined);
+        setScanOwner(undefined);
+        app.setMatches([]);
+        setRouterOnlyBlocks(undefined);
+        setPrivateStatus('notStarted');
+        setStart('0');
+        setResume(false);
+        app.announce(latestT.current('scan.checkpoint.cleared'));
+      } catch (cause) {
+        try { guard(); } catch { return; }
+        setError(privateScanError(cause));
+        setPrivateStatus('failed');
+      } finally { vault?.lock(); setClearing(false); }
+    })();
+  };
+
+  const checkpointBlock = checkpoint?.nextBlock === undefined || checkpoint.nextBlock === 0n || (privateMode && (savedPrivateState === undefined || checkpoint.nextBlock <= savedPrivateState.startBlock)) ? undefined : checkpoint.nextBlock - 1n;
+  const displayedPrivateStatus = privateStatus === 'completed' && checkpointBlock === undefined ? 'interrupted' : privateStatus;
 
   return (
     <section aria-labelledby="scan-h">
@@ -349,10 +716,18 @@ export function Scan(): ReactNode {
       <Notice kind="warn" title={t('scan.rpcPrivacy.title')}>
         {t('scan.rpcPrivacy.body')}
       </Notice>
+      <Notice kind="warn">{t('scan.providerSeesPayments')}</Notice>
+      {privateMode && <div className="panel" aria-live="polite" aria-atomic="true" data-testid="private-scan-state">
+        <p>{t('scan.checkpoint.network', { network: configuredChain?.name ?? String(chainId) })}</p>
+        <p>{t(PRIVATE_SCAN_STATUS_KEYS[displayedPrivateStatus], { block: checkpointBlock?.toString() ?? '' })}</p>
+        {checkpointBlock !== undefined && <p>{t('scan.checkpoint.last', { block: checkpointBlock.toString() })}</p>}
+        {savedPrivateState !== undefined && <p>{t('scan.checkpoint.saved', { count: String(savedPrivateState.matches.length) })}</p>}
+        <p className="hint">{t('scan.checkpoint.privacy')}</p>
+      </div>}
       <details className="panel">
         <summary>{t('scan.disclosure.summary')}</summary>
         <ul>
-          {describeScanDisclosureMessages(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
+          {describeScanDisclosureMessages(scanPrivacy, { hasSecondary: (selectedSettings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {scanLanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
@@ -376,7 +751,7 @@ export function Scan(): ReactNode {
         </Field>
         {checkpoint !== undefined && (
           <div className="check">
-            <input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} />
+            <input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} disabled={running || clearing} />
             <label htmlFor="resume">{t('scan.resume')}</label>
           </div>
         )}
@@ -386,18 +761,19 @@ export function Scan(): ReactNode {
         </div>
         {deepScan && <Notice kind="warn">{t('scan.deepScan.warn')}</Notice>}
         <div className="check">
-          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
+          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { autoNetworkRevision.current = e.target.checked ? (services.network?.getRevision() ?? 0) : undefined; setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
           <label htmlFor="auto-rescan">{t('scan.autoRescan')}</label>
         </div>
         <p id="auto-rescan-hint" className="hint">{t('scan.autoRescan.hint')}</p>
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={() => { begin(); }} disabled={running}>{t('scan.start')}</button>
+          <button type="button" className="btn btn-primary" onClick={() => { begin(); }} disabled={running || clearing || !privateReady}>{t('scan.start')}</button>
           <button type="button" className="btn" onClick={() => { setAutoRescan(false); abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button>
-          {checkpoint !== undefined && (
-            <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce(t('scan.checkpointCleared')); }} disabled={running}>
-              {t('scan.clearCheckpoint')}
+          {(checkpoint !== undefined || privateFailure !== undefined) && (
+            <button type="button" className="btn" onClick={clearCheckpoint} disabled={running || clearing || privateLoading}>
+              {t(privateMode ? 'scan.checkpoint.clear' : 'scan.clearCheckpoint')}
             </button>
           )}
+          {privateFailure !== undefined && <button type="button" className="btn" onClick={() => { setPrivateRevision((revision) => revision + 1); }} disabled={running || clearing || privateLoading}>{t('scan.checkpoint.retry')}</button>}
         </div>
       </div>
       <div role="status" aria-live="polite" className="status">
@@ -409,6 +785,7 @@ export function Scan(): ReactNode {
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
       {lagNote !== undefined && <Notice kind="warn">{show(lagNote, t)}</Notice>}
       {error !== undefined && <Notice kind="error">{show(error, t)}</Notice>}
+      {privateFailure !== undefined && <Notice kind="error">{show(privateFailure, t)}</Notice>}
       {autoRescan && error !== undefined && <Notice kind="warn">{t('scan.autoRescan.stopped')}</Notice>}
 
       <Matches
@@ -416,6 +793,7 @@ export function Scan(): ReactNode {
         matches={scopedMatches}
         sellerSignerPublicKey={app.session.signerPublicKey}
         receiptSignerPublicKey={scanMatchesCurrentScope ? scanOwner.signerPublicKey : undefined}
+        exportRpc={exportRpc}
       />
       <ReconciliationLedger
         chainId={chainId}
@@ -444,7 +822,7 @@ function describe(m: ScanMatch, chainId: number, t: T): string {
   return token === undefined ? t('scan.match.unlistedToken', { amount: m.metadata.netAmount.toString(), token: m.metadata.token }) : `${formatUnits(m.metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
+function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined; readonly exportRpc: ExportRpc | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();
@@ -483,6 +861,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
+      <StealthExportArchive matches={matches} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
@@ -548,6 +927,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
               <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
                 {t('scan.sweep')}
               </button>
+              <StealthExportPayment match={m} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
             </li>
           );
         })}
@@ -649,7 +1029,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
             {t('scan.tags.unlock')}
           </button>
         ) : (
-          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
+          <button type="button" className="btn" onClick={() => { services.vault.lock(); revokePrivacyReveal(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
             {t('scan.tags.lock')}
           </button>
         )}

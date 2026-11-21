@@ -1,0 +1,18 @@
+{
+  "source": "98786e75f7979708b52fbe7424825a41100e2d98",
+  "path": "docs/handoffs/qr-surrogate-review-20261119/evidence/qr-package.lcov.info.gz",
+  "uncompressedSha256": "c1e9fea7aa2f9d3b44563141a68b5474b4454a80358ef394fc85248dba67ea24",
+  "uncompressedBytes": 19087,
+  "storedSha256": "cbb1d1a07dacfbee84374d7e538a42d3af0498921a256a1edf4c7f8d5f45b6ca",
+  "sourceFiles": [
+    "src/assembler.ts",
+    "src/base64url.ts",
+    "src/camera.ts",
+    "src/errors.ts",
+    "src/generate.ts",
+    "src/multipart.ts",
+    "src/readers.ts",
+    "src/seller.ts",
+    "src/settings-exchange.ts"
+  ]
+}

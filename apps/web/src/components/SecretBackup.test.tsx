@@ -6,6 +6,9 @@ import { BACKUP_VISIBLE_MS, clearCopiedBackup, englishBackupText, SecretBackup }
 
 const SECRET = 'ab'.repeat(32);
 const writeText = vi.fn<(text: string) => Promise<void>>();
+// Existing lifecycle cases assume the copied backup is still present. External replacements and denied reads
+// are exercised with a stateful clipboard in SecretBackup.clipboardPrivacy.test.tsx.
+const readText = (): Promise<string> => Promise.resolve(SECRET);
 let visibility: DocumentVisibilityState = 'visible';
 
 function setup() {
@@ -48,7 +51,7 @@ describe('SecretBackup', () => {
   beforeEach(() => {
     writeText.mockReset();
     writeText.mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     visibility = 'visible';
     Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => visibility });
   });
@@ -56,9 +59,9 @@ describe('SecretBackup', () => {
     cleanup();
     vi.useRealTimers();
     // Clear the module's "copied" mark (and a pending retry) with a working clipboard, so tests stay independent.
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.resolve() } });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText: () => Promise.resolve(''), writeText: () => Promise.resolve() } });
     clearCopiedBackup();
-    await Promise.resolve();
+    await settle();
   });
 
   it('keeps the backup out of the page until asked for, and can show it again while loaded', () => {
@@ -118,9 +121,11 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenCalledExactlyOnceWith(SECRET);
     expect(screen.getByRole('status').textContent).toMatch(/Copied/);
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenLastCalledWith('');
     // Cleared once: a second clear does not touch the clipboard again.
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
@@ -135,11 +140,13 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenLastCalledWith('');
     // The seed may still be on the clipboard: the next Hide tries again, and this time it works.
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     // Emptied: later clears leave the clipboard alone.
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
   });
 
@@ -148,32 +155,40 @@ describe('SecretBackup', () => {
     await copyBackup();
     writeText.mockImplementationOnce(() => { throw new DOMException('Clipboard unavailable.', 'NotAllowedError'); });
     expect(() => clearCopiedBackup()).not.toThrow();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     fireEvent.keyDown(document.body, { key: 'a' });
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     fireEvent.keyDown(document.body, { key: 'b' });
+    await settle();
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
   });
 
-  it('starts clearing synchronously and retains the mark if that promise later rejects', async () => {
+  it('compares before clearing and retains the mark if the write promise later rejects', async () => {
     setup();
     await copyBackup();
     let rejectClear!: (error: unknown) => void;
     writeText.mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectClear = reject; }));
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     expect(rejectClear).toBeDefined();
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     rejectClear(new DOMException('Document is not focused.', 'NotAllowedError'));
     await settle();
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     await settle();
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
   });
 
@@ -182,12 +197,15 @@ describe('SecretBackup', () => {
     await copyBackup();
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
     expect(() => clearCopiedBackup()).not.toThrow();
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await settle();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     fireEvent.keyDown(document.body, { key: 'a' });
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
@@ -201,19 +219,24 @@ describe('SecretBackup', () => {
     // A key press that the browser still refuses keeps the retry; the next click (user activation) empties it.
     writeText.mockImplementationOnce(refused);
     fireEvent.keyDown(document.body, { key: 'a' });
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     await settle();
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(4);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     fireEvent.click(document.body);
+    await settle();
     fireEvent.keyDown(document.body, { key: 'a' });
+    await settle();
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(4);
   });
 
-  it('a retry runs before the handlers of the click that triggers it, so it never empties the copy that click makes', async () => {
+  it('a retry started in capture phase cannot empty the new copy made by that click', async () => {
     setup();
     await copyBackup();
     writeText.mockImplementationOnce(refused);
@@ -224,13 +247,16 @@ describe('SecretBackup', () => {
     click('Copy seed');
     await settle();
     await clickAndSettle('Copy anyway');
-    expect(writeText.mock.calls.map(([text]) => text)).toEqual([SECRET, '', '', '', SECRET]);
+    // The pending comparison loses ownership before it can write; the explicit new copy is last.
+    expect(writeText.mock.calls.map(([text]) => text)).toEqual([SECRET, '', '', SECRET]);
     expect(screen.getByRole('status').textContent).toMatch(/Copied/);
-    // The retry worked: later clicks leave the new copy alone, and Hide empties it.
+    // The retry was superseded: later clicks leave the new copy alone, and Hide empties it.
     fireEvent.click(document.body);
-    expect(writeText).toHaveBeenCalledTimes(5);
+    await settle();
+    expect(writeText).toHaveBeenCalledTimes(4);
     click('Hide seed');
-    expect(writeText).toHaveBeenCalledTimes(6);
+    await settle();
+    expect(writeText).toHaveBeenCalledTimes(5);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
 
@@ -238,11 +264,13 @@ describe('SecretBackup', () => {
     setup();
     await copyBackup();
     cleanup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     // Emptied: later clears leave the clipboard alone.
     clearCopiedBackup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
@@ -256,10 +284,12 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenCalledTimes(2);
     // No view's own lock runs any more; the app lock still empties it (a focused page allows that in some browsers).
     act(() => { notifyAppLock('idle'); });
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
   });
 
@@ -274,10 +304,12 @@ describe('SecretBackup', () => {
     await settle();
     expect(writeText.mock.calls.map(([text]) => text)).toEqual([SECRET, '', '']);
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(4);
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     fireEvent.keyDown(document.body, { key: 'a' });
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(4);
   });
 
@@ -290,9 +322,11 @@ describe('SecretBackup', () => {
     await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     cleanup();
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(2);
     // The waiting retry runs at the next click.
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
@@ -303,14 +337,21 @@ describe('SecretBackup', () => {
     let finishClear: () => void = () => undefined;
     writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishClear = resolve; }));
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenLastCalledWith('');
-    // Copied again while the clear is still pending.
-    await copyBackup();
-    expect(writeText).toHaveBeenLastCalledWith(SECRET);
+    // A new copy requested during the clear waits until that browser write has settled.
+    click('Show backup seed');
+    click('Copy seed');
+    await clickAndSettle('Copy anyway');
+    expect(screen.getByRole('status').textContent).toMatch(/Copying/);
+    expect(writeText).toHaveBeenLastCalledWith('');
     finishClear();
     await settle();
+    expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
+    expect(writeText).toHaveBeenLastCalledWith(SECRET);
     // The second copy is on the clipboard: Hide empties it.
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(4);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
@@ -323,6 +364,7 @@ describe('SecretBackup', () => {
     await clickAndSettle('Copy anyway');
     expect(screen.getByRole('status').textContent).toMatch(/Copy failed/);
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
@@ -335,6 +377,7 @@ describe('SecretBackup', () => {
     await clickAndSettle('Copy anyway');
     expect(screen.getByRole('status').textContent).toMatch(/Copy failed: select the text manually/);
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(1);
   });
 
@@ -436,23 +479,31 @@ describe('SecretBackup', () => {
     expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', SECRET]);
     expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
     click('Hide seed');
+    await settle();
     expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', SECRET, '']);
   });
 
-  it('an older successful clear cannot cancel the retry needed by a newer refused clear', async () => {
+  it('finishes an older clear before a new copy and retains its newer refused cleanup for retry', async () => {
     setup();
     await copyBackup();
     let finishFirstClear!: () => void;
     writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishFirstClear = resolve; }));
     click('Hide seed');
-    await copyBackup();
+    await settle();
+    click('Show backup seed');
+    click('Copy seed');
+    await clickAndSettle('Copy anyway');
+    expect(screen.getByRole('status').textContent).toMatch(/Copying/);
+    expect(writeText).toHaveBeenCalledTimes(2);
+    finishFirstClear();
+    await settle();
+    expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
     writeText.mockImplementationOnce(refused);
     click('Hide seed');
     await settle();
-    finishFirstClear();
-    await settle();
     const beforeRetry = writeText.mock.calls.length;
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(beforeRetry + 1);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
@@ -463,13 +514,20 @@ describe('SecretBackup', () => {
     let rejectFirstClear!: (reason: Error) => void;
     writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectFirstClear = reject; }));
     click('Hide seed');
-    await copyBackup();
+    await settle();
+    click('Show backup seed');
+    click('Copy seed');
+    await clickAndSettle('Copy anyway');
+    expect(screen.getByRole('status').textContent).toMatch(/Copying/);
     rejectFirstClear(new Error('first clear refused'));
     await settle();
+    expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
     const beforeClick = writeText.mock.calls.length;
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(beforeClick);
     click('Hide seed');
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(beforeClick + 1);
   });
 
@@ -479,6 +537,7 @@ describe('SecretBackup', () => {
     let rejectClear!: (reason: Error) => void;
     writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectClear = reject; }));
     click('Hide seed');
+    await settle();
     let rejectCopy!: (reason: Error) => void;
     writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectCopy = reject; }));
     click('Show backup seed');
@@ -490,6 +549,7 @@ describe('SecretBackup', () => {
     await settle();
     const beforeRetry = writeText.mock.calls.length;
     fireEvent.click(document.body);
+    await settle();
     expect(writeText).toHaveBeenCalledTimes(beforeRetry + 1);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
@@ -499,12 +559,14 @@ describe('SecretBackup', () => {
     setup();
     await copyBackup();
     act(() => { vi.advanceTimersByTime(BACKUP_VISIBLE_MS); });
+    await settle();
     expect(screen.queryByText(SECRET)).toBeNull();
     expect(writeText).toHaveBeenLastCalledWith('');
     await settle();
     click('Show backup seed');
     expect(screen.getByText(SECRET)).toBeTruthy();
     act(() => { notifyAppLock('idle'); });
+    await settle();
     expect(screen.queryByText(SECRET)).toBeNull();
   });
 

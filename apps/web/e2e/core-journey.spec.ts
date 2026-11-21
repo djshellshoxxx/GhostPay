@@ -7,7 +7,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { encodeAbiParameters, keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } from '../src/test/fakeManifest';
 import { verifyReceipt } from '../src/lib/receipts';
-import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
+import { ORIGIN, approveWalletDisclosure, createInvoice, generateKeys, openFresh } from './helpers';
 import { DESTINATION, readSweepJournal } from './sweep-network';
 
 /*
@@ -336,7 +336,7 @@ async function verifyBackup(page: Page, keystore: string): Promise<void> {
   await expect(page.getByText('This backup is not verified yet')).toBeVisible();
   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
-  await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+  await keysView(page).getByRole('button', { name: 'Verify backup', exact: true }).click();
   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
   await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
 }
@@ -385,13 +385,14 @@ async function createShortInvoice(page: Page, hours: number): Promise<string> {
   return box.inputValue();
 }
 
-/** Payer: review -> explicit consent steps -> final check. Nothing reaches the wallet before the send click. */
+/** Payer: review -> explicit consent steps -> final check. No transaction is submitted before the send decision. */
 async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string): Promise<void> {
   await openFresh(payer, link);
   await expect(payer.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(payer.getByText(FAKE_ROUTER).first()).toBeVisible();
   await payer.getByRole('button', { name: 'Continue' }).click();
   await payer.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+  await approveWalletDisclosure(payer, 'eth_requestAccounts');
   await payer.getByRole('button', { name: 'Prepare payment' }).click();
   await expect(payer.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
   await expect(payer.getByText('payNative')).toBeVisible();
@@ -401,6 +402,7 @@ async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string): Pro
 async function payThroughCheckout(payer: Page, sim: ChainSim, link: string): Promise<MinedPayment> {
   await reviewToFinalCheck(payer, sim, link);
   await payer.getByRole('button', { name: 'Send payment in my wallet' }).click();
+  await approveWalletDisclosure(payer, 'eth_sendTransaction');
   await expect(payer.getByRole('heading', { name: 'Submitted' })).toBeVisible();
   await expect(payer.getByText(/Independently verified on your RPC/)).toBeVisible();
   await expect(payer.getByText(`Status: included in block ${String(sim.mineAt)} (not necessarily final yet).`)).toBeVisible();
@@ -513,6 +515,9 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(s.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -537,6 +542,10 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
     await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
@@ -601,13 +610,14 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
     const link = await createShortInvoice(s, 1);
     const { invoice } = await parseFragment(new URL(link).hash);
     const payer = await openPayer(open, sim, { clock: true });
-    // Cross this invoice's deadline within the normal idle limit; a two-hour jump also expires the session.
-    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt - 300) * 1000));
+    // Mount near expiry so the 90-second transition tests the send guard without also crossing the idle deadline.
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt - 60) * 1000));
     await reviewToFinalCheck(payer.page, sim, link);
     // The invoice expires between the reviewed final check and the send click.
-    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 300) * 1000));
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 30) * 1000));
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(payer.page.getByText('This invoice has expired. Nothing was sent.')).toBeVisible();
+    await expect(payer.page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
     await expect(payer.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
     expect(sim.walletTxs).toHaveLength(0);
     expect(await walletJournal(payer.page)).toEqual([]);
@@ -635,6 +645,9 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
     const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep, after its session capture.
     await sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' }).click();
     await held.arrived;
@@ -732,6 +745,7 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
     sim.lookups = 'reset';
     sim.mineAt = 480; // Will land in a recent block: 21 of Base Sepolia's 100 confirmations.
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toBeVisible({ timeout: 45_000 });
     const payment = sim.payments[0];
     if (payment === undefined) throw new Error('payment expected');

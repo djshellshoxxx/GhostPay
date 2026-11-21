@@ -5,8 +5,10 @@ import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
-import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
-import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
+import { clearRpcSessionOnly, loadPrivacyPreferences, loadSettings, savePrivacyPreferences, saveSettings, SETTINGS_KEY, UI_PRIVACY_KEY, type Settings as SettingsData } from './lib/settings';
+import { sameExecutionSettings } from './lib/executionSettings';
+import { AppContext, VIEW_LABELS, type AppState, type RpcAuthorizationOptions, type ViewId } from './state';
+import { UserFacingError } from './lib/errors';
 import { RegistryView } from './features/registry/RegistryView';
 import { About } from './views/About';
 import { CreateInvoice } from './views/CreateInvoice';
@@ -18,7 +20,14 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { notifyAppLock } from './lib/appLock';
+import { PrivacyControls } from './components/PrivacyControls';
+import { ClipboardPrivacySync } from './components/ClipboardPrivacySync';
+import { PrivacyQuickHide } from './components/PrivacyQuickHide';
+import { WalletDisclosureProvider } from './components/WalletDisclosure';
+import { SensitiveContent } from './components/SensitiveContent';
+import { PrivacyProvider } from './lib/privacyMode';
+import { notifyAppLock, subscribeAppLock } from './lib/appLock';
+import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -57,9 +66,26 @@ export interface AppShellProps {
 }
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
+const noNetworkSubscription = (): (() => void) => () => undefined;
+const noNetworkRevision = (): number => 0;
+function storedSettingsRevision(): string | null | undefined {
+  try { return window.localStorage.getItem(SETTINGS_KEY); } catch { return undefined; }
+}
 
-function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
+/** Shown instead of a key, sweep or settings view while the page is framed by another site (SEC-18). */
+function FrameRefusal(): ReactNode {
+  return (
+    <Notice kind="warn" title={FRAME_REFUSAL.title}>
+      {FRAME_REFUSAL.body}{' '}
+      {/* The app root without the current fragment: an invoice link is never handed to the new tab. */}
+      <a href="./" target="_blank" rel="noopener noreferrer">{FRAME_REFUSAL.action}</a>
+    </Notice>
+  );
+}
+
+function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode; readonly framedRefusal: boolean }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  if (props.framedRefusal) return <FrameRefusal />;
   switch (props.view) {
     case 'home':
       return <Home />;
@@ -91,12 +117,19 @@ export function AppShell(props: AppShellProps): ReactNode {
   const extraViews = props.extraViews ?? {};
   const order = profile === 'lean' ? props.order.filter((id) => CORE_ORDER.includes(id)) : props.order;
   const services = useServices();
-  const [fragment, setFragment] = useState<string | undefined>(() => readInvoiceFragment(window.location));
+  const networkRevision = useSyncExternalStore(services.network?.subscribe ?? noNetworkSubscription, services.network?.getRevision ?? noNetworkRevision);
+  const [fragment, setFragmentState] = useState<string | undefined>(() => readInvoiceFragment(window.location));
+  const setFragment = useCallback((next: string | undefined): void => {
+    services.network?.invalidate();
+    setFragmentState(next);
+  }, [services]);
   const [selectedView, setViewState] = useState<ViewId>(() => (readInvoiceFragment(window.location) === undefined ? 'home' : 'pay'));
   const setView = useCallback((next: ViewId): void => {
+    services.network?.invalidate();
     setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
-  }, [profile]);
+  }, [profile, services]);
   const [settings, setSettings] = useState<SettingsData>(() => loadSettings());
+  const settingsRevision = useRef(storedSettingsRevision());
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
@@ -106,14 +139,60 @@ export function AppShell(props: AppShellProps): ReactNode {
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
   const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
   const view = suspended ? 'seller' : profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
+  // Consent for one invoice or sweep target must not reveal a replacement on the same route. Keep the grant's
+  // identity opaque instead of copying invoice text or seller details into the reveal model.
+  const privacyScope = useMemo(() => ({}), [view, fragment, sweepTarget, session, suspended]);
+  // Visual privacy preferences revoke the displayed approval but must not strand an established wallet's gate.
+  // Every execution-setting field (including future fields) retains the existing conservative scope comparison.
+  const disclosureSettings = useRef(settings);
+  if (!sameExecutionSettings(disclosureSettings.current, settings)) disclosureSettings.current = settings;
+  const walletDisclosureScope = useMemo(() => ({}), [privacyScope, disclosureSettings.current, networkRevision]);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
+  // Framed by another site outside the explicit embed mode: key, sweep and settings views are refused (SEC-18).
+  const [framed] = useState(() => isFramed(window));
+  const embedMode = embedModeEnabled(import.meta.env, profile);
+  // Served from another origin than the build declares (SEC-09): manifests are refused in loadBundledManifest; say why.
+  const [wrongOrigin] = useState(() => {
+    const check = currentOriginCheck();
+    return check !== undefined && originMismatch(check.declared, check.actual) ? check : undefined;
+  });
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
   // Configuration/service rerenders do not count as activity. Only actual key installation starts a new session lease.
   const idleLease = useRef<IdleLease | undefined>(undefined);
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent): void => {
+      if (event.key !== null && event.key !== SETTINGS_KEY && event.key !== UI_PRIVACY_KEY) return;
+      if (event.storageArea !== null && event.storageArea !== window.localStorage) return;
+      if (event.key === UI_PRIVACY_KEY) {
+        // A display preference from another tab does not replace selected endpoint/signer references or clear
+        // session-only endpoint consent. The separate execution-storage listener keeps its existing boundary.
+        setSettings((current) => {
+          const privacy = loadPrivacyPreferences(current);
+          return privacy.privacyMode === current.privacyMode && privacy.clipboardClearAfterMs === current.clipboardClearAfterMs
+            ? current : { ...current, ...privacy };
+        });
+        return;
+      }
+      clearRpcSessionOnly();
+      rpcCache.current.clear();
+      settingsRevision.current = storedSettingsRevision();
+      setSettings((current) => ({
+        ...loadSettings(),
+        // Clearing or losing execution storage is not consent to expose a currently masked screen.
+        // An explicit valid visual preference still wins; absent/invalid storage retains this tab's choice.
+        ...loadPrivacyPreferences(current),
+      }));
+    };
+    window.addEventListener('storage', onStorage);
+    const unsubscribeLock = subscribeAppLock(() => { rpcCache.current.clear(); });
+    return () => { window.removeEventListener('storage', onStorage); unsubscribeLock(); };
+  }, []);
+  useEffect(() => { rpcCache.current.clear(); }, [networkRevision]);
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
   // Hash changes arriving later are handled by the listener below.
@@ -128,14 +207,14 @@ export function AppShell(props: AppShellProps): ReactNode {
       const f = readInvoiceFragment(window.location);
       if (f === undefined) return;
       setFragment(f);
-      setViewState('pay');
+      setView('pay');
       if (settings.autoClearFragment) clearFragment(window.location, window.history);
     };
     window.addEventListener('hashchange', onHash);
     return () => {
       window.removeEventListener('hashchange', onHash);
     };
-  }, [settings.autoClearFragment]);
+  }, [settings.autoClearFragment, setFragment, setView]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -145,6 +224,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
   useEffect(() => subscribeSession(() => {
+    rpcCache.current.clear();
     services.vault.lock();
     if (hasSession()) setIdleWiped(undefined);
   }), [services]);
@@ -309,19 +389,20 @@ export function AppShell(props: AppShellProps): ReactNode {
     };
   }, [services, settings.lockTimeoutMin]);
 
-  // A suspended copy is retained precisely because disposal could lose keys. Keep that recovery copy protected
-  // against accidental navigation, including when a previously saved vault cannot currently be confirmed.
-  const unsavedKeys = session !== undefined && suspended;
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
   useEffect(() => {
-    if (!unsavedKeys) return;
+    if (!loadedKeys) return;
     // preventDefault is the standard; a truthy returnValue covers older engines.
     const onBeforeUnload = (e: BeforeUnloadEvent): void => {
-      if (sessionHasExternalCopy()) return;
+      if (!hasSession() || sessionHasExternalCopy()) return;
       e.preventDefault(); e.returnValue = true;
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
-  }, [unsavedKeys]);
+  }, [loadedKeys]);
 
   useEffect(() => {
     if (first.current) {
@@ -334,10 +415,17 @@ export function AppShell(props: AppShellProps): ReactNode {
   }, [view, fragment]);
 
   const rpcFor = useCallback(
-    (urls: Readonly<Record<string, string>>, chainId: number): Promise<RpcClient | undefined> => {
+    (urls: Readonly<Record<string, string>>, chainId: number, authorization?: RpcAuthorizationOptions): Promise<RpcClient | undefined> => {
       const url = urls[String(chainId)];
       const chain = services.chains.find((c) => c.chainId === chainId);
       if (url === undefined || chain === undefined) return Promise.resolve(undefined);
+      if (services.network !== undefined) {
+        if (authorization === undefined) return Promise.reject(new UserFacingError({ key: 'error.network.authorizationRefused' }));
+        try {
+          const context = services.network.authorize({ ...authorization, category: 'rpc', endpoint: url, network: { kind: 'evm', chainId } });
+          return services.createRpc(chain, url, context).catch((error: unknown) => { context.dispose(); throw error; });
+        } catch { return Promise.reject(new UserFacingError({ key: 'error.network.authorizationRefused' })); }
+      }
       const key = `${String(chainId)}|${url}`;
       let p = rpcCache.current.get(key);
       if (p === undefined) {
@@ -351,17 +439,41 @@ export function AppShell(props: AppShellProps): ReactNode {
     },
     [services],
   );
-  const getRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrls, chainId), [rpcFor, settings.rpcUrls]);
-  const getSecondaryRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrlsSecondary, chainId), [rpcFor, settings.rpcUrlsSecondary]);
+  const getRpc = useCallback((chainId: number, authorization?: RpcAuthorizationOptions) => rpcFor(settings.rpcUrls, chainId, authorization), [rpcFor, settings.rpcUrls]);
+  const getSecondaryRpc = useCallback((chainId: number, authorization?: RpcAuthorizationOptions) => rpcFor(settings.rpcUrlsSecondary, chainId, authorization), [rpcFor, settings.rpcUrlsSecondary]);
 
   const state = useMemo<AppState>(
     () => ({
       view,
       setView,
       settings,
+      networkRevision,
       updateSettings: (s) => {
+        // A form opened before another tab saved may not overwrite that newer selection.
+        if (storedSettingsRevision() !== settingsRevision.current) {
+          rpcCache.current.clear();
+          clearRpcSessionOnly();
+          settingsRevision.current = storedSettingsRevision();
+          setSettings((current) => ({
+            ...loadSettings(),
+            // Refusing an obsolete edit is not consent to expose the current tab's sensitive content.
+            ...loadPrivacyPreferences(current),
+          }));
+          services.network?.invalidate();
+          setLive({ key: 'error.network.authorizationRefused' });
+          return false;
+        }
+        if (sameExecutionSettings(settings, s)) {
+          setSettings(s);
+          // Preserve the exact raw execution-settings bytes to which active network grants are bound.
+          return savePrivacyPreferences(s);
+        }
+        rpcCache.current.clear();
         setSettings(s);
-        return saveSettings(s);
+        const saved = saveSettings(s);
+        settingsRevision.current = storedSettingsRevision();
+        services.network?.invalidate();
+        return saved;
       },
       session,
       fragment,
@@ -374,15 +486,20 @@ export function AppShell(props: AppShellProps): ReactNode {
       getSecondaryRpc,
       announce: setLive,
     }),
-    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc],
+    [view, setView, settings, networkRevision, session, fragment, setFragment, matches, sweepTarget, getRpc, getSecondaryRpc, services],
   );
 
   return (
     <AppContext.Provider value={state}>
+      <ClipboardPrivacySync />
+      <PrivacyProvider enabled={settings.privacyMode} scope={privacyScope}>
+      <WalletDisclosureProvider scope={walletDisclosureScope}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
+        <PrivacyControls />
+        <PrivacyQuickHide />
         <nav aria-label={t('app.shell.main')}>
           <ul className="nav">
             {order.map((v) => (
@@ -396,19 +513,26 @@ export function AppShell(props: AppShellProps): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
-        {!suspended && props.mainPrelude}
+        {services.network !== undefined && <Notice kind="info">
+          <p>{t('network.actionConsent')}</p>
+          <button type="button" className="btn" onClick={() => { services.network?.invalidate(); setLive({ key: 'network.revoked' }); }}>{t('network.revoke')}</button>
+        </Notice>}
+        <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
+        {wrongOrigin !== undefined && (
+          <Notice kind="error" title={ORIGIN_MISMATCH.title}>{ORIGIN_MISMATCH.body(wrongOrigin.declared ?? 'another origin', wrongOrigin.actual)}</Notice>
+        )}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.unverified.action')}</button></>}
           </Notice>
         )}
         {session !== undefined && backup?.backedUp === false && (
           // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
           <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
             {backup.signerOnly ? t('app.backup.signerOnly.body') : t('app.backup.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
         {session === undefined && idleWiped !== undefined && (
@@ -418,13 +542,15 @@ export function AppShell(props: AppShellProps): ReactNode {
           </Notice>
         )}
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
-        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
+        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setView('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
+            <SensitiveContent active={view !== 'home' && view !== 'about' && view !== 'settings'}>
+            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} framedRefusal={frameRefusesView(view, framed, embedMode)} />
+            </SensitiveContent>
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
+      <SensitiveContent><div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div></SensitiveContent>
       <footer className="site-footer">
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
@@ -433,6 +559,8 @@ export function AppShell(props: AppShellProps): ReactNode {
           <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
+      </WalletDisclosureProvider>
+      </PrivacyProvider>
     </AppContext.Provider>
   );
 }

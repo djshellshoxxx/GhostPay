@@ -1,0 +1,567 @@
+﻿2026-11-18T23:26:03.3211370Z Current runner version: '2.338.2'
+2026-11-18T23:26:03.3234442Z ##[group]Runner Image Provisioner
+2026-11-18T23:26:03.3235292Z Hosted Compute Agent
+2026-11-18T23:26:03.3235893Z Version: 20261103.629
+2026-11-18T23:26:03.3236593Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:26:03.3237312Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:26:03.3238015Z Worker ID: {01a8202b-36ea-4bd5-bee6-4217a1d39454}
+2026-11-18T23:26:03.3238722Z Region: westus
+2026-11-18T23:26:03.3239324Z Cloud: Azure
+2026-11-18T23:26:03.3239903Z ##[endgroup]
+2026-11-18T23:26:03.3241707Z ##[group]Operating System
+2026-11-18T23:26:03.3242619Z Ubuntu
+2026-11-18T23:26:03.3243151Z 26.04.1
+2026-11-18T23:26:03.3243685Z LTS
+2026-11-18T23:26:03.3244238Z ##[endgroup]
+2026-11-18T23:26:03.3244786Z ##[group]Runner Image
+2026-11-18T23:26:03.3245366Z Image: ubuntu-26.04
+2026-11-18T23:26:03.3245982Z Version: 20261111.196.1
+2026-11-18T23:26:03.3247258Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:26:03.3248884Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:26:03.3249855Z ##[endgroup]
+2026-11-18T23:26:03.3251044Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:26:03.3253081Z Contents: read
+2026-11-18T23:26:03.3253794Z Metadata: read
+2026-11-18T23:26:03.3254375Z ##[endgroup]
+2026-11-18T23:26:03.3256425Z Secret source: Actions
+2026-11-18T23:26:03.3257380Z Cache mode: write
+2026-11-18T23:26:03.3258085Z Prepare workflow directory
+2026-11-18T23:26:03.3583113Z Prepare all required actions
+2026-11-18T23:26:03.3632077Z Getting action download info
+2026-11-18T23:26:03.6785940Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:26:03.9016939Z Complete job name: ts-lint
+2026-11-18T23:26:03.9866250Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:26:03.9867695Z with:
+2026-11-18T23:26:03.9868191Z   persist-credentials: false
+2026-11-18T23:26:03.9868747Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:26:03.9872986Z   token: ***
+2026-11-18T23:26:03.9873432Z   ssh-strict: true
+2026-11-18T23:26:03.9873873Z   ssh-user: git
+2026-11-18T23:26:03.9874287Z   clean: true
+2026-11-18T23:26:03.9874726Z   sparse-checkout-cone-mode: true
+2026-11-18T23:26:03.9875240Z   fetch-depth: 1
+2026-11-18T23:26:03.9875662Z   fetch-tags: false
+2026-11-18T23:26:03.9876097Z   show-progress: true
+2026-11-18T23:26:03.9876540Z   lfs: false
+2026-11-18T23:26:03.9876946Z   submodules: false
+2026-11-18T23:26:03.9877394Z   set-safe-directory: true
+2026-11-18T23:26:03.9877901Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:26:03.9878771Z ##[endgroup]
+2026-11-18T23:26:04.2457480Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:26:04.2460239Z ##[group]Getting Git version info
+2026-11-18T23:26:04.2461378Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:26:04.2462947Z [command]/usr/bin/git version
+2026-11-18T23:26:04.2468662Z git version 2.56.1
+2026-11-18T23:26:04.2493884Z ##[endgroup]
+2026-11-18T23:26:04.2505566Z Temporarily overriding HOME='/home/runner/work/_temp/6f2f0a94-3004-472e-b9f6-20bac73a2c1f' before making global git config changes
+2026-11-18T23:26:04.2507146Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:26:04.2510721Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:26:04.2574069Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:26:04.2577131Z ##[group]Determining repository object format
+2026-11-18T23:26:04.2578418Z ##[endgroup]
+2026-11-18T23:26:04.2579157Z ##[group]Initializing the repository
+2026-11-18T23:26:04.2584027Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:26:04.2703591Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:26:04.2705110Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:26:04.2706682Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:26:04.2707646Z hint: call:
+2026-11-18T23:26:04.2708128Z hint:
+2026-11-18T23:26:04.2708645Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:26:04.2709301Z hint:
+2026-11-18T23:26:04.2709900Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:26:04.2711381Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:26:04.2713399Z hint:
+2026-11-18T23:26:04.2714302Z hint: 	git branch -m <name>
+2026-11-18T23:26:04.2714798Z hint:
+2026-11-18T23:26:04.2715435Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:26:04.2716473Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:26:04.2735121Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:26:04.2777995Z ##[endgroup]
+2026-11-18T23:26:04.2779351Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:26:04.2783134Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:26:04.2819314Z ##[endgroup]
+2026-11-18T23:26:04.2820979Z ##[group]Setting up auth
+2026-11-18T23:26:04.2821922Z Removing SSH command configuration
+2026-11-18T23:26:04.2826472Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:26:04.2866211Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:26:04.3359910Z Removing HTTP extra header
+2026-11-18T23:26:04.3366638Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:26:04.3401544Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:26:04.3675791Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:26:04.3680478Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:26:04.3713453Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:26:04.3999319Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:26:04.4045317Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:04.4082402Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:04.4123066Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:04.4160444Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:04.4195113Z ##[endgroup]
+2026-11-18T23:26:04.4195967Z ##[group]Fetching the repository
+2026-11-18T23:26:04.4204213Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3177702f25d36a54e24837f69175b4787ecc04a5:refs/remotes/pull/239/merge
+2026-11-18T23:26:06.3611962Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:26:06.3614312Z  * [new ref]         3177702f25d36a54e24837f69175b4787ecc04a5 -> pull/239/merge
+2026-11-18T23:26:06.3618419Z ##[endgroup]
+2026-11-18T23:26:06.3620423Z ##[group]Determining the checkout info
+2026-11-18T23:26:06.3622639Z ##[endgroup]
+2026-11-18T23:26:06.3626179Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:26:06.3682301Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:26:06.3714131Z ##[group]Checking out the ref
+2026-11-18T23:26:06.3720084Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:26:06.6833913Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:26:06.6835207Z 
+2026-11-18T23:26:06.6836232Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:26:06.6838521Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:26:06.6840884Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:26:06.6842448Z 
+2026-11-18T23:26:06.6843425Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:26:06.6845661Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:26:06.6846986Z 
+2026-11-18T23:26:06.6847540Z   git switch -c <new-branch-name>
+2026-11-18T23:26:06.6848164Z 
+2026-11-18T23:26:06.6848596Z Or undo this operation with:
+2026-11-18T23:26:06.6849149Z 
+2026-11-18T23:26:06.6849474Z   git switch -
+2026-11-18T23:26:06.6849910Z 
+2026-11-18T23:26:06.6850922Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:26:06.6852970Z 
+2026-11-18T23:26:06.6855083Z HEAD is now at 3177702 Merge b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:26:06.6859074Z ##[endgroup]
+2026-11-18T23:26:06.6907979Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:26:06.6935422Z 3177702f25d36a54e24837f69175b4787ecc04a5
+2026-11-18T23:26:06.6945438Z ##[group]Removing auth
+2026-11-18T23:26:06.6946702Z Removing SSH command configuration
+2026-11-18T23:26:06.6949265Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:26:06.6985122Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:26:06.7266583Z Removing HTTP extra header
+2026-11-18T23:26:06.7270912Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:26:06.7309235Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:26:06.7579445Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:26:06.7582789Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:26:06.7607563Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:26:06.7611655Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:26:06.7615457Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:26:06.7618521Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:26:06.7625696Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:26:06.7644943Z /home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:06.7657094Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5079c9c3\-2967\-4e5a\-a175\-b0daa4831a52\.config
+2026-11-18T23:26:06.7701096Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:26:06.7725554Z /home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:06.7743860Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5079c9c3\-2967\-4e5a\-a175\-b0daa4831a52\.config
+2026-11-18T23:26:06.7784479Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:26:06.7808762Z /github/runner_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:06.7819329Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5079c9c3\-2967\-4e5a\-a175\-b0daa4831a52\.config
+2026-11-18T23:26:06.7857909Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:26:06.7883511Z /github/runner_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config
+2026-11-18T23:26:06.7898223Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5079c9c3\-2967\-4e5a\-a175\-b0daa4831a52\.config
+2026-11-18T23:26:06.7933077Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:26:06.8203747Z Removing credentials config '/home/runner/work/_temp/git-credentials-5079c9c3-2967-4e5a-a175-b0daa4831a52.config'
+2026-11-18T23:26:06.8211099Z ##[endgroup]
+2026-11-18T23:26:06.8646777Z Prepare all required actions
+2026-11-18T23:26:06.8648689Z Getting action download info
+2026-11-18T23:26:06.9960906Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:26:07.0604086Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T23:26:07.2274994Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-18T23:26:07.2275462Z with:
+2026-11-18T23:26:07.2275777Z   save-cache: true
+2026-11-18T23:26:07.2276110Z ##[endgroup]
+2026-11-18T23:26:07.2338363Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-18T23:26:07.2441205Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:26:07.2441745Z with:
+2026-11-18T23:26:07.2442064Z   node-version: 22
+2026-11-18T23:26:07.2442762Z   cache: npm
+2026-11-18T23:26:07.2443153Z   package-manager-cache: true
+2026-11-18T23:26:07.2443537Z   check-latest: false
+2026-11-18T23:26:07.2446598Z   token: ***
+2026-11-18T23:26:07.2446924Z ##[endgroup]
+2026-11-18T23:26:07.3718242Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:26:07.4565911Z ##[group]Environment details
+2026-11-18T23:26:07.8001133Z node: v22.23.4
+2026-11-18T23:26:07.8002044Z npm: 10.9.9
+2026-11-18T23:26:07.8002851Z yarn: 1.22.22
+2026-11-18T23:26:07.8004591Z ##[endgroup]
+2026-11-18T23:26:07.8025482Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:26:07.9123900Z /home/runner/.npm
+2026-11-18T23:26:08.1812435Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:26:09.5403463Z Received 4194304 of 247554651 (1.7%), 3.7 MBs/sec
+2026-11-18T23:26:10.5410364Z Received 134217728 of 247554651 (54.2%), 61.9 MBs/sec
+2026-11-18T23:26:11.2523781Z Received 247554651 of 247554651 (100.0%), 84.9 MBs/sec
+2026-11-18T23:26:11.2524970Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:26:11.2632377Z [command]/usr/bin/tar -xf /home/runner/work/_temp/89add544-91a7-45e0-aa01-dd4a2fca25f2/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:26:11.7066359Z Cache restored successfully
+2026-11-18T23:26:11.7178687Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:26:11.7350329Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=4501]
+2026-11-18T23:26:11.7354073Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-18T23:26:11.7396500Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:26:11.7396871Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:26:11.7461680Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-18T23:26:11.7462078Z ##[endgroup]
+2026-11-18T23:26:16.7110265Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:26:20.0796594Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:26:24.8652863Z 
+2026-11-18T23:26:24.8673872Z added 721 packages, and audited 790 packages in 13s
+2026-11-18T23:26:24.8692751Z 
+2026-11-18T23:26:24.8693316Z 157 packages are looking for funding
+2026-11-18T23:26:24.8694109Z   run `npm fund` for details
+2026-11-18T23:26:24.8905416Z 
+2026-11-18T23:26:24.8905969Z 17 low severity vulnerabilities
+2026-11-18T23:26:24.8906376Z 
+2026-11-18T23:26:24.8906823Z To address issues that do not require attention, run:
+2026-11-18T23:26:24.8907491Z   npm audit fix
+2026-11-18T23:26:24.8907741Z 
+2026-11-18T23:26:24.8908261Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:26:24.8909022Z   npm audit fix --force
+2026-11-18T23:26:24.8909361Z 
+2026-11-18T23:26:24.8909762Z Some issues need review, and may require choosing
+2026-11-18T23:26:24.8910964Z a different dependency.
+2026-11-18T23:26:24.8911305Z 
+2026-11-18T23:26:24.8911553Z Run `npm audit` for details.
+2026-11-18T23:26:25.0353721Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=13299]
+2026-11-18T23:26:25.0356574Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-18T23:26:25.9263373Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T23:26:25.9263751Z with:
+2026-11-18T23:26:25.9263954Z   path: packages/*/dist
+2026-11-18T23:26:25.9264391Z   key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:25.9264895Z   enableCrossOsArchive: false
+2026-11-18T23:26:25.9265156Z   fail-on-cache-miss: false
+2026-11-18T23:26:25.9265390Z   lookup-only: false
+2026-11-18T23:26:25.9265603Z   save-always: false
+2026-11-18T23:26:25.9265808Z ##[endgroup]
+2026-11-18T23:26:26.3114197Z Cache hit for: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:27.4930815Z Received 2029151 of 2029151 (100.0%), 2.2 MBs/sec
+2026-11-18T23:26:27.4931689Z Cache Size: ~2 MB (2029151 B)
+2026-11-18T23:26:27.4958020Z [command]/usr/bin/tar -xf /home/runner/work/_temp/34488356-7334-483e-9257-b951219ab362/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:26:27.5924582Z Cache restored successfully
+2026-11-18T23:26:27.6099187Z Cache restored from key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:27.6195452Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=2583]
+2026-11-18T23:26:27.6200350Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-18T23:26:27.6210359Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:26:27.6212716Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-18T23:26:27.6218778Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:26:27.6255024Z ##[group]Run npm run lint
+2026-11-18T23:26:27.6255329Z [36;1mnpm run lint[0m
+2026-11-18T23:26:27.6307452Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:26:27.6307735Z ##[endgroup]
+2026-11-18T23:26:27.7353355Z 
+2026-11-18T23:26:27.7353913Z > ghostpay@0.1.0 lint
+2026-11-18T23:26:27.7354607Z > npm run lint --workspaces --if-present
+2026-11-18T23:26:27.7355021Z 
+2026-11-18T23:26:27.8742304Z 
+2026-11-18T23:26:27.8743099Z > @ghostpay/address-safety@0.1.0 lint
+2026-11-18T23:26:27.8743684Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:26:27.8744426Z 
+2026-11-18T23:26:31.1376830Z 
+2026-11-18T23:26:31.1377906Z > @ghostpay/amount-blur@0.1.0 lint
+2026-11-18T23:26:31.1378640Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:26:31.1379025Z 
+2026-11-18T23:26:34.2425977Z 
+2026-11-18T23:26:34.2426681Z > @ghostpay/btc-family@0.1.0 lint
+2026-11-18T23:26:34.2427220Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:26:34.2427457Z 
+2026-11-18T23:26:37.9730200Z 
+2026-11-18T23:26:37.9731069Z > @ghostpay/btc-payjoin@0.1.0 lint
+2026-11-18T23:26:37.9731796Z > eslint --config ../../eslint.config.js src e2e
+2026-11-18T23:26:37.9732378Z 
+2026-11-18T23:26:42.4996405Z 
+2026-11-18T23:26:42.4998609Z > @ghostpay/btc-silent-payments@0.1.0 lint
+2026-11-18T23:26:42.4999143Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:26:42.4999370Z 
+2026-11-18T23:26:49.3844643Z 
+2026-11-18T23:26:49.3845874Z /home/runner/work/GhostPay/GhostPay/packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts
+2026-11-18T23:26:49.3847366Z   3:1  warning  Unused eslint-disable directive (no problems were reported)
+2026-11-18T23:26:49.3847971Z 
+2026-11-18T23:26:49.3848732Z ✖ 1 problem (0 errors, 1 warning)
+2026-11-18T23:26:49.3849461Z   0 errors and 1 warning potentially fixable with the `--fix` option.
+2026-11-18T23:26:49.3849947Z 
+2026-11-18T23:26:49.5686705Z 
+2026-11-18T23:26:49.5687407Z > @ghostpay/chain-adapters@0.1.0 lint
+2026-11-18T23:26:49.5687963Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:26:49.5688192Z 
+2026-11-18T23:27:01.7483351Z 
+2026-11-18T23:27:01.7484573Z /home/runner/work/GhostPay/GhostPay/packages/chain-adapters/src/payments.bulkCancellation.test.ts
+2026-11-18T23:27:01.7522655Z ##[error]  21:7  error  Async method 'getLogs' has no 'await' expression  @typescript-eslint/require-await
+2026-11-18T23:27:01.7533054Z 
+2026-11-18T23:27:01.7533631Z ✖ 1 problem (1 error, 0 warnings)
+2026-11-18T23:27:01.7533981Z 
+2026-11-18T23:27:01.8663002Z npm error Lifecycle script `lint` failed with error:
+2026-11-18T23:27:01.8663634Z npm error code 1
+2026-11-18T23:27:01.8664520Z npm error path /home/runner/work/GhostPay/GhostPay/packages/chain-adapters
+2026-11-18T23:27:01.8667630Z npm error workspace @ghostpay/chain-adapters@0.1.0
+2026-11-18T23:27:01.8668379Z npm error location /home/runner/work/GhostPay/GhostPay/packages/chain-adapters
+2026-11-18T23:27:01.8669188Z npm error command failed
+2026-11-18T23:27:01.8669619Z npm error command sh -c eslint --config ../../eslint.config.js src
+2026-11-18T23:27:01.8670058Z 
+2026-11-18T23:27:01.8675309Z 
+2026-11-18T23:27:01.8675714Z > @ghostpay/chain-evm-extra@0.1.0 lint
+2026-11-18T23:27:01.8676130Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:01.8676363Z 
+2026-11-18T23:27:05.1701104Z 
+2026-11-18T23:27:05.1701893Z > @ghostpay/chain-solana@0.1.0 lint
+2026-11-18T23:27:05.1703237Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:05.1703635Z 
+2026-11-18T23:27:08.5020049Z 
+2026-11-18T23:27:08.5020773Z > @ghostpay/chain-tron@0.1.0 lint
+2026-11-18T23:27:08.5021528Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:08.5021926Z 
+2026-11-18T23:27:11.1699222Z 
+2026-11-18T23:27:11.1699767Z > @ghostpay/cli@0.1.0 lint
+2026-11-18T23:27:11.1700225Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:11.1700461Z 
+2026-11-18T23:27:21.3037413Z 
+2026-11-18T23:27:21.3038021Z > @ghostpay/confidential-amounts@0.1.0 lint
+2026-11-18T23:27:21.3038576Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:21.3038846Z 
+2026-11-18T23:27:28.2751768Z 
+2026-11-18T23:27:28.2754403Z > @ghostpay/core-crypto@0.1.0 lint
+2026-11-18T23:27:28.2755207Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:28.2755608Z 
+2026-11-18T23:27:32.5635585Z 
+2026-11-18T23:27:32.5636254Z > @ghostpay/donation@0.1.0 lint
+2026-11-18T23:27:32.5638585Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:32.5639100Z 
+2026-11-18T23:27:35.7411385Z 
+2026-11-18T23:27:35.7412048Z > @ghostpay/external-pools@0.1.0 lint
+2026-11-18T23:27:35.7413126Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:35.7413857Z 
+2026-11-18T23:27:40.8739281Z 
+2026-11-18T23:27:40.8740131Z > @ghostpay/external-pools-privacypools@0.1.0 lint
+2026-11-18T23:27:40.8740941Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:40.8741330Z 
+2026-11-18T23:27:47.2030823Z 
+2026-11-18T23:27:47.2031615Z > @ghostpay/external-pools-railgun@0.1.0 lint
+2026-11-18T23:27:47.2032692Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:47.2032989Z 
+2026-11-18T23:27:52.1705470Z 
+2026-11-18T23:27:52.1706203Z > @ghostpay/hops@0.1.0 lint
+2026-11-18T23:27:52.1706968Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:52.1707384Z 
+2026-11-18T23:27:56.0339177Z 
+2026-11-18T23:27:56.0339764Z > @ghostpay/hygiene@0.1.0 lint
+2026-11-18T23:27:56.0340228Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:56.0340457Z 
+2026-11-18T23:27:59.8243099Z 
+2026-11-18T23:27:59.8243628Z > @ghostpay/i18n@0.1.0 lint
+2026-11-18T23:27:59.8244117Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:27:59.8244421Z 
+2026-11-18T23:28:03.5333283Z 
+2026-11-18T23:28:03.5333958Z > @ghostpay/invoice-schema@0.1.0 lint
+2026-11-18T23:28:03.5334443Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:03.5334680Z 
+2026-11-18T23:28:07.7551535Z 
+2026-11-18T23:28:07.7552394Z > @ghostpay/merchant-billing@0.1.0 lint
+2026-11-18T23:28:07.7553237Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:07.7553680Z 
+2026-11-18T23:28:11.3506449Z 
+2026-11-18T23:28:11.3507125Z > @ghostpay/merchant-hooks@0.1.0 lint
+2026-11-18T23:28:11.3507684Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:11.3507966Z 
+2026-11-18T23:28:14.0861109Z 
+2026-11-18T23:28:14.0861780Z > @ghostpay/merchant-ledger@0.1.0 lint
+2026-11-18T23:28:14.0862754Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:14.0863148Z 
+2026-11-18T23:28:16.5793085Z 
+2026-11-18T23:28:16.5793703Z > @ghostpay/merchant-multisig@0.1.0 lint
+2026-11-18T23:28:16.5794280Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:16.5794605Z 
+2026-11-18T23:28:19.6954591Z 
+2026-11-18T23:28:19.6955268Z > @ghostpay/metadata-hardening@0.1.0 lint
+2026-11-18T23:28:19.6955738Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:19.6955967Z 
+2026-11-18T23:28:24.1148595Z 
+2026-11-18T23:28:24.1149221Z > @ghostpay/net-harness@0.1.0 lint
+2026-11-18T23:28:24.1149767Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:24.1150056Z 
+2026-11-18T23:28:26.8359432Z 
+2026-11-18T23:28:26.8360132Z > @ghostpay/net-transport@0.1.0 prelint
+2026-11-18T23:28:26.8360953Z > npm run build -w @ghostpay/net-harness --if-present
+2026-11-18T23:28:26.8361398Z 
+2026-11-18T23:28:26.9955113Z 
+2026-11-18T23:28:26.9955757Z > @ghostpay/net-harness@0.1.0 build
+2026-11-18T23:28:26.9956181Z > tsc -p tsconfig.build.json
+2026-11-18T23:28:26.9956374Z 
+2026-11-18T23:28:28.2747208Z 
+2026-11-18T23:28:28.2747910Z > @ghostpay/net-transport@0.1.0 lint
+2026-11-18T23:28:28.2748940Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:28.2749562Z 
+2026-11-18T23:28:32.4369291Z 
+2026-11-18T23:28:32.4369811Z > @ghostpay/ops-monitor@0.1.0 lint
+2026-11-18T23:28:32.4370284Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:32.4370527Z 
+2026-11-18T23:28:38.2266383Z 
+2026-11-18T23:28:38.2267063Z > @ghostpay/payer-sponsor@0.1.0 lint
+2026-11-18T23:28:38.2267520Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:38.2267756Z 
+2026-11-18T23:28:46.4623355Z 
+2026-11-18T23:28:46.4623943Z > @ghostpay/payment-uri@0.1.0 lint
+2026-11-18T23:28:46.4624817Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:46.4625082Z 
+2026-11-18T23:28:49.6190139Z 
+2026-11-18T23:28:49.6190794Z > @ghostpay/pir-two-server@0.1.0 lint
+2026-11-18T23:28:49.6191548Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:49.6191923Z 
+2026-11-18T23:28:52.7690993Z 
+2026-11-18T23:28:52.7691555Z > @ghostpay/plugin-api@0.1.0 lint
+2026-11-18T23:28:52.7692012Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:52.7692795Z 
+2026-11-18T23:28:55.6525753Z 
+2026-11-18T23:28:55.6526435Z > @ghostpay/policy-scheme@0.1.0 lint
+2026-11-18T23:28:55.6527203Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:28:55.6527598Z 
+2026-11-18T23:29:02.9266566Z 
+2026-11-18T23:29:02.9267306Z > @ghostpay/pool-circuits@0.1.0 lint
+2026-11-18T23:29:02.9268093Z > eslint --config ../../eslint.config.js src test
+2026-11-18T23:29:02.9268496Z 
+2026-11-18T23:29:05.6173104Z 
+2026-11-18T23:29:05.6173743Z > @ghostpay/pool-prover@0.1.0 lint
+2026-11-18T23:29:05.6174508Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:05.6174903Z 
+2026-11-18T23:29:07.9284827Z 
+2026-11-18T23:29:07.9285494Z > @ghostpay/pool-relayer@0.1.0 lint
+2026-11-18T23:29:07.9286288Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:15.3690390Z 
+2026-11-18T23:29:15.3690411Z 
+2026-11-18T23:29:15.3691057Z > @ghostpay/pool-sdk@0.1.0 lint
+2026-11-18T23:29:15.3691937Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:15.3692799Z 
+2026-11-18T23:29:19.8979906Z 
+2026-11-18T23:29:19.8980622Z > @ghostpay/privacy-pipeline@0.1.0 lint
+2026-11-18T23:29:19.8981308Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:19.8981643Z 
+2026-11-18T23:29:25.4346323Z 
+2026-11-18T23:29:25.4346949Z > @ghostpay/privacy-profiles@0.1.0 lint
+2026-11-18T23:29:25.4347433Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:25.4347664Z 
+2026-11-18T23:29:29.1249649Z 
+2026-11-18T23:29:29.1250341Z > @ghostpay/qr-exchange@0.1.0 lint
+2026-11-18T23:29:29.1251176Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:29.1251606Z 
+2026-11-18T23:29:33.2682225Z 
+2026-11-18T23:29:33.2682852Z > @ghostpay/relayer-guard@0.1.0 lint
+2026-11-18T23:29:33.2683365Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:33.2683619Z 
+2026-11-18T23:29:36.7249012Z 
+2026-11-18T23:29:36.7249666Z > @ghostpay/sandbox@0.1.0 lint
+2026-11-18T23:29:36.7250581Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:36.7251104Z 
+2026-11-18T23:29:39.9643589Z 
+2026-11-18T23:29:39.9644281Z > @ghostpay/scan-source@0.1.0 lint
+2026-11-18T23:29:39.9645242Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:39.9645783Z 
+2026-11-18T23:29:43.1657798Z 
+2026-11-18T23:29:43.1658382Z > @ghostpay/sdk@0.1.0 lint
+2026-11-18T23:29:43.1658913Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:43.1659208Z 
+2026-11-18T23:29:46.1613022Z 
+2026-11-18T23:29:46.1613668Z > @ghostpay/secret-box@0.1.0 lint
+2026-11-18T23:29:46.1614148Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:46.1614431Z 
+2026-11-18T23:29:48.7244713Z 
+2026-11-18T23:29:48.7245402Z > @ghostpay/solana-stealth@0.1.0 lint
+2026-11-18T23:29:48.7246173Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:48.7246574Z 
+2026-11-18T23:29:52.5735644Z 
+2026-11-18T23:29:52.5736318Z > @ghostpay/tron-adapter@0.1.0 lint
+2026-11-18T23:29:52.5736933Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:52.5737255Z 
+2026-11-18T23:29:55.8788815Z 
+2026-11-18T23:29:55.8789472Z > @ghostpay/tx-review@0.1.0 lint
+2026-11-18T23:29:55.8789968Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:55.8790205Z 
+2026-11-18T23:29:59.4120676Z 
+2026-11-18T23:29:59.4121265Z > @ghostpay/ux-connect@0.1.0 lint
+2026-11-18T23:29:59.4121730Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:29:59.4121967Z 
+2026-11-18T23:30:02.5137131Z 
+2026-11-18T23:30:02.5137777Z > @ghostpay/ux-core@0.1.0 lint
+2026-11-18T23:30:02.5138235Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:02.5138476Z 
+2026-11-18T23:30:06.2455065Z 
+2026-11-18T23:30:06.2456073Z > @ghostpay/ux-export@0.1.0 lint
+2026-11-18T23:30:06.2456546Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:06.2456785Z 
+2026-11-18T23:30:09.2709051Z 
+2026-11-18T23:30:09.2709961Z > @ghostpay/ux-fees@0.1.0 lint
+2026-11-18T23:30:09.2710654Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:09.2710968Z 
+2026-11-18T23:30:12.2643457Z 
+2026-11-18T23:30:12.2644185Z > @ghostpay/ux-fiat@0.1.0 lint
+2026-11-18T23:30:12.2644896Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:12.2645814Z 
+2026-11-18T23:30:14.8144224Z 
+2026-11-18T23:30:14.8145006Z > @ghostpay/ux-flow@0.1.0 lint
+2026-11-18T23:30:14.8145611Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:14.8145852Z 
+2026-11-18T23:30:17.7470238Z 
+2026-11-18T23:30:17.7470732Z > @ghostpay/ux-guide@0.1.0 lint
+2026-11-18T23:30:17.7471181Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:17.7471413Z 
+2026-11-18T23:30:20.6791297Z 
+2026-11-18T23:30:20.6792071Z > @ghostpay/ux-i18n@0.1.0 lint
+2026-11-18T23:30:20.6793003Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:20.6793444Z 
+2026-11-18T23:30:22.5979973Z 
+2026-11-18T23:30:22.5980937Z > @ghostpay/ux-intake@0.1.0 lint
+2026-11-18T23:30:22.5981602Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:22.5981943Z 
+2026-11-18T23:30:25.5464258Z 
+2026-11-18T23:30:25.5464939Z > @ghostpay/ux-links@0.1.0 lint
+2026-11-18T23:30:25.5465467Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:25.5465765Z 
+2026-11-18T23:30:28.4079550Z 
+2026-11-18T23:30:28.4080164Z > @ghostpay/ux-notify@0.1.0 lint
+2026-11-18T23:30:28.4080750Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:28.4081070Z 
+2026-11-18T23:30:31.5859638Z 
+2026-11-18T23:30:31.5860304Z > @ghostpay/ux-presets@0.1.0 lint
+2026-11-18T23:30:31.5860868Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:31.5861123Z 
+2026-11-18T23:30:34.5154447Z 
+2026-11-18T23:30:34.5155029Z > @ghostpay/ux-privacy@0.1.0 lint
+2026-11-18T23:30:34.5155520Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:34.5155752Z 
+2026-11-18T23:30:37.0836024Z 
+2026-11-18T23:30:37.0836648Z > @ghostpay/ux-receipts@0.1.0 lint
+2026-11-18T23:30:37.0837153Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:37.0837411Z 
+2026-11-18T23:30:39.9159502Z 
+2026-11-18T23:30:39.9160256Z > @ghostpay/ux-sandbox@0.1.0 lint
+2026-11-18T23:30:39.9161004Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:39.9161396Z 
+2026-11-18T23:30:41.7983826Z 
+2026-11-18T23:30:41.7984371Z > @ghostpay/ux-schedule@0.1.0 lint
+2026-11-18T23:30:41.7984832Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:41.7985067Z 
+2026-11-18T23:30:44.6708410Z 
+2026-11-18T23:30:44.6709006Z > @ghostpay/ux-vault@0.1.0 lint
+2026-11-18T23:30:44.6709462Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:44.6709713Z 
+2026-11-18T23:30:50.6355048Z 
+2026-11-18T23:30:50.6355564Z > @ghostpay/relayer@0.1.0 lint
+2026-11-18T23:30:50.6356099Z > eslint --config ../../eslint.config.js src
+2026-11-18T23:30:50.6356424Z 
+2026-11-18T23:31:01.1709884Z 
+2026-11-18T23:31:01.1710726Z > @ghostpay/web@0.1.0 lint
+2026-11-18T23:31:01.1711452Z > eslint --config ../../eslint.config.js src e2e
+2026-11-18T23:31:01.1711872Z 
+2026-11-18T23:31:41.7977884Z ##[error]Process completed with exit code 1.
+2026-11-18T23:31:41.8090237Z Post job cleanup.
+2026-11-18T23:31:41.8095006Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__6fcc7b88-f6a1-4ffb-8ffa-f8127c84274d.libs]
+2026-11-18T23:31:41.8097481Z ##[end-action id=__6fcc7b88-f6a1-4ffb-8ffa-f8127c84274d.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:31:41.8099756Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__6fcc7b88-f6a1-4ffb-8ffa-f8127c84274d.__actions_setup-node]
+2026-11-18T23:31:41.8102056Z ##[end-action id=__6fcc7b88-f6a1-4ffb-8ffa-f8127c84274d.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:31:41.8186517Z Post job cleanup.
+2026-11-18T23:31:41.9022842Z [command]/usr/bin/git version
+2026-11-18T23:31:41.9103635Z git version 2.56.1
+2026-11-18T23:31:41.9145857Z Temporarily overriding HOME='/home/runner/work/_temp/44e99935-938b-47e2-8ea2-551cad804c7b' before making global git config changes
+2026-11-18T23:31:41.9147576Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:31:41.9150715Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:31:41.9186512Z Removing SSH command configuration
+2026-11-18T23:31:41.9193903Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:31:41.9233984Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:31:41.9568377Z Removing HTTP extra header
+2026-11-18T23:31:41.9571251Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:31:41.9615638Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:31:41.9944018Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:31:41.9950963Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:31:41.9994195Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:31:42.0467406Z Cleaning up orphan processes
+

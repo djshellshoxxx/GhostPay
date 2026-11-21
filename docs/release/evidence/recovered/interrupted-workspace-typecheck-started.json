@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "gate": "typecheck",
+  "status": "RUNNING",
+  "started_utc": "2026-11-19T13:53:59.682202+00:00",
+  "cwd": "/tmp/ghostpay-qualified-246ff268d20d",
+  "source_before": {
+    "head": "4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a",
+    "tree": "34550b8aba22684825dcc6fbe0aaebdf5aec4a12",
+    "status": ""
+  },
+  "original_root_script": "npm run typecheck --workspaces --if-present",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/tmp/ghostpay-npm10-recovery-246ff268d20d/_npx/d8f2e63c6145eb9d/node_modules/npm/bin/npm-cli.js",
+    "run",
+    "typecheck",
+    "--workspaces",
+    "--if-present"
+  ],
+  "command_note": "Execute the unchanged root script directly through the qualified npm 10 CLI; the root has no gate lifecycle hooks. This avoids ambient npm 11 for the nested npm command.",
+  "node": {
+    "path": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "version": "v22.23.5",
+    "sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd"
+  },
+  "npm": {
+    "path": "/tmp/ghostpay-npm10-recovery-246ff268d20d/_npx/d8f2e63c6145eb9d/node_modules/npm/bin/npm-cli.js",
+    "version": "10.9.8",
+    "cli_sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"
+  },
+  "node_options": "--max-old-space-size=1536",
+  "package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "eslint_config_sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+  "workspace_count": 68,
+  "expected_script_count": 68,
+  "workspaces": [
+    {
+      "path": "packages/address-safety",
+      "name": "@ghostpay/address-safety",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "80ca9b45a8d9cbd3b0f74395a5556eac6eaf41cda13ba06cf90870deeb0e06ae"
+    },
+    {
+      "path": "packages/amount-blur",
+      "name": "@ghostpay/amount-blur",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "efd6e9cc1ea6df40a07094f2f87942c65ca6aa7a3ed95d4ac70f9c684c0a3015"
+    },
+    {
+      "path": "packages/btc-family",
+      "name": "@ghostpay/btc-family",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "c0d8b5b2da65af9aca294676d1e4e66d1de90c8f264a249e085bfa4010a5a4c5"
+    },
+    {
+      "path": "packages/btc-payjoin",
+      "name": "@ghostpay/btc-payjoin",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "ea92a36c8b712b5c1837f17631c6a638042d9cf44f6abc4cb9b58e412a62b348"
+    },
+    {
+      "path": "packages/btc-silent-payments",
+      "name": "@ghostpay/btc-silent-payments",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "b85b4a60ee08bf657c746d9b715cf4713c237489f4cfbf20a792d9f4d81588bc"
+    },
+    {
+      "path": "packages/chain-adapters",
+      "name": "@ghostpay/chain-adapters",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "3a597a65d54944b0f20a2fbd2be3cf95f42f5065bf1fc675901333c365f4a173"
+    },
+    {
+      "path": "packages/chain-evm-extra",
+      "name": "@ghostpay/chain-evm-extra",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "df9b694d6e33d98e9f9dc18a9a83906e4e022fb9e86308b1c4b0843f7518153a"
+    },
+    {
+      "path": "packages/chain-solana",
+      "name": "@ghostpay/chain-solana",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "2f625222d81b9c30525413da6d9aedb875be8776c909aa6e43065e64d4a754b3"
+    },
+    {
+      "path": "packages/chain-tron",
+      "name": "@ghostpay/chain-tron",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "e9ecbd5828198a62c84739baed4fe0d5026f598119a2bca64f0b71b3e8ad6fcd"
+    },
+    {
+      "path": "packages/cli",
+      "name": "@ghostpay/cli",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "e563b0072aca45724a021e62bebaa942cf268cf645b01d1ba47568b3f3ca815b"
+    },
+    {
+      "path": "packages/confidential-amounts",
+      "name": "@ghostpay/confidential-amounts",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "a0454d21b0d897949e402d73b7316a2b7cc086f025705f2c418ce8ed05bfa584"
+    },
+    {
+      "path": "packages/confidential-contracts",
+      "name": "@ghostpay/confidential-contracts",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "cdf6574799fee59f16483167efaf752aea2e6a209378ef7cfbf646c9d605b540"
+    },
+    {
+      "path": "packages/core-crypto",
+      "name": "@ghostpay/core-crypto",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "7c7220ba1a8d5f76f2db9baf9d3a3be4b5171fc417f524504a79d63b3ad788aa"
+    },
+    {
+      "path": "packages/donation",
+      "name": "@ghostpay/donation",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "6e62c8c143b3bc4f826057d2fc3253af262f6a32b50cf009106c20597e68eb98"
+    },
+    {
+      "path": "packages/external-pools",
+      "name": "@ghostpay/external-pools",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "d80d4330a704c35150f2cdbc11869300382914f0bb836da1a4c513eef5fd39c1"
+    },
+    {
+      "path": "packages/external-pools-privacypools",
+      "name": "@ghostpay/external-pools-privacypools",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "ad471e75e36687f65b29b2d9da0d759b8ad557a2740539c7af8e71a70012238a"
+    },
+    {
+      "path": "packages/external-pools-railgun",
+      "name": "@ghostpay/external-pools-railgun",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "7d58ec3ca40bc7b2f4cee8b2a6e05a233c72ad95fe8e7440902f7b3b8fe089fa"
+    },
+    {
+      "path": "packages/hops",
+      "name": "@ghostpay/hops",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "1c118484317d79744255c0fcba786fd8b74ed6bcbea7c25860883b0fd76f2dda"
+    },
+    {
+      "path": "packages/hygiene",
+      "name": "@ghostpay/hygiene",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "b0a611d2bdb7077daae57bf553daa7e2704546436c383ba0a8ccaf75412efa69"
+    },
+    {
+      "path": "packages/i18n",
+      "name": "@ghostpay/i18n",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "62f1c1188eb55f436e0fb989174d16da9b7b1aad03803231d7c05a778c1683fa"
+    },
+    {
+      "path": "packages/invoice-schema",
+      "name": "@ghostpay/invoice-schema",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582"
+    },
+    {
+      "path": "packages/merchant-billing",
+      "name": "@ghostpay/merchant-billing",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "ab7473135cb30a11ad0acfba8db99ff914487c612ae76ebb013f429bca100505"
+    },
+    {
+      "path": "packages/merchant-hooks",
+      "name": "@ghostpay/merchant-hooks",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "38fde5729ec37c00cd84855b0e36a11104c74a9cb49455231b147004e67a189f"
+    },
+    {
+      "path": "packages/merchant-ledger",
+      "name": "@ghostpay/merchant-ledger",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "c570cdd0ca4f30e17ad5454fa4bf51ce609dfcac8a47b089ac4365bfeaf1a485"
+    },
+    {
+      "path": "packages/merchant-multisig",
+      "name": "@ghostpay/merchant-multisig",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "09fb46d2d6b6a89dbfc8404426f8a9fc2b6a9d686b919d497ea071ed40d05541"
+    },
+    {
+      "path": "packages/metadata-hardening",
+      "name": "@ghostpay/metadata-hardening",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "640242d8214aaaec17630cf37937352833ad57efc2c2265cd290d93b534b1c4d"
+    },
+    {
+      "path": "packages/net-harness",
+      "name": "@ghostpay/net-harness",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "70ffc02c7d4f69902cc3e6270456451cd348a0269bdb3f12ae0af6aed857aed6"
+    },
+    {
+      "path": "packages/net-transport",
+      "name": "@ghostpay/net-transport",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "3961ea57fa9436f22f71ffb9325442d5cedb4e70674c7282dec2fefb4dd504a2"
+    },
+    {
+      "path": "packages/ops-monitor",
+      "name": "@ghostpay/ops-monitor",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "27470dc155c754f68c9098df5ffa86f11e86ea67359f2d0e7a102e053f87873a"
+    },
+    {
+      "path": "packages/payer-sponsor",
+      "name": "@ghostpay/payer-sponsor",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "5e1b306d028f8f2e5ee98b87cd770759697613eff31e7d82471be4773a75795f"
+    },
+    {
+      "path": "packages/payment-uri",
+      "name": "@ghostpay/payment-uri",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "09cfcb2d77e0fe846e118088fdfecb51b6469acc231868b6b0860c7d98315123"
+    },
+    {
+      "path": "packages/pir-two-server",
+      "name": "@ghostpay/pir-two-server",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "1ebbf61bbe1782c839e3656b431a8702c1e488c76933abcf043ac23be3348725"
+    },
+    {
+      "path": "packages/plugin-api",
+      "name": "@ghostpay/plugin-api",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "a55b75f1e77ce475d943b3e2a9425f032dc9e761e394d4229120215b505df5ed"
+    },
+    {
+      "path": "packages/policy-scheme",
+      "name": "@ghostpay/policy-scheme",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "eef6c14b2bb08cad359ef172f1ad4d7df014c1280e1ee252d34a008e1c2e4b76"
+    },
+    {
+      "path": "packages/pool-circuits",
+      "name": "@ghostpay/pool-circuits",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "7c118b3a2b5e5ed22d413880c88da22c85204c4c106aeb6ca18370c565d23cc1"
+    },
+    {
+      "path": "packages/pool-prover",
+      "name": "@ghostpay/pool-prover",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "d50052ae219ac29d8238bbd53d93f11a0e559e0054a4f03e7ff402bd333909be"
+    },
+    {
+      "path": "packages/pool-relayer",
+      "name": "@ghostpay/pool-relayer",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "c169550075b147530555ef714dd0364953bb5eb579bbc6fa1c64ffdb617e6dc9"
+    },
+    {
+      "path": "packages/pool-sdk",
+      "name": "@ghostpay/pool-sdk",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "a4c067d960c49d48bc9b4dc91eddbdbd5b47d5d478402e61f159c76f25a72bca"
+    },
+    {
+      "path": "packages/privacy-pipeline",
+      "name": "@ghostpay/privacy-pipeline",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "e8fe9792780f350081bc7a7f49ff1f9a26afcb2315f88f1b1728b1d13e15df33"
+    },
+    {
+      "path": "packages/privacy-profiles",
+      "name": "@ghostpay/privacy-profiles",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "826a601f6e9de22b8e275559b46cbeee354a89ba4f2de324d6b97edfb061f2aa"
+    },
+    {
+      "path": "packages/qr-exchange",
+      "name": "@ghostpay/qr-exchange",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "e5f598d93734bd135dae250a249e58500a8e8c2985bd53ae1a6e075a373433a9"
+    },
+    {
+      "path": "packages/relayer-guard",
+      "name": "@ghostpay/relayer-guard",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "0f00154a3f637d2b6c1dd574ec2b0f13f56d66738bf0738a7e830dae0065d85b"
+    },
+    {
+      "path": "packages/sandbox",
+      "name": "@ghostpay/sandbox",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "fd04999f6735631a1dd44688d7470b8be9f9b03b566f49ccb95810eafa15e1f9"
+    },
+    {
+      "path": "packages/scan-source",
+      "name": "@ghostpay/scan-source",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "dd12a5bee5da071d4fce11cf2e236dd7b061b785e303aa5f13f82f5caf35ba5e"
+    },
+    {
+      "path": "packages/sdk",
+      "name": "@ghostpay/sdk",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "f28a890e823660d00d178b27549760082cbe6cefd05b9f900135c2bcb87ec22c"
+    },
+    {
+      "path": "packages/secret-box",
+      "name": "@ghostpay/secret-box",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "927b44012b067bc5beda1347a7f659d75fc550c597d61affb9bc4d31975adb02"
+    },
+    {
+      "path": "packages/solana-stealth",
+      "name": "@ghostpay/solana-stealth",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "fa19e7714ce1e828c06d7bc9fdafae7932b01a14a4757fba255fcaa6d50e93b8"
+    },
+    {
+      "path": "packages/tron-adapter",
+      "name": "@ghostpay/tron-adapter",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "5887383ad2d5b1b11867f06cb170bac55f94478b2a0b846dc3df8df46f38ec6a"
+    },
+    {
+      "path": "packages/tx-review",
+      "name": "@ghostpay/tx-review",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "7ec5e67ca259aa56cbd9518361f22cdf9581960cefef9674ae46b465bf4e294a"
+    },
+    {
+      "path": "packages/ux-connect",
+      "name": "@ghostpay/ux-connect",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "447ea4de7d4840c380d9e8f254ee0300ae3ea9810ff8ab7acf96b2f3ea9c87d6"
+    },
+    {
+      "path": "packages/ux-core",
+      "name": "@ghostpay/ux-core",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "cd8c9c304397c09e7ad19d1a563dc3bc4a4e39015e2b42271b97bf1a5c293961"
+    },
+    {
+      "path": "packages/ux-export",
+      "name": "@ghostpay/ux-export",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "08a21077c7948c47c279588f0b5cf6dfdd364df18a792d9701f6219d3497f02a"
+    },
+    {
+      "path": "packages/ux-fees",
+      "name": "@ghostpay/ux-fees",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "8580aa0f25567845b877e93849024db507fd2fd3a3b2b2f93216f22f23f05dc7"
+    },
+    {
+      "path": "packages/ux-fiat",
+      "name": "@ghostpay/ux-fiat",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "b8c08af39f8842947e3fc6b704db66178d406831491eeefa594913a5102ebf95"
+    },
+    {
+      "path": "packages/ux-flow",
+      "name": "@ghostpay/ux-flow",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "2cda2ca7bd1acf34a39ce23b69b8fc17f40828ba4dffe746894f083f0f52f33e"
+    },
+    {
+      "path": "packages/ux-guide",
+      "name": "@ghostpay/ux-guide",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "cb1bdec4610656a492dc935c7fe080aa4b257e3b7e62dd37232c0f3e4945bb48"
+    },
+    {
+      "path": "packages/ux-i18n",
+      "name": "@ghostpay/ux-i18n",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "76ba6b1df8e4f2e7281d30dad1041cd831df70d048407a45ed9a4a13afc5e728"
+    },
+    {
+      "path": "packages/ux-intake",
+      "name": "@ghostpay/ux-intake",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "e3f3650c9b3a55f365fcba6514c9e324374cebd12ac02eb0c3a8a8db51b8a7d6"
+    },
+    {
+      "path": "packages/ux-links",
+      "name": "@ghostpay/ux-links",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "acb76d8377fa52132203390df2e6007f71b76f4afc46fdbc897efe6f9267363b"
+    },
+    {
+      "path": "packages/ux-notify",
+      "name": "@ghostpay/ux-notify",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "dd073fe14520e4acc2393e0a3326bd9bc27813b0ac63f59f2c832de2f4d4b424"
+    },
+    {
+      "path": "packages/ux-presets",
+      "name": "@ghostpay/ux-presets",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "2050335f999e997c32dddcaca3534c0f7395cf06d5bbfbef6ac5e2910ff80d5e"
+    },
+    {
+      "path": "packages/ux-privacy",
+      "name": "@ghostpay/ux-privacy",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "18eab4d536acf6ff2094d87b0227103fa7e5232d47d23d296130769aace22161"
+    },
+    {
+      "path": "packages/ux-receipts",
+      "name": "@ghostpay/ux-receipts",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "68e7f94a968a72bab6c0670be0373b98264c6c9b99e9e676a7d0fd00bab1167f"
+    },
+    {
+      "path": "packages/ux-sandbox",
+      "name": "@ghostpay/ux-sandbox",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "1f78571150c043b55f4bee000d5a3e653624408d1e6483176673125de33a4358"
+    },
+    {
+      "path": "packages/ux-schedule",
+      "name": "@ghostpay/ux-schedule",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "adadfcc88e26570e0024554490b9f67d6a39572d44e1c09d243f1caea9dfe4ba"
+    },
+    {
+      "path": "packages/ux-vault",
+      "name": "@ghostpay/ux-vault",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "97993e1c07cb5c398acacf4bbac3423920c33b15bd528d62217ab7d03816d95a"
+    },
+    {
+      "path": "apps/relayer",
+      "name": "@ghostpay/relayer",
+      "version": "0.1.0",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "67ba77e9fada1dcde9ebdc0d2a6e4d9196de04fd37c9d77ecaecb346d3f204ef"
+    },
+    {
+      "path": "apps/web",
+      "name": "@ghostpay/web",
+      "version": "1.0.0-beta.1",
+      "script": "tsc -p tsconfig.json --noEmit",
+      "manifest_sha256": "8dc92a2cb449e4ed9661c24a7265da5f912836ca0d82bf593ae643897f8f9ad9"
+    }
+  ],
+  "runner_sha256": "20de407e7ec090996576d905728d51302e346bfbfd2e83c4ae885843009655b5"
+}

@@ -4,7 +4,7 @@ import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, type Address, type Hex } fro
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
-import { generateKeys, openFresh } from './helpers';
+import { approveWalletDisclosure, generateKeys, openFresh } from './helpers';
 import { ANVIL_ACCOUNTS, Anvil, DevnetNetwork, DevnetWallet, loadDevnet, type DevnetState } from './devnet/chain';
 import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
 
@@ -94,6 +94,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     // 3. Real transaction: held in anvil's mempool first (automine off), so the app's pending state is observable.
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     const payHash = payer.wallet.hashes[0] as Hex;
     // Pending: the app waits for inclusion, the send control is disarmed and the returned hash is journaled in the tab.
@@ -136,15 +137,22 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.reload();
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    // The tab journal survives reload; visual disclosure still requires wallet reconnection.
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(payHash);
     await openFresh(p, link);
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    // The matching account+chain reveals the retained hash without authorizing a second send.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ANVIL_ACCOUNTS.payer)).toBe(payerNonce + 1);
@@ -168,6 +176,9 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
     await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -191,6 +202,9 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(net.sentRaw.length).toBe(sweepRawBefore);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
     await sign.click();
@@ -226,7 +240,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
-    const again = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
+    const again = sweepView(s).getByRole('button', { name: 'Review native sweep fees' });
     // EIP-1559 leaves the unspent part of the max fee behind; that dust cannot pay for another transfer.
     expect(dust).toBeGreaterThan(0n);
     await expect(again).toBeEnabled();
@@ -250,6 +264,7 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     const hash = payer.wallet.hashes[0] as Hex;
     await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -258,15 +273,21 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     // Reload mid-flow: the transaction is still only in the mempool.
     await p.reload();
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(hash);
+    // The submitted hash stays durable in tab storage even while concealed.
     await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash }]);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect((await anvil.tx(hash))?.blockNumber).toBeNull();
@@ -294,6 +315,8 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
+    await approveWalletDisclosure(p, 'wallet_switchEthereumChain');
     await expect(p.getByText('Your wallet is on chain 31337 but this invoice requires chain 84532.', { exact: false })).toBeVisible();
     await expect(p.getByRole('button', { name: 'Prepare payment' })).toHaveCount(0);
 
@@ -303,6 +326,7 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
     payer.wallet.chainOverride = '0x7a69';
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('The wallet network changed. Reconnect and review again.', { exact: false })).toBeVisible();
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toHaveCount(0);
     expect(payer.wallet.sends).toHaveLength(0);

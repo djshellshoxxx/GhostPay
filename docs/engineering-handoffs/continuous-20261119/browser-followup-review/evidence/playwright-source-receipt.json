@@ -1,0 +1,7 @@
+{
+  "package": "playwright-core",
+  "version": "1.65.1",
+  "source_path": "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/playwright-core/lib/coreBundle.js",
+  "sha256": "874451b4e7acf90cda4330be42db2259c9e5036c22150f18016f04768434234c",
+  "source_excerpts": "playwright-lifecycle-source.txt"
+}

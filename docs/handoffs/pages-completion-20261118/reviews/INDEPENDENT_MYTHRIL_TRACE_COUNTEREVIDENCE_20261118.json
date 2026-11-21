@@ -1,0 +1,209 @@
+{
+  "reviewer": "branch_archaeology",
+  "reviewed_utc": "2026-11-18T15:34:57.464963+00:00",
+  "scope": "Independent read-only raw JSON, ABI-word, runtime-template and source guard comparison; no compiler, EVM replay, analyzer, tests or Git mutation.",
+  "report_source": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "reviewed_local_source": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+  "raw_report_sha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7",
+  "cached_reports_verified_against_raw_offsets": true,
+  "constructor_abi_order_verified": true,
+  "factory_records": [
+    {
+      "factory_issue_index": 0,
+      "swc_id": "110",
+      "pc": 30,
+      "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 1,
+      "swc_id": "113",
+      "pc": 999,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 2,
+      "swc_id": "107",
+      "pc": 999,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 3,
+      "swc_id": "107",
+      "pc": 1170,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 4,
+      "swc_id": "113",
+      "pc": 1668,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 5,
+      "swc_id": "107",
+      "pc": 2887,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 6,
+      "swc_id": "107",
+      "pc": 2978,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    },
+    {
+      "factory_issue_index": 7,
+      "swc_id": "104",
+      "pc": 2978,
+      "contract": "PolicyAccountFactory",
+      "constructor_implementation": "0x0000000000000000000000000000000000000001",
+      "constructor_calldata_bytes": 4319,
+      "creation_bytes": 3807,
+      "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+      "runtime_template_offset": 457,
+      "runtime_exact_occurrences": 1
+    }
+  ],
+  "existing_artifact": {
+    "path": "/workspace/scratch/4fa14be12559/GhostPay/packages/contracts/out/PolicyAccountFactory.sol/PolicyAccountFactory.json",
+    "sha256": "1a679417bb1364873e61ed6dd0049e47339a4f32d5ce30f4b475ebf01e98bfe0",
+    "runtime_template_bytes": 3296,
+    "runtime_template_sha256": "3f3d30fefbb3b607c579c355570273a86997ed3a60d197f6a78c369320ed1ac0",
+    "metadata": {
+      "bytecodeHash": "none",
+      "appendCBOR": false
+    },
+    "immutable_references": {
+      "58010": [
+        {
+          "start": 153,
+          "length": 32
+        },
+        {
+          "start": 716,
+          "length": 32
+        },
+        {
+          "start": 869,
+          "length": 32
+        },
+        {
+          "start": 1213,
+          "length": 32
+        }
+      ],
+      "58013": [
+        {
+          "start": 245,
+          "length": 32
+        },
+        {
+          "start": 1461,
+          "length": 32
+        }
+      ],
+      "58016": [
+        {
+          "start": 331,
+          "length": 32
+        },
+        {
+          "start": 809,
+          "length": 32
+        }
+      ],
+      "58019": [
+        {
+          "start": 389,
+          "length": 32
+        },
+        {
+          "start": 1601,
+          "length": 32
+        },
+        {
+          "start": 1850,
+          "length": 32
+        },
+        {
+          "start": 2060,
+          "length": 32
+        },
+        {
+          "start": 2354,
+          "length": 32
+        }
+      ]
+    },
+    "scope": "Metadata-free runtime template with unresolved immutable slots; not full initcode or a deployed instance comparison."
+  },
+  "new_swc113_pc999": {
+    "selector": "affdf337",
+    "input_bytes": 132,
+    "input_sha256": "e36f9f5077bb06cdb7aa9d8c6f4cbf3fa4f66e821b1014bafa24d3ae6f907d3b",
+    "two_inputs_identical": true,
+    "decoded_inputs": [
+      "0x0000000000000000000000400000000040000000",
+      "0x02ff000001000000000000000000400000000020",
+      3600,
+      "0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "same_target": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+    "same_value": "0x0",
+    "different_origins": [
+      "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "repeat_guard_limit": "After a successful first deployment, identical inputs resolve to the same CREATE2 address and are rejected by AlreadyDeployed before fee/initialize. Identical inputs alone do not show that the first call succeeded. A reverted first transaction preserves no successful clone deployment."
+  },
+  "ci_note_json": "/workspace/scratch/4fa14be12559/analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.json",
+  "ci_note_json_sha256": "db3af78d3a39870c4ac4ffac2e398853b4cc0c4b16d8d64b886c3e1378709ff1",
+  "agreement": "The decisive byte/input comparisons match the CI worker note.",
+  "classification": "The retained model constructor is rejected by the implementation code-length guard on the ordinary EVM precompile model; this is trace-specific counterevidence, not proof that every valid-constructor execution is safe.",
+  "remaining_conditions": [
+    "Analyzer gate remains failure/exit1 with eleven findings; no disposition approval, suppression or gate change.",
+    "Historical R8 absence is not remediation; new SWC-113 PC999 identity remains separate from R5 SWC-107.",
+    "Fixed fee-token view failure and unexpected successful-transfer deltas retain the real N1 conditional availability risk; owner deployment decisions remain."
+  ]
+}

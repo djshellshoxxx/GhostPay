@@ -1,0 +1,152 @@
+{
+  "main": {
+    "name": "main",
+    "commit": {
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "node_id": "C_kwDOVR5mTNoAKGRmYzc1ZWYyMDg3ZmE2NDYzYWU1OWUwODE4YWJlYzAxNzk2YzU3OGQ",
+      "commit": {
+        "author": {
+          "name": "sheldon",
+          "email": "127660907+djshellshoxxx@users.noreply.github.com",
+          "date": "2026-11-18T11:13:19Z"
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "date": "2026-11-18T11:13:19Z"
+        },
+        "message": "Merge PR #206: reviewed agent tooling on consolidated main\n\nPreserve #204 ancestry and consolidated CI checks. Exact head c487f0fe649e24a1e89f1f8fd0d82e90a3441c62: 28 GitHub checks successful; independent agent tooling regression suite 12/12. No deployment, publication, custody or release-gate changes.",
+        "tree": {
+          "sha": "21929503cbb7ee6186cfbfc4b278815387d35d66",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/21929503cbb7ee6186cfbfc4b278815387d35d66"
+        },
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/dfc75ef2087fa6463ae59e0818abec01796c578d",
+        "comment_count": 0,
+        "verification": {
+          "verified": true,
+          "reason": "valid",
+          "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq/YhPCRC1aQ7uu5UhlAAAzQ8QAG1hKblS1ixnfEon2sD7jdc0\nbYEdY825Nr3dxuaM8jZzDzIKXxY3jN5ieXS896zJsZivacVZSlEmxQqZDbsU2aTa\nizE5FW8oSn5GTVo9sNEantEZkmR/Qi0+93Y0chp0uzotfl0WyCTlxDMyZ6tlNLvG\nY8WdqEntzBMRflzHHaCv45FYItVl3IRCX7loOZbvNgantlOcd5snZjKT0rArcJOW\n3/28yEU/Ff6yyTLwBHBvqwaz0n3VkmgbjZm87DGdlF+S/wj6pLTWJ+VtZXfDeAii\ngeeyyMklZT518YNlNUkOdkYal9WQcPg4dVSqwvUEgda44fQUW3h6WuUISGzsKRHe\n4sJ1AUxXZPgNXhgDXuMaUe89CrA15Py0YTFw3eMwTRNf+YlT1lrPSEVLbyv5JtIH\nwzyYiDRGM1ueKsmv2yuwA/6XEFxLa2207WvrHrs6lxI1zEbpdB6sGSH+gcahN4gy\nPLr4IZk5c4Wkrdt4+d7TGXe17pnhEbszR6VjnIBXba674QWYn79iDqYj6MvGS813\nc6tKwKZ/V8p7IilZVCDXJpRYV4V0Q1tIeCaWu5tH1kGq/eRT8C14mSdqVABBtz3i\nKQ6RGMUjQI803w0eA1g8ChHDoez6asm0tvTQSHY+cx3T3S+zrSH2O/4hSN4qK0k1\nPQU0mh8+vexUJqYBI1Ap\n=MYSK\n-----END PGP SIGNATURE-----\n",
+          "payload": "tree 21929503cbb7ee6186cfbfc4b278815387d35d66\nparent 5467c158069c5bab264b6a653ac56e89e13f3e13\nparent c487f0fe649e24a1e89f1f8fd0d82e90a3441c62\nauthor sheldon <127660907+djshellshoxxx@users.noreply.github.com> 1795000399 -0800\ncommitter GitHub <noreply@github.com> 1795000399 -0800\n\nMerge PR #206: reviewed agent tooling on consolidated main\n\nPreserve #204 ancestry and consolidated CI checks. Exact head c487f0fe649e24a1e89f1f8fd0d82e90a3441c62: 28 GitHub checks successful; independent agent tooling regression suite 12/12. No deployment, publication, custody or release-gate changes.",
+          "verified_at": "2026-11-18T11:13:19Z"
+        }
+      },
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "comments_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/dfc75ef2087fa6463ae59e0818abec01796c578d/comments",
+      "author": {
+        "login": "djshellshoxxx",
+        "id": 127660907,
+        "node_id": "U_kgDOB5vzaw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/djshellshoxxx",
+        "html_url": "https://github.com/djshellshoxxx",
+        "followers_url": "https://api.github.com/users/djshellshoxxx/followers",
+        "following_url": "https://api.github.com/users/djshellshoxxx/following{/other_user}",
+        "gists_url": "https://api.github.com/users/djshellshoxxx/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/djshellshoxxx/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/djshellshoxxx/subscriptions",
+        "organizations_url": "https://api.github.com/users/djshellshoxxx/orgs",
+        "repos_url": "https://api.github.com/users/djshellshoxxx/repos",
+        "events_url": "https://api.github.com/users/djshellshoxxx/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/djshellshoxxx/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "web-flow",
+        "id": 19864447,
+        "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/web-flow",
+        "html_url": "https://github.com/web-flow",
+        "followers_url": "https://api.github.com/users/web-flow/followers",
+        "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+        "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+        "organizations_url": "https://api.github.com/users/web-flow/orgs",
+        "repos_url": "https://api.github.com/users/web-flow/repos",
+        "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/web-flow/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/5467c158069c5bab264b6a653ac56e89e13f3e13",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/5467c158069c5bab264b6a653ac56e89e13f3e13"
+        },
+        {
+          "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/c487f0fe649e24a1e89f1f8fd0d82e90a3441c62"
+        }
+      ]
+    },
+    "_links": {
+      "self": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main",
+      "html": "https://github.com/djshellshoxxx/GhostPay/tree/main"
+    },
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main/protection"
+  },
+  "repository": {
+    "id": "1428055628",
+    "name": "GhostPay",
+    "owner": {
+      "login": "djshellshoxxx",
+      "id": 127660907,
+      "type": "User",
+      "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+      "url": "https://api.github.com/users/djshellshoxxx"
+    },
+    "repository_full_name": "djshellshoxxx/GhostPay",
+    "permissions": {
+      "admin": true,
+      "maintain": true,
+      "pull": true,
+      "push": true,
+      "triage": true
+    },
+    "allow_auto_merge": true,
+    "allow_merge_commit": true,
+    "allow_rebase_merge": true,
+    "allow_squash_merge": true,
+    "allow_update_branch": false,
+    "clone_url": "https://github.com/djshellshoxxx/GhostPay.git",
+    "size": 25699,
+    "default_branch": "main",
+    "git_commits_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits{/sha}",
+    "git_refs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/refs{/sha}",
+    "git_url": "git://github.com/djshellshoxxx/GhostPay.git",
+    "master_branch": null,
+    "visibility": "public",
+    "archived": false,
+    "is_code_search_indexed": null
+  },
+  "rulesets": [],
+  "protection_endpoint": "403 Resource not accessible by integration",
+  "prs_pages": [
+    100,
+    100,
+    39
+  ],
+  "branch_pages": [
+    100,
+    100,
+    46
+  ]
+}

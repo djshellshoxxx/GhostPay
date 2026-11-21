@@ -1,0 +1,13 @@
+d5fe06e7a7b383da1726c4d38165c824e996b9db	refs/heads/chatgpt/ghostpay-idle-lifecycle-qualified-20261119
+94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57	refs/heads/chatgpt/ghostpay-mythril-checker-failclosed-20261118
+3a3b136a326e0d8c1f369d94d4517ad0711babc8	refs/heads/chatgpt/ghostpay-sonar-review-20261118
+38d69832ddc58ec27a19c00dbe3c89347c577495	refs/heads/chatgpt/spec18-recovery-completion-20261118
+f4e79b078514cdd174a087bd5142ad76bc49f811	refs/heads/claude/friendly-turing-1ui0on
+4894d0d8d94333dffa8ae3937a4d8314f27c686f	refs/heads/claude/ghostpay-consolidation-9xhtxg-security
+c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483	refs/heads/claude/sharp-bohr-uigfgh
+e2ebb4902e53e2249c6585a1d72be6e1e416c36c	refs/heads/integration/ghostpay-idle-session-completion-20261119
+ea47fa75eabb0be2045081ffeb120fc2bfae67ab	refs/heads/integration/ghostpay-mythril-security-closure-20261118
+c977b5d6723f6822c3b5d86cd6b231712c53c395	refs/heads/main
+d74af79ebabdc8cead843361c3497b46d8c421f9	refs/heads/release/ghostpay-beta-qualification-20261119
+6b07e403dd26a8c8e12dfab82dedb0c36002b043	refs/heads/repair/ghostpay-pr-87-20261119
+16c48521f99903ccd2e584df5d00a9dec5ef754c	refs/heads/security/mythril-full-remediation-20261118

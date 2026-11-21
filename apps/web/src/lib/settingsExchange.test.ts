@@ -22,6 +22,23 @@ const all = (s: Settings, sections = EXCHANGE_SECTIONS) => {
   return { incoming, preview: (current: Settings) => previewSettingsExchange(current, incoming, CHAINS) };
 };
 
+describe('local privacy settings and exchange', () => {
+  it('preserves local privacy choices when importing the existing preferences wire format', () => {
+    const current = { ...DEFAULT_SETTINGS, privacyMode: true, clipboardClearAfterMs: 60_000 as const };
+    const incoming = parseSettingsExchange(exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }));
+    const preview = previewSettingsExchange(current, incoming, CHAINS);
+    expect(applySettingsExchange(current, preview, { preferences: true })).toMatchObject({ privacyMode: true, clipboardClearAfterMs: 60_000, theme: 'dark' });
+    expect(exportSettingsExchange(current)).not.toMatch(/privacyMode|clipboardClearAfterMs/);
+  });
+
+  it('rejects an exchange preview made before a local privacy preference changed', () => {
+    const incoming = parseSettingsExchange(exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }));
+    const preview = previewSettingsExchange(DEFAULT_SETTINGS, incoming, CHAINS);
+    expect(() => applySettingsExchange({ ...DEFAULT_SETTINGS, ...{ privacyMode: true } }, preview, { preferences: true })).toThrow(/Nothing was changed/);
+    expect(() => applySettingsExchange({ ...DEFAULT_SETTINGS, ...{ clipboardClearAfterMs: 60_000 as const } }, preview, { preferences: true })).toThrow(/Nothing was changed/);
+  });
+});
+
 describe('settings exchange: export', () => {
   it('defaults to preferences only and keeps the exact v1 envelope that excludes endpoints and signer trust', () => {
     expect(DEFAULT_EXPORT_SECTIONS).toEqual(['preferences']);

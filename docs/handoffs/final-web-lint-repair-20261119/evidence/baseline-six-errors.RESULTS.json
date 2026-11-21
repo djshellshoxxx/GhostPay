@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "kind": "original-complete-web-eslint",
+  "before": {
+    "head": "75cc6149e2fd560f26725e806b24f859f999d647",
+    "tree": "11a70e0576af5aaa177c81c45b0df2cd1cc88c6b",
+    "inputs": {
+      "apps/web": "ca51902b761af9da73ec9ffa63daccacc87e9977",
+      "packages": "d4a76ceb0f3e592578947e4752d3028fe02a631e",
+      "scripts": "7664f0c70121073d30813cf6099c06e0f854541d",
+      "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "package.json": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "tsconfig.base.json": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+    },
+    "dirty": ""
+  },
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay/node_modules/eslint/bin/eslint.js",
+    "--config",
+    "../../eslint.config.js",
+    "src",
+    "e2e"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay/apps/web",
+  "node": {
+    "path": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "version": "v22.23.5",
+    "sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd"
+  },
+  "resourceEnvironment": {
+    "NODE_OPTIONS": "--max-old-space-size=1536",
+    "PATH_prefix": "/workspace/scratch/c20ffc46347e/toolchain/bin"
+  },
+  "eslintVersion": "10.15.0",
+  "originalScript": "eslint --config ../../eslint.config.js src e2e",
+  "configRulesOrFilePatternsChanged": false,
+  "startedAtUtc": "2026-11-19T13:11:36.284324+00:00",
+  "exitCode": 1,
+  "signal": null,
+  "elapsedSeconds": 93.20122417499806,
+  "maxChildRssKiB": 1690568,
+  "after": {
+    "head": "75cc6149e2fd560f26725e806b24f859f999d647",
+    "tree": "11a70e0576af5aaa177c81c45b0df2cd1cc88c6b",
+    "inputs": {
+      "apps/web": "ca51902b761af9da73ec9ffa63daccacc87e9977",
+      "packages": "d4a76ceb0f3e592578947e4752d3028fe02a631e",
+      "scripts": "7664f0c70121073d30813cf6099c06e0f854541d",
+      "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "package.json": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "tsconfig.base.json": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+    },
+    "dirty": ""
+  },
+  "logSha256": "7583c5fd8a862cd856475437df816ee7aa6aac26b8d07c75c4d79f5fab8cde92",
+  "finishedAtUtc": "2026-11-19T13:13:09.522143+00:00",
+  "actualInputsUnchanged": true,
+  "verdict": "FAILED_OR_BLOCKED"
+}

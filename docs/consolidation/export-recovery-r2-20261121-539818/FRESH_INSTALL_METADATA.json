@@ -1,0 +1,13 @@
+{
+  "node": "v24.22.3",
+  "npm": "11.19.1",
+  "vitest": "5.1.0",
+  "typescript": "5.9.3",
+  "package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "installed_package_entries": 789,
+  "metadata_mismatches": [],
+  "install": "Fresh original npm ci, coordinator-managed. No old installation reuse. Root reported exit0,721 packages added in18 seconds. Installation command output is coordinator-owned; this worker received completion metadata and independently verified the installed lock entries.",
+  "native_scripts": "npm reported keccak and secp256k1 install scripts not allowlisted by default; no allowlist or config changes and no claim those scripts ran.",
+  "build_status": "Coordinator original all-library build in progress at time of this install-only metadata check; compiled outputs not inspected.",
+  "later_build_receipt": "FRESH_BUILD.json.gz records the completed fresh all-library build and full output."
+}

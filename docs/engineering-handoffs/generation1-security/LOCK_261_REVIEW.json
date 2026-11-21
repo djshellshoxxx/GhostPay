@@ -1,0 +1,23 @@
+{
+  "source_pr": 261,
+  "source_head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+  "reviewer": "security_gen1",
+  "source_blobs": {
+    "scripts/automation/integration-lock.mjs": "47a7411628f7775228e15f88b120c3684b461249",
+    "scripts/tests/integration-lock.test.mjs": "f2ef3e9ac3425ad6296a878526c68d69afac04c7"
+  },
+  "verdict": "No introduced source blocker in the two-file extraction under the documented cooperative-lock model.",
+  "checks": [
+    "Every transition is a commit with the exact observed remote head as parent; ordinary nonforce pushes reject sibling competitors. Initial unrelated roots likewise produce one successful creator.",
+    "Reads validate the exact fixed ref, fetch the observed immutable commit without tags/submodules/FETCH_HEAD writes, and fail closed on malformed state.",
+    "Configured read and push destinations must be the same single remote URL; argv execution avoids shell interpolation.",
+    "Exact owner/token and unexpired monotonic clock checks precede authority assertions and heartbeat; expiry alone never permits takeover.",
+    "Push explicitly disables followTags; exact refspec confines transitions to metadata branch.",
+    "Ten original tests use real bare repositories and pre-receive race barriers; assert main remains unchanged and annotated tags remain local."
+  ],
+  "limits": [
+    "This is cooperative exclusion, not adversarial authorization: owner/token values are readable metadata.",
+    "The tool does not interpose on arbitrary shared-branch writes. The coordinator must assertOwned before mutation and separately enforce current target head, CI and review.",
+    "Source review only by this worker; the coordinator executes original Git tests. No live remote lock transition performed by this reviewer."
+  ]
+}

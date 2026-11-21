@@ -49,6 +49,27 @@ describe('shared presentation helpers', () => {
     expect(await screen.findByRole('button', { name: 'Copy failed: select the text manually' })).toBeTruthy();
   });
 
+  it('protects an explicitly opted-in sensitive copy without changing default copy behavior', async () => {
+    vi.useFakeTimers();
+    let value = '';
+    const readText = vi.fn(() => Promise.resolve(value));
+    const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText, writeText } });
+    const { rerender } = render(<CopyButton text="sensitive value" label="Copy secret" autoClearAfterMs={30_000} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy secret' }));
+    await act(async () => { await Promise.resolve(); });
+    expect(value).toBe('sensitive value');
+    await act(async () => { await vi.advanceTimersByTimeAsync(30_000); });
+    expect(value).toBe('');
+    expect(readText).toHaveBeenCalledTimes(2);
+
+    rerender(<CopyButton text="another value" label="Copy ordinary" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy ordinary' }));
+    await act(async () => { await Promise.resolve(); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(5 * 60_000); });
+    expect(value).toBe('another value');
+  });
+
   it('starts a local text download and revokes the object URL', () => {
     const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:local');
     const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);

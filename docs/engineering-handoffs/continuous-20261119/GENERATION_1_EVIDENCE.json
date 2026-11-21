@@ -1,0 +1,107 @@
+{
+  "schema": "ghostpay-continuation-evidence/1",
+  "recorded_at": "2026-11-19T23:38:19.027754+00:00",
+  "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "product_head": "a080c2db54d79a280def1f1ed365637d16180e44",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "source_prs": [
+    280,
+    281,
+    282,
+    285,
+    289
+  ],
+  "receipts": [
+    {
+      "id": "narrow-web-red",
+      "command_scope": "original repository Vitest configuration, maxWorkers=1, coverage disabled for focused reproduction",
+      "counts": {
+        "numTotalTests": 55,
+        "numPassedTests": 50,
+        "numFailedTests": 5,
+        "numPendingTests": 0,
+        "success": false
+      },
+      "raw_sha256": "814c21a4047f58b2939de88375ed3f0ef908e371d0d947a5f9bab7bf9c42f6a5",
+      "evidence": "evidence/narrow-web-red.json.gz"
+    },
+    {
+      "id": "narrow-web-green",
+      "command_scope": "original repository Vitest configuration, maxWorkers=1, coverage disabled for focused reproduction",
+      "counts": {
+        "numTotalTests": 73,
+        "numPassedTests": 73,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "raw_sha256": "58a7dbbd542fb9ec6bb0cb94c8800625276ca175743de1f0fc2150c95884c0f3",
+      "evidence": "evidence/narrow-web-green.json.gz"
+    },
+    {
+      "id": "base64url-red",
+      "command_scope": "original repository Vitest configuration, maxWorkers=1, coverage disabled for focused reproduction",
+      "counts": {
+        "numTotalTests": 5,
+        "numPassedTests": 4,
+        "numFailedTests": 1,
+        "numPendingTests": 0,
+        "success": false
+      },
+      "raw_sha256": "860cb2cce2f9cdff7d92df788afda6004ffcdce8804d05c9c08965a8bdba8100",
+      "evidence": "evidence/base64url-red.json.gz"
+    },
+    {
+      "id": "base64url-green",
+      "command_scope": "original repository Vitest configuration, maxWorkers=1, coverage disabled for focused reproduction",
+      "counts": {
+        "numTotalTests": 5,
+        "numPassedTests": 5,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "raw_sha256": "cdd9fe6e46831659e48b539bf962421d9e341bb1ddc0787d9ae2eaf3bf74b928",
+      "evidence": "evidence/base64url-green.json.gz"
+    },
+    {
+      "id": "json-fixture-green",
+      "command_scope": "original repository Vitest configuration, maxWorkers=1, coverage disabled for focused reproduction",
+      "counts": {
+        "numTotalTests": 24,
+        "numPassedTests": 24,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "raw_sha256": "2ff4c4964bd5d4350621de3ae6f7cfa9deb017cbf2f8680925e9d5b01ae4cdcc",
+      "evidence": "evidence/json-fixture-green.json.gz"
+    },
+    {
+      "id": "npm-ci",
+      "raw_sha256": "ca8e560538fdcb009dd57502ef8c6a5583da1cdbe47587d5bfbe6f1487c98778",
+      "evidence": "evidence/npm-ci.log.gz"
+    },
+    {
+      "id": "build-libs",
+      "raw_sha256": "70ad710c76013439b659a717c3bd33e86e0b5665e85c1c7c7545ef4b1e3853ba",
+      "evidence": "evidence/build-libs.log.gz"
+    },
+    {
+      "id": "json-lint-red",
+      "raw_sha256": "d23e0dbe497d89543bfd8bcbfe282ce555b43fd876404c584ed5a790882d2413",
+      "evidence": "evidence/json-lint-red.log.gz"
+    },
+    {
+      "id": "json-lint-green",
+      "raw_sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "evidence": "evidence/json-lint-green.log.gz"
+    }
+  ],
+  "limits": [
+    "Focused checks do not establish full coverage or browser acceptance.",
+    "Full workspace lint/typecheck still running at this checkpoint.",
+    "Five production patches retained original author attribution via cherry-pick -x."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "number": 278,
+  "url": "https://github.com/djshellshoxxx/GhostPay/pull/278",
+  "state": "open",
+  "draft": true,
+  "head": "release/ghostpay-beta-qualification-20261119",
+  "head_sha": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "base": "main",
+  "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "merged": false
+}

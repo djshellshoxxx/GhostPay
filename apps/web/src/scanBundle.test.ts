@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ALLOWED_URLS, scanBundle } from '../scripts/scan-bundle.mjs';
+import { LEAN_EXCLUDED_MODULES } from '../../../scripts/pages/lean-exclusions.mjs';
 
 const dirs: string[] = [];
 afterEach(() => {
@@ -78,6 +79,9 @@ describe('scan-bundle', () => {
     ['preserved scan-mode claims', 'dist/assets/a.js', 'var c={label:"Two-server PIR scanning (research PoC, testnet only)"}', /preserved-code marker "Two-server PIR scanning/],
     ['preserved prover', 'dist/assets/a.js', 'var p={protocol:"groth16"}', /preserved-code marker "groth16"/],
     ['preserved external pools', 'dist/assets/a.js', 'var id="privacy-pools"', /preserved-code marker "privacy-pools"/],
+    // SEC-14: the legacy unsigned-dev text-manifest path must not reach any build (lean or full).
+    ['legacy unsigned-dev manifest acceptance', 'dist/assets/a.js', 'var w="UNSIGNED DEV MANIFEST: no release key is pinned, so this deployment manifest is not authenticated. Testnet use only"', /legacy text-manifest marker "no release key is pinned/],
+    ['legacy text-manifest signing domain', 'dist/assets/a.js', 'var d="GhostPay-deployment-manifest-v1\\n"', /legacy text-manifest marker "GhostPay-deployment-manifest-v1"/],
     ['preserved code in the worker', 'dist/assets/scanner.worker-1.js', 'throw Error("PIR server request failed")', /scanner\.worker-1\.js: preserved-code marker/],
   ])('fails on %s', (_name, file, content, re) => {
     const b = build({ [file]: content });
@@ -161,6 +165,71 @@ describe('scan-bundle', () => {
     // An unterminated element is not a parsable external script either.
     expect(scan(build({}, { html: GOOD_HTML.replace(module, '<script>alert(1)') }))).toContain('index.html: unterminated <script>');
     expect(scan(build())).toEqual([]);
+  });
+
+  // SEC-24 / E-13: every HTML entry of the output gets the inline-code and CSP checks, not just index.html.
+  it.each(['help.html', 'privacy.html', 'nested/extra.html', 'custom.HTM'])('checks %s like index.html', (name) => {
+    const help = GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', '');
+    expect(scan(build({ [`dist/${name}`]: help }))).toEqual([]);
+    const bad = (html: string): string => scan(build({ [`dist/${name}`]: html })).join('\n');
+    expect(bad(help.replace('</body>', '<script>alert(1)</script></body>'))).toContain(`${name}: inline <script>`);
+    expect(bad(help.replace(/<meta http-equiv[^>]*>/, ''))).toContain(`${name}: meta CSP missing`);
+    expect(bad(help.replace('<body>', '<body onload="x()">'))).toContain(`${name}: inline event handler attribute`);
+    expect(bad(help.replace('</body>', '<style>a{}</style></body>'))).toContain(`${name}: inline <style>`);
+    expect(bad(help.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'"))).toContain(`${name}: CSP allows unsafe-inline/eval scripts`);
+    expect(bad(help.replace('</head>', '<script src="https://cdn.example/a.js"></script></head>'))).toContain(`${name}: remote script`);
+  });
+
+  // Static help pages link to external documentation as plain navigation; anything else external still fails.
+  it('allows external https navigation links in pages other than index.html, but no external resources', () => {
+    const help = GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', '');
+    const page = (body: string): string[] => scan(build({ 'dist/help.html': help.replace('<body></body>', `<body>${body}</body>`) }));
+    expect(page('<a href="https://github.com/example/GhostPay" rel="noopener noreferrer">source</a> <a href="https://eips.ethereum.org/EIPS/eip-5564">EIP</a>')).toEqual([]);
+    expect(page('<img src="https://tracker.example/p.png">').join()).toMatch(/help\.html: unexpected origin or hostname "https:\/\/tracker\.example/);
+    expect(page('<a href="http://insecure.example/">x</a>').join()).toMatch(/help\.html: unexpected origin/);
+    expect(page('<p>see https://tracker.example/x</p>').join()).toMatch(/help\.html: unexpected origin/);
+    // index.html stays strict: the app entry carries no external URL at all.
+    expect(scan(build({}, { html: GOOD_HTML.replace('<body></body>', '<body><a href="https://github.com/example">x</a></body>') })).join()).toMatch(/index\.html: unexpected origin/);
+  });
+
+  // SEC-09: a Pages build compiles its declared origin in (VITE_GHOSTPAY_PAGES_ORIGIN) to compare with location.origin;
+  // exactly that origin literal is allowed, nothing under it and no other origin.
+  it('allows exactly the declared own origin of the build and nothing else', () => {
+    const js = (text: string): ReturnType<typeof build> => build({ 'dist/assets/b.js': text });
+    const own = { ownOrigin: 'https://owner.github.io' };
+    const b = js('const o="https://owner.github.io";');
+    expect(scanBundle(b.dist, b.src, b.cfg, own)).toEqual([]);
+    expect(scanBundle(b.dist, b.src, b.cfg, {}).join()).toMatch(/unexpected origin or hostname "https:\/\/owner\.github\.io"/);
+    for (const bad of ['fetch("https://owner.github.io/other/x")', 'const o="https://owner.github.io.evil.example"', 'const o="http://owner.github.io"']) {
+      const c = js(bad);
+      expect(scanBundle(c.dist, c.src, c.cfg, own).join(), bad).toMatch(/unexpected origin/);
+    }
+    // A declaration that is not exactly an origin allows nothing.
+    const d = js('const o="https://owner.github.io/GhostPay/";');
+    expect(scanBundle(d.dist, d.src, d.cfg, { ownOrigin: 'https://owner.github.io/GhostPay/' }).join()).toMatch(/unexpected origin/);
+    // Default: the build's own VITE_GHOSTPAY_PAGES_ORIGIN (build-pages.sh sets it for the build and its scan).
+    const before = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'];
+    process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] = 'https://owner.github.io';
+    try {
+      expect(scan(b)).toEqual([]);
+    } finally {
+      if (before === undefined) delete process.env['VITE_GHOSTPAY_PAGES_ORIGIN'];
+      else process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] = before;
+    }
+  });
+
+  // SEC-24: the lean module report in dist is checked against the one exclusion list the Pages verifier also uses.
+  it('fails a lean build whose module report renders any excluded module from the shared list', () => {
+    const report = (modules: readonly object[]): string => JSON.stringify({ format: 'ghostpay-lean-build/1', profile: 'lean', chunks: [{ fileName: 'assets/a.js', modules }], workers: [] });
+    expect(scan(build({ 'dist/ghostpay-lean-build.json': report([{ id: 'src/main.tsx', renderedLength: 5, renderedExports: [] }]) }))).toEqual([]);
+    expect(LEAN_EXCLUDED_MODULES.length).toBeGreaterThan(5);
+    for (const { sample } of LEAN_EXCLUDED_MODULES) {
+      const out = scan(build({ 'dist/ghostpay-lean-build.json': report([{ id: sample, renderedLength: 5, renderedExports: [] }]) })).join('\n');
+      expect(out, sample).toContain(`ghostpay-lean-build.json: excluded module rendered into the lean build`);
+    }
+    const embed = scan(build({ 'dist/ghostpay-lean-build.json': report([{ id: 'src/lib/embedHost.ts', renderedLength: 5, renderedExports: ['startEmbedHost'] }]) })).join('\n');
+    expect(embed).toContain('embedding startup/profile exports');
+    expect(scan(build({ 'dist/ghostpay-lean-build.json': '{ nope' })).join()).toMatch(/ghostpay-lean-build\.json: not valid JSON/);
   });
 
   it('requires a hardened _headers file', () => {

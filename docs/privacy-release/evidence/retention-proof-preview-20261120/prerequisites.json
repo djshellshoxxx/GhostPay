@@ -1,0 +1,334 @@
+{
+  "head": "662e9cc8d3f25d17994e95c1aad9219ceae00f79",
+  "tree": "ddd289b0fd67a602a6043f530b8a8a12ea5b4490",
+  "node_options": "--max-old-space-size=512",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "planned_workspaces": [
+    "@ghostpay/address-safety",
+    "@ghostpay/btc-silent-payments",
+    "@ghostpay/core-crypto",
+    "@ghostpay/invoice-schema",
+    "@ghostpay/chain-adapters",
+    "@ghostpay/hygiene",
+    "@ghostpay/metadata-hardening",
+    "@ghostpay/net-harness",
+    "@ghostpay/net-transport",
+    "@ghostpay/payment-uri",
+    "@ghostpay/policy-scheme",
+    "@ghostpay/qr-exchange",
+    "@ghostpay/pir-two-server",
+    "@ghostpay/scan-source",
+    "@ghostpay/secret-box",
+    "@ghostpay/solana-stealth",
+    "@ghostpay/tron-adapter",
+    "@ghostpay/tx-review",
+    "@ghostpay/ux-vault"
+  ],
+  "results": [
+    {
+      "workspace": "@ghostpay/address-safety",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/address-safety"
+      ],
+      "exit_code": 0,
+      "seconds": 2.12,
+      "log": "build-address-safety.log.json",
+      "sha256": "4a16bba5ddf7996f3b5e2730eab0cd10e4ae8ac851a501627f95c663bded016c",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "9c5483ff52692efa3fd5e7f3e3f8892654c5991f914c1879511a91318fc36ccf"
+    },
+    {
+      "workspace": "@ghostpay/btc-silent-payments",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "exit_code": 0,
+      "seconds": 2.07,
+      "log": "build-btc-silent-payments.log.json",
+      "sha256": "0e34269851ec2c3a2f601fc729ec75640cbc5c06ac78dcbd63db0906ef3c2737",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "51f067e01e52ded38be65c0a41a6d94d949062d0ceed53e4bd1e79a1a33552cd"
+    },
+    {
+      "workspace": "@ghostpay/core-crypto",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/core-crypto"
+      ],
+      "exit_code": 0,
+      "seconds": 1.5,
+      "log": "build-core-crypto.log.json",
+      "sha256": "381810612987a2321c37dbe97ca76399f3ad16f9f19c85aa19baaf72b878d76b",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "6e4d39908ac906bd1f6ce4fff86d25f332822effd926257600a2b5b47fa72847"
+    },
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/invoice-schema"
+      ],
+      "exit_code": 0,
+      "seconds": 1.12,
+      "log": "build-invoice-schema.log.json",
+      "sha256": "a3328b4a4fac82d09b486fbb30d90a2dabd98532f4a28be850aa5ebcd97e55a8",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "635f5b0700dc1ee14bd187005bddbfd5ca2d99b01b8651b11802802775851fef"
+    },
+    {
+      "workspace": "@ghostpay/chain-adapters",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/chain-adapters"
+      ],
+      "exit_code": 0,
+      "seconds": 5.52,
+      "log": "build-chain-adapters.log.json",
+      "sha256": "0c23b911559b89e433d22d1b767842b7480e342ccb16a04b717b6fe0129d0990",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "1037b5ee5f0493deeab5f6cf625a1301aa0579061807b83c5c1d0dbb72ad22b7"
+    },
+    {
+      "workspace": "@ghostpay/hygiene",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/hygiene"
+      ],
+      "exit_code": 0,
+      "seconds": 1.81,
+      "log": "build-hygiene.log.json",
+      "sha256": "09f896713f8ef44360426e6a47f3f8a6d6b270a135bde1115673ab74149e0913",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "e42588c82f7613b5051cd7ae076a1e4945cc86706ae6166587059ed426f73a5d"
+    },
+    {
+      "workspace": "@ghostpay/metadata-hardening",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/metadata-hardening"
+      ],
+      "exit_code": 0,
+      "seconds": 2.01,
+      "log": "build-metadata-hardening.log.json",
+      "sha256": "209e74e40fb0cb3455b87dee66411ef680a8a411ceb3de42772129f4cf042bcf",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "14c69fb27e0c0edf7479d00697daad1eeb37db0abedeff07455aefd0d3d7a21a"
+    },
+    {
+      "workspace": "@ghostpay/net-harness",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/net-harness"
+      ],
+      "exit_code": 0,
+      "seconds": 1.19,
+      "log": "build-net-harness.log.json",
+      "sha256": "0d19434291545a24240078532d44d3aefa49f4ca0488370ab7ce547a2b25dcea",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "e698d284d1fb3d00d535485f6a127552f7572c16bd7c1f988b946f3897b07c17"
+    },
+    {
+      "workspace": "@ghostpay/net-transport",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/net-transport"
+      ],
+      "exit_code": 0,
+      "seconds": 1.78,
+      "log": "build-net-transport.log.json",
+      "sha256": "89f005fc4f4bafc5a9958e7041eaed9af9003928cb51658fac33b992d7b100d5",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "c58587d0ebb518b01d71afa949bcba6f83857ca0567a98f65a0753cda3f5e644"
+    },
+    {
+      "workspace": "@ghostpay/payment-uri",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/payment-uri"
+      ],
+      "exit_code": 0,
+      "seconds": 1.17,
+      "log": "build-payment-uri.log.json",
+      "sha256": "37b5ced94fb719d4a63c5996f78e9b0462b8dd32030d2db601e6c514ea610421",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "04f0700b6e5bfb1f4587f9f0ff2be34f82b29d41cbe5a2bc5f10062d89df77f9"
+    },
+    {
+      "workspace": "@ghostpay/policy-scheme",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/policy-scheme"
+      ],
+      "exit_code": 0,
+      "seconds": 4.24,
+      "log": "build-policy-scheme.log.json",
+      "sha256": "126d081264f77c5eeb366735f20229d2a794efbf3be3b667be7298d10ce13c98",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "319e6d86e6e41bb82cf7ceb0cde24d0361112a1d03402f6ed4d81eecbf9ee412"
+    },
+    {
+      "workspace": "@ghostpay/qr-exchange",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/qr-exchange"
+      ],
+      "exit_code": 0,
+      "seconds": 1.48,
+      "log": "build-qr-exchange.log.json",
+      "sha256": "d7daaf349b8d8c501f105cd03303f2ba8969fc73d8dc67607f4db27084901a2f",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "33c2d1cb96c16e8445fea1dd999dfefb1643f25371c8a473c0910ac67f41244d"
+    },
+    {
+      "workspace": "@ghostpay/pir-two-server",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/pir-two-server"
+      ],
+      "exit_code": 0,
+      "seconds": 1.31,
+      "log": "build-pir-two-server.log.json",
+      "sha256": "1719f1f28e76f6d5f05e061c4b8483308ad97106885e68bc5bfe9e231602ca00",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "a9a283dfaba027385fd1346e589566164a3afd75f1b83502acbc9ecfe5c314b3"
+    },
+    {
+      "workspace": "@ghostpay/scan-source",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/scan-source"
+      ],
+      "exit_code": 0,
+      "seconds": 3.29,
+      "log": "build-scan-source.log.json",
+      "sha256": "04ec61112c6a35a202b7010f50a1035dd3deed10fc414992be3472312df25c32",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "fa343d74cbb9f570ac046c475e50cf7adfb4ba83f16ee052476722340b73c1b5"
+    },
+    {
+      "workspace": "@ghostpay/secret-box",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/secret-box"
+      ],
+      "exit_code": 0,
+      "seconds": 0.79,
+      "log": "build-secret-box.log.json",
+      "sha256": "25d09bd67db9b437f28028a5af7804150017ab452139833b20df2c88a499ec37",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "62b7a7ff0353933fecb896f8fc8bfb45dbb35d690ff955440dad192526a042fc"
+    },
+    {
+      "workspace": "@ghostpay/solana-stealth",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/solana-stealth"
+      ],
+      "exit_code": 0,
+      "seconds": 2.41,
+      "log": "build-solana-stealth.log.json",
+      "sha256": "6a0cf587cd3a4d4e4ca43131259fef843db6b793a8cbc42d761f06d7615325fe",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "b124223b700299ca890e674796e2b4ebd5f08a3ea12929a9a0833ce6ce95675b"
+    },
+    {
+      "workspace": "@ghostpay/tron-adapter",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/tron-adapter"
+      ],
+      "exit_code": 0,
+      "seconds": 2.73,
+      "log": "build-tron-adapter.log.json",
+      "sha256": "2b9bf482997a3cbb77137ee94f2de70431c9c65b5c664cdcad8d018dd9995039",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "c70ec98a79dc667ed4694913dcd3256e12a2446366822cdbc0fc7f085f827597"
+    },
+    {
+      "workspace": "@ghostpay/tx-review",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/tx-review"
+      ],
+      "exit_code": 0,
+      "seconds": 1.93,
+      "log": "build-tx-review.log.json",
+      "sha256": "7c5f8dd8b1379f339aedcb7332d7e521c706d8d4bb2d651e74e930d5bb312827",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "afcfa13920db9daefa26bf497c6f8bb8300a36a4e5896325185892beb3f5cc7f"
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/ux-vault"
+      ],
+      "exit_code": 0,
+      "seconds": 1.65,
+      "log": "build-ux-vault.log.json",
+      "sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "efe4e8216ddf8f31a17241e75687cf20498a491a94a868e4dd836f13bb734e37"
+    }
+  ],
+  "exit_code": 0
+}

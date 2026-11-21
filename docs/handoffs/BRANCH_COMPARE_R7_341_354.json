@@ -1,0 +1,652 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 341,
+  "offset_end": 355,
+  "results": [
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+          "added",
+          126,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P02-rpc-policy/SPEC.md",
+          "added",
+          143,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+          "added",
+          127,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+          "added",
+          155,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+          "added",
+          143,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P06-key-role-separation/SPEC.md",
+          "added",
+          137,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+          "added",
+          148,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P08-linkability-analysis/SPEC.md",
+          "added",
+          129,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+          "added",
+          129,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P10-private-submission/SPEC.md",
+          "added",
+          137,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+          "added",
+          135,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+          "added",
+          156,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P13-confidential-amounts/SPEC.md",
+          "added",
+          134,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/P14-shielded-payments/SPEC.md",
+          "added",
+          136,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    }
+  ]
+}

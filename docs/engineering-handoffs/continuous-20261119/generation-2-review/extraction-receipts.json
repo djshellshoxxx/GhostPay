@@ -1,0 +1,55 @@
+[
+  {
+    "id": "extractions-web",
+    "source_commit": "a080c2db54d79a280def1f1ed365637d16180e44",
+    "scope": "exact source/test overlay in independently owned security-review worktree",
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/lib/buildProfile.test.ts",
+      "src/lib/scanSpam.partial.test.ts",
+      "src/lib/scanSpam.test.ts",
+      "src/lib/merchantIdentity.test.ts",
+      "src/lib/qrKinds.test.ts",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-web.json"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 3.11,
+    "counts": {
+      "numTotalTests": 73,
+      "numPassedTests": 73,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  {
+    "id": "extractions-invoice",
+    "source_commit": "a080c2db54d79a280def1f1ed365637d16180e44",
+    "scope": "exact source/test overlay in independently owned security-review worktree",
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/packages/invoice-schema",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/base64url.test.ts",
+      "src/json.test.ts",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-invoice.json"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 1.187,
+    "counts": {
+      "numTotalTests": 29,
+      "numPassedTests": 29,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  }
+]

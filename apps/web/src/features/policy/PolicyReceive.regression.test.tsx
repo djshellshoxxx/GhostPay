@@ -8,6 +8,7 @@ import { beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
 import * as withdrawalState from './withdrawalState';
@@ -60,6 +61,7 @@ async function openReceive(rejectSend = false) {
   await screen.findByText(/1 new for your keys/);
   await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByText(/Connected:/);
   return { user, wallet };
 }
@@ -97,6 +99,7 @@ describe('policy receive audit regressions', () => {
     await user.click(screen.getByRole('button', { name: 'Check account' }));
     await user.type(await screen.findByLabelText('Amount to withdraw (base units)'), '1');
     await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(rejectSend ? 'You rejected the request in your wallet.' : /Withdrawal request submitted/);
     expect(within(screen.getByRole('region', { name: 'Saved policy wallet attempts' })).getByText(priorHash)).toBeTruthy();
   });

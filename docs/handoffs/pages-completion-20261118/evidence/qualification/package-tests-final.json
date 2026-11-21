@@ -1,0 +1,4710 @@
+{
+  "observed_utc": "2026-11-18T15:12:18.332018+00:00",
+  "source_commit": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "log_path": "/workspace/scratch/4fa14be12559/qualification/package-tests.log",
+  "log_bytes_captured": 260844,
+  "log_sha256_captured": "df758e1fd7d1a95be14c27d74370a5e8af406707db41d8eb95d6dc89f7660e17",
+  "log_modified_utc": "2026-11-18T15:09:06.036440+00:00",
+  "existing_exec_session": "55369",
+  "process_exit_code": 0,
+  "outcome": "completed_successfully",
+  "workspace_invocations_started": 68,
+  "workspace_summaries_complete": 68,
+  "incomplete_workspaces": [],
+  "failure_workspaces": [],
+  "test_totals_from_reported_summaries": {
+    "passed": 12402,
+    "skipped": 79
+  },
+  "validation_issues": [],
+  "limitations": [
+    "Counts are executed test cases in this npm invocation, not unique behaviors or independent security properties.",
+    "A reported summary does not independently reveal a workspace process exit; aggregate exit is supplied only after coordinator observation.",
+    "Minimal reporter does not identify every skipped test. Skip reasons remain unknown unless separately established from retained evidence.",
+    "Coverage percentages are each phase's reported aggregate; they are not combined across workspaces.",
+    "Start-clock strings retain runtime-local formatting and are not relabeled UTC."
+  ],
+  "workspaces": [
+    {
+      "workspace": "@ghostpay/address-safety",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 12,
+      "line_end": 55,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/address-safety",
+          "tests": {
+            "raw": "76 passed (76)",
+            "counts": {
+              "passed": 76
+            },
+            "declared_total": 76
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 97.43,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 132,
+              "total": 132
+            },
+            "branches": {
+              "percent": 97.43,
+              "covered": 114,
+              "total": 117
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 22,
+              "total": 22
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 101,
+              "total": 101
+            }
+          },
+          "duration_text": "1.23s (import 67%, transform 13%, tests 11%, worker 8%)",
+          "start_clock_text": "06:32:21",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 76
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/amount-blur",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 55,
+      "line_end": 106,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/amount-blur",
+          "tests": {
+            "raw": "96 passed (96)",
+            "counts": {
+              "passed": 96
+            },
+            "declared_total": 96
+          },
+          "test_files": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.2,
+            "branches": 95.47,
+            "functions": 100.0,
+            "lines": 99.7
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.2,
+              "covered": 437,
+              "total": 445
+            },
+            "branches": {
+              "percent": 95.47,
+              "covered": 274,
+              "total": 287
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 47,
+              "total": 47
+            },
+            "lines": {
+              "percent": 99.7,
+              "covered": 339,
+              "total": 340
+            }
+          },
+          "duration_text": "2.81s (import 44%, tests 33%, transform 18%, worker 4%)",
+          "start_clock_text": "06:32:23",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 96
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/btc-family",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 106,
+      "line_end": 165,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/btc-family",
+          "tests": {
+            "raw": "162 passed (162)",
+            "counts": {
+              "passed": 162
+            },
+            "declared_total": 162
+          },
+          "test_files": {
+            "raw": "9 passed (9)",
+            "counts": {
+              "passed": 9
+            },
+            "declared_total": 9
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 96.75,
+            "branches": 94.04,
+            "functions": 100.0,
+            "lines": 99.78
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 96.75,
+              "covered": 566,
+              "total": 585
+            },
+            "branches": {
+              "percent": 94.04,
+              "covered": 379,
+              "total": 403
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 94,
+              "total": 94
+            },
+            "lines": {
+              "percent": 99.78,
+              "covered": 467,
+              "total": 468
+            }
+          },
+          "duration_text": "8.06s (tests 91%, import 5%, transform 2%, worker 1%)",
+          "start_clock_text": "06:32:26",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 162
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 10,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/btc-payjoin",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 165,
+      "line_end": 235,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/btc-payjoin",
+          "tests": {
+            "raw": "158 passed (158)",
+            "counts": {
+              "passed": 158
+            },
+            "declared_total": 158
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.31,
+            "branches": 92.69,
+            "functions": 98.36,
+            "lines": 99.51
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.31,
+              "covered": 1014,
+              "total": 1042
+            },
+            "branches": {
+              "percent": 92.69,
+              "covered": 736,
+              "total": 794
+            },
+            "functions": {
+              "percent": 98.36,
+              "covered": 120,
+              "total": 122
+            },
+            "lines": {
+              "percent": 99.51,
+              "covered": 827,
+              "total": 831
+            }
+          },
+          "duration_text": "5.17s (tests 78%, import 13%, transform 6%, worker 3%)",
+          "start_clock_text": "06:32:34",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 158
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/btc-silent-payments",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 235,
+      "line_end": 351,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/btc-silent-payments",
+          "tests": {
+            "raw": "559 passed (559)",
+            "counts": {
+              "passed": 559
+            },
+            "declared_total": 559
+          },
+          "test_files": {
+            "raw": "32 passed (32)",
+            "counts": {
+              "passed": 32
+            },
+            "declared_total": 32
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.8,
+            "branches": 95.85,
+            "functions": 98.44,
+            "lines": 99.46
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.8,
+              "covered": 2364,
+              "total": 2417
+            },
+            "branches": {
+              "percent": 95.85,
+              "covered": 1713,
+              "total": 1787
+            },
+            "functions": {
+              "percent": 98.44,
+              "covered": 380,
+              "total": 386
+            },
+            "lines": {
+              "percent": 99.46,
+              "covered": 1860,
+              "total": 1870
+            }
+          },
+          "duration_text": "39.39s (tests 93%, import 5%, transform 2%, worker 1%)",
+          "start_clock_text": "06:32:40",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 559
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 33,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/chain-adapters",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 351,
+      "line_end": 451,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters",
+          "tests": {
+            "raw": "584 passed (584)",
+            "counts": {
+              "passed": 584
+            },
+            "declared_total": 584
+          },
+          "test_files": {
+            "raw": "27 passed (27)",
+            "counts": {
+              "passed": 27
+            },
+            "declared_total": 27
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.51,
+            "branches": 96.64,
+            "functions": 99.11,
+            "lines": 99.05
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.51,
+              "covered": 1808,
+              "total": 1854
+            },
+            "branches": {
+              "percent": 96.64,
+              "covered": 1583,
+              "total": 1638
+            },
+            "functions": {
+              "percent": 99.11,
+              "covered": 223,
+              "total": 225
+            },
+            "lines": {
+              "percent": 99.05,
+              "covered": 1466,
+              "total": 1480
+            }
+          },
+          "duration_text": "13.41s (tests 57%, import 35%, transform 4%, worker 3%)",
+          "start_clock_text": "06:33:20",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 584
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 28,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/chain-evm-extra",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 451,
+      "line_end": 496,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/chain-evm-extra",
+          "tests": {
+            "raw": "44 passed (44)",
+            "counts": {
+              "passed": 44
+            },
+            "declared_total": 44
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 96.5,
+            "branches": 94.0,
+            "functions": 97.05,
+            "lines": 99.42
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 96.5,
+              "covered": 221,
+              "total": 229
+            },
+            "branches": {
+              "percent": 94.0,
+              "covered": 188,
+              "total": 200
+            },
+            "functions": {
+              "percent": 97.05,
+              "covered": 33,
+              "total": 34
+            },
+            "lines": {
+              "percent": 99.42,
+              "covered": 172,
+              "total": 173
+            }
+          },
+          "duration_text": "1.12s (import 36%, tests 35%, transform 19%, worker 10%)",
+          "start_clock_text": "06:33:33",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 44
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/chain-solana",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 496,
+      "line_end": 553,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/chain-solana",
+          "tests": {
+            "raw": "97 passed (97)",
+            "counts": {
+              "passed": 97
+            },
+            "declared_total": 97
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.71,
+            "branches": 97.77,
+            "functions": 98.3,
+            "lines": 99.61
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.71,
+              "covered": 307,
+              "total": 311
+            },
+            "branches": {
+              "percent": 97.77,
+              "covered": 176,
+              "total": 180
+            },
+            "functions": {
+              "percent": 98.3,
+              "covered": 58,
+              "total": 59
+            },
+            "lines": {
+              "percent": 99.61,
+              "covered": 260,
+              "total": 261
+            }
+          },
+          "duration_text": "18.31s (tests 96%, import 2%, transform 1%, worker 1%)",
+          "start_clock_text": "06:33:35",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 97
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/chain-tron",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 553,
+      "line_end": 590,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/chain-tron",
+          "tests": {
+            "raw": "42 passed (42)",
+            "counts": {
+              "passed": 42
+            },
+            "declared_total": 42
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 100.0,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 132,
+              "total": 132
+            },
+            "branches": {
+              "percent": 100.0,
+              "covered": 77,
+              "total": 77
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 31,
+              "total": 31
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 112,
+              "total": 112
+            }
+          },
+          "duration_text": "1.85s (tests 65%, import 22%, transform 10%, worker 4%)",
+          "start_clock_text": "06:33:53",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 42
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/cli",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 590,
+      "line_end": 713,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/cli",
+          "tests": {
+            "raw": "570 passed (570)",
+            "counts": {
+              "passed": 570
+            },
+            "declared_total": 570
+          },
+          "test_files": {
+            "raw": "37 passed (37)",
+            "counts": {
+              "passed": 37
+            },
+            "declared_total": 37
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.61,
+            "branches": 97.33,
+            "functions": 99.07,
+            "lines": 99.49
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.61,
+              "covered": 2353,
+              "total": 2386
+            },
+            "branches": {
+              "percent": 97.33,
+              "covered": 1793,
+              "total": 1842
+            },
+            "functions": {
+              "percent": 99.07,
+              "covered": 323,
+              "total": 326
+            },
+            "lines": {
+              "percent": 99.49,
+              "covered": 1956,
+              "total": 1966
+            }
+          },
+          "duration_text": "270.14s (tests 94%, import 5%, transform 1%)",
+          "start_clock_text": "06:33:55",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 570
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 38,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/confidential-amounts",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 713,
+      "line_end": 766,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/confidential-amounts",
+          "tests": {
+            "raw": "88 passed (88)",
+            "counts": {
+              "passed": 88
+            },
+            "declared_total": 88
+          },
+          "test_files": {
+            "raw": "7 passed (7)",
+            "counts": {
+              "passed": 7
+            },
+            "declared_total": 7
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.38,
+            "branches": 95.18,
+            "functions": 100.0,
+            "lines": 99.76
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.38,
+              "covered": 488,
+              "total": 491
+            },
+            "branches": {
+              "percent": 95.18,
+              "covered": 257,
+              "total": 270
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 95,
+              "total": 95
+            },
+            "lines": {
+              "percent": 99.76,
+              "covered": 422,
+              "total": 423
+            }
+          },
+          "duration_text": "2.57s (import 65%, tests 18%, transform 12%, worker 4%)",
+          "start_clock_text": "06:38:26",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 88
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 8,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/confidential-contracts",
+      "package_version": "0.1.0",
+      "command": "hardhat test",
+      "line_start": 766,
+      "line_end": 846,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "hardhat/mocha",
+          "version": null,
+          "tests": {
+            "counts": {
+              "passed": 46
+            },
+            "declared_total": 46,
+            "raw": "Mocha totals"
+          },
+          "test_files": null,
+          "coverage_enabled": false,
+          "coverage_percent": null,
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 46
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 1,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/core-crypto",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 846,
+      "line_end": 897,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/core-crypto",
+          "tests": {
+            "raw": "76 passed (76)",
+            "counts": {
+              "passed": 76
+            },
+            "declared_total": 76
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.5,
+            "branches": 98.16,
+            "functions": 100.0,
+            "lines": 98.21
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.5,
+              "covered": 198,
+              "total": 201
+            },
+            "branches": {
+              "percent": 98.16,
+              "covered": 107,
+              "total": 109
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 42,
+              "total": 42
+            },
+            "lines": {
+              "percent": 98.21,
+              "covered": 165,
+              "total": 168
+            }
+          },
+          "duration_text": "46.93s (tests 95%, import 3%, transform 1%)",
+          "start_clock_text": "06:40:31",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 76
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/donation",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 897,
+      "line_end": 938,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/donation",
+          "tests": {
+            "raw": "68 passed (68)",
+            "counts": {
+              "passed": 68
+            },
+            "declared_total": 68
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 100.0,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 136,
+              "total": 136
+            },
+            "branches": {
+              "percent": 100.0,
+              "covered": 135,
+              "total": 135
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 21,
+              "total": 21
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 106,
+              "total": 106
+            }
+          },
+          "duration_text": "1.72s (import 79%, transform 10%, worker 6%, tests 5%)",
+          "start_clock_text": "06:41:18",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 68
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/external-pools",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 938,
+      "line_end": 985,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/external-pools",
+          "tests": {
+            "raw": "94 passed (94)",
+            "counts": {
+              "passed": 94
+            },
+            "declared_total": 94
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.12,
+            "branches": 96.66,
+            "functions": 99.3,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.12,
+              "covered": 678,
+              "total": 684
+            },
+            "branches": {
+              "percent": 96.66,
+              "covered": 492,
+              "total": 509
+            },
+            "functions": {
+              "percent": 99.3,
+              "covered": 142,
+              "total": 143
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 552,
+              "total": 552
+            }
+          },
+          "duration_text": "23.12s (tests 95%, import 3%, transform 1%)",
+          "start_clock_text": "06:41:20",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 94
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/external-pools-privacypools",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 985,
+      "line_end": 1036,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/external-pools-privacypools",
+          "tests": {
+            "raw": "73 passed | 4 skipped (77)",
+            "counts": {
+              "passed": 73,
+              "skipped": 4
+            },
+            "declared_total": 77
+          },
+          "test_files": {
+            "raw": "7 passed | 1 skipped (8)",
+            "counts": {
+              "passed": 7,
+              "skipped": 1
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.11,
+            "branches": 91.46,
+            "functions": 98.85,
+            "lines": 99.77
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.11,
+              "covered": 572,
+              "total": 583
+            },
+            "branches": {
+              "percent": 91.46,
+              "covered": 375,
+              "total": 410
+            },
+            "functions": {
+              "percent": 98.85,
+              "covered": 86,
+              "total": 87
+            },
+            "lines": {
+              "percent": 99.77,
+              "covered": 449,
+              "total": 450
+            }
+          },
+          "duration_text": "7.80s (tests 64%, import 29%, transform 5%, worker 2%)",
+          "start_clock_text": "06:41:44",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 73,
+        "skipped": 4
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/external-pools-railgun",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1036,
+      "line_end": 1077,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/external-pools-railgun",
+          "tests": {
+            "raw": "20 passed | 1 skipped (21)",
+            "counts": {
+              "passed": 20,
+              "skipped": 1
+            },
+            "declared_total": 21
+          },
+          "test_files": {
+            "raw": "3 passed | 1 skipped (4)",
+            "counts": {
+              "passed": 3,
+              "skipped": 1
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.92,
+            "branches": 94.89,
+            "functions": 97.82,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.92,
+              "covered": 277,
+              "total": 280
+            },
+            "branches": {
+              "percent": 94.89,
+              "covered": 186,
+              "total": 196
+            },
+            "functions": {
+              "percent": 97.82,
+              "covered": 45,
+              "total": 46
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 205,
+              "total": 205
+            }
+          },
+          "duration_text": "2.03s (tests 52%, import 32%, transform 13%, worker 3%)",
+          "start_clock_text": "06:41:52",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 20,
+        "skipped": 1
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/hops",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1077,
+      "line_end": 1122,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/hops",
+          "tests": {
+            "raw": "57 passed (57)",
+            "counts": {
+              "passed": 57
+            },
+            "declared_total": 57
+          },
+          "test_files": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 100.0,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 409,
+              "total": 409
+            },
+            "branches": {
+              "percent": 100.0,
+              "covered": 270,
+              "total": 270
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 58,
+              "total": 58
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 324,
+              "total": 324
+            }
+          },
+          "duration_text": "11.88s (tests 77%, import 20%, transform 3%, worker 1%)",
+          "start_clock_text": "06:41:54",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 57
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/hygiene",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1122,
+      "line_end": 1165,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/hygiene",
+          "tests": {
+            "raw": "142 passed (142)",
+            "counts": {
+              "passed": 142
+            },
+            "declared_total": 142
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.67,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 395,
+              "total": 395
+            },
+            "branches": {
+              "percent": 99.67,
+              "covered": 305,
+              "total": 306
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 72,
+              "total": 72
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 314,
+              "total": 314
+            }
+          },
+          "duration_text": "6.36s (tests 77%, import 16%, transform 6%, worker 1%)",
+          "start_clock_text": "06:42:06",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 142
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/i18n",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1165,
+      "line_end": 1233,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/i18n",
+          "tests": {
+            "raw": "215 passed (215)",
+            "counts": {
+              "passed": 215
+            },
+            "declared_total": 215
+          },
+          "test_files": {
+            "raw": "12 passed (12)",
+            "counts": {
+              "passed": 12
+            },
+            "declared_total": 12
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.91,
+            "branches": 97.0,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.91,
+              "covered": 1155,
+              "total": 1156
+            },
+            "branches": {
+              "percent": 97.0,
+              "covered": 843,
+              "total": 869
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 165,
+              "total": 165
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 942,
+              "total": 942
+            }
+          },
+          "duration_text": "2.27s (transform 29%, tests 28%, import 25%, worker 18%)",
+          "start_clock_text": "06:42:13",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 215
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 13,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1233,
+      "line_end": 1293,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/invoice-schema",
+          "tests": {
+            "raw": "731 passed (731)",
+            "counts": {
+              "passed": 731
+            },
+            "declared_total": 731
+          },
+          "test_files": {
+            "raw": "13 passed (13)",
+            "counts": {
+              "passed": 13
+            },
+            "declared_total": 13
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.09,
+            "branches": 97.77,
+            "functions": 100.0,
+            "lines": 99.26
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.09,
+              "covered": 826,
+              "total": 842
+            },
+            "branches": {
+              "percent": 97.77,
+              "covered": 570,
+              "total": 583
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 112,
+              "total": 112
+            },
+            "lines": {
+              "percent": 99.26,
+              "covered": 674,
+              "total": 679
+            }
+          },
+          "duration_text": "179.93s (tests 99%)",
+          "start_clock_text": "06:42:16",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 731
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 14,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/merchant-billing",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1293,
+      "line_end": 1346,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/merchant-billing",
+          "tests": {
+            "raw": "275 passed (275)",
+            "counts": {
+              "passed": 275
+            },
+            "declared_total": 275
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.69,
+            "branches": 99.66,
+            "functions": 100.0,
+            "lines": 99.8
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.69,
+              "covered": 659,
+              "total": 661
+            },
+            "branches": {
+              "percent": 99.66,
+              "covered": 588,
+              "total": 590
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 88,
+              "total": 88
+            },
+            "lines": {
+              "percent": 99.8,
+              "covered": 508,
+              "total": 509
+            }
+          },
+          "duration_text": "2.43s (import 46%, tests 27%, transform 18%, worker 8%)",
+          "start_clock_text": "06:45:16",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 275
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/merchant-hooks",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1346,
+      "line_end": 1380,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/merchant-hooks",
+          "tests": {
+            "raw": "35 passed (35)",
+            "counts": {
+              "passed": 35
+            },
+            "declared_total": 35
+          },
+          "test_files": {
+            "raw": "2 passed (2)",
+            "counts": {
+              "passed": 2
+            },
+            "declared_total": 2
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.58,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 238,
+              "total": 238
+            },
+            "branches": {
+              "percent": 99.58,
+              "covered": 240,
+              "total": 241
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 33,
+              "total": 33
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 188,
+              "total": 188
+            }
+          },
+          "duration_text": "537ms (transform 44%, tests 33%, import 16%, worker 6%)",
+          "start_clock_text": "06:45:19",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 35
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 3,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/merchant-ledger",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1380,
+      "line_end": 1412,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/merchant-ledger",
+          "tests": {
+            "raw": "27 passed (27)",
+            "counts": {
+              "passed": 27
+            },
+            "declared_total": 27
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.31,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 175,
+              "total": 175
+            },
+            "branches": {
+              "percent": 99.31,
+              "covered": 144,
+              "total": 145
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 40,
+              "total": 40
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 149,
+              "total": 149
+            }
+          },
+          "duration_text": "327ms (transform 58%, tests 18%, import 13%, worker 11%)",
+          "start_clock_text": "06:45:19",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 27
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 2,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/merchant-multisig",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1412,
+      "line_end": 1456,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/merchant-multisig",
+          "tests": {
+            "raw": "92 passed (92)",
+            "counts": {
+              "passed": 92
+            },
+            "declared_total": 92
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.15,
+            "branches": 98.4,
+            "functions": 100.0,
+            "lines": 99.67
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.15,
+              "covered": 354,
+              "total": 357
+            },
+            "branches": {
+              "percent": 98.4,
+              "covered": 185,
+              "total": 188
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 62,
+              "total": 62
+            },
+            "lines": {
+              "percent": 99.67,
+              "covered": 305,
+              "total": 306
+            }
+          },
+          "duration_text": "20.83s (tests 98%, import 1%, transform 1%)",
+          "start_clock_text": "06:45:20",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 92
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/metadata-hardening",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1456,
+      "line_end": 1511,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/metadata-hardening",
+          "tests": {
+            "raw": "115 passed (115)",
+            "counts": {
+              "passed": 115
+            },
+            "declared_total": 115
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.48,
+            "branches": 98.83,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.48,
+              "covered": 579,
+              "total": 582
+            },
+            "branches": {
+              "percent": 98.83,
+              "covered": 423,
+              "total": 428
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 119,
+              "total": 119
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 480,
+              "total": 480
+            }
+          },
+          "duration_text": "2.64s (import 38%, tests 35%, transform 18%, worker 9%)",
+          "start_clock_text": "06:45:41",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 115
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/net-harness",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1511,
+      "line_end": 1558,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/net-harness",
+          "tests": {
+            "raw": "27 passed (27)",
+            "counts": {
+              "passed": 27
+            },
+            "declared_total": 27
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 96.13,
+            "branches": 90.52,
+            "functions": 96.96,
+            "lines": 99.11
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 96.13,
+              "covered": 373,
+              "total": 388
+            },
+            "branches": {
+              "percent": 90.52,
+              "covered": 172,
+              "total": 190
+            },
+            "functions": {
+              "percent": 96.96,
+              "covered": 64,
+              "total": 66
+            },
+            "lines": {
+              "percent": 99.11,
+              "covered": 335,
+              "total": 338
+            }
+          },
+          "duration_text": "3.51s (tests 97%, transform 3%, import 1%)",
+          "start_clock_text": "06:45:44",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 27
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 3,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/net-transport",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1558,
+      "line_end": 1606,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/net-transport",
+          "tests": {
+            "raw": "156 passed (156)",
+            "counts": {
+              "passed": 156
+            },
+            "declared_total": 156
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.64,
+            "branches": 96.6,
+            "functions": 96.49,
+            "lines": 97.92
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.64,
+              "covered": 955,
+              "total": 978
+            },
+            "branches": {
+              "percent": 96.6,
+              "covered": 598,
+              "total": 619
+            },
+            "functions": {
+              "percent": 96.49,
+              "covered": 165,
+              "total": 171
+            },
+            "lines": {
+              "percent": 97.92,
+              "covered": 801,
+              "total": 818
+            }
+          },
+          "duration_text": "5.31s (tests 60%, import 29%, transform 10%, worker 1%)",
+          "start_clock_text": "06:45:49",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 156
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ops-monitor",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1606,
+      "line_end": 1663,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ops-monitor",
+          "tests": {
+            "raw": "113 passed (113)",
+            "counts": {
+              "passed": 113
+            },
+            "declared_total": 113
+          },
+          "test_files": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.01,
+            "branches": 93.59,
+            "functions": 97.72,
+            "lines": 99.78
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.01,
+              "covered": 543,
+              "total": 554
+            },
+            "branches": {
+              "percent": 93.59,
+              "covered": 336,
+              "total": 359
+            },
+            "functions": {
+              "percent": 97.72,
+              "covered": 86,
+              "total": 88
+            },
+            "lines": {
+              "percent": 99.78,
+              "covered": 475,
+              "total": 476
+            }
+          },
+          "duration_text": "3.57s (import 68%, transform 16%, tests 13%, worker 3%)",
+          "start_clock_text": "06:45:54",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 113
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/payer-sponsor",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1663,
+      "line_end": 1731,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/payer-sponsor",
+          "tests": {
+            "raw": "135 passed | 4 skipped (139)",
+            "counts": {
+              "passed": 135,
+              "skipped": 4
+            },
+            "declared_total": 139
+          },
+          "test_files": {
+            "raw": "13 passed | 1 skipped (14)",
+            "counts": {
+              "passed": 13,
+              "skipped": 1
+            },
+            "declared_total": 14
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.28,
+            "branches": 98.04,
+            "functions": 99.37,
+            "lines": 99.57
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.28,
+              "covered": 828,
+              "total": 834
+            },
+            "branches": {
+              "percent": 98.04,
+              "covered": 551,
+              "total": 562
+            },
+            "functions": {
+              "percent": 99.37,
+              "covered": 160,
+              "total": 161
+            },
+            "lines": {
+              "percent": 99.57,
+              "covered": 696,
+              "total": 699
+            }
+          },
+          "duration_text": "5.02s (import 57%, tests 29%, transform 9%, worker 5%)",
+          "start_clock_text": "06:45:58",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 135,
+        "skipped": 4
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 15,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/payment-uri",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1731,
+      "line_end": 1775,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/payment-uri",
+          "tests": {
+            "raw": "199 passed (199)",
+            "counts": {
+              "passed": 199
+            },
+            "declared_total": 199
+          },
+          "test_files": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.31,
+            "branches": 96.53,
+            "functions": 100.0,
+            "lines": 99.08
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.31,
+              "covered": 543,
+              "total": 558
+            },
+            "branches": {
+              "percent": 96.53,
+              "covered": 530,
+              "total": 549
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 47,
+              "total": 47
+            },
+            "lines": {
+              "percent": 99.08,
+              "covered": 433,
+              "total": 437
+            }
+          },
+          "duration_text": "1.14s (tests 67%, transform 18%, import 11%, worker 4%)",
+          "start_clock_text": "06:46:04",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 199
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 4,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/pir-two-server",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1775,
+      "line_end": 1820,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/pir-two-server",
+          "tests": {
+            "raw": "60 passed (60)",
+            "counts": {
+              "passed": 60
+            },
+            "declared_total": 60
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.14,
+            "branches": 93.29,
+            "functions": 98.76,
+            "lines": 99.74
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.14,
+              "covered": 466,
+              "total": 470
+            },
+            "branches": {
+              "percent": 93.29,
+              "covered": 320,
+              "total": 343
+            },
+            "functions": {
+              "percent": 98.76,
+              "covered": 80,
+              "total": 81
+            },
+            "lines": {
+              "percent": 99.74,
+              "covered": 394,
+              "total": 395
+            }
+          },
+          "duration_text": "4.09s (tests 94%, transform 3%, import 2%, worker 1%)",
+          "start_clock_text": "06:46:05",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 60
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/plugin-api",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1820,
+      "line_end": 1864,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/plugin-api",
+          "tests": {
+            "raw": "45 passed (45)",
+            "counts": {
+              "passed": 45
+            },
+            "declared_total": 45
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.52,
+            "branches": 97.36,
+            "functions": 98.46,
+            "lines": 99.13
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.52,
+              "covered": 401,
+              "total": 407
+            },
+            "branches": {
+              "percent": 97.36,
+              "covered": 259,
+              "total": 266
+            },
+            "functions": {
+              "percent": 98.46,
+              "covered": 64,
+              "total": 65
+            },
+            "lines": {
+              "percent": 99.13,
+              "covered": 343,
+              "total": 346
+            }
+          },
+          "duration_text": "761ms (tests 41%, transform 29%, import 16%, worker 14%)",
+          "start_clock_text": "06:46:09",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 45
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/policy-scheme",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1864,
+      "line_end": 1915,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/policy-scheme",
+          "tests": {
+            "raw": "95 passed (95)",
+            "counts": {
+              "passed": 95
+            },
+            "declared_total": 95
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.11,
+            "branches": 94.7,
+            "functions": 100.0,
+            "lines": 99.74
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.11,
+              "covered": 471,
+              "total": 485
+            },
+            "branches": {
+              "percent": 94.7,
+              "covered": 286,
+              "total": 302
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 73,
+              "total": 73
+            },
+            "lines": {
+              "percent": 99.74,
+              "covered": 398,
+              "total": 399
+            }
+          },
+          "duration_text": "5.78s (tests 78%, import 16%, transform 4%, worker 2%)",
+          "start_clock_text": "06:46:11",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 95
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/pool-circuits",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1915,
+      "line_end": 1990,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/pool-circuits",
+          "tests": {
+            "raw": "18 passed | 59 skipped (77)",
+            "counts": {
+              "passed": 18,
+              "skipped": 59
+            },
+            "declared_total": 77
+          },
+          "test_files": {
+            "raw": "3 passed | 2 skipped (5)",
+            "counts": {
+              "passed": 3,
+              "skipped": 2
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 100.0,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 123,
+              "total": 123
+            },
+            "branches": {
+              "percent": 100.0,
+              "covered": 67,
+              "total": 67
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 22,
+              "total": 22
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 111,
+              "total": 111
+            }
+          },
+          "duration_text": "3.15s (tests 74%, import 19%, transform 5%, worker 2%)",
+          "start_clock_text": "06:46:17",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 18,
+        "skipped": 59
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 24,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/pool-prover",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 1990,
+      "line_end": 2022,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/pool-prover",
+          "tests": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.61,
+            "branches": 95.31,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.61,
+              "covered": 71,
+              "total": 72
+            },
+            "branches": {
+              "percent": 95.31,
+              "covered": 61,
+              "total": 64
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 13,
+              "total": 13
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 57,
+              "total": 57
+            }
+          },
+          "duration_text": "270ms (tests 60%, transform 24%, import 9%, worker 7%)",
+          "start_clock_text": "06:46:20",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 8
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 2,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/pool-relayer",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2022,
+      "line_end": 2072,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/pool-relayer",
+          "tests": {
+            "raw": "43 passed | 9 skipped (52)",
+            "counts": {
+              "passed": 43,
+              "skipped": 9
+            },
+            "declared_total": 52
+          },
+          "test_files": {
+            "raw": "5 passed | 2 skipped (7)",
+            "counts": {
+              "passed": 5,
+              "skipped": 2
+            },
+            "declared_total": 7
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.65,
+            "branches": 95.78,
+            "functions": 96.59,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.65,
+              "covered": 416,
+              "total": 426
+            },
+            "branches": {
+              "percent": 95.78,
+              "covered": 273,
+              "total": 285
+            },
+            "functions": {
+              "percent": 96.59,
+              "covered": 85,
+              "total": 88
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 341,
+              "total": 341
+            }
+          },
+          "duration_text": "3.61s (import 59%, tests 26%, transform 12%, worker 3%)",
+          "start_clock_text": "06:46:21",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 43,
+        "skipped": 9
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 8,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/pool-sdk",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2072,
+      "line_end": 2123,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/pool-sdk",
+          "tests": {
+            "raw": "47 passed (47)",
+            "counts": {
+              "passed": 47
+            },
+            "declared_total": 47
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.73,
+            "branches": 95.85,
+            "functions": 99.1,
+            "lines": 99.77
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.73,
+              "covered": 546,
+              "total": 553
+            },
+            "branches": {
+              "percent": 95.85,
+              "covered": 370,
+              "total": 386
+            },
+            "functions": {
+              "percent": 99.1,
+              "covered": 111,
+              "total": 112
+            },
+            "lines": {
+              "percent": 99.77,
+              "covered": 451,
+              "total": 452
+            }
+          },
+          "duration_text": "2.48s (import 60%, tests 24%, transform 12%, worker 3%)",
+          "start_clock_text": "06:46:25",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 47
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/privacy-pipeline",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2123,
+      "line_end": 2191,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/privacy-pipeline",
+          "tests": {
+            "raw": "747 passed (747)",
+            "counts": {
+              "passed": 747
+            },
+            "declared_total": 747
+          },
+          "test_files": {
+            "raw": "12 passed (12)",
+            "counts": {
+              "passed": 12
+            },
+            "declared_total": 12
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.34,
+            "branches": 97.07,
+            "functions": 99.7,
+            "lines": 99.5
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.34,
+              "covered": 1658,
+              "total": 1669
+            },
+            "branches": {
+              "percent": 97.07,
+              "covered": 1493,
+              "total": 1538
+            },
+            "functions": {
+              "percent": 99.7,
+              "covered": 343,
+              "total": 344
+            },
+            "lines": {
+              "percent": 99.5,
+              "covered": 1407,
+              "total": 1414
+            }
+          },
+          "duration_text": "8.61s (tests 91%, transform 4%, import 3%, worker 2%)",
+          "start_clock_text": "06:46:27",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 747
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 13,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/privacy-profiles",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2191,
+      "line_end": 2235,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/privacy-profiles",
+          "tests": {
+            "raw": "176 passed (176)",
+            "counts": {
+              "passed": 176
+            },
+            "declared_total": 176
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.07,
+            "branches": 93.93,
+            "functions": 98.95,
+            "lines": 98.66
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.07,
+              "covered": 464,
+              "total": 478
+            },
+            "branches": {
+              "percent": 93.93,
+              "covered": 356,
+              "total": 379
+            },
+            "functions": {
+              "percent": 98.95,
+              "covered": 95,
+              "total": 96
+            },
+            "lines": {
+              "percent": 98.66,
+              "covered": 369,
+              "total": 374
+            }
+          },
+          "duration_text": "24.54s (tests 98%, import 1%, transform 1%)",
+          "start_clock_text": "06:46:36",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 176
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/qr-exchange",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2235,
+      "line_end": 2288,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/qr-exchange",
+          "tests": {
+            "raw": "233 passed (233)",
+            "counts": {
+              "passed": 233
+            },
+            "declared_total": 233
+          },
+          "test_files": {
+            "raw": "7 passed (7)",
+            "counts": {
+              "passed": 7
+            },
+            "declared_total": 7
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.57,
+            "branches": 95.17,
+            "functions": 100.0,
+            "lines": 99.08
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.57,
+              "covered": 685,
+              "total": 702
+            },
+            "branches": {
+              "percent": 95.17,
+              "covered": 552,
+              "total": 580
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 91,
+              "total": 91
+            },
+            "lines": {
+              "percent": 99.08,
+              "covered": 543,
+              "total": 548
+            }
+          },
+          "duration_text": "3.54s (tests 69%, import 19%, transform 9%, worker 3%)",
+          "start_clock_text": "06:47:01",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 233
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 8,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/relayer-guard",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2288,
+      "line_end": 2337,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/relayer-guard",
+          "tests": {
+            "raw": "167 passed (167)",
+            "counts": {
+              "passed": 167
+            },
+            "declared_total": 167
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.62,
+            "branches": 94.14,
+            "functions": 99.25,
+            "lines": 99.19
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.62,
+              "covered": 715,
+              "total": 725
+            },
+            "branches": {
+              "percent": 94.14,
+              "covered": 515,
+              "total": 547
+            },
+            "functions": {
+              "percent": 99.25,
+              "covered": 134,
+              "total": 135
+            },
+            "lines": {
+              "percent": 99.19,
+              "covered": 619,
+              "total": 624
+            }
+          },
+          "duration_text": "1.68s (tests 76%, transform 12%, import 8%, worker 4%)",
+          "start_clock_text": "06:47:05",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 167
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/sandbox",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2337,
+      "line_end": 2400,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/sandbox",
+          "tests": {
+            "raw": "95 passed (95)",
+            "counts": {
+              "passed": 95
+            },
+            "declared_total": 95
+          },
+          "test_files": {
+            "raw": "9 passed (9)",
+            "counts": {
+              "passed": 9
+            },
+            "declared_total": 9
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.69,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 488,
+              "total": 488
+            },
+            "branches": {
+              "percent": 99.69,
+              "covered": 322,
+              "total": 323
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 112,
+              "total": 112
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 425,
+              "total": 425
+            }
+          },
+          "duration_text": "1.55s (tests 32%, transform 27%, import 22%, worker 19%)",
+          "start_clock_text": "06:47:07",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 95
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/scan-source",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2400,
+      "line_end": 2452,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/scan-source",
+          "tests": {
+            "raw": "72 passed (72)",
+            "counts": {
+              "passed": 72
+            },
+            "declared_total": 72
+          },
+          "test_files": {
+            "raw": "7 passed (7)",
+            "counts": {
+              "passed": 7
+            },
+            "declared_total": 7
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.76,
+            "branches": 95.82,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.76,
+              "covered": 400,
+              "total": 405
+            },
+            "branches": {
+              "percent": 95.82,
+              "covered": 367,
+              "total": 383
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 66,
+              "total": 66
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 326,
+              "total": 326
+            }
+          },
+          "duration_text": "1.77s (tests 59%, import 17%, transform 16%, worker 7%)",
+          "start_clock_text": "06:47:10",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 72
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 8,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/sdk",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2452,
+      "line_end": 2503,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/sdk",
+          "tests": {
+            "raw": "54 passed (54)",
+            "counts": {
+              "passed": 54
+            },
+            "declared_total": 54
+          },
+          "test_files": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.63,
+            "branches": 97.81,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.63,
+              "covered": 270,
+              "total": 271
+            },
+            "branches": {
+              "percent": 97.81,
+              "covered": 179,
+              "total": 183
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 73,
+              "total": 73
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 218,
+              "total": 218
+            }
+          },
+          "duration_text": "1.94s (tests 37%, import 34%, transform 20%, worker 9%)",
+          "start_clock_text": "06:47:12",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 54
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/secret-box",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2503,
+      "line_end": 2540,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/secret-box",
+          "tests": {
+            "raw": "47 passed (47)",
+            "counts": {
+              "passed": 47
+            },
+            "declared_total": 47
+          },
+          "test_files": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.85,
+            "branches": 98.93,
+            "functions": 100.0,
+            "lines": 99.33
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.85,
+              "covered": 173,
+              "total": 175
+            },
+            "branches": {
+              "percent": 98.93,
+              "covered": 93,
+              "total": 94
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 34,
+              "total": 34
+            },
+            "lines": {
+              "percent": 99.33,
+              "covered": 149,
+              "total": 150
+            }
+          },
+          "duration_text": "656ms (tests 45%, transform 27%, import 15%, worker 13%)",
+          "start_clock_text": "06:47:14",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 47
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 4,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/solana-stealth",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2540,
+      "line_end": 2592,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/solana-stealth",
+          "tests": {
+            "raw": "109 passed (109)",
+            "counts": {
+              "passed": 109
+            },
+            "declared_total": 109
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.83,
+            "branches": 95.61,
+            "functions": 97.91,
+            "lines": 99.55
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.83,
+              "covered": 541,
+              "total": 553
+            },
+            "branches": {
+              "percent": 95.61,
+              "covered": 371,
+              "total": 388
+            },
+            "functions": {
+              "percent": 97.91,
+              "covered": 94,
+              "total": 96
+            },
+            "lines": {
+              "percent": 99.55,
+              "covered": 452,
+              "total": 454
+            }
+          },
+          "duration_text": "2.92s (tests 75%, import 15%, transform 7%, worker 3%)",
+          "start_clock_text": "06:47:15",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 109
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/tron-adapter",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2592,
+      "line_end": 2646,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/tron-adapter",
+          "tests": {
+            "raw": "74 passed (74)",
+            "counts": {
+              "passed": 74
+            },
+            "declared_total": 74
+          },
+          "test_files": {
+            "raw": "8 passed (8)",
+            "counts": {
+              "passed": 8
+            },
+            "declared_total": 8
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.29,
+            "branches": 93.64,
+            "functions": 98.79,
+            "lines": 99.5
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.29,
+              "covered": 503,
+              "total": 517
+            },
+            "branches": {
+              "percent": 93.64,
+              "covered": 383,
+              "total": 409
+            },
+            "functions": {
+              "percent": 98.79,
+              "covered": 82,
+              "total": 83
+            },
+            "lines": {
+              "percent": 99.5,
+              "covered": 405,
+              "total": 407
+            }
+          },
+          "duration_text": "2.06s (import 45%, tests 34%, transform 14%, worker 7%)",
+          "start_clock_text": "06:47:18",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 74
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 9,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/tx-review",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2646,
+      "line_end": 2689,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/tx-review",
+          "tests": {
+            "raw": "160 passed (160)",
+            "counts": {
+              "passed": 160
+            },
+            "declared_total": 160
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.58,
+            "branches": 98.67,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.58,
+              "covered": 238,
+              "total": 239
+            },
+            "branches": {
+              "percent": 98.67,
+              "covered": 223,
+              "total": 226
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 33,
+              "total": 33
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 171,
+              "total": 171
+            }
+          },
+          "duration_text": "2.63s (import 70%, transform 15%, tests 13%, worker 3%)",
+          "start_clock_text": "06:47:20",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 160
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-connect",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2689,
+      "line_end": 2731,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-connect",
+          "tests": {
+            "raw": "129 passed (129)",
+            "counts": {
+              "passed": 129
+            },
+            "declared_total": 129
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.62,
+            "branches": 99.32,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.62,
+              "covered": 526,
+              "total": 528
+            },
+            "branches": {
+              "percent": 99.32,
+              "covered": 589,
+              "total": 593
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 60,
+              "total": 60
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 417,
+              "total": 417
+            }
+          },
+          "duration_text": "805ms (transform 35%, import 28%, tests 21%, worker 16%)",
+          "start_clock_text": "06:47:23",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 129
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-core",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2731,
+      "line_end": 2776,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-core",
+          "tests": {
+            "raw": "119 passed (119)",
+            "counts": {
+              "passed": 119
+            },
+            "declared_total": 119
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 97.94,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 766,
+              "total": 766
+            },
+            "branches": {
+              "percent": 97.94,
+              "covered": 621,
+              "total": 634
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 167,
+              "total": 167
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 607,
+              "total": 607
+            }
+          },
+          "duration_text": "2.61s (tests 86%, transform 7%, import 4%, worker 2%)",
+          "start_clock_text": "06:47:24",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 119
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-export",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2776,
+      "line_end": 2824,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-export",
+          "tests": {
+            "raw": "134 passed (134)",
+            "counts": {
+              "passed": 134
+            },
+            "declared_total": 134
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.8,
+            "branches": 98.25,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.8,
+              "covered": 511,
+              "total": 512
+            },
+            "branches": {
+              "percent": 98.25,
+              "covered": 393,
+              "total": 400
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 74,
+              "total": 74
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 429,
+              "total": 429
+            }
+          },
+          "duration_text": "1.65s (tests 68%, transform 14%, import 12%, worker 7%)",
+          "start_clock_text": "06:47:27",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 134
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-fees",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2824,
+      "line_end": 2861,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-fees",
+          "tests": {
+            "raw": "50 passed (50)",
+            "counts": {
+              "passed": 50
+            },
+            "declared_total": 50
+          },
+          "test_files": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 98.56,
+            "branches": 98.37,
+            "functions": 98.07,
+            "lines": 99.75
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 98.56,
+              "covered": 480,
+              "total": 487
+            },
+            "branches": {
+              "percent": 98.37,
+              "covered": 484,
+              "total": 492
+            },
+            "functions": {
+              "percent": 98.07,
+              "covered": 51,
+              "total": 52
+            },
+            "lines": {
+              "percent": 99.75,
+              "covered": 408,
+              "total": 409
+            }
+          },
+          "duration_text": "622ms (transform 40%, tests 25%, import 22%, worker 13%)",
+          "start_clock_text": "06:47:29",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 50
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 4,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-fiat",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2861,
+      "line_end": 2893,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-fiat",
+          "tests": {
+            "raw": "48 passed (48)",
+            "counts": {
+              "passed": 48
+            },
+            "declared_total": 48
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.31,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 282,
+              "total": 282
+            },
+            "branches": {
+              "percent": 99.31,
+              "covered": 292,
+              "total": 294
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 27,
+              "total": 27
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 217,
+              "total": 217
+            }
+          },
+          "duration_text": "288ms (transform 53%, import 27%, tests 14%, worker 6%)",
+          "start_clock_text": "06:47:30",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 48
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 2,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-flow",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2893,
+      "line_end": 2939,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-flow",
+          "tests": {
+            "raw": "91 passed (91)",
+            "counts": {
+              "passed": 91
+            },
+            "declared_total": 91
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.16,
+            "branches": 97.72,
+            "functions": 100.0,
+            "lines": 99.2
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.16,
+              "covered": 475,
+              "total": 479
+            },
+            "branches": {
+              "percent": 97.72,
+              "covered": 473,
+              "total": 484
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 55,
+              "total": 55
+            },
+            "lines": {
+              "percent": 99.2,
+              "covered": 375,
+              "total": 378
+            }
+          },
+          "duration_text": "985ms (transform 33%, tests 26%, import 23%, worker 17%)",
+          "start_clock_text": "06:47:31",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 91
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-guide",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2939,
+      "line_end": 2976,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-guide",
+          "tests": {
+            "raw": "62 passed (62)",
+            "counts": {
+              "passed": 62
+            },
+            "declared_total": 62
+          },
+          "test_files": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.43,
+            "branches": 99.47,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.43,
+              "covered": 355,
+              "total": 357
+            },
+            "branches": {
+              "percent": 99.47,
+              "covered": 378,
+              "total": 380
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 40,
+              "total": 40
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 273,
+              "total": 273
+            }
+          },
+          "duration_text": "628ms (transform 34%, import 30%, tests 24%, worker 12%)",
+          "start_clock_text": "06:47:32",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 62
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 4,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-i18n",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 2976,
+      "line_end": 3007,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-i18n",
+          "tests": {
+            "raw": "2 passed (2)",
+            "counts": {
+              "passed": 2
+            },
+            "declared_total": 2
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 0.0,
+            "branches": 0.0,
+            "functions": 0.0,
+            "lines": 0.0
+          },
+          "coverage_summary": {},
+          "duration_text": "308ms (transform 79%, import 13%, worker 6%, tests 2%)",
+          "start_clock_text": "06:47:33",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 2
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 2,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-intake",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3007,
+      "line_end": 3053,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-intake",
+          "tests": {
+            "raw": "77 passed (77)",
+            "counts": {
+              "passed": 77
+            },
+            "declared_total": 77
+          },
+          "test_files": {
+            "raw": "6 passed (6)",
+            "counts": {
+              "passed": 6
+            },
+            "declared_total": 6
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.67,
+            "branches": 99.42,
+            "functions": 100.0,
+            "lines": 99.79
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.67,
+              "covered": 619,
+              "total": 621
+            },
+            "branches": {
+              "percent": 99.42,
+              "covered": 520,
+              "total": 523
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 61,
+              "total": 61
+            },
+            "lines": {
+              "percent": 99.79,
+              "covered": 478,
+              "total": 479
+            }
+          },
+          "duration_text": "1.69s (tests 73%, transform 12%, import 8%, worker 7%)",
+          "start_clock_text": "06:47:34",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 77
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 7,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-links",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3053,
+      "line_end": 3099,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-links",
+          "tests": {
+            "raw": "49 passed (49)",
+            "counts": {
+              "passed": 49
+            },
+            "declared_total": 49
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.53,
+            "branches": 99.02,
+            "functions": 100.0,
+            "lines": 99.69
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.53,
+              "covered": 424,
+              "total": 426
+            },
+            "branches": {
+              "percent": 99.02,
+              "covered": 405,
+              "total": 409
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 55,
+              "total": 55
+            },
+            "lines": {
+              "percent": 99.69,
+              "covered": 326,
+              "total": 327
+            }
+          },
+          "duration_text": "1.56s (tests 74%, transform 13%, import 8%, worker 5%)",
+          "start_clock_text": "06:47:35",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 49
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-notify",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3099,
+      "line_end": 3144,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-notify",
+          "tests": {
+            "raw": "79 passed (79)",
+            "counts": {
+              "passed": 79
+            },
+            "declared_total": 79
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.81,
+            "branches": 99.15,
+            "functions": 98.88,
+            "lines": 99.76
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.81,
+              "covered": 544,
+              "total": 545
+            },
+            "branches": {
+              "percent": 99.15,
+              "covered": 588,
+              "total": 593
+            },
+            "functions": {
+              "percent": 98.88,
+              "covered": 89,
+              "total": 90
+            },
+            "lines": {
+              "percent": 99.76,
+              "covered": 429,
+              "total": 430
+            }
+          },
+          "duration_text": "1.38s (tests 67%, transform 16%, import 10%, worker 7%)",
+          "start_clock_text": "06:47:37",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 79
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-presets",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3144,
+      "line_end": 3187,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-presets",
+          "tests": {
+            "raw": "57 passed (57)",
+            "counts": {
+              "passed": 57
+            },
+            "declared_total": 57
+          },
+          "test_files": {
+            "raw": "4 passed (4)",
+            "counts": {
+              "passed": 4
+            },
+            "declared_total": 4
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.05,
+            "branches": 98.66,
+            "functions": 98.43,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.05,
+              "covered": 420,
+              "total": 424
+            },
+            "branches": {
+              "percent": 98.66,
+              "covered": 369,
+              "total": 374
+            },
+            "functions": {
+              "percent": 98.43,
+              "covered": 63,
+              "total": 64
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 320,
+              "total": 320
+            }
+          },
+          "duration_text": "1.47s (tests 80%, transform 10%, import 6%, worker 4%)",
+          "start_clock_text": "06:47:39",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 57
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 5,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-privacy",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3187,
+      "line_end": 3221,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-privacy",
+          "tests": {
+            "raw": "33 passed (33)",
+            "counts": {
+              "passed": 33
+            },
+            "declared_total": 33
+          },
+          "test_files": {
+            "raw": "2 passed (2)",
+            "counts": {
+              "passed": 2
+            },
+            "declared_total": 2
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 100.0,
+            "branches": 99.13,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 100.0,
+              "covered": 244,
+              "total": 244
+            },
+            "branches": {
+              "percent": 99.13,
+              "covered": 230,
+              "total": 232
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 37,
+              "total": 37
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 221,
+              "total": 221
+            }
+          },
+          "duration_text": "425ms (transform 40%, tests 27%, import 21%, worker 12%)",
+          "start_clock_text": "06:47:41",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 33
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 3,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-receipts",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3221,
+      "line_end": 3258,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-receipts",
+          "tests": {
+            "raw": "117 passed (117)",
+            "counts": {
+              "passed": 117
+            },
+            "declared_total": 117
+          },
+          "test_files": {
+            "raw": "2 passed (2)",
+            "counts": {
+              "passed": 2
+            },
+            "declared_total": 2
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.74,
+            "branches": 98.19,
+            "functions": 98.07,
+            "lines": 99.66
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.74,
+              "covered": 392,
+              "total": 393
+            },
+            "branches": {
+              "percent": 98.19,
+              "covered": 380,
+              "total": 387
+            },
+            "functions": {
+              "percent": 98.07,
+              "covered": 51,
+              "total": 52
+            },
+            "lines": {
+              "percent": 99.66,
+              "covered": 300,
+              "total": 301
+            }
+          },
+          "duration_text": "505ms (transform 43%, tests 30%, import 18%, worker 8%)",
+          "start_clock_text": "06:47:42",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 117
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 3,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-sandbox",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3258,
+      "line_end": 3289,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-sandbox",
+          "tests": {
+            "raw": "2 passed (2)",
+            "counts": {
+              "passed": 2
+            },
+            "declared_total": 2
+          },
+          "test_files": {
+            "raw": "1 passed (1)",
+            "counts": {
+              "passed": 1
+            },
+            "declared_total": 1
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 0.0,
+            "branches": 0.0,
+            "functions": 0.0,
+            "lines": 0.0
+          },
+          "coverage_summary": {},
+          "duration_text": "263ms (transform 78%, import 12%, worker 8%, tests 2%)",
+          "start_clock_text": "06:47:42",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 2
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 2,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-schedule",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3289,
+      "line_end": 3335,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-schedule",
+          "tests": {
+            "raw": "133 passed (133)",
+            "counts": {
+              "passed": 133
+            },
+            "declared_total": 133
+          },
+          "test_files": {
+            "raw": "5 passed (5)",
+            "counts": {
+              "passed": 5
+            },
+            "declared_total": 5
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 99.54,
+            "branches": 97.95,
+            "functions": 100.0,
+            "lines": 100.0
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 99.54,
+              "covered": 434,
+              "total": 436
+            },
+            "branches": {
+              "percent": 97.95,
+              "covered": 336,
+              "total": 343
+            },
+            "functions": {
+              "percent": 100.0,
+              "covered": 61,
+              "total": 61
+            },
+            "lines": {
+              "percent": 100.0,
+              "covered": 333,
+              "total": 333
+            }
+          },
+          "duration_text": "916ms (transform 45%, import 22%, worker 17%, tests 15%)",
+          "start_clock_text": "06:47:43",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 133
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 6,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3335,
+      "line_end": 3392,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/ux-vault",
+          "tests": {
+            "raw": "352 passed (352)",
+            "counts": {
+              "passed": 352
+            },
+            "declared_total": 352
+          },
+          "test_files": {
+            "raw": "10 passed (10)",
+            "counts": {
+              "passed": 10
+            },
+            "declared_total": 10
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 96.99,
+            "branches": 94.24,
+            "functions": 99.5,
+            "lines": 98.89
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 96.99,
+              "covered": 2003,
+              "total": 2065
+            },
+            "branches": {
+              "percent": 94.24,
+              "covered": 1391,
+              "total": 1476
+            },
+            "functions": {
+              "percent": 99.5,
+              "covered": 402,
+              "total": 404
+            },
+            "lines": {
+              "percent": 98.89,
+              "covered": 1604,
+              "total": 1622
+            }
+          },
+          "duration_text": "169.77s (tests 99%, import 1%)",
+          "start_clock_text": "06:47:44",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 352
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 11,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/relayer",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage",
+      "line_start": 3392,
+      "line_end": 3475,
+      "expected_runner_phases": 1,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/apps/relayer",
+          "tests": {
+            "raw": "484 passed | 1 skipped (485)",
+            "counts": {
+              "passed": 484,
+              "skipped": 1
+            },
+            "declared_total": 485
+          },
+          "test_files": {
+            "raw": "19 passed (19)",
+            "counts": {
+              "passed": 19
+            },
+            "declared_total": 19
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 97.08,
+            "branches": 92.75,
+            "functions": 98.05,
+            "lines": 98.87
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 97.08,
+              "covered": 2335,
+              "total": 2405
+            },
+            "branches": {
+              "percent": 92.75,
+              "covered": 1537,
+              "total": 1657
+            },
+            "functions": {
+              "percent": 98.05,
+              "covered": 403,
+              "total": 411
+            },
+            "lines": {
+              "percent": 98.87,
+              "covered": 1941,
+              "total": 1963
+            }
+          },
+          "duration_text": "59.30s (tests 91%, import 7%, transform 1%)",
+          "start_clock_text": "06:50:34",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 484,
+        "skipped": 1
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 20,
+      "individual_skipped_test_names": null
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "package_version": "0.1.0",
+      "command": "vitest run --coverage && vitest run --config vitest.nocov.config.ts",
+      "line_start": 3475,
+      "line_end": 4095,
+      "expected_runner_phases": 2,
+      "phases": [
+        {
+          "index": 1,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/apps/web",
+          "tests": {
+            "raw": "2959 passed | 1 skipped (2960)",
+            "counts": {
+              "passed": 2959,
+              "skipped": 1
+            },
+            "declared_total": 2960
+          },
+          "test_files": {
+            "raw": "217 passed | 1 skipped (218)",
+            "counts": {
+              "passed": 217,
+              "skipped": 1
+            },
+            "declared_total": 218
+          },
+          "coverage_enabled": true,
+          "coverage_percent": {
+            "statements": 93.3,
+            "branches": 89.52,
+            "functions": 95.04,
+            "lines": 97.04
+          },
+          "coverage_summary": {
+            "statements": {
+              "percent": 93.3,
+              "covered": 13979,
+              "total": 14982
+            },
+            "branches": {
+              "percent": 89.52,
+              "covered": 9648,
+              "total": 10777
+            },
+            "functions": {
+              "percent": 95.04,
+              "covered": 2841,
+              "total": 2989
+            },
+            "lines": {
+              "percent": 97.04,
+              "covered": 11234,
+              "total": 11576
+            }
+          },
+          "duration_text": "1034.95s (tests 87%, import 8%, environment 4%, transform 1%)",
+          "start_clock_text": "06:51:34",
+          "summary_complete": true
+        },
+        {
+          "index": 2,
+          "runner": "vitest",
+          "version": "5.1.0",
+          "directory": "/workspace/scratch/4fa14be12559/GhostPay/apps/web",
+          "tests": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "test_files": {
+            "raw": "3 passed (3)",
+            "counts": {
+              "passed": 3
+            },
+            "declared_total": 3
+          },
+          "coverage_enabled": false,
+          "coverage_percent": null,
+          "coverage_summary": {},
+          "duration_text": "16.22s (tests 91%, import 6%, transform 3%)",
+          "start_clock_text": "07:08:49",
+          "summary_complete": true
+        }
+      ],
+      "test_totals": {
+        "passed": 2962,
+        "skipped": 1
+      },
+      "status": "summaries_complete",
+      "failure_markers": [],
+      "experimental_proxy_warning_count": 223,
+      "individual_skipped_test_names": null
+    }
+  ],
+  "source_record_path": "/workspace/scratch/4fa14be12559/qualification/package-tests-source.txt",
+  "coordinator_result_path": "/workspace/scratch/4fa14be12559/qualification/package-tests-result.json",
+  "coordinator_result_sha256": "99f8f301c8cb14357931a895e717db7e5db7f30954d451b37ca9abf3120ff903",
+  "coordinator_result_metadata": {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm test",
+    "node": "22.23.5",
+    "npm": "11.21.2",
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=1536",
+      "VITEST_MAX_WORKERS": "1",
+      "RAYON_NUM_THREADS": "1",
+      "ANVIL_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/anvil",
+      "CAST_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/cast",
+      "SOLC_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc",
+      "FOUNDRY_SOLC": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc"
+    },
+    "exitCode": 0,
+    "seconds": 2204.93,
+    "log": "package-tests.log"
+  }
+}

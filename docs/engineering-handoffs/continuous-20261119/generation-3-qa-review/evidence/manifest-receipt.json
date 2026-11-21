@@ -1,0 +1,36 @@
+[
+  {
+    "name": "red",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/Disclosure.manifest.test.tsx",
+      "src/views/Pay.network.test.tsx",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/qa-review-gen3/manifest-red.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-review-gen3/apps/web",
+    "exit_code": 1,
+    "duration_seconds": 8.704241037368774,
+    "runtime_sha256": "abfece9053c4eb863251cc2b5dd867f0e0998ecef666918073f812a4ef46fc68"
+  },
+  {
+    "name": "green",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/Disclosure.manifest.test.tsx",
+      "src/views/Pay.network.test.tsx",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/qa-review-gen3/manifest-green.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-review-gen3/apps/web",
+    "exit_code": 0,
+    "duration_seconds": 5.36353874206543,
+    "runtime_sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391"
+  }
+]

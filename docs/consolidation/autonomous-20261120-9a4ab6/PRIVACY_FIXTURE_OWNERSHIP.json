@@ -1,0 +1,183 @@
+{
+  "frozen_111_pr_snapshot": "Historical ownership input, not a live lease",
+  "paths": {
+    "apps/web/src/components/SharedComponents.i18n.test.tsx": [
+      {
+        "pr": 211,
+        "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+        "base": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      }
+    ],
+    "docs/privacy/network-egress-inventory.json": [
+      {
+        "pr": 246,
+        "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 251,
+        "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 262,
+        "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 264,
+        "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      },
+      {
+        "pr": 269,
+        "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "base": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0"
+      },
+      {
+        "pr": 278,
+        "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      }
+    ],
+    "apps/web/e2e/pages-devnet.spec.ts": [
+      {
+        "pr": 231,
+        "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+        "base": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      },
+      {
+        "pr": 233,
+        "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+        "base": "2bc2098298d90928eb1acafad969f28316bb05fc"
+      },
+      {
+        "pr": 238,
+        "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      },
+      {
+        "pr": 239,
+        "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 240,
+        "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 243,
+        "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 248,
+        "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+        "base": "e454de6abfefda70d82784fafc1d8949b277c334"
+      },
+      {
+        "pr": 252,
+        "head": "4085622463411d3ba27f4efb7b73a70575170535",
+        "base": "e454de6abfefda70d82784fafc1d8949b277c334"
+      },
+      {
+        "pr": 256,
+        "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+        "base": "14ded337a10c140d7a9f9a9238ec038587d925bb"
+      },
+      {
+        "pr": 262,
+        "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 264,
+        "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      },
+      {
+        "pr": 272,
+        "head": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+        "base": "8f56376427c96881f49590920ff0bf8543ec81b4"
+      },
+      {
+        "pr": 278,
+        "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 307,
+        "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "base": "bfebea0acf213a113d2740366fd592042661ca67"
+      },
+      {
+        "pr": 336,
+        "head": "410353a23631234aa888e46f38df22291c699a26",
+        "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5"
+      }
+    ],
+    "apps/web/e2e/devnet-journey.spec.ts": [
+      {
+        "pr": 231,
+        "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+        "base": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      },
+      {
+        "pr": 233,
+        "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+        "base": "2bc2098298d90928eb1acafad969f28316bb05fc"
+      },
+      {
+        "pr": 238,
+        "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      },
+      {
+        "pr": 252,
+        "head": "4085622463411d3ba27f4efb7b73a70575170535",
+        "base": "e454de6abfefda70d82784fafc1d8949b277c334"
+      },
+      {
+        "pr": 262,
+        "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 264,
+        "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      },
+      {
+        "pr": 272,
+        "head": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+        "base": "8f56376427c96881f49590920ff0bf8543ec81b4"
+      },
+      {
+        "pr": 278,
+        "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 307,
+        "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "base": "bfebea0acf213a113d2740366fd592042661ca67"
+      },
+      {
+        "pr": 336,
+        "head": "410353a23631234aa888e46f38df22291c699a26",
+        "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5"
+      }
+    ]
+  },
+  "current_pr336_head": "410353a23631234aa888e46f38df22291c699a26",
+  "newer_prs_checked": [
+    345,
+    346,
+    347
+  ],
+  "newer_pr_overlap": false,
+  "existing_owner_preserved": "PR #336, fix/ghostpay-devnet-wallet-consent-20261120-r2",
+  "browser_files_unchanged": true,
+  "node_version": "v24.22.3"
+}

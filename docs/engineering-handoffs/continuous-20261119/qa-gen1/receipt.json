@@ -1,0 +1,191 @@
+{
+  "format": "ghostpay-continuous-qa/1",
+  "worker": "/root/qa_bug_gen1",
+  "date": "2026-11-19",
+  "sourcePins": "source-pins.json",
+  "runtimeImports": "runtime-imports.json",
+  "compiledDependencyObservation": "compiled-dependencies.json",
+  "checks": [
+    {
+      "name": "baseline-regressions",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "passed": 1,
+      "failed": 3,
+      "fileCount": 2,
+      "durationSeconds": 4.87,
+      "source": "Original c993bb2340942c85dbf10303b61f69a91c4944e0 Disclosure.tsx substituted into 95f28a0411a01dc1d4d44c836e258ab214a07bbe tests/tree; fixed file restored exactly in finally",
+      "rawOutput": "baseline-regressions-red.txt.gz"
+    },
+    {
+      "name": "focused-regressions",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/views/Pay.test.tsx",
+        "src/views/Pay.supported.test.tsx",
+        "src/lib/paymentExportRpc.test.ts",
+        "src/views/Scan.stealthExport.authorization.test.tsx",
+        "src/views/Scan.privateCheckpoint.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "passed": 122,
+      "failed": 0,
+      "fileCount": 7,
+      "durationSeconds": 62.8,
+      "source": "95f28a0411a01dc1d4d44c836e258ab214a07bbe runtime source, unchanged by the later e2e-only follow-up",
+      "rawOutput": "focused-green.txt.gz"
+    },
+    {
+      "name": "fixture-support-regressions",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/lib/defaultServices.authorization.test.ts",
+        "src/views/Settings.test.tsx",
+        "src/lib/sweep.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "passed": 138,
+      "failed": 0,
+      "fileCount": 5,
+      "durationSeconds": 19.56,
+      "source": "95f28a0411a01dc1d4d44c836e258ab214a07bbe after final baseline reproduction/restoration; runtime source unchanged by the later e2e-only follow-up",
+      "rawOutput": "fixture-support-green.txt.gz"
+    },
+    {
+      "name": "final-web-typecheck",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "source": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "rawOutput": "final-typecheck.txt.gz"
+    },
+    {
+      "name": "final-changed-web-lint",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/components/Disclosure.tsx",
+        "apps/web/src/components/Disclosure.manifest.test.tsx",
+        "apps/web/src/views/Pay.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/e2e/privacy-settings.spec.ts",
+        "apps/web/e2e/stealth-export.spec.ts",
+        "apps/web/e2e/stealthExportFixtures.ts"
+      ],
+      "exitCode": 0,
+      "source": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "rawOutput": "final-lint.txt.gz"
+    },
+    {
+      "name": "browser-spec-discovery",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/network-authorization.spec.ts",
+        "e2e/privacy-settings.spec.ts",
+        "e2e/stealth-export.spec.ts",
+        "--list",
+        "--project=desktop"
+      ],
+      "exitCode": 0,
+      "listedTests": 24,
+      "listedFiles": 3,
+      "source": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "browserExecuted": false,
+      "rawOutput": "browser-spec-discovery.txt.gz"
+    },
+    {
+      "name": "final-recovery-spec-discovery",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-gen1/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/stealth-export.spec.ts",
+        "--list",
+        "--project=desktop"
+      ],
+      "exitCode": 0,
+      "listedTests": 10,
+      "listedFiles": 1,
+      "source": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "browserExecuted": false,
+      "rawOutput": "recovery-spec-discovery.txt.gz"
+    }
+  ],
+  "overlap": "The four new regression tests occur in both passing Vitest suites; totals are not distinct when added.",
+  "browserAcceptance": {
+    "status": "not_executed_locally",
+    "reason": "System Chromium availability probe aborted before page startup: socket() EPERM, SIGABRT; no workaround or repeated equivalent launch.",
+    "systemChromiumVersion": "156.0.8078.79",
+    "availabilityProbePlaywrightVersion": "1.64.1",
+    "projectPlaywrightVersion": "1.65.1",
+    "rawAvailabilityProbeLog": null,
+    "required": "Hosted original complete e2e suite in both lean and full profiles on the combined source"
+  },
+  "hostedBaseline": {
+    "associatedPullRequestHead": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+    "executedSyntheticMerge": "5c1ff468974b20d7160b2cf12776b3b82a69b537",
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "lean": {
+      "jobId": 135680793160,
+      "passed": 112,
+      "failed": 4,
+      "skipped": 5,
+      "excerpt": "hosted-lean-baseline-failures.txt.gz"
+    },
+    "full": {
+      "jobId": 135680793350,
+      "passed": 125,
+      "failed": 4,
+      "skipped": 2,
+      "excerpt": "hosted-full-baseline-failures.txt.gz"
+    }
+  },
+  "artifactSha256": {
+    "README.md": "2220245a7cf707c7bddfc5c3f9d66d904268d41f8c77a3543c494820496ad44b",
+    "baseline-regressions-red.txt.gz": "d14feafc7afc1e8ebea63be86c3865fda86061fb2611caa7f5fbf171d06a1170",
+    "browser-spec-discovery.txt.gz": "17ba749d96b837b42a3f01e2ad213dfd98b60becab242b85a32057e39adf432e",
+    "compiled-dependencies.json": "8e61e634fde76c704fce39d93f9d26d7ed6d3bed9b542403254d0b40caff7c5e",
+    "final-lint.txt.gz": "928add1489239e1a7d61edccaf17e628cf62c3962930312ddfe3ac3a70dac87c",
+    "final-typecheck.txt.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "fixture-support-green.txt.gz": "fd3a6e2550997d35fe29129d721c7d74d82dd747c09644d873b8a3f24bf47f95",
+    "focused-green.txt.gz": "a3bd512b3f44801dcf0f676e5d4e66830d881829f7d3fa56d372a2b8fefa169b",
+    "hosted-full-baseline-failures.txt.gz": "d3f8b3579be97f2cb93f632fc46c5ef361ab8e4cd3cf756b490430d322545479",
+    "hosted-lean-baseline-failures.txt.gz": "cb16cdc076de01250e2da2d70eed0c8a6cc8be9dae2b92a27b179879ed4e6c9a",
+    "recovery-spec-discovery.txt.gz": "5a881636c6fa1105ecc8d294fade62c48fb7a7fd1dbccf894284741b8876797c",
+    "runtime-imports.json": "4407986402326aee48994dd6974bb8e5617253d4acd8e003659a16edfd03e733",
+    "source-pins.json": "1e9c365ab30622bb9e0243c7af391444dbf99ce804c59acacf5871d17450329b"
+  }
+}

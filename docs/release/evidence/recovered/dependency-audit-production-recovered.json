@@ -1,0 +1,31 @@
+{
+  "command": [
+    "npm",
+    "audit",
+    "--omit=dev",
+    "--json",
+    "--cache",
+    "/tmp/ghostpay-npm-recovery-cache-246ff268d20d"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:14:02.198905+00:00",
+  "source_commit": "75cc6149e2fd560f26725e806b24f859f999d647",
+  "source_tree": "11a70e0576af5aaa177c81c45b0df2cd1cc88c6b",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 5.483890771865845,
+  "finished_utc": "2026-11-19T13:14:07.682788+00:00",
+  "final_source_commit": "75cc6149e2fd560f26725e806b24f859f999d647",
+  "final_status": "",
+  "log": "dependency-audit-production-recovered.log.gz",
+  "uncompressed_bytes": 640,
+  "uncompressed_sha256": "e3c3652191e79bd8ad4f42f05dc1090deb23cfb57ffccf01bf2ac000675e2101",
+  "stored_bytes": 372,
+  "stored_sha256": "bbda1702bb251fd8b2ef57e538d10a69aa6b519d9a6a70c1d698a183dd318158"
+}

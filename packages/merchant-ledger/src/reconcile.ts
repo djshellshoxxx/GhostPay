@@ -158,7 +158,9 @@ export function reconcile(
     const tol = tolFor(i.due, options.tolerance);
     let status: InvoiceStatus;
     if (i.counted > i.due + tol) status = 'over';
-    else if (i.counted + tol >= i.due) status = 'paid';
+    // Nothing owed is settled; otherwise at least one counted payment is required, so a tolerance >= due cannot
+    // report an unpaid invoice as paid (independent review G, D-2).
+    else if (i.counted + tol >= i.due && (i.due === 0n || i.counted > 0n)) status = 'paid';
     else if (options.now >= i.raw.expiresAt) status = 'expired';
     else status = i.counted === 0n ? 'unmatched' : 'partial';
     return {

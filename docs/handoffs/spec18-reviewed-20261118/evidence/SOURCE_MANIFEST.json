@@ -1,0 +1,206 @@
+{
+  "local_source": "8461dbdfeab16648a78e3c1cd2f4dbb3c0fa5187",
+  "published_source": "07a7497d1a0cb39fb6904e5c50f8a52db2285820",
+  "tree": "6febc03ffd521fe9ac00ac10275f9ff625db509c",
+  "note": "Committed candidate source; later evidence and guide updates do not alter runtime, tests, manifests or CI gates.",
+  "files": [
+    {
+      "path": "apps/web/e2e/backup-panel.spec.ts",
+      "bytes": 4290,
+      "sha256": "af17a9726cb69683605f7751e10d2d1d73a824fb4c8516dc9269b43ebd3e60a7",
+      "git_blob": "e95ddd85126da2f6b57f746bb273334d959d675f"
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "bytes": 43820,
+      "sha256": "907e7fe2a6425c833712f0c58284a4aba5300b8aaaa67a0f9f21313814841805",
+      "git_blob": "76ceef9608df6f6f26924efbbaf41d974e3ba4b5"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "bytes": 71339,
+      "sha256": "1525ee1b45b27fca4a4e96f70d703f0e450685736a86a3d142d4d7955dba20c5",
+      "git_blob": "ad1d47954d3a9dd66be1e7c71ca02bf20d1fe79b"
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "bytes": 26911,
+      "sha256": "72b72239737de041c2a6b2b8e7538c341a52d18a35d40782a7776f6c13f6baa3",
+      "git_blob": "ce41229858023e6db29599b39087ff3e579a1b74"
+    },
+    {
+      "path": "apps/web/locales/ar.json",
+      "bytes": 344644,
+      "sha256": "1fd244c4436b80be99cba76bcf9dd0d3784e3f4eedf9347330e57f4e6a609620",
+      "git_blob": "caedaf3c0f392208031682794ca9825f81a8a802"
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "bytes": 257244,
+      "sha256": "5dab9a4030037e9dd8b57ced0e82ff28731ea2696366fb8b16244c19148df7f1",
+      "git_blob": "9abb03b37d06e81c273b7c5391f8545172eb49cf"
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "bytes": 288369,
+      "sha256": "7be54430db986edc67a83e67967c52ef4761346064272ade0613f62803a037df",
+      "git_blob": "808b85141bfde178bd1699d6b11943a04b6dfed8"
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "bytes": 337326,
+      "sha256": "40b88eca1f034a5ad2fd9e7bf88117b0fb86d04fd36ca8c589a57a0270c3b405",
+      "git_blob": "def00cd54f02792386927fc9713236b0a2c6491d"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportArchive.tsx",
+      "bytes": 6809,
+      "sha256": "cab1422b4798978ebf3c5c40914046bbd16b365445270bab0f4b9a63211e33cb",
+      "git_blob": "b4ba62a90797295349725dbc0e991d83da576826"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "bytes": 10517,
+      "sha256": "2806b9c32c95a2faf127c00368c95307dd3c45ad5c54f12ad8766a3df10cdcd1",
+      "git_blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+      "bytes": 4361,
+      "sha256": "25dd0c3c6dddf4ce5934432221eae034087cc86cf2bb4a307b63fc77b759c45b",
+      "git_blob": "b575ca653ec342ba75de1c3790172389f5c40781"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportMaster.tsx",
+      "bytes": 4495,
+      "sha256": "28e59e8524e225ae133385dc47f86d29854e49a9c513e825b40b1418be0895d8",
+      "git_blob": "c703b8a853f9b8613db64d78892bce49484872dc"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "bytes": 20312,
+      "sha256": "38d8cad3da38e1e2939d95dd2562588324b3e0588b32dcf22dbb45c9a51fc1c1",
+      "git_blob": "e862d56370e933cdead752e57a30c6d54e2af000"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "bytes": 10286,
+      "sha256": "6ac29c027f86b93a424240b15080fbc9580c0178372fe3384d9168e886d90299",
+      "git_blob": "8db65de1837b1bf70dff72a4be1e0e30a5d27006"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "bytes": 25866,
+      "sha256": "9ea1061130962be5c367327503a6167f27fbfbd7d1c850cd322b2536723899c5",
+      "git_blob": "917556179a897fc2889d2145d85ae974774cbbfb"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "bytes": 16481,
+      "sha256": "9a053e47a271c1d8d01788f954503954ea2709cbe6d72f281bb28bce9d85cad1",
+      "git_blob": "d430bc359cb40d4295dc49963d04a203dc66c385"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "bytes": 6950,
+      "sha256": "f2f08a15adc302eada037dac69a64128f3dae5354ed7d9695d8a16daebd60791",
+      "git_blob": "01e4b56e692bf638fe7be61ff1149f20fd244077"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "bytes": 10644,
+      "sha256": "1ecbf2fb1b1ee9321f8b72e1d5e9c9a45b2c8b5a932cdd760240df637b3e476d",
+      "git_blob": "1488d51d0857437ccbdfd017a879f31e13f11d33"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "bytes": 6200,
+      "sha256": "cc2e4dd212596e4bf73b175a11b4d55b7b5bd6b99449744e6cc7ca24f93f0db4",
+      "git_blob": "1fa430acb1a1bdac01525e803faa1395b8501f45"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "bytes": 87551,
+      "sha256": "e3c42c4aaa31099164839a4eb67006488c43c8acffe2b8ead552c095c4c75b9a",
+      "git_blob": "3d8251953b9f75c10d92a83fcad05d679fcc7229"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "bytes": 25841,
+      "sha256": "b322c9ac3d4d24bf2cbc396ba8bf04b30f8211a0681c1b848516d208605e0587",
+      "git_blob": "826578ab8904206b22d69f4ea963648f01a5eb38"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "bytes": 22597,
+      "sha256": "8af22a668291f5bfe6cba43b3992b0561d701fdd149070263db8a6fc824c9186",
+      "git_blob": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "bytes": 2996,
+      "sha256": "587ec50765d7d05b675038929cb891b963da1a5d001763b21e28eb6485a0b441",
+      "git_blob": "f6cdfc565e943ed52e4c73973cdb4398f0707430"
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "bytes": 25429,
+      "sha256": "354160c69316244de4276ccadfed57d08e4c3ec9560cdadadc69078dd80147c5",
+      "git_blob": "79e144ae0e0a86c27dcd1fef5e29b2acf5d92e7b"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+      "bytes": 6499,
+      "sha256": "cfa62589eeb70d6b04b961a6b5b0adbfeb63cf504dfd8a685be192994c2987aa",
+      "git_blob": "6fba523cde318686ef1b4bb700a400e068b17539"
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "bytes": 62444,
+      "sha256": "b255d3261d5583a2e34d453537df4ccb5a1687a0eeb5e253f12517e9fb0ab3e4",
+      "git_blob": "c305a031b06d15e7024a532c3eaa60d50ba2575a"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/snapshot.json",
+      "bytes": 4133,
+      "sha256": "6ed999aad1691aa056f29d71d571fb381a5d252548837d854202a4e3c5724da9",
+      "git_blob": "5f54b0e4ad09edbfe022fea20f1e7c6159a9fa36"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export-formats.md",
+      "bytes": 15901,
+      "sha256": "be9338465ce41daf9c9308b79c95506f1718da508f5c401416bbffaff99f8957",
+      "git_blob": "42bc05e725f95e3d9db109f9247f32f16514ea4f"
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "bytes": 16570,
+      "sha256": "06c96e70a335ec9da283cf470450dacafc43200b1925ac4821e32a4db822cd3b",
+      "git_blob": "c47e48e8dbe4c8ebe8101471036ad9a46d676831"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+      "bytes": 60646,
+      "sha256": "f307a67f7c915f28730cc7da1769fff91c9f93eeb52740c407c8c87236f4d2cb",
+      "git_blob": "ce875cc4b5e3607617ac6c147ad463c5de931b86"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "bytes": 39595,
+      "sha256": "d0bad95bd056f18c0fc91e26558505fd116754e75d0ac1bb17fb41606622403f",
+      "git_blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "bytes": 35865,
+      "sha256": "889c3b2cfb25b997d5304bbf4349a5b8d7444467a6ff12e4db4c872673d8c888",
+      "git_blob": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.test.mjs",
+      "bytes": 29443,
+      "sha256": "5fbd853079e67b63f5f48eb19d5a9e434c0243b8221555ef333307de9a999214",
+      "git_blob": "6e9704496d90d41915c61a87729497e040211ed8"
+    }
+  ]
+}

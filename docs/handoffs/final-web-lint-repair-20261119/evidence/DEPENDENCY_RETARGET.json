@@ -1,0 +1,1646 @@
+{
+  "retargetedExternalLinks": 408,
+  "localEmptyCaches": [
+    "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/.vite-temp",
+    "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/.vitest-cache",
+    "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/.vite"
+  ],
+  "ownWorkspaceLinksAndCompiledSnapshotsPreserved": true,
+  "noActiveQualificationProcesses": true,
+  "source": "/tmp/ghostpay-qualified-246ff268d20d",
+  "entries": [
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@babel",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@babel"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hasown",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hasown"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@fhevm",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@fhevm"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hmac-drbg",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hmac-drbg"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/uri-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/uri-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cookie",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cookie"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/mdn-data",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/mdn-data"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/semver",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/semver"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tryer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tryer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/call-bound",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/call-bound"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ws",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ws"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ordinal",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ordinal"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/esprima",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/esprima"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/whatwg-url",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/whatwg-url"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/escodegen",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/escodegen"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/json-stable-stringify-without-jsonify",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/json-stable-stringify-without-jsonify"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hardhat",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hardhat"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/saxes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/saxes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tr46",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tr46"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-typed-array",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-typed-array"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/node-tfhe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/node-tfhe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/dotenv",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/dotenv"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/function-bind",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/function-bind"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/why-is-node-running",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/why-is-node-running"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@nomicfoundation",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@nomicfoundation"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/blake2b-wasm",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/blake2b-wasm"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/eslint",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/eslint"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/expect-type",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/expect-type"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/path-parse",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/path-parse"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/yargs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/yargs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/esquery",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/esquery"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/magic-string",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/magic-string"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/micro-packed",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/micro-packed"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ms",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ms"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/evp_bytestokey",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/evp_bytestokey"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/log-symbols",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/log-symbols"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/supports-preserve-symlinks-flag",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/supports-preserve-symlinks-flag"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tinyexec",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tinyexec"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/create-hash",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/create-hash"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/typescript",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/typescript"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/yn",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/yn"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/static-eval",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/static-eval"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@bcoe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@bcoe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/for-each",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/for-each"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/wasm-feature-detect",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/wasm-feature-detect"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/toidentifier",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/toidentifier"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/chai",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/chai"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@bufbuild",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@bufbuild"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/math-intrinsics",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/math-intrinsics"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/require-directory",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/require-directory"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/obliterator",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/obliterator"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/string_decoder",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/string_decoder"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/scrypt-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/scrypt-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fast-levenshtein",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fast-levenshtein"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-extglob",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-extglob"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fastfile",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fastfile"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bluebird",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bluebird"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/glob",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/glob"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/isows",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/isows"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/boxen",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/boxen"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@rolldown",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@rolldown"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tkms",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tkms"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/esrecurse",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/esrecurse"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@testing-library",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@testing-library"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/snarkjs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/snarkjs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/abitype",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/abitype"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/keccak",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/keccak"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/color-convert",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/color-convert"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/has-tostringtag",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/has-tostringtag"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/camelcase",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/camelcase"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/has-symbols",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/has-symbols"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ajv",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ajv"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@isaacs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@isaacs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/get-caller-file",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/get-caller-file"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/check-types",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/check-types"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tmp",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tmp"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/p-map",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/p-map"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lru-cache",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lru-cache"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/strip-ansi",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/strip-ansi"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/data-urls",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/data-urls"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@zama-fhe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@zama-fhe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/randombytes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/randombytes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/picomatch",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/picomatch"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/has-flag",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/has-flag"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/has-property-descriptors",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/has-property-descriptors"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/flatted",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/flatted"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/levn",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/levn"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ignore",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ignore"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@humanwhocodes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@humanwhocodes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/statuses",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/statuses"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ethereumjs-util",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ethereumjs-util"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@zk-kit",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@zk-kit"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/set-function-length",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/set-function-length"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/get-proto",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/get-proto"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ts-api-utils",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ts-api-utils"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/whatwg-mimetype",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/whatwg-mimetype"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/graceful-fs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/graceful-fs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@vitejs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@vitejs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/rolldown",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/rolldown"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@graphql-typed-document-node",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@graphql-typed-document-node"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/http-errors",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/http-errors"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/aes-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/aes-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/process-nextick-args",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/process-nextick-args"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/which-typed-array",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/which-typed-array"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/underscore",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/underscore"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ansi-align",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ansi-align"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/typed-array-buffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/typed-array-buffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/commander",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/commander"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/w3c-xmlserializer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/w3c-xmlserializer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/circom_runtime",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/circom_runtime"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@exodus",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@exodus"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/v8-compile-cache-lib",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/v8-compile-cache-lib"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/natural-compare",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/natural-compare"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ox",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ox"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/react",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/react"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/resolve",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/resolve"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/prettier",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/prettier"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-plain-obj",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-plain-obj"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/debug",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/debug"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/filelist",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/filelist"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-core-module",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-core-module"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/env-paths",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/env-paths"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/immutable",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/immutable"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/qrcode-generator",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/qrcode-generator"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/pathval",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/pathval"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/circomlib",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/circomlib"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/gopd",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/gopd"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/brace-expansion",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/brace-expansion"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@scure",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@scure"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/enquirer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/enquirer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/base-x",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/base-x"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/get-func-name",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/get-func-name"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-callable",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-callable"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lru_map",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lru_map"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/es-errors",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/es-errors"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ci-info",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ci-info"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/possible-typed-array-names",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/possible-typed-array-names"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/xmlchars",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/xmlchars"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/create-hmac",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/create-hmac"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/scheduler",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/scheduler"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/p-locate",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/p-locate"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@tsconfig",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@tsconfig"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/balanced-match",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/balanced-match"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-path-inside",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-path-inside"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/word-wrap",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/word-wrap"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/aria-query",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/aria-query"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/find-up",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/find-up"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@cspotcode",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@cspotcode"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/follow-redirects",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/follow-redirects"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ansi-styles",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ansi-styles"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/react-dom",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/react-dom"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/browser-stdout",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/browser-stdout"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/type-check",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/type-check"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/escalade",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/escalade"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/rlp",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/rlp"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ansi-escapes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ansi-escapes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lightningcss-linux-x64-gnu",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lightningcss-linux-x64-gnu"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/universalify",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/universalify"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tfhe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tfhe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/source-map-support",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/source-map-support"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@playwright",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@playwright"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/csstype",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/csstype"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/source-map-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/source-map-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/raw-body",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/raw-body"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/type-fest",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/type-fest"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bs58",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bs58"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@csstools",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@csstools"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ast-v8-to-istanbul",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ast-v8-to-istanbul"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/magicast",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/magicast"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/.package-lock.json",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/.package-lock.json"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hash.js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hash.js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cli-boxes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cli-boxes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/logplease",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/logplease"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/buffer-xor",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/buffer-xor"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/jsonfile",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/jsonfile"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/eslint-scope",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/eslint-scope"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/argparse",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/argparse"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/workerpool",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/workerpool"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/punycode",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/punycode"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/define-data-property",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/define-data-property"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@humanfs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@humanfs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/undici",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/undici"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/shebang-command",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/shebang-command"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/source-map",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/source-map"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/command-exists",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/command-exists"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@ethereumjs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@ethereumjs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/which",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/which"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/nanoid",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/nanoid"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/playwright",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/playwright"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/strip-json-comments",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/strip-json-comments"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/decamelize",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/decamelize"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ffjavascript",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ffjavascript"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/decimal.js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/decimal.js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-unicode-supported",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-unicode-supported"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ripemd160",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ripemd160"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/secp256k1",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/secp256k1"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/readdirp",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/readdirp"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/md5.js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/md5.js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/yocto-queue",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/yocto-queue"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lightningcss",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lightningcss"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/keyv",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/keyv"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/path-scurry",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/path-scurry"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/maci-crypto",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/maci-crypto"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/stacktrace-parser",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/stacktrace-parser"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/path-exists",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/path-exists"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/loupe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/loupe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fast-deep-equal",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fast-deep-equal"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/call-bind",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/call-bind"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/graphql-request",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/graphql-request"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/react-is",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/react-is"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/zod",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/zod"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/iconv-lite",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/iconv-lite"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@cacheable",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@cacheable"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lightningcss-linux-x64-musl",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lightningcss-linux-x64-musl"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fs-extra",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fs-extra"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/setimmediate",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/setimmediate"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/r1csfile",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/r1csfile"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tsort",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tsort"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@vitest",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@vitest"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/mnemonist",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/mnemonist"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/wasmcurves",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/wasmcurves"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@jridgewell",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@jridgewell"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/agent-base",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/agent-base"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/webidl-conversions",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/webidl-conversions"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ieee754",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ieee754"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/jsonpath",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/jsonpath"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tldts",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tldts"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/solidity-comments-linux-x64-gnu",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/solidity-comments-linux-x64-gnu"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@typescript-eslint",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@typescript-eslint"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/eventemitter3",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/eventemitter3"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/core-util-is",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/core-util-is"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/minipass",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/minipass"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ethereum-cryptography",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ethereum-cryptography"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/entities",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/entities"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/esutils",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/esutils"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/jsqr",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/jsqr"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/get-intrinsic",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/get-intrinsic"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/create-require",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/create-require"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/require-from-string",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/require-from-string"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/yargs-parser",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/yargs-parser"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@noble",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@noble"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tslib",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tslib"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/mocha",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/mocha"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/web-worker",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/web-worker"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/postcss",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/postcss"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@0xbow",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@0xbow"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/graphql",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/graphql"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@adraffy",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@adraffy"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/parse5",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/parse5"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/detect-libc",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/detect-libc"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/encrypted-types",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/encrypted-types"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/prelude-ls",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/prelude-ls"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/yargs-unparser",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/yargs-unparser"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/viem",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/viem"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/elliptic",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/elliptic"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@ethersproject",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@ethersproject"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/axe-core",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/axe-core"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/shebang-regex",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/shebang-regex"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lodash",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lodash"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/io-ts",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/io-ts"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ts-node",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ts-node"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/locate-path",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/locate-path"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/glob-parent",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/glob-parent"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fast-check",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fast-check"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/deep-eql",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/deep-eql"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-glob",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-glob"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/type-detect",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/type-detect"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/pbkdf2",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/pbkdf2"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@openzeppelin",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@openzeppelin"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tldts-core",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tldts-core"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/node-gyp-build",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/node-gyp-build"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/json-stream-stringify",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/json-stream-stringify"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/acorn",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/acorn"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@keyv",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@keyv"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hash-base",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hash-base"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/picocolors",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/picocolors"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/async",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/async"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/y18n",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/y18n"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/he",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/he"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@asamuzakjp",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@asamuzakjp"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/call-bind-apply-helpers",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/call-bind-apply-helpers"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/check-error",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/check-error"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-fullwidth-code-point",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-fullwidth-code-point"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lodash.isequal",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lodash.isequal"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@eslint-community",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@eslint-community"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/depd",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/depd"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/node-addon-api",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/node-addon-api"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hoopy",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hoopy"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/emoji-regex",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/emoji-regex"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/eslint-visitor-keys",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/eslint-visitor-keys"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bidi-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bidi-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@types",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@types"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/chalk",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/chalk"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/optionator",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/optionator"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cipher-base",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cipher-base"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@sentry",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@sentry"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/es-module-lexer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/es-module-lexer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/isexe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/isexe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/p-limit",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/p-limit"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/isarray",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/isarray"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/minimalistic-assert",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/minimalistic-assert"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/indent-string",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/indent-string"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/obug",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/obug"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bytes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bytes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/dom-accessibility-api",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/dom-accessibility-api"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/typescript-eslint",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/typescript-eslint"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@oxc-project",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@oxc-project"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/lz-string",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/lz-string"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ethers",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ethers"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/jake",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/jake"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tinyglobby",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tinyglobby"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/chokidar",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/chokidar"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/es-define-property",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/es-define-property"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/https-proxy-agent",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/https-proxy-agent"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/clean-stack",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/clean-stack"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/nanoassert",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/nanoassert"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/adm-zip",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/adm-zip"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/minimatch",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/minimatch"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/dunder-proto",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/dunder-proto"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/jsdom",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/jsdom"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@scopelift",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@scopelift"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cliui",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cliui"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/espree",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/espree"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/es-object-atoms",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/es-object-atoms"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@iden3",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@iden3"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/file-entry-cache",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/file-entry-cache"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ansi-regex",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ansi-regex"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/string-width",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/string-width"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/js-yaml",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/js-yaml"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ejs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ejs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/safer-buffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/safer-buffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tinyrainbow",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tinyrainbow"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/qified",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/qified"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/undici-types",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/undici-types"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/brorand",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/brorand"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/base64-js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/base64-js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/escape-string-regexp",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/escape-string-regexp"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bfj",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bfj"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/wasmbuilder",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/wasmbuilder"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/xml-name-validator",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/xml-name-validator"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/deep-is",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/deep-is"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/acorn-jsx",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/acorn-jsx"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/arg",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/arg"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hookified",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hookified"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/std-env",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/std-env"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/.bin",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/.bin"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/html-encoding-sniffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/html-encoding-sniffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@eslint",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@eslint"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/js-tokens",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/js-tokens"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/supports-color",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/supports-color"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/sha.js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/sha.js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/setprototypeof",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/setprototypeof"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/vitest",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/vitest"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/solc",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/solc"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/readable-stream",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/readable-stream"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bn.js",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bn.js"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/color-name",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/color-name"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/js-sha3",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/js-sha3"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/util-deprecate",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/util-deprecate"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/minimalistic-crypto-utils",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/minimalistic-crypto-utils"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/vite",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/vite"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/flat",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/flat"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/pretty-format",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/pretty-format"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tough-cookie",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tough-cookie"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@bramus",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@bramus"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/to-buffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/to-buffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cross-spawn",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cross-spawn"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/@solana",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/@solana"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/micro-eth-signer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/micro-eth-signer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/browserify-aes",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/browserify-aes"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/flat-cache",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/flat-cache"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/safe-buffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/safe-buffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/poseidon-lite",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/poseidon-lite"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fp-ts",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fp-ts"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/dequal",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/dequal"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/buffer",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/buffer"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/make-error",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/make-error"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fdir",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fdir"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/tinybench",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/tinybench"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/playwright-core",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/playwright-core"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/available-typed-arrays",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/available-typed-arrays"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/inherits",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/inherits"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/wrap-ansi",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/wrap-ansi"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/estree-walker",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/estree-walker"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/assertion-error",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/assertion-error"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/node-tkms",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/node-tkms"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/b4a",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/b4a"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fetch-retry",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fetch-retry"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/cacheable",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/cacheable"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/fast-json-stable-stringify",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/fast-json-stable-stringify"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/is-potential-custom-element-name",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/is-potential-custom-element-name"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/pure-rand",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/pure-rand"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/json-schema-traverse",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/json-schema-traverse"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/css-tree",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/css-tree"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/path-key",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/path-key"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/blakejs",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/blakejs"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/memorystream",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/memorystream"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/estraverse",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/estraverse"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/widest-line",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/widest-line"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/aggregate-error",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/aggregate-error"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/serialize-javascript",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/serialize-javascript"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/bs58check",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/bs58check"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/unpipe",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/unpipe"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/acorn-walk",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/acorn-walk"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/ansi-colors",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/ansi-colors"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/hashery",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/hashery"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/buffer-from",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/buffer-from"
+    },
+    {
+      "path": "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/imurmurhash",
+      "target": "/tmp/ghostpay-qualified-246ff268d20d/node_modules/imurmurhash"
+    }
+  ],
+  "initialRetargetObservation": "All dependency counterparts existed; three transient cache folders were not present in the fresh install, so only this worktree cache symlinks were replaced by local empty directories."
+}

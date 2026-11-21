@@ -1,0 +1,113 @@
+{
+  "worker": "/root/invoice_gen2",
+  "branch": "privacy/v11-invoice-minimization-20261120",
+  "base": "186363a53ea7c5943fc2c6dc7c1406d5a874407e",
+  "spec_base": "bbcf71b79d4efd00892948faa833cb7d8f471406",
+  "source_commit": "4f288fcdc3acad66db16ddf70743ff05a903c973",
+  "source_tree": "a33173e9a40c83f853849a3ea0463632cc6ec82c",
+  "runtime_commit": "e498ec5998db4168207b224b7d5ee6a4b2eda54c",
+  "node_version": "v24.22.3",
+  "source_blobs": {
+    "apps/web/src/components/MerchantTemplateIssuer.metadata.test.tsx": "9cc318e28a32433b0b1880b8db2174d5987f070c",
+    "apps/web/src/components/MerchantTemplateIssuer.tsx": "7591731f79954e0d12254a426fdf4a7ae1f0b3de",
+    "apps/web/src/i18n/securityKeys.ts": "70dcd4652c0d0a80ae4c2dfe7f0f6e14fc73b206",
+    "apps/web/src/lib/invoiceCreate.metadata.test.ts": "9a4e3dbe7163c89fb5b106cec040461866298757",
+    "apps/web/src/lib/invoiceCreate.ts": "5acf835b39f1886af0f802c8dd780dfbe48b82e4",
+    "apps/web/src/lib/invoiceMetadata.test.ts": "a1108ca1f657e97b7a49a7aea627c4201ad636b5",
+    "apps/web/src/lib/invoiceMetadata.ts": "c8782f2c2979fba537aa4b8a5e39680bf61e5220",
+    "apps/web/src/lib/merchantTemplate.metadata.test.ts": "363bccd36dec5112294808e0f6f6f96d4cd4ec70",
+    "apps/web/src/lib/merchantTemplate.ts": "0905953c5a0d1ad3b20a2917e3780e874c6b9600",
+    "apps/web/src/views/CreateInvoice.metadata.test.tsx": "a454b123cb5f32f2d0cf9f4cf9f25eac9fa8c464",
+    "apps/web/src/views/CreateInvoice.tsx": "5c70b942d441b507d60eec3e263412e3f150f6d8",
+    "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    "apps/web/tsconfig.json": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+    "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+    "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36"
+  },
+  "checks": [
+    {
+      "name": "Merchant regression baseline",
+      "source": "87d878fa9baeb931ae6b50dd83011cfe2d378c0f",
+      "result": "13 failed, 2 passed in 2 files: 12 missing-feature failures plus 1 invalid signed-profile fixture failure",
+      "exit": 1,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/lib/merchantTemplate.metadata.test.ts src/components/MerchantTemplateIssuer.metadata.test.tsx --coverage=false --maxWorkers=1",
+      "log": "red.log.gz"
+    },
+    {
+      "name": "Initial focused implementation acceptance",
+      "source": "e498ec5998db4168207b224b7d5ee6a4b2eda54c",
+      "result": "46 passed, 1 failed in 6 files; sole failure was the invalid test fixture, not a changed runtime guard",
+      "exit": 1,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/lib/merchantTemplate.metadata.test.ts src/lib/merchantTemplate.test.ts src/components/MerchantTemplateIssuer.metadata.test.tsx src/components/MerchantTemplateIssuer.test.tsx src/lib/invoiceMetadata.test.ts src/lib/invoiceCreate.metadata.test.ts --coverage=false --maxWorkers=1",
+      "log": "initial-acceptance.log.gz"
+    },
+    {
+      "name": "Final focused implementation acceptance",
+      "source": "4f288fcdc3acad66db16ddf70743ff05a903c973",
+      "result": "47 passed in 6 files, zero skips, 28.50 seconds",
+      "exit": 0,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/lib/merchantTemplate.metadata.test.ts src/lib/merchantTemplate.test.ts src/components/MerchantTemplateIssuer.metadata.test.tsx src/components/MerchantTemplateIssuer.test.tsx src/lib/invoiceMetadata.test.ts src/lib/invoiceCreate.metadata.test.ts --coverage=false --maxWorkers=1",
+      "log": "focused-final.log.gz"
+    },
+    {
+      "name": "Original full web TypeScript",
+      "source": "4f288fcdc3acad66db16ddf70743ff05a903c973",
+      "result": "Killed before any TypeScript diagnostic; no typecheck qualification",
+      "exit": 137,
+      "command": "NODE_OPTIONS='--max-old-space-size=2048' npm run typecheck",
+      "log": "typecheck.log.gz"
+    },
+    {
+      "name": "Secret scan",
+      "source": "4f288fcdc3acad66db16ddf70743ff05a903c973",
+      "result": "OK: no committed env files or key material found.",
+      "exit": 0,
+      "command": "bash scripts/scan-secrets.sh",
+      "log": "secret-scan.log.gz"
+    },
+    {
+      "name": "Complete feature whitespace check",
+      "source": "4f288fcdc3acad66db16ddf70743ff05a903c973",
+      "result": "Passed",
+      "exit": 0,
+      "command": "git diff --check bbcf71b79d4efd00892948faa833cb7d8f471406 HEAD"
+    }
+  ],
+  "log_hashes": {
+    "red.log": {
+      "original_sha256": "5ee642c8f93d21b6ff41c6ff2fb324e2de8e612491ca3f73f49f23c002b5e992",
+      "gzip_sha256": "93b7a14b0c38f330f22900238a21f7053165aaaab00582c5c96a4d7f910b7293"
+    },
+    "initial-acceptance.log": {
+      "original_sha256": "e7e89617618c315d63def92df132f7ca0610a42055b9e748a110873449648b3f",
+      "gzip_sha256": "4845d3f4efa45468818290ff186deef90dab44332007e79d7ebac116d353d735"
+    },
+    "focused-final.log": {
+      "original_sha256": "3b6185b2580db7a0a5ced3cf9d548463b947ab03c75fd3a777bb7662a5ec725b",
+      "gzip_sha256": "14568fe5078845705dd8c7b9102fda856feea5dcc1c213e6adc3605dffd841f0"
+    },
+    "typecheck.log": {
+      "original_sha256": "3a306cbc123426708a82f200d99f119c25e3ee44a64712b506aeb4f852a740d7",
+      "gzip_sha256": "89f62f56f3860eca1787f3a9aa2d0ef97be5ea32a54d5a29c62d325e43a2456a"
+    },
+    "secret-scan.log": {
+      "original_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "gzip_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3"
+    }
+  },
+  "review": [
+    "Independently inspected predecessor M1 source and its 51/74-case evidence. Four UI tests overlap; historical counts are not added to this generation.",
+    "Browser issuance census found only CreateInvoice and MerchantTemplateIssuer via buildInvoiceLink. All browser link/copy/QR paths consume their generated signed result; no signed payload is stripped.",
+    "Merchant profile snapshot, signer, custody, exact expiry, asset allowlist and explicit amount guards retain their existing code; metadataMode is captured before custody awaits.",
+    "CLI invoice creation/signing, SDK builders and merchant-billing unsigned issuance are outside the static browser-only specification. Signed-link encoders preserve signed inputs.",
+    "No external source copied, dependency changes, CreateInvoice edits, shared integration updates or remote writes in this generation."
+  ],
+  "qualification_limits": [
+    "Full web TypeScript exited137 with no diagnostics. Coordinator explicitly deferred further heavy verification until parallel tests finish.",
+    "Scoped typed ESLint not run because coordinator released the verification window after the resource failure; no lint acceptance claimed.",
+    "Focused coverage-disabled tests do not qualify original whole-web coverage thresholds.",
+    "No browser/Playwright/full-profile/hosted CI/release qualification or root retention integration.",
+    "CLI/SDK/billing metadata options are outside this browser specification; repository-wide feature completion is not claimed.",
+    "Three untracked node_modules links are coordinator dependency setup and are not staged."
+  ]
+}

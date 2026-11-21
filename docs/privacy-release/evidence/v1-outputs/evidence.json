@@ -1,0 +1,28 @@
+{
+  "feature": "v1-05-outputs",
+  "generation": 1,
+  "source": "81e295a3cdf3e75d5a64f36cefe395aa233cce0c",
+  "tree": "fd3ddbbc8278660c5cea33142e23c9f2f49a3a70",
+  "base": "bbcf71b79d4efd00892948faa833cb7d8f471406",
+  "red": {
+    "fail": 3,
+    "filtered": 27,
+    "exit": 1
+  },
+  "green": {
+    "pass": 3,
+    "filtered": 27,
+    "exit": "summary observed; original shell receipt not retained"
+  },
+  "original_three_files": {
+    "pass": 34,
+    "filtered": 0,
+    "exit": 0
+  },
+  "sha256": {
+    "red": "1042fbc5e74f55f52e7c7d459abdeb93ac9783d5c6c51e33daa12419c6f60f7b",
+    "green": "86234447c26ccf4dcd926bfcffd7e42455f46a985008e27779eb2f29d7cc04d6",
+    "all": "d87cb77e0e8754835fc23e190e71de12b4eaa3e6b04b876f47a9cb082c6dad97"
+  },
+  "qualification": "focused only; complete original gates remain open"
+}

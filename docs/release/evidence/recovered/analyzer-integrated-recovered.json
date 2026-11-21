@@ -1,0 +1,32 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "scripts/tests/mythril-runner.test.mjs",
+    "scripts/tests/mythril-completeness.test.mjs",
+    "scripts/tests/mythril-evidence.test.mjs",
+    "scripts/tests/contract-analysis-workflow.test.mjs"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:00:02.837229+00:00",
+  "source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "source_tree": "b0bfa31a8dea6872dbc6a16aa39150458e5a9616",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=128"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 102.01142716407776,
+  "finished_utc": "2026-11-19T13:01:44.848647+00:00",
+  "final_source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "final_status": "",
+  "log": "analyzer-integrated-recovered.log.gz",
+  "uncompressed_bytes": 14079,
+  "uncompressed_sha256": "0733ebc23c4b456efd2dcdd8672a8a72f152ff85928b74461e7631258068dac2",
+  "stored_bytes": 2538,
+  "stored_sha256": "0d59ebd537710bf096033dcf8b3c7e4fca7a23a050f3061534667bdfe338318f"
+}

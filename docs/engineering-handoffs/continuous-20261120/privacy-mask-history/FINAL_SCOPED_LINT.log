@@ -1,0 +1,14 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web/src/AppShell.privacy.test.tsx
+  83:24  error  Async arrow function has no 'await' expression  @typescript-eslint/require-await
+
+/workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web/src/lib/executionSettings.test.ts
+  16:52  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+
+✖ 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

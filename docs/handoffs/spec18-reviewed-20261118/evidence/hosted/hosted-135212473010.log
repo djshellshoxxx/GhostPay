@@ -1,0 +1,652 @@
+﻿2026-11-18T23:26:17.2046921Z Current runner version: '2.338.2'
+2026-11-18T23:26:17.2067452Z ##[group]Runner Image Provisioner
+2026-11-18T23:26:17.2068129Z Hosted Compute Agent
+2026-11-18T23:26:17.2068708Z Version: 20261103.629
+2026-11-18T23:26:17.2069236Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:26:17.2069893Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:26:17.2070480Z Worker ID: {92271889-faf9-442e-bbc7-348e1f311a40}
+2026-11-18T23:26:17.2071107Z Region: westus3
+2026-11-18T23:26:17.2071608Z Cloud: Azure
+2026-11-18T23:26:17.2072092Z ##[endgroup]
+2026-11-18T23:26:17.2073500Z ##[group]Operating System
+2026-11-18T23:26:17.2074029Z Ubuntu
+2026-11-18T23:26:17.2074458Z 26.04.1
+2026-11-18T23:26:17.2074930Z LTS
+2026-11-18T23:26:17.2075363Z ##[endgroup]
+2026-11-18T23:26:17.2075842Z ##[group]Runner Image
+2026-11-18T23:26:17.2076524Z Image: ubuntu-26.04
+2026-11-18T23:26:17.2076991Z Version: 20261111.196.1
+2026-11-18T23:26:17.2078071Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:26:17.2079280Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:26:17.2080123Z ##[endgroup]
+2026-11-18T23:26:17.2081020Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:26:17.2082590Z Contents: read
+2026-11-18T23:26:17.2083113Z Metadata: read
+2026-11-18T23:26:17.2083675Z ##[endgroup]
+2026-11-18T23:26:17.2085349Z Secret source: Actions
+2026-11-18T23:26:17.2086273Z Cache mode: write
+2026-11-18T23:26:17.2086852Z Prepare workflow directory
+2026-11-18T23:26:17.2348394Z Prepare all required actions
+2026-11-18T23:26:17.2402823Z Getting action download info
+2026-11-18T23:26:17.5316345Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:26:17.6667757Z Download action repository 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9' (SHA:55cc8345863c7cc4c66a329aec7e433d2d1c52a9)
+2026-11-18T23:26:17.8733321Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-11-18T23:26:18.0401914Z Complete job name: e2e (full)
+2026-11-18T23:26:18.1278194Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:26:18.1278996Z with:
+2026-11-18T23:26:18.1279357Z   persist-credentials: false
+2026-11-18T23:26:18.1279785Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:26:18.1283395Z   token: ***
+2026-11-18T23:26:18.1283766Z   ssh-strict: true
+2026-11-18T23:26:18.1284123Z   ssh-user: git
+2026-11-18T23:26:18.1284461Z   clean: true
+2026-11-18T23:26:18.1284815Z   sparse-checkout-cone-mode: true
+2026-11-18T23:26:18.1285232Z   fetch-depth: 1
+2026-11-18T23:26:18.1285584Z   fetch-tags: false
+2026-11-18T23:26:18.1285939Z   show-progress: true
+2026-11-18T23:26:18.1286476Z   lfs: false
+2026-11-18T23:26:18.1286805Z   submodules: false
+2026-11-18T23:26:18.1287165Z   set-safe-directory: true
+2026-11-18T23:26:18.1287564Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:26:18.1288321Z ##[endgroup]
+2026-11-18T23:26:18.9529803Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:26:18.9531784Z ##[group]Getting Git version info
+2026-11-18T23:26:18.9532704Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:26:18.9534134Z [command]/usr/bin/git version
+2026-11-18T23:26:19.0209672Z git version 2.56.1
+2026-11-18T23:26:19.0225456Z ##[endgroup]
+2026-11-18T23:26:19.0235184Z Temporarily overriding HOME='/home/runner/work/_temp/776e2c1d-71c4-4ee7-a0d3-5b553df62d5a' before making global git config changes
+2026-11-18T23:26:19.0237507Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:26:19.0239621Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:26:19.0287354Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:26:19.0295207Z ##[group]Determining repository object format
+2026-11-18T23:26:19.0299980Z ##[endgroup]
+2026-11-18T23:26:19.0302580Z ##[group]Initializing the repository
+2026-11-18T23:26:19.0304619Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:26:19.0559020Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:26:19.0561300Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:26:19.0563398Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:26:19.0565189Z hint: call:
+2026-11-18T23:26:19.0566421Z hint:
+2026-11-18T23:26:19.0567869Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:26:19.0569538Z hint:
+2026-11-18T23:26:19.0571400Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:26:19.0574117Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:26:19.0576603Z hint:
+2026-11-18T23:26:19.0577909Z hint: 	git branch -m <name>
+2026-11-18T23:26:19.0579305Z hint:
+2026-11-18T23:26:19.0581011Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:26:19.0583926Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:26:19.0588568Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:26:19.1457043Z ##[endgroup]
+2026-11-18T23:26:19.1459430Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:26:19.1461401Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:26:19.1495504Z ##[endgroup]
+2026-11-18T23:26:19.1498286Z ##[group]Setting up auth
+2026-11-18T23:26:19.1499957Z Removing SSH command configuration
+2026-11-18T23:26:19.1502180Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:26:19.1549502Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:26:19.2759750Z Removing HTTP extra header
+2026-11-18T23:26:19.2765377Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:26:19.2867330Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:26:19.3038044Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:26:19.3042577Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:26:19.3074099Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:26:19.3308224Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:26:19.3340498Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:19.3368744Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:19.3406307Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:19.3434464Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:19.3582878Z ##[endgroup]
+2026-11-18T23:26:19.3584290Z ##[group]Fetching the repository
+2026-11-18T23:26:19.3588638Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3177702f25d36a54e24837f69175b4787ecc04a5:refs/remotes/pull/239/merge
+2026-11-18T23:26:21.3152136Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:26:21.3153757Z  * [new ref]         3177702f25d36a54e24837f69175b4787ecc04a5 -> pull/239/merge
+2026-11-18T23:26:21.3155924Z ##[endgroup]
+2026-11-18T23:26:21.3156792Z ##[group]Determining the checkout info
+2026-11-18T23:26:21.3157433Z ##[endgroup]
+2026-11-18T23:26:21.3160712Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:26:21.3205970Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:26:21.3232262Z ##[group]Checking out the ref
+2026-11-18T23:26:21.3235376Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:26:21.5722766Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:26:21.5723257Z 
+2026-11-18T23:26:21.5723568Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:26:21.5724258Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:26:21.5725012Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:26:21.5725419Z 
+2026-11-18T23:26:21.5725731Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:26:21.5726512Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:26:21.5726866Z 
+2026-11-18T23:26:21.5727040Z   git switch -c <new-branch-name>
+2026-11-18T23:26:21.5727292Z 
+2026-11-18T23:26:21.5727469Z Or undo this operation with:
+2026-11-18T23:26:21.5727717Z 
+2026-11-18T23:26:21.5727871Z   git switch -
+2026-11-18T23:26:21.5728180Z 
+2026-11-18T23:26:21.5728496Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:26:21.5728932Z 
+2026-11-18T23:26:21.5729415Z HEAD is now at 3177702 Merge b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:26:21.5739079Z ##[endgroup]
+2026-11-18T23:26:21.5788944Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:26:21.5815661Z 3177702f25d36a54e24837f69175b4787ecc04a5
+2026-11-18T23:26:21.5824845Z ##[group]Removing auth
+2026-11-18T23:26:21.5825891Z Removing SSH command configuration
+2026-11-18T23:26:21.5828487Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:26:21.5855813Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:26:21.6096522Z Removing HTTP extra header
+2026-11-18T23:26:21.6100208Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:26:21.6128780Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:26:21.6360475Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:26:21.6363796Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:26:21.6385531Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:26:21.6386420Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:26:21.6386910Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:26:21.6387251Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:26:21.6392762Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:26:21.6413980Z /home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:21.6422813Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-a9907e9f\-47c0\-4dd8\-bee3\-17faadf80be5\.config
+2026-11-18T23:26:21.6458793Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:26:21.6479173Z /home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:21.6491597Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-a9907e9f\-47c0\-4dd8\-bee3\-17faadf80be5\.config
+2026-11-18T23:26:21.6520960Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:26:21.6540668Z /github/runner_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:21.6547103Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-a9907e9f\-47c0\-4dd8\-bee3\-17faadf80be5\.config
+2026-11-18T23:26:21.6579110Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:26:21.6600272Z /github/runner_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config
+2026-11-18T23:26:21.6606558Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-a9907e9f\-47c0\-4dd8\-bee3\-17faadf80be5\.config
+2026-11-18T23:26:21.6635343Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:26:21.6867046Z Removing credentials config '/home/runner/work/_temp/git-credentials-a9907e9f-47c0-4dd8-bee3-17faadf80be5.config'
+2026-11-18T23:26:21.6875801Z ##[endgroup]
+2026-11-18T23:26:21.7187787Z Prepare all required actions
+2026-11-18T23:26:21.7188265Z Getting action download info
+2026-11-18T23:26:21.8386588Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:26:22.0205127Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T23:26:22.7161428Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-18T23:26:22.7161684Z with:
+2026-11-18T23:26:22.7161853Z   save-cache: true
+2026-11-18T23:26:22.7162029Z ##[endgroup]
+2026-11-18T23:26:22.7208408Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-18T23:26:22.7946739Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:26:22.7947060Z with:
+2026-11-18T23:26:22.7947225Z   node-version: 22
+2026-11-18T23:26:22.7947395Z   cache: npm
+2026-11-18T23:26:22.7947634Z   package-manager-cache: true
+2026-11-18T23:26:22.7947837Z   check-latest: false
+2026-11-18T23:26:22.7949942Z   token: ***
+2026-11-18T23:26:22.7950110Z ##[endgroup]
+2026-11-18T23:26:22.9057101Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:26:22.9796447Z ##[group]Environment details
+2026-11-18T23:26:23.2616593Z node: v22.23.4
+2026-11-18T23:26:23.2617011Z npm: 10.9.9
+2026-11-18T23:26:23.2617414Z yarn: 1.22.22
+2026-11-18T23:26:23.2617972Z ##[endgroup]
+2026-11-18T23:26:23.2634907Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:26:23.3515701Z /home/runner/.npm
+2026-11-18T23:26:23.5686601Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:26:24.7941647Z Received 46137344 of 247554651 (18.6%), 44.0 MBs/sec
+2026-11-18T23:26:25.7998524Z Received 226583131 of 247554651 (91.5%), 108.0 MBs/sec
+2026-11-18T23:26:26.0118337Z Received 247554651 of 247554651 (100.0%), 106.4 MBs/sec
+2026-11-18T23:26:26.0118895Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:26:26.0142425Z [command]/usr/bin/tar -xf /home/runner/work/_temp/f4a86e07-aeb4-44e5-aca9-9b75c8fa6d40/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:26:26.3594959Z Cache restored successfully
+2026-11-18T23:26:26.3702493Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:26:26.3975861Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=3676]
+2026-11-18T23:26:26.3978778Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-18T23:26:26.4011702Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:26:26.4012043Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:26:26.4065586Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-18T23:26:26.4065903Z ##[endgroup]
+2026-11-18T23:26:30.4176801Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:26:32.9410559Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:26:36.6216518Z 
+2026-11-18T23:26:36.6217646Z added 721 packages, and audited 790 packages in 10s
+2026-11-18T23:26:36.6218249Z 
+2026-11-18T23:26:36.6218622Z 157 packages are looking for funding
+2026-11-18T23:26:36.6219140Z   run `npm fund` for details
+2026-11-18T23:26:36.6398641Z 
+2026-11-18T23:26:36.6399593Z 17 low severity vulnerabilities
+2026-11-18T23:26:36.6400066Z 
+2026-11-18T23:26:36.6400483Z To address issues that do not require attention, run:
+2026-11-18T23:26:36.6401099Z   npm audit fix
+2026-11-18T23:26:36.6401395Z 
+2026-11-18T23:26:36.6401881Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:26:36.6402498Z   npm audit fix --force
+2026-11-18T23:26:36.6402815Z 
+2026-11-18T23:26:36.6403182Z Some issues need review, and may require choosing
+2026-11-18T23:26:36.6404311Z a different dependency.
+2026-11-18T23:26:36.6404638Z 
+2026-11-18T23:26:36.6404908Z Run `npm audit` for details.
+2026-11-18T23:26:36.7574622Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=10359]
+2026-11-18T23:26:36.7578276Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-18T23:26:37.3744155Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T23:26:37.3744607Z with:
+2026-11-18T23:26:37.3744867Z   path: packages/*/dist
+2026-11-18T23:26:37.3745394Z   key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:37.3746158Z   enableCrossOsArchive: false
+2026-11-18T23:26:37.3746478Z   fail-on-cache-miss: false
+2026-11-18T23:26:37.3746769Z   lookup-only: false
+2026-11-18T23:26:37.3747025Z   save-always: false
+2026-11-18T23:26:37.3747286Z ##[endgroup]
+2026-11-18T23:26:37.6788242Z Cache hit for: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:38.5144135Z Received 2029151 of 2029151 (100.0%), 3.1 MBs/sec
+2026-11-18T23:26:38.5144637Z Cache Size: ~2 MB (2029151 B)
+2026-11-18T23:26:38.5163034Z [command]/usr/bin/tar -xf /home/runner/work/_temp/1a21eb06-8737-41cd-ad73-a7c535746f6f/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:26:38.5798994Z Cache restored successfully
+2026-11-18T23:26:38.5930098Z Cache restored from key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:26:38.6017145Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=1843]
+2026-11-18T23:26:38.6021930Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-18T23:26:38.6030538Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:26:38.6032442Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-18T23:26:38.6038127Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:26:38.6071110Z ##[group]Run echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+2026-11-18T23:26:38.6071994Z [36;1mecho "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"[0m
+2026-11-18T23:26:38.6118490Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:26:38.6118723Z ##[endgroup]
+2026-11-18T23:26:38.6458448Z ##[group]Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+2026-11-18T23:26:38.6458762Z with:
+2026-11-18T23:26:38.6458967Z   path: ~/.cache/ms-playwright
+2026-11-18T23:26:38.6459195Z   key: playwright-Linux-1.65.1
+2026-11-18T23:26:38.6459415Z   enableCrossOsArchive: false
+2026-11-18T23:26:38.6459632Z   fail-on-cache-miss: false
+2026-11-18T23:26:38.6459836Z   lookup-only: false
+2026-11-18T23:26:38.6460030Z   save-always: false
+2026-11-18T23:26:38.6460204Z ##[endgroup]
+2026-11-18T23:26:38.9447149Z Cache hit for: playwright-Linux-1.65.1
+2026-11-18T23:26:40.1564612Z Received 50331648 of 307154356 (16.4%), 48.0 MBs/sec
+2026-11-18T23:26:41.1562750Z Received 234881024 of 307154356 (76.5%), 112.0 MBs/sec
+2026-11-18T23:26:41.5807433Z Received 307154356 of 307154356 (100.0%), 120.9 MBs/sec
+2026-11-18T23:26:41.5832084Z Cache Size: ~293 MB (307154356 B)
+2026-11-18T23:26:41.5875836Z [command]/usr/bin/tar -xf /home/runner/work/_temp/44ba3940-0471-4d19-bb10-5b10a8a85d31/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:26:42.5633611Z Cache restored successfully
+2026-11-18T23:26:42.5816720Z Cache restored from key: playwright-Linux-1.65.1
+2026-11-18T23:26:42.6498945Z ##[group]Run ./node_modules/.bin/playwright install --with-deps chromium
+2026-11-18T23:26:42.6499590Z [36;1m./node_modules/.bin/playwright install --with-deps chromium[0m
+2026-11-18T23:26:42.6546392Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:26:42.6546622Z ##[endgroup]
+2026-11-18T23:26:43.0471509Z Installing dependencies...
+2026-11-18T23:26:43.0577931Z Switching to root user to install dependencies...
+2026-11-18T23:26:43.1718293Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-18T23:26:43.1895424Z Get:6 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]
+2026-11-18T23:26:43.2069386Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease
+2026-11-18T23:26:43.2110827Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]
+2026-11-18T23:26:43.2182448Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]
+2026-11-18T23:26:43.2190540Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]
+2026-11-18T23:26:43.2240776Z Get:7 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [165 kB]
+2026-11-18T23:26:43.2483047Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [874 kB]
+2026-11-18T23:26:43.2495055Z Get:12 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [151 kB]
+2026-11-18T23:26:43.2566412Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [196 kB]
+2026-11-18T23:26:43.2610737Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [393 kB]
+2026-11-18T23:26:43.2613342Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [124 kB]
+2026-11-18T23:26:43.2727856Z Get:13 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [721 kB]
+2026-11-18T23:26:43.2752453Z Get:14 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [158 kB]
+2026-11-18T23:26:43.2766575Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [221 kB]
+2026-11-18T23:26:43.2787468Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [72.7 kB]
+2026-11-18T23:26:43.2792532Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted amd64v3 Packages [590 kB]
+2026-11-18T23:26:43.2820368Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted Translation-en [122 kB]
+2026-11-18T23:26:45.8244349Z Fetched 4203 kB in 0s (13.8 MB/s)
+2026-11-18T23:26:46.3457992Z Reading package lists...
+2026-11-18T23:26:46.3677208Z Reading package lists...
+2026-11-18T23:26:46.5004339Z Building dependency tree...
+2026-11-18T23:26:46.5010669Z Reading state information...
+2026-11-18T23:26:46.5280117Z libasound2t64 is already the newest version (1.2.15.3-1ubuntu1.1).
+2026-11-18T23:26:46.5280716Z libasound2t64 set to manually installed.
+2026-11-18T23:26:46.5281342Z libatk-bridge2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:26:46.5281922Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-18T23:26:46.5282506Z libatk1.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:26:46.5282999Z libatk1.0-0t64 set to manually installed.
+2026-11-18T23:26:46.5283578Z libatspi2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:26:46.5284136Z libatspi2.0-0t64 set to manually installed.
+2026-11-18T23:26:46.5284730Z libcairo2 is already the newest version (1.18.4-3).
+2026-11-18T23:26:46.5285206Z libcairo2 set to manually installed.
+2026-11-18T23:26:46.5285771Z libcups2t64 is already the newest version (2.4.16-1ubuntu1.3).
+2026-11-18T23:26:46.5286468Z libcups2t64 set to manually installed.
+2026-11-18T23:26:46.5287003Z libdbus-1-3 is already the newest version (1.16.2-2ubuntu4).
+2026-11-18T23:26:46.5287507Z libdbus-1-3 set to manually installed.
+2026-11-18T23:26:46.5287973Z libdrm2 is already the newest version (2.4.131-1).
+2026-11-18T23:26:46.5288926Z libdrm2 set to manually installed.
+2026-11-18T23:26:46.5289287Z libgbm1 is already the newest version (26.0.8-1ubuntu0.3).
+2026-11-18T23:26:46.5289616Z libgbm1 set to manually installed.
+2026-11-18T23:26:46.5289954Z libglib2.0-0t64 is already the newest version (2.88.0-1ubuntu0.1).
+2026-11-18T23:26:46.5290304Z libglib2.0-0t64 set to manually installed.
+2026-11-18T23:26:46.5290653Z libnspr4 is already the newest version (2:4.38.2-1ubuntu1).
+2026-11-18T23:26:46.5291061Z libnspr4 set to manually installed.
+2026-11-18T23:26:46.5291391Z libnss3 is already the newest version (2:3.120-1ubuntu2.2).
+2026-11-18T23:26:46.5291716Z libnss3 set to manually installed.
+2026-11-18T23:26:46.5292045Z libpango-1.0-0 is already the newest version (1.57.0-1).
+2026-11-18T23:26:46.5292368Z libpango-1.0-0 set to manually installed.
+2026-11-18T23:26:46.5292716Z libx11-6 is already the newest version (2:1.8.13-1ubuntu0.1).
+2026-11-18T23:26:46.5293033Z libx11-6 set to manually installed.
+2026-11-18T23:26:46.5293351Z libxcb1 is already the newest version (1.17.0-2ubuntu1).
+2026-11-18T23:26:46.5293655Z libxcb1 set to manually installed.
+2026-11-18T23:26:46.5293994Z libxcomposite1 is already the newest version (1:0.4.6-1build1).
+2026-11-18T23:26:46.5294340Z libxcomposite1 set to manually installed.
+2026-11-18T23:26:46.5294663Z libxdamage1 is already the newest version (1:1.1.7-1).
+2026-11-18T23:26:46.5294975Z libxdamage1 set to manually installed.
+2026-11-18T23:26:46.5295297Z libxext6 is already the newest version (2:1.3.4-1build3).
+2026-11-18T23:26:46.5295598Z libxext6 set to manually installed.
+2026-11-18T23:26:46.5295930Z libxfixes3 is already the newest version (1:6.0.0-2build2).
+2026-11-18T23:26:46.5296447Z libxfixes3 set to manually installed.
+2026-11-18T23:26:46.5296763Z libxkbcommon0 is already the newest version (1.13.1-1).
+2026-11-18T23:26:46.5297077Z libxkbcommon0 set to manually installed.
+2026-11-18T23:26:46.5297400Z libxrandr2 is already the newest version (2:1.5.4-1build1).
+2026-11-18T23:26:46.5297718Z libxrandr2 set to manually installed.
+2026-11-18T23:26:46.5298031Z xvfb is already the newest version (2:21.1.22-1ubuntu1.3).
+2026-11-18T23:26:46.5298434Z fonts-noto-color-emoji is already the newest version (2.051-1build1).
+2026-11-18T23:26:46.5298887Z libfontconfig1 is already the newest version (2.17.1-3ubuntu1).
+2026-11-18T23:26:46.5299215Z libfontconfig1 set to manually installed.
+2026-11-18T23:26:46.5299576Z libfreetype6 is already the newest version (2.14.2+dfsg-1ubuntu0.2).
+2026-11-18T23:26:46.5299922Z libfreetype6 set to manually installed.
+2026-11-18T23:26:46.5300285Z fonts-liberation is already the newest version (1:2.1.5-3build1).
+2026-11-18T23:26:46.5300783Z fonts-liberation set to manually installed.
+2026-11-18T23:26:46.5744082Z Solving dependencies...
+2026-11-18T23:26:46.6489260Z The following additional packages will be installed:
+2026-11-18T23:26:46.6489994Z   xfonts-encodings xfonts-utils
+2026-11-18T23:26:46.6493240Z Recommended packages:
+2026-11-18T23:26:46.6493615Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-18T23:26:46.6653176Z The following NEW packages will be installed:
+2026-11-18T23:26:46.6653642Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-18T23:26:46.6657312Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-18T23:26:46.6657654Z   xfonts-utils
+2026-11-18T23:26:46.6829705Z 0 upgraded, 9 newly installed, 0 to remove and 32 not upgraded.
+2026-11-18T23:26:46.6830214Z Need to get 21.9 MB of archives.
+2026-11-18T23:26:46.6830600Z After this operation, 80.2 MB of additional disk space will be used.
+2026-11-18T23:26:46.6831048Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-18T23:26:46.7455162Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-ipafont-gothic all 00303-23ubuntu1 [3703 kB]
+2026-11-18T23:26:46.9804582Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 fonts-freefont-ttf all 20211204+svn4273-4build1 [5656 kB]
+2026-11-18T23:26:47.2748392Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-tlwg-loma-otf all 1:0.7.3-1build1 [106 kB]
+2026-11-18T23:26:47.3215177Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-unifont all 1:16.0.04-1build1 [3169 kB]
+2026-11-18T23:26:47.5059386Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-wqy-zenhei all 0.9.45-8build1 [7863 kB]
+2026-11-18T23:26:47.8767168Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-encodings all 1:1.0.5-0ubuntu3 [576 kB]
+2026-11-18T23:26:47.9292869Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-utils amd64 1:7.7+7build1 [97.3 kB]
+2026-11-18T23:26:47.9756776Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-cyrillic all 1:1.0.5+nmu1build1 [384 kB]
+2026-11-18T23:26:48.0260807Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-scalable all 1:1.0.3-1.3build1 [304 kB]
+2026-11-18T23:26:48.2891208Z Fetched 21.9 MB in 1s (16.1 MB/s)
+2026-11-18T23:26:48.3154301Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-18T23:26:48.3374066Z (Reading database ... 
+2026-11-18T23:26:48.3374435Z (Reading database ... 5%
+2026-11-18T23:26:48.3374834Z (Reading database ... 10%
+2026-11-18T23:26:48.3375164Z (Reading database ... 15%
+2026-11-18T23:26:48.3375421Z (Reading database ... 20%
+2026-11-18T23:26:48.3375639Z (Reading database ... 25%
+2026-11-18T23:26:48.3376300Z (Reading database ... 30%
+2026-11-18T23:26:48.3376629Z (Reading database ... 35%
+2026-11-18T23:26:48.3376964Z (Reading database ... 40%
+2026-11-18T23:26:48.3377253Z (Reading database ... 45%
+2026-11-18T23:26:48.3377472Z (Reading database ... 50%
+2026-11-18T23:26:48.4640297Z (Reading database ... 55%
+2026-11-18T23:26:48.5951745Z (Reading database ... 60%
+2026-11-18T23:26:48.7993531Z (Reading database ... 65%
+2026-11-18T23:26:49.0328783Z (Reading database ... 70%
+2026-11-18T23:26:49.1938202Z (Reading database ... 75%
+2026-11-18T23:26:49.3521793Z (Reading database ... 80%
+2026-11-18T23:26:49.5407307Z (Reading database ... 85%
+2026-11-18T23:26:49.7409772Z (Reading database ... 90%
+2026-11-18T23:26:49.9077393Z (Reading database ... 95%
+2026-11-18T23:26:49.9077788Z (Reading database ... 100%
+2026-11-18T23:26:49.9078158Z (Reading database ... 213946 files and directories currently installed.)
+2026-11-18T23:26:49.9121346Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-23ubuntu1_all.deb ...
+2026-11-18T23:26:49.9240319Z Unpacking fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-18T23:26:50.0211154Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-18T23:26:50.0335841Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-4build1_all.deb ...
+2026-11-18T23:26:50.0341305Z Unpacking fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-18T23:26:50.1233815Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-18T23:26:50.1359807Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1build1_all.deb ...
+2026-11-18T23:26:50.1365399Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-18T23:26:50.1570798Z Selecting previously unselected package fonts-unifont.
+2026-11-18T23:26:50.1694292Z Preparing to unpack .../3-fonts-unifont_1%3a16.0.04-1build1_all.deb ...
+2026-11-18T23:26:50.1699412Z Unpacking fonts-unifont (1:16.0.04-1build1) ...
+2026-11-18T23:26:50.3638010Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-18T23:26:50.3762024Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8build1_all.deb ...
+2026-11-18T23:26:50.3883245Z Unpacking fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-18T23:26:50.5355314Z Selecting previously unselected package xfonts-encodings.
+2026-11-18T23:26:50.5480186Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu3_all.deb ...
+2026-11-18T23:26:50.5487272Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-18T23:26:50.5782813Z Selecting previously unselected package xfonts-utils.
+2026-11-18T23:26:50.5907444Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+7build1_amd64v3.deb ...
+2026-11-18T23:26:50.5914178Z Unpacking xfonts-utils (1:7.7+7build1) ...
+2026-11-18T23:26:50.6243986Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-18T23:26:50.6369182Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1build1_all.deb ...
+2026-11-18T23:26:50.6381410Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-18T23:26:50.6652507Z Selecting previously unselected package xfonts-scalable.
+2026-11-18T23:26:50.6774606Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3build1_all.deb ...
+2026-11-18T23:26:50.6784164Z Unpacking xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-18T23:26:50.7408776Z Setting up fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-18T23:26:50.7667166Z Setting up fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-18T23:26:50.7681820Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-18T23:26:50.7696251Z Setting up xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-18T23:26:50.7711192Z Setting up fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-18T23:26:50.7764610Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-18T23:26:50.7776397Z Setting up fonts-unifont (1:16.0.04-1build1) ...
+2026-11-18T23:26:50.7790666Z Setting up xfonts-utils (1:7.7+7build1) ...
+2026-11-18T23:26:50.7845751Z Setting up xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-18T23:26:50.8254418Z Setting up xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-18T23:26:50.8601680Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-18T23:26:50.8620062Z Not building database; man-db/auto-update is not 'true'.
+2026-11-18T23:26:50.8630600Z Processing triggers for fontconfig (2.17.1-3ubuntu1) ...
+2026-11-18T23:26:51.4412695Z 
+2026-11-18T23:26:51.4413371Z Running kernel seems to be up-to-date.
+2026-11-18T23:26:51.4413689Z 
+2026-11-18T23:26:51.4413836Z Restarting services...
+2026-11-18T23:26:51.4501920Z 
+2026-11-18T23:26:51.4502685Z Service restarts being deferred:
+2026-11-18T23:26:51.4605365Z  systemctl restart hosted-compute-agent.service
+2026-11-18T23:26:51.4605695Z 
+2026-11-18T23:26:51.4606435Z No containers need to be restarted.
+2026-11-18T23:26:51.4606678Z 
+2026-11-18T23:26:51.4606918Z No user sessions are running outdated binaries.
+2026-11-18T23:26:51.4607188Z 
+2026-11-18T23:26:51.4626750Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-18T23:26:52.4323369Z ##[group]Run npm run test:e2e --workspace @ghostpay/web
+2026-11-18T23:26:52.4323737Z [36;1mnpm run test:e2e --workspace @ghostpay/web[0m
+2026-11-18T23:26:52.4368693Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:26:52.4368917Z env:
+2026-11-18T23:26:52.4369097Z   GHOSTPAY_LOCAL_BUILD_PROFILE: full
+2026-11-18T23:26:52.4369335Z ##[endgroup]
+2026-11-18T23:26:52.5533823Z 
+2026-11-18T23:26:52.5534482Z > @ghostpay/web@0.1.0 test:e2e
+2026-11-18T23:26:52.5534925Z > playwright test
+2026-11-18T23:26:52.5535054Z 
+2026-11-18T23:27:10.0406890Z [WebServer] 
+2026-11-18T23:27:10.0457541Z [WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+2026-11-18T23:27:10.3189879Z [WebServer] [plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/home/runner/work/GhostPay/GhostPay/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+2026-11-18T23:27:10.7420082Z [WebServer] [plugin builtin:vite-reporter] 
+2026-11-18T23:27:10.7420850Z [WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:
+2026-11-18T23:27:10.7421711Z [WebServer] - Using dynamic import() to code-split the application
+2026-11-18T23:27:10.7422853Z [WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+2026-11-18T23:27:10.7423970Z [WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-11-18T23:27:10.7425790Z [WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+2026-11-18T23:27:10.7426944Z [WebServer] 
+2026-11-18T23:27:13.5275350Z 
+2026-11-18T23:27:13.5275944Z Running 87 tests using 1 worker
+2026-11-18T23:27:13.5276336Z 
+2026-11-18T23:27:17.0991801Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"home","rules":"all default enabled axe rules; no exclusions","passes":38,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"seller-generated-and-explicit-backup-waiver","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:17.1148004Z   ✓   1 [desktop] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus (2.7s)
+2026-11-18T23:27:19.3491370Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Create invoice","state":"create-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"scan-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"signed-invoice-created","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"signed-invoice-review","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"malformed-invoice-rejected","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:19.3606119Z   ✓   2 [desktop] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable (2.2s)
+2026-11-18T23:27:23.8600480Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Home","state":"Home-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:23.8679312Z   ✓   3 [desktop] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (4.5s)
+2026-11-18T23:27:26.3624239Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:26.3698961Z   ✓   4 [desktop] › e2e/accessibility.spec.ts:121:1 › supported routes remain accessible with forced colors and reduced motion (2.5s)
+2026-11-18T23:27:26.6557184Z   ✓   5 [desktop] › e2e/app.spec.ts:16:1 › loads, shows the shell, and raises no console errors or CSP violations (272ms)
+2026-11-18T23:27:27.4025857Z   ✓   6 [desktop] › e2e/app.spec.ts:29:1 › create invoice -> open link -> review screen (no manifest shipped, so payment is disabled) (738ms)
+2026-11-18T23:27:28.3118175Z   ✓   7 [desktop] › e2e/app.spec.ts:49:1 › invoice QR text stays local, rejects foreign links and requires a fresh preview after collapse (899ms)
+2026-11-18T23:27:29.5322951Z   ✓   8 [desktop] › e2e/app.spec.ts:86:1 › egress: parsing and reviewing an invoice makes no request except same-origin (1.2s)
+2026-11-18T23:27:30.2060767Z   ✘   9 [desktop] › e2e/app.spec.ts:115:1 › hostile text in line items and memo is rendered inert (641ms)
+2026-11-18T23:27:31.9410834Z   ✓  10 [desktop] › e2e/app.spec.ts:133:1 › a tampered fragment fails closed (956ms)
+2026-11-18T23:27:32.1954492Z   ✓  11 [desktop] › e2e/app.spec.ts:151:1 › an oversized fragment is rejected (242ms)
+2026-11-18T23:27:32.9466692Z   ✓  12 [desktop] › e2e/app.spec.ts:157:1 › the fragment is removed from the address bar after it is read (744ms)
+2026-11-18T23:27:33.7359155Z   ✓  13 [desktop] › e2e/app.spec.ts:168:1 › no secrets reach localStorage, sessionStorage, IndexedDB or cookies after key generation (782ms)
+2026-11-18T23:27:34.0441865Z   ✓  14 [desktop] › e2e/app.spec.ts:209:1 › keyboard: skip link and navigation are reachable, focus moves to the new view (299ms)
+2026-11-18T23:27:34.3589051Z   ✓  15 [desktop] › e2e/app.spec.ts:222:1 › light and dark colour schemes both render with readable text (305ms)
+2026-11-18T23:27:35.1037302Z   ✓  16 [desktop] › e2e/app.spec.ts:242:1 › mobile width: no horizontal page scroll (734ms)
+2026-11-18T23:27:37.7641290Z   ✓  17 [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export (2.6s)
+2026-11-18T23:27:37.7648502Z   -  18 [desktop] › e2e/backup-panel.spec.ts:60:3 › lean profile › keeps the key backup and has no tag archive item or combined panel
+2026-11-18T23:27:39.5059438Z   ✓  19 [desktop] › e2e/btc-worker.spec.ts:6:1 › Bitcoin native worker cancels, resumes encrypted checkpoints, and never selects restored matches (1.6s)
+2026-11-18T23:27:40.3399221Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Settings","state":"settings-help-open-375px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:40.3474765Z   ✓  20 [desktop] › e2e/contextual-help.spec.ts:20:1 › contextual RPC help is described, keyboard operable and dismissible at a mobile viewport (824ms)
+2026-11-18T23:27:41.7940963Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Settings","state":"preferences-qr-dialog-375px","rules":"all default enabled axe rules; no exclusions","passes":48,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"الإعدادات","state":"preferences-qr-rtl-375px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:27:41.8018176Z   ✓  21 [desktop] › e2e/contextual-help.spec.ts:50:1 › large QR confines keyboard focus, scrolls on short screens and preserves bytes under RTL (1.4s)
+2026-11-18T23:27:42.2367411Z   ✓  22 [desktop] › e2e/contextual-help.spec.ts:92:3 › a control below help opened by clicking its button receives the click that closes the help (426ms)
+2026-11-18T23:27:42.6514214Z   ✓  23 [desktop] › e2e/contextual-help.spec.ts:92:3 › a control below help opened by keyboard focus receives the click that closes the help (405ms)
+2026-11-18T23:27:43.0846248Z   ✓  24 [desktop] › e2e/contextual-help.spec.ts:92:3 › a control below help opened by hover receives the click that closes the help (423ms)
+2026-11-18T23:27:43.5685339Z   ✓  25 [desktop] › e2e/contextual-help.spec.ts:117:3 › touch › a control below help opened by a tap receives the next tap (476ms)
+2026-11-18T23:27:49.9208475Z   ✓  26 [desktop] › e2e/core-journey.spec.ts:474:1 › core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore (6.3s)
+2026-11-18T23:27:51.2719151Z   ✓  27 [desktop] › e2e/core-journey.spec.ts:601:1 › invoice expiry is refused at the final pay guard: nothing reaches the wallet (1.3s)
+2026-11-18T23:27:55.0789229Z   ✓  28 [desktop] › e2e/core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results (3.8s)
+2026-11-18T23:27:57.3929710Z   ✓  29 [desktop] › e2e/core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep (2.3s)
+2026-11-18T23:28:00.6388848Z   ✓  30 [desktop] › e2e/core-journey.spec.ts:681:1 › reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt (3.2s)
+2026-11-18T23:28:03.0330386Z   ✓  31 [desktop] › e2e/core-journey.spec.ts:722:1 › unknown and late outcomes are shown honestly: no false success, pending until final (2.4s)
+2026-11-18T23:28:05.0181137Z   ✓  32 [desktop] › e2e/embed-iframe.spec.ts:190:3 › embed SDK (iframe mode) › accepts a signed profile that lists the embedding origin and delivers one verified completion (522ms)
+2026-11-18T23:28:05.6307367Z   ✓  33 [desktop] › e2e/embed-iframe.spec.ts:220:3 › embed SDK (iframe mode) › greets a reloaded checkout again, so a reload after gp:init does not lose the completion (604ms)
+2026-11-18T23:28:06.3348271Z   ✓  34 [desktop] › e2e/embed-iframe.spec.ts:236:3 › embed SDK (iframe mode) › ignores completions from the wrong source or wrong origin (694ms)
+2026-11-18T23:28:06.7619268Z   ✓  35 [desktop] › e2e/embed-iframe.spec.ts:270:3 › embed SDK (iframe mode) › refuses to answer when the embedding origin is not in the signed profile (popup fallback) (421ms)
+2026-11-18T23:28:07.1882098Z   ✓  36 [desktop] › e2e/embed-iframe.spec.ts:277:3 › embed SDK (iframe mode) › refuses a tampered profile (popup fallback) (417ms)
+2026-11-18T23:28:07.6262571Z   ✓  37 [desktop] › e2e/embed-iframe.spec.ts:284:3 › embed SDK (iframe mode) › refuses an unsigned profile (popup fallback) (426ms)
+2026-11-18T23:28:08.0733591Z   ✓  38 [desktop] › e2e/embed-iframe.spec.ts:291:3 › embed SDK (iframe mode) › refuses a checkout opened with no profile at all (popup fallback) (428ms)
+2026-11-18T23:28:09.2494721Z   ✓  39 [desktop] › e2e/flows.spec.ts:106:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it (1.2s)
+2026-11-18T23:28:11.1480063Z   ✓  40 [desktop] › e2e/flows.spec.ts:140:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry (1.9s)
+2026-11-18T23:28:12.3608031Z   ✓  41 [desktop] › e2e/flows.spec.ts:197:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses a changed wallet account during the final authority recheck before send (1.2s)
+2026-11-18T23:28:13.5571267Z   ✓  42 [desktop] › e2e/flows.spec.ts:218:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses when the wallet mutates the transaction (1.2s)
+2026-11-18T23:28:17.6155679Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Create invoice","state":"flow-signed-invoice-created-and-registered","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"flow-worker-scan-verified-payment","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"flow-reconciliation-match-proposed","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"flow-reconciliation-match-confirmed","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"flow-bound-receipt-awaiting-signing-consent","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"flow-bound-receipt-signed-and-exported","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"flow-receipt-import-consent-required","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"flow-tampered-receipt-refused","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"flow-bound-receipt-import-accepted","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:28:17.6234605Z   ✓  43 [desktop] › e2e/flows.spec.ts:239:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › scans in a real Web Worker under the CSP, finds my payment, verifies it, signs a receipt only on consent, and stores tags only as ciphertext (4.1s)
+2026-11-18T23:28:18.5727545Z   ✓  44 [desktop] › e2e/flows.spec.ts:526:3 › embed SDK (popup mode only) › opens the checkout popup for a same-origin link; refuses other origins (922ms)
+2026-11-18T23:28:19.3888881Z   ✓  45 [desktop] › e2e/merchant-profile.spec.ts:13:3 › embed SDK (popup mode only): merchant profile UI › loads only on consent, preserves exact templates and detects a changed key in a second tab (797ms)
+2026-11-18T23:28:20.0032848Z   ✓  46 [desktop] › e2e/merchant-profile.spec.ts:43:3 › embed SDK (popup mode only): merchant profile UI › matching merchant keys issue a separate exact-template invoice without changing payer requests (610ms)
+2026-11-18T23:28:22.2468990Z   ✓  47 [desktop] › e2e/passphrase-vault.spec.ts:4:1 › passphrase invoice stays closed after a wrong passphrase and opens with the right one (2.2s)
+2026-11-18T23:28:24.5577287Z   ✓  48 [desktop] › e2e/passphrase-vault.spec.ts:37:1 › encrypted seller vault survives reload, rejects a wrong passphrase, then unlocks the same keys (2.3s)
+2026-11-18T23:28:26.8149957Z   ✓  49 [desktop] › e2e/product-backup-retry.spec.ts:7:1 › reimports the same original tag archive after a successful import without reloading (2.2s)
+2026-11-18T23:28:27.4513282Z   ✓  50 [desktop] › e2e/receipt-lean.spec.ts:8:1 › receipt creation keeps the manual digest mode (full) (622ms)
+2026-11-18T23:28:29.2378469Z   ✓  51 [desktop] › e2e/reconciliation.spec.ts:12:1 › encrypted reconciliation keeps invoice identity through language changes and cancels import previews on lock (1.8s)
+2026-11-18T23:28:35.3966710Z   ✓  52 [desktop] › e2e/recovery.spec.ts:180:1 › cross-browser recovery: A backup -> independent B, B re-encrypts under a new passphrase (6.1s)
+2026-11-18T23:28:39.5178964Z   ✓  53 [desktop] › e2e/recovery.spec.ts:256:1 › damaged backup is refused and an occupied destination vault is never overwritten (4.1s)
+2026-11-18T23:28:40.3419094Z   ✓  54 [desktop] › e2e/sellerpairing.spec.ts:5:1 › public seller config exports on one device and previews on another without applying anything (813ms)
+2026-11-18T23:28:41.0518524Z   ✓  55 [desktop] › e2e/sellerpairing.spec.ts:41:1 › the same public config file can be previewed again after clearing and never survives a reload as loaded keys (700ms)
+2026-11-18T23:28:41.8566776Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Help","state":"/help.html-375px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Help","state":"/help.html-768px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Help","state":"/help.html-1440px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:28:41.8631590Z   ✓  56 [desktop] › e2e/static-help.spec.ts:10:3 › /help.html keeps local assets and accessible content at mobile, tablet and desktop widths (801ms)
+2026-11-18T23:28:42.4205175Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Privacy","state":"/privacy.html-375px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Privacy","state":"/privacy.html-768px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Privacy","state":"/privacy.html-1440px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:28:42.4297699Z   ✓  57 [desktop] › e2e/static-help.spec.ts:10:3 › /privacy.html keeps local assets and accessible content at mobile, tablet and desktop widths (557ms)
+2026-11-18T23:28:42.6381485Z   ✓  58 [desktop] › e2e/static-help.spec.ts:37:3 › help without JavaScript › the no-JavaScript entry links to usable local help and privacy pages (200ms)
+2026-11-18T23:28:46.6303092Z   ✓  59 [desktop] › e2e/stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation (4.0s)
+2026-11-18T23:28:49.1993848Z   ✓  60 [desktop] › e2e/stealth-export.spec.ts:140:1 › a blocked encrypted download can retry the generated file without running key export again (2.6s)
+2026-11-18T23:28:52.8063196Z   ✓  61 [desktop] › e2e/stealth-export.spec.ts:180:1 › keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given (3.6s)
+2026-11-18T23:28:53.6287590Z   ✓  62 [desktop] › e2e/stealth-export.spec.ts:221:1 › a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing (815ms)
+2026-11-18T23:28:54.3948387Z   ✓  63 [desktop] › e2e/stealth-export.spec.ts:264:1 › mobile verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet (757ms)
+2026-11-18T23:29:01.1618184Z   ✓  64 [desktop] › e2e/stealth-export.spec.ts:305:1 › secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard (6.8s)
+2026-11-18T23:29:09.4779646Z   ✓  65 [desktop] › e2e/stealth-export.spec.ts:368:1 › the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded (8.3s)
+2026-11-18T23:29:27.0030427Z   ✓  66 [desktop] › e2e/stealth-export.spec.ts:415:1 › wiping the keys while the master backup KDF runs discards the result: no download (17.5s)
+2026-11-18T23:29:31.5183716Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"sweep-worker-scan-verified-payment","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-success-direct-signing-ready","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-success-broadcast-held-with-durable-lock","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-success-pending-status-lock-retained","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"sweep-worker-rescan-verified-payment","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-success-reloaded-and-rescanned-duplicate-refused","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-success-included-on-chain","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:29:31.5259875Z   ✓  67 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before success handoff and refuses a duplicate through reload (4.5s)
+2026-11-18T23:29:36.5141807Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"sweep-worker-scan-verified-payment","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-unknown-direct-signing-ready","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-unknown-broadcast-held-with-durable-lock","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-unknown-pending-status-lock-retained","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"sweep-worker-rescan-verified-payment","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-unknown-reloaded-and-rescanned-duplicate-refused","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"sweep-unknown-included-on-chain","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:29:36.5212713Z   ✓  68 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before unknown handoff and refuses a duplicate through reload (5.0s)
+2026-11-18T23:29:45.5173119Z   ✓  69 [desktop] › e2e/qr-camera-multipart.spec.ts:12:1 › a multi-part invoice QR is assembled from looping parts, previewed locally and opens only the ordinary review (8.1s)
+2026-11-18T23:29:47.2068918Z   ✓  70 [desktop] › e2e/qr-camera.spec.ts:33:3 › virtual camera: single QR › camera starts only on click, decodes the public seller config, previews it untrusted and stops the camera (750ms)
+2026-11-18T23:29:47.9808283Z   ✓  71 [desktop] › e2e/qr-camera.spec.ts:44:3 › virtual camera: single QR › stopping, navigating away and reopening never leaves a live camera track (751ms)
+2026-11-18T23:29:48.5203244Z   ✓  72 [desktop] › e2e/qr-camera.spec.ts:62:3 › virtual camera: permission denied › a denied camera falls back to paste with a clear message and no preview (521ms)
+2026-11-18T23:29:51.9570250Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"home","rules":"all default enabled axe rules; no exclusions","passes":38,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"seller-generated-and-explicit-backup-waiver","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:29:51.9687317Z   ✓  73 [pixel-7-chromium] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus (2.5s)
+2026-11-18T23:29:53.9689533Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Create invoice","state":"create-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"scan-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"signed-invoice-created","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"signed-invoice-review","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"malformed-invoice-rejected","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:29:53.9777542Z   ✓  74 [pixel-7-chromium] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable (2.0s)
+2026-11-18T23:29:58.2656382Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Home","state":"Home-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:29:58.2742140Z   ✓  75 [pixel-7-chromium] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (4.3s)
+2026-11-18T23:30:00.7256223Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:00.7327494Z   ✓  76 [pixel-7-chromium] › e2e/accessibility.spec.ts:121:1 › supported routes remain accessible with forced colors and reduced motion (2.5s)
+2026-11-18T23:30:01.9373454Z   ✓  77 [pixel-7-chromium] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (1.2s)
+2026-11-18T23:30:05.3121758Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"home","rules":"all default enabled axe rules; no exclusions","passes":38,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"seller-generated-and-explicit-backup-waiver","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:05.3241705Z   ✓  78 [iphone-se-chromium] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus (2.6s)
+2026-11-18T23:30:07.3728386Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Create invoice","state":"create-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"scan-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"signed-invoice-created","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"signed-invoice-review","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"malformed-invoice-rejected","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:07.3815400Z   ✓  79 [iphone-se-chromium] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable (2.0s)
+2026-11-18T23:30:11.6038152Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Home","state":"Home-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:11.6109775Z   ✓  80 [iphone-se-chromium] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (4.2s)
+2026-11-18T23:30:14.1076390Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:14.1138257Z   ✓  81 [iphone-se-chromium] › e2e/accessibility.spec.ts:121:1 › supported routes remain accessible with forced colors and reduced motion (2.5s)
+2026-11-18T23:30:15.3067678Z   ✓  82 [iphone-se-chromium] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (1.2s)
+2026-11-18T23:30:18.6720986Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"home","rules":"all default enabled axe rules; no exclusions","passes":38,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"seller-generated-and-explicit-backup-waiver","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:18.6846294Z   ✓  83 [ipad-mini-chromium] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus (2.6s)
+2026-11-18T23:30:20.7057986Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Create invoice","state":"create-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"scan-validation-error","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"signed-invoice-created","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"signed-invoice-review","rules":"all default enabled axe rules; no exclusions","passes":50,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"malformed-invoice-rejected","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:20.7136935Z   ✓  84 [ipad-mini-chromium] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable (2.0s)
+2026-11-18T23:30:24.9879092Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Home","state":"Home-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":40,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":46,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:24.9948780Z   ✓  85 [ipad-mini-chromium] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (4.3s)
+2026-11-18T23:30:27.4500637Z GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"full","route":"Home","state":"Home-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Seller keys","state":"Seller keys-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Create invoice","state":"Create invoice-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"Pay","state":"Pay-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Scan and receive","state":"Scan and receive-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Sweep","state":"Sweep-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":39,"violations":[],"incomplete":["color-contrast"]},{"version":"4.14.0","profile":"full","route":"Public registry","state":"Public registry-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"full","route":"Settings","state":"Settings-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["color-contrast","label-content-name-mismatch"]},{"version":"4.14.0","profile":"full","route":"About and privacy","state":"About and privacy-forced-colors-and-reduced-motion","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+2026-11-18T23:30:27.4586218Z   ✓  86 [ipad-mini-chromium] › e2e/accessibility.spec.ts:121:1 › supported routes remain accessible with forced colors and reduced motion (2.5s)
+2026-11-18T23:30:28.6699904Z   ✓  87 [ipad-mini-chromium] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (1.2s)
+2026-11-18T23:30:28.7505051Z 
+2026-11-18T23:30:28.7505110Z 
+2026-11-18T23:30:28.7506685Z   1) [desktop] › e2e/app.spec.ts:115:1 › hostile text in line items and memo is rendered inert ─────
+2026-11-18T23:30:28.7507216Z 
+2026-11-18T23:30:28.7507528Z     Error: page.goto: net::ERR_ABORTED at about:blank
+2026-11-18T23:30:28.7508449Z     Call log:
+2026-11-18T23:30:28.7508839Z       - navigating to "about:blank", waiting until "load"
+2026-11-18T23:30:28.7509149Z 
+2026-11-18T23:30:28.7509411Z 
+2026-11-18T23:30:28.7509542Z        at helpers.ts:56
+2026-11-18T23:30:28.7509732Z 
+2026-11-18T23:30:28.7510200Z       54 | /** A genuine fresh page load of `url` (as when following a link), not a same-document hash change. */
+2026-11-18T23:30:28.7511071Z       55 | export async function openFresh(page: Page, url: string): Promise<void> {
+2026-11-18T23:30:28.7511637Z     > 56 |   await page.goto('about:blank');
+2026-11-18T23:30:28.7511983Z          |              ^
+2026-11-18T23:30:28.7512325Z       57 |   await page.goto(url);
+2026-11-18T23:30:28.7512666Z       58 | }
+2026-11-18T23:30:28.7512924Z       59 |
+2026-11-18T23:30:28.7513451Z         at openFresh (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/helpers.ts:56:14)
+2026-11-18T23:30:28.7514241Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/app.spec.ts:125:9
+2026-11-18T23:30:28.7514625Z 
+2026-11-18T23:30:28.7515245Z     Error Context: test-results/app-hostile-text-in-line-items-and-memo-is-rendered-inert-desktop/error-context.md
+2026-11-18T23:30:28.7515900Z 
+2026-11-18T23:30:28.7516165Z   1 failed
+2026-11-18T23:30:28.7516957Z     [desktop] › e2e/app.spec.ts:115:1 › hostile text in line items and memo is rendered inert ──────
+2026-11-18T23:30:28.7517529Z   1 skipped
+2026-11-18T23:30:28.7517918Z   85 passed (3.6m)
+2026-11-18T23:30:28.7713567Z npm error Lifecycle script `test:e2e` failed with error:
+2026-11-18T23:30:28.7714242Z npm error code 1
+2026-11-18T23:30:28.7714787Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-18T23:30:28.7727804Z npm error workspace @ghostpay/web@0.1.0
+2026-11-18T23:30:28.7728330Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-18T23:30:28.7728802Z npm error command failed
+2026-11-18T23:30:28.7729200Z npm error command sh -c playwright test
+2026-11-18T23:30:28.7789612Z ##[error]Process completed with exit code 1.
+2026-11-18T23:30:28.7857994Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-11-18T23:30:28.7858344Z with:
+2026-11-18T23:30:28.7858564Z   name: playwright-test-results-full
+2026-11-18T23:30:28.7858812Z   path: apps/web/test-results
+2026-11-18T23:30:28.7859044Z   if-no-files-found: ignore
+2026-11-18T23:30:28.7859264Z   retention-days: 7
+2026-11-18T23:30:28.7859450Z   compression-level: 6
+2026-11-18T23:30:28.7859650Z   overwrite: false
+2026-11-18T23:30:28.7859837Z   include-hidden-files: false
+2026-11-18T23:30:28.7860054Z   archive: true
+2026-11-18T23:30:28.7860233Z ##[endgroup]
+2026-11-18T23:30:28.9206820Z With the provided path, there will be 47 files uploaded
+2026-11-18T23:30:28.9209591Z Artifact name is valid!
+2026-11-18T23:30:28.9210053Z Root directory input is valid!
+2026-11-18T23:30:29.2635875Z Uploading artifact: playwright-test-results-full.zip
+2026-11-18T23:30:29.2663937Z Beginning upload of artifact content to blob storage
+2026-11-18T23:30:29.6017821Z Uploaded bytes 41381
+2026-11-18T23:30:29.6640001Z Finished uploading artifact content to blob storage!
+2026-11-18T23:30:29.6640973Z SHA256 digest of uploaded artifact is 8a7c565d7a1824a1b6c3602ed50a3ee548223e032d30e32f58bd7e95ba9b3f6f
+2026-11-18T23:30:29.6641753Z Finalizing artifact upload
+2026-11-18T23:30:30.3489387Z Artifact playwright-test-results-full successfully finalized. Artifact ID 14480758698
+2026-11-18T23:30:30.3490597Z Artifact playwright-test-results-full has been successfully uploaded! Final size is 41381 bytes. Artifact ID is 14480758698
+2026-11-18T23:30:30.3492498Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520704/artifacts/14480758698
+2026-11-18T23:30:30.3688059Z Post job cleanup.
+2026-11-18T23:30:30.3691528Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__2748cf6e-ef78-45f5-a1f6-0365b17f3284.libs]
+2026-11-18T23:30:30.3693416Z ##[end-action id=__2748cf6e-ef78-45f5-a1f6-0365b17f3284.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:30:30.3695157Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__2748cf6e-ef78-45f5-a1f6-0365b17f3284.__actions_setup-node]
+2026-11-18T23:30:30.3697299Z ##[end-action id=__2748cf6e-ef78-45f5-a1f6-0365b17f3284.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:30:30.3750170Z Post job cleanup.
+2026-11-18T23:30:30.4465348Z [command]/usr/bin/git version
+2026-11-18T23:30:30.4510394Z git version 2.56.1
+2026-11-18T23:30:30.4543501Z Temporarily overriding HOME='/home/runner/work/_temp/5bf1c8a8-6688-419f-a1cd-9e59395f9d19' before making global git config changes
+2026-11-18T23:30:30.4544637Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:30:30.4548008Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:30:30.4582111Z Removing SSH command configuration
+2026-11-18T23:30:30.4588407Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:30:30.4623454Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:30:30.4902025Z Removing HTTP extra header
+2026-11-18T23:30:30.4908134Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:30:30.4943145Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:30:30.5209171Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:30:30.5213871Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:30:30.5244429Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:30:30.5655927Z Cleaning up orphan processes
+

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, SETTINGS_KEY, checkDelayRange, checkRelayerUrl, checkRpcUrl, loadSettings, sanitizeSettings, saveSettings } from './settings';
+import { DEFAULT_SETTINGS, UI_PRIVACY_KEY, clearRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, SETTINGS_KEY, checkDelayRange, checkRelayerUrl, checkRpcUrl, loadSettings, sanitizeSettings, saveSettings } from './settings';
 
 describe('settings validation', () => {
   it('accepts https/wss RPC URLs and rejects the rest', () => {
@@ -28,6 +28,24 @@ describe('settings validation', () => {
 });
 
 describe('sanitizeSettings', () => {
+  it('defaults local privacy controls off and accepts only supported clipboard intervals', () => {
+    expect(sanitizeSettings({})).toMatchObject({ privacyMode: false, clipboardClearAfterMs: 0 });
+    for (const clipboardClearAfterMs of [0, 30_000, 60_000, 300_000]) {
+      expect(sanitizeSettings({ privacyMode: true, clipboardClearAfterMs })).toMatchObject({ privacyMode: true, clipboardClearAfterMs });
+    }
+    for (const clipboardClearAfterMs of [-1, 1_000, 30_000.5, 300_001, Infinity, NaN, '30000', true, null]) {
+      expect(sanitizeSettings({ privacyMode: 'true', clipboardClearAfterMs })).toMatchObject({ privacyMode: false, clipboardClearAfterMs: 0 });
+    }
+  });
+
+  it('round-trips only the nonsecret local privacy preferences', () => {
+    const records = new Map<string, string>();
+    const storage = { setItem: (key: string, text: string): void => { records.set(key, text); }, getItem: (key: string) => records.get(key) ?? null };
+    expect(saveSettings({ ...DEFAULT_SETTINGS, ...{ privacyMode: true, clipboardClearAfterMs: 60_000 as const, clipboardValue: 'private data', privacyRevealed: true } }, storage)).toBe(true);
+    expect(loadSettings(storage)).toMatchObject({ privacyMode: true, clipboardClearAfterMs: 60_000 });
+    expect([...records.values()].join()).not.toMatch(/private data|clipboardValue|privacyRevealed/);
+  });
+
   it('falls back to defaults for junk', () => {
     expect(sanitizeSettings(null)).toEqual(DEFAULT_SETTINGS);
     expect(sanitizeSettings([])).toEqual(DEFAULT_SETTINGS);
@@ -75,18 +93,61 @@ describe('persistence', () => {
     expect(saveSettings(s, { setItem: () => { throw new Error('full'); } })).toBe(false);
   });
   it('never stores key material fields', () => {
-    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
+    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'clipboardClearAfterMs', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'privacyMode', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
     const store = new Map<string, string>();
     const settingsWithExtraFields = { ...DEFAULT_SETTINGS, theme: 'dark' as const, spendingKey: 'secret-spend', viewingKey: 'secret-view', passphrase: 'secret-password' };
     expect(saveSettings(settingsWithExtraFields, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);
     const saved = store.get(SETTINGS_KEY)!;
     expect(saved).not.toMatch(/spendingKey|viewingKey|passphrase|secret-/);
-    expect(JSON.parse(saved)).toEqual({ ...DEFAULT_SETTINGS, theme: 'dark' });
+    expect({ ...JSON.parse(saved) as Record<string, unknown>, ...JSON.parse(store.get(UI_PRIVACY_KEY)!) as Record<string, unknown> }).toEqual({ ...DEFAULT_SETTINGS, theme: 'dark' });
+    expect([...store.values()].join()).not.toMatch(/spendingKey|viewingKey|passphrase|secret-/);
   });
   it('does not execute a supplied serialization hook when persisting preferences', () => {
     const store = new Map<string, string>();
     const settingsWithHook = { ...DEFAULT_SETTINGS, toJSON: () => ({ privateKey: 'accidental-secret' }) };
     expect(saveSettings(settingsWithHook, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);
-    expect(JSON.parse(store.get(SETTINGS_KEY)!)).toEqual(DEFAULT_SETTINGS);
+    expect({ ...JSON.parse(store.get(SETTINGS_KEY)!) as Record<string, unknown>, ...JSON.parse(store.get(UI_PRIVACY_KEY)!) as Record<string, unknown> }).toEqual(DEFAULT_SETTINGS);
+    expect([...store.values()].join()).not.toMatch(/privateKey|accidental-secret/);
+  });
+});
+
+describe('RPC URL secrets (TM4)', () => {
+  it('flags key-like paths and query parameters', () => {
+    for (const u of [
+      'https://eth-mainnet.g.alchemy.com/v2/AbCdEf0123456789AbCdEf0123456789',
+      'https://rpc.example/?apikey=abc', 'https://rpc.example/?key=1', 'https://rpc.example/?token=x',
+      'https://rpc.example/' + 'a1'.repeat(20), 'https://rpc.example/v3/abc123def456',
+      'https://rpc.example/?x=' + 'Zz9'.repeat(8), 'wss://rpc.example/ws/v2/abc123def456',
+    ]) expect(rpcUrlLooksSecret(u), u).toBe(true);
+  });
+  it('does not flag ordinary endpoints', () => {
+    for (const u of ['https://rpc.example', 'https://rpc.example/', 'https://sepolia.example.org/rpc', 'https://rpc.example/ethereum-sepolia', 'https://rpc.example/?chain=sepolia', 'nope'])
+      expect(rpcUrlLooksSecret(u), u).toBe(false);
+  });
+  it('keeps session-only endpoints out of storage but not other endpoints', () => {
+    const secret = 'https://rpc.example/v2/AbCdEf0123456789AbCdEf0123456789';
+    const other = 'https://rpc.example/ok';
+    let written = '';
+    const storage = { setItem: (key: string, value: string): void => { if (key === SETTINGS_KEY) written = value; } };
+    const s = { ...DEFAULT_SETTINGS, rpcUrls: { '1': secret, '10': other }, rpcUrlsSecondary: { '1': secret } };
+    try {
+      setRpcSessionOnly('primary', '1', secret);
+      expect(saveSettings(s, storage)).toBe(true);
+      expect(JSON.stringify((JSON.parse(written) as { rpcUrls: unknown }).rpcUrls)).not.toContain('AbCdEf');
+      const back = JSON.parse(written) as { rpcUrls: Record<string, string>; rpcUrlsSecondary: Record<string, string> };
+      expect(back.rpcUrls).toEqual({ '10': other });
+      expect(back.rpcUrlsSecondary).toEqual({ '1': secret }); // secondary slot not marked
+      setRpcSessionOnly('primary', '1', undefined);
+      saveSettings(s, storage);
+      expect((JSON.parse(written) as { rpcUrls: Record<string, string> }).rpcUrls['1']).toBe(secret);
+    } finally {
+      clearRpcSessionOnly();
+    }
+  });
+  it('flags but never drops a persisted secret-looking URL on load', () => {
+    const secret = 'https://rpc.example/?apikey=abc';
+    const loaded = loadSettings({ getItem: () => JSON.stringify({ rpcUrls: { '1': secret } }) });
+    expect(loaded.rpcUrls['1']).toBe(secret);
+    expect(rpcUrlLooksSecret(loaded.rpcUrls['1']!)).toBe(true);
   });
 });

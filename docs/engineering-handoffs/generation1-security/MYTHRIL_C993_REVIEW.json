@@ -1,0 +1,238 @@
+{
+  "source_commit": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "workflow_run_id": 44539518235,
+  "artifact_id": 14552010877,
+  "artifact_sha256": "7ea2f0648d3ae777ede6aebb5e8c7de81ebe20e7746f24d9b1c290ffc45fceee",
+  "artifact_bytes": 53084,
+  "source_files": 241,
+  "source_mismatches": [],
+  "full_report_hash_matches": true,
+  "full_report_sha256": "475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb",
+  "full_report_bytes": 254223,
+  "manifest_completed": true,
+  "source_unchanged": true,
+  "configuration": {
+    "compilerVersion": "0.8.28",
+    "optimizerEnabled": true,
+    "optimizerRuns": 200,
+    "evmVersion": "cancun",
+    "transactionDepth": 3,
+    "executionTimeoutSeconds": 900,
+    "modules": "default",
+    "remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+    ]
+  },
+  "strict_runner_exit_code": 1,
+  "findings": {
+    "total": 10,
+    "medium": 3,
+    "low": 7
+  },
+  "analyses": [
+    {
+      "target": "GhostPayRouter",
+      "exit_code": 0,
+      "success": true,
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      },
+      "manifest_evidence_hash_checks": {
+        "stdout": true,
+        "stderr": true,
+        "completeness": true
+      },
+      "issues": []
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "exit_code": 1,
+      "success": true,
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      },
+      "manifest_evidence_hash_checks": {
+        "stdout": true,
+        "stderr": true,
+        "completeness": true
+      },
+      "issues": [
+        {
+          "title": "Dependence on predictable environment variable",
+          "severity": "Low",
+          "swc-id": "116",
+          "filename": "src/GhostPaySweepRelayer.sol",
+          "lineno": 83,
+          "code": "if (block.timestamp > s.deadline) revert Expired()",
+          "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+          "address": 785
+        }
+      ]
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "exit_code": 0,
+      "success": true,
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      },
+      "manifest_evidence_hash_checks": {
+        "stdout": true,
+        "stderr": true,
+        "completeness": true
+      },
+      "issues": []
+    },
+    {
+      "target": "PolicyAccount",
+      "exit_code": 1,
+      "success": true,
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      },
+      "manifest_evidence_hash_checks": {
+        "stdout": true,
+        "stderr": true,
+        "completeness": true
+      },
+      "issues": [
+        {
+          "title": "Dependence on predictable environment variable",
+          "severity": "Low",
+          "swc-id": "116",
+          "filename": "src/PolicyAccount.sol",
+          "lineno": 161,
+          "code": "if (block.timestamp > w.deadline) revert Expired()",
+          "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+          "address": 1876
+        },
+        {
+          "title": "Dependence on predictable environment variable",
+          "severity": "Low",
+          "swc-id": "116",
+          "filename": "src/PolicyAccount.sol",
+          "lineno": 262,
+          "code": "if (block.timestamp > deadline) revert Expired()",
+          "function": "proposeDestination(address,uint256,uint256,bytes)",
+          "address": 5077
+        }
+      ]
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "exit_code": 1,
+      "success": true,
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      },
+      "manifest_evidence_hash_checks": {
+        "stdout": true,
+        "stderr": true,
+        "completeness": true
+      },
+      "issues": [
+        {
+          "title": "Exception State",
+          "severity": "Low",
+          "swc-id": "110",
+          "filename": null,
+          "lineno": null,
+          "code": null,
+          "function": "fallback",
+          "address": 30
+        },
+        {
+          "title": "State access after external call",
+          "severity": "Medium",
+          "swc-id": "107",
+          "filename": "src/PolicyAccountFactory.sol",
+          "lineno": 117,
+          "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 999
+        },
+        {
+          "title": "State access after external call",
+          "severity": "Low",
+          "swc-id": "107",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+          "lineno": 99,
+          "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 1170
+        },
+        {
+          "title": "Multiple Calls in a Single Transaction",
+          "severity": "Low",
+          "swc-id": "113",
+          "filename": "src/PolicyAccountFactory.sol",
+          "lineno": 131,
+          "code": "token.balanceOf(FEE_RECIPIENT)",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 1668
+        },
+        {
+          "title": "State access after external call",
+          "severity": "Medium",
+          "swc-id": "107",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+          "lineno": 104,
+          "code": "create2(value, 0x09, 0x37, salt)",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 2887
+        },
+        {
+          "title": "External Call To User-Supplied Address",
+          "severity": "Low",
+          "swc-id": "107",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+          "lineno": 227,
+          "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 2978
+        },
+        {
+          "title": "Unchecked return value from external call.",
+          "severity": "Medium",
+          "swc-id": "104",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+          "lineno": 227,
+          "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+          "function": "deploy(address,address,uint256,bytes32)",
+          "address": 2978
+        }
+      ]
+    }
+  ],
+  "disposition": "Gate remains failed. Pattern-level source observations do not clear findings or provide an approved exception. No contract changes or rerun performed by this reviewer."
+}

@@ -1,0 +1,73 @@
+{
+  "feature": "v1-04-history",
+  "generation": 2,
+  "base": "814eb4d88f96cc797294a130583737d01cc19054",
+  "runtime_source": "4cc9026f4e9ee27905da70f75b0b8487f8f14a2b",
+  "runtime_tree": "18d98f6bc267ff0feb4be60bff96d840175ffd49",
+  "cwd_for_vitest": "apps/web",
+  "checks": [
+    {
+      "name": "original Pay and Policy regressions",
+      "source": "894844cab7dbe0fd905105f35319c37f898e387a",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/features/policy/PolicyView.guard.test.tsx -t 'surfaces a user rejection and blocks a blind retry until explicit clearing|M2: after an explicit clear under Wallet attempts' --coverage=false --maxWorkers=1",
+      "failed": 2,
+      "passed": 0,
+      "filtered": 76,
+      "exit": 1,
+      "duration_seconds": 9.02
+    },
+    {
+      "name": "registry scope regression",
+      "source": "94c639f89f51f44f6bc71930a7d61e555a4e2a2a",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/features/registry/RegistryView.history.test.tsx --coverage=false --maxWorkers=1",
+      "failed": 1,
+      "passed": 0,
+      "filtered": 0,
+      "exit": 1,
+      "duration_seconds": 3.52
+    },
+    {
+      "name": "complete focused five-file acceptance",
+      "source": "4cc9026f4e9ee27905da70f75b0b8487f8f14a2b",
+      "tree": "18d98f6bc267ff0feb4be60bff96d840175ffd49",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/features/policy/PolicyView.guard.test.tsx src/features/registry/RegistryView.history.test.tsx src/components/WalletAttempts.test.tsx src/components/ReconciliationLedger.privacy.test.tsx --coverage=false --maxWorkers=1",
+      "failed": 0,
+      "passed": 84,
+      "filtered": 0,
+      "files": 5,
+      "exit": 0,
+      "duration_seconds": 45.32
+    },
+    {
+      "name": "secret scan",
+      "source": "4cc9026f4e9ee27905da70f75b0b8487f8f14a2b",
+      "command": "bash scripts/scan-secrets.sh",
+      "exit": 0
+    },
+    {
+      "name": "complete feature whitespace check",
+      "source": "4cc9026f4e9ee27905da70f75b0b8487f8f14a2b",
+      "command": "git diff 814eb4d8..HEAD --check",
+      "exit": 0
+    }
+  ],
+  "logs": {
+    "red": {
+      "sha256": "6723b6ad108d5213f1c3b1ed5dcca2544c4c59f0caf12ef5cfd63c333f0c5bd5",
+      "uncompressed_bytes": 30426
+    },
+    "registry-red": {
+      "sha256": "2ea1c7c83ae0a9c778a9f38073fd6fd3f1fa1048f5faba96a5f6fea4c05e70a3",
+      "uncompressed_bytes": 3540
+    },
+    "green": {
+      "sha256": "d627fab67d667d4531ce1b95841fbe9e2a8ae7a4af8c06a47d8cb140b30d4234",
+      "uncompressed_bytes": 423
+    },
+    "secret-scan": {
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "uncompressed_bytes": 50
+    }
+  },
+  "qualification": "Independent source review plus focused original tests only; combined original type/lint/full coverage/browser/hosted acceptance remains open."
+}

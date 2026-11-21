@@ -1,0 +1,22 @@
+{
+  "name": "pages-project-build",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "bash",
+    "scripts/pages/build-pages.sh",
+    "/workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-project"
+  ],
+  "started": "2026-11-18T15:12:11.325431+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 1536,
+  "pages_node_cap": true,
+  "overrides": {
+    "GHOSTPAY_PAGES_ORIGIN": "https://djshellshoxxx.github.io"
+  },
+  "removed_ambient_build_variable_names": [],
+  "exit_code": 0,
+  "seconds": 15.275,
+  "finished": "2026-11-18T15:12:26.600238+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/pages-project-build.log"
+}

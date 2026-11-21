@@ -13,6 +13,7 @@ import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
 import { getSessionPublic, withSessionSecrets } from './session';
 import { passphraseProblemMessage } from './keystore';
+import { prepareInvoiceMetadata, type InvoiceMetadataMode } from './invoiceMetadata';
 
 export interface LineItemInput {
   readonly description: string;
@@ -38,6 +39,8 @@ export interface InvoiceForm {
   readonly quoteTtlMinutes: number;
   readonly maxSlippageBps: number;
   readonly memo: string;
+  /** Omit optional descriptive metadata before signing; existing callers default to standard metadata. */
+  readonly metadataMode?: InvoiceMetadataMode;
   readonly encrypt: boolean;
   /** Protect the whole invoice with a secret shared out of band. */
   readonly passphrase?: string;
@@ -135,6 +138,7 @@ export async function buildInvoiceLink(
   if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError({ key: 'error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints' });
   // The schema accepts only NFC text. Normalize here, as for line descriptions, so pasted decomposed text is not refused.
   const memo = form.memo.normalize('NFC').trim();
+  const metadata = prepareInvoiceMetadata({ lineItems: items, ...(memo === '' ? {} : { memo }) }, form.metadataMode);
   const invoice = createInvoice(
     {
       chainId: form.chainId,
@@ -149,10 +153,10 @@ export async function buildInvoiceLink(
         maxSlippageBps: form.maxSlippageBps,
       },
       expiresAt: nowSeconds + expirySeconds,
-      lineItems: items,
+      lineItems: metadata.lineItems,
       tax: { rateBps, minorUnits: totals.tax.toString() },
       feePolicy: form.feePolicy,
-      ...(memo === '' ? {} : { memo }),
+      ...(metadata.memo === undefined ? {} : { memo: metadata.memo }),
       signer: pub.signerPublicKey,
       ...(form.bufferPolicy === undefined ? {} : { bufferPolicy: form.bufferPolicy }),
     },

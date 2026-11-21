@@ -1,0 +1,80 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/lib/scanPrivacy.authorization.test.ts (5 tests | 4 failed) 33ms
+   ❯ scan caller cancellation without a network authority mock (5)
+     × refuses pre-aborted bootstrap before dispatch for endpoint undefined 16ms
+     × refuses pre-aborted bootstrap before dispatch for endpoint http://127.0.0.1:8545/ 2ms
+     × does not dispatch another queued window after cancellation during the preceding request 5ms
+     × checks cancellation again after jitter before dispatching the next window 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > refuses pre-aborted bootstrap before dispatch for endpoint undefined
+ FAIL  src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > refuses pre-aborted bootstrap before dispatch for endpoint http://127.0.0.1:8545/
+AssertionError: expected [Function] to throw error including 'scan cancelled' but got 'scan-aborted'
+
+Expected: "scan cancelled"
+Received: "scan-aborted"
+
+ ❯ src/lib/scanPrivacy.authorization.test.ts:28:8
+     26|       plan: ready({ endpoint, allowLoopbackHttp: endpoint !== undefine…
+     27|       appRpc, fetchImpl, sleep, signal: AbortSignal.abort('private rea…
+     28|     })).rejects.toThrow('scan cancelled');
+       |        ^
+     29|     expect(appRpc).not.toHaveBeenCalled();
+     30|     expect(fetchImpl).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > does not dispatch another queued window after cancellation during the preceding request
+AssertionError: expected Error: scan-aborted to match object { code: 'RPC_URL_REJECTED', …(1) }
+
+- Expected
++ Received
+
+- {
+-   "code": "RPC_URL_REJECTED",
+-   "message": "RPC_URL_REJECTED: scan cancelled",
++ Error {
++   "message": "scan-aborted",
+  }
+
+ ❯ src/lib/scanPrivacy.authorization.test.ts:71:27
+     69|     controller.abort();
+     70|     firstLogs.resolve([]);
+     71|     expect(await outcome).toMatchObject({ code: 'RPC_URL_REJECTED', me…
+       |                           ^
+     72|     expect(rpc.calls.filter((call) => call.method === 'eth_getLogs')).…
+     73|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > checks cancellation again after jitter before dispatching the next window
+AssertionError: expected Error: scan-aborted to match object { code: 'RPC_URL_REJECTED', …(1) }
+
+- Expected
++ Received
+
+- {
+-   "code": "RPC_URL_REJECTED",
+-   "message": "RPC_URL_REJECTED: scan cancelled",
++ Error {
++   "message": "scan-aborted",
+  }
+
+ ❯ src/lib/scanPrivacy.authorization.test.ts:90:27
+     88|     controller.abort();
+     89|     wake.resolve();
+     90|     expect(await outcome).toMatchObject({ code: 'RPC_URL_REJECTED', me…
+       |                           ^
+     91|     expect(sleepImpl).toHaveBeenCalledTimes(1);
+     92|     expect(rpc.calls.filter((call) => call.method === 'eth_getLogs')).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  01:03:06
+   Duration  2.49s (transform 52%, import 46%, tests 2%)

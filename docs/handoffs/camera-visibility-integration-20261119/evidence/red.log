@@ -1,0 +1,324 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/CameraImporter.visibility.test.tsx (9 tests | 9 failed) 354ms
+   ❯ CameraImporter hidden-document authorization (9)
+     × aborts a pending image import and drops its late result even after the page becomes visible again 82ms
+     × revokes a pending pasted callback without replaying or accepting it when visibility returns 148ms
+     × refuses new camera dispatch while hidden before the visibility event is delivered 35ms
+     × refuses new paste dispatch while hidden before the visibility event is delivered 19ms
+     × refuses new image dispatch while hidden before the visibility event is delivered 13ms
+     × does not deliver a decoded image after visibility changes but before the visibility event 9ms
+     × does not start camera work after preview invalidation synchronously hides and aborts the import 18ms
+     × does not start paste work after preview invalidation synchronously hides and aborts the import 16ms
+     × does not start image work after preview invalidation synchronously hides and aborts the import 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > aborts a pending image import and drops its late result even after the page becomes visible again
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:65:29
+     63|
+     64|     setVisibility('hidden');
+     65|     expect(signal?.aborted).toBe(true);
+       |                             ^
+     66|     expect(screen.queryByRole('button', { name: 'Stop camera' })).toBe…
+     67|     setVisibility('visible');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > revokes a pending pasted callback without replaying or accepting it when visibility returns
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:94:29
+     92|
+     93|     setVisibility('hidden');
+     94|     expect(signal?.aborted).toBe(true);
+       |                             ^
+     95|     setVisibility('visible');
+     96|     await act(async () => { pending.resolve(true); await pending.promi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > refuses new camera dispatch while hidden before the visibility event is delivered
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      <video
+        aria-label="QR scanner camera preview"
+        hidden=""
+        playsinline=""
+        style="width: 100%; max-width: 32rem;"
+      />,
+      undefined,
+      Object {
+        "deviceId": undefined,
+        "secureContext": undefined,
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+        },
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:120:38
+    118|       await Promise.resolve();
+    119|     });
+    120|     expect(exchange.startCamera).not.toHaveBeenCalled();
+       |                                      ^
+    121|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+    122|     expect(onText).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > refuses new paste dispatch while hidden before the visibility event is delivered
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "synthetic invoice",
+      AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 0,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kHandlers): Map {},
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+        Symbol(kComposite): false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:122:24
+    120|     expect(exchange.startCamera).not.toHaveBeenCalled();
+    121|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+    122|     expect(onText).not.toHaveBeenCalled();
+       |                        ^
+    123|   });
+    124|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > refuses new image dispatch while hidden before the visibility event is delivered
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      File {},
+      Object {
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+        },
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:121:40
+    119|     });
+    120|     expect(exchange.startCamera).not.toHaveBeenCalled();
+    121|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+       |                                        ^
+    122|     expect(onText).not.toHaveBeenCalled();
+    123|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > does not deliver a decoded image after visibility changes but before the visibility event
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "hidden private invoice",
+      AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 0,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kHandlers): Map {},
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+        Symbol(kComposite): false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:133:24
+    131|     setVisibility('hidden', false);
+    132|     await act(async () => { pending.resolve('hidden private invoice');…
+    133|     expect(onText).not.toHaveBeenCalled();
+       |                        ^
+    134|     setVisibility('visible');
+    135|     expect(onText).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > does not start camera work after preview invalidation synchronously hides and aborts the import
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      <video
+        aria-label="QR scanner camera preview"
+        hidden=""
+        playsinline=""
+        style="width: 100%; max-width: 32rem;"
+      />,
+      undefined,
+      Object {
+        "deviceId": undefined,
+        "secureContext": undefined,
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+        },
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:150:38
+    148|     else pickImage();
+    149|     await act(async () => { await Promise.resolve(); });
+    150|     expect(exchange.startCamera).not.toHaveBeenCalled();
+       |                                      ^
+    151|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+    152|     expect(onText).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > does not start paste work after preview invalidation synchronously hides and aborts the import
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "synthetic invoice",
+      AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 0,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kHandlers): Map {},
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+        Symbol(kComposite): false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:152:24
+    150|     expect(exchange.startCamera).not.toHaveBeenCalled();
+    151|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+    152|     expect(onText).not.toHaveBeenCalled();
+       |                        ^
+    153|   });
+    154| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  src/components/CameraImporter.visibility.test.tsx > CameraImporter hidden-document authorization > does not start image work after preview invalidation synchronously hides and aborts the import
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      File {},
+      Object {
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+        },
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/components/CameraImporter.visibility.test.tsx:151:40
+    149|     await act(async () => { await Promise.resolve(); });
+    150|     expect(exchange.startCamera).not.toHaveBeenCalled();
+    151|     expect(exchange.decodeQrImage).not.toHaveBeenCalled();
+       |                                        ^
+    152|     expect(onText).not.toHaveBeenCalled();
+    153|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed (9)
+   Start at  01:23:16
+   Duration  2.88s (environment 60%, transform 14%, tests 14%, import 11%)
+
+
+real	0m3.694s
+user	0m2.905s
+sys	0m1.357s

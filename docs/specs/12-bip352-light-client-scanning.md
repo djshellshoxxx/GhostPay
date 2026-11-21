@@ -1,5 +1,13 @@
 # 12 BIP-352 light-client scanning
 
+> **2026-11-18 spentness completion:** Full-block scans recognize confirmed spends from the already downloaded,
+> header-bound transaction inputs. Local status requires continuous coverage through the sampled chain tip;
+> incomplete scans and legacy coverage gaps remain unknown and cannot be swept. Per-output provider queries remain
+> off by default in full mode and are explicitly required in light mode, with independent enforcement in the
+> main-thread request bridge. Encrypted version-1 history retains compatible, reorganization-aware spend/coverage
+> evidence. See [the user guide](../user/bitcoin-spent-status.md) and
+> [source-pinned qualification](../handoffs/btc-spentness-20261118/QUALIFICATION.md).
+
 > **2026-11-16 implementation:** The full-profile Bitcoin view has an isolated scan worker, opt-in encrypted continuity, own-node Esplora full-block checks, explicit BlindBit HTTP/HTTPS gRPC-Web selection, all-block cross-checks, and optional light scanning. Light matches require raw-transaction/Merkle inclusion against the checked header chain and current Esplora outspend checks, including restored matches. Source changes cancel work, clear spend authority, and separate encrypted oracle-policy scopes. See [source handoff](../handoffs/agents/TEAM_H_SOURCES_UNIFIED.md) and [worker handoff](../handoffs/agents/TEAM_H_WORKER_UNIFIED.md). Real-node/proxy and physical-device acceptance remain unperformed; mocked regtest evidence does not satisfy those gates.
 
 Priority P2-P3 | Effort M-L (8-12 d) | Owner: btc-silent-payments | Deps: 11, 10 (shared disclosure model)
@@ -8,8 +16,8 @@ Sources: research s3 (Appendix A open research; ~30 MB/month for 3-day scans, Ju
 ## 1. Modes and disclosure table (shown in UI before enabling)
 | Mode | Scan key leaves client? | Server learns | Bandwidth |
 |---|---|---|---|
-| A own-node Esplora with local `EsploraTweakSource` (default path) | no | selected Esplora sees IP, block range and outspend queries; an own local node keeps this local | full blocks plus headers |
-| B explicitly selected BlindBit HTTP or HTTPS gRPC-Web | no | oracle sees IP/block range; light proof queries reveal matching transaction IDs to Esplora; outspend queries reveal matched outpoints | full mode retains full-block bandwidth; light mode fetches tweaks/outputs and matched transaction proofs; no current size estimate claimed |
+| A own-node Esplora with local `EsploraTweakSource` (default path) | no | selected Esplora sees IP and block range; per-output spent queries reveal outpoints only if explicitly enabled; an own local node keeps this local | full blocks plus headers |
+| B explicitly selected BlindBit HTTP or HTTPS gRPC-Web | no | oracle sees IP/block range; light proof queries reveal matching transaction IDs to Esplora; required light spent queries reveal candidate outpoints (optional in full mode) | full mode retains full-block bandwidth; light mode fetches tweaks/outputs and matched transaction proofs; no current size estimate claimed |
 | C hosted scan service (Frigate-style) | yes (scan key) | all incoming payments | minimal; loudly labelled opt-in, own ToS (MULTICHAIN s4) |
 Hosted mode C remains absent and ADR-gated. BlindBit gRPC schema/transport provenance is pinned in the worker handoff. Deployed server/proxy compatibility is not demonstrated by fixtures. HTTP is the legacy adapter; full, unfiltered capabilities and exact network identity are required at runtime.
 
@@ -35,7 +43,7 @@ Regtest bitcoind in CI (if available) generating SP payments; mock oracle with f
 
 The default full-block mode recomputes transaction IDs, block Merkle roots and BIP-141 witness commitments against locally checked headers. It excludes coinbase and ineligible transaction outputs before scanning. It does not validate all Bitcoin scripts/prevouts/consensus. An optional oracle must agree on every scanned block's complete tweak/output multisets before results or checkpoints are accepted; extra, missing or changed entries fail closed. A second selected oracle can cross-check every block in either mode, including blocks with no wallet match. Different origins are required but do not establish independent operators.
 
-Light mode never treats oracle metadata alone as spend authority. Every matched raw transaction must reproduce the claimed txid and exact taproot script, amount and output index, then verify its Merkle branch against the expected height and checked header hash. Coinbase outputs are rejected. Historical matches are re-derived and freshly proved on restoration. This proves inclusion, not witness validity, tweak correctness, payment completeness or the best chain. Colluding oracles may omit payments. Current spent status remains the explicitly selected Esplora server's report, checked again before broadcast by the existing sweep flow.
+Light mode never treats oracle metadata alone as spend authority. Every matched raw transaction must reproduce the claimed txid and exact taproot script, amount and output index, then verify its Merkle branch against the expected height and checked header hash. Coinbase outputs are rejected. Historical matches are re-derived and freshly proved on restoration. This proves inclusion, not witness validity, tweak correctness, payment completeness or the best chain. Colluding oracles may omit payments. Spent status remains the explicitly authorized Esplora server's report at scan time; later blocks and mempool changes can invalidate it before broadcast. The existing signing and broadcast policy is unchanged.
 
 The source UI starts with Esplora only and no oracle URL. No keys leave the worker through either bounded main-thread transport. Oracle source/mode edits cancel asynchronous work, wipe results/review/signatures and turn saved continuity off until selected again. Oracle continuity is cryptographically scoped to network, wallet, normalized Esplora URL, oracle protocol/URL, mode and optional second endpoint; endpoint details are not persisted in plaintext. The established full-block scope remains compatible and always revalidates historical matches.
 

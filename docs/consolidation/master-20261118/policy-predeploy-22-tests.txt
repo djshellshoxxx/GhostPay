@@ -1,0 +1,30 @@
+✔ fee 1 is rejected without a token-specific acknowledgement (54.453145ms)
+✔ fee 0001 is rejected without a token-specific acknowledgement (36.142457ms)
+✔ fee 3000000 is rejected without a token-specific acknowledgement (44.567682ms)
+✔ fee 999999999999999999999999999999999999999 is rejected without a token-specific acknowledgement (38.785996ms)
+✔ rejects a fee acknowledgement that does not name the configured token ("0x3333333333333333333333333333333333333333") (81.535847ms)
+✔ rejects a fee acknowledgement that does not name the configured token ("yes") (36.948379ms)
+✔ rejects a fee acknowledgement that does not name the configured token ("true") (50.671371ms)
+✔ rejects a fee acknowledgement that does not name the configured token ("0x123") (63.345435ms)
+✔ rejects a fee acknowledgement that does not name the configured token (" 0x1111111111111111111111111111111111111111") (51.696575ms)
+✔ rejects a fee acknowledgement that does not name the configured token ("0x1111111111111111111111111111111111111111\n") (414.986496ms)
+✔ a matching token acknowledgement permits the offline preflight only (182.255892ms)
+✔ the acknowledgement stays bound to the configured token after a token change (96.875543ms)
+✔ zero fee 0 requires no acknowledgement (35.074154ms)
+✔ zero fee 0000 requires no acknowledgement (71.988579ms)
+✔ matching acknowledgement cannot bypass missing token (28.176023ms)
+✔ matching acknowledgement cannot bypass zero token (216.317518ms)
+✔ matching acknowledgement cannot bypass malformed token (55.764976ms)
+✔ matching acknowledgement cannot bypass missing fee (40.589098ms)
+✔ matching acknowledgement cannot bypass negative fee (52.218615ms)
+✔ matching acknowledgement cannot bypass fractional fee (47.806437ms)
+✔ matching acknowledgement cannot bypass missing cap (71.624926ms)
+✔ matching acknowledgement cannot bypass fee above cap (93.534986ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2370.874049

@@ -1,0 +1,47 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-btc/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/features/btc/headers.test.ts (32 tests | 1 failed | 31 skipped) 238ms
+   ❯ invalidating scan results after a reorg (5)
+     × keeps a discovery unknown when reloaded headers have not rechecked its spending suffix 236ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/btc/headers.test.ts > invalidating scan results after a reorg > keeps a discovery unknown when reloaded headers have not rechecked its spending suffix
+AssertionError: expected { scan: { fromHeight: 1, …(6) }, …(1) } to deeply equal { scan: { fromHeight: 1, …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -99,9 +99,9 @@
+        },
+      ],
+      "fromHeight": 1,
+      "headerAnchored": true,
+      "spentCount": 0,
+-     "spentStatus": "unknown",
++     "spentStatus": "local",
+      "toHeight": 4,
+    },
+  }
+
+ ❯ src/features/btc/headers.test.ts:362:46
+    360|       headerAnchored: true, spentStatus: 'local',
+    361|     };
+    362|     expect(invalidateReorged(scan, headers)).toEqual({ scan: { ...scan…
+       |                                              ^
+    363|   });
+    364|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 31 skipped (32)
+   Start at  00:10:52
+   Duration  3.99s (import 54%, transform 39%, tests 7%)
+

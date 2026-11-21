@@ -1,0 +1,27 @@
+$ python /workspace/scratch/4fa14be12559/analysis-build/check-release-artifact.py /workspace/scratch/4fa14be12559/analysis-build/artifacts/release-development 9bad95e5cc0ee73f5adb8d2c587161074b21e080 0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2 1795012894
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=384", "pages_node_cap": false}
+{
+  "result": "PASS",
+  "scope": "development artifacts; no publication",
+  "artifact": "/workspace/scratch/4fa14be12559/analysis-build/artifacts/release-development",
+  "commit": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "channel": "development",
+  "sourceTree": {
+    "clean": true,
+    "tagCommit": null
+  },
+  "node": "v22.23.5",
+  "npm": "11.21.2",
+  "sourceDateEpoch": 1795012894,
+  "bundleFiles": 19,
+  "sbomComponents": 139,
+  "sha256": {
+    "ghostpay-web-qualification-9bad95e5.tar.gz": "3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1",
+    "sbom.cdx.json": "e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d",
+    "release-manifest.json": "5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213"
+  }
+}
+
+EXIT_CODE=0
+SECONDS=0.041

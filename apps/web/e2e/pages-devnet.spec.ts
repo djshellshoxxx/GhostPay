@@ -4,13 +4,14 @@ import { createServer } from 'node:http';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
-  FRAGMENT_PREFIX, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest as calculateInvoiceDigest, parseFragment,
+  invoiceDigest as calculateInvoiceDigest, parseFragment,
 } from '@ghostpay/invoice-schema';
 import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, tokensForChain, type Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { getAddress, keccak256, parseTransaction, recoverTransactionAddress, toHex, type Address } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
-import { generateKeys, openFresh } from './helpers';
+import { approveWalletDisclosure, generateKeys, openFresh } from './helpers';
+import { tamperInvoiceLink } from './devnet/invoiceTamper';
 import { ANVIL_ACCOUNTS, APP_RPC, Anvil, loadDevnet, type DevnetState } from './devnet/chain';
 import { identityOf, keysView, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
 import {
@@ -107,14 +108,14 @@ async function expectNoKeys(page: Page): Promise<void> {
   await expect(keysView(page).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
 }
 
-/** Direct-sweep attempt of the currently selected payment; returns the sign button for the caller to click. */
+/** Native sweep of the selected payment; returns its fee-review button, which can fail before signing is offered. */
 async function prepareDirectSweep(page: Page, vaultPass?: string): Promise<Locator> {
   await sweepView(page).getByLabel(/Directly/).check();
   await sweepView(page).getByLabel('Destination address (your own wallet)').fill(ACCOUNTS.destination);
   if (vaultPass !== undefined) await sweepView(page).getByLabel('Vault passphrase (required for each sweep action)').fill(vaultPass);
-  const sign = sweepView(page).getByRole('button', { name: 'Sign and broadcast directly' });
-  await expect(sign).toBeEnabled();
-  return sign;
+  const prepareFees = sweepView(page).getByRole('button', { name: 'Review native sweep fees' });
+  await expect(prepareFees).toBeEnabled();
+  return prepareFees;
 }
 
 async function scanFromZero(page: Page, resume: boolean): Promise<void> {
@@ -126,19 +127,6 @@ async function scanFromZero(page: Page, resume: boolean): Promise<void> {
   await page.getByRole('button', { name: 'Start scan' }).click();
   await expect(page.getByText(/^Finished\./)).toBeVisible({ timeout: 60_000 });
 }
-
-/** A copy of a signed invoice link whose public amount was changed after signing (the signature no longer verifies). */
-function tamperInvoiceLink(link: string): string {
-  const url = new URL(link);
-  expect(url.hash.startsWith(FRAGMENT_PREFIX)).toBe(true);
-  const envelope = JSON.parse(new TextDecoder().decode(decodeBase64Url(url.hash.slice(FRAGMENT_PREFIX.length)))) as { alg: string; inv: { amountPolicy: { mode: string; tokenAmount: string } }; sig: string };
-  expect(envelope.alg).toBe('none');
-  expect(envelope.inv.amountPolicy.mode).toBe('fixed_token');
-  envelope.inv.amountPolicy.tokenAmount = (BigInt(envelope.inv.amountPolicy.tokenAmount) / 10n).toString();
-  url.hash = FRAGMENT_PREFIX + encodeBase64Url(new TextEncoder().encode(canonicalize(envelope)));
-  return url.toString();
-}
-
 
 /**
  * Pages transport fidelity: an upstream HTTP error is not a successful JSON-RPC transport.
@@ -311,19 +299,19 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const verifyPass = keysView(sp).getByLabel('Keystore passphrase', { exact: true });
     await verifyFile.setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(tamperCiphertext(keystoreText), 'utf8') });
     await verifyPass.fill(KEYSTORE_PASS);
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill('wrong passphrase for the file');
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill(KEYSTORE_PASS);
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
     await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
@@ -347,6 +335,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     link = await createPagesInvoice(sp, baseURL ?? '', { description: 'Pages devnet consulting', register: true });
     const opened = await parseFragment(new URL(link).hash);
     expect(opened.verification.signatureValid).toBe(true);
+    expect(opened.encrypted).toBe(true);
     expect(opened.invoice).toMatchObject({ chainId: 84532, token: 'native', signer: identity.signer, metaAddress: identity.meta });
     digest = `0x${bytesToHex(calculateInvoiceDigest(opened.invoice))}`;
 
@@ -374,12 +363,13 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const feeBefore = await anvil.balance(dn.feeRecipient);
     await openFresh(p, link);
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
-    // Nothing reaches the wallet or the chain before the explicit send click.
+    // No transaction reaches the wallet or chain before the send and disclosure decisions.
     expect(payer.wallet.sends).toHaveLength(0);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce);
 
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     payHash = payer.wallet.hashes[0] as Hex;
     await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -419,14 +409,21 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(new URL(p.url()).pathname).toBe(PAGES_BASE);
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    // Reload retains the submitted hash, not permission to display it without wallet context.
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(payHash);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    // Reconnecting the original wallet reveals the same saved hash, but retry stays blocked.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce + 1);
@@ -479,6 +476,24 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
     await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
+    await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+    const minimized: unknown = JSON.parse(await panel.getByLabel('Signed receipt JSON').inputValue());
+    expect(verifyReceipt(minimized)).toBe(true);
+    expect(minimized).not.toHaveProperty('stealthAddress');
+    expect(minimized).toMatchObject({
+      invoiceDigest: digest, chainId: 84532, asset: 'native', amountMinorUnits: net0.toString(),
+      txHash: payHash.toLowerCase(), signerPublicKey: identity.signer,
+    });
+
+    // Rebind and explicitly opt into the full receipt before checking its address and archiving it.
+    await panel.getByRole('button', { name: 'Clear invoice binding', exact: true }).click();
+    await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
+    await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receipt: unknown = JSON.parse(await panel.getByLabel('Signed receipt JSON').inputValue());
@@ -511,7 +526,12 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
-    const sign = await prepareDirectSweep(s, VAULT_PASS);
+    const prepareFees = await prepareDirectSweep(s, VAULT_PASS);
+    await prepareFees.click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(net.sentRaw.length).toBe(rawBefore);
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await sign.click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
     const raw = net.sentRaw.at(-1) as `0x02${string}`;
@@ -581,7 +601,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
     expect(await webStorageContains(sp, VAULT_PASS)).toBe(false);
 
-    // Scan state: the checkpoint persisted (localStorage); matches are in memory only, so none before a new scan.
+    // The authenticated encrypted journal persists discovery with its cursor. Restored history stays nonactionable
+    // until the real scanner rereads its blocks and revalidates payment evidence against this local chain.
     await nav(sp).getByRole('button', { name: 'Scan and receive' }).click();
     await sp.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
     await expect(sp.getByText(/^A checkpoint exists at block \d+\.$/)).toBeVisible();
@@ -603,9 +624,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(reconciliationBackup).not.toContain(payHash.toLowerCase());
     expect(reconciliationBackup).not.toContain(digest);
 
-    // Resuming from the checkpoint finds nothing new; a full rescan finds the one payment, which is not counted twice.
+    // Resume revalidates the saved payment even when its block is behind the cursor; a full rescan also keeps one entry.
     await scanFromZero(sp, true);
-    await expect(sp.getByText(/^Finished\./)).toContainText(' 0 payments found');
+    await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
+    await expect(scanMatches(sp)).toHaveCount(1);
     await scanFromZero(sp, false);
     await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
     await expect(scanMatches(sp)).toHaveCount(1);
@@ -758,6 +780,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       expect(payer.wallet.sends).toHaveLength(0);
       await anvil.automine(false);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect.poll(() => payer.wallet.hashes.length).toBe(1);
       const original = payer.wallet.hashes[0]!;
       await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -799,6 +822,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(1);
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
@@ -837,8 +861,14 @@ test.describe('GitHub Pages artifact: refusals', () => {
     try {
       const s = await quickSeller(c);
       const genuine = await createPagesInvoice(s, baseURL ?? '', { description: 'Pages tamper check' });
+      const original = await parseFragment(new URL(genuine).hash);
+      expect(original.encrypted).toBe(true);
+      expect(original.verification.signatureValid).toBe(true);
       const forged = tamperInvoiceLink(genuine);
-      expect((await parseFragment(new URL(forged).hash)).verification.signatureValid).toBe(false);
+      const altered = await parseFragment(new URL(forged).hash);
+      expect(altered.encrypted).toBe(true);
+      expect(altered.invoice.amountPolicy).toMatchObject({ mode: 'fixed_token', tokenAmount: (PRICE / 10n).toString() });
+      expect(altered.verification.signatureValid).toBe(false);
       const payer = await openPayer(c, ACCOUNTS.rejectPayer);
       const nonce = await anvil.nonce(ACCOUNTS.rejectPayer);
       await openFresh(payer.page, forged);
@@ -973,6 +1003,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       payer.wallet.rejectSends = true;
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByRole('alert').filter({ hasText: 'You rejected the request in your wallet.' })).toBeVisible({ timeout: 30_000 });
       expect(payer.wallet.rejected).toHaveLength(1);
       expect(payer.wallet.hashes).toHaveLength(0);
@@ -985,6 +1016,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(0);
       expect(payer.wallet.hashes).toHaveLength(0);
@@ -1012,14 +1044,14 @@ test.describe('GitHub Pages artifact: refusals', () => {
       const createdAt = Math.floor(Date.now() / 1000);
       expect(parsed.invoice.expiresAt - createdAt).toBeGreaterThan(3_500);
       expect(parsed.invoice.expiresAt - createdAt).toBeLessThanOrEqual(3_600);
-      const past = new Date((parsed.invoice.expiresAt + 300) * 1000);
-      // Keep the seller's clock unchanged and begin this payer's lease shortly before invoice expiry.
-      // The later ten-minute jump crosses the invoice deadline within the normal fifteen-minute idle limit.
-      const clocked = await newContext(browser, baseURL, net);
-      extra.push(clocked);
-      const payer = await openPayer(clocked, ACCOUNTS.expiryPayer);
+      const past = new Date((parsed.invoice.expiresAt + 30) * 1000);
+      // Keep the seller's clock unchanged, and mount the payer near expiry so only 90 seconds pass before Send.
+      // A one-hour jump after mounting would also trigger the independent 15-minute idle lock before the click.
+      const payerContext = await newContext(browser, baseURL, net);
+      extra.push(payerContext);
+      await payerContext.clock.install({ time: new Date((parsed.invoice.expiresAt - 60) * 1000) });
+      const payer = await openPayer(payerContext, ACCOUNTS.expiryPayer);
       const p = payer.page;
-      await p.clock.install({ time: new Date((parsed.invoice.expiresAt - 300) * 1000) });
       const nonce = await anvil.nonce(ACCOUNTS.expiryPayer);
 
       // 1. Valid when prepared, expired by the time of the send click: refused before the wallet is asked.
@@ -1028,6 +1060,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await p.clock.setSystemTime(past);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(p.getByText('This invoice has expired. Nothing was sent.', { exact: false }).first()).toBeVisible({ timeout: 30_000 });
+      await expect(p.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
       expect(payer.wallet.requests.filter((m) => m === 'eth_sendTransaction')).toHaveLength(0);
 
       // 2. Opened after expiry: the review itself blocks the payment.
@@ -1055,6 +1088,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       const callsBefore = net.calls.length;
       await q.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(q.page.getByRole('alert').filter({ hasText: 'Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.' })).toBeVisible({ timeout: 30_000 });
+      await expect(q.page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
       await expect(q.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
       expect(q.wallet.sends).toHaveLength(0);
       expect(q.wallet.hashes).toHaveLength(0);

@@ -1,0 +1,34 @@
+✔ contract analysis is reusable and PR-scoped with read-only pinned tools and retained failing outcomes (0.945684ms)
+✔ Mythril host compatibility preserves every argument and the CLI return code (17.89271ms)
+✔ the workflow analysis shell records and rethrows both successful and abnormal runner exits (10.018774ms)
+✔ artifact collection bounds retained bytes, hashes the full report and preserves failure attribution (49.635773ms)
+✔ missing reports and cancellation never acquire a successful exit code (28.119948ms)
+✔ release builds and drafts only after Echidna and Mythril ran on the tagged commit in the same run (0.985725ms)
+✔ the release analysis gate accepts only successful evidence of both analyzers for the built commit (2093.766762ms)
+✔ accepts complete clean reports and preserves pinned analyzer inputs for every contract (74.861493ms)
+✔ preserves the default 900-second execution budget (63.350778ms)
+✔ rejects missing issues in any one contract and still analyzes all contracts (285.353676ms)
+✔ rejects null issues in any one contract and still analyzes all contracts (306.846711ms)
+✔ rejects object issues in any one contract and still analyzes all contracts (323.922166ms)
+✔ rejects string issues in any one contract and still analyzes all contracts (303.626085ms)
+✔ rejects nonempty issues in any one contract and still analyzes all contracts (291.959449ms)
+✔ rejects unsuccessful analysis in any one contract and still analyzes all contracts (307.611886ms)
+✔ rejects nonboolean success in any one contract and still analyzes all contracts (310.973498ms)
+✔ rejects missing success in any one contract and still analyzes all contracts (284.153712ms)
+✔ rejects missing error field in any one contract and still analyzes all contracts (285.226591ms)
+✔ rejects error despite success flag in any one contract and still analyzes all contracts (262.593505ms)
+✔ rejects malformed JSON in any one contract and still analyzes all contracts (255.306568ms)
+✔ rejects empty output in any one contract and still analyzes all contracts (268.548901ms)
+✔ rejects array report in any one contract and still analyzes all contracts (277.960997ms)
+✔ rejects null report in any one contract and still analyzes all contracts (265.260521ms)
+✔ rejects failure then clean report in any one contract and still analyzes all contracts (261.274778ms)
+✔ rejects duplicate clean reports in any one contract and still analyzes all contracts (286.959031ms)
+✔ rejects abnormal exits even with clean-looking output from the affected contract (1174.641511ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8245.247442

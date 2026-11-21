@@ -1,0 +1,16 @@
+{
+  "phase": "RED",
+  "source_commit": "003c2bc7f57df4a243ec87f7ca112c6a3d2e8a5c",
+  "started_at_utc": "2026-11-19T12:53:18.569784+00:00",
+  "elapsed_seconds": 2.286291842996434,
+  "command_argv": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "--max-old-space-size=128",
+    "--test",
+    "--test-concurrency=1",
+    "--test-name-pattern=accepts complete|preserves the default|rejects (duplicate success key|duplicate error key|duplicate nested issue key|missing completeness|internal execution timeout|internal creation timeout|hidden report exception|logged error|missing serialized report)",
+    "scripts/tests/mythril-runner.test.mjs"
+  ],
+  "exit_code": 1,
+  "scope": "Original published runner plus recovered original upstream tests. Selected regressions and controls only; deselected cases are not a pass."
+}

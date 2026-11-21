@@ -55,7 +55,7 @@ describe('Settings exchange: export', () => {
     for (const name of ['RPC endpoints', 'Second RPC endpoints', 'Relayer URL', 'Pinned signer public keys']) expect(box(name).checked).toBe(false);
     const list = (): string[] => within(within(panel()).getByRole('list', { name: 'The QR will contain exactly:' })).getAllByRole('listitem').map((li) => li.textContent ?? '');
     expect(list()).toEqual(['Preferences (delay, idle lock, theme, address bar): delay 120–900 s, idle lock 5 min, theme Dark, remove invoice from address bar: Yes']);
-    expect(within(panel()).queryByText(/they show which providers you use/)).toBeNull();
+    expect(within(panel()).queryByText(/reveals which providers you use/)).toBeNull();
     await user.click(box('RPC endpoints'));
     await user.click(box('Relayer URL'));
     await user.click(box('Pinned signer public keys'));
@@ -69,7 +69,8 @@ describe('Settings exchange: export', () => {
     ]);
     // Full URL paths (which may hold an API key) are in the QR, not in the on-screen listing.
     expect(within(panel()).queryByText(/v3\/KEY/)).toBeNull();
-    expect(within(panel()).getByText(/they show which providers you use/)).toBeTruthy();
+    expect(within(panel()).getByText(/The QR contains complete exported endpoint URLs and reveals which providers you use\./)).toBeTruthy();
+    expect(within(panel()).getByText(/Session-only RPCs and detected credential-bearing endpoints are omitted, but detection can miss secrets\./)).toBeTruthy();
 
     render(<Harness initial={DEFAULT_SETTINGS} />, { container: document.body.appendChild(document.createElement('div')) });
     const second = screen.getAllByRole('region', { name: 'Move settings to your other devices' })[1];

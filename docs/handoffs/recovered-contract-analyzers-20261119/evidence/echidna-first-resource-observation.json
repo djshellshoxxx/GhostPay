@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-11-19T13:40:13.695908+00:00",
+  "evidence_commit": "89f13e99b118ff0cf2c347d6c830dbc064bd54a8",
+  "memory": {},
+  "available_bytes": 2575486976,
+  "failure_lines": [
+    "scripts/run-echidna.sh: line 13:    10 Killed                  echidna \"test/echidna/$h.sol\" --contract \"$h\" --config echidna.yaml --corpus-dir \"echidna-corpus-$h\" --format text \"${limit_args[@]}\" > \"$out\" 2>&1",
+    "::error::EchidnaRouter: unexpected echidna exit 137; expected 1 for falsified canaries",
+    "::error::EchidnaRouter: missing, duplicate, malformed or incomplete call total; need at least 300000",
+    "::error::EchidnaRouter: missing property result: echidna_canary_buffer_success",
+    "::error::EchidnaRouter: missing property result: echidna_canary_erc20_success",
+    "::error::EchidnaRouter: missing property result: echidna_canary_native_success",
+    "::error::EchidnaRouter: missing property result: echidna_canary_nonzero_fee",
+    "::error::EchidnaRouter: missing property result: echidna_fee_plus_net_eq_gross",
+    "::error::EchidnaRouter: missing property result: echidna_fee_recipient_only_gets_bps",
+    "::error::EchidnaRouter: missing property result: echidna_native_fee_plus_net_eq_gross",
+    "::error::EchidnaRouter: missing property result: echidna_router_never_holds_tokens"
+  ],
+  "last_router_status": "[2026-11-19 05:37:35.82] [status] tests: 4/8, fuzzing: 133127/300000, values: [], cov: 7796, corpus: 12, gas/s: 108207305"
+}

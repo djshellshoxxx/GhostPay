@@ -8,8 +8,8 @@
 //   - every HTML entry carries the meta CSP with `script-src 'self'`, no inline <script> body, no inline handler, and
 //     only relative same-site references (the site is served under /<repo>/, so absolute paths would break);
 //   - no secret-shaped strings, no public anvil development keys, no RPC provider URLs with embedded API keys;
-//   - the lean module report names only supported EVM modules (no relayer service, BTC, Solana, TRON, policy, pools,
-//     Node built-ins), and has worker evidence;
+//   - the lean module report names only supported EVM modules (the shared list in ./lean-exclusions.mjs: no relayer
+//     service, BTC, Solana, TRON, policy, pools, Node built-ins, full entry, embed protocol), and has worker evidence;
 //   - every bundled deployment manifest is for a known EVM *testnet*; a mainnet chain id fails closed;
 //   - index.html carries the mirror banner (ADR-0015: a Pages instance is a labelled, degraded mirror).
 // Usage: node scripts/pages/verify-pages-site.mjs <site dir> <lean report json> [--expect-commit <sha>]
@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { leanModuleProblem } from './lean-exclusions.mjs';
 
 /** EVM testnets the app knows (packages/chain-adapters/src/config/chains.ts, `testnet: true`). 84532 also backs devnet. */
 export const TESTNET_CHAIN_IDS = Object.freeze([11155111, 84532, 11155420, 421614, 80002, 97, 43113]);
@@ -46,9 +47,6 @@ const SECRET_PATTERNS = [
   { name: 'RPC URL with an embedded project key', re: /(?:infura\.io\/v3\/|alchemy\.com\/v2\/|quiknode\.pro\/|ankr\.com\/[a-z_]+\/)[0-9A-Za-z_-]{16,}/ },
   { name: 'Google API key', re: /\bAIza[0-9A-Za-z_-]{35}\b/ },
 ];
-
-/** Module paths that must never be rendered into the Pages bundle. */
-const EXCLUDED_MODULE = /(?:^|\/)(?:apps\/relayer\/|src\/features\/(?:btc|solana|tron|policy)\/|(?:packages|node_modules\/@ghostpay)\/(?:btc-silent-payments|btc-family|btc-payjoin|chain-solana|chain-tron|solana-stealth|tron-adapter|policy-scheme|pool-[^/]+|external-pools(?:-[^/]+)?|pir-[^/]+|payer-sponsor|pool-relayer|merchant-billing|merchant-hooks)\/)|^(?:virtual:)?node:/;
 
 function walk(dir, root, out, problems) {
   for (const name of readdirSync(dir).sort()) {
@@ -196,9 +194,10 @@ export function checkLeanReport(report) {
   const groups = [...(Array.isArray(report.chunks) ? report.chunks : []), ...(Array.isArray(report.workers) ? report.workers.flatMap((w) => w?.chunks ?? []) : [])];
   for (const chunk of groups) {
     for (const m of Array.isArray(chunk?.modules) ? chunk.modules : []) {
-      const id = typeof m?.id === 'string' ? m.id.replaceAll('\\', '/') : '';
-      if (id === '') problems.push(`lean report chunk ${String(chunk?.fileName)} has a module without id`);
-      else if ((m.renderedLength ?? 0) > 0 && EXCLUDED_MODULE.test(id)) problems.push(`excluded module rendered into the site: ${id}`);
+      // One exclusion list for this verifier and apps/web/scripts/scan-bundle.mjs (SEC-24): scripts/pages/lean-exclusions.mjs.
+      const why = leanModuleProblem(m);
+      if (why === 'module without id') problems.push(`lean report chunk ${String(chunk?.fileName)} has a module without id`);
+      else if (why !== undefined) problems.push(why);
     }
   }
   return problems;

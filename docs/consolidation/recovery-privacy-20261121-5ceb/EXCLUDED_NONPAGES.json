@@ -1,0 +1,412 @@
+{
+  "preserved_parent": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+  "incoming_parent": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+  "package_manifest_policy": "Keep donor-compatible workspace versions and dependency graph. Runtime, tests, docs and configuration listed under paths remain exact base versions; the explicitly enumerated selective_test_recoveries are the only test exceptions.",
+  "paths": [
+    {
+      "path": ".github/dependabot.yml",
+      "incoming_blob": "604a27d1f04a043461d0dd9adcbcfdf73234e845",
+      "retained_blob": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": ".github/workflows/contract-analysis.yml",
+      "incoming_blob": "efcb5a9b743002e82df01f2169dbd74b215da461",
+      "retained_blob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": ".github/workflows/ghostpay-codex-cloud.yml",
+      "incoming_blob": "5cdda9261404abc06d2b4b827033d0614dcea04c",
+      "retained_blob": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": ".github/workflows/ghostpay-parallel-review.yml",
+      "incoming_blob": "c0b8aaeb2ebd8b6f2751b5931de5743d16708d41",
+      "retained_blob": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/DEVIATIONS.md",
+      "incoming_blob": "6351d5764333325155f7f7d555633587a7b3bbd5",
+      "retained_blob": "909ad1f93f22e37f9a839a9357f11ffba05f3b55",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/Dockerfile",
+      "incoming_blob": "f902b4581b09cf4da288de4c29c3aedbc5d9d7c0",
+      "retained_blob": "658e8a3b661300abe18c88e15e01a0e9a02629ea",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/PRIVACY.md",
+      "incoming_blob": "d2e60641f91fbad19bdab75b760e2b027d4d9f8e",
+      "retained_blob": "65c14bb728ac82e44660b9c7fb13c2c7226f327e",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/README.md",
+      "incoming_blob": "2ea1ab9e65db770a56b83f6ddb9725fd4ef28480",
+      "retained_blob": "2c51340b70b086c10e788c9aafbc98e3dbcdb8fa",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/relayer.config.example.json",
+      "incoming_blob": "3e5cf5bbcc1698704cc554d56fc536121e9c0326",
+      "retained_blob": "f1e12f843fec324c48c93f29cc4c33ce8a4b058b",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/api.test.ts",
+      "incoming_blob": "1cca3b929360d4d55835751c87115247559391bb",
+      "retained_blob": "705cad730c43bd43fd827b62d601c24b444291a7",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/config.test.ts",
+      "incoming_blob": "ae6bbdf77f292c60cff16ac98ed8f0906bd71b20",
+      "retained_blob": "bccfda45474af3daa6d28ab99a4114081f170adf",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/config.ts",
+      "incoming_blob": "6d493824c097ede2cea5f449f30b2737fba1edd5",
+      "retained_blob": "68ef8bd08cfb24f296c22d0789b58840f4d63e3b",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/hardening.test.ts",
+      "incoming_blob": "fe8e316ad7684ebd84f4c199f8c75ff5c30cea49",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/harness.testutil.ts",
+      "incoming_blob": "7b2fbe7f7fa732ba7f1edbb3091694619e231985",
+      "retained_blob": "3c432cb2baea5f62e06976b0a37ec2888f9bb8b0",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/lane.ts",
+      "incoming_blob": "ec73822ae52d7ea459db0ff07b609605e5cceebe",
+      "retained_blob": "6a68db1c9dc47464e0b42e7690ee00bd75da7359",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/log.ts",
+      "incoming_blob": "ee4ca2f1f0c51f7aef3826c05b691391d94a7096",
+      "retained_blob": "76df07bece8f7411b01c945b3c4153adea0b28d1",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/main.ts",
+      "incoming_blob": "817e8c27c8d197e681bbd5aed1471f2af543d9d7",
+      "retained_blob": "c90aa553c168023d6b4052a6a8aed26f1e1bcc15",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/privacy.test.ts",
+      "incoming_blob": "68ef282a2a591b3bdcf9bf8c06e27340148975ad",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/runtime.ts",
+      "incoming_blob": "df682d3acbc2ec51c4274b1f56c0e703f61a38ac",
+      "retained_blob": "14bc1fbf87d20d8bd89e55b84145eb388642b57a",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/server.ts",
+      "incoming_blob": "c99e9b66f88bc99b9b082c968c3023dbd7454a68",
+      "retained_blob": "c916c582785529a55f6c5a863efa83bf4fa03314",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/service.ts",
+      "incoming_blob": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef",
+      "retained_blob": "19e1d63e059db7b2bac9b6f863d3543c9032bee1",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/stress.test.ts",
+      "incoming_blob": "5c130662bbc4e4b975639d99fa46b6a378170cc5",
+      "retained_blob": "331298b9fa2a6367914e4b32cf2b6e0b7621f15d",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/src/validate.ts",
+      "incoming_blob": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+      "retained_blob": "86fca2d61268c0a8da5ab392d2c114b9da46bf31",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/tsconfig.json",
+      "incoming_blob": "c589e6c7117d45e91e382b2e78a94f4103da86d9",
+      "retained_blob": "3c89371772ceb0adbf06acefa94d0a6acdd7ca72",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "apps/relayer/vitest.config.ts",
+      "incoming_blob": "e5fa28f8ab593c7d3e792b5e7f1549747d32cac4",
+      "retained_blob": "3263e9c0b66a0a16910244b483e568c5d0014e2e",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/README.md",
+      "incoming_blob": "66bd271753f3f3b7549529f477eb08a7eaf0a595",
+      "retained_blob": "07586016458deb8c5dd2da899fd8c6577933110a",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/args.ts",
+      "incoming_blob": "f5cbc96a7cc97d172e124c7e76fd4e8024fb9f8b",
+      "retained_blob": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/commands/i18n.ts",
+      "incoming_blob": "82bf08711b34949d87b4f888b56b3038674359e3",
+      "retained_blob": "dbd6e9aeb234f885780b4c0d33384ecc843ffe2e",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/commands/reconcile.ts",
+      "incoming_blob": "4d6c65d8f7cf8a6402ba04994701e275f4d59614",
+      "retained_blob": "39c94eb5215526a87da89551268c2c4ad11f2ab2",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/ctx.ts",
+      "incoming_blob": "55aa94afaf1a272add5c6fe679645e1926246151",
+      "retained_blob": "62afbe2573acb12cf78b435d44366128ac3f4387",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/global-switches.test.ts",
+      "incoming_blob": "088cc1d4c3f7ea0d893e0f73a3a36aa69a41f887",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/io.ts",
+      "incoming_blob": "5dd8d6ad5adeb4265aa04543bbaa9d1d33393dbc",
+      "retained_blob": "0874fd8fd7826d0fa385910ed2d079b40cc9808c",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/observation-input.test.ts",
+      "incoming_blob": "19d547875eec56346999ed8cebad56ad66e9f7b0",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/payment-commands.test.ts",
+      "incoming_blob": "7648253b4632d184b4f673c8c927e7f721247f29",
+      "retained_blob": "25b6c0011add0f148c535aa4121dc80ec8360e06",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/payment-input.ts",
+      "incoming_blob": "283cbe171cef4a3a92e39bdef4360ed790503873",
+      "retained_blob": "ae51e409bef2d4e8fc04b5f8a3e871e2d5e74bd7",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/reconcile-stored-only.test.ts",
+      "incoming_blob": "1982a26a19b59923e0505d48445256453439e2ac",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/run.ts",
+      "incoming_blob": "f12b435a2db0d1337de751192e600f1ddc498790",
+      "retained_blob": "24d57c9964dbd2148461d374b3691b15accf3fe6",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/cli/src/untrusted-echo.test.ts",
+      "incoming_blob": "efc757219c47aed430f52577b55e4ac6de9b83e9",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol",
+      "incoming_blob": "ad92a40d46fa130f80a7d355aa5ee147a2823512",
+      "retained_blob": "9aac9df8f4bae276cc588720929fc0fd7454783f",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/confidential-contracts/contracts/mocks/ReturnBombStealth.sol",
+      "incoming_blob": "6f5a0663505db2cadefdd1c57cc48b0c9cbd8586",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/confidential-contracts/test/router.test.ts",
+      "incoming_blob": "05c3cd83dd9fe2691ee2aad0e72afc55502f6c89",
+      "retained_blob": "69b27a4ed7af33d664d0cdcd587b2ba8f85a960b",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/.gas-snapshot",
+      "incoming_blob": "c5501171e498089cef03d37cc7547338210a935b",
+      "retained_blob": "e2b30d0fc25752a05105979799d54c74d16c103d",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "incoming_blob": "e096beec41dabeb1c382efed9ec690c01a340688",
+      "retained_blob": "3592c96a4839789d4d03a637d2d291ccbbe82893",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/script/DeployPolicy.s.sol",
+      "incoming_blob": "c20b4f85726f3634d91be71372cdcafda778ce4b",
+      "retained_blob": "ba2e6861fe48f99b1659d54b7f1596f46b6365f1",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "incoming_blob": "e0d317c8462e9119a1564106562ca7db5afe92d9",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/scripts/collect-analysis-report.py",
+      "incoming_blob": "4d82b5d3b60aa2cb9ad14d0b528d52e68e9f1b2c",
+      "retained_blob": "ef41f23686a89741d59eb56b6e7e12d1f968246f",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "incoming_blob": "4604d3055535ac85274c0bf83afdee8e6becbd9a",
+      "retained_blob": "bd78f6b0cecc1f9b43c2a933a44981d38e403521",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/scripts/pre-deploy-check.sh",
+      "incoming_blob": "eb882038fe26a25cd117cbb67292c606fdec1a8d",
+      "retained_blob": "0e85d5d4694ed10ec7d670fd09e493891146f5f1",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "incoming_blob": "a277ff0061e0d08f9850957f3dd9d96a59ad17ec",
+      "retained_blob": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/test/DeployChecksum.t.sol",
+      "incoming_blob": "b732ef32587ac73dac65b7b3513fd799e5532769",
+      "retained_blob": "511d1c0801b496bcdda08015ec62e6a8014655ff",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/contracts/test/DeployPolicy.t.sol",
+      "incoming_blob": "38c6180c0e54805e162ac6efa89dfc06cc3bab65",
+      "retained_blob": "60ea62010d3beab805393faaf187e8451ed1de20",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/DEVIATIONS.md",
+      "incoming_blob": "f463592d7ebc915413b2ce80a2b9d022080d6a10",
+      "retained_blob": "573b321ed34e91ca9d65a2c49d2e92bf49e396d1",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/README.md",
+      "incoming_blob": "648c762609818a2432cdc704ffad6d115963305f",
+      "retained_blob": "b80f53d52273a5d8f1a60200247080ff0c198e56",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/src/index.ts",
+      "incoming_blob": "7713bd559eb6dcd4e8456b5b424bd78aa5701369",
+      "retained_blob": "8fc7aa2c00ecd15cb479482f39283a9be2607fcc",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.abuse.test.ts",
+      "incoming_blob": "944162cb2dcea4f92ebadcba38956aacf1a17a0b",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.test.ts",
+      "incoming_blob": "92fa969ed084c5f1155c42331f2aa678e2f2c1ea",
+      "retained_blob": "6162491efef724d34470293c9d697eac1f217322",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.ts",
+      "incoming_blob": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+      "retained_blob": "33f8829cf3f34ef515b49d27fee4f7194e699282",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+      "incoming_blob": "c18bd4337dd18f197fe7d3e287b37691f9fea240",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/contract-analysis-workflow.test.mjs",
+      "incoming_blob": "50a72a2ad5a883e37aca82114fd77ed9330d1dac",
+      "retained_blob": "eb49b85471b9eb139acb768c942aedc2b354e9d6",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/ghostpay-automation-hardening.test.mjs",
+      "incoming_blob": "c130b616c6c5dd681bd103ee76c47f3b595c5995",
+      "retained_blob": "14ad8c2721709fb3019bb3c1888668a45c26735b",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/ghostpay-parallel-review-workflow.test.mjs",
+      "incoming_blob": "3b67c43406512a412d2b3f5dd6a3a60f20d1958e",
+      "retained_blob": "cfe9f1b776bca6e8819b10e247c03b564d8df954",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/mythril-completeness.test.mjs",
+      "incoming_blob": "c3abc1c843b91f20d4497f3c45b48685af3c343e",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/mythril-disposition-check.test.mjs",
+      "incoming_blob": "d8d056f09b84ece35f7c768970a637a929f1285c",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/mythril-evidence.test.mjs",
+      "incoming_blob": "c88dfc1ca8b6274d0607fed7e524b62c4a265c98",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/mythril-runner.test.mjs",
+      "incoming_blob": "1d4f6661ae838547d02c453edc451b7de7655a6f",
+      "retained_blob": "3852bf05e014330882702bcd010b14fd6e1ae218",
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    },
+    {
+      "path": "scripts/tests/policy-predeploy.test.mjs",
+      "incoming_blob": "c8911d80b1851299c4af00b310cde2239695bc14",
+      "retained_blob": null,
+      "reason": "Existing non-Pages runtime, contract, deployment/analyzer or automation work remains on original donor; no implicit adoption in recovery/privacy composition."
+    }
+  ],
+  "selective_test_recoveries": [
+    {
+      "path": "packages/cli/src/receipt-parity.test.ts",
+      "original_retained_blob": "a3c0bf095b16bf3ce7ce915da8a8bd21425ac8a2",
+      "recovered_blob": "0871cbfaab0dca9faf5fb662cc91d09e093c5fc9",
+      "source": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "reason": "Exact donor test-only compatibility correction: re-sign the optional stealthAddress only when present. All assertion semantics remain; no CLI runtime behavior imported."
+    }
+  ]
+}

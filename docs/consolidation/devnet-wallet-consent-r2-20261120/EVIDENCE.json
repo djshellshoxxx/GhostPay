@@ -1,0 +1,496 @@
+{
+  "format": "ghostpay-devnet-wallet-consent-qualification/1",
+  "recorded_at_utc": "2026-11-20T19:43:31.877390+00:00",
+  "base_pr": 327,
+  "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+  "claim_commit": "2b8881de8be22998407d91505357771d755b680d",
+  "qualified_source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+  "qualified_tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081",
+  "branch": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+  "implementation": {
+    "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081",
+    "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+    "rows": [
+      {
+        "path": "apps/web/e2e/devnet/ui.ts",
+        "base_blob": "a48e444572702aec5542fb96fcfe82ce6e3e1c55",
+        "source_blob": "f8903c87ce37d9869273d12d322469c81da90d57",
+        "old_expect_lines": 9,
+        "new_expect_lines": 9,
+        "original_expect_lines_retained_in_order": true,
+        "new_approvals": 1
+      },
+      {
+        "path": "apps/web/e2e/devnet-journey.spec.ts",
+        "base_blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+        "source_blob": "b6e3cdea64b3e84feb932692d71cb7d2cf65d25c",
+        "old_expect_lines": 88,
+        "new_expect_lines": 88,
+        "original_expect_lines_retained_in_order": true,
+        "new_approvals": 9
+      },
+      {
+        "path": "apps/web/e2e/pages-devnet.spec.ts",
+        "base_blob": "90b905165b9b6457585635022bc9e64dab674521",
+        "source_blob": "008f7a72d59bd8128eb5ca972fee61e9ee58c7b2",
+        "old_expect_lines": 330,
+        "new_expect_lines": 332,
+        "original_expect_lines_retained_in_order": true,
+        "new_approvals": 7
+      }
+    ],
+    "changed_paths": [
+      "apps/web/e2e/devnet-journey.spec.ts",
+      "apps/web/e2e/devnet/ui.ts",
+      "apps/web/e2e/pages-devnet.spec.ts",
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "limits": [
+      "Literal assertion-line retention is a supplementary diff check, not semantic or browser qualification.",
+      "Hosted failed head and its synthetic merge are separately identified in the report."
+    ]
+  },
+  "original_hosted_failure": {
+    "associated_pr": 326,
+    "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+    "head_tree": "b277d0b71b0b6d9242d2d36cdfcadc3b1296f5d3",
+    "tested_merge": "adbcec37c3f589e9b1a0cc6ee419193ce90d355e",
+    "tested_merge_tree_equals_head_tree": true,
+    "pages": {
+      "run": 44785154719,
+      "job": 136457928140,
+      "passed": 6,
+      "failed": 5,
+      "did_not_run": 5
+    },
+    "beta": {
+      "run": 44785154517,
+      "job": 136457926770,
+      "library_stage": "passed",
+      "cli_stage": "passed",
+      "browser_passed": 0,
+      "browser_failed": 3
+    },
+    "raw_logs_preserved": true,
+    "no_error_context_or_screenshot_artifact_returned": true
+  },
+  "initial_local_prerequisite_failure": {
+    "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081",
+    "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-retention",
+    "results": [
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T19:38:35.168561+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-typecheck.log",
+        "status": "finished",
+        "exit_code": 2,
+        "elapsed_seconds": 20.988,
+        "finished_at": "2026-11-20T19:38:56.157202+00:00"
+      }
+    ],
+    "browser_execution": false,
+    "network_or_transactions": false,
+    "source_after": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tracked_changes_after": ""
+  },
+  "corrected_original_gates": {
+    "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081",
+    "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-retention",
+    "results": [
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T19:39:35.261623+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-typecheck-corrected.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 23.924,
+        "finished_at": "2026-11-20T19:39:59.186165+00:00"
+      },
+      {
+        "name": "lint",
+        "command": [
+          "npm",
+          "run",
+          "lint",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T19:39:59.187313+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-lint-corrected.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 58.531,
+        "finished_at": "2026-11-20T19:40:57.718938+00:00"
+      }
+    ],
+    "browser_execution": false,
+    "network_or_transactions": false,
+    "prerequisite_correction": "Missing own-worktree relayer-guard test dependency symlink restored; previous failing original gate preserved separately.",
+    "source_after": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tracked_changes_after": ""
+  },
+  "static_collections": {
+    "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-retention/apps/web",
+    "synthetic_fixture": {
+      "path": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/synthetic-state.json",
+      "content": {
+        "chainId": 84532,
+        "publicKey": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+        "deploymentsDir": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/uncreated-deployments"
+      },
+      "sha256": "0a416b9ea55b49d527591f67c4f6d4674add0ad4b27c1681498d0fff594aa678",
+      "purpose": "Satisfy original dedicated config import-time schema checks for --list only. Not an observed chain, signed deployment, running server, browser or acceptance run."
+    },
+    "results": [
+      {
+        "name": "dedicated-devnet",
+        "command": [
+          "npx",
+          "--no-install",
+          "playwright",
+          "test",
+          "--config",
+          "playwright.devnet.config.ts",
+          "--list"
+        ],
+        "environment": {
+          "GHOSTPAY_DEVNET_STATE": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/synthetic-state.json",
+          "GHOSTPAY_DEVNET_DIST": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/uncreated-dist",
+          "NODE_OPTIONS": "--max-old-space-size=768",
+          "npm_config_offline": "true"
+        },
+        "started_at": "2026-11-20T19:41:17.968360+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-dedicated-devnet-collection.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 2.047,
+        "finished_at": "2026-11-20T19:41:20.015311+00:00",
+        "collected_tests": 3,
+        "collected_files": 1
+      },
+      {
+        "name": "dedicated-pages",
+        "command": [
+          "npx",
+          "--no-install",
+          "playwright",
+          "test",
+          "--config",
+          "playwright.pages-devnet.config.ts",
+          "--list"
+        ],
+        "environment": {
+          "GHOSTPAY_DEVNET_STATE": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/synthetic-state.json",
+          "GHOSTPAY_PAGES_OUT": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-collection-fixture/uncreated-pages",
+          "NODE_OPTIONS": "--max-old-space-size=768",
+          "npm_config_offline": "true"
+        },
+        "started_at": "2026-11-20T19:41:20.015800+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-dedicated-pages-collection.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 1.963,
+        "finished_at": "2026-11-20T19:41:21.982584+00:00",
+        "collected_tests": 16,
+        "collected_files": 1
+      },
+      {
+        "name": "default-full",
+        "command": [
+          "npx",
+          "--no-install",
+          "playwright",
+          "test",
+          "--config",
+          "playwright.config.ts",
+          "--list"
+        ],
+        "environment": {
+          "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+          "NODE_OPTIONS": "--max-old-space-size=768",
+          "npm_config_offline": "true"
+        },
+        "started_at": "2026-11-20T19:41:21.983236+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-default-full-collection.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 4.355,
+        "finished_at": "2026-11-20T19:41:26.338190+00:00",
+        "collected_tests": 136,
+        "collected_files": 31
+      },
+      {
+        "name": "default-lean",
+        "command": [
+          "npx",
+          "--no-install",
+          "playwright",
+          "test",
+          "--config",
+          "playwright.config.ts",
+          "--list"
+        ],
+        "environment": {
+          "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+          "NODE_OPTIONS": "--max-old-space-size=768",
+          "npm_config_offline": "true"
+        },
+        "started_at": "2026-11-20T19:41:26.338744+00:00",
+        "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-default-lean-collection.log",
+        "status": "finished",
+        "exit_code": 0,
+        "elapsed_seconds": 1.925,
+        "finished_at": "2026-11-20T19:41:28.263910+00:00",
+        "collected_tests": 126,
+        "collected_files": 29
+      }
+    ],
+    "browser_execution": false,
+    "web_server_or_anvil_start": false,
+    "rpc_requests_or_transactions": false,
+    "source_after": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "tracked_changes_after": "",
+    "synthetic_output_paths_absent_after": {
+      "uncreated-deployments": true,
+      "uncreated-dist": true,
+      "uncreated-pages": true
+    }
+  },
+  "source_verification": [
+    {
+      "name": "secret-scan",
+      "command": [
+        "npm",
+        "run",
+        "ci:scan-secrets"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-retention",
+      "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+      "finished_at": "2026-11-20T19:42:18.605489+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.32,
+      "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-secret-scan.log"
+    },
+    {
+      "name": "source-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-retention",
+      "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+      "finished_at": "2026-11-20T19:42:18.617326+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.012,
+      "log": "/workspace/scratch/994a0d214fb9/devnet-wallet-consent-r2-source-diff-check.log"
+    }
+  ],
+  "independent_review": {
+    "decision": "APPROVE",
+    "source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+    "blocking_findings": 0,
+    "markdown": "outputs/independent-devnet-wallet-consent-r2.md.artifact.json",
+    "json": "outputs/independent-devnet-wallet-consent-r2.json.artifact.json"
+  },
+  "artifacts": [
+    {
+      "name": "devnet-wallet-consent-r2-cache-preflight.json",
+      "path": "outputs/devnet-wallet-consent-r2-cache-preflight.json.artifact.json",
+      "bytes": 123342,
+      "sha256": "cc526223056fcc657351c378a15fcaed5407dc66bd7435e311539a3b4e731e12"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-collect.py",
+      "path": "outputs/devnet-wallet-consent-r2-collect.py.artifact.json",
+      "bytes": 4114,
+      "sha256": "38cd24412cc984dc35d95dd711bd7cca6212360f5bcba15a0a71978887389c7a"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-collections.json",
+      "path": "outputs/devnet-wallet-consent-r2-collections.json.artifact.json",
+      "bytes": 4565,
+      "sha256": "85715c9e3e524ed95a6eec9783c43015854f343b7571b47f798fed32543b68b9"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-corrected-gates.json",
+      "path": "outputs/devnet-wallet-consent-r2-corrected-gates.json.artifact.json",
+      "bytes": 1511,
+      "sha256": "16892c0783cfbe06351d836b0649f1c05fa0a22c6c0384a4b9c63973041746a8"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-dedicated-devnet-collection.log",
+      "path": "outputs/devnet-wallet-consent-r2-dedicated-devnet-collection.log.artifact.json",
+      "bytes": 718,
+      "sha256": "10b5850c886e6dc131188b3094236ab68b48aefa7a998904979bb0dcef7d0f38"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-dedicated-pages-collection.log",
+      "path": "outputs/devnet-wallet-consent-r2-dedicated-pages-collection.log.artifact.json",
+      "bytes": 3355,
+      "sha256": "b4ebd9b4cad52406e01e8d86d0ad2300161b8050924d39f2eeb4e897eceded5b"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-default-full-collection.log",
+      "path": "outputs/devnet-wallet-consent-r2-default-full-collection.log.artifact.json",
+      "bytes": 19317,
+      "sha256": "1baa7d319e0ccb90234692302dce75dfe9e36077ed16a31be4f1e4127e768dd3"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-default-lean-collection.log",
+      "path": "outputs/devnet-wallet-consent-r2-default-lean-collection.log.artifact.json",
+      "bytes": 17771,
+      "sha256": "98a326b15c9a9f5bf9b0ea8966299ac3ef731eef8826d234bc0d28fce1683382"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-dependency-provenance.json",
+      "path": "outputs/devnet-wallet-consent-r2-dependency-provenance.json.artifact.json",
+      "bytes": 84531,
+      "sha256": "1772546e5c651dd74b59ba0ca861005f912095f63bf8a23af86b19754027bdb2"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-hosted-artifacts.json",
+      "path": "outputs/devnet-wallet-consent-r2-hosted-artifacts.json.artifact.json",
+      "bytes": 2517,
+      "sha256": "59d8fdeab51211d9aad5094b90bbd337beba5c051fcca32a0892d5a618c5b986"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-hosted-merge.json",
+      "path": "outputs/devnet-wallet-consent-r2-hosted-merge.json.artifact.json",
+      "bytes": 3033,
+      "sha256": "30331fd32e865a83caa1bbe2f9713a58832736307a751729dd2b6eda43afa2fa"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-install-estimate.json",
+      "path": "outputs/devnet-wallet-consent-r2-install-estimate.json.artifact.json",
+      "bytes": 56199,
+      "sha256": "336157b58d96eafac71ce2d405bfed9afd9aa6f2f0688438d315fc65e843ab45"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-install.json",
+      "path": "outputs/devnet-wallet-consent-r2-install.json.artifact.json",
+      "bytes": 15960,
+      "sha256": "66da820c285293befa5f775d82158fc9284bec4f3d9e403ada45f1d13075bb8c"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-install.log",
+      "path": "outputs/devnet-wallet-consent-r2-install.log.artifact.json",
+      "bytes": 176,
+      "sha256": "a31bd2c57c56af66c828e003a23a349853d45be7d9f16e3f6467a124b3671869"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-lint-corrected.log",
+      "path": "outputs/devnet-wallet-consent-r2-lint-corrected.log.artifact.json",
+      "bytes": 235,
+      "sha256": "7cbadbf1a6ff02d2113d440f21ca3a66760872f7a7686b8d6364848aaac17fbf"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-original-gates.json",
+      "path": "outputs/devnet-wallet-consent-r2-original-gates.json.artifact.json",
+      "bytes": 853,
+      "sha256": "638352294ad0589bb757f8c8481417a3bd87ae0150ba6781f5e075e261eb8db9"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-secret-scan.log",
+      "path": "outputs/devnet-wallet-consent-r2-secret-scan.log.artifact.json",
+      "bytes": 273,
+      "sha256": "11a86c723ca4a46189e1baf2757f5453faeb881e59e75a40e2e566e59a5357ea"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-source-checks.json",
+      "path": "outputs/devnet-wallet-consent-r2-source-checks.json.artifact.json",
+      "bytes": 1564,
+      "sha256": "ff767e9830e41c4cbf187ca5a9f5b199fcebe47dd8f148e23956b74a9f4c7183"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-source-diff-check.log",
+      "path": "outputs/devnet-wallet-consent-r2-source-diff-check.log.artifact.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-source-provenance.json",
+      "path": "outputs/devnet-wallet-consent-r2-source-provenance.json.artifact.json",
+      "bytes": 7953,
+      "sha256": "a1dec187bb4e7e58d8f5ef56d0729be523553443aba80ef7dec40c7941940e91"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-source-verification.json",
+      "path": "outputs/devnet-wallet-consent-r2-source-verification.json.artifact.json",
+      "bytes": 919,
+      "sha256": "884f6c7cbd5d73fee8a64de4f9d6bd9d9ef6ffa42b59fcefd587bf6858439855"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-source.patch",
+      "path": "outputs/devnet-wallet-consent-r2-source.patch.artifact.json",
+      "bytes": 13354,
+      "sha256": "88f9ee4e918662f2d2ab1c772ec41b53f75871df7d011397f7daf98b919ea079"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-typecheck-corrected.log",
+      "path": "outputs/devnet-wallet-consent-r2-typecheck-corrected.log.artifact.json",
+      "bytes": 223,
+      "sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b"
+    },
+    {
+      "name": "devnet-wallet-consent-r2-typecheck.log",
+      "path": "outputs/devnet-wallet-consent-r2-typecheck.log.artifact.json",
+      "bytes": 1841,
+      "sha256": "35f3b6bea41f8ab9f592172a0b413d5763b5cb0c4b302cb71a38dbef783d29e3"
+    },
+    {
+      "name": "independent-devnet-wallet-consent-r2.md",
+      "path": "outputs/independent-devnet-wallet-consent-r2.md.artifact.json",
+      "bytes": 2051,
+      "sha256": "97a3b60f3dc1f18e5789deb8b009919a9ba0bbf8e64259dcf4716017ecede0a2"
+    },
+    {
+      "name": "independent-devnet-wallet-consent-r2.json",
+      "path": "outputs/independent-devnet-wallet-consent-r2.json.artifact.json",
+      "bytes": 3058,
+      "sha256": "3b8ce5ee23c4b24043d74b7a8cc83a8523412024c6fb2127a40efb512624ee67"
+    },
+    {
+      "name": "hosted-r2-pr326-job-136457928140.log",
+      "path": "outputs/hosted-r2-pr326-job-136457928140.log.artifact.json",
+      "bytes": 86308,
+      "sha256": "3d61061108641f955bb65bbe56862258e9aa9427911390cc7503cb0a4057f089"
+    },
+    {
+      "name": "hosted-r2-pr326-job-136457926770.log",
+      "path": "outputs/hosted-r2-pr326-job-136457926770.log.artifact.json",
+      "bytes": 107459,
+      "sha256": "f45c0cd44c02c01fac5384fe0031f9b122d3dfe921359feb2e29a793f8589332"
+    }
+  ],
+  "limits": [
+    "No browser test body, server, anvil, live RPC, transaction, production build or full web test gate ran on this correction.",
+    "Static collection counts are not passes and must not be added to executed tests.",
+    "Full and lean default collections overlap; the dedicated configurations collect the actual changed devnet specs.",
+    "Original hosted failures remain failures on their frozen tree; repaired hosted acceptance is still required.",
+    "No runtime, dependency version, lockfile, workflow, timeout, retry, skip, assertion weakening, deployment or shared-target ref change."
+  ]
+}

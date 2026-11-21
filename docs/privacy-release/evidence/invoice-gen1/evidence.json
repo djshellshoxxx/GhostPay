@@ -1,0 +1,88 @@
+{
+  "source_commit": "7c39a080e8510587898e2a02435c7e967951e803",
+  "source_tree": "d8dd595b10eadc2ada05a8ecb48823e4f43d4327",
+  "base": "bbcf71b79d4efd00892948faa833cb7d8f471406",
+  "node_version": "v24.22.3",
+  "source_blobs": {
+    "apps/web/src/lib/invoiceMetadata.ts": "c8782f2c2979fba537aa4b8a5e39680bf61e5220",
+    "apps/web/src/lib/invoiceMetadata.test.ts": "a1108ca1f657e97b7a49a7aea627c4201ad636b5",
+    "apps/web/src/lib/invoiceCreate.ts": "5acf835b39f1886af0f802c8dd780dfbe48b82e4",
+    "apps/web/src/lib/invoiceCreate.metadata.test.ts": "9a4e3dbe7163c89fb5b106cec040461866298757",
+    "apps/web/src/views/CreateInvoice.tsx": "5c70b942d441b507d60eec3e263412e3f150f6d8",
+    "apps/web/src/views/CreateInvoice.metadata.test.tsx": "a454b123cb5f32f2d0cf9f4cf9f25eac9fa8c464",
+    "apps/web/src/i18n/securityKeys.ts": "70dcd4652c0d0a80ae4c2dfe7f0f6e14fc73b206",
+    "apps/web/locales/en.json": "6d3f4ce27a827a540ffc19a2f00de8ffa10fefee",
+    "apps/web/locales/es.json": "6c8600c562fa91bcf7434e4e92ad574bc1fb2cdc",
+    "apps/web/locales/ja.json": "d8af061f25331ec9d19557ed786d15f077ca267a",
+    "apps/web/locales/ar.json": "d81b4549a650c33c7f481d33f523b0a93e038069",
+    "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    "apps/web/tsconfig.json": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+    "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+    "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36"
+  },
+  "checks": [
+    {
+      "name": "Builder regression baseline",
+      "source": "dcc49f71",
+      "result": "8 failed; 4 filtered",
+      "exit": 1,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/lib/invoiceCreate.metadata.test.ts -t 'removes descriptive metadata|rejects an unsupported runtime metadata mode' --coverage=false --maxWorkers=1",
+      "log": "red.log.gz"
+    },
+    {
+      "name": "UI regression baseline",
+      "source": "d6f7e1e2",
+      "result": "4 failed",
+      "exit": 1,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/views/CreateInvoice.metadata.test.tsx --coverage=false --maxWorkers=1",
+      "log": "ui-red.log.gz"
+    },
+    {
+      "name": "Focused implementation acceptance",
+      "source": "7c39a080e8510587898e2a02435c7e967951e803",
+      "result": "51 passed in 5 files, zero skips",
+      "exit": 0,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/lib/invoiceMetadata.test.ts src/lib/invoiceCreate.metadata.test.ts src/lib/invoiceCreate.test.ts src/views/CreateInvoice.metadata.test.tsx src/i18n/securityKeys.test.ts --coverage=false --maxWorkers=1",
+      "log": "green.log.gz"
+    },
+    {
+      "name": "Secret scan",
+      "source": "7c39a080e8510587898e2a02435c7e967951e803",
+      "result": "OK: no committed env files or key material found.",
+      "exit": 0,
+      "command": "bash scripts/scan-secrets.sh"
+    },
+    {
+      "name": "All CreateInvoice view regressions",
+      "source": "7c39a080e8510587898e2a02435c7e967951e803",
+      "result": "74 passed in 8 files, zero skips",
+      "exit": 0,
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' ../../node_modules/.bin/vitest run src/views/CreateInvoice --coverage=false --maxWorkers=1",
+      "log": "view-regressions.log.gz"
+    }
+  ],
+  "log_hashes": {
+    "red.log": {
+      "original_sha256": "eae06cb93a3b7f6e4c1d748714031e7a78680dd069403479f09654620f7059a5",
+      "gzip_sha256": "4493d7b56cbca3037162ee60a6ff8a8b592f054b5c32aa5df19158f8d0b7b1cb"
+    },
+    "ui-red.log": {
+      "original_sha256": "63ee671f91dde11bd0f3842b1e14734ea8e947787285bdb9e38e13e8321aa99b",
+      "gzip_sha256": "510ea79267fe56803f41791ad91cd5e47f47acbe272adee34f7827ac4e0152ec"
+    },
+    "green.log": {
+      "original_sha256": "bb14ec0f26de9cb2fecc23557c981e2224b175e2dbf4026d6bf908c88e307b81",
+      "gzip_sha256": "6f2b73709376505b2e811cd9bf378047beb25e1d29ccb7092d44d8fc09f0991c"
+    },
+    "view-regressions.log": {
+      "original_sha256": "d269d561c1cd8295dbb6a3585bc69bafe8819bf8d40c27f9f58b8eefd363fedb",
+      "gzip_sha256": "fc675783ba735519c45107f2207d91020278b8d96ea2e0bec51a6221495fb1d1"
+    }
+  },
+  "qualification_limits": [
+    "No full web TypeScript or scoped/full lint execution in this worker; coordinator reserved an exclusive successor window.",
+    "Focused runs disable coverage and do not qualify whole-web coverage thresholds.",
+    "No Playwright/browser/hosted CI execution, merchant-profile UI implementation or release qualification.",
+    "Three untracked node_modules links belong to coordinator dependency setup; none are staged or product changes."
+  ]
+}

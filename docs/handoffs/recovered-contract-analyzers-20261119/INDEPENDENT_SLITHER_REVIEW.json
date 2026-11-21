@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/key_exports",
+  "reviewed_commit": "89f13e99b118ff0cf2c347d6c830dbc064bd54a8",
+  "reviewed_tree": "cf8d8286f5df17ae50d6fb2c216de485a1bbce96",
+  "verdict": "APPROVED_SCOPED_EVIDENCE",
+  "independent_checks": [
+    "31 committed checksum entries recomputed.",
+    "13 gzip log/document pairs and 4,286,117-byte build-info verified.",
+    "36 source paths/content bytes matched e8680e13 Git, current root source, both hash lists and preserved record SHA-256 928d3eff398e6acce9b2ed8e5ad80ed4bb161201cd743aea14c340d900d12911.",
+    "Raw output supports 36 compiled sources, Slither 0.11.6/solc 0.8.28 and 34 contracts/64 detectors/0 results with original flags and compiler configuration.",
+    "Official resolved package URLs/hashes preserved; 4,903-byte upstream README and deterministic gzip exactly verified.",
+    "Lint review tree, six blobs and diff hash match e8e2edec with source-only attribution."
+  ],
+  "clarification": "Reviewer requested explicit preserved-record source/path; this follow-up adds them without changing any compiled/source evidence or result.",
+  "limits": [
+    "No analyzer was rerun by this reviewer.",
+    "No Echidna campaign qualification is established by this review.",
+    "This is internal AI-assisted independent review, not an external security audit."
+  ]
+}

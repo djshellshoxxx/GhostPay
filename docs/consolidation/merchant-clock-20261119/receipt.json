@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-11-19T10:40:34.615058+00:00",
+  "repository": "djshellshoxxx/GhostPay",
+  "worker": "branch_recon",
+  "branch": "codex/ghostpay-merchant-clock-integration-20261119",
+  "baseline": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "claim": "35658b7ff7ffe509c1a7b0a20b1e670cb43b14f3",
+  "upstreamPr": 268,
+  "upstreamHead": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+  "product": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+  "mergeParents": [
+    "35658b7ff7ffe509c1a7b0a20b1e670cb43b14f3",
+    "ddfc8cfafa44b09103ced821f160c1d37fdfe552"
+  ],
+  "changedPathsFromBase": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/MERCHANT_PROFILE_CLOCK_20261119.md",
+    "packages/invoice-schema/src/merchantProfile.test.ts",
+    "packages/invoice-schema/src/merchantProfile.ts"
+  ],
+  "productFiles": [
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "blob": "a1299d9ceedefeefb5784d287d556008531af02f",
+      "sha256": "a4e379d2f71ace6da597170c74ef95ea31c0be93c933668fc7e8635820ffb005",
+      "bytes": 4622,
+      "exact_upstream_blob": true
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+      "sha256": "7253a236747cc04abf5d04f5b9152fca90f7075b1857d4416dff390b53c4ce1a",
+      "bytes": 7671,
+      "exact_upstream_blob": true
+    }
+  ],
+  "unchangedConfiguration": [
+    {
+      "path": "package.json",
+      "blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "eslint.config.js",
+      "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.json",
+      "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "blob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "unchanged_from_base": true
+    }
+  ],
+  "sourceContract": {
+    "change": "Return existing format result at verifyMerchantProfile entry for !Number.isFinite(nowSec) || nowSec < 0. Preserve the exact original upstream source and tests.",
+    "acceptance": "Reject nonfinite, negative and runtime nonnumber clocks without numeric coercion; retain finite nonnegative/fractional clocks and exp <= nowSec expiry equality.",
+    "noBroaderClaim": "Conditional malformed-clock handling at a public API; no remote clock-control, signing bypass or production exploit established. Existing signature/schema/canonicalization logic unchanged."
+  },
+  "runtime": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "nodeHeapMiB": 384,
+    "packageChecksSerialized": true,
+    "testConfig": "packages/invoice-schema/vitest.config.ts",
+    "coverageThresholdsUnchanged": {
+      "statements": 95,
+      "branches": 90,
+      "functions": 95,
+      "lines": 95
+    }
+  },
+  "checks": [
+    {
+      "name": "red",
+      "source": "35658b7ff7ffe509c1a7b0a20b1e670cb43b14f3",
+      "cwd": "packages/invoice-schema",
+      "command": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--max-old-space-size=384",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--maxWorkers=1",
+        "src/merchantProfile.test.ts"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 2.856,
+      "vitestReportedSeconds": 1.28,
+      "result": {
+        "files": 1,
+        "tests": 8,
+        "passed": 7,
+        "failed": 1,
+        "expectedFailure": "The added invalid-clock case accepted NaN rather than returning format. The loop is one failed Vitest case, not five independent failures."
+      },
+      "log": "red.log.gz",
+      "compression": "gzip-lossless-mtime0",
+      "storedBytes": 1069,
+      "storedSha256": "de865f94b4dd6c1f05d0daf008c5ae40f5fe9d8ffdd0f8b9260a3d9e3c24b1a5",
+      "rawBytes": 2310,
+      "rawSha256": "080ac084e27e637ee906f165bd322d9c5826e9d5c1f714542f024680a8d354bf"
+    },
+    {
+      "name": "green",
+      "source": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+      "cwd": "packages/invoice-schema",
+      "command": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--max-old-space-size=384",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--maxWorkers=1",
+        "src/merchantProfile.test.ts",
+        "src/json.test.ts",
+        "src/schema.test.ts",
+        "src/sign.test.ts",
+        "src/receipts.test.ts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 11.475,
+      "vitestReportedSeconds": 9.74,
+      "result": {
+        "files": 5,
+        "tests": 208,
+        "passed": 208,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "green.log.gz",
+      "compression": "gzip-lossless-mtime0",
+      "storedBytes": 463,
+      "storedSha256": "5066ff9f68a4291a72a70409c3c25015fc6991894db643933df0926f7003fb99",
+      "rawBytes": 1480,
+      "rawSha256": "82dfad8b1bbd20b6c6bc6dd5ca76a5a734eaf9121353c53c02e415c69ec6fab1"
+    },
+    {
+      "name": "typecheck",
+      "source": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+      "cwd": "packages/invoice-schema",
+      "command": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--max-old-space-size=384",
+        "../../node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.json",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 9.46,
+      "vitestReportedSeconds": null,
+      "result": {},
+      "log": "typecheck.txt",
+      "compression": null,
+      "storedBytes": 0,
+      "storedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "lint",
+      "source": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+      "cwd": "packages/invoice-schema",
+      "command": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--max-old-space-size=384",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 19.538,
+      "vitestReportedSeconds": null,
+      "result": {},
+      "log": "lint.txt",
+      "compression": null,
+      "storedBytes": 175,
+      "storedSha256": "202a87a00ef76091d8a32984349b989f52b738f07047864bf3713d162d3dcc74",
+      "rawBytes": 175,
+      "rawSha256": "202a87a00ef76091d8a32984349b989f52b738f07047864bf3713d162d3dcc74"
+    },
+    {
+      "name": "build",
+      "source": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+      "cwd": "packages/invoice-schema",
+      "command": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--max-old-space-size=384",
+        "../../node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.build.json"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.871,
+      "vitestReportedSeconds": null,
+      "result": {},
+      "log": "build.txt",
+      "compression": null,
+      "storedBytes": 0,
+      "storedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "redSourceIdentity": {
+    "productionSourceBlob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+    "regressionTestBlob": "a1299d9ceedefeefb5784d287d556008531af02f",
+    "description": "Exact upstream regression temporarily applied to claim baseline; production source unchanged. Baseline test restored before merging upstream ancestry."
+  },
+  "registryResolution": {
+    "onlyMergeConflict": "docs/ai/ACTIVE_WORK.md",
+    "upstreamPrefixBytes": 971,
+    "candidateClaimBytesPreservedContiguously": 127304,
+    "method": "Exact upstream claim prefix plus every byte of our full candidate registry."
+  },
+  "independentReview": {
+    "reviewer": "privacy_completion",
+    "product": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+    "verdict": "No introduced source blocker",
+    "verified": [
+      "Original upstream ancestry and both merge parents",
+      "Exact source/test Git blobs and SHA256 values",
+      "Only two non-documentation changed paths",
+      "Unchanged package/root/web configuration",
+      "Complete preserved registry and upstream claim",
+      "Raw RED7pass1fail and GREEN208pass logs"
+    ],
+    "executionAttribution": "Reviewer performed source/evidence review only; no independent runtime replay. All test/type/lint/build execution was performed by branch_recon."
+  },
+  "limitations": [
+    "Focused five-file tests use the original package config but do not execute the full package test script with coverage. No full-package/workspace coverage result is claimed.",
+    "No web consumer, browser, release or hosted exact-head qualification is newly claimed by this receipt.",
+    "Root must merge the qualified local source, rebuild invoice-schema and independently compare emitted inputs before final consumer builds.",
+    "Original upstream PR/body handoff remains historical and accurately states that its author did not execute repository tests. This separate receipt adds later integration evidence.",
+    "Execution environment interruption occurred before claim/implementation; old fetch/probe sessions ended in transport recovery errors without an observed Git exit. One fresh baseline fetch and one exact upstream fetch subsequently completed0; no failed test/build was relabeled as a pass.",
+    "Raw RED/GREEN logs are losslessly compressed to preserve original whitespace. No log content was removed.",
+    "No remote branch modification, PR mutation, merge to main, deployment, release, dependency or configuration change."
+  ]
+}

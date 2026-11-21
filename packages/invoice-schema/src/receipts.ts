@@ -21,7 +21,8 @@ export interface ReceiptPayload {
   readonly invoiceDigest: string;
   readonly chainId: number;
   readonly txHash: string;
-  readonly stealthAddress: string;
+  /** Optional since minimal receipts: omitted unless the issuer explicitly includes the one-time address. Receipts that carry it stay valid. */
+  readonly stealthAddress?: string;
   /** `native` or the canonical lowercase token contract address. */
   readonly asset: string;
   /** Exact positive token base units, represented as a decimal integer string. */
@@ -62,28 +63,30 @@ const AMOUNT = /^[1-9][0-9]{0,77}$/;
 const MAX_AMOUNT = (1n << 256n) - 1n;
 export const MAX_RECEIPT_JSON_BYTES = 65_536;
 const PAYLOAD_KEYS = ['amountMinorUnits', 'asset', 'chainId', 'invoiceDigest', 'issuedAt', 'signerPublicKey', 'stealthAddress', 'txHash', 'version'] as const;
+const OPTIONAL_PAYLOAD_KEYS = ['stealthAddress'] as const;
 const RECEIPT_KEYS = [...PAYLOAD_KEYS, 'signature'] as const;
 
-function record(value: unknown, keys: readonly string[], name: string): Record<string, unknown> {
+function record(value: unknown, keys: readonly string[], name: string, optional: readonly string[] = []): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new SignedReceiptError('OBJECT', { name });
   const prototype = Object.getPrototypeOf(value) as unknown;
   if (prototype !== Object.prototype && prototype !== null) throw new SignedReceiptError('PLAIN_OBJECT', { name });
   const ownKeys = Reflect.ownKeys(value);
   if (ownKeys.some((key) => typeof key !== 'string')) throw new SignedReceiptError('SCHEMA', { name });
   const actual = (ownKeys as string[]).sort();
-  const expected = [...keys].sort();
+  const expected = [...keys].sort().filter((key) => !optional.includes(key) || actual.includes(key));
   if (actual.length !== expected.length || actual.some((key, i) => key !== expected[i])) throw new SignedReceiptError('SCHEMA', { name });
   return value as Record<string, unknown>;
 }
 
 /** Strictly validates and canonicalizes the signed receipt payload. */
 export function validateReceiptPayload(value: unknown): ReceiptPayload {
-  const o = record(value, PAYLOAD_KEYS, 'Receipt payload');
+  const o = record(value, PAYLOAD_KEYS, 'Receipt payload', OPTIONAL_PAYLOAD_KEYS);
   if (o.version !== 1) throw new SignedReceiptError('VERSION');
   if (typeof o.invoiceDigest !== 'string' || !DIGEST.test(o.invoiceDigest)) throw new SignedReceiptError('DIGEST');
   if (!Number.isSafeInteger(o.chainId) || (o.chainId as number) <= 0) throw new SignedReceiptError('CHAIN');
   if (typeof o.txHash !== 'string' || !HASH.test(o.txHash)) throw new SignedReceiptError('TX_HASH');
-  if (typeof o.stealthAddress !== 'string' || !ADDRESS.test(o.stealthAddress)) throw new SignedReceiptError('STEALTH_ADDRESS');
+  const hasAddress = Object.hasOwn(o, 'stealthAddress');
+  if (hasAddress && (typeof o.stealthAddress !== 'string' || !ADDRESS.test(o.stealthAddress))) throw new SignedReceiptError('STEALTH_ADDRESS');
   if (typeof o.asset !== 'string' || (o.asset !== 'native' && !ADDRESS.test(o.asset))) throw new SignedReceiptError('ASSET');
   if (typeof o.amountMinorUnits !== 'string' || !AMOUNT.test(o.amountMinorUnits)) throw new SignedReceiptError('AMOUNT');
   if (BigInt(o.amountMinorUnits) > MAX_AMOUNT) throw new SignedReceiptError('AMOUNT_RANGE');
@@ -92,14 +95,14 @@ export function validateReceiptPayload(value: unknown): ReceiptPayload {
   secp256k1.Point.fromHex(o.signerPublicKey);
   // All public values use one representation, avoiding semantically equivalent signed variants.
   if (o.invoiceDigest !== o.invoiceDigest.toLowerCase() || o.txHash !== o.txHash.toLowerCase() ||
-      o.stealthAddress !== o.stealthAddress.toLowerCase() || o.asset !== o.asset.toLowerCase() ||
+      (hasAddress && o.stealthAddress !== (o.stealthAddress as string).toLowerCase()) || o.asset !== o.asset.toLowerCase() ||
       o.signerPublicKey !== o.signerPublicKey.toLowerCase()) throw new SignedReceiptError('LOWERCASE');
   return {
     version: 1,
     invoiceDigest: o.invoiceDigest,
     chainId: o.chainId as number,
     txHash: o.txHash,
-    stealthAddress: o.stealthAddress,
+    ...(hasAddress ? { stealthAddress: o.stealthAddress as string } : {}),
     asset: o.asset,
     amountMinorUnits: o.amountMinorUnits,
     issuedAt: o.issuedAt as number,
@@ -128,8 +131,8 @@ export function signReceipt(payload: Omit<ReceiptPayload, 'signerPublicKey' | 'v
 /** Returns false for malformed or tampered receipts; accepts no unknown fields. */
 export function verifyReceipt(value: unknown): value is SignedReceipt {
   try {
-    const o = record(value, RECEIPT_KEYS, 'Receipt');
-    const payload = validateReceiptPayload(Object.fromEntries(PAYLOAD_KEYS.map((key) => [key, o[key]])));
+    const o = record(value, RECEIPT_KEYS, 'Receipt', OPTIONAL_PAYLOAD_KEYS);
+    const payload = validateReceiptPayload(Object.fromEntries(PAYLOAD_KEYS.filter((key) => Object.hasOwn(o, key)).map((key) => [key, o[key]])));
     if (typeof o.signature !== 'string' || !SIGNATURE.test(o.signature)) return false;
     return secp256k1.verify(hexToBytes(o.signature), receiptDigest(payload), hexToBytes(payload.signerPublicKey), { prehash: false, lowS: true });
   } catch {
@@ -149,7 +152,7 @@ export function bindReceiptToInvoice(value: unknown, binding: ReceiptInvoiceBind
   if (receipt.asset !== binding.asset.toLowerCase()) throw new SignedReceiptError('RECEIPT_ASSET_MISMATCH');
   if (receipt.amountMinorUnits !== binding.amountMinorUnits) throw new SignedReceiptError('RECEIPT_AMOUNT_MISMATCH');
   if (binding.txHash !== undefined && receipt.txHash !== binding.txHash.toLowerCase()) throw new SignedReceiptError('RECEIPT_TX_MISMATCH');
-  if (binding.stealthAddress !== undefined && receipt.stealthAddress !== binding.stealthAddress.toLowerCase()) throw new SignedReceiptError('RECEIPT_RECIPIENT_MISMATCH');
+  if (binding.stealthAddress !== undefined && receipt.stealthAddress !== undefined && receipt.stealthAddress !== binding.stealthAddress.toLowerCase()) throw new SignedReceiptError('RECEIPT_RECIPIENT_MISMATCH');
 
   const trustedKey = binding.trustedSignerPublicKey?.trim().toLowerCase();
   if (trustedKey !== undefined) {

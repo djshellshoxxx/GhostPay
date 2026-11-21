@@ -1,0 +1,24 @@
+﹣ K04 raw key interop with Foundry cast on anvil (0.543377ms) # anvil/cast not found (ANVIL_BIN/CAST_BIN, PATH, ~/.foundry/bin); set REQUIRE_ANVIL=1 to fail instead
+✔ independence: the decoder imports only node: built-ins and @noble/curves + @noble/hashes (1.253223ms)
+✔ canonical() matches format section 1.5 (sorted keys, no whitespace, integers, JSON.stringify strings) (0.313131ms)
+✔ public record: validates, binds publicKey to stealthAddress and re-serializes byte for byte (4.996158ms)
+✔ public record: tampered or malformed records are refused (2.632787ms)
+✔ single keypair file: decrypts the a1 key and re-serializes byte for byte (92.331191ms)
+✔ archive: three keys in address order, each matching its vector; a3 is not in it (66.687851ms)
+✔ master backup: recovers the seller pair and every vector announcement, including one omitted from the archive (85.840998ms)
+✔ raw private-key text: exact section 6 layout and the key controls the address (1.946695ms)
+✔ every invalid[] vector is refused with its documented error code (259.640766ms)
+✔ tampering, wrong passphrase, wrong chain and bounds fail closed (285.95699ms)
+✔ cross-implementation: files freshly written by the built @ghostpay/ux-vault codec decrypt here (1762.704841ms)
+✔ CLI: archive decrypts with the passphrase on stdin and prints no private key without the flag (273.70143ms)
+✔ CLI: wrong passphrase, wrong chain, tampering and argv/env passphrases are refused without echoing input (422.112788ms)
+✔ CLI: master --scan-announcement recovers the archive-omitted a3 address; keys only with the flag, never master keys (395.184002ms)
+✔ CLI: public record and raw-key files need no passphrase; the raw key prints only with the flag (318.491064ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 4142.933159

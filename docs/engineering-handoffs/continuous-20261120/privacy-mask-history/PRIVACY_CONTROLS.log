@@ -1,0 +1,47 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web
+
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/lib/privacyMode.test.tsx (17 tests | 1 failed) 483ms
+   ❯ temporary privacy reveals (17)
+     × expires at 30 seconds, clears both text selections and moves focus without losing a mounted draft 181ms
+(node:62) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/privacyMode.test.tsx > temporary privacy reveals > expires at 30 seconds, clears both text selections and moves focus without losing a mounted draft
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/privacyMode.test.tsx:54:49
+     52|     expect(hidden()).toBe(true);
+     53|     expect(document.activeElement).toBe(screen.getByRole('button', { n…
+     54|     expect(document.getSelection()?.rangeCount).toBe(0);
+       |                                                 ^
+     55|     expect(input.selectionStart).toBe(0);
+     56|     expect(input.selectionEnd).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 19 passed (20)
+   Start at  17:14:10
+   Duration  9.37s (import 43%, environment 21%, transform 18%, tests 17%)
+
+    Isolate  3 workers spawned · ~882ms startup each (spawn + environment, per file)
+             at least ~1.76s faster with isolate: false — reuses workers across files instead of one per file
+

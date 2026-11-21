@@ -1,9 +1,11 @@
 import type { ChainConfig } from '@ghostpay/chain-adapters';
 import type { PolicyRecord } from '@ghostpay/policy-scheme';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
+import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -22,25 +24,52 @@ export interface PolicyCtx {
   readonly addRecord: (r: PolicyRecord) => void;
   /** Captured deployment scope; invalidated immediately by edits, re-verification or leaving this view. */
   readonly assertDeploymentCurrent: () => void;
+  /** Cancels all app-owned requests that depend on this verified deployment. */
+  readonly networkSignal?: AbortSignal;
 }
 
-function WalletPicker(props: { readonly chainId: number; readonly onConnected: (w: WalletSession) => void }): ReactNode {
+function WalletPicker(props: { readonly chainId: number; readonly assertCurrent: () => void; readonly onConnected: (w: WalletSession) => void }): ReactNode {
   const services = useServices();
+  const disclosure = useWalletDisclosure();
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [err, setErr] = useState<string | undefined>(undefined);
+  const privacy = useWalletPrivacy(undefined, () => { setWallets(undefined); setErr(undefined); });
+  const find = (): void => {
+    const scope = privacy.begin();
+    setErr(undefined);
+    void services.discoverWallets().then((found) => {
+      try { scope.assertCurrent(); props.assertCurrent(); } catch { return; }
+      setWallets(found);
+    }, (e: unknown) => {
+      try { scope.assertCurrent(); props.assertCurrent(); } catch { return; }
+      setErr(userMessage(e));
+    });
+  };
+  const connect = (selected: WalletInfo): void => {
+    const scope = privacy.begin();
+    const guard = (): void => { scope.assertCurrent(); props.assertCurrent(); };
+    setErr(undefined);
+    void connectWallet(selected, props.chainId, guard, scope.signal, { disclosure }).then((connected) => {
+      try { guard(); } catch { return; }
+      props.onConnected(connected);
+    }, (e: unknown) => {
+      try { guard(); } catch { return; }
+      setErr(userMessage(e));
+    });
+  };
   return (
     <div>
-      <button type="button" onClick={() => { setErr(undefined); void services.discoverWallets().then(setWallets, (e: unknown) => { setErr(userMessage(e)); }); }}>
+      <button type="button" onClick={find}>
         {t('policy.wallet.find')}
       </button>
       {wallets?.length === 0 && <p>{t('policy.wallet.none')}</p>}
       <ul className="plain">
         {wallets?.map((w) => (
           <li key={w.id}>
-            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
+            <button type="button" onClick={() => { connect(w); }}>
               {t('policy.wallet.connect', { name: w.name })}
             </button>
           </li>
@@ -69,24 +98,33 @@ export function PolicyView(): ReactNode {
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [records, setRecords] = useState<readonly PolicyRecord[]>([]);
   const revision = useRef(0);
+  const operation = useRef(new AbortController());
   const [scope, setScope] = useState(0);
-  useEffect(() => () => { revision.current++; }, []);
+  useEffect(() => () => { revision.current++; operation.current.abort(); }, []);
 
-  const invalidateDeployment = (): number => {
+  const invalidateDeployment = useCallback((): number => {
+    operation.current.abort();
+    operation.current = new AbortController();
     const next = ++revision.current;
     setScope(next);
     setDeployment(undefined);
     setDepErr(undefined);
     setBusy(false);
     return next;
-  };
+  }, []);
+  useWalletPrivacy(wallet, () => {
+    setWallet(undefined);
+    invalidateDeployment();
+  });
+  useEffect(() => services.network?.subscribe(invalidateDeployment), [services.network, invalidateDeployment]);
+  const networkRevision = services.network?.getRevision() ?? 0;
 
   const verify = async (): Promise<void> => {
     if (chain === undefined) return;
     const started = invalidateDeployment();
     setBusy(true);
     try {
-      const client = await app.getRpc(chain.chainId);
+      const client = await app.getRpc(chain.chainId, { action: 'policy', signal: operation.current.signal });
       if (revision.current !== started) return;
       if (client === undefined) throw new Error('no-rpc');
       const verified = await verifyPolicyDeployment(client, chain, { factory, router });
@@ -103,9 +141,10 @@ export function PolicyView(): ReactNode {
     deployment,
     wallet: wallet?.chainId === chain.chainId ? wallet : undefined,
     records,
+    networkSignal: operation.current.signal,
     addRecord: (r) => { setRecords((prev) => (prev.some((x) => x.policyHash === r.policyHash) ? prev : [...prev, r])); },
     assertDeploymentCurrent: () => {
-      if (revision.current !== scope || deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
+      if (revision.current !== scope || deployment === undefined || operation.current.signal.aborted || (services.network?.getRevision() ?? 0) !== networkRevision) throw new UserFacingError(t('policy.error.verifyFirst'));
     },
   };
 
@@ -140,7 +179,9 @@ export function PolicyView(): ReactNode {
             </dl>
           )}
           <h3>{t('policy.wallet.heading')}</h3>
-          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker key={`wallet:${String(scope)}`} chainId={chain.chainId} onConnected={(w) => { if (revision.current === scope) setWallet(w); }} />}
+          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker key={`wallet:${String(scope)}`} chainId={chain.chainId} assertCurrent={() => {
+            if (revision.current !== scope || operation.current.signal.aborted) throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
+          }} onConnected={(w) => { if (revision.current === scope) setWallet(w); }} />}
         </>
       )}
 

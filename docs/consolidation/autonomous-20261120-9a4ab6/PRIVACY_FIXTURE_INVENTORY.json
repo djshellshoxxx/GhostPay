@@ -1,0 +1,25 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "scripts/tests/network-egress-inventory.test.mjs"
+  ],
+  "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-privacy-fixtures",
+  "source_head": "a02d640b7f847c006526d561467db9f348910d5a",
+  "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "started_at": "2026-11-21T00:21:59.725557+00:00",
+  "completed_at": "2026-11-21T00:22:01.076598+00:00",
+  "duration_seconds": 1.351,
+  "exit_code": 0,
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "log_sha256": "b9d55db5989014cfaf7a9230d7fe25885356b4b0adf62393a08369e27273e0ed",
+  "log": {
+    "bytes": 750,
+    "sha256": "b9d55db5989014cfaf7a9230d7fe25885356b4b0adf62393a08369e27273e0ed",
+    "encoding": "utf-8",
+    "text": "\u2714 network inventory has unique complete records and references existing sources and tests (3.878179ms)\n\u2714 every explicit production web network reference is represented in the inventory (263.910181ms)\n\u2714 shipped SDK and transport boundaries are represented, with library-only adapters distinguished (0.27121ms)\n\u2714 inventory detector recognizes calls and aliases without flagging type declarations or comments (1.034373ms)\n\u2714 reference counts detect new dispatchers inside known modules as well as new files (0.4965ms)\n\u2714 inventoried authorization actions exist and local/external operations gain no implicit grant (3.545957ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1258.865875\n",
+    "base64": "4pyUIG5ldHdvcmsgaW52ZW50b3J5IGhhcyB1bmlxdWUgY29tcGxldGUgcmVjb3JkcyBhbmQgcmVmZXJlbmNlcyBleGlzdGluZyBzb3VyY2VzIGFuZCB0ZXN0cyAoMy44NzgxNzltcykK4pyUIGV2ZXJ5IGV4cGxpY2l0IHByb2R1Y3Rpb24gd2ViIG5ldHdvcmsgcmVmZXJlbmNlIGlzIHJlcHJlc2VudGVkIGluIHRoZSBpbnZlbnRvcnkgKDI2My45MTAxODFtcykK4pyUIHNoaXBwZWQgU0RLIGFuZCB0cmFuc3BvcnQgYm91bmRhcmllcyBhcmUgcmVwcmVzZW50ZWQsIHdpdGggbGlicmFyeS1vbmx5IGFkYXB0ZXJzIGRpc3Rpbmd1aXNoZWQgKDAuMjcxMjFtcykK4pyUIGludmVudG9yeSBkZXRlY3RvciByZWNvZ25pemVzIGNhbGxzIGFuZCBhbGlhc2VzIHdpdGhvdXQgZmxhZ2dpbmcgdHlwZSBkZWNsYXJhdGlvbnMgb3IgY29tbWVudHMgKDEuMDM0MzczbXMpCuKclCByZWZlcmVuY2UgY291bnRzIGRldGVjdCBuZXcgZGlzcGF0Y2hlcnMgaW5zaWRlIGtub3duIG1vZHVsZXMgYXMgd2VsbCBhcyBuZXcgZmlsZXMgKDAuNDk2NW1zKQrinJQgaW52ZW50b3JpZWQgYXV0aG9yaXphdGlvbiBhY3Rpb25zIGV4aXN0IGFuZCBsb2NhbC9leHRlcm5hbCBvcGVyYXRpb25zIGdhaW4gbm8gaW1wbGljaXQgZ3JhbnQgKDMuNTQ1OTU3bXMpCuKEuSB0ZXN0cyA2CuKEuSBzdWl0ZXMgMArihLkgcGFzcyA2CuKEuSBmYWlsIDAK4oS5IGNhbmNlbGxlZCAwCuKEuSBza2lwcGVkIDAK4oS5IHRvZG8gMArihLkgZHVyYXRpb25fbXMgMTI1OC44NjU4NzUK"
+  }
+}

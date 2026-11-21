@@ -176,7 +176,7 @@ What the design stops
 - Replay: relayed signature is single-use through the nonce bitmap and expires at `deadline` (<= 30 min); direct tx is bound to chain id and account nonce.
 
 What this does NOT hide or stop (honest list)
-- The view key is online: a stolen view key reveals your whole payment history and all future payments (not spendable). This mode is "view-only is still sensitive".
+- The view key is online: a stolen view key reveals your whole payment history and all future payments. It is not spendable on its own, but view key + the private key of any one one-time address yields the master spend key (EIP-5564 scheme 1: one-time key = spend key + H(view key · R), R public). So in this mode no one-time private key may ever leave the offline signer; only signatures may. This mode is "view-only is still sensitive".
 - A1 can still show a WRONG destination to the user on the online page and also in the request; protection exists only if the user checks the offline screen against an independent source or uses pinned destinations. If the user approves without reading, funds are lost. The offline signer cannot know your true intent.
 - A1 can request signatures of real but unwanted sweeps (e.g. tiny amounts, wrong timing) to pinned destinations; harmless to funds, but can leak timing preferences. A1 can also withhold requests (DoS).
 - QR/file transfer exposes the sweep (owner, destination, amount, token) to anyone who sees the screen or photographs it, and the signed relayed order is a bearer authorisation until deadline (submitting it only pays the fee, destination fixed).

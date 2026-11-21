@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "role": "independent read-only provenance and integration review",
+  "source": "c60f7cc3a1c320e092a86131d73faf2b760741ac",
+  "sweep": {
+    "base": "6c8e7de5",
+    "blob": "cc9039204ad91cd98d3dd4068c58945d809cfd32",
+    "review": "No lost behavior found in the semantic PR272 integration.",
+    "preserved": [
+      "Explicit per-action RPC and relayer network authorizations",
+      "AbortControllers on lock, scope change and cancellation",
+      "networkRevision in balance scope",
+      "Exact endpoint disclosures",
+      "Destination reuse ledger and its captured guard",
+      "Final attempt journal compare-and-swap and post-handoff outcome handling"
+    ],
+    "added": [
+      "Balance/quote operation generations",
+      "Quote review scope binding to destination, mode, relayer, manifest and services",
+      "Review checks after vault authorization, RPC/manifest awaits and immediately before journal/handoff"
+    ],
+    "remaining": "Caller review must also be asserted inside the async helper before local signatures; security_review worker is implementing that boundary. No Sweep runtime test run by this reviewer while coordinator overlays RED baseline."
+  },
+  "jitter": {
+    "source": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+    "blob": "9845576adfb522c17db145b1772276f66523180c",
+    "original_suite": {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/lib/jitter.test.ts --maxWorkers=1 --coverage.enabled=false",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "files_passed": 1,
+      "tests_passed": 13,
+      "failures": 0,
+      "skips": 0,
+      "log": "jitter-vitest.log",
+      "source": "c60f7cc3a1c320e092a86131d73faf2b760741ac"
+    },
+    "independent_harness": {
+      "command": "node --experimental-transform-types jitter-independent.mjs",
+      "node": "v24.22.3",
+      "exit_code": 0,
+      "asserted_cases": 34,
+      "breakdown": "Two old-source rollback reproductions, two corrected-source rollback checks, thirty nonfinite clock/expiry refusals.",
+      "evidence": "jitter-independent-results.json"
+    },
+    "limits": [
+      "Original caller uses randomDelayMs, which rejects malformed delay before constructing a scheduler; direct malformed-delay probes are not demonstrated UI exploits.",
+      "Backward injected monotonic clocks are clamped rather than rejected. Negative initial wall time can produce ready. This narrows broad 'clock anomalies fail closed' claims.",
+      "Pay revalidates invoice context after the scheduler becomes ready; no transaction/signing bypass was established."
+    ]
+  },
+  "verdict": "No introduced source blocker found in the reviewed PR274 scheduler delta, semantic Sweep integration, helper authority repair, caller wiring, entry-session repair and native balance binding. Scoped independent tests passed; filtered-out cases are explicit. Final combined-source qualification and external release gates remain required.",
+  "helper_followup": {
+    "source": "1d8445b656bdc6a78449dcc3b112b57322e3f482",
+    "helper_blob": "6ea4e3713c2f314e4dff89cc0a93a30fce2f50cc",
+    "test_blob": "5f110f95607ff7768e8fd1577ecfe98c97ad10bc",
+    "review": "All original session checkpoints still call captured session guard; quote checks and post-transport outcomes unchanged. Caller review assertion added before derivation and at signature/pre-handoff continuations. No introduced blocker found.",
+    "tests": {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/lib/sweep.reviewAuthority.test.ts --maxWorkers=1 --coverage.enabled=false",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "files_passed": 1,
+      "tests_passed": 14,
+      "failures": 0,
+      "skips": 0,
+      "log": "sweep-helper-independent-vitest.log",
+      "log_sha256": "11c6c48541be698221882952026df5d87aa722b3276bcc0da7b3f06e28c1194d"
+    },
+    "scope_caveat": "Helper guard runs after awaited nested helpers, not between every nested RPC. Actual per-action network guard remains responsible for network cancellation."
+  },
+  "component_followup": {
+    "source": "04ded6b5",
+    "review": "Direct/replacement and relayed calls pass assertReviewCurrent. Error publication requires matching operation, un-aborted controller, epoch, balance scope and quote scope. No post-handoff journal changes or lost network/destination guard found.",
+    "preexisting_observation": "Subsequently reproduced by coordinator (test-first5043555f) and fixed89ec593b; independent targeted replay passed. No remaining entry-session issue asserted.",
+    "entry_fix": {
+      "source": "89ec593b0c3a324fa30c2973ecb26b53c8ba6eec",
+      "test_source": "5043555fb435fe60dbfb9a6cadf5189e5dc571ce",
+      "review": "Session capture now occurs inside existing try; cleanup, error-context checks and cryptographic authority guards remain intact. Test uses real suspendSession.",
+      "independent_test": {
+        "executed_at_source_prefix": "acdebc5a",
+        "command": "node ../../node_modules/vitest/vitest.mjs run src/views/Sweep.quoteLifecycle.test.tsx -t 'handles a session that locks before authorization' --maxWorkers=1 --coverage.enabled=false",
+        "exit_code": 0,
+        "tests_passed": 1,
+        "tests_filtered_out": 70,
+        "failures": 0,
+        "log": "sweep-entry-independent-vitest.log",
+        "log_sha256": "9765f1087e2d23ab6b1c827ae20774bd3ef7147b2e70f0814c283756a568b701"
+      }
+    }
+  },
+  "candidate_271": {
+    "source": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+    "comparison_candidate": "73545f63112910d46002718354ab5e99f8652e1f",
+    "result": "Six adapter/fixture source blobs already identical. Different rpc.ts/test omit candidate newer credentials omit/no-referrer/no-store; retain candidate. Three additive TRON missing-height tests are unique and deferred outside lean EVM runtime.",
+    "source_compare": "git diff candidate source -- packages/chain-adapters/src/rpc.ts packages/chain-adapters/src/rpc.test.ts"
+  },
+  "native_balance_followup": {
+    "source": "3f6fcb845320a6d898e996d4a11d6fa22816b671",
+    "helper_blob": "6d14435b315f38646c30d6406ae358a73210d715",
+    "regression_source": "0004bc9d1906d09edebc44a4dd158598a2040332",
+    "review": "No source blocker found. Native-only equality check follows fresh balance and current authority, precedes fees/signing/journal, and rejection stays inside secret-wiping finally. ERC20 branch unchanged. Eight legacy fixture inputs now name the balance their RPC already returns; matcher expectations unchanged.",
+    "independent_test": {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/lib/sweep.reviewAuthority.test.ts -t 'native sweep reviewed balance' --maxWorkers=1 --coverage.enabled=false",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "tests_passed": 5,
+      "tests_filtered_out": 14,
+      "failures": 0,
+      "log": "sweep-native-independent-vitest.log",
+      "log_sha256": "562404834ca53d65dd56cdd35f90780e43ffff82bfa3b6158eaa26daf9010ebe"
+    },
+    "coverage": [
+      "balance increase",
+      "balance decrease",
+      "pending balance response",
+      "same-nonce replacement",
+      "later deposit cannot enlarge signed value"
+    ]
+  }
+}

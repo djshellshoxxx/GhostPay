@@ -1,0 +1,23 @@
+{
+  "head": "e8b8bd334d6829de3145d350bd7d682c3e771383",
+  "tree": "a5a8fbcc9dc8843538c34e51263ec8791789f56a",
+  "cwd": "apps/web",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/components/PaymentProofQr.retention.test.tsx",
+    "src/views/Pay.test.tsx",
+    "--coverage=false",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-final-proof-pay.json"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512"
+  },
+  "start_time": 1795194970.2235851,
+  "mem_available_kib_before": 4058984,
+  "seconds": 32.292,
+  "exit_code": 0,
+  "log_sha256": "17028576892bc736289f6b568a1a1606ff2b596dd84bb8902e018dba76444796"
+}

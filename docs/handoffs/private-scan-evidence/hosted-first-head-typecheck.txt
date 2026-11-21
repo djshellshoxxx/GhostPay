@@ -1,0 +1,27 @@
+Head: 797f75ac8d91ae8e5872218028365496e67fc7d3
+GitHub merge ref: 827273b4bfaa6869e92cd6234f4fb8edb4ad63c8
+Job: https://github.com/djshellshoxxx/GhostPay/actions/runs/44472906116/job/135386429191
+Clean npm ci succeeded using Node 22.23.4 and npm 10.9.9.
+Selected build/error excerpt follows; setup and credential-cleanup logs are omitted.
+
+##[group]Run npm run build --workspace @ghostpay/web
+2026-11-19T06:35:08.6376850Z [36;1mnpm run build --workspace @ghostpay/web[0m
+2026-11-19T06:35:08.6428252Z shell: /usr/bin/bash -e {0}
+2026-11-19T06:35:08.6428612Z ##[endgroup]
+2026-11-19T06:35:08.7983702Z
+2026-11-19T06:35:08.7984600Z > @ghostpay/web@0.1.0 build
+2026-11-19T06:35:08.7985468Z > tsc -p tsconfig.json --noEmit && vite build
+2026-11-19T06:35:08.7985912Z
+2026-11-19T06:35:28.7013472Z ##[error]src/lib/privateScanStore.test.ts(98,39): error TS2345: Argument of type '{ chainId: number; sellerKeyId: string; deep: boolean; finalityDepth: number; announcer: `0x${string}`; router: `0x${string}`; configuration: string; } | { sellerKeyId: string; chainId: number; deep: boolean; finalityDepth: number; announcer: `0x${string}`; router: `0x${string}`; configuration: string; } | ... 4 mor...' is not assignable to parameter of type 'PrivateScanScope | undefined'.
+2026-11-19T06:35:28.7027847Z   Type '{ announcer: string; chainId: number; sellerKeyId: string; deep: boolean; finalityDepth: number; router: Address; configuration: string; }' is not assignable to type 'PrivateScanScope'.
+2026-11-19T06:35:28.7029468Z     Types of property 'announcer' are incompatible.
+2026-11-19T06:35:28.7030205Z       Type 'string' is not assignable to type '`0x${string}`'.
+2026-11-19T06:35:28.8061392Z npm error Lifecycle script `build` failed with error:
+2026-11-19T06:35:28.8062138Z npm error code 2
+2026-11-19T06:35:28.8062912Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-19T06:35:28.8063858Z npm error workspace @ghostpay/web@0.1.0
+2026-11-19T06:35:28.8064967Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-19T06:35:28.8065729Z npm error command failed
+2026-11-19T06:35:28.8081793Z npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+2026-11-19T06:35:28.8135645Z ##[error]Process completed with exit code 2.
+2026-11-19T06:35:28.8267779Z

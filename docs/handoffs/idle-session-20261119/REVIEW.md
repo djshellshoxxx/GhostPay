@@ -37,6 +37,7 @@ confirmed behavioral issue received a regression before its correction.
 - Existing imported-key, signer-only, downloaded-backup and encrypted-vault custody rules remain.
 - Retained recovery intentionally stays available to whoever controls the tab. No confidentiality or physical-erasure claim is made for that exception.
 - The selected target's settings, RPC consent, privacy defaults, transport isolation and full/lean packaging are preserved.
+- Settings, RPC consent, privacy defaults, frame/origin refusal and full/lean packaging are preserved.
 - No assertions, coverage thresholds, required security gates or branch protections are weakened.
 - Actual Chromium execution, physical OS sleep, Tor and real-device acceptance must be distinguished from jsdom and synthetic clock/lifecycle tests.
 

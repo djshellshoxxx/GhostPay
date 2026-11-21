@@ -1,0 +1,26 @@
+{
+  "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+  "tree": "f2401beadec3a4ea4d511cde7a78c7e7d4b58ff8",
+  "cwd": "apps/web",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/AppShell.privacy.test.tsx",
+    "src/components/MerchantTemplateIssuer.retention.test.tsx",
+    "src/lib/wallet.test.ts",
+    "src/lib/wallet.lifecycle.test.ts",
+    "src/lib/wallet.disclosure.test.ts",
+    "--coverage=false",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-prerequisite-repairs.json"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512"
+  },
+  "start_time": 1795195291.0401106,
+  "mem_available_kib_before": 4362912,
+  "seconds": 11.866,
+  "exit_code": 0,
+  "log_sha256": "507f76cd10ad0b8ac578bc6a9269484c7cc5ca6872f9e80d2a5f30edfbf7142b"
+}

@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { bech32 } from '@scure/base';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { clearCopiedBackup } from '../../components/SecretBackup';
 import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
@@ -10,6 +11,26 @@ import { inlineBtcScanWorker } from './scanWorker.testutil';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
 
 const BCRT = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
+
+function clipboardFixture() {
+  let value = '';
+  const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
+  const readText = vi.fn(() => Promise.resolve(value));
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
+  return {
+    writeText,
+    readText,
+    get value() { return value; },
+    set value(next: string) { value = next; },
+  };
+}
+
+afterEach(async () => {
+  cleanup();
+  // Denied-read cases leave best-effort retry ownership; end it between isolated tests.
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText: () => Promise.resolve(''), writeText: () => Promise.resolve() } });
+  await act(async () => { clearCopiedBackup(); await Promise.resolve(); });
+});
 
 async function setup(over: Partial<{ failPath: string; payments: number }> = {}) {
   const chain = mockChain('regtest', walletA(), { payments: over.payments ?? 1 });
@@ -62,48 +83,80 @@ describe('BtcView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+  it('copies the backup seed only after a warning, and Lock clears the unchanged copied seed', async () => {
     const { user } = await setup();
-    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
-    expect(writeText).not.toHaveBeenCalled();
+    expect(clipboard.writeText).not.toHaveBeenCalled();
     expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenLastCalledWith(''));
+    expect(clipboard.writeText).toHaveBeenCalledTimes(2);
+    expect(clipboard.value).toBe('');
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
   });
 
   it('empties the clipboard at the next click when the app lock could not (no user activation)', async () => {
     const { user } = await setup();
-    let refuse = false;
-    const writeText = vi.fn((text: string) => (refuse && text === '' ? Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError')) : Promise.resolve()));
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     // The idle lock runs without user activation, so the browser refuses to empty the clipboard.
-    refuse = true;
+    clipboard.writeText.mockRejectedValueOnce(new DOMException('Document is not focused.', 'NotAllowedError'));
     await act(async () => {
       notifyAppLock('idle');
       await Promise.resolve();
     });
-    expect(writeText).toHaveBeenCalledTimes(2);
-    expect(writeText).toHaveBeenLastCalledWith('');
-    refuse = false;
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenCalledTimes(2));
+    expect(clipboard.writeText).toHaveBeenLastCalledWith('');
+    expect(clipboard.value).toBe(seed);
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
     // Back at the page: the first click empties it.
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
-    expect(writeText).toHaveBeenLastCalledWith('');
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenCalledTimes(3));
+    expect(clipboard.writeText).toHaveBeenLastCalledWith('');
+    expect(clipboard.value).toBe('');
     // Emptied once: Lock leaves the clipboard alone.
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(clipboard.writeText).toHaveBeenCalledTimes(3);
+    expect(clipboard.value).toBe('');
+  });
+
+  it.each(['replaced', 'denied', 'unavailable'] as const)('Lock forgets the wallet without clearing a %s clipboard', async (state) => {
+    const { user } = await setup();
+    const clipboard = clipboardFixture();
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
+
+    if (state === 'replaced') clipboard.value = 'newer external clipboard content';
+    else if (state === 'denied') clipboard.readText.mockRejectedValue(new DOMException('Denied', 'NotAllowedError'));
+    else Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard.writeText } });
+
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(state === 'replaced' ? 'newer external clipboard content' : seed);
+    if (state !== 'unavailable') expect(clipboard.readText).toHaveBeenCalled();
   });
 
   it('discloses what the scan verifies, its limits and the data-source modes (hosted scanning unavailable)', async () => {
@@ -127,6 +180,22 @@ describe('BtcView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
   });
 
+  it('recognises spent outputs locally by default and asks the server per outpoint only when the box is ticked', async () => {
+    const { chain, user } = await setup();
+    await importSeed(user);
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Also ask the server whether each found output is unspent/ });
+    expect(box.checked).toBe(false);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    expect(screen.getByText(/Spent status: checked locally through height/).textContent).toMatch(/No optional per-output spent-status query was sent/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
+    await user.click(box);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/Spent status: the selected Esplora server was asked about outputs not already known locally to be spent/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
+  });
+
   it('scans, reviews, requires approval, signs and broadcasts', async () => {
     const { chain, user } = await setup();
     await importSeed(user);
@@ -136,7 +205,9 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
     expect(screen.getByText('0.0005 BTC')).toBeTruthy();
-    expect(screen.getByText(/Output and spent status were checked with the configured Esplora provider/).textContent)
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toEqual([]);
+    expect(screen.getByText(/What the Esplora server can see/)).toBeTruthy();
+    expect(screen.getByText(/Outputs were read from the configured Esplora provider/).textContent)
       .toMatch(/single-provider check, not independent verification/i);
     expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
     expect(screen.getByText('Unique in this scan')).toBeTruthy();
@@ -156,11 +227,33 @@ describe('BtcView', () => {
     await user.click(sign);
     await screen.findByText('Signed transaction');
     expect(chain.broadcasts).toHaveLength(0);
+    // Local signing does not silently authorize a new disclosure of the selected outputs.
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toHaveLength(0);
 
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await screen.findByText(/The server accepted transaction/);
     expect(chain.broadcasts).toHaveLength(1);
     expect(chain.broadcasts[0]).toMatch(/^[0-9a-f]+$/);
+  });
+
+  it('clears an old sweep and removes a newly spent output after an explicitly authorized provider refresh', async () => {
+    const { chain, user } = await setup();
+    await importSeed(user);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
+    await user.type(screen.getByLabelText('Destination address'), BCRT);
+    await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+    await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+    chain.spent.add(`${chain.blocks[3]!.txs[2]!.txid}:1`);
+    await user.click(screen.getByRole('checkbox', { name: /Also ask the server whether each found output is unspent/ }));
+    expect(screen.queryByText('Review before signing')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/No unspent payments found/);
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toHaveLength(1);
+    expect(screen.queryByRole('checkbox', { name: /^Sweep / })).toBeNull();
+    expect(screen.queryByText('Signed transaction')).toBeNull();
   });
 
   it('validates scanned Bitcoin destinations for the selected test network before filling them, with nothing selected', async () => {

@@ -4,6 +4,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { fetchMerchantProfile, readProfileFromSearch, startEmbedHost } from '../lib/embedHost';
 import { forgetMerchantKey, MERCHANT_PIN_PREFIX, merchantProfileUrl, readMerchantKey, rememberMerchantKey, type MerchantKey } from '../lib/merchantIdentity';
 import { useServices } from '../lib/services';
+import type { NetworkAuthorization } from '../lib/networkAuthorization';
 import { Field, Mono, Notice } from './Common';
 import { MerchantTemplateIssuer } from './MerchantTemplateIssuer';
 import { merchantTemplateAmount } from '../lib/merchantTemplate';
@@ -72,6 +73,7 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
     setLoading(false);
     setPinBusy(false);
   };
+  useEffect(() => services.network?.subscribe(cancel), [services]);
   const load = (): void => {
     const normalized = merchantProfileUrl(url);
     cancel();
@@ -86,7 +88,10 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
     const nextController = new AbortController();
     controller.current = nextController;
     setLoading(true);
-    void fetchMerchantProfile(normalized, Math.floor(services.nowMs() / 1000), services.fetchFn, nextController.signal).then((loaded) => {
+    let context: NetworkAuthorization | undefined;
+    try { context = services.network?.authorize({ action: 'merchant-profile', category: 'resource', endpoint: normalized, signal: nextController.signal, allowDirectOnce: true }); }
+    catch { setFailed(true); setLoading(false); return; }
+    void fetchMerchantProfile(normalized, Math.floor(services.nowMs() / 1000), context?.fetchFn ?? services.fetchFn, nextController.signal).then((loaded) => {
       if (revision !== request.current || nextController.signal.aborted) return;
       controller.current = undefined;
       setLoading(false);
@@ -97,7 +102,9 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
       setProfile(loaded);
       setOrigin(new URL(normalized).origin);
       setPin(readMerchantKey(new URL(normalized).origin));
-    });
+    }, () => {
+      if (revision === request.current && !nextController.signal.aborted) { setFailed(true); setLoading(false); }
+    }).finally(() => { context?.dispose(); });
   };
   const revokePinConsent = (): void => { pinRevision.current += 1; setPinBusy(false); };
   const pinCurrent = (): void => {

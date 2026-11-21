@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /tmp/ghostpay-security-246ff268d20d/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  03:18:17
+   Duration  2.47s (import 51%, tests 25%, transform 23%)
+

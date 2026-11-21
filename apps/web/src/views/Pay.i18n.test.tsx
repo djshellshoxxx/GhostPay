@@ -12,6 +12,7 @@ import { makeParsed } from '../test/invoiceFixtures';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
+import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { clearSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import ar from '../../locales/ar.json';
@@ -75,6 +76,7 @@ describe('Pay localization', () => {
     await screen.findByRole('heading', { name: 'Pagar una factura' });
     await user.click(await screen.findByRole('button', { name: es.messages['pay.continue'] }));
     await user.click(await screen.findByRole('button', { name: es.messages['pay.connect'].replace('{name}', 'Locale Wallet') }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByText('Conectada: cuenta.')).toBeTruthy();
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(0);
   });
@@ -104,8 +106,10 @@ describe('Pay localization', () => {
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Locale Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await user.click(await screen.findByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/Waiting for wallet confirmation/);
     await waitFor(() => { expect(release).toBeDefined(); });
     const submittedBytes = JSON.stringify(wallet.sent);

@@ -1,0 +1,23 @@
+{
+  "name": "existing-standalone-decoder",
+  "application_source_commit": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "execution_head": "0a574b661dd910206f684931c6a12140ff29e565",
+  "cwd": ".",
+  "argv": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "scripts/recovery/stealth-export-recover.test.mjs"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-21T04:46:48.213781+00:00",
+  "elapsed_seconds": 8.304,
+  "exit_code": 0,
+  "test_blob": "f773ce1f8918e22f0fe4eb34729e85b2b506c0d9",
+  "output_bytes": 2426,
+  "output_sha256": "1f1aa1d207a436c211fde740cadcb6fb70c65635bdcfce00bf359a253603fdd2",
+  "output": "\u2714 independence: the decoder imports only node: built-ins and @noble/curves + @noble/hashes (2.084703ms)\n\u2714 canonical() matches format section 1.5 (sorted keys, no whitespace, integers, JSON.stringify strings) (0.513171ms)\n\u2714 public record: validates, binds publicKey to stealthAddress and re-serializes byte for byte (6.126798ms)\n\u2714 public record: tampered or malformed records are refused (7.065848ms)\n\u2714 single keypair file: decrypts the a1 key and re-serializes byte for byte (125.456356ms)\n\u2714 archive: three keys in address order, each matching its vector; a3 is not in it (53.69315ms)\n\u2714 master backup: recovers the seller pair and every vector announcement, including one omitted from the archive (120.80503ms)\n\u2714 raw private-key text: exact section 6 layout and the key controls the address (2.895812ms)\n\u2714 every invalid[] vector is refused with its documented error code (384.079268ms)\n\u2714 tampering, wrong passphrase, wrong chain and bounds fail closed (475.748403ms)\n\u2714 master header rejects the same key in spending and viewing roles before decryption (0.560532ms)\n\u2714 cross-implementation: files freshly written by the built @ghostpay/ux-vault codec decrypt here (2386.303935ms)\n\u2714 CLI: archive decrypts with the passphrase on stdin and prints no private key without the flag (285.702073ms)\n\u2714 CLI: wrong passphrase, wrong chain, tampering and argv/env passphrases are refused without echoing input (539.289463ms)\n\u2714 CLI: master --scan-announcement recovers the archive-omitted a3 address; keys only with the flag, never master keys (855.670449ms)\n\u2714 CLI: public record and raw-key files need no passphrase; the raw key prints only with the flag (488.439431ms)\n\u2714 CLI: expected chain is enforced for raw keys, public records and header-only inspection (697.178298ms)\n\u2714 CLI: a chain-neutral master backup never silently accepts an expected-chain assertion (161.192918ms)\n\u2714 CLI: unknown options never echo their untrusted contents (179.462597ms)\n\u2714 CLI: failed passphrase input wipes previously received chunks and never prints their contents (10.599939ms)\n\u2714 CLI: raw-file read buffers are wiped after successful recovery and oversized-input refusal (36.648811ms)\n\u2714 offline recovery works in a fresh directory with no GhostPay packages or repository access (1158.793593ms)\n\u2139 tests 22\n\u2139 suites 0\n\u2139 pass 22\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 8201.549409\n",
+  "scope": "Complete existing standalone decoder test file, including fixture/fresh-codec, rejection/redaction and restricted-process recovery cases. No filters, timeout, assertion or permission-boundary changes. The separate Anvil spend file is outside this execution."
+}

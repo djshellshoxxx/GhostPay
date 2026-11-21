@@ -1,0 +1,31 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "node --test --test-concurrency=1 --test-reporter=tap scripts/recovery/*.test.mjs"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:00:32.908062+00:00",
+  "source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "source_tree": "b0bfa31a8dea6872dbc6a16aa39150458e5a9616",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "ANVIL_BIN": "/workspace/scratch/75c78c17e2fc/contract-tools/anvil",
+    "CAST_BIN": "/workspace/scratch/75c78c17e2fc/contract-tools/cast",
+    "REQUIRE_ANVIL": "1"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 13.756507635116577,
+  "finished_utc": "2026-11-19T13:00:46.664592+00:00",
+  "final_source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "final_status": "",
+  "log": "independent-recovery-recovered.log.gz",
+  "uncompressed_bytes": 6195,
+  "uncompressed_sha256": "3acb9b2e8ffc852d6c48de9c0d8da81f41f7aed8f1f538d4e35cb086257dd1e4",
+  "stored_bytes": 1658,
+  "stored_sha256": "4e5c6309670c765d8756b11a8806b10e6cb544ea67b3d4758ada5a7d838c0dd8"
+}

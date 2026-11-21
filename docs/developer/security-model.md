@@ -123,3 +123,15 @@ cite the ID in commit messages and tests.
 
 Reporting: GitHub private vulnerability reporting (never a public issue); the contact and timelines in `SECURITY.md` are
 placeholders awaiting owner confirmation.
+
+## TM privacy boundaries and regression obligations
+
+The bounded TM1–TM15 continuation is tracked in the [completion/defaults matrix](../threat-model/TM_HARDENING_COMPLETION_20261118.md). Keep consent attached to its payment and seller session: a new receipt must not inherit address-inclusion consent, and a replaced/reinstalled seller session must not inherit plaintext-invoice opt-out or a late invoice result. RPC credentials belong to endpoint configuration, never diagnostics; session-only markers must use normalized URLs and must not change on failed form validation. Export filters preserve source settings and omit session-only or detected sensitive endpoint values.
+
+Read persisted network profiles strictly at the browser boundary. Malformed, incomplete, unreadable and unacknowledged saved profiles block new shared EVM RPC dispatch, including cached clients and retries. Missing fresh-install preferences still mean Direct. Deleting site data resets preferences; these controls are not tamper resistance against a compromised origin and do not implement general network isolation. PR #241 owns the broader transport workstream. The shared EVM RPC profile guard does not cover separately configured scan endpoints/indexers, raw relayer fetch, or the Bitcoin, Solana and TRON adapters; their transport behavior is tracked separately under #241.
+
+TM8 uses the already-owned v4 private checkpoint slot implementation from PR #235. Do not restore either conflicting v3 format or migrate public v2 slots into a private profile. Legacy progress requires a rescan. Cursor contents remain plaintext and unauthenticated; private names do not encrypt all metadata.
+
+Test the actual generated CSP artifacts, including the Pages clean-environment build. Only an active early head meta policy protects Pages; `_headers` applies only on supporting hosts and nginx needs its generated HTTP-header configuration. Neither a source string nor a report-only/header-shaped comment proves enforcement. No build step should echo invalid origin inputs that might contain credentials.
+
+Preserve chain-specific limits: Bitcoin spend inference must use committed raw transaction inputs, not server annotations; TRON review must recheck its cancellation scope before each subsequent disclosure. Padding failures must not silently drop privacy options except for the documented explicit/size/legacy compatibility paths. Application zero-log mode does not erase operational events or infrastructure logs. Per-invoice key generation, quote-less protocol design, general browser transports and recovery remain separately owned.

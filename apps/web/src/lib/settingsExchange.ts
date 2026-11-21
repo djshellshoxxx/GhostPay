@@ -4,7 +4,7 @@ import {
   type SharedSettings,
 } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
-import { checkRelayerUrl, checkRpcUrl, sanitizeSettings, type Settings } from './settings';
+import { checkRelayerUrl, checkRpcUrl, isRpcSessionOnly, rpcUrlLooksSecret, sanitizeSettings, type RpcSlot, type Settings } from './settings';
 
 export type { DeviceSettings, SharedSettings } from '@ghostpay/qr-exchange';
 export type ExchangeSection = DeviceSettingsSection;
@@ -32,16 +32,22 @@ function preferencesOf(s: Settings): SharedSettings {
   return { delayMinSec: s.delayMinSec, delayMaxSec: s.delayMaxSec, lockTimeoutMin: s.lockTimeoutMin, theme: s.theme, autoClearFragment: s.autoClearFragment };
 }
 
-function knownChains(map: Readonly<Record<string, string>>, chainIds: readonly number[]): Record<string, string> {
+/** A section choice never overrides session-only retention or the credential warning heuristic. */
+function exportableChains(map: Readonly<Record<string, string>>, chainIds: readonly number[], slot: RpcSlot): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const id of [...chainIds].sort((a, b) => a - b)) { const url = map[String(id)]; if (url !== undefined && url !== '') out[String(id)] = url; }
+  for (const id of [...chainIds].sort((a, b) => a - b)) {
+    const key = String(id);
+    const url = map[key];
+    if (url !== undefined && url !== '' && !isRpcSessionOnly(slot, key, url) && !rpcUrlLooksSecret(url)) out[key] = url;
+  }
   return out;
 }
 
 /** Whether a section has anything to export (empty maps are never sent; an empty relayer means "no relayer"). */
 export function exportSectionAvailable(s: Settings, section: ExchangeSection, chainIds: readonly number[]): boolean {
-  if (section === 'rpcUrls') return Object.keys(knownChains(s.rpcUrls, chainIds)).length > 0;
-  if (section === 'rpcUrlsSecondary') return Object.keys(knownChains(s.rpcUrlsSecondary, chainIds)).length > 0;
+  if (section === 'rpcUrls') return Object.keys(exportableChains(s.rpcUrls, chainIds, 'primary')).length > 0;
+  if (section === 'rpcUrlsSecondary') return Object.keys(exportableChains(s.rpcUrlsSecondary, chainIds, 'secondary')).length > 0;
+  if (section === 'relayerUrl') return !rpcUrlLooksSecret(s.relayerUrl);
   if (section === 'pinnedSigners') return s.pinnedSigners.length > 0;
   return true;
 }
@@ -51,8 +57,8 @@ export function buildSettingsExport(s: Settings, sections: readonly ExchangeSect
   const want = (section: ExchangeSection): boolean => sections.includes(section) && exportSectionAvailable(s, section, chainIds);
   return {
     ...(want('preferences') ? { preferences: preferencesOf(s) } : {}),
-    ...(want('rpcUrls') ? { rpcUrls: knownChains(s.rpcUrls, chainIds) } : {}),
-    ...(want('rpcUrlsSecondary') ? { rpcUrlsSecondary: knownChains(s.rpcUrlsSecondary, chainIds) } : {}),
+    ...(want('rpcUrls') ? { rpcUrls: exportableChains(s.rpcUrls, chainIds, 'primary') } : {}),
+    ...(want('rpcUrlsSecondary') ? { rpcUrlsSecondary: exportableChains(s.rpcUrlsSecondary, chainIds, 'secondary') } : {}),
     ...(want('relayerUrl') ? { relayerUrl: s.relayerUrl } : {}),
     ...(want('pinnedSigners') ? { pinnedSigners: [...s.pinnedSigners] } : {}),
   };
@@ -111,7 +117,8 @@ const sameMap = (a: Readonly<Record<string, string>>, b: Readonly<Record<string,
   Object.keys(a).length === Object.keys(b).length && Object.entries(a).every(([k, v]) => b[k] === v);
 
 function sameSettings(a: Settings, b: Settings): boolean {
-  return samePreferences(preferencesOf(a), preferencesOf(b)) && sameMap(a.rpcUrls, b.rpcUrls) && sameMap(a.rpcUrlsSecondary, b.rpcUrlsSecondary) &&
+  return a.privacyMode === b.privacyMode && a.clipboardClearAfterMs === b.clipboardClearAfterMs &&
+    samePreferences(preferencesOf(a), preferencesOf(b)) && sameMap(a.rpcUrls, b.rpcUrls) && sameMap(a.rpcUrlsSecondary, b.rpcUrlsSecondary) &&
     a.relayerUrl === b.relayerUrl && a.pinnedSigners.length === b.pinnedSigners.length && a.pinnedSigners.every((p, i) => b.pinnedSigners[i] === p);
 }
 

@@ -1,0 +1,118 @@
+{
+  "review_kind": "read-only strict-gate preservation; not full PR or native analyzer qualification",
+  "reviewed_runtime_commit": "4a3c9af62da162e531814ef88d8877113ace4211",
+  "observed_current_head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "current_head_delta_source": "Local Git exact blobs and full diff after coordinator fetch",
+  "current_head_changed_files": [
+    "apps/web/src/AppShell.idleClock.test.tsx",
+    "apps/web/src/AppShell.tsx",
+    "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+    "apps/web/src/lib/scanClient.test.ts",
+    "apps/web/src/lib/scanClient.ts",
+    "apps/web/src/lib/scanCursorSlot.test.ts",
+    "apps/web/src/lib/scanCursorSlot.ts",
+    "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/consolidation/master-20261118/QUALIFIED_GROUP.md",
+    "docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md",
+    "docs/handoffs/PAGES_IDLE_CLOCK_INTEGRATION_20261118.md",
+    "docs/handoffs/agents/INVOICE_VALIDATION_20261118.md",
+    "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+    "docs/threat-model/THREAT_MODEL.md",
+    "packages/invoice-schema/DEVIATIONS.md",
+    "packages/invoice-schema/README.md",
+    "packages/invoice-schema/src/envelope.ts",
+    "packages/invoice-schema/src/errors.ts",
+    "packages/invoice-schema/src/pinnedSigner.test.ts",
+    "packages/ux-core/src/errors.test.ts",
+    "packages/ux-core/src/errors.ts"
+  ],
+  "current_head_gate_delta": [],
+  "findings": [
+    {
+      "status": "preserved",
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "evidence": "All five production targets remain; default900s,depth3,solc0.8.28,optimizer200,Cancun unchanged. Exit nonzero or any reported issue still sets status1; final runner exits accumulatedstatus."
+    },
+    {
+      "status": "strengthened",
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "evidence": "Required completeness sidecar validation and duplicate-key-rejecting strict JSON validation run regardless of optional evidence directory. Missing/internal-timeout/exception telemetry cannot become clean."
+    },
+    {
+      "status": "preserved",
+      "path": ".github/workflows/contract-analysis.yml",
+      "evidence": "Exact requested-head checkout, Echidna+Mythril matrix, command outcome propagation and release evidence unchanged; no continue-on-error or disposition invocation. Native runner gets passive evidence path; evidence collection/upload always runs without clearing failure."
+    },
+    {
+      "status": "unwired",
+      "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+      "evidence": "No production runner or workflow invokes checkDispositions or its CLI. Only changed workflow reference is test-path trigger. Source explicitly requires external authenticated review; local ownerApproval identity/evidence strings alone are not proof of owner authorization."
+    },
+    {
+      "status": "preserved",
+      "path": "packages/contracts/src",
+      "evidence": "No production contract runtime diff relative58d89b39; changes are deployment scripts/tests/tooling/evidence."
+    },
+    {
+      "status": "independent useful work",
+      "path": "packages/contracts/script/DeployPolicy.s.sol",
+      "evidence": "Nonzero-fee acknowledgment additionally binds chainID,token address,runtime codehash,flatFee andrecipient before broadcast. This supersedes token-address-only acknowledgment only when separately qualified; no economic acceptance inferred."
+    }
+  ],
+  "limits": [
+    "No tests or native analyzers run by this reviewer.",
+    "PR body reports502Forge/112tooling and other validation at an earlier source; these claims are not independently promoted to observed currenthead.",
+    "Full native current-source Mythril,Echidna,coverage and hosted checks remain pending per active draft.",
+    "No source change,disposition activation,owner-approved exception,merge,release,deployment orremote mutation performed."
+  ],
+  "classification": "E active candidate; any future finding-exception activation is H owner decision and separate authenticated approval, not included.",
+  "recommendation": "Preserve and monitor current exacthead; source gate-preservation review finds no weakening in scoped runtime. Do not merge wholesale or treat helper output as strictgate success.",
+  "reviewed_gate_blob_comparison": [
+    {
+      "path": ".github/workflows/contract-analysis.yml",
+      "reviewed_blob": "3139d9b7e7864c76704e2e95a633fc80bcc81ffc",
+      "current_blob": "3139d9b7e7864c76704e2e95a633fc80bcc81ffc"
+    },
+    {
+      "path": ".github/actions/setup-forge/action.yml",
+      "reviewed_blob": "3015f5ef9122e72d2452b1e78de960c970910618",
+      "current_blob": "3015f5ef9122e72d2452b1e78de960c970910618"
+    },
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "reviewed_blob": "a277ff0061e0d08f9850957f3dd9d96a59ad17ec",
+      "current_blob": "a277ff0061e0d08f9850957f3dd9d96a59ad17ec"
+    },
+    {
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "reviewed_blob": "4604d3055535ac85274c0bf83afdee8e6becbd9a",
+      "current_blob": "4604d3055535ac85274c0bf83afdee8e6becbd9a"
+    },
+    {
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "reviewed_blob": "e0d317c8462e9119a1564106562ca7db5afe92d9",
+      "current_blob": "e0d317c8462e9119a1564106562ca7db5afe92d9"
+    },
+    {
+      "path": "packages/contracts/scripts/collect-analysis-report.py",
+      "reviewed_blob": "4d82b5d3b60aa2cb9ad14d0b528d52e68e9f1b2c",
+      "current_blob": "4d82b5d3b60aa2cb9ad14d0b528d52e68e9f1b2c"
+    },
+    {
+      "path": "packages/contracts/script/DeployPolicy.s.sol",
+      "reviewed_blob": "1ea3f823c0576b23c357f57eaa22c92d1b8bd625",
+      "current_blob": "1ea3f823c0576b23c357f57eaa22c92d1b8bd625"
+    },
+    {
+      "path": "packages/contracts/scripts/pre-deploy-check.sh",
+      "reviewed_blob": "bfa247178a3843ae9c5f4592367af1b8a943e0bb",
+      "current_blob": "bfa247178a3843ae9c5f4592367af1b8a943e0bb"
+    },
+    {
+      "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+      "reviewed_blob": "3547302f7ce1635358ace699668e49822ed05c70",
+      "current_blob": "3547302f7ce1635358ace699668e49822ed05c70"
+    }
+  ]
+}

@@ -1,0 +1,822 @@
+{
+  "format": "ghostpay-sanitized-execution-evidence/1",
+  "generated_at": "2026-11-19T10:58:51.644562+00:00",
+  "prepared_by": "consolidation_map independent evidence reviewer",
+  "repository": "djshellshoxxx/GhostPay",
+  "pr": 270,
+  "prior_candidate": "2557186cd7547990cc32978639e18162d4a69235",
+  "original_base": "c40b7581b9b996f33612186bc91960c65273cb64",
+  "node_version": "v24.22.3",
+  "vitest_version": "5.1.0",
+  "unchanged_inputs": [
+    {
+      "path": "package-lock.json",
+      "base_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "final_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "identical": true
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "base_blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "final_blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "identical": true
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.ts",
+      "base_blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+      "final_blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+      "identical": true
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.test.ts",
+      "base_blob": "7c9183038e3d1454d418419da7dcf1bee3a91d32",
+      "final_blob": "7c9183038e3d1454d418419da7dcf1bee3a91d32",
+      "identical": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "base_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "final_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "base_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "final_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "identical": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "canonical-json-red",
+      "kind": "focused-regression",
+      "stage": "pre-repair",
+      "source": {
+        "baseline_commit": "c40b7581b9b996f33612186bc91960c65273cb64",
+        "runtime_blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+        "test_cases": 22,
+        "run_time_test_blob": "not captured in raw log"
+      },
+      "command_summary": "Original invoice-schema Vitest configuration; focused src/json.test.ts; coverage disabled. Exact argv not preserved in available evidence.",
+      "exact_argv": null,
+      "exit_code": 1,
+      "counts": {
+        "total": 22,
+        "passed": 11,
+        "failed": 11,
+        "skipped": 0
+      },
+      "vitest_seconds": 3.17,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/json-red.log",
+        "bytes": 5744,
+        "sha256": "d77a2a3d96fc809101105fec92563a3fa318d43eb41f952d297013b5ef63d3be",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  11 failed | 11 passed (22)",
+        "Duration  3.17s (import 44%, transform 43%, tests 11%, worker 2%)"
+      ],
+      "current_source_boundary": "Historical source-pinned execution. Do not relabel as final refreshed-source whole-candidate qualification."
+    },
+    {
+      "id": "canonical-json-green-prior",
+      "kind": "focused-regression",
+      "stage": "post-repair-before-base-refresh",
+      "source": {
+        "candidate_checkpoint": "2557186cd7547990cc32978639e18162d4a69235",
+        "runtime_blob": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+        "checkpoint_test_blob": "934f60de54018235a6c87fc5caad0f8ed84e47b9",
+        "test_cases": 22,
+        "run_time_blob_capture": "not embedded in raw log; checkpoint is coordinator-attributed source context"
+      },
+      "command_summary": "Original invoice-schema Vitest configuration; focused src/json.test.ts; coverage disabled. Exact argv not preserved in available evidence.",
+      "exact_argv": null,
+      "exit_code": 0,
+      "counts": {
+        "total": 22,
+        "passed": 22,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitest_seconds": 244.82,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/json-green.log",
+        "bytes": 218,
+        "sha256": "397943af34f42f981b7184b87b88c3376aedbd76dd7fe3008e0de54ba8d57df0",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  22 passed (22)",
+        "Duration  244.82s (transform 80%, import 15%, worker 5%)"
+      ],
+      "limits": [
+        "This result covers the prior 22-case suite, not a separate focused execution of the final 24-case suite.",
+        "Final runtime blob is unchanged; the final test blob includes two preserved upstream cases."
+      ],
+      "current_source_boundary": "Historical source-pinned execution. Do not relabel as final refreshed-source whole-candidate qualification."
+    },
+    {
+      "id": "merchant-clock-red",
+      "kind": "focused-regression",
+      "source": {
+        "base_commit": "c40b7581b9b996f33612186bc91960c65273cb64",
+        "upstream_commit": "509a800439f2feb6173b20d2543746c3d74e9a42",
+        "worker_evidence_commit": "bf26be0f5703ae7a84c804137b9bb4ff25ae1abd",
+        "runtime_blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+        "test_blob": "31d40e8871a4d1a89c525d3361cb2922431c5c4b"
+      },
+      "argv": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--coverage.enabled=false"
+      ],
+      "cwd": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/packages/invoice-schema",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "exit_code": 1,
+      "counts": {
+        "total": 63,
+        "passed": 37,
+        "failed": 26,
+        "skipped": 0
+      },
+      "vitest_seconds": 10.79,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/docs/consolidation/merchant-clock-integration-20261119/red.log",
+        "bytes": 7845,
+        "sha256": "4996ae8e4561ec054650174dd912e6f90d3e3e140186ec113669d9896009d068",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  26 failed | 37 passed (63)",
+        "Duration  10.79s (tests 65%, transform 21%, import 14%)"
+      ],
+      "current_source_boundary": "Historical #246 merchant implementation, removed from the refreshed task scope. The current base preserves different #268 validation semantics."
+    },
+    {
+      "id": "merchant-clock-green",
+      "kind": "focused-regression",
+      "source": {
+        "base_commit": "c40b7581b9b996f33612186bc91960c65273cb64",
+        "upstream_commit": "509a800439f2feb6173b20d2543746c3d74e9a42",
+        "worker_evidence_commit": "bf26be0f5703ae7a84c804137b9bb4ff25ae1abd",
+        "runtime_blob": "35af2b07417916eca4d10e1e4f5584e171ece1dd",
+        "test_blob": "31d40e8871a4d1a89c525d3361cb2922431c5c4b"
+      },
+      "argv": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--coverage.enabled=false"
+      ],
+      "cwd": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/packages/invoice-schema",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "exit_code": 0,
+      "counts": {
+        "total": 63,
+        "passed": 63,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitest_seconds": 6.29,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/docs/consolidation/merchant-clock-integration-20261119/green.log",
+        "bytes": 243,
+        "sha256": "80367ce4bd1b4084cf86cd495e0ba44f24a43f1d2aac7cb54e87c28f6e6c566a",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  63 passed (63)",
+        "Duration  6.29s (tests 65%, import 23%, transform 12%, worker 1%)"
+      ],
+      "current_source_boundary": "Historical #246 merchant implementation, removed from the refreshed task scope. The current base preserves different #268 validation semantics."
+    },
+    {
+      "id": "scanner-core-red",
+      "kind": "focused-regression",
+      "source": {
+        "commit": "f123c8682273f8ea0a9f468aadf41fc580bb6cdf",
+        "runtime_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+        "test_blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "unchanged_fuzz_blob": "77ce0bd28772235418d9e241b0da84028068035f"
+      },
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-web-deps/node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vite.config.ts",
+        "src/lib/scannerCore.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "-t",
+        "rejects unsupported schemes without curve work|honors cancellation from a progress callback|preserves core-crypto compatibility with a missing runtime scheme"
+      ],
+      "cwd": "/workspace/scratch/c374725a11b7/ghostpay-scanner-review/apps/web",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "exit_code": 1,
+      "counts": {
+        "total_defined": 21,
+        "selected": 3,
+        "passed": 1,
+        "failed": 2,
+        "filtered": 18
+      },
+      "vitest_seconds": 4.07,
+      "wrapper_seconds": 6.041803273001278,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-red.log",
+        "bytes": 165129,
+        "sha256": "14f824dc8f7d0b78043ba7258ebc572ee1f02d648fc501d2f6db42186cc77529",
+        "raw_content_embedded": false
+      },
+      "original_receipt": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-red.json",
+        "bytes": 1156,
+        "sha256": "f98bc62001d6c0b5019652bb6ae85ab4d6ffecd10eee1f6ed6ae2cf70ec33758",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed | 1 passed | 18 skipped (21)",
+        "Duration  4.07s (transform 37%, import 33%, tests 30%)"
+      ],
+      "limits": [
+        "Raw scanner RED output is excluded because spy failures printed synthetic buffer/call arguments.",
+        "No coverage, full web acceptance or million-log corpus result is implied."
+      ],
+      "current_source_boundary": "Historical source-pinned execution. Do not relabel as final refreshed-source whole-candidate qualification."
+    },
+    {
+      "id": "scanner-core-green",
+      "kind": "focused-regression",
+      "source": {
+        "commit": "fefcd57fb2397685a361dcbb9b9cf705efbfc17b",
+        "runtime_blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "test_blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "unchanged_fuzz_blob": "77ce0bd28772235418d9e241b0da84028068035f"
+      },
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-web-deps/node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vite.config.ts",
+        "src/lib/scannerCore.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-final/apps/web",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "exit_code": 0,
+      "counts": {
+        "total": 21,
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitest_seconds": 1.72,
+      "wrapper_seconds": 2.3205121740029426,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-green.log",
+        "bytes": 204,
+        "sha256": "5077557909d293bed11a10fd5c2ceb8f60cec82d87d62cfe9a59de8a355d6279",
+        "raw_content_embedded": false
+      },
+      "original_receipt": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-green.json",
+        "bytes": 601,
+        "sha256": "e10db358be6c9cc55486d6d34d6541536763f68656cecd508bb106ff88ff9bbc",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  21 passed (21)",
+        "Duration  1.72s (tests 34%, import 33%, transform 32%, worker 1%)"
+      ],
+      "limits": [
+        "Raw scanner RED output is excluded because spy failures printed synthetic buffer/call arguments.",
+        "No coverage, full web acceptance or million-log corpus result is implied."
+      ],
+      "current_source_boundary": "Historical source-pinned execution. Do not relabel as final refreshed-source whole-candidate qualification."
+    },
+    {
+      "id": "merchant-worker-typecheck",
+      "kind": "package-check-on-worker-source",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/invoice-schema"
+      ],
+      "cwd": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "source": {
+        "worker_evidence_commit": "bf26be0f5703ae7a84c804137b9bb4ff25ae1abd",
+        "scope": "merchant worker source; not final combined candidate"
+      },
+      "exit_code": 0,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/docs/consolidation/merchant-clock-integration-20261119/typecheck.log",
+        "bytes": 176,
+        "sha256": "87163942c8d255b8a721e8dcd47a0b853062fb0f5834ff309251a80cc788a8fa",
+        "raw_content_embedded": false
+      },
+      "limits": [],
+      "current_source_boundary": "Historical #246 merchant implementation, removed from the refreshed task scope. The current base preserves different #268 validation semantics."
+    },
+    {
+      "id": "merchant-worker-lint",
+      "kind": "package-check-on-worker-source",
+      "argv": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/invoice-schema"
+      ],
+      "cwd": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "source": {
+        "worker_evidence_commit": "bf26be0f5703ae7a84c804137b9bb4ff25ae1abd",
+        "scope": "merchant worker source; not final combined candidate"
+      },
+      "exit_code": 137,
+      "log": {
+        "path": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/docs/consolidation/merchant-clock-integration-20261119/lint.log",
+        "bytes": 602,
+        "sha256": "dbd7853da1ac3b04431dcb9771ea16fbdab483cf3eb537ac616004c3f351aa11",
+        "raw_content_embedded": false
+      },
+      "limits": [
+        "Exit 137 is incomplete, not a lint pass. Cause is not established by the log."
+      ],
+      "current_source_boundary": "Historical #246 merchant implementation, removed from the refreshed task scope. The current base preserves different #268 validation semantics."
+    },
+    {
+      "id": "invoice-schema-full-coverage",
+      "kind": "full-package-test-and-coverage",
+      "source": {
+        "commit": "fefcd57fb2397685a361dcbb9b9cf705efbfc17b"
+      },
+      "argv": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--coverage.processingConcurrency=1"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-final/packages/invoice-schema",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512 --max-semi-space-size=16"
+      },
+      "exit_code": 1,
+      "exit_confirmation": "Coordinator confirmed terminal session 78755 exit 1.",
+      "counts": {
+        "test_files": 14,
+        "passed_files": 13,
+        "failed_files": 1,
+        "total_tests": 858,
+        "passed_tests": 855,
+        "failed_tests": 3
+      },
+      "vitest_seconds": 852.72,
+      "failed_tests": [
+        {
+          "file": "src/passphrase.test.ts",
+          "name": "signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature",
+          "milliseconds": 61139
+        },
+        {
+          "file": "src/passphrase.test.ts",
+          "name": "authentic but malformed plaintext gives typed errors (reachable only with the passphrase)",
+          "milliseconds": 62006
+        },
+        {
+          "file": "src/passphrase.test.ts",
+          "name": "unicode: NFKC-equivalent passphrases open the same link",
+          "milliseconds": 60002
+        }
+      ],
+      "configured_test_timeout_ms": 60000,
+      "coverage_thresholds": {
+        "statements": 95,
+        "branches": 90,
+        "functions": 95,
+        "lines": 95
+      },
+      "coverage_threshold_status": "not qualified; no percentage/threshold report in stdout",
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-invoice-coverage.log",
+        "bytes": 2719,
+        "sha256": "e2a6819cc3d49c5250277801a41aeceb188c88fac9851302346501e58f398d05",
+        "raw_content_embedded": false
+      },
+      "summary": [
+        "Test Files  1 failed | 13 passed (14)",
+        "Tests  3 failed | 855 passed (858)",
+        "Duration  852.72s (tests 100%)"
+      ],
+      "limits": [
+        "Full run failed. Focused passes do not supersede the failure.",
+        "Final JSON 24-case and merchant 63-case suites were included among the 13 passing files, according to coordinator confirmation and the final full-run failure inventory. No separate final 24-case focused run is claimed."
+      ],
+      "current_source_boundary": "Failed full run on historical fefcd57 source. Current refreshed merchant source differs; no full refreshed-source qualification is claimed."
+    },
+    {
+      "id": "scanner-million-corpus",
+      "kind": "unchanged-million-log-fuzz-corpus",
+      "source": {
+        "commit": "fefcd57fb2397685a361dcbb9b9cf705efbfc17b",
+        "runtime_blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "corpus_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+        "vite_config_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+      },
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-web-deps/node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vite.config.ts",
+        "src/lib/scannerCore.fuzz.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-final/apps/web",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "exit_code": 0,
+      "state": "completed",
+      "counts": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "corpus_logs": 1000000
+      },
+      "configured_test_timeout_ms": 180000,
+      "coverage_enabled": false,
+      "vitest_seconds": 65.62,
+      "wrapper_seconds": 66.46626307100087,
+      "started_at": "2026-11-19T10:56:57.060485+00:00",
+      "completed_at": "2026-11-19T10:58:03.527021+00:00",
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-million.log",
+        "bytes": 176,
+        "sha256": "9797af2871456e9c90f5267d035d40240e867ba1fcfc7ce8683072f16871566a",
+        "raw_content_embedded": false
+      },
+      "original_receipt": {
+        "path": "/tmp/ghostpay-c374725a11b7-scanner-million.json",
+        "bytes": 1066,
+        "sha256": "8b6f6bcf8248d3961345784a33c63d80b6b744d94df920e6fa408131101086a7",
+        "raw_content_embedded": false
+      },
+      "limits": [
+        "No matching baseline timing was measured; no speedup ratio is claimed.",
+        "This noncoverage corpus pass does not qualify the separate instrumented full web suite."
+      ],
+      "current_source_boundary": "Historical source-pinned execution. Do not relabel as final refreshed-source whole-candidate qualification."
+    }
+  ],
+  "merchant_author_receipt": {
+    "path": "/workspace/scratch/c374725a11b7/ghostpay-merchant-review/docs/consolidation/merchant-clock-integration-20261119/QUALIFICATION.md",
+    "bytes": 3902,
+    "sha256": "a280ca258b7600d2464569fe4b0ffd5a40164756261e4cb0d1be52d619b674f3",
+    "raw_content_embedded": false
+  },
+  "remaining_gates": [
+    "Typed invoice/scanner lint remains incomplete after serial original-config attempts at 512 MiB and 256 MiB; no rule diagnostic preceded termination.",
+    "The production web build stopped during the BTC dependency compiler with exit137. Web build/browser/lean qualification was not reached.",
+    "Full refreshed invoice tests/coverage remain unqualified. The historical fefcd57 full suite failed three unchanged passphrase deadlines; no final coverage report was produced.",
+    "Current-head hosted application/security qualification and lock-owner integration remain separate. This evidence does not authorize main merge, deployment or release."
+  ],
+  "sanitization": {
+    "raw_logs_copied": false,
+    "scanner_red_buffers_or_call_arguments_included": false,
+    "included_content": "Source identifiers, exact recorded argv where available, count/duration summaries and raw-input SHA-256s only."
+  },
+  "updated_at": "2026-11-19T11:08:00.852Z",
+  "historical_tested_blobs": {
+    "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+    "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+    "packages/invoice-schema/src/merchantProfile.ts": "35af2b07417916eca4d10e1e4f5584e171ece1dd",
+    "packages/invoice-schema/src/merchantProfile.test.ts": "31d40e8871a4d1a89c525d3361cb2922431c5c4b",
+    "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+    "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605"
+  },
+  "historical_tested_candidate": "fefcd57fb2397685a361dcbb9b9cf705efbfc17b",
+  "historical_refreshed_base": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+  "current_refreshed_scope": {
+    "base_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "base_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "worktree": "/tmp/ghostpay-c374725a11b7-refreshed",
+    "snapshot_state": "Tests ran before publication on an uncommitted overlay; the containing commit is mapped to the exact observed source blobs, original lockfile and configurations.",
+    "observed_file_blobs": {
+      "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+      "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+      "packages/invoice-schema/src/merchantProfile.ts": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+      "packages/invoice-schema/src/merchantProfile.test.ts": "a1299d9ceedefeefb5784d287d556008531af02f",
+      "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+      "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605"
+    },
+    "policy_decision": "Preserve the active coordinator base merchant runtime and tests exactly. Remove the former #246 merchant delta from this task scope.",
+    "merchant_semantics": "The base rejects nonfinite or negative clocks as format at function entry; do not restore the earlier #246 after-signature expired policy.",
+    "merchant_files_identical_to_base": true,
+    "unchanged_json_scanner_blobs_from_historical_candidate": true,
+    "qualification_boundary": "Refreshed 32-case JSON/base-merchant selection and direct original invoice TypeScript check passed. Typed lint and production web dependency build were killed before diagnostics/completion. Historical #246 merchant and fefcd57 full-suite results are not refreshed-source full qualification.",
+    "publication_base_commit": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+    "publication_base_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "publication_base_tree_identical_to_tested_base": true
+  },
+  "refreshed_checks": [
+    {
+      "id": "refreshed-invoice-focused",
+      "state": "passed",
+      "base_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "source_blobs": {
+        "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+        "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+        "packages/invoice-schema/src/merchantProfile.ts": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+        "packages/invoice-schema/src/merchantProfile.test.ts": "a1299d9ceedefeefb5784d287d556008531af02f",
+        "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "apps/web/src/lib/scannerCore.fuzz.test.ts": "77ce0bd28772235418d9e241b0da84028068035f",
+        "packages/invoice-schema/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+        "packages/invoice-schema/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+        "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+        "package-lock.json": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef"
+      },
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-web-deps/node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.config.ts",
+        "src/json.test.ts",
+        "src/merchantProfile.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed/packages/invoice-schema",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "wrapper_seconds": 1.7924712980020558,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-refreshed-scope-invoice-focused.log",
+        "bytes": 223,
+        "sha256": "1613638fb007f1095fad19dea94e6012708527a0ae46cff4250fed8039a2ede9",
+        "raw_content_embedded": false
+      },
+      "counts": {
+        "test_files": 2,
+        "total": 32,
+        "passed": 32,
+        "failed": 0,
+        "skipped": 0,
+        "json_cases": 24,
+        "merchant_cases": 8
+      },
+      "vitest_seconds": 1.29,
+      "coverage_enabled": false
+    },
+    {
+      "id": "refreshed-invoice-typecheck",
+      "state": "incomplete-killed",
+      "base_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "source_blobs": {
+        "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+        "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+        "packages/invoice-schema/src/merchantProfile.ts": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+        "packages/invoice-schema/src/merchantProfile.test.ts": "a1299d9ceedefeefb5784d287d556008531af02f",
+        "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "apps/web/src/lib/scannerCore.fuzz.test.ts": "77ce0bd28772235418d9e241b0da84028068035f",
+        "packages/invoice-schema/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+        "packages/invoice-schema/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+        "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+        "package-lock.json": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef"
+      },
+      "argv": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/invoice-schema"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "exit_code": 137,
+      "timed_out": false,
+      "wrapper_seconds": 2.4434404650019133,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-refreshed-scope-invoice-typecheck.log",
+        "bytes": 546,
+        "sha256": "4d93c9c20ee236790ebd4cb4e058f0f506814933ed3fe8a9615af57d0b278c43",
+        "raw_content_embedded": false
+      },
+      "limits": [
+        "No TypeScript or ESLint source finding was emitted before process termination. This is incomplete qualification, not a pass.",
+        "Cause of termination is not established by this receipt."
+      ]
+    },
+    {
+      "id": "refreshed-invoice-lint",
+      "state": "incomplete-killed",
+      "base_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "source_blobs": {
+        "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+        "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+        "packages/invoice-schema/src/merchantProfile.ts": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+        "packages/invoice-schema/src/merchantProfile.test.ts": "a1299d9ceedefeefb5784d287d556008531af02f",
+        "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "apps/web/src/lib/scannerCore.fuzz.test.ts": "77ce0bd28772235418d9e241b0da84028068035f",
+        "packages/invoice-schema/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+        "packages/invoice-schema/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+        "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+        "package-lock.json": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef"
+      },
+      "argv": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/invoice-schema"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "exit_code": 137,
+      "timed_out": false,
+      "wrapper_seconds": 2.992042064004636,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-refreshed-scope-invoice-lint.log",
+        "bytes": 562,
+        "sha256": "e813c6269810eccc58a6e049b84546f05c636d056790cf2356d8912c8eccd75e",
+        "raw_content_embedded": false
+      },
+      "limits": [
+        "No TypeScript or ESLint source finding was emitted before process termination. This is incomplete qualification, not a pass.",
+        "Cause of termination is not established by this receipt."
+      ]
+    },
+    {
+      "id": "refreshed-scanner-lint",
+      "state": "incomplete-killed",
+      "base_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "source_blobs": {
+        "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+        "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+        "packages/invoice-schema/src/merchantProfile.ts": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+        "packages/invoice-schema/src/merchantProfile.test.ts": "a1299d9ceedefeefb5784d287d556008531af02f",
+        "apps/web/src/lib/scannerCore.ts": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+        "apps/web/src/lib/scannerCore.test.ts": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+        "apps/web/src/lib/scannerCore.fuzz.test.ts": "77ce0bd28772235418d9e241b0da84028068035f",
+        "packages/invoice-schema/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+        "packages/invoice-schema/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+        "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+        "package-lock.json": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef"
+      },
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-web-deps/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/lib/scannerCore.ts",
+        "src/lib/scannerCore.test.ts"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed/apps/web",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "exit_code": -9,
+      "timed_out": false,
+      "wrapper_seconds": 3.1284821220033336,
+      "log": {
+        "path": "/tmp/ghostpay-c374725a11b7-refreshed-scope-scanner-lint.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "raw_content_embedded": false
+      },
+      "limits": [
+        "No TypeScript or ESLint source finding was emitted before process termination. This is incomplete qualification, not a pass.",
+        "Cause of termination is not established by this receipt."
+      ]
+    }
+  ],
+  "refreshed_execution_receipt": {
+    "path": "/tmp/ghostpay-c374725a11b7-refreshed-scope.json",
+    "bytes": 3893,
+    "sha256": "d7dd871fc6345cf04e4c2e2c5faa99dc72ddd73574b58546152db1b25678abf4",
+    "raw_content_embedded": false
+  },
+  "bounded_followup_checks": [
+    {
+      "check": "refreshed-invoice-typecheck-direct-bounded",
+      "source_base": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "argv": [
+        "/tmp/ghostpay-c374725a11b7-refreshed/node_modules/.bin/tsc",
+        "-p",
+        "tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed/packages/invoice-schema",
+      "NODE_OPTIONS": "--max-old-space-size=256 --max-semi-space-size=8",
+      "exit_code": 0,
+      "duration_seconds": 3.765,
+      "log": "/tmp/ghostpay-c374725a11b7-typecheck-256.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "state": "passed",
+      "same_original_tsconfig": true
+    },
+    {
+      "check": "invoice-lint-direct-bounded",
+      "source_base": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-refreshed/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed/packages/invoice-schema",
+      "NODE_OPTIONS": "--max-old-space-size=256 --max-semi-space-size=8",
+      "exit_code": -9,
+      "duration_seconds": 2.435,
+      "log": "/tmp/ghostpay-c374725a11b7-invoice-lint-256.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "state": "incomplete-killed",
+      "same_original_eslint_config_and_rules": true
+    },
+    {
+      "check": "scanner-lint-direct-bounded",
+      "source_base": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "argv": [
+        "node",
+        "/tmp/ghostpay-c374725a11b7-refreshed/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/lib/scannerCore.ts",
+        "src/lib/scannerCore.test.ts"
+      ],
+      "cwd": "/tmp/ghostpay-c374725a11b7-refreshed/apps/web",
+      "NODE_OPTIONS": "--max-old-space-size=256 --max-semi-space-size=8",
+      "exit_code": -9,
+      "duration_seconds": 3.617,
+      "log": "/tmp/ghostpay-c374725a11b7-scanner-lint-256.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "state": "incomplete-killed",
+      "same_original_eslint_config_and_rules": true
+    }
+  ],
+  "production_web_build_attempt": {
+    "check": "refreshed-web-dependency-closure-and-production-build",
+    "source_base": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "argv": [
+      "node",
+      "scripts/build-workspaces.mjs",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "cwd": "/tmp/ghostpay-c374725a11b7-refreshed",
+    "NODE_OPTIONS": "--max-old-space-size=256 --max-semi-space-size=8",
+    "exit_code": 137,
+    "duration_seconds": 5.765,
+    "log": "/tmp/ghostpay-c374725a11b7-refreshed-web-build.log",
+    "log_sha256": "3375ec1b3033295d3d5e358b545bf92b4261a99240a4d42f7835df1c65c65417",
+    "boundary": "Address-safety dependency build completed; BTC silent-payments TypeScript build was killed; web build was not reached.",
+    "state": "incomplete-killed"
+  },
+  "environment_note": "Execution environment disconnected after the last build attempt and subsequently reconnected. Setup/termination events are not test passes."
+}

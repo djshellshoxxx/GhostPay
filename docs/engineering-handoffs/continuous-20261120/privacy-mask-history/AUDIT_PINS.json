@@ -1,0 +1,48 @@
+{
+  "issue": "https://github.com/djshellshoxxx/GhostPay/issues/286",
+  "issue_title": "Beta release requirement: five Privacy UX Hardening features",
+  "scope": [
+    1,
+    4
+  ],
+  "live_main_observation": "git ls-remote origin refs/heads/main returned the pinned main SHA during this review",
+  "refs": {
+    "main": {
+      "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "tree": "2634456ffa35681e799f71b72bb907f946a77618",
+      "blobs": {
+        "apps/web/src/AppShell.tsx": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+        "apps/web/src/lib/settings.ts": "24b906e163e6bd314c73f172d95332dce4340233",
+        "apps/web/src/components/ReconciliationLedger.tsx": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+        "apps/web/src/components/WalletAttempts.tsx": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+        "apps/web/src/views/Scan.tsx": "eed9daf882711659720a577138b3e08554ce9fe9"
+      }
+    },
+    "candidate": {
+      "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "tree": "4cf2148578f83d27a61d45f480246f317c5099ff",
+      "blobs": {
+        "apps/web/src/AppShell.tsx": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+        "apps/web/src/lib/settings.ts": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+        "apps/web/src/components/ReconciliationLedger.tsx": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+        "apps/web/src/components/WalletAttempts.tsx": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+        "apps/web/src/views/Scan.tsx": "d92f0f2df98b2452a9285c5d4e4687d4096a0834"
+      }
+    },
+    "source_freeze": {
+      "commit": "2b7c015e28aa23f63ba39486ae7345983ce9ff97",
+      "tree": "cfb76c46e40ba32916e385083738036ed12e33af",
+      "blobs": {
+        "apps/web/src/AppShell.tsx": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+        "apps/web/src/lib/settings.ts": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+        "apps/web/src/components/ReconciliationLedger.tsx": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+        "apps/web/src/components/WalletAttempts.tsx": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+        "apps/web/src/views/Scan.tsx": "d92f0f2df98b2452a9285c5d4e4687d4096a0834"
+      }
+    }
+  },
+  "initial_regression_commit": "22c9bcad",
+  "initial_result": "3 failed, 0 passed; missing global mask control, stored privacy mode not applied, unlocked reconciliation history exposed",
+  "wallet_regression_commit": "d11ee12e",
+  "wallet_result": "3 failed, 1 retained control passed; disconnected/cross-account disclosure and missing separate reveal"
+}

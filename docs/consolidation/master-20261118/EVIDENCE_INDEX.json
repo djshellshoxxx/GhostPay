@@ -1,0 +1,206 @@
+{
+  "recorded_at_utc": "2026-11-19T07:27:26.388027+00:00",
+  "scope": "Evidence snapshot before full master qualification. Each review/test applies only to its recorded source and command; older snapshots are retained.",
+  "files": [
+    {
+      "file": "COMBINED_435C_SOURCE_REVIEW.md",
+      "bytes": 9083,
+      "sha256": "c5660e8ffa23ff84eb6034e98dc8aff02f8de71d666650550227a6c3d0f326de"
+    },
+    {
+      "file": "DEPLOYMENT_HISTORY_INDEPENDENT_REVIEW.md",
+      "bytes": 4817,
+      "sha256": "6dedd625c264be592b53f3a9faf86022ebd601c35baba6662550d65ae3b4ee70"
+    },
+    {
+      "file": "FOCUSED_PROMOTION_REVIEW.md",
+      "bytes": 4061,
+      "sha256": "55a624917c0f876f5970ae8a160e56dd59a9df2da9e2430cb8db1cc23d6f472d"
+    },
+    {
+      "file": "INITIAL_CI_REVIEW.md",
+      "bytes": 13020,
+      "sha256": "493dd2efe853e03c12f44586d5576b759f4705897a4b54ddf4449bc60df59880"
+    },
+    {
+      "file": "INITIAL_FEATURE_REVIEW.md",
+      "bytes": 10383,
+      "sha256": "97afbd3334c90afa18cd36405c9d181262ad888dfd367197ae45090934282b38"
+    },
+    {
+      "file": "INITIAL_HISTORY_REVIEW.md",
+      "bytes": 49408,
+      "sha256": "1fbaf14e8f428b6083e053b395ecf5ec2c8b7267673e67df42e6f69604d37f96"
+    },
+    {
+      "file": "INTEGRATION_REPAIRS.md",
+      "bytes": 3382,
+      "sha256": "b18b021bc8a8bafcffe24bf34f428f13e8abe2a76777ccb0f70753a5537a535b"
+    },
+    {
+      "file": "POLICY_INDEPENDENT_REVIEW.md",
+      "bytes": 5077,
+      "sha256": "40ba77b16a309a5d63435ae04b2f84f3b6c6fb85c3f50abc13ddbb1d7520163e"
+    },
+    {
+      "file": "PR242_QUALIFICATION.md",
+      "bytes": 3025,
+      "sha256": "0bc8d95f79c337b47b1f0eb65d546d939b72511f5bcff169bf9e6ac27b3e0964"
+    },
+    {
+      "file": "PR255_GATE_SOURCE_REVIEW.md",
+      "bytes": 3427,
+      "sha256": "8e6ddf088d26229e5447c6d9d7c5a98ef35fd0d3d49e53609dd761627fe00b65"
+    },
+    {
+      "file": "PROGRESS.md",
+      "bytes": 9614,
+      "sha256": "8844fcf01699f05b69eab5af752716c90ee9e9fc2315df32c7100cb915b689ef"
+    },
+    {
+      "file": "QUALIFIED_GROUP.md",
+      "bytes": 3269,
+      "sha256": "c88adacb39b4746fefdfff20736faacd523cce44b2c13f07e14061c574b16c56"
+    },
+    {
+      "file": "RECOVERY_INDEPENDENT_REVIEW.md",
+      "bytes": 3011,
+      "sha256": "e97e78162e508169b2e9b079cfef1e528ed2c20de44fbff2dc2c6aee215f3b96"
+    },
+    {
+      "file": "RUNTIME_INDEPENDENT_REVIEW.md",
+      "bytes": 5936,
+      "sha256": "93261561bcd168a194a351aac1f879836e0533a10fe2afb194d45d551406215d"
+    },
+    {
+      "file": "SELECTIVE_PR246_SOURCE_REVIEW.md",
+      "bytes": 4274,
+      "sha256": "3840ac6ceb3ec22b389e3f28c4ff0330b3aacf093534bd12123297382c4e6251"
+    },
+    {
+      "file": "census-refresh-20261119-0720.json",
+      "bytes": 220636,
+      "sha256": "daa242071ba225677c1902b5d58e3f4195bdde0e7911d8b2cdcce057db571ee4"
+    },
+    {
+      "file": "combined-435c-reviewed-blobs.json",
+      "bytes": 8877,
+      "sha256": "d4a1887cda128876a69282dda531277c7ab01afcbe2e173bc5f116bddf3f4fee"
+    },
+    {
+      "file": "focused-promotion-review.json",
+      "bytes": 10310,
+      "sha256": "2ab4e60248d746eab025d7370a0a89ed74a9e952500c5414368aa45df94c7491"
+    },
+    {
+      "file": "historical-deleted-heads.json",
+      "bytes": 38328,
+      "sha256": "51f972122f5bb0a4a5c0326aa3c9ad908edc0d9141b885a658d59e228bd0f5a3"
+    },
+    {
+      "file": "historical-deleted-source-evidence.json",
+      "bytes": 357618,
+      "sha256": "2134cac133d668c7b234dcd71e18e1399eddfbb23ee91816be5ad359049ad398"
+    },
+    {
+      "file": "initial-branch-ledger.csv",
+      "bytes": 118233,
+      "sha256": "e11ea9498521d6964e0acaf1ebbaf199ced4c63e61a488776d06ff632beeb347"
+    },
+    {
+      "file": "initial-branch-ledger.json",
+      "bytes": 3299093,
+      "sha256": "7fa1b98fceb7be4938e80dabe41855678312ef932166b5d63c6a2d62f35280df"
+    },
+    {
+      "file": "initial-ci-evidence.json",
+      "bytes": 226235,
+      "sha256": "e32f9074989db4aff68a66bf8ab8814e2afd99556d04378edba9882cf5abcd03"
+    },
+    {
+      "file": "initial-evidence-manifest.json",
+      "bytes": 3005,
+      "sha256": "8ff4819da45ecc807d33cd788e250ff2d2ecd00ff83c8cfee36764e1144995e4"
+    },
+    {
+      "file": "initial-feature-review-evidence.json",
+      "bytes": 2809,
+      "sha256": "6e04a96e9ad20b1b55c6e7c35fa96d5ab5c673c5d534b65cbfc5cf71fd27d960"
+    },
+    {
+      "file": "initial-pr-head-comparisons.json",
+      "bytes": 304876,
+      "sha256": "96ad4690208bc301e8d65ba884f8b0d870f23e2fcb134eff8263eb4df41acdcd"
+    },
+    {
+      "file": "initial-pr-inventory.json",
+      "bytes": 179760,
+      "sha256": "ff23eceebbed9fab5e326044b4e19faa7db296ac2a7714315e9f3ff3b384ae81"
+    },
+    {
+      "file": "initial-remote-branches.json",
+      "bytes": 69525,
+      "sha256": "2d3cbd43a00bde26bebbdfbd19d95d0e843d43680dd7cdbae17933555f6b164a"
+    },
+    {
+      "file": "initial-repository-metadata.json",
+      "bytes": 8010,
+      "sha256": "7a4e94d6bd33eb0d6790af39988b9fa1fa28d58b9609616b41bd4a8fcc64c401"
+    },
+    {
+      "file": "main-e454-postmerge-tooling.txt",
+      "bytes": 463,
+      "sha256": "a694838221769f4e54b2d101e294623a04ba9c58d772de7a54c9651d8b10cde0"
+    },
+    {
+      "file": "patch-identity-crosscheck.json",
+      "bytes": 55798,
+      "sha256": "3792de013f172271c90d21ddde092da55b769be8859279e33aefad9f5a11b456"
+    },
+    {
+      "file": "policy-predeploy-22-tests.txt",
+      "bytes": 2036,
+      "sha256": "d51605151bde70f53eb5303cc95ee3d7d983d94a2935d9c7138460450f9387c1"
+    },
+    {
+      "file": "pr242-qualification.json",
+      "bytes": 15527,
+      "sha256": "ae470792d30abfdf4877989d7082bffc481208f7ca10ec06c3f8f680ace392d4"
+    },
+    {
+      "file": "pr242-test-totals.json",
+      "bytes": 31915,
+      "sha256": "30d9e3b7716058d55a1f296b22e9adec2c87f9eff6f6b667b4d814ab0375198c"
+    },
+    {
+      "file": "pr255-gate-source-review.json",
+      "bytes": 6238,
+      "sha256": "1acf94c0f75299231f0444550c60beb72cc2e7d6cac0613117e55a9ad940c2a8"
+    },
+    {
+      "file": "preserved-mythril-findings.json",
+      "bytes": 10232,
+      "sha256": "87a1f5bfe88e46e0034a47809a6078cce85ac152e35b9917fe35b730a7de42eb"
+    },
+    {
+      "file": "preserved-mythril-full-report.txt",
+      "bytes": 283168,
+      "sha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00"
+    },
+    {
+      "file": "preserved-mythril-metadata.json",
+      "bytes": 532,
+      "sha256": "778fde76eb0dda7842fae219377917a733dd48e1a9c6945a57787ef935191fcb"
+    },
+    {
+      "file": "publication-map-through-435c.json",
+      "bytes": 2444,
+      "sha256": "896a55aedf3903860ec0b61f92dd0950f4406e46459f960780e0d779d091a0ea"
+    },
+    {
+      "file": "selective-pr246-source.json",
+      "bytes": 1577,
+      "sha256": "acc0dd009a474746e060137827772db13c607fc60391cc4e58da9e9bb1fa02d2"
+    }
+  ]
+}

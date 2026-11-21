@@ -1,0 +1,26 @@
+{
+  "source": "397c9e140120bdbc9b683de5c157cb35b02b365a",
+  "tree": "9f6bf96458b87366301f4a4082b13513942a2025",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-qr/node_modules/vitest/vitest.mjs",
+    "run",
+    "--maxWorkers=1",
+    "src/lib/qrMultipart.test.ts"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-qr/apps/web",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:13:58.483987+00:00",
+  "ended": "2026-11-19T13:14:01.844761+00:00",
+  "durationSeconds": 3.361,
+  "exitCode": 1,
+  "log": {
+    "path": "docs/handoffs/qr-surrogate-review-20261119/evidence/baseline-red.log.gz",
+    "uncompressedSha256": "3c9a4273a9ac4eb0333d8b52d64d3fef495cddd5d2c719e713f7b52128d941b8",
+    "uncompressedBytes": 1533,
+    "storedSha256": "334286b52a643d926a5317b2ec11c8b1f4d8f28808d9fbbe9b49ab03268e0d06"
+  }
+}
