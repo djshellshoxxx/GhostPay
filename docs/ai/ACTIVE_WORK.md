@@ -1136,3 +1136,27 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+# Independent PR #353 Settings regression qualification — 20 November 2026 (Pacific)
+
+Worker: `/root/scan_fix_review`, continuation coordinator `539818ee134f-root`.
+Branch: `review/ghostpay-pr353-539818`; exact read-only test/source input:
+`a8c10a965f726a6c2dc8eb7391f495df833b3e9b`, stacked on PR #307 at
+`5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Owned edits: this additive claim and `PR353_*` review/evidence documents under
+`docs/consolidation/continuation-20261120-539818/` only. Production and tests are
+read-only. Acceptance: independently inspect selected import sections, explicit
+trust confirmation, unsaved draft visibility, persistence boundaries and later
+Save behavior; run the complete existing two-case partial-import file with its
+original configuration and exact matching dependencies. Preserve actual output
+and unexecuted broader gates. No duplicate implementation, remote update, shared
+integration, lock change, deployment, or modification of frozen PR #354.
+
+Approved scope extension before test edits: root authorized correction of exactly
+two expected persisted `relayerUrl` strings in
+`apps/web/src/views/Settings.partialImportDrafts.test.tsx`. The baseline executed
+both cases and failed only because those expectations retained a trailing slash,
+contrary to the existing `checkRelayerUrl` contract and existing tests. Preserve
+input drafts, every assertion, production source, configuration and timeouts.
+Rerun the complete partial-import file, existing `lib/settings.test.ts`, and
+`Settings.exchange.test.tsx` sequentially at 256 MiB. Retain baseline output.
