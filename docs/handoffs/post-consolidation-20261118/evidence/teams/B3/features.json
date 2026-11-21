@@ -1,0 +1,3836 @@
+[
+ {
+  "id": "F-BTC-01",
+  "name": "BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)",
+  "area": "btc",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/11-bip352-wallet-hardening.md",
+   "docs/specs/12-bip352-light-client-scanning.md",
+   "docs/MULTICHAIN_SPEC.md s3"
+  ],
+  "implementation_files": [
+   "packages/btc-silent-payments/src/{address,keys,sender,receiver,spend,tx,labels,uri,inputs,policy}.ts",
+   "apps/web/src/features/btc/{BtcView.tsx,scan.ts,sweep.ts,wallet.ts}"
+  ],
+  "test_files": [
+   "packages/btc-silent-payments/src/vectors.test.ts",
+   "packages/btc-silent-payments/src/spend-vectors.test.ts",
+   "packages/btc-silent-payments/src/spend-regtest.test.ts",
+   "apps/web/src/features/btc/BtcView.test.tsx",
+   "apps/web/src/features/btc/regtest.e2e.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #113 hard-lane closure: BTC local spend tracking + wallet policy (open)",
+    "sha": "",
+    "pr": "113",
+    "note": "spec 11; not independently diffed (UNVERIFIED if in candidate)"
+   },
+   {
+    "ref": "PR #30 remaining waves: embed, private scanning, policy, BTC (open)",
+    "sha": "",
+    "pr": "30",
+    "note": ""
+   }
+  ],
+  "requirements": [
+   {
+    "req": "official BIP-352 test vectors derive/scan",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "vectors.test.ts"
+   },
+   {
+    "req": "labels + Kmax/k++ per spec 11",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "labels.test.ts, policy.test.ts"
+   },
+   {
+    "req": "taproot spend + sweep + sign w/ policy",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "spend*.test.ts; real broadcast unperformed"
+   },
+   {
+    "req": "secrets never leave worker / no scan key in requests",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scan-secrets.hardening.test.ts"
+   },
+   {
+    "req": "wired to web UI full profile",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "BtcView.test.tsx"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "scan key never in requests (modes A/B)",
+   "mode C hosted scan absent unless ADR",
+   "never claim anonymity"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Real bitcoind/regtest/signet + physical device acceptance unperformed (spec 12 banner).",
+  "implementation_pct": 90,
+  "verification_pct": 80,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "Real, wired in full profile (App.tsx 'btc' view; absent from AppLean). Package has BIP-352 official vectors (vectors.test.ts) + regtest-mocked spend. Needs real-node/regtest acceptance + PR #113 local spend tracking verdict.",
+  "evidence": [
+   "local vitest btc-silent-payments @7a620ff1: files 32 passed (32); tests 559 passed (559); exit=0"
+  ],
+  "unverified": [
+   "whether PR #113 content is fully in candidate",
+   "regtest e2e is mocked, not real bitcoind (no bitcoind installed)"
+  ]
+ },
+ {
+  "id": "F-BTC-02",
+  "name": "BTC header-chain validation, persistence, scan anchoring (A4 PR #74)",
+  "area": "btc",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/12-bip352-light-client-scanning.md"
+  ],
+  "implementation_files": [
+   "packages/btc-silent-payments/src/{header,headerchain,merkleProof,witness}.ts",
+   "packages/btc-silent-payments/src/scan/headersync.ts",
+   "apps/web/src/features/btc/{headers.ts,inclusion.ts}"
+  ],
+  "test_files": [
+   "packages/btc-silent-payments/src/header.test.ts",
+   "packages/btc-silent-payments/src/headerchain.test.ts",
+   "packages/btc-silent-payments/src/headerchain.memory.test.ts",
+   "packages/btc-silent-payments/src/merkleProof.test.ts",
+   "apps/web/src/features/btc/headers.test.ts",
+   "apps/web/src/features/btc/BtcView.headers.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #74 A4 header chain (open)",
+    "sha": "",
+    "pr": "74",
+    "note": "candidate contains header code (VERIFIED files exist); PR head not diffed"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "PoW + retarget header validation",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "header.test/headerchain.test"
+   },
+   {
+    "req": "persist headers + reorg rollback",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "headers.test.ts"
+   },
+   {
+    "req": "Merkle/witness-commitment inclusion",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "merkleProof.test.ts"
+   },
+   {
+    "req": "bounded memory",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "headerchain.memory.test.ts"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Real Esplora/mainnet header sync unperformed.",
+  "implementation_pct": 90,
+  "verification_pct": 75,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "headersync/headerchain/merkleProof/witness in btc-silent-payments; web headers.ts persists + anchors scans. Verify PR #74 equivalent; PoW/difficulty checks real but no real-network sync run.",
+  "evidence": [
+   "local vitest btc-silent-payments @7a620ff1: files 32 passed (32); tests 559 passed (559); exit=0"
+  ],
+  "unverified": [
+   "PR #74 vs candidate delta"
+  ]
+ },
+ {
+  "id": "F-BTC-03",
+  "name": "BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node Esplora, 2-oracle cross-check, worker",
+  "area": "btc",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/specs/12",
+   "docs/handoffs/agents/BLINDBIT_GRPC_HANDOFF.md",
+   "TEAM_H_*_UNIFIED.md"
+  ],
+  "implementation_files": [
+   "packages/btc-silent-payments/src/scan/*",
+   "apps/web/src/features/btc/{oracleSource,oracleBridge,scanWorker*,scanStore}.ts"
+  ],
+  "test_files": [
+   "packages/btc-silent-payments/src/scan/blindbitGrpc.test.ts",
+   "apps/web/src/features/btc/oracleWorker.test.ts",
+   "apps/web/src/features/btc/scan.resume.test.ts",
+   "apps/web/src/features/btc/BtcView.oracle.test.tsx"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "own-node Esplora full-block checks default",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "BlindBit gRPC-Web opt-in",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "fixtures only"
+   },
+   {
+    "req": "light matches need Merkle inclusion",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "inclusion.ts"
+   },
+   {
+    "req": "encrypted scan continuity opt-in",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scanStore.test.ts"
+   },
+   {
+    "req": "hosted scan service mode C",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent by design"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "mode C (intended absent)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "oracle sees IP + block range (disclosed)",
+   "oracle collusion may omit payments"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Real BlindBit/proxy deployment + device acceptance unperformed.",
+  "implementation_pct": 90,
+  "verification_pct": 75,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "scan/{blindbit,blindbitGrpc,grpcWebUnary,scanner,state}.ts + web oracleSource/scanWorker. Handoffs TEAM_H_*. Needs deployed BlindBit server compat (fixtures only); optional external oracle = operator dependency, default Esplora-only/no oracle URL.",
+  "evidence": [
+   "local vitest btc-silent-payments @7a620ff1: files 32 passed (32); tests 559 passed (559); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-BTC-04",
+  "name": "BTC family engine (LTC/DOGE etc. SP w/ ChainParams) \u2014 standalone",
+  "area": "btc",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/chain-ports/"
+  ],
+  "implementation_files": [
+   "packages/btc-family/src/*"
+  ],
+  "test_files": [
+   "packages/btc-family/src/*.test.ts (9 files)"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "chain-param engine for btc/ltc",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired anywhere",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep: 0 importers outside pkg"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "none",
+  "implementation_pct": 70,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    3,
+    6
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "README: research/testnet only, not imported by web/cli, duplicate of btc-silent-payments code. Keep, label experimental; decide merge-or-freeze later.",
+  "evidence": [
+   "web/cli importers: none (grep @ghostpay/btc-family)",
+   "local vitest btc-family @7a620ff1: files 9 passed (9); tests 162 passed (162); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-BTC-05",
+  "name": "BTC PayJoin BIP-78 policy core + v1 HTTP transport (+ optional BIP-77 ffi, unverified)",
+  "area": "btc",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/btc-payjoin.md"
+  ],
+  "implementation_files": [
+   "packages/btc-payjoin/src/*"
+  ],
+  "test_files": [
+   "packages/btc-payjoin/src/*.test.ts (11)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "BIP-78 sender/receiver policy checks",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "v1 HTTP transport",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": ""
+   },
+   {
+    "req": "BIP-77 v2 adapter",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "payjoin-ffi optional unverified"
+   },
+   {
+    "req": "wired in apps",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "testnet only"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "requires receiver HTTP endpoint (server) -> not beta-core"
+  ],
+  "external_acceptance": "No real wallet interop.",
+  "implementation_pct": 70,
+  "verification_pct": 75,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Testnet-only; mainnet refused by design. Not wired to apps. v1 receiver needs a payjoin server (operator) -> optional only. BIP-77 adapter unverified.",
+  "evidence": [
+   "local vitest btc-payjoin @7a620ff1: files 10 passed (10); tests 158 passed (158); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-SOL-01",
+  "name": "Solana dual-key ed25519 stealth (solana-stealth) wired to web full profile",
+  "area": "solana",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/adr/ADR-0017-solana-stealth.md"
+  ],
+  "implementation_files": [
+   "packages/solana-stealth/src/*",
+   "apps/web/src/features/solana/*"
+  ],
+  "test_files": [
+   "packages/solana-stealth/src/*.test.ts",
+   "apps/web/src/features/solana/SolanaView.test.tsx",
+   "apps/web/src/features/solana/chain.hardening.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "derive/scan/spend ed25519 stealth",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "SPL + ATA + tx build",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": ""
+   },
+   {
+    "req": "web view + secret hardening",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scan-secrets.hardening.test.ts"
+   },
+   {
+    "req": "mainnet",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "not accepted by design"
+   },
+   {
+    "req": "audit",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Devnet RPC e2e + audit unperformed.",
+  "implementation_pct": 75,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "ADR-0017. Wired: web SolanaView, devnet/testnet scoped. Unaudited. Fixture test-vectors/solana-stealth.json. Not interoperable with chain-solana (different formats).",
+  "evidence": [
+   "local vitest solana-stealth @7a620ff1: files 6 passed (6); tests 109 passed (109); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-SOL-02",
+  "name": "chain-solana alt stealth PoC (CLI only)",
+  "area": "solana",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/chain-solana/src/*"
+  ],
+  "test_files": [
+   "packages/chain-solana/src/*.test.ts (10)"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "derive/scan/sign",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "interop with web format",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "format split with solana-stealth (README + DEVIATIONS)"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "Duplicate Solana format (gpsol:/gpst1 base64url) used by CLI chain commands only; incompatible with solana-stealth. Pick one format before any beta claim.",
+  "evidence": [
+   "local vitest chain-solana @7a620ff1: files 10 passed (10); tests 97 passed (97); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-TRX-01",
+  "name": "Tron stealth adapter (tron-adapter) wired to web full profile",
+  "area": "tron",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/adr/ADR-0019*"
+  ],
+  "implementation_files": [
+   "packages/tron-adapter/src/*",
+   "apps/web/src/features/tron/*"
+  ],
+  "test_files": [
+   "packages/tron-adapter/src/*.test.ts (8)",
+   "apps/web/src/features/tron/TronView.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "address/stealth/scan/tx build",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "fees/energy",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": ""
+   },
+   {
+    "req": "web view",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "mainnet",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Nile/Shasta e2e + audit unperformed.",
+  "implementation_pct": 75,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "ADR-0019. Wired in web TronView; testnet-scoped; unaudited; secp256k1 stealth, TRC-20 txs, protobuf. Meta tag st:trx:0x.",
+  "evidence": [
+   "local vitest tron-adapter @7a620ff1: files 8 passed (8); tests 74 passed (74); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-TRX-02",
+  "name": "chain-tron alt PoC (CLI only)",
+  "area": "tron",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/chain-tron/src/*"
+  ],
+  "test_files": [
+   "packages/chain-tron/src/*.test.ts (4)"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "codec/stealth wrappers",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "interop",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "meta-address tag mismatch vs tron-adapter"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "Uses st:eth:0x tag; NOT interoperable with tron-adapter (README). No network/signing. Merge into or retire for tron-adapter.",
+  "evidence": [
+   "local vitest chain-tron @7a620ff1: files 4 passed (4); tests 42 passed (42); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-EVMX-01",
+  "name": "Extra EVM chain manifests + fail-closed verifier (Linea, Scroll, zkSync ... 12 chains)",
+  "area": "evmx",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/specs/09-chain-token-deployment-matrix-and-pins.md"
+  ],
+  "implementation_files": [
+   "packages/chain-evm-extra/src/*"
+  ],
+  "test_files": [
+   "packages/chain-evm-extra/src/*.test.ts (5)"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chains-ports (PR #14 closed-unmerged)",
+    "sha": "",
+    "pr": "14",
+    "note": "chain ports; content in candidate via #17/#187 lineage (INFERRED: pkgs present, branch ancestor)"
+   },
+   {
+    "ref": "PR #110 test(chain-evm-extra) open",
+    "sha": "",
+    "pr": "110",
+    "note": ""
+   }
+  ],
+  "requirements": [
+   {
+    "req": "manifests validated offline",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "verifyChain RPC identity fail-closed",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PR #110 open adds mismatched-response test (UNVERIFIED in cand)"
+   },
+   {
+    "req": "deploy + enable",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    3,
+    5
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Config-only, all enabled:false, many fields 'unverified'. No deployments. Not imported by web/cli. Beta is EVM core (Sepolia). zkSync needs non-standard CREATE2 (rejected).",
+  "evidence": [
+   "local vitest chain-evm-extra @7a620ff1: files 5 passed (5); tests 44 passed (44); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-01",
+  "name": "Shielded pool circuits (circom Groth16, withdraw/commitment) \u2014 INSECURE dev ceremony",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/shielded-pool.md",
+   "test-vectors/shielded-pool.json"
+  ],
+  "implementation_files": [
+   "packages/pool-circuits/{circuits,src,verifiers,vkeys}"
+  ],
+  "test_files": [
+   "packages/pool-circuits/test/*.test.ts (6)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "circuits + witness helpers",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "circom compile not run"
+   },
+   {
+    "req": "secure ceremony",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   },
+   {
+    "req": "audit",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "INSECURE dev ceremony (documented, intended for testnet)"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Ceremony + audit unperformed.",
+  "implementation_pct": 70,
+  "verification_pct": 50,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    15,
+    30
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Deterministic public-beacon dev ceremony: anyone can forge proofs. Forked from 0xbow. Needs real multi-party ceremony + circuit audit. TS helpers testable; circom toolchain not run here.",
+  "evidence": [
+   "pool-circuits: 59 of 77 tests SKIPPED (circom/snarkjs artifacts absent) -> verif capped",
+   "local vitest pool-circuits @7a620ff1: files 3 passed | 2 skipped (5); tests 18 passed | 59 skipped (77); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-02",
+  "name": "Shielded pool contracts (GhostPayShieldedPool ERC20/Native, ASP registry)",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/shielded-pool.md"
+  ],
+  "implementation_files": [
+   "packages/pool-contracts/src/*"
+  ],
+  "test_files": [
+   "packages/pool-contracts/test/*.t.sol (13)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "deposit/withdraw/ragequit",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "forge CI only"
+   },
+   {
+    "req": "secure verifiers",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   },
+   {
+    "req": "audit",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Deployment + audit unperformed.",
+  "implementation_pct": 70,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    10,
+    25
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Foundry; testnet chain guard; forge tests run in CI (pool-contracts matrix, ci.yml ~L473), NOT run here (no forge). Verifiers insecure dev ceremony. Never deployed.",
+  "evidence": [
+   "forge not installed locally; CI job matrix pool-contracts (ci.yml:473) \u2014 CI green on d91ae16a UNVERIFIED for this job"
+  ],
+  "unverified": [
+   "forge test pass count"
+  ]
+ },
+ {
+  "id": "F-POOL-03",
+  "name": "Pool prover + pool SDK (client side proving, Poseidon, note mgmt)",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [
+   "test-vectors/shielded-pool.json"
+  ],
+  "implementation_files": [
+   "packages/pool-prover/src/*",
+   "packages/pool-sdk/src/*"
+  ],
+  "test_files": [
+   "packages/pool-prover/src/*.test.ts",
+   "packages/pool-sdk/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "note/commit/Poseidon vs vectors",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "prover",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "half",
+    "evidence": ""
+   },
+   {
+    "req": "wired to web",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    5,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Client SDK testnet-only; browser proving not wired to apps. Large proof artifacts (zkey) would bloat static app.",
+  "evidence": [
+   "local vitest pool-prover @7a620ff1: files 1 passed (1); tests 8 passed (8); exit=0",
+   "local vitest pool-sdk @7a620ff1: files 5 passed (5); tests 47 passed (47); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-04",
+  "name": "Pool withdrawal relayer service (node:http)",
+  "area": "pool",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/pool-relayer/src/*"
+  ],
+  "test_files": [
+   "packages/pool-relayer/src/*.test.ts (7)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "quote/relay checks, fee cap, rate limit",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "anvil e2e",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "anvil absent"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "hot key mode-600 file; no custody of user funds"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "requires operator-run server + hot gas key (constraint 2: optional operator only)"
+  ],
+  "external_acceptance": "",
+  "implementation_pct": 75,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    5,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Server process w/ hot key (relayer-hiding of gas payer). Optional operator component, never beta-core; user can self-submit instead. Anvil e2e needs anvil (not installed -> skipped).",
+  "evidence": [
+   "local vitest pool-relayer @7a620ff1: files 5 passed | 2 skipped (7); tests 43 passed | 9 skipped (52); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-05",
+  "name": "External pools adapter interface (Privacy Pools, Railgun) \u2014 shared machinery",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/external-pools/src/*"
+  ],
+  "test_files": [
+   "packages/external-pools/src/*.test.ts (5)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "interface + chain guard",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 65,
+  "verification_pct": 65,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "S1->third-party pool->fresh addr. Not wired. Chains 31337/Sepolia/Base Sepolia. Nothing run against real pools.",
+  "evidence": [
+   "local vitest external-pools @7a620ff1: files 5 passed (5); tests 93 passed | 1 skipped (94); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-06",
+  "name": "Privacy Pools (0xbow) adapter",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/external-pools-privacypools/src/*"
+  ],
+  "test_files": [
+   "packages/external-pools-privacypools/src/*.test.ts (8)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "adapter/crypto",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "anvil integration",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "skipped without anvil"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 65,
+  "verification_pct": 65,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "SDK crypto tests, anvil integration test (needs anvil), relayer client. Third-party relayer = remote service dependency.",
+  "evidence": [
+   "local vitest external-pools-privacypools @7a620ff1: files 7 passed | 1 skipped (8); tests 73 passed | 4 skipped (77); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-07",
+  "name": "Railgun adapter",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/external-pools-railgun/src/*"
+  ],
+  "test_files": [
+   "packages/external-pools-railgun/src/*.test.ts (4)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "adapter",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "real broadcaster",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Small adapter; third-party infra (Waku/broadcasters) not self-hostable client-side.",
+  "evidence": [
+   "local vitest external-pools-railgun @7a620ff1: files 3 passed | 1 skipped (4); tests 20 passed | 1 skipped (21); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-POOL-08",
+  "name": "Payer-hiding contracts PH-2 PayRelay / PH-3 7702 delegate / PH-4 4337 account+paymaster",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/payer-hiding.md",
+   "docs/specs/15-eip7702-aa-policy-account-path.md"
+  ],
+  "implementation_files": [
+   "packages/payer-hiding-contracts/src/*"
+  ],
+  "test_files": [
+   "packages/payer-hiding-contracts/test/*.t.sol (8)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "PayRelay/Delegate/Account/Paymaster impl",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "forge CI only"
+   },
+   {
+    "req": "audit",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no payer anonymity claim"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    8,
+    15
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Foundry; CI matrix payer-hiding-contracts (ci.yml:473). Paymaster has SPONSOR_ADMIN privileged role (sponsor deposit only, not user funds). Sponsor sees everything; does not hide payer. forge not run here.",
+  "evidence": [
+   "requires fetch-entrypoint.sh network fetch in CI"
+  ],
+  "unverified": [
+   "forge pass count"
+  ]
+ },
+ {
+  "id": "F-POOL-09",
+  "name": "Confidential amounts client (ERC-7984 / Zama fhEVM backend) + confidential contracts",
+  "area": "pool",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/confidential-tokens.md",
+   "docs/future/privacy-architecture/5j.md"
+  ],
+  "implementation_files": [
+   "packages/confidential-amounts/src/*",
+   "packages/confidential-contracts/contracts/*"
+  ],
+  "test_files": [
+   "packages/confidential-amounts/src/*.test.ts (7)",
+   "packages/confidential-contracts/test/* (3)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   },
+   {
+    "ref": "PR #22 update Solana Kit + preserve fhEVM stack (merged)",
+    "sha": "",
+    "pr": "22",
+    "note": ""
+   }
+  ],
+  "requirements": [
+   {
+    "req": "backend iface + chain guard",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "fhEVM router contract",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "hardhat not run"
+   },
+   {
+    "req": "wired",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [
+   "Zama fhEVM relayer/KMS (third-party service)"
+  ],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 65,
+  "verification_pct": 60,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    8,
+    15
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "CT-1 PoC on Zama fhEVM; hardhat tests (confidential-contracts) not run here (fhevm plugin heavy); client pkg vitest. Mainnets refused; Base Sepolia refused for CT-1. Not wired.",
+  "evidence": [
+   "local vitest confidential-amounts @7a620ff1: files 7 passed (7); tests 88 passed (88); exit=0"
+  ],
+  "unverified": [
+   "hardhat test result"
+  ]
+ },
+ {
+  "id": "F-PRIV-01",
+  "name": "Privacy pipeline (chain steps, cost/leak preview, run)",
+  "area": "priv",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/chaining.md"
+  ],
+  "implementation_files": [
+   "packages/privacy-pipeline/src/*"
+  ],
+  "test_files": [
+   "packages/privacy-pipeline/src/*.test.ts (13)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #15 closed-unmerged",
+    "sha": "",
+    "pr": "15",
+    "note": "client-side privacy option packages"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "pipeline compose/validate/preview",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 70,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    4,
+    8
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Pure logic orchestrator over method pkgs; not wired to web; testnet only.",
+  "evidence": [
+   "local vitest privacy-pipeline @7a620ff1: files 12 passed (12); tests 747 passed (747); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PRIV-02",
+  "name": "Privacy profiles catalogue/presets/conflict rules",
+  "area": "priv",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/future/privacy-first/18-privacy-modes.md"
+  ],
+  "implementation_files": [
+   "packages/privacy-profiles/src/*"
+  ],
+  "test_files": [
+   "packages/privacy-profiles/src/*.test.ts (6)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #15 closed-unmerged",
+    "sha": "",
+    "pr": "15",
+    "note": "client-side privacy option packages"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "catalogue+rules+eval",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired in UI",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 75,
+  "verification_pct": 75,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "No-I/O catalogue of 10 method specs + honest label keys; natural source for spec-18-style 'privacy modes' UI; not wired.",
+  "evidence": [
+   "local vitest privacy-profiles @7a620ff1: files 5 passed (5); tests 176 passed (176); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PRIV-03",
+  "name": "Metadata hardening MH-* helpers",
+  "area": "priv",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/metadata-hardening.md"
+  ],
+  "implementation_files": [
+   "packages/metadata-hardening/src/*"
+  ],
+  "test_files": [
+   "packages/metadata-hardening/src/*.test.ts (10)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #15 closed-unmerged",
+    "sha": "",
+    "pr": "15",
+    "note": "client-side privacy option packages"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "MH catalogue + helpers",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 75,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "Pure helpers; docs: each reduces one named leak; not wired; some map to web privacy hardening (separately implemented in apps/web/src/lib).",
+  "evidence": [
+   "local vitest metadata-hardening @7a620ff1: files 10 passed (10); tests 115 passed (115); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PRIV-04",
+  "name": "Amount blur (split/round/jitter, Off by default)",
+  "area": "priv",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/amount-blurring.md"
+  ],
+  "implementation_files": [
+   "packages/amount-blur/src/*"
+  ],
+  "test_files": [
+   "packages/amount-blur/src/*.test.ts (8)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #15 closed-unmerged",
+    "sha": "",
+    "pr": "15",
+    "note": "client-side privacy option packages"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "blur modes",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 75,
+  "verification_pct": 75,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Friction not anonymity; pure logic, not wired.",
+  "evidence": [
+   "local vitest amount-blur @7a620ff1: files 8 passed (8); tests 96 passed (96); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PRIV-05",
+  "name": "Delayed multi-hop forwarding (Weak)",
+  "area": "priv",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/hops.md"
+  ],
+  "implementation_files": [
+   "packages/hops/src/*"
+  ],
+  "test_files": [
+   "packages/hops/src/*.test.ts (8)"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #15 closed-unmerged",
+    "sha": "",
+    "pr": "15",
+    "note": "client-side privacy option packages"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "plan/reduce/persist-before-sign",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "hygiene imports hop-source"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [
+   "delayed legs need an always-on client/relayer -> conflicts static-client model unless user keeps tab open"
+  ],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 75,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Labelled Weak; used as type source by hygiene (hop-source.ts) only. Requires relayer/timer => long-lived client or operator.",
+  "evidence": [
+   "local vitest hops @7a620ff1: files 8 passed (8); tests 57 passed (57); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-NET-01",
+  "name": "Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport",
+  "area": "net",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/10-feature5-stage1-private-scanning.md",
+   "docs/remote/privacy-specs/network-privacy.md"
+  ],
+  "implementation_files": [
+   "packages/net-transport/src/*",
+   "apps/web/src/lib/scanPrivacy.ts"
+  ],
+  "test_files": [
+   "packages/net-transport/src/*.test.ts (4)",
+   "apps/web/src/lib/scanPrivacy.i18n.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "browser fetch transport + notices",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "SOCKS5h node agent",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "socks.test.ts"
+   },
+   {
+    "req": "OHTTP framing",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "fake HPKE"
+   },
+   {
+    "req": "Tor browser unverifiable claim handled honestly",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "copy says user asserts"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Real Tor/onion route not exercised.",
+  "implementation_pct": 70,
+  "verification_pct": 65,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    5
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "net-transport: browser subpath wired into web scanPrivacy (user-selected; default direct, never automatic). Node SOCKS5h agent + OHTTP are node/PoC only (browser can't open SOCKS). OHTTP needs gateway/relay operators.",
+  "evidence": [
+   "local vitest net-transport @7a620ff1: files 4 passed (4); tests 149 passed (149); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-NET-02",
+  "name": "Onion URL canonicalization / v3 checksum, reject escaped authorities (PR #122/#134)",
+  "area": "net",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/net-transport/src/{onion,url,proxyUrl}.ts"
+  ],
+  "test_files": [
+   "packages/net-transport/src/core.test.ts",
+   "packages/net-transport/src/browser.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/chatgpt/zero-codex/onion-canonical-host-20261111",
+    "sha": "72dde82d",
+    "pr": "122",
+    "note": "ancestor of candidate, 0 unique patches"
+   },
+   {
+    "ref": "PR #134 port onto beta (open)",
+    "sha": "",
+    "pr": "134",
+    "note": ""
+   }
+  ],
+  "requirements": [
+   {
+    "req": "v3 onion checksum",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "reject percent-encoded/raw escapes",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PR #122/#134"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 95,
+  "verification_pct": 85,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "onion.ts v3 checksum + url.ts; origin/chatgpt/zero-codex/onion-canonical-host-20261111 (72dde82d) is ancestor of cand with 0 unique patches (census) => landed. Verify tests pass with net-transport run.",
+  "evidence": [
+   "local vitest net-transport @7a620ff1: files 4 passed (4); tests 149 passed (149); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-NET-03",
+  "name": "PIR two-server XOR private scan (pir2 scan mode, default OFF)",
+  "area": "net",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/remote/privacy-specs/network-privacy.md s4.8",
+   "docs/specs/10"
+  ],
+  "implementation_files": [
+   "packages/pir-two-server/src/*",
+   "packages/scan-source/src/pir2.ts"
+  ],
+  "test_files": [
+   "packages/pir-two-server/src/*.test.ts (4)",
+   "packages/scan-source/src/pir2.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "PR #16 closed-unmerged",
+    "sha": "",
+    "pr": "16",
+    "note": "privacy PoCs swarm 10; pkgs present in candidate"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "XOR PIR client/server",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   },
+   {
+    "req": "wired in web",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ""
+   },
+   {
+    "req": "non-collusion assumption",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "operational"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [
+   "requires 2 operator servers"
+  ],
+  "external_acceptance": "No real deployment.",
+  "implementation_pct": 70,
+  "verification_pct": 65,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    5,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Needs TWO non-colluding operator-run servers (violates constraint 2 for core) -> optional operator/experimental only. createPir2Source in scan-source; web imports scan-source but pir2 UI not wired (INFERRED; no pir2 ref in web non-test src).",
+  "evidence": [
+   "local vitest pir-two-server @7a620ff1: files 4 passed (4); tests 60 passed (60); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-NET-04",
+  "name": "Network test harness (fake SOCKS5/CONNECT proxies; test-only)",
+  "area": "net",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/net-harness/src/*"
+  ],
+  "test_files": [
+   "packages/net-harness/src/*.test.ts (1)"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "SOCKS5/CONNECT fakes",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 60,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Test-only loopback fakes; only 1 test file. Used by net-transport tests; never bundled.",
+  "evidence": [
+   "local vitest net-harness @7a620ff1: files 1 passed (1); tests 27 passed (27); exit=0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-01",
+  "name": "5a: No accounts / identifying telemetry",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5a.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5a.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: apps/web/src/privacyInvariants.test.ts, ci:scan-secrets (partial guard exists).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-02",
+  "name": "5b: Local encryption and key management",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5b.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5b.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: secret-box, ux-vault, ux-export.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-03",
+  "name": "5c: Fresh EVM stealth destinations + local discovery",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5c.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5c.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: core-crypto scheme-1, hygiene, scan-source.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-04",
+  "name": "5d: Privacy-preserving RPC and scanning",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5d.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5d.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: net-transport, scan-source, apps/web/src/lib/scanPrivacy.ts, pir-two-server (spec 10 stage-1 partial).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-05",
+  "name": "5e: Sweep privacy + linkability analysis",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5e.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5e.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: hygiene, hops, ux-flow.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-06",
+  "name": "5f: Encrypted invoice + metadata minimization",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5f.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5f.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: invoice-schema, metadata-hardening, payment-uri.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-07",
+  "name": "5g: HTTPS and Tor hosting w/ verifiable boundaries",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5g.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5g.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: net-transport/onion.ts, docs/research/hosting.md, CI pages.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-08",
+  "name": "5h: Optional broadcast + gas sponsorship without custody",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5h.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5h.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: payer-sponsor, relayer-guard, payer-hiding-contracts.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-09",
+  "name": "5i: Buyer-side privacy adapters + identity separation",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5i.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5i.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: external-pools*, pool-sdk, privacy-pipeline, payer-hiding-contracts.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-10",
+  "name": "5j: Confidential amount + settlement integrations",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5j.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5j.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: confidential-amounts, confidential-contracts (CT-1 PoC).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-11",
+  "name": "5l: Reproducible builds + release integrity",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-architecture/5l.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-architecture/5l.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: scripts/build-workspaces.mjs, ops-monitor, CI (owned B-release; ref only).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-12",
+  "name": "privacy-first 01: GhostTips donations",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/01-ghosttips.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/01-ghosttips.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: donation, payment-uri.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-13",
+  "name": "privacy-first 02: GhostStore static storefronts",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/02-ghoststore.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/02-ghoststore.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: merchant-*, invoice-schema.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-14",
+  "name": "privacy-first 03: Private payment links/QR",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/03-private-payment-links.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/03-private-payment-links.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: payment-uri, qr-exchange, ux-links.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-15",
+  "name": "privacy-first 04: Local merchant dashboard",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/04-merchant-dashboard.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/04-merchant-dashboard.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: merchant-ledger, ux-receipts.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-16",
+  "name": "privacy-first 05: GhostProof selective disclosure",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/05-ghostproof.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/05-ghostproof.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-receipts, specs/ideas/07.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-17",
+  "name": "privacy-first 06: Encrypted backups + full recovery",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/06-encrypted-backups.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/06-encrypted-backups.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-vault, ux-export, spec 18 (B1b).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-18",
+  "name": "privacy-first 07: Private multi-recipient payouts",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/07-ghostpayouts.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/07-ghostpayouts.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: merchant-multisig, privacy-pipeline.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-19",
+  "name": "privacy-first 08: Portable merchant identities",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/08-ghostid.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/08-ghostid.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: policy-scheme, merchant-hooks.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-20",
+  "name": "privacy-first 09: In-person QR checkout",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/09-ghostpos.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/09-ghostpos.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: qr-exchange, ux-flow.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-21",
+  "name": "privacy-first 10: Private recurring invoices",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/10-private-recurring.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/10-private-recurring.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-schedule.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-22",
+  "name": "privacy-first 11: Encrypted collaboration",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/11-ghostteams.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/11-ghostteams.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: merchant-multisig, secret-box.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-23",
+  "name": "privacy-first 12: P2P offramp handoff",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/12-ghostbridge.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/12-ghostbridge.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: (none).",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-24",
+  "name": "privacy-first 13: Privacy-aware fiat conversion",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/13-fiat-conversion.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/13-fiat-conversion.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-fiat.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-25",
+  "name": "privacy-first 14: Privacy-aware multichain routing",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/14-multichain-routing.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/14-multichain-routing.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: chain-adapters, btc-*, solana-stealth, tron-adapter, chain-evm-extra.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-26",
+  "name": "privacy-first 15: Private scanning/RPC/broadcast",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/15-private-rpc.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/15-private-rpc.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: net-transport, scan-source, pir-two-server.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-27",
+  "name": "privacy-first 16: Per-client identities",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/16-per-client-identities.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/16-per-client-identities.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ideas/03, core-crypto.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-28",
+  "name": "privacy-first 17: Private sweeping/offline funds",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/17-private-funds.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/17-private-funds.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: hygiene, ux-vault.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-29",
+  "name": "privacy-first 18: Selectable privacy modes",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/future/privacy-first/18-privacy-modes.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/future/privacy-first/18-privacy-modes.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: privacy-profiles, ux-privacy.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-30",
+  "name": "idea 01: Sweep + link hygiene",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/01-sweep-and-link-hygiene.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/01-sweep-and-link-hygiene.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: hygiene pkg (exists; see B-owners). Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-31",
+  "name": "idea 02: Claim-by-tx-hash + spam filter",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/02-claim-by-hash-and-spam-filter.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/02-claim-by-hash-and-spam-filter.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: scan-source, apps scan. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-32",
+  "name": "idea 03: Per-client meta-addresses",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/03-per-client-meta-addresses.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/03-per-client-meta-addresses.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: core-crypto. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-33",
+  "name": "idea 04: Encrypted backup/restore",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/04-encrypted-backup-restore.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/04-encrypted-backup-restore.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-vault, ux-export. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-34",
+  "name": "idea 05: Tor/onion/proxy RPC + padded queries",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/05-private-rpc-padded-queries.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/05-private-rpc-padded-queries.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: net-transport, web scanPrivacy (largely implemented stage 1). Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-35",
+  "name": "idea 06: Watch-only + airgapped signer",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/06-watch-only-airgapped-signer.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/06-watch-only-airgapped-signer.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: qr-exchange, tx-review. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-36",
+  "name": "idea 07: Selective-disclosure receipts",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/07-selective-disclosure-receipts.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/07-selective-disclosure-receipts.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-receipts. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-37",
+  "name": "idea 08: Multi-relayer + self-submit",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/08-multi-relayer-self-submit.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/08-multi-relayer-self-submit.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: relayer-guard, apps/relayer. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-38",
+  "name": "idea 09: 'What is public' explainer",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/09-what-is-public-explainer.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/09-what-is-public-explainer.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-guide, ux-sandbox, sandbox. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-39",
+  "name": "idea 10: Client-side hosting constraints",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/ideas/10-client-side-hosting-constraints.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/ideas/10-client-side-hosting-constraints.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: cross-cutting. Idea spec; some pieces may exist in other teams' scope.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-40",
+  "name": "Spec 18 / req 3q stealth keypair export (reference only; owned by B1b)",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/18-stealth-keypair-export.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/18-stealth-keypair-export.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: ux-export, secret-box, core-crypto. Referenced, not duplicated; spec says approved, not yet implemented. Counterpart 5k.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-FUT-41",
+  "name": "Hosted BTC scan service (mode C / Frigate-style)",
+  "area": "future",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/12-bip352-light-client-scanning.md"
+  ],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "spec requirements",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "docs/specs/12-bip352-light-client-scanning.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 0,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Spec only. Maps to: btc-silent-payments/scan. ADR-gated; sends scan key to server; violates constraint 3 by default - keep absent.",
+  "evidence": [
+   "spec/doc only; grep for dedicated module: none"
+  ],
+  "unverified": []
+ }
+]

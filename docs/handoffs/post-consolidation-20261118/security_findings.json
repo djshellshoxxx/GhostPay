@@ -1,0 +1,1435 @@
+[
+ {
+  "id": "SEC-01",
+  "sources": [
+   "E-01"
+  ],
+  "area": "hosting / shared origin (GP-PAGES-01)",
+  "severity": "High",
+  "status": "CONFIRMED",
+  "title": "Shared djshellshoxxx.github.io origin: 35 sibling Pages sites can read/rewrite all GhostPay storage and script the app (High once payments are enabled; Medium for a demo)",
+  "evidence": [
+   "scripts/pages/build-pages.sh:60-69,93-101@7a620ff1 (shared detection; manifests refused on shared origin unless GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet)",
+   "gh api -X GET search/repositories q='user:djshellshoxxx' (2026-11-18): 86 public repos, 36 has_pages=true incl. GhostPay; q='user:djshellshoxxx in:name github.io' -> 0 (no root user site)",
+   "packages/ux-vault/src/keystore-portable.ts:9-18@7a620ff1 (plaintext meta.metaAddress/signer in stored vault)",
+   "apps/web/src/lib/settings.ts:5-29,137-148@7a620ff1 (plaintext RPC URLs, pinnedSigners); apps/web/locales/en.json:2037 ('pinned by you' label)",
+   "built Pages index.html banner warns about shared origin ($SP/out/E/pages-demo/site/index.html)",
+   "docs/pages/RELEASE_MATRIX.md:53 (project rated Confirmed medium, owner action open)"
+  ],
+  "affected_features": [
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-PROTO-13",
+   "F-WEB-08",
+   "F-WEB-20",
+   "F-WEB-21"
+  ],
+  "remediation": "Serve from a repo-level custom domain (CNAME on the GhostPay repo, not an account-wide user-site domain) or a dedicated account/org; keep payments refused on shared origin; warn that keys ever loaded on a shared origin are testnet-only; do not create a root <owner>.github.io site (root-scoped service worker risk).",
+  "verification": "Live: page origin == dedicated origin (see E-03); probe from a sibling path cannot read storage.",
+  "blocks": [
+   "pages-deploy",
+   "sepolia-beta",
+   "mainnet"
+  ],
+  "notes": "Severity High taken from E (E: High once payments enabled, Medium for demo); prior GP-PAGES-01 rated it Confirmed-medium (RELEASE_MATRIX:53). Higher kept. Compounds with D-03 (weak passphrase policy) and E-09 (plaintext meta in vault record): a sibling-origin script can read the vault ciphertext for offline attack.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-02",
+  "sources": [
+   "E-04",
+   "R-07"
+  ],
+  "area": "deployment integrity / CI",
+  "severity": "High",
+  "status": "UNVERIFIED",
+  "title": "Deploy trust boundary not demonstrated: main reportedly unprotected; Pages artifact unsigned/unattested and not bound to the release trust root",
+  "evidence": [
+   "docs/handoffs/consolidation-20261118/PROMOTION_PACKET.md@71abc7e5 blocker 1 + REVIEW_FINDINGS R-07 (prior session, 2026-11-18): API 404 'Branch not protected' with admin visibility, no rulesets, no v* tag ruleset; environment reviewers not readable (403) \u2014 fresher than the 2026-11-04 comment, still UNVERIFIED by this audit",
+   ".github/workflows/ghostpay-codex-cloud.yml:57@7a620ff1 ('main has NO branch protection or rulesets (checked 2026-11-04 ...)')",
+   ".github/workflows/pages.yml:59-69,213-233@7a620ff1 (dispatch on main + github-pages env only)",
+   ".github/workflows/release.yml:39-66,194-197@7a620ff1 (signed-tag + attestation only for release tarball)",
+   ".github/release-signers/allowed_signers@7a620ff1 (no keys; release fails closed)",
+   ".github/workflows/ghostpay-codex-cloud.yml:21-28,35-52@7a620ff1 (contents:write + PAT; agent may change apps/*, packages/*)",
+   "ADR-0029: 'Branch protection and the github-pages environment rules are part of the security boundary'; gate 2 Open",
+   "S re-verify @7a620ff1: comment text present at ghostpay-codex-cloud.yml:57 (dated 2026-11-04, stale)"
+  ],
+  "affected_features": [
+   "F-CTR-07",
+   "F-FUT-11",
+   "F-HOST-03",
+   "F-WEB-21"
+  ],
+  "remediation": "Rulesets on main (required reviews + checks, no force push); github-pages env main-only + required reviewers; actions/attest-build-provenance on Pages SHA256SUMS; publish signed checksums out of band; optionally require dispatch from a signed tag verified by verify-tag.sh.",
+  "verification": "Owner provides rulesets/env API output; gh attestation verify on served files.",
+  "blocks": [
+   "pages-deploy",
+   "sepolia-beta",
+   "release-tag",
+   "mainnet"
+  ],
+  "notes": "E-04 (High, UNVERIFIED) and prior R-07 (High, owner action) are the same root cause (no evidenced branch protection / tag ruleset / environment reviewers; Pages artifact unsigned). Evidence of \"no protection\" in the codex workflow comment is dated 2026-11-04 (stale). Status kept UNVERIFIED because live settings are not readable (R-16 style access gap).",
+  "source_kind": "team+prior",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-03",
+  "sources": [
+   "D-01",
+   "R-15"
+  ],
+  "area": "key-management / step-up",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "Vault-less seller sessions have no re-authentication for sweeping or for master-key keystore export; idle lock deliberately keeps un-backed-up keys loaded",
+  "evidence": [
+   "apps/web/src/lib/keyVault.ts:257-266@7a620ff1 (authorizeKeyExport returns undefined when no vault record)",
+   "apps/web/src/lib/keyVault.ts:328-333@7a620ff1 (authorizeEncryptedVault returns undefined without a vault)",
+   "apps/web/src/views/SellerKeys.tsx:221-224@7a620ff1 (export = authorizeKeyExport(stepUp) then exportKeystore(newPass))",
+   "apps/web/src/views/Sweep.tsx:150-154@7a620ff1 (vaultGuard?.() - optional)",
+   "apps/web/src/AppShell.tsx:128-160@7a620ff1 (idle lock keeps keys that have no verified copy)",
+   "apps/web/src/lib/keyVault.test.ts:241@7a620ff1 (behaviour pinned: authorizeKeyExport('') -> undefined); focused web tests 4 files/168 passed",
+   "S re-verify @7a620ff1: keyVault.ts:257-266,328-333 and keyVault.test.ts:241 re-read, match"
+  ],
+  "affected_features": [
+   "F-KEY-01",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-KEY-04",
+   "F-KEY-09",
+   "F-KEY-10",
+   "F-KEY-12",
+   "F-WEB-07",
+   "F-WEB-08",
+   "F-WEB-11",
+   "F-WEB-12",
+   "F-WEB-16",
+   "F-WEB-21"
+  ],
+  "remediation": "Owner decision (R-15/K03): e.g. require an encrypted vault or verified backup + its passphrase before any sweep or spec-18 secret export on mainnet (never block creating the encrypted keystore v1 backup or a vault: constraint 4); or a session unlock secret set at key generation; or WebAuthn user-verification step-up (local, origin-bound, no server). Raw/single-key export (K04) must refuse when no re-auth factor exists.",
+  "verification": "Unit + Playwright tests: vault-less session -> export/sweep/raw-export refused or re-auth enforced; lock/key change during KDF never publishes secrets.",
+  "blocks": [
+   "beta-exit",
+   "mainnet"
+  ],
+  "notes": "D-01 (Medium CONFIRMED) merged with prior R-15 (Info, spec wording). Higher severity kept. Beta posture: disclose, or require a vault for beta sweeps (owner decision).",
+  "source_kind": "team+prior",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-04",
+  "sources": [
+   "D-02"
+  ],
+  "area": "recovery / portability",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "No GhostPay-independent recovery path is shipped: spec 18 formats (K01-K06) are unimplemented and the CLI can scan but cannot derive one-time keys or sweep",
+  "evidence": [
+   "grep \"ghostpay-stealth-\" apps packages scripts@7a620ff1: no matches",
+   "packages/cli/src/commands/scan.ts:88@7a620ff1 (checkAnnouncement only; no deriveStealthSecret/sign/sweep anywhere in packages/cli/src)",
+   "VERIFIED feasibility: $SP/out/D/scripts/indep-keystore-recovery.mjs decrypted a keystore v1 (N=2^17) with node:crypto only from the documented AAD and derived the scheme1-001 stealth key/address with elliptic+js-sha3 (exit 0)"
+  ],
+  "affected_features": [
+   "F-CLI-03",
+   "F-CLI-05",
+   "F-FUT-17",
+   "F-FUT-33",
+   "F-FUT-40",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-KEY-07",
+   "F-KEY-08",
+   "F-KEY-09",
+   "F-KEY-10",
+   "F-KEY-11",
+   "F-KEY-12",
+   "F-PROTO-13"
+  ],
+  "remediation": "Implement K01-K06 per spec 18; ship a documented offline reference recovery script + keystore/keypair/master test vectors; add CI job decrypting vectors with a non-GhostPay implementation and proving recovery on anvil with pinned Foundry 1.8.5.",
+  "verification": "KC checkpoint on one SHA: fresh-install restore, offline recovery of a historic announcement, independent wallet tool signs anvil transfer with exported key.",
+  "blocks": [
+   "beta-exit",
+   "mainnet"
+  ],
+  "notes": "Violates mandatory constraint 4 until spec 18 K01-K06 ships.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-05",
+  "sources": [
+   "D-03"
+  ],
+  "area": "key-management / KDF policy",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "Master-key keystore/vault passphrase policy accepts name+year style passphrases (score>=2 heuristic, 14 chars) protecting all spend/view/signing keys",
+  "evidence": [
+   "packages/ux-vault/src/keystore-portable.ts:186-216@7a620ff1 (pool-based estimator; reject only score<2)",
+   "VERIFIED probe $SP/out/D/scripts/passphrase-probe.mjs: accepted \"Michael1985!!x\"(65 bits, good), \"Jennifer041990\"(55), \"Liverpool2026!\"(53), \"Correcthorse12\"(65); rejected Password123456/qwerty/Summer2026",
+   "packages/ux-vault/src/keystore-portable.ts:49@7a620ff1 (scrypt N=2^17 r=8 p=1; ~0.37 s/guess node CPU measured)",
+   "S re-verify @7a620ff1: keystore-portable.ts:62,186-216 re-read; MIN_PASSPHRASE=14, score<2 rejected, bits<60 => fair accepted"
+  ],
+  "affected_features": [
+   "F-CLI-03",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-KEY-05",
+   "F-KEY-14",
+   "F-PROTO-13",
+   "F-WEB-09"
+  ],
+  "remediation": "Before mainnet: default to the generated 6-word passphrase (60 bits) with explicit override; raise the floor (score>=3) or adopt a dictionary/pattern estimator (zxcvbn-class, bundled, no network); consider scrypt N=2^18 for exports; warn about cloud storage of keystores.",
+  "verification": "Estimator regression corpus (names+dates, leaked-list samples) rejected; KDF timing on low-end mobile recorded.",
+  "blocks": [
+   "mainnet"
+  ],
+  "notes": "Estimator is a heuristic on character pools; floor 14 chars, reject only score<2 (<45 bits => weak; 45-60 accepted).",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-06",
+  "sources": [
+   "D-04"
+  ],
+  "area": "contracts / privacy (scheme 2)",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "AUD24-01 re-verified: GhostPayPolicyRouter takes PolicyRef{owner, policyHash}, so every scheme-2 payment exposes the seller-constant policyHash in calldata",
+  "evidence": [
+   "packages/contracts/src/GhostPayPolicyRouter.sol:93-106,236-242@7a620ff1",
+   "docs/audits/26-contract-security-review-2026-11.md:45 (AUD24-01 open, PoC test_EXPLOIT_AUD24_01_policyHashLinksPaymentsInCalldata)",
+   "git diff --quiet beb525dd 7a620ff1 -- packages/contracts/src: unchanged",
+   "S re-verify @7a620ff1: GhostPayPolicyRouter.sol:93-106 payERC20 takes PolicyRef calldata policy (owner, policyHash); confirmed"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-02",
+   "F-POOL-08",
+   "F-WEB-15"
+  ],
+  "remediation": "Owner ABI decision: restore salt-only router ABI (50881e4) in lockstep with policy-scheme and RouterCall.sol; even then deploy calldata and withdrawals reveal the policy/destination - document.",
+  "verification": "test_policy_calldataDoesNotLinkPaymentsToSeller restored; anvil e2e on new ABI.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "Prior AUD24-01 (docs/audits/26:45) still open; contracts unchanged since beb525dd.",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-07",
+  "sources": [
+   "D-05",
+   "R-11"
+  ],
+  "area": "contracts / token quirks (scheme 2)",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "N1 re-verified: failing fee-token views or an unexpected fee delta revert every fee-charging deploy of the immutable factory, freezing counterfactual policy funds",
+  "evidence": [
+   "packages/contracts/src/PolicyAccountFactory.sol:113-114,128-164@7a620ff1",
+   "docs/audits/mythril-14290880802-factory-dispositions.md R7/R8 residual; REVIEW_FINDINGS R-11",
+   "S re-verify @7a620ff1: PolicyAccountFactory.sol:128-140 _collectFee reads balanceOf/allowance before transfer with no try/catch; confirmed"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-03"
+  ],
+  "remediation": "Owner: zero-fee factory for upgradeable/fee-switch tokens, or specified fail-open _collectFee (spec change), before any production scheme-2 deployment.",
+  "verification": "test_probe_feeSwitchFreezesCounterfactualFunds inverted to pass under chosen design; Mythril/Echidna rerun.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "D-05 and prior R-11 (N1) same root cause. Owner choice: zero-fee factory or specified fail-open _collectFee.",
+  "source_kind": "team+prior",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-08",
+  "sources": [
+   "E-02"
+  ],
+  "area": "deployment / live site",
+  "severity": "Medium",
+  "status": "SUSPECTED",
+  "title": "Stale prototype (gh-pages cc8d0794, 2026-10-21) probably live on /GhostPay/: runtime unsigned manifest loading, no mirror banner, predates later fixes",
+  "evidence": [
+   "git: refs/remotes/origin/gh-pages = cc8d0794 'Publish GhostPay build with help, why, privacy options and how-it-works pages' (2026-10-21)",
+   "search API: djshellshoxxx/GhostPay has_pages=true",
+   "docs/pages/README.md:173@7a620ff1 ('Source: GitHub Actions. The prototype's gh-pages branch is then unused' => currently in use)",
+   "gh-pages:assets/index-Bmfq019n.js function Xg: fetch ./deployments/<id>.json -> {status:'loaded'} with schema check only, no signature verification",
+   "live fetch blocked by sandbox proxy (403 CONNECT) => live state UNVERIFIED"
+  ],
+  "affected_features": [
+   "F-WEB-21"
+  ],
+  "remediation": "Owner: Settings > Pages > Source = GitHub Actions (or unpublish); delete/archive gh-pages; then run scripts/pages/smoke.mjs against the live URL with --commit.",
+  "verification": "Live smoke: build-info.json names the dispatched commit; mirror banner present; no /deployments/ fetch.",
+  "blocks": [
+   "pages-deploy",
+   "sepolia-beta"
+  ],
+  "notes": "SUSPECTED: live site could not be read (github.io blocked by sandbox proxy).",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-09",
+  "sources": [
+   "E-03"
+  ],
+  "area": "deployment / origin gate",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "Shared-origin gate trusts the declared GHOSTPAY_PAGES_ORIGIN (*.github.io suffix only); deployed page_url origin never asserted; account-wide custom domains pass as dedicated",
+  "evidence": [
+   "scripts/pages/build-pages.sh:60-69@7a620ff1",
+   ".github/workflows/pages.yml:100,213-261@7a620ff1 (no origin assertion in deploy/smoke)",
+   "scripts/pages/smoke.mjs:23-117@7a620ff1 (no origin check)",
+   "S re-verify @7a620ff1: build-pages.sh:60-69 re-read; only *.github.io suffix => shared, else shared=0 (declared value trusted)"
+  ],
+  "affected_features": [
+   "F-WEB-21"
+  ],
+  "remediation": "Assert new URL(page_url).origin === vars.GHOSTPAY_PAGES_ORIGIN in deploy/smoke; require repo-level cname + https_enforced from the Pages API; treat any origin that serves other project sites as shared.",
+  "verification": "Workflow test: mismatched origin fails the run.",
+  "blocks": [
+   "pages-deploy",
+   "sepolia-beta"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-10",
+  "sources": [
+   "E-05"
+  ],
+  "area": "scan privacy (spec 10 stage 1)",
+  "severity": "Medium",
+  "status": "CONFIRMED",
+  "title": "'Local proxy' scan transport over http loopback is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed; only an https loopback proxy would pass)",
+  "evidence": [
+   "apps/web/src/lib/scanPrivacy.ts:72-98@7a620ff1 (http loopback accepted)",
+   "apps/web/index.html:13@7a620ff1; apps/web/public/_headers:5; deploy/nginx/security-headers.conf:3 (connect-src 'self' https: wss:)",
+   "docs/specs/10-feature5-stage1-private-scanning.md:7 (mode b http://127.0.0.1); docs/pages/README.md:49",
+   "Chromium probe on built Pages artifact: securitypolicyviolation 'connect-src http://127.0.0.1:47126/', proxyHits 0 ($SP/out/E/logs/csp_loopback_probe.json)",
+   "no e2e covers local-proxy (grep apps/web/e2e)",
+   "S re-verify @7a620ff1: scanPrivacy.ts:72-98 accepts http loopback; index.html:13 connect-src \"self\" https: wss: has no http:; confirmed"
+  ],
+  "affected_features": [
+   "F-FUT-04",
+   "F-FUT-26",
+   "F-FUT-34",
+   "F-NET-01",
+   "F-WEB-07",
+   "F-WEB-18",
+   "F-WEB-22"
+  ],
+  "remediation": "Add http://127.0.0.1:* http://localhost:* http://[::1]:* to connect-src (meta, _headers, nginx) or require https loopback (mkcert) and say so; add Playwright test under the real meta CSP; fix docs.",
+  "verification": "e2e: scan through a local JSON-RPC forwarder succeeds and no direct RPC is contacted.",
+  "blocks": [
+   "sepolia-beta"
+  ],
+  "notes": "Fails closed (no leak); privacy-claim and spec-10 acceptance blocker.",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-11",
+  "sources": [
+   "D-06"
+  ],
+  "area": "contracts / funds lock-in (scheme 2)",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Scheme-2 payers cannot tell which assets the seller policy can withdraw: meta-address carries only policyHash, PolicyRouter accepts any token/native, and an asset without a limits leaf is stuck forever (whole payments, not only CORE-01 buffers)",
+  "evidence": [
+   "packages/contracts/src/PolicyAccount.sol:172-186@7a620ff1 (leaf required when limitsRoot!=0)",
+   "packages/contracts/src/GhostPayPolicyRouter.sol:136-158@7a620ff1 (payNative to any predicted account)",
+   "packages/policy-scheme/src/meta.ts:7-12@7a620ff1 (meta = spend, view, policyHash only)",
+   "docs/audits/02-security-review-contracts.md:90-95 (L-05 accepted by design); CONTRACTS-CORE-01 open"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-02",
+   "F-WEB-15"
+  ],
+  "remediation": "Client gate: seller-side invoice issuance must refuse assets without an (unlimited) leaf; payer warning; consider committing accepted assets in the meta-address or treating missing leaf as unlimited (contract change).",
+  "verification": "Unit test: scheme-2 invoice for unlisted asset refused; anvil test for native without leaf. Client-side mitigation existence UNVERIFIED.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-12",
+  "sources": [
+   "D-07",
+   "R-09"
+  ],
+  "area": "contracts / L2 timing (scheme 2)",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Factory MIN_DELAY = 1 h is below L2 censorship/forced-inclusion bounds; a colluding or stalled sequencer can defeat the owner cancel window (R-09 refinement)",
+  "evidence": [
+   "packages/contracts/src/PolicyAccountFactory.sol:36@7a620ff1",
+   "docs/developer/security-model.md:44 (qualitative note only)",
+   "INFERRED (public protocol parameters, not checked this session): OP Stack sequencing window ~12 h, Arbitrum delayed-inbox force inclusion ~24 h, Arbitrum sequencer timestamp up to ~1 h ahead",
+   "S re-verify @7a620ff1: PolicyAccountFactory.sol:36 MIN_DELAY = 1 hours confirmed"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-03"
+  ],
+  "remediation": "Per-chain minimum delay > forced-inclusion bound + margin (UI-enforced and/or per-chain factory constant); document numbers per chain in spec 15/16.",
+  "verification": "Foundry test with timestamp jump/censorship model per chain; chain matrix entry for min delay.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "D-07 refines prior R-09 (docs-only mitigation landed 3f10fcaf). L2 protocol parameters INFERRED.",
+  "source_kind": "team+prior",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-13",
+  "sources": [
+   "D-08"
+  ],
+  "area": "key-management / raw export (full profile)",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "BTC/Solana/TRON views reveal raw master seeds/keys and allow (warned, two-click) clipboard copy without re-authentication; TRON backup is plaintext spend+view hex",
+  "evidence": [
+   "apps/web/src/components/SecretBackup.tsx:193,233@7a620ff1 (clipboard.writeText after confirm click)",
+   "apps/web/src/features/tron/wallet.ts:54-63@7a620ff1; TronView.tsx:339; BtcView.tsx:664; SolanaView.tsx:343@7a620ff1",
+   "apps/web/src/AppShell.tsx:39@7a620ff1 (lean CORE_ORDER excludes these views)"
+  ],
+  "affected_features": [
+   "F-BTC-01",
+   "F-KEY-04",
+   "F-SOL-01",
+   "F-TRX-01"
+  ],
+  "remediation": "Owner decision with spec 18 clipboard wording; align with K04 controls (re-auth + second confirmation, no clipboard by default) or keep explicitly experimental/full-only.",
+  "verification": "Component tests for re-auth gate; lean bundle scan proves absence.",
+  "blocks": [
+   "promotion:BTC/SOL/TRON beyond experimental"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-14",
+  "sources": [
+   "D-09"
+  ],
+  "area": "signing / manifest trust",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Legacy text-manifest scheme (sha256/ed25519, domain GhostPay-deployment-manifest-v1) with runtime fetch and unsigned-testnet acceptance still exported beside the strict bundled keccak scheme",
+  "evidence": [
+   "apps/web/src/lib/manifest.ts:52-101@7a620ff1 (loadManifest: fetch ./deployments, unsigned-dev on testnets, console.warn)",
+   "packages/chain-adapters/src/deploymentsSignature.ts:19,79-103@7a620ff1",
+   "apps/web/src/lib/defaultServices.ts:30@7a620ff1 (default app uses loadBundledManifest only)"
+  ],
+  "affected_features": [
+   "F-DEP-01",
+   "F-WEB-17"
+  ],
+  "remediation": "Delete or move loadManifest/verifyTextManifestSignature to test utilities; add bundle-scan rule that the lean/full build contains no unsigned-dev acceptance path.",
+  "verification": "scan-bundle rule + unit test; lean build module list check.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-15",
+  "sources": [
+   "D-10"
+  ],
+  "area": "recovery / documentation",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Keystore v1 format documentation drifts from code (bounds, passphrase rule, writer location), weakening spec 18 flow 4 \"documented, stable format\"",
+  "evidence": [
+   "docs/developer/byte-layouts.md:195-198 (N in [2^14,2^20], passphrase >=10, writer apps/web/src/lib/keystore.ts)",
+   "packages/ux-vault/src/keystore-portable.ts:51-62,323,376-381@7a620ff1 (N<=2^18, r<=8, p<=2, 8 KiB, passphrase>=14 + strength)"
+  ],
+  "affected_features": [
+   "F-DOC-02",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-KEY-08",
+   "F-PROTO-13"
+  ],
+  "remediation": "Correct doc; publish normative keystore v1 spec + fixed test vector; CI test that decodes vector with node:crypto (pattern of indep-keystore-recovery.mjs).",
+  "verification": "Doc/code parity test.",
+  "blocks": [
+   "K06 docs"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-16",
+  "sources": [
+   "D-11"
+  ],
+  "area": "key-management (experimental pool)",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "pool-sdk seed backup is weaker than the keystore policy: passphrase >=8 chars, no estimator, no NFKC, scrypt N=2^15 default, import accepts logN up to 20 (~1 GiB)",
+  "evidence": [
+   "packages/pool-sdk/src/store.ts:118-150@7a620ff1"
+  ],
+  "affected_features": [
+   "F-POOL-03"
+  ],
+  "remediation": "Reuse the ux-vault KDF/estimator/bounds (N 2^17, max 2^18) and NFKC; bind version/params in AAD.",
+  "verification": "Unit tests for bounds and weak passphrase refusal.",
+  "blocks": [
+   "promotion:pool features beyond experimental"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-17",
+  "sources": [
+   "D-12"
+  ],
+  "area": "analyzers",
+  "severity": "Low",
+  "status": "MISSING-COVERAGE",
+  "title": "Analyzer scope gaps: Slither CI excludes Low/Informational (doc claims \"no detector exclusions\"); payer-hiding/pool/confidential contracts get no Slither/Mythril/Echidna; Echidna does not fuzz permit entry points, forged signers, factory or PolicyRouter",
+  "evidence": [
+   ".github/workflows/ci.yml:459 and nightly.yml:65 (--exclude-informational --exclude-low; working-directory packages/contracts)",
+   "docs/audits/00-slither-triage.md:10 (contradicting wording)",
+   "packages/contracts/scripts/run-mythril.sh:20@7a620ff1 (5 core contracts only); run-echidna.sh:13 (Router, Sweep, Policy)",
+   "packages/contracts/test/echidna/EchidnaRouter.sol:94-160, EchidnaSweep.sol:52-150@7a620ff1 (no payERC20WithPermit/sweepWithPermit, no wrong-key sweep)",
+   "S re-verify @7a620ff1: ci.yml:459 and nightly.yml:65 slither flags and 00-slither-triage.md:10 \"no detector exclusions\" wording contradiction re-read; run-mythril.sh:20 contract list re-read"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-03",
+   "F-CTR-01",
+   "F-CTR-02",
+   "F-CTR-03",
+   "F-CTR-05",
+   "F-CTR-06",
+   "F-CTR-07",
+   "F-DEP-04",
+   "F-POOL-02",
+   "F-POOL-08",
+   "F-POOL-09"
+  ],
+  "remediation": "One-time full-severity Slither triage before mainnet; extend analyzers to any contract that may deploy; add Echidna actions for permit paths, forged signers, factory deploy/fee and PolicyRouter.",
+  "verification": "CI artifacts with per-detector triage; canaries for new actions.",
+  "blocks": [
+   "mainnet"
+  ],
+  "notes": "Refined by S: run-mythril.sh:20 DOES list GhostPayRouter and GhostPayPolicyRouter, so the gap is the absence of any retrievable/dispositioned per-record result for them (CI report artifact 403; local runs killed), not an unrun target. payer-hiding/pool/confidential remain unanalysed.",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-18",
+  "sources": [
+   "D-13",
+   "E-11"
+  ],
+  "area": "web hosting / UI redress",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "No anti-framing protection on GitHub Pages: frame-ancestors only in _headers (ignored by Pages; meta CSP cannot carry it) and no JS refusal to render seller/sweep views when framed",
+  "evidence": [
+   "apps/web/scripts/scan-bundle.mjs:189 (_headers requires frame-ancestors)",
+   "apps/web/src/lib/embedHost.ts:7-9@7a620ff1 (Pages flag off; no frame-busting elsewhere: grep window.top/self in src = none)",
+   "INFERRED: browser storage partitioning limits a framed instance to empty storage; impact = clickjacking of typed-passphrase flows only",
+   "apps/web/index.html:11-14@7a620ff1 (meta CSP, no frame-ancestors possible)",
+   "apps/web/src/lib/embedHost.ts:144@7a620ff1 (only parent check in code)",
+   "ADR-0029 Consequences (no one-click fund movement)",
+   "S re-verify @7a620ff1: embedHost.ts:7-9 comment confirmed; index.html meta CSP carries no frame-ancestors"
+  ],
+  "affected_features": [
+   "F-KEY-02",
+   "F-WEB-18",
+   "F-WEB-21",
+   "F-WEB-22",
+   "F-WEB-23"
+  ],
+  "remediation": "Refuse to render key/sweep/export views when window.top !== window.self unless embed protocol active; prefer header-capable host for mainnet (ADR-0029). | Lean-only frame guard refusing to render when framed; null window.opener at startup.",
+  "verification": "Playwright test framing the built site. | e2e: framed load shows 'open in its own tab'.",
+  "blocks": [],
+  "notes": "D-13 and E-11 same root cause (Pages cannot send frame-ancestors/XFO/COOP; no JS frame guard). Both Low.",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-19",
+  "sources": [
+   "E-06"
+  ],
+  "area": "RPC configuration",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "wss:// RPC URLs are accepted and allowed by CSP but no transport supports them (always fail closed)",
+  "evidence": [
+   "packages/chain-adapters/src/rpc.ts:87,97@7a620ff1",
+   "packages/net-transport/src/fetchTransport.ts:32,39@7a620ff1",
+   "apps/web/locales/en.json:11; docs/pages/README.md:48",
+   "S re-verify @7a620ff1: rpc.ts:87 accepts wss; net-transport fetchTransport rejects non-http (:32,:39); confirmed"
+  ],
+  "affected_features": [
+   "F-NET-01",
+   "F-PROTO-03",
+   "F-WEB-08"
+  ],
+  "remediation": "Reject wss in checkRpcUrl or implement a WebSocket transport; drop wss: from connect-src if unused; fix copy.",
+  "verification": "Unit test + copy review.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-20",
+  "sources": [
+   "E-07"
+  ],
+  "area": "RPC transport hygiene",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Default chain-adapters fetchTransport omits credentials:'omit', cache:'no-store', referrerPolicy:'no-referrer' (other transports set them)",
+  "evidence": [
+   "packages/chain-adapters/src/rpc.ts:103-109@7a620ff1",
+   "packages/net-transport/src/fetchTransport.ts:52-55@7a620ff1",
+   "apps/web/src/lib/relayerClient.ts:121-130@7a620ff1",
+   "apps/web/src/privacyInvariants.test.ts covers apps/web/src only",
+   "S re-verify @7a620ff1: rpc.ts:103-112 fetch() has only method/headers/body/signal/redirect; no credentials/cache/referrerPolicy; confirmed"
+  ],
+  "affected_features": [
+   "F-PROTO-03",
+   "F-WEB-08",
+   "F-WEB-12",
+   "F-WEB-22"
+  ],
+  "remediation": "Set the three options in fetchTransport; extend privacy invariants to packages/chain-adapters and net-transport.",
+  "verification": "Unit assertion on fetch init.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-21",
+  "sources": [
+   "E-08"
+  ],
+  "area": "URL / history",
+  "severity": "Low",
+  "status": "INTENDED",
+  "title": "Invoice bearer fragment persists in browser history/session/UKM DBs after address-bar clearing; docs omit history sync",
+  "evidence": [
+   "apps/web/src/lib/fragment.ts:20-26@7a620ff1; apps/web/src/AppShell.tsx:97-115@7a620ff1",
+   "Chromium persistent profile after auto-clear: '#gpi=v1.TEAME-PROBE...' in Default/History urls table, Sessions/*, Top Sites, segmentation_platform/ukm_db (Team E walk)",
+   "documented: apps/web/locales/en.json:766,908; apps/web/privacy.html:40; README.md:256 (audit S3-03)"
+  ],
+  "affected_features": [
+   "F-KEY-04",
+   "F-WEB-01",
+   "F-WEB-08",
+   "F-WEB-16",
+   "F-WEB-21"
+  ],
+  "remediation": "Mention cloud history sync; keep promoting paste/passphrase links.",
+  "verification": "Copy review.",
+  "blocks": [],
+  "notes": "Documented residual (audit S3-03); INTENDED.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-22",
+  "sources": [
+   "E-09"
+  ],
+  "area": "storage linkability",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Plaintext linkable identifiers: checkpoint slots keyed by sha256(spend|view pub), vault meta-address/signer, reconciliation sellerKeyId, tag timestamps, tab journals with one-time owners",
+  "evidence": [
+   "apps/web/src/lib/scanClient.ts:661-700@7a620ff1; packages/ux-vault/src/seller-scope.ts:8-10@7a620ff1",
+   "packages/ux-vault/src/reconciliation-portable.ts:407-430@7a620ff1",
+   "apps/web/src/lib/tags.ts:8-20@7a620ff1",
+   "apps/web/src/lib/sweepAttemptJournal.ts:5-14@7a620ff1; apps/web/src/lib/duplicateAttemptJournal.ts:4-23@7a620ff1",
+   "documented: apps/web/locales/en.json:273; docs/user/privacy-limits.md:40"
+  ],
+  "affected_features": [
+   "F-KEY-02",
+   "F-KEY-05",
+   "F-KEY-06",
+   "F-PROTO-05",
+   "F-WEB-06",
+   "F-WEB-09"
+  ],
+  "remediation": "Pseudonymize slot names with a viewing-key-derived key; minimize plaintext in vault record.",
+  "verification": "Storage-dump test asserts no meta-derived identifiers.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-23",
+  "sources": [
+   "E-10"
+  ],
+  "area": "storage retention",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "No in-app 'erase all GhostPay data'; clearing site data on github.io wipes all 36 sites",
+  "evidence": [
+   "apps/web/locales/en.json:273",
+   "apps/web/src/lib/reconciliationLedger.ts:51-63@7a620ff1 (legacy ledger delete only)",
+   "grep: no deleteDatabase/localStorage.clear in apps/web/src",
+   "S re-verify @7a620ff1: grep non-test sources for deleteDatabase/localStorage.clear: none"
+  ],
+  "affected_features": [
+   "F-KEY-02",
+   "F-MER-05",
+   "F-WEB-08",
+   "F-WEB-09",
+   "F-WEB-20"
+  ],
+  "remediation": "Confirmed wipe of ghostpay.* local/session keys and the three IndexedDB databases with backup warning.",
+  "verification": "e2e: storage empty after wipe.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-24",
+  "sources": [
+   "E-13"
+  ],
+  "area": "build guards",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "scan-bundle checks inline scripts/CSP only in index.html; lean exclusion lists differ between guard and Pages verifier (R-01 fix itself verified)",
+  "evidence": [
+   "apps/web/scripts/scan-bundle.mjs:153-183@7a620ff1",
+   "scripts/pages/verify-pages-site.mjs:51,238-241@7a620ff1",
+   "apps/web/scripts/localBuildProfile.mjs:122@7a620ff1",
+   "apps/web/src/scanBundle.test.ts:131 passes (vitest 14 files 239 tests)"
+  ],
+  "affected_features": [
+   "F-DEP-01",
+   "F-HOST-03",
+   "F-WEB-17",
+   "F-WEB-18",
+   "F-WEB-21",
+   "F-WEB-22"
+  ],
+  "remediation": "Scan every *.html; single shared exclusion list.",
+  "verification": "Unit tests.",
+  "blocks": [],
+  "notes": "R-01 fix itself verified by E.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-25",
+  "sources": [
+   "E-14"
+  ],
+  "area": "supply chain (dev tree)",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "npm audit: 30 dev-tree advisories (14 high picomatch<=4.0.7 ReDoS via vite/vitest/typescript-eslint/hardhat; 16 low elliptic/cookie/@sentry via hardhat); production 0",
+  "evidence": [
+   "npm audit --json (all): exit 1; high 14, low 16, critical 0 ($SP/out/E/logs/npm_audit_all.json)",
+   "npm audit --omit=dev --json: 0 ($SP/out/E/logs/npm_audit_prod.json)",
+   "npm view picomatch versions: latest 4.0.7 (no fix)",
+   ".github/workflows/ci.yml:114@7a620ff1; .github/workflows/release.yml:93@7a620ff1 (prod-only gate)"
+  ],
+  "affected_features": [
+   "F-FUT-11"
+  ],
+  "remediation": "Track; add overrides when picomatch fix ships; non-blocking full-tree audit report.",
+  "verification": "npm audit.",
+  "blocks": [],
+  "notes": "Dev tree only; production 0 advisories; no upstream picomatch fix.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-26",
+  "sources": [
+   "E-15"
+  ],
+  "area": "self-host supply chain",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Self-host images pinned by tag only; dependabot lacks docker ecosystem; nginx sends no HSTS (relies on terminator)",
+  "evidence": [
+   "deploy/docker-compose.yml:53@7a620ff1",
+   "deploy/tor/Dockerfile:2@7a620ff1",
+   "infra/web/Dockerfile:9@7a620ff1",
+   ".github/dependabot.yml@7a620ff1",
+   "deploy/nginx/security-headers.conf:3-9@7a620ff1",
+   "apps/relayer/Dockerfile:14,26@7a620ff1 (digest pinned)"
+  ],
+  "affected_features": [
+   "F-HOST-01",
+   "F-HOST-02",
+   "F-HOST-04",
+   "F-WEB-18"
+  ],
+  "remediation": "Digest pins + dependabot docker entries; HSTS at TLS terminator documented/tested.",
+  "verification": "Config review.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-27",
+  "sources": [
+   "E-16"
+  ],
+  "area": "docs accuracy",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "PRIVACY_THREAT_MODEL says net-transport/scan-source are not imported by apps/web; they ship in the lean bundle",
+  "evidence": [
+   "docs/threat-model/PRIVACY_THREAT_MODEL.md:16@7a620ff1",
+   "apps/web/package.json@7a620ff1 deps; apps/web/src/lib/scanPrivacy.ts:27-28@7a620ff1",
+   "lean bundle: net-transport 2k, scan-source 8k ($SP/out/E/pages-demo/evidence/ghostpay-lean-build.json)",
+   "S re-verify @7a620ff1: re-read; statement present at line 17; apps/web/package.json depends on net-transport and scan-source"
+  ],
+  "affected_features": [
+   "F-DOC-04",
+   "F-WEB-22"
+  ],
+  "remediation": "Refresh sections 1.1/5 and note E-05.",
+  "verification": "Doc review.",
+  "blocks": [],
+  "notes": "Line drift: claim is at PRIVACY_THREAT_MODEL.md:17 (not :16).",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-28",
+  "sources": [
+   "E-17"
+  ],
+  "area": "privacy claims",
+  "severity": "Low",
+  "status": "CONFIRMED",
+  "title": "Overclaims/imprecise copy: unqualified 'hides which seller owns the one-time address', 'stay unlinkable', false local-proxy/wss statements",
+  "evidence": [
+   "apps/web/locales/en.json:1100",
+   "docs/developer/api/policy-scheme.md:233",
+   "docs/pages/README.md:48-49",
+   "apps/web/locales/en.json:11,2138",
+   "README.md:5"
+  ],
+  "affected_features": [
+   "F-CTR-05",
+   "F-DOC-01",
+   "F-DOC-04",
+   "F-I18N-02"
+  ],
+  "remediation": "Qualify per SECURITY_PRIVACY_BROWSER.md section 8.",
+  "verification": "Copy review.",
+  "blocks": [],
+  "notes": "Privacy-claim honesty (constraint 3).",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-29",
+  "sources": [
+   "R-03"
+  ],
+  "area": "UX / lost click (ContextHelp)",
+  "severity": "Low",
+  "status": "UNVERIFIED",
+  "title": "ContextHelp hover-leave still collapses an open explanation, shifting layout (residual of R-02/FR-M1)",
+  "evidence": [
+   "REVIEW_FINDINGS.md R-03 @71abc7e5 (prior, not re-verified by S)"
+  ],
+  "affected_features": [
+   "F-DOC-04",
+   "F-WEB-23"
+  ],
+  "remediation": "Non-shifting help presentation (next-phase UX).",
+  "verification": "Browser test of hover-leave vs click timing (prior measured 26/26 runs click wins).",
+  "blocks": [],
+  "notes": "Carried from prior; UX, not security. Not re-verified by S.",
+  "source_kind": "prior",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-30",
+  "sources": [
+   "R-04"
+  ],
+  "area": "UX / focus scope",
+  "severity": "Low",
+  "status": "INTENDED",
+  "title": "#201 focus scope also focuses main after in-view paste/QR/Forget/cancel; comment names only deep links",
+  "evidence": [
+   "REVIEW_FINDINGS.md R-04 @71abc7e5 (prior, not re-verified by S)"
+  ],
+  "affected_features": [
+   "F-KEY-04",
+   "F-WEB-08",
+   "F-WEB-16",
+   "F-WEB-21",
+   "F-WEB-23"
+  ],
+  "remediation": "Pin paste-submit focus with a test (backlog).",
+  "verification": "Unit test pinning focus after in-view actions.",
+  "blocks": [],
+  "notes": "Carried from prior; accepted as merged. Not re-verified by S.",
+  "source_kind": "prior",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-31",
+  "sources": [
+   "D-14"
+  ],
+  "area": "contracts / recovery (scheme 2)",
+  "severity": "Info",
+  "status": "INTENDED",
+  "title": "Policy-account owner-key compromise yields an indefinite freeze race (thief can cancel every withdrawal and keep proposing destinations); no rotation; recovery ADR-0028 unaccepted",
+  "evidence": [
+   "packages/contracts/src/PolicyAccount.sol:245-252,255-280@7a620ff1",
+   "docs/adr/ADR-0028-policy-recovery-authority-model.md:3,14-21"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-AA-05"
+  ],
+  "remediation": "Owner decision on ADR-0028 (no custodial guardians); document liveness-only guarantee in user docs.",
+  "verification": "Model tests in scripts/experimental/policy-recovery.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "INTENDED per D; ADR-0028 unaccepted.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-32",
+  "sources": [
+   "D-15"
+  ],
+  "area": "release trust roots (fail-closed gate)",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Release trust roots are empty: RELEASE_KEY undefined, RELEASE_PUBLIC_KEYS [], allowed_signers has 0 keys; payments and releases stay disabled; keys ship inside the same bundle (needs out-of-band bundle verification)",
+  "evidence": [
+   "packages/chain-adapters/src/deploymentsSignature.ts:19@7a620ff1",
+   "apps/web/src/lib/releaseKeys.ts:9@7a620ff1",
+   "apps/web/src/lib/manifest.ts:41@7a620ff1 (no keys -> manifests invalid)",
+   ".github/release-signers/allowed_signers (0 non-comment lines)",
+   "S re-verify @7a620ff1: deploymentsSignature.ts:19 RELEASE_KEY undefined; releaseKeys.ts:9 RELEASE_PUBLIC_KEYS defaults []"
+  ],
+  "affected_features": [
+   "F-CTR-07",
+   "F-DEP-01",
+   "F-DEP-02",
+   "F-DEP-04",
+   "F-WEB-03",
+   "F-WEB-06",
+   "F-WEB-11",
+   "F-WEB-17"
+  ],
+  "remediation": "Owner offline key ceremony (secp256k1 manifest key; SSH/PGP tag keys); document separation of trust roots; reproducible-build/out-of-band digest publication.",
+  "verification": "Signed Sepolia manifest validates at build and runtime; tag verify passes; unsigned still fails.",
+  "blocks": [
+   "sepolia-beta",
+   "release-tag",
+   "mainnet"
+  ],
+  "notes": "Fail-closed by design (payments disabled); Info severity reflects safe-by-default, but it is a hard gate.",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-33",
+  "sources": [
+   "D-16",
+   "R-08",
+   "R-10"
+  ],
+  "area": "analyzers / release gate",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Mythril gate is red by design (11 dispositioned records; R8 timeout-dependent); no finding-specific suppression mechanism exists, so every release is blocked",
+  "evidence": [
+   "gh api runs/44231986631 (d91ae16a) and runs/44242366379 (7a620ff1): echidna success, mythril failure (VERIFIED job conclusions)",
+   "packages/contracts/scripts/run-mythril.sh:1-8@7a620ff1"
+  ],
+  "affected_features": [
+   "F-CTR-07",
+   "F-DEP-04"
+  ],
+  "remediation": "Owner: approve keyed disposition mechanism (contract, function, SWC, PC, compiler+source hash, auto-fail on change) or keep releases blocked.",
+  "verification": "Gate mutation tests for the mechanism.",
+  "blocks": [
+   "release-tag"
+  ],
+  "notes": "D-16 plus prior R-08 (SWC-116 x3, intended) and R-10 (factory x8, FP/intended) dispositions: gate red by design.",
+  "source_kind": "team+prior",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-34",
+  "sources": [
+   "D-17"
+  ],
+  "area": "relayer trust",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Relayer cannot steal or redirect (EIP-712 binds token/owner/destination/feeTo/amount/fee/deadline/nonce + chainId + verifyingContract) but can censor/delay (<=20 min order life), observes owner/destination/amount/IP, and censorship fallback (direct sweep) needs native gas on the stealth address",
+  "evidence": [
+   "packages/contracts/src/GhostPaySweepRelayer.sol:46-60,80-115@7a620ff1",
+   "apps/web/src/lib/sweep.ts:103-121,172-266@7a620ff1",
+   "packages/chain-adapters/src/sweep.ts:79-106,192-202@7a620ff1",
+   "apps/relayer/src/log.ts:4-16@7a620ff1 (allowlisted log fields)"
+  ],
+  "affected_features": [
+   "F-CTR-02",
+   "F-CTR-03",
+   "F-DEP-02",
+   "F-HOST-01",
+   "F-PROTO-13",
+   "F-RLY-01",
+   "F-RLY-02",
+   "F-RLY-03",
+   "F-WEB-11",
+   "F-WEB-12",
+   "F-WEB-26"
+  ],
+  "remediation": "Keep relayer optional/user-selected; document metadata exposure and fallback privacy cost; prefer buffer payments for gas.",
+  "verification": "Existing Sweep.audit tamper/replay suites (forge, not run here).",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-35",
+  "sources": [
+   "D-18"
+  ],
+  "area": "EIP-7702 / ERC-4337 (experimental)",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "EIP-7702 payer delegation persists after use (public fingerprint, exposure to future delegate bugs); 4337 paymaster admin powers limited to sponsor deposit/stake; verifying signer is a server key (optional); testnet ChainGuard",
+  "evidence": [
+   "packages/payer-hiding-contracts/src/GhostPayPayerDelegate.sol:36-39,98-147@7a620ff1",
+   "packages/payer-hiding-contracts/src/GhostPayVerifyingPaymaster.sol:180-207@7a620ff1",
+   "packages/payer-sponsor/src/eip7702/intent.ts:67-68@7a620ff1"
+  ],
+  "affected_features": [
+   "F-AA-04",
+   "F-POOL-08",
+   "F-RLY-05"
+  ],
+  "remediation": "Before any non-testnet use: mandatory clear-delegation step, independent audit, analyzer coverage (D-12); no default delegate authority (D03).",
+  "verification": "anvil e2e of delegate->clear flow.",
+  "blocks": [
+   "scheme2-deploy"
+  ],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-36",
+  "sources": [
+   "D-19"
+  ],
+  "area": "contracts / availability",
+  "severity": "Info",
+  "status": "INTENDED",
+  "title": "Native payments forward the fee to immutable FEE_RECIPIENT with all gas; a non-accepting recipient blocks every native payment >= 400 wei (no fund loss)",
+  "evidence": [
+   "packages/contracts/src/GhostPayRouter.sol:121-127,241-249@7a620ff1",
+   "packages/contracts/src/GhostPayPolicyRouter.sol:150-155@7a620ff1"
+  ],
+  "affected_features": [
+   "F-AA-01",
+   "F-CTR-01",
+   "F-CTR-02",
+   "F-CTR-05",
+   "F-CTR-06"
+  ],
+  "remediation": "Deploy with an EOA/known-good multisig that accepts ETH; smoke-test in deployment readback.",
+  "verification": "SmokeSepolia native payment.",
+  "blocks": [],
+  "notes": "Operational: FEE_RECIPIENT must accept ETH (beta deployment checklist).",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-37",
+  "sources": [
+   "D-20"
+  ],
+  "area": "crypto / memory hygiene",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Zeroization is best-effort: secrets transit immutable JS strings (keystore plaintext JSON hex, typed key hex and passphrases in React state), noble toHex path is allowed, and the viewing key is structured-cloned into the scan worker",
+  "evidence": [
+   "packages/core-crypto/src/secret.ts:16-20,61-75,132-134@7a620ff1",
+   "packages/ux-vault/src/keystore-portable.ts:327-333@7a620ff1",
+   "apps/web/src/lib/session.ts:268-279,334-337@7a620ff1",
+   "apps/web/src/lib/scannerCore.ts:75-88@7a620ff1"
+  ],
+  "affected_features": [
+   "F-KEY-01",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-KEY-13",
+   "F-PROTO-01",
+   "F-PROTO-13"
+  ],
+  "remediation": "Keep lifetimes short; for spec 18 build plaintext as bytes (no JSON hex string) where feasible; document residual.",
+  "verification": "n/a (documented limitation).",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-38",
+  "sources": [
+   "D-21"
+  ],
+  "area": "crypto / EIP-5564 interop",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Scheme-1 derivation verified independently (6/6 vectors with elliptic+js-sha3); hash convention keccak256(compressed S) pinned by ADR-0001 = ScopeLift SDK; EIP-5564 publishes no official vectors; s_h >= n is reduced mod n where the SDK would throw (p~2^-128)",
+  "evidence": [
+   "packages/core-crypto/src/stealth.ts:78-100,120-136,157-190,212-232@7a620ff1",
+   "test-vectors/scheme1.json (generator ScopeLift 1.0.0-beta.5)",
+   "VERIFIED: $SP/out/D/scripts/indep-vectors.cjs ok=6 bad=0; core-crypto vitest 9 files/75 tests passed"
+  ],
+  "affected_features": [
+   "F-KEY-01",
+   "F-PROTO-01",
+   "F-PROTO-02"
+  ],
+  "remediation": "Record the convention in K01 public format; optionally cross-check against a second independent 5564 wallet implementation.",
+  "verification": "n/a",
+  "blocks": [],
+  "notes": "Positive control (verified sound).",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-39",
+  "sources": [
+   "D-22"
+  ],
+  "area": "process / evidence accuracy",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Promotion packet says commits after d91ae16a are docs-only, but 7a620ff1 also edits apps/web/src/views/SellerKeys.test.tsx (test-only); CI re-ran on 7a620ff1 and is green apart from the expected Mythril failure",
+  "evidence": [
+   "git diff --name-only d91ae16a 7a620ff1 (4 docs + 1 test file)",
+   "gh api: CI 44242366118 success; contract-analysis 44242366379 echidna success / mythril failure"
+  ],
+  "affected_features": [],
+  "remediation": "Update packet: qualified head = 7a620ff1 (or note test-only delta).",
+  "verification": "n/a",
+  "blocks": [],
+  "notes": "Process/evidence accuracy.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-40",
+  "sources": [
+   "E-12"
+  ],
+  "area": "UX safety",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Pages banner link navigates the same tab; no beforeunload guard while unsaved keys are loaded",
+  "evidence": [
+   "scripts/pages/build-pages.sh:148@7a620ff1",
+   "grep: no beforeunload/pagehide handler in apps/web/src",
+   "S re-verify @7a620ff1: grep beforeunload/pagehide in apps/web/src: none"
+  ],
+  "affected_features": [
+   "F-KEY-01",
+   "F-KEY-04",
+   "F-WEB-08",
+   "F-WEB-16",
+   "F-WEB-21"
+  ],
+  "remediation": "target=_blank rel='noopener noreferrer' or beforeunload prompt while backup unverified.",
+  "verification": "e2e.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-41",
+  "sources": [
+   "E-18"
+  ],
+  "area": "Tor Browser compatibility",
+  "severity": "Info",
+  "status": "UNVERIFIED",
+  "title": "No WASM/WebGL/SAB/SW needed; Safest mode unusable (JS off); JIT-less scrypt ~28 s; canvas QR likely blocked; TB private mode drops vault/checkpoints; onion RPC unsupported; deploy/tor untested",
+  "evidence": [
+   "bundle token counts WebAssembly/webgl/SharedArrayBuffer/serviceWorker = 0",
+   "node jitless bench: scrypt N=2^17 28338 ms vs 512 ms; ECDH ~4 ms ($SP/out/E/logs/bench_*.txt)",
+   "packages/qr-exchange/src/readers.ts:31-36@7a620ff1 (getImageData)",
+   "packages/chain-adapters/src/rpc.ts:77-92@7a620ff1 (http only loopback)",
+   "deploy/TOR.md:8@7a620ff1 ('Not tested')",
+   "apps/web/DEVIATIONS.md:258@7a620ff1 (only Chromium)"
+  ],
+  "affected_features": [
+   "F-FUT-34",
+   "F-HOST-02",
+   "F-KEY-02",
+   "F-KEY-03",
+   "F-NET-01",
+   "F-PROTO-10",
+   "F-PROTO-13",
+   "F-WEB-13",
+   "F-WEB-20",
+   "F-WEB-24"
+  ],
+  "remediation": "Manual TB Standard/Safer QA; KDF progress text; document TB persistence; consider https onion RPC guidance.",
+  "verification": "QA record.",
+  "blocks": [
+   "sepolia-beta"
+  ],
+  "notes": "Blocks Tor-compat claims only.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-42",
+  "sources": [
+   "E-19"
+  ],
+  "area": "logging",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "createRoot without onCaughtError/onUncaughtError: React logs caught render errors (may contain input snippets) to console",
+  "evidence": [
+   "apps/web/src/main.tsx:11@7a620ff1",
+   "bundle console.error only React internals (6); console.warn/log 0",
+   "apps/web/src/lib/errors.ts:68-80@7a620ff1 (UI never renders raw messages)"
+  ],
+  "affected_features": [
+   "F-WEB-22"
+  ],
+  "remediation": "Pass sanitized root error handlers.",
+  "verification": "Unit.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-43",
+  "sources": [
+   "E-20"
+  ],
+  "area": "integrity / SRI",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "No SRI; embed SDK SRI tooling unwired (full only); Pages SHA256SUMS only in run summary/14-day artifact, unsigned",
+  "evidence": [
+   "apps/web/README.md:57@7a620ff1",
+   ".github/workflows/pages.yml:106-122@7a620ff1",
+   "ADR-0029 gate 2 Open"
+  ],
+  "affected_features": [
+   "F-FUT-11",
+   "F-WEB-18",
+   "F-WEB-21"
+  ],
+  "remediation": "See E-04 (attest + signed checksums).",
+  "verification": "\u2014",
+  "blocks": [],
+  "notes": "Related to E-04 (artifact authenticity) but a distinct control (SRI/checksums).",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-44",
+  "sources": [
+   "E-21"
+  ],
+  "area": "release keys",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "No denylist for the public Playwright manifest-signing key in GHOSTPAY_RELEASE_PUBKEYS parsing",
+  "evidence": [
+   "apps/web/scripts/validate-deployments.mjs:38-43@7a620ff1",
+   "apps/web/e2e/prepare-manifest.mjs:21-22@7a620ff1 (key = 0x07*32)",
+   "S re-verify @7a620ff1: validate-deployments.mjs:38-43 key parser has no denylist; prepare-manifest.mjs testKey = Uint8Array(32).fill(7) (public)"
+  ],
+  "affected_features": [
+   "F-DEP-01",
+   "F-DEP-03",
+   "F-WEB-17"
+  ],
+  "remediation": "Denylist known public test keys.",
+  "verification": "Unit.",
+  "blocks": [],
+  "notes": "",
+  "source_kind": "team",
+  "s_reverified": true
+ },
+ {
+  "id": "SEC-45",
+  "sources": [
+   "E-22"
+  ],
+  "area": "network metadata",
+  "severity": "Info",
+  "status": "SUSPECTED",
+  "title": "RPC can fingerprint GhostPay users: Origin header, UA, Accept-Language, sequential JSON-RPC ids, 60 s eth_chainId recheck, optional 60-90 s auto-scan",
+  "evidence": [
+   "packages/chain-adapters/src/rpc.ts:227-237@7a620ff1",
+   "docs/pages/README.md:41 (polling cadence documented); Origin header not documented (grep)"
+  ],
+  "affected_features": [
+   "F-NET-01",
+   "F-PROTO-03",
+   "F-WEB-08",
+   "F-WEB-22"
+  ],
+  "remediation": "Document; consider random request ids.",
+  "verification": "Doc.",
+  "blocks": [],
+  "notes": "Team E status was INFERRED (evidence level); mapped to SUSPECTED in the S status vocabulary.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-46",
+  "sources": [
+   "E-23"
+  ],
+  "area": "deploy smoke coverage",
+  "severity": "Info",
+  "status": "CONFIRMED",
+  "title": "Post-deploy smoke only idles on the home view for 3 s",
+  "evidence": [
+   "scripts/pages/smoke.mjs:100-112@7a620ff1",
+   "Team E local walk: all 9 lean / 12 full views, 0 foreign requests until explicit Test ($SP/out/E/logs/egress_walk*.json)"
+  ],
+  "affected_features": [
+   "F-WEB-21",
+   "F-WEB-22"
+  ],
+  "remediation": "Extend smoke to click every lean view and open a fixture invoice, then assert no request outside the site.",
+  "verification": "Smoke run log.",
+  "blocks": [
+   "sepolia-beta"
+  ],
+  "notes": "Live egress evidence for beta.",
+  "source_kind": "team",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-47",
+  "sources": [
+   "R-06"
+  ],
+  "area": "release gating",
+  "severity": "Info",
+  "status": "UNVERIFIED",
+  "title": "release.yml contract-analysis gate (R-06) resolved in source but unexercised on a real tag",
+  "evidence": [
+   "REVIEW_FINDINGS.md R-06 @71abc7e5: \"Resolved (unexercised on a real tag)\""
+  ],
+  "affected_features": [
+   "F-CTR-07",
+   "F-FUT-11"
+  ],
+  "remediation": "Dry-run a signed pre-release tag in a sandbox repo/branch to exercise the gate end to end.",
+  "verification": "A real or rehearsal tag run showing the gate fails on red analyzers and passes on dispositioned set.",
+  "blocks": [
+   "release-tag"
+  ],
+  "notes": "Prior R-06 (High, process) resolved in source (15c302cd, 12 gate mutations); carried because the gate is unexercised on a real tag.",
+  "source_kind": "prior",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-48",
+  "sources": [
+   "R-16"
+  ],
+  "area": "security inventories (access)",
+  "severity": "Info",
+  "status": "MISSING-COVERAGE",
+  "title": "CodeQL, Dependabot and secret-scanning alert inventories not obtainable (403/proxy); passing scanner jobs are not issue closure",
+  "evidence": [
+   "REVIEW_FINDINGS.md R-16 @71abc7e5",
+   "CodeQL conclusion success on 7a620ff1 per brief (job result only)"
+  ],
+  "affected_features": [],
+  "remediation": "Owner exports/reviews the alert inventories or grants read access to the integration.",
+  "verification": "Inventory reviewed with zero open High/Critical or each dispositioned.",
+  "blocks": [
+   "mainnet"
+  ],
+  "notes": "Prior gate item (access): CodeQL/Dependabot alert APIs 403, secret-scanning blocked, no Sonar config. Not rated by prior; Info assigned, gate-type. Owner must review inventories.",
+  "source_kind": "prior",
+  "s_reverified": false
+ },
+ {
+  "id": "SEC-49",
+  "sources": [
+   "R-17"
+  ],
+  "area": "process / concurrent PR",
+  "severity": "Info",
+  "status": "UNVERIFIED",
+  "title": "PR #204 (agent tooling) conflicts with #203 in ci.yml and CLAUDE.md",
+  "evidence": [
+   "REVIEW_FINDINGS.md R-17 @71abc7e5"
+  ],
+  "affected_features": [
+   "F-CTR-07"
+  ],
+  "remediation": "Define merge order; re-run CI after the second merge. After the snapshot: #203 merged 06:56:49Z; #204 re-integrated with conflicts resolved as open PR #206 (c487f0fe) - review/merge #206.",
+  "verification": "CI green after both merged.",
+  "blocks": [],
+  "notes": "Coordination: PR #204 conflicts with #203 in ci.yml and CLAUDE.md.",
+  "source_kind": "prior",
+  "s_reverified": false
+ }
+]

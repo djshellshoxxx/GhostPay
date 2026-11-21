@@ -1,0 +1,108 @@
+# Scoring consistency issues
+
+- F-PROTO-03: requirement 'Per-log block-hash cross-check' corrected by override (Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 alr)
+- F-PROTO-03: reported impl 95 != computed 100 (computed used)
+- F-PROTO-03: reported verif 95 != computed 100 (computed used)
+- F-PROTO-03: status PARTIAL normalized to rubric-implied VERIFIED_COMPLETE
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'range mode: grid-aligned padded windows, budgets'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'pir2 two-server PIR, dummy-padded epochs, manifest match'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'light-client wrapper (block hashes confirmed by LC)'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'quorum composition fails closed on disagreement'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'createScanSource never falls back; describeScanMode honest c'
+- F-PROTO-11: reported verif 100 != computed 70 (computed used)
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R1 createClient: no I/O on construct; https-only baseUrl, no'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R2 invoice helpers (build/sign/link/parse, immutable builder'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R3 typed errors, fixed messages, no echo'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R4 merchant API client strict validation, 1 MiB cap, AbortSi'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R5 React adapter without importing react'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'JSON Schemas (invoice v1, webhook) drift-guarded'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'verifyInvoice verdict matrix (pinned signer, expiry, warning'
+- F-PROTO-12: reported verif 90 != computed 45 (computed used)
+- F-PROTO-13: status SPEC_ONLY normalized to rubric-implied PARTIAL
+- F-CTR-02: reported verif 95 != computed 90 (computed used)
+- F-DEP-05: requirement verified > implemented (verification capped at implementation): 'adapter.scan AsyncIterable'
+- F-DEP-05: reported verif 80 != computed 75 (computed used)
+- F-WEB-04: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-06: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-07: fields ['effort', 'strategy', 'strategy_detail'] corrected by override
+- F-WEB-07: requirement 'Transports direct / tor-browser / local-proxy' corrected by override (H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shi)
+- F-WEB-07: reported impl 100 != computed 90 (computed used)
+- F-WEB-07: reported verif 100 != computed 90 (computed used)
+- F-WEB-07: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-11: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (direct sweep signs without step-up in vault-less sessions)
+- F-WEB-12: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (relayer-assisted sweep signs without step-up in vault-less sessions)
+- F-WEB-18: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-01: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (vault-less in-memory session has no step-up before secret export/sweep)
+- F-KEY-02: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-05 (vault/keystore passphrase floor accepts name+year passphrases)
+- F-KEY-03: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-05, SEC-03 (keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224))
+- F-KEY-05: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-13: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Encrypted profiles/contacts (PBKDF2 600k + AES-256-GCM, AAD '
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Backup export/import merge/replace with report'
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Lookalike/confusable findings on contacts'
+- F-KEY-14: reported verif 65 != computed 30 (computed used)
+- F-MER-05: tier beta-core corrected to full-profile by override (H1: MerchantProfilePanel/MerchantTemplateIssuer/merchantIdentity/merchantTemplat)
+- F-INT-03: status SPEC_ONLY normalized to rubric-implied PARTIAL
+- F-RLY-01: requirement verified > implemented (verification capped at implementation): 'Price feeds: operator constants, not oracles (DEVIATIONS 2)'
+- F-RLY-01: reported verif 90 != computed 80 (computed used)
+- F-A11Y-03: status NOT_STARTED normalized to rubric-implied PARTIAL
+- F-BTC-01: tier beta-supporting corrected to full-profile by override (H1: BtcView only in App.tsx ORDER (full); AppLean renders CORE_ORDER (AppShell.t)
+- F-BTC-01: reported impl 90 != computed 100 (computed used)
+- F-BTC-02: tier beta-supporting corrected to full-profile by override (H1: header chain reachable only from the full-profile BTC view)
+- F-BTC-02: fields ['strategy', 'strategy_detail'] corrected by override
+- F-BTC-02: reported impl 90 != computed 100 (computed used)
+- F-BTC-02: reported verif 75 != computed 100 (computed used)
+- F-BTC-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
+- F-BTC-03: reported verif 75 != computed 80 (computed used)
+- F-BTC-04: reported impl 70 != computed 40 (computed used)
+- F-BTC-04: reported verif 60 != computed 40 (computed used)
+- F-BTC-05: reported impl 70 != computed 60 (computed used)
+- F-BTC-05: reported verif 75 != computed 45 (computed used)
+- F-SOL-01: reported impl 75 != computed 60 (computed used)
+- F-SOL-01: reported verif 70 != computed 50 (computed used)
+- F-SOL-02: reported impl 60 != computed 40 (computed used)
+- F-SOL-02: reported verif 60 != computed 40 (computed used)
+- F-TRX-01: reported impl 75 != computed 70 (computed used)
+- F-TRX-01: reported verif 70 != computed 60 (computed used)
+- F-TRX-02: reported impl 60 != computed 40 (computed used)
+- F-TRX-02: reported verif 60 != computed 40 (computed used)
+- F-EVMX-01: reported impl 60 != computed 55 (computed used)
+- F-EVMX-01: reported verif 70 != computed 55 (computed used)
+- F-POOL-01: reported impl 70 != computed 35 (computed used)
+- F-POOL-01: reported verif 50 != computed 15 (computed used)
+- F-POOL-02: reported impl 70 != computed 35 (computed used)
+- F-POOL-02: reported verif 60 != computed 15 (computed used)
+- F-POOL-03: reported impl 70 != computed 50 (computed used)
+- F-POOL-03: reported verif 70 != computed 50 (computed used)
+- F-POOL-04: reported impl 75 != computed 100 (computed used)
+- F-POOL-04: reported verif 70 != computed 60 (computed used)
+- F-POOL-05: reported impl 65 != computed 40 (computed used)
+- F-POOL-05: reported verif 65 != computed 40 (computed used)
+- F-POOL-06: reported impl 65 != computed 100 (computed used)
+- F-POOL-06: reported verif 65 != computed 60 (computed used)
+- F-POOL-07: reported impl 55 != computed 50 (computed used)
+- F-POOL-07: reported verif 60 != computed 50 (computed used)
+- F-POOL-08: reported impl 70 != computed 50 (computed used)
+- F-POOL-08: reported verif 60 != computed 25 (computed used)
+- F-POOL-09: reported impl 65 != computed 60 (computed used)
+- F-POOL-09: reported verif 60 != computed 45 (computed used)
+- F-PRIV-01: reported impl 70 != computed 50 (computed used)
+- F-PRIV-01: reported verif 70 != computed 50 (computed used)
+- F-PRIV-02: reported impl 75 != computed 60 (computed used)
+- F-PRIV-02: reported verif 75 != computed 60 (computed used)
+- F-PRIV-03: reported impl 70 != computed 60 (computed used)
+- F-PRIV-03: reported verif 75 != computed 60 (computed used)
+- F-PRIV-04: reported impl 75 != computed 60 (computed used)
+- F-PRIV-04: reported verif 75 != computed 60 (computed used)
+- F-PRIV-05: reported impl 70 != computed 80 (computed used)
+- F-PRIV-05: reported verif 75 != computed 60 (computed used)
+- F-NET-01: requirement 'local-proxy profile usable from the shipped browser builds' added by override (H1: CSP connect-src blocks http loopback in every shipped profile (apps/web/inde)
+- F-NET-01: reported impl 70 != computed 80 (computed used)
+- F-NET-02: fields ['related_branches', 'strategy_detail'] corrected by override
+- F-NET-02: reported impl 95 != computed 100 (computed used)
+- F-NET-02: reported verif 85 != computed 100 (computed used)
+- F-NET-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
+- F-NET-03: reported impl 70 != computed 40 (computed used)
+- F-NET-03: reported verif 65 != computed 40 (computed used)
+- F-NET-04: reported verif 60 != computed 100 (computed used)
+- F-NET-04: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE

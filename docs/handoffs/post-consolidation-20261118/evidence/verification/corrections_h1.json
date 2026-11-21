@@ -1,0 +1,632 @@
+[
+ {
+  "id": "C-01",
+  "severity": "blocker",
+  "file": "README.md",
+  "find": "| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` (unprotected per prior session) |",
+  "replace": "| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` while this audit ran (unprotected per prior session). **After the snapshot** PR #203 was merged (2026-11-18T06:56:49Z): `main` = merge commit `5467c158069c5bab264b6a653ac56e89e13f3e13` (parents `cfaebeea` + `71abc7e5`; tree identical to `71abc7e5`, so product source = `7a620ff1`). Branch-protection state is still unverified (OA-01). |",
+  "reason": "Baseline is stale: main moved to the #203 merge commit after the snapshot; the next session must branch from the new main.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-02",
+  "severity": "blocker",
+  "file": "README.md",
+  "find": "branch protection (OA-01), merging #203 (OA-02) and the",
+  "replace": "branch protection (OA-01; PR #203 itself was merged after the snapshot, closing OA-02) and the",
+  "reason": "OA-02 is done (merge at 06:56:49Z); listing it as an open owner blocker is wrong.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-03",
+  "severity": "blocker",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "| OA-02 | Mark PR #203 ready and merge it with a merge commit or fast-forward (never squash) after OA-01 | `release.yml` reads `scripts/verify-tag.sh` and `.github/release-signers/` from `main`, which lack them | F release gate 2; PROMOTION_PACKET | Release pipeline; Pages workflow on main |",
+  "replace": "| OA-02 | **Done after the audit snapshot:** PR #203 merged 2026-11-18T06:56:49Z as merge commit `5467c158` (not squash; tree == `71abc7e5`). Unverified whether OA-01 was completed first | `main` now carries `scripts/verify-tag.sh` and `.github/release-signers/` (verified with `git ls-tree 5467c158`), so release gate 2 is cleared; gates 1 (no signing key) and 3 (Mythril) remain | F release gate 2; PROMOTION_PACKET; `git ls-remote` 07:10Z | Release pipeline and the new Pages workflow are now on main |",
+  "reason": "Row describes an action that has already happened; its 'why' (main lacks verify-tag.sh/release-signers) is no longer true.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account; `git ls-tree --name-only 5467c158 scripts/verify-tag.sh .github/release-signers/` lists both (cfaebeea: none)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-04",
+  "severity": "blocker",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "`main` = `cfaebeeae22f292cb0bb3074619b2603cb738367`. Finding IDs refer to",
+  "replace": "`main` = `cfaebeeae22f292cb0bb3074619b2603cb738367` at audit time; after the snapshot PR #203 was merged (2026-11-18T06:56:49Z) and `main` = `5467c158` (tree == `71abc7e5`). Finding IDs refer to",
+  "reason": "Header baseline stale.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-05",
+  "severity": "blocker",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "not `main`; `main` is an ancestor and receives everything only through the owner's merge of #203.",
+  "replace": "not `main`; `main` was an ancestor during the audit and received everything through the owner's merge of #203 at 2026-11-18T06:56:49Z (`5467c158`, tree == `71abc7e5`), after this snapshot.",
+  "reason": "Assumption 1 is overtaken by events.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-06",
+  "severity": "blocker",
+  "file": "EVIDENCE_INDEX.md",
+  "find": "| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge of #189, 2026-11-16) | `git rev-parse origin/main` |",
+  "replace": "| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge of #189, 2026-11-16) during the audit; after the snapshot `5467c158069c5bab264b6a653ac56e89e13f3e13` (merge of #203, 2026-11-18T06:56:49Z, parents `cfaebeea` + `71abc7e5`, tree == `71abc7e5`) | `git rev-parse origin/main`; `git ls-remote origin refs/heads/main` (07:10Z) |",
+  "reason": "Evidence table must record the post-snapshot main.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-07",
+  "severity": "blocker",
+  "file": "EVIDENCE_INDEX.md",
+  "find": "| Remote branch heads | 217 | `git ls-remote --heads origin \\| wc -l` |",
+  "replace": "| Remote branch heads | 217 at the census (~06:10Z; this package's branch was not yet pushed). Live at 07:10Z: 219 = 217 − `dependabot/github_actions/actions-1850456dc8` (#85 closed) + `nodata/zealous-hopper-lr0nxe` (#205, this package) + `claude/ghostpay-consolidation-9xhtxg` (#206, #204 re-integrated) + `dependabot/github_actions/actions-b9ade1236b` (#207); moved: `main` and `nodata/wizardly-allen-qwol6u` → `5467c158`, the three zero-codex docs heads, `claude/admiring-albattani-6kydor` (#208) | `git ls-remote --heads origin \\| wc -l` |",
+  "reason": "The documented command now returns 219, not 217; the snapshot time and delta must be stated (task requirement: handle the package's own branch).",
+  "evidence": "`git ls-remote --heads origin` 07:10Z (219 lines) vs branch_recovery_matrix.json branch entries (217)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-08",
+  "severity": "blocker",
+  "file": "EVIDENCE_INDEX.md",
+  "find": "| PRs | 202: 145 open, 25 merged, 32 closed unmerged (highest #204) |",
+  "replace": "| PRs | 202: 145 open, 25 merged, 32 closed unmerged (highest #204) at ~05:37Z. Live at 07:10Z: 206 PRs (highest #208): 122 open, 51 merged, 33 closed unmerged — the #203 merge auto-marked 26 contained PRs merged (e.g. #187, #157, #136, #84, #78), #85 closed, #205–#208 opened |",
+  "reason": "PR state changed materially after the snapshot (26 PRs auto-merged by the #203 merge); retirement planning (OD-19, A33) depends on it.",
+  "evidence": "gh api -X GET search/issues q='repo:djshellshoxxx/GhostPay is:pr' total 206; is:open 122; is:merged 51; is:closed is:unmerged 33 (07:10Z)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-09",
+  "severity": "blocker",
+  "file": "evidence/features/matrix_header.md",
+  "find": "Default branch `main` = `cfaebeeae22f292cb0bb3074619b2603cb738367` (an ancestor; the candidate is not merged).",
+  "replace": "Default branch `main` = `cfaebeeae22f292cb0bb3074619b2603cb738367` at audit time (an ancestor); after the snapshot PR #203 was merged (2026-11-18T06:56:49Z, `main` = `5467c158`, tree == `71abc7e5`).",
+  "reason": "Header (rendered into FEATURE_COMPLETION_MATRIX.md line 3) states the candidate is not merged. Apply to out/G/matrix_header.md too, then re-render.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-10",
+  "severity": "blocker",
+  "file": "POST_CONSOLIDATION_AUDIT.md",
+  "find": "Audit date 2026-11-18. Read-only. Tags: VERIFIED (command/code at SHA) | INFERRED | UNVERIFIED.",
+  "replace": "Audit date 2026-11-18. Read-only. Tags: VERIFIED (command/code at SHA) | INFERRED | UNVERIFIED.\n\n> **After this snapshot (H1, 07:10Z):** PR #203 was merged at 06:56:49Z (`main` = `5467c158`, tree == `71abc7e5`), so A21 is done; GitHub then auto-marked 26 contained PRs merged (A33 partly overtaken); #204 was re-integrated onto the consolidated tree as open PR #206 (`c487f0fe`, A26). Rows below describe the snapshot.",
+  "reason": "Task table (A21 NOT STARTED, A26/A33) and §1/§8.4 are stale without a post-snapshot note.",
+  "evidence": "PR #203 was merged after the audit snapshot: GitHub search API merged_at 2026-11-18T06:56:49Z; live `git ls-remote` 07:10Z: refs/heads/main = 5467c158069c5bab264b6a653ac56e89e13f3e13 (parents cfaebeea + 71abc7e5; `git diff --quiet 71abc7e5 5467c158` exit 0); author = owner account",
+  "occurrences": 1
+ },
+ {
+  "id": "C-11",
+  "severity": "major",
+  "file": "evidence/features/stats.json",
+  "find": "<re-generate>",
+  "replace": "<re-generate: GP_OVERRIDES=out/H/overrides_h1.json python3 -I out/H/score_features_h1.py merged.json stats.json scoring_issues.md <B1 proto> <B1 web> <B2> <B3>; then render_matrix.py; ship overrides_h1.json as evidence/scripts/overrides.json and score_features_h1.py as evidence/scripts/score_features.py>",
+  "reason": "Mechanical path for C-12..C-17. Result: VC 38, IU 28, PARTIAL 28, SPEC_ONLY 46, EXPERIMENTAL 45, BLOCKED 7; tiers beta-core 42 / beta-supporting 37 / full-profile 25; beta-core 18 VC, 10 IU, 5 PARTIAL, 3 BLOCKED, 6 SPEC_ONLY; beta scope 79 rows 87.2 %/83.5 %; ex-future 79.7/74.8; all 73.8/69.1; effort 41–104 / 202–462 / 309–920; 106 issues. Coordinator v2 stats reproduce exactly with the unpatched script (verified).",
+  "evidence": "out/H/stats_h1.json, out/H/merged_features_h1.json, out/H/scoring_issues_h1.md, out/H/FEATURE_COMPLETION_MATRIX_h1.md",
+  "occurrences": null
+ },
+ {
+  "id": "C-12",
+  "severity": "major",
+  "file": "evidence/scripts/score_features.py",
+  "find": "exp = (\"VERIFIED_COMPLETE\" if ci == 100 and cv >= 90 and not f.get(\"confirmed_defects\") else",
+  "replace": "exp = (\"VERIFIED_COMPLETE\" if ci == 100 and cv >= 90 and not open_medium_plus(f.get(\"confirmed_defects\")) else",
+  "reason": "Rubric (brief FEATURE_RUBRIC.md): VERIFIED_COMPLETE needs no OPEN Medium+ defect. The script demotes on ANY entry: F-KEY-03 (only defect: Info, already fixed in 7a620ff1) and F-WEB-09 (only defect: Low) are IU for that reason alone. open_medium_plus() is defined in out/H/score_features_h1.py (Medium+/unknown severity block; fixed/resolved/closed do not). Effect: F-WEB-09 -> VC; F-KEY-03 stays IU but via an explicit SEC-05/SEC-03 hold (overrides_h1.json).",
+  "evidence": "merged_features.json F-KEY-03 confirmed_defects[0] starts 'Info: ... fixed test-only in 7a620ff1'; F-WEB-09 'Low: apps/web/scripts/test-reconciliation-idb.mjs:71 ...'; SellerKeys.tsx:207,221-224 @7a620ff1",
+  "occurrences": 1
+ },
+ {
+  "id": "C-13",
+  "severity": "major",
+  "file": "evidence/scripts/overrides.json",
+  "find": "{\"id\": \"F-WEB-07\", \"finding\": \"SEC-10\", \"reason\": \"local-proxy scan transport blocked by the app's own CSP while UI/docs offer it\"},",
+  "replace": "{\"id\": \"F-WEB-07\", \"finding\": \"SEC-10\", \"reason\": \"local-proxy scan transport blocked by the app's own CSP while UI/docs offer it\"},\n  {\"id\": \"F-KEY-03\", \"finding\": \"SEC-05, SEC-03\", \"reason\": \"keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224)\"},",
+  "reason": "Same root cause as the F-KEY-02 hold: the keystore export uses the same passphrase floor and has no step-up in vault-less sessions; record the real reason (needed once C-12 stops the fixed Info flake from demoting it). Full override set incl. C-14..C-17 is in out/H/overrides_h1.json.",
+  "evidence": "SellerKeys.tsx:207 passphraseProblemMessage(pass); :221-224 authorizeKeyExport(stepUp) @7a620ff1; passphrase probe re-run: 'Michael1985!!x' accepted",
+  "occurrences": 1
+ },
+ {
+  "id": "C-14",
+  "severity": "major",
+  "file": "evidence/scripts/overrides.json",
+  "find": "\"requirement_corrections\": [",
+  "replace": "\"requirement_corrections\": [\n  {\"id\": \"F-WEB-07\", \"req_prefix\": \"Transports direct / tor-browser / local-proxy\", \"implemented\": \"half\", \"verified\": \"half\", \"evidence\": \"H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shipped CSP connect-src 'self' https: wss: (apps/web/index.html:13 @7a620ff1; own lean build); SEC-10, TB-02\"},",
+  "reason": "F-WEB-07 keeps Implementation 100 % although its first requirement (local-proxy transport) does not work in any shipped build (SEC-10, TB-02): the hold changes the status but leaves an incorrect 100/100. Corrected score 90/90 (status IU by rubric, no hold needed).",
+  "evidence": "apps/web/index.html:13 and own lean build dist/index.html CSP 'connect-src 'self' https: wss:'; scanPrivacy.ts:72-98 accepts http loopback; Team E Chromium probe securitypolicyviolation",
+  "occurrences": 1
+ },
+ {
+  "id": "C-15",
+  "severity": "major",
+  "file": "evidence/scripts/overrides.json",
+  "find": "\"security_holds\": [",
+  "replace": "\"requirement_additions\": [\n  {\"id\": \"F-NET-01\", \"req\": \"local-proxy profile usable from the shipped browser builds\", \"weight\": 2, \"implemented\": \"no\", \"verified\": \"no\", \"evidence\": \"H1: CSP connect-src blocks http loopback in every shipped profile (apps/web/index.html:13, public/_headers:5, deploy/nginx/security-headers.conf:3 @7a620ff1); SEC-10, TB-02\"}\n ],\n \"security_holds\": [",
+  "reason": "F-NET-01 ('direct/Tor SOCKS5h/local-proxy/OHTTP framing') was raised from the team's PARTIAL 70/65 to IU 100/80 because its 4-item list omits the local-proxy profile that SEC-10 shows is blocked. With the missing requirement: PARTIAL 80/65 (team's own status restored). Needs the requirement_additions handler in score_features_h1.py.",
+  "evidence": "B3 reported impl 70 / verif 65 PARTIAL (scoring_issues.md); SEC-10 evidence lines",
+  "occurrences": 1
+ },
+ {
+  "id": "C-16",
+  "severity": "major",
+  "file": "evidence/scripts/overrides.json",
+  "find": "\"security_holds\": [",
+  "replace": "\"tier_corrections\": [\n  {\"id\": \"F-BTC-01\", \"tier\": \"full-profile\", \"evidence\": \"H1: BtcView only in App.tsx ORDER (full); AppLean renders CORE_ORDER (AppShell.tsx:39) without btc; 0 BTC modules among the 306 lean-bundle modules\"},\n  {\"id\": \"F-BTC-02\", \"tier\": \"full-profile\", \"evidence\": \"H1: header chain reachable only from the full-profile BTC view\"},\n  {\"id\": \"F-MER-05\", \"tier\": \"full-profile\", \"evidence\": \"H1: MerchantProfilePanel/MerchantTemplateIssuer/merchantIdentity/merchantTemplate mounted only via App.tsx mainPrelude; absent from AppLean and from the lean bundle\"}\n ],\n \"security_holds\": [",
+  "reason": "Tier errors vs the rubric ('beta-core = needed for the Sepolia-first static browser beta'): BTC is full-profile only (F-BTC-01's own name says '(full-profile web)'; OD-20 lists BTC outside the lean EVM beta); F-MER-05's signed merchant profile/templates/embed are full-only. They inflate beta scope (82 -> 79 rows) and beta-core VC (F-MER-05). C-15, C-16 and C-17 each insert before the same `\"security_holds\": [` anchor; apply them in order (dry run verified).",
+  "evidence": "apps/web/src/App.tsx:3-12,20-27; AppLean.tsx:4-6; AppShell.tsx:39,72-78 @7a620ff1; own lean build ghostpay-lean-build.json: MerchantProfilePanel 0, merchantIdentity 0, merchantTemplate 0, features/btc 0, btc-silent-payments 0 modules",
+  "occurrences": 1
+ },
+ {
+  "id": "C-17",
+  "severity": "major",
+  "file": "evidence/scripts/overrides.json",
+  "find": "\"security_holds\": [",
+  "replace": "\"field_corrections\": [\n  {\"id\": \"F-NET-02\", \"fields\": {\"related_branches\": [{\"ref\": \"origin/chatgpt/zero-codex/onion-canonical-host-20261111\", \"sha\": \"72dde82d\", \"pr\": \"122\", \"note\": \"NOT an ancestor of 7a620ff1: 0 unique / 2 patch-equivalent commits (git cherry), class C\"}, {\"ref\": \"origin/chatgpt/ghostpay-onion-canonical-port-20261112\", \"sha\": \"8277879e\", \"pr\": \"134\", \"note\": \"port of #122; ancestor of 7a620ff1\"}], \"strategy_detail\": \"onion.ts v3 checksum + url.ts. #122 (72dde82d) is patch-equivalent to the candidate; its port #134 (8277879e) is an ancestor => landed. net-transport 149/149 pass.\"}},\n  {\"id\": \"F-BTC-02\", \"fields\": {\"strategy\": \"none\", \"strategy_detail\": \"Complete by rubric (4/4 requirements implemented and tested). Real Esplora/mainnet sync stays external acceptance; PR #74 delta stays under unverified.\"}},\n  {\"id\": \"F-WEB-07\", \"fields\": {\"strategy\": \"repair\", \"effort\": {\"size\": \"S\", \"engineer_days\": [0.5, 2]}, \"strategy_detail\": \"Fix TB-02: allow http loopback in connect-src for the full/self-host profile (or remove local-proxy from lean UI/docs) and add an e2e under the real CSP. Effort is an H1 ESTIMATE.\"}}\n ],\n \"security_holds\": [",
+  "reason": "F-NET-02 says the onion branch 72dde82d 'is ancestor of cand' — false (BRANCH_RECOVERY_MATRIX itself lists it as a non-ancestor patch-equivalent C row). F-BTC-02 is VERIFIED_COMPLETE but keeps strategy 'consolidate' with 1–3 days that the effort sum silently drops. F-WEB-07 (now IU) gets strategy repair and an H1 ESTIMATE of 0.5–2 days for TB-02.",
+  "evidence": "git merge-base --is-ancestor 72dde82d 7a620ff1 -> exit 1; git cherry 7a620ff1 72dde82d -> 2 '-'; 8277879e is ancestor",
+  "occurrences": 1
+ },
+ {
+  "id": "C-18",
+  "severity": "major",
+  "file": "README.md",
+  "find": "192 distinct features: 37 verified-complete, 30 implemented-but-unverified, 27 partial, 46 spec-only, 45",
+  "replace": "192 distinct features: 38 verified-complete, 28 implemented-but-unverified, 28 partial, 46 spec-only, 45",
+  "reason": "Only after C-11..C-17 are applied (numbers from out/H/stats_h1.json). Without them the current text matches stats.json v2.",
+  "evidence": "out/H/stats_h1.json by_status",
+  "occurrences": 1
+ },
+ {
+  "id": "C-19",
+  "severity": "major",
+  "file": "README.md",
+  "find": "experimental, 7 blocked (155 unfinished). Beta-core (43): 18 complete; the six spec-18 key-portability items",
+  "replace": "experimental, 7 blocked (154 unfinished). Beta-core (42): 18 complete; the six spec-18 key-portability items",
+  "reason": "After C-11..C-17 (F-MER-05 leaves beta-core; F-WEB-09 becomes VC).",
+  "evidence": "out/H/stats_h1.json by_tier_status.beta-core",
+  "occurrences": 1
+ },
+ {
+  "id": "C-20",
+  "severity": "major",
+  "file": "README.md",
+  "find": "(K01–K06) have no code; five otherwise-complete rows are held by open findings SEC-03/SEC-05/SEC-10.",
+  "replace": "(K01–K06) have no code; five otherwise-complete rows are held by open findings SEC-03/SEC-05 (F-KEY-01/02/03, F-WEB-11/12) and the SEC-10 local-proxy gap is scored into F-WEB-07 (90/90) and F-NET-01 (PARTIAL).",
+  "reason": "After C-11..C-17.",
+  "evidence": "out/H/merged_features_h1.json",
+  "occurrences": 1
+ },
+ {
+  "id": "C-21",
+  "severity": "major",
+  "file": "README.md",
+  "find": "beta scope 87.9 % implemented / 84.0 % verified; all tiers excluding the future",
+  "replace": "beta scope 87.2 % implemented / 83.5 % verified; all tiers excluding the future",
+  "reason": "After C-11..C-17.",
+  "evidence": "out/H/stats_h1.json aggregate_release_scope_beta (79 rows, weight 1079)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-22",
+  "severity": "major",
+  "file": "README.md",
+  "find": "roadmap 79.9 % / 75.0 %; including it 73.9 % / 69.3 %.",
+  "replace": "roadmap 79.7 % / 74.8 %; including it 73.8 % / 69.1 %.",
+  "reason": "After C-11..C-17.",
+  "evidence": "out/H/stats_h1.json aggregate_all_excluding_future / aggregate_all",
+  "occurrences": 1
+ },
+ {
+  "id": "C-23",
+  "severity": "major",
+  "file": "README.md",
+  "find": "per-feature rows sum to ≈ 43–107 engineer-days for the beta scope, ≈ 202–461 excluding the future",
+  "replace": "per-feature rows sum to ≈ 41–104 engineer-days for the beta scope, ≈ 202–462 excluding the future",
+  "reason": "After C-11..C-17 (includes H1 ESTIMATE 0.5–2 d for F-WEB-07/TB-02).",
+  "evidence": "out/H/stats_h1.json effort_days_*",
+  "occurrences": 1
+ },
+ {
+  "id": "C-24",
+  "severity": "major",
+  "file": "README.md",
+  "find": "roadmap and ≈ 309–919 for all rows.",
+  "replace": "roadmap and ≈ 309–920 for all rows.",
+  "reason": "After C-11..C-17.",
+  "evidence": "out/H/stats_h1.json effort_days_unfinished [309.0, 920.0]",
+  "occurrences": 1
+ },
+ {
+  "id": "C-25",
+  "severity": "major",
+  "file": "EVIDENCE_INDEX.md",
+  "find": "The 99 places where team headline numbers or statuses were replaced by rubric-computed values, plus the coordinator's one verified requirement correction (F-PROTO-03) and five security holds",
+  "replace": "The 106 places where team headline numbers, statuses, tiers or requirement lists were replaced by rubric-computed or verified values: the coordinator's F-PROTO-03 requirement correction, six security holds (F-KEY-01/02/03, F-WEB-07 (superseded by its re-score), F-WEB-11/12) and the H1 corrections (F-WEB-07 and F-NET-01 requirements, F-BTC-01/02 and F-MER-05 tiers, F-NET-02/F-BTC-02 fields, severity-aware VC rule)",
+  "reason": "After C-11..C-17.",
+  "evidence": "out/H/scoring_issues_h1.md (106 lines)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-26",
+  "severity": "major",
+  "file": "evidence/features/matrix_header.md",
+  "find": "VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open defect;",
+  "replace": "VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open Medium-or-higher defect (Low/Info and fixed items do not block, as in the rubric);",
+  "reason": "Header restates the rule more strictly than the brief rubric and than the patched script (C-12). Apply to out/G/matrix_header.md too.",
+  "evidence": "brief FEATURE_RUBRIC.md rule 4",
+  "occurrences": 1
+ },
+ {
+  "id": "C-27",
+  "severity": "major",
+  "file": "README.md",
+  "find": "| 234 refs (217 heads + 17 PR-only) classified A–F with recovery method |",
+  "replace": "| 234 entries (217 heads + 17 PR-only refs; 3 PR-only entries — `pr/139`, `pr/140`, `pr/153` — are older fetches of open PRs' own branches, so 231 distinct refs) classified A–F with recovery method |",
+  "reason": "GitHub's refs/pull/N/head tracks an open PR's branch; the three entries exist only because PR refs were fetched one rotation before the branch tips. They duplicate branch rows (and pr/140 is counted as a second class-B item).",
+  "evidence": "live: refs/pull/{139,140,153}/head == branch tips (364b01f8, c5efadab, 83fe9b02); shared repo refs/remotes/pr/{139,140,153} now == 7af4b5ff/400e20f1/30f1604d (14 PR-only refs, not 17)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-28",
+  "severity": "major",
+  "file": "README.md",
+  "find": "only one class-A item (#204 tooling) and six class-B",
+  "replace": "only one class-A item (#204 tooling; re-integrated after the snapshot as open PR #206) and five distinct class-B",
+  "reason": "Six class-B entries = 5 distinct refs + pr/140 (stale copy of #140's branch). #206 (claude/ghostpay-consolidation-9xhtxg @ c487f0fe) merges 71abc7e5 + 2693b08e with conflicts resolved and PACKAGE_MAP regenerated (22 lines).",
+  "evidence": "branch_recovery_matrix.json class B entries; git log/diff c487f0fe (live.git)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-29",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "| **Total** | **217** | **17** | **234** |",
+  "replace": "| **Total** | **217** | **17** | **234** |\n\nH1 note: 3 of the 17 PR-only entries (`pr/139` D, `pr/140` B, `pr/153` D) are not distinct refs — GitHub's `refs/pull/N/head` tracks each open PR's branch and these copies were fetched one rotation before the branch tips (verified 07:10Z: live `refs/pull/{139,140,153}/head` equal the branch tips). Distinct population at the snapshot: 231 (217 heads + 14 PR-only); distinct class B = 5, class D = 12.",
+  "reason": "Totals double-count three docs branches.",
+  "evidence": "see C-27",
+  "occurrences": 1
+ },
+ {
+  "id": "C-30",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "### `chatgpt/zero-codex/docs-pages-scope-20261112` @ `400e20f1` (2026-11-17) class B\n- **PRs:** none",
+  "replace": "### `chatgpt/zero-codex/docs-pages-scope-20261112` @ `400e20f1` (2026-11-17) class B\n- **PRs:** #140 open (head branch; the `pr/140` entry below is the same PR fetched one rotation earlier)",
+  "reason": "Branch rows lost their PR association because PR mapping was by head SHA.",
+  "evidence": "evidence/prs/open_prs.json: #140 head 'chatgpt/zero-codex/docs-pages-scope-20261112'",
+  "occurrences": 1
+ },
+ {
+  "id": "C-31",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "| `chatgpt/zero-codex/audit-pages-release-20261112` | 7af4b5ff | - |",
+  "replace": "| `chatgpt/zero-codex/audit-pages-release-20261112` | 7af4b5ff | #139 |",
+  "reason": "Same as C-30.",
+  "evidence": "open_prs.json: #139 head 'chatgpt/zero-codex/audit-pages-release-20261112'",
+  "occurrences": 1
+ },
+ {
+  "id": "C-32",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "| `chatgpt/zero-codex/pages-owner-ci-handoff-20261114` | 30f1604d | - |",
+  "replace": "| `chatgpt/zero-codex/pages-owner-ci-handoff-20261114` | 30f1604d | #153 |",
+  "reason": "Same as C-30.",
+  "evidence": "open_prs.json: #153 head 'chatgpt/zero-codex/pages-owner-ci-handoff-20261114'",
+  "occurrences": 1
+ },
+ {
+  "id": "C-33a",
+  "severity": "major",
+  "file": "branch_recovery_matrix.json",
+  "find": "\"ref\": \"chatgpt/zero-codex/docs-pages-scope-20261112\",\n   \"sha\": \"400e20f19d857a2fb99b90247fcba65e4f90a40a\",\n   \"date\": \"2026-11-17T21:38:39-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [],",
+  "replace": "\"ref\": \"chatgpt/zero-codex/docs-pages-scope-20261112\",\n   \"sha\": \"400e20f19d857a2fb99b90247fcba65e4f90a40a\",\n   \"date\": \"2026-11-17T21:38:39-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [\n    {\n     \"n\": 140,\n     \"state\": \"open\",\n     \"title\": \"docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger\"\n    }\n   ],",
+  "reason": "JSON twin of C-30..C-32.",
+  "evidence": "open_prs.json #140 head ref",
+  "occurrences": 1
+ },
+ {
+  "id": "C-33b",
+  "severity": "major",
+  "file": "branch_recovery_matrix.json",
+  "find": "\"ref\": \"chatgpt/zero-codex/audit-pages-release-20261112\",\n   \"sha\": \"7af4b5ff5735f1d9f7c4609fe70b3300764f9778\",\n   \"date\": \"2026-11-17T21:38:14-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [],",
+  "replace": "\"ref\": \"chatgpt/zero-codex/audit-pages-release-20261112\",\n   \"sha\": \"7af4b5ff5735f1d9f7c4609fe70b3300764f9778\",\n   \"date\": \"2026-11-17T21:38:14-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [\n    {\n     \"n\": 139,\n     \"state\": \"open\",\n     \"title\": \"docs(audit): randomized read-only Pages audit ledger (rotation 179)\"\n    }\n   ],",
+  "reason": "JSON twin of C-30..C-32.",
+  "evidence": "open_prs.json #139 head ref",
+  "occurrences": 1
+ },
+ {
+  "id": "C-33c",
+  "severity": "major",
+  "file": "branch_recovery_matrix.json",
+  "find": "\"ref\": \"chatgpt/zero-codex/pages-owner-ci-handoff-20261114\",\n   \"sha\": \"30f1604da78709dfafcc83c9db5d3e67b72d0d46\",\n   \"date\": \"2026-11-17T21:39:06-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [],",
+  "replace": "\"ref\": \"chatgpt/zero-codex/pages-owner-ci-handoff-20261114\",\n   \"sha\": \"30f1604da78709dfafcc83c9db5d3e67b72d0d46\",\n   \"date\": \"2026-11-17T21:39:06-08:00\",\n   \"kind\": \"branch\",\n   \"prs\": [\n    {\n     \"n\": 153,\n     \"state\": \"open\",\n     \"title\": \"docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification\"\n    }\n   ],",
+  "reason": "JSON twin of C-30..C-32.",
+  "evidence": "open_prs.json #153 head ref",
+  "occurrences": 1
+ },
+ {
+  "id": "C-34",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "`$SP/evidence/branch_census_current.json` was computed in a **shallow** checkout",
+  "replace": "The first shared census (since replaced: the packaged `evidence/census/branch_census_current.json` is the coordinator's full-history re-run) was computed in a **shallow** checkout",
+  "reason": "As written, §0 says the packaged file of that name is the shallow one, and cites an unresolvable scratch path.",
+  "evidence": "EVIDENCE_INDEX §2/§6.1; packaged census: 217 heads, 168 strict ancestors + candidate branch (at 71abc7e5)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-35",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "`nodata/zealous-hopper-lr0nxe` is a local-only name (== main `cfaebeea`; stale `origin/` tracking ref, absent on remote) and is excluded.",
+  "replace": "`nodata/zealous-hopper-lr0nxe` was a local-only name (== main `cfaebeea`) at census time and is excluded; it was pushed at 06:56:55Z as this package's branch (PR #205) and is not a recovery candidate.",
+  "reason": "Now false: the branch exists remotely (15ad0219, then b3c1c86b).",
+  "evidence": "git ls-remote --heads origin 07:10Z; search API #205",
+  "occurrences": 1
+ },
+ {
+  "id": "C-36",
+  "severity": "major",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "- Local `zealous-hopper-lr0nxe` equals main and is not a remote head.",
+  "replace": "- `nodata/zealous-hopper-lr0nxe` is this package's branch (PR #205, pushed after the census); not a recovery candidate.",
+  "reason": "Same as C-35.",
+  "evidence": "same",
+  "occurrences": 1
+ },
+ {
+  "id": "C-37",
+  "severity": "major",
+  "file": "branch_recovery_matrix.json",
+  "find": "\"nodata/zealous-hopper-lr0nxe (== main cfaebeea, tracking ref only; absent from git ls-remote)\"",
+  "replace": "\"nodata/zealous-hopper-lr0nxe (== main cfaebeea and local-only at census time; pushed 06:56:55Z as this package's branch, PR #205; not a recovery candidate)\"",
+  "reason": "JSON twin of C-35.",
+  "evidence": "same",
+  "occurrences": 1
+ },
+ {
+  "id": "C-38",
+  "severity": "major",
+  "file": "EVIDENCE_INDEX.md",
+  "find": "Per ref (217 heads + 202 PR refs)",
+  "replace": "Per ref (218 origin refs = 217 remote heads + the then local-only `nodata/zealous-hopper-lr0nxe`, plus 202 PR refs; 168 heads are strict ancestors of `7a620ff1` and the candidate branch itself — already at docs-only `71abc7e5` — makes 169 contained; 14 all-patch-equivalent; 32 with differing files. Team C's `census_full.json`, taken while the branch was at `7a620ff1`: 169/48/14/31)",
+  "reason": "File content does not match the stated 217 heads or the 169/48 split without this explanation.",
+  "evidence": "python3 count over evidence/census/branch_census_current.json: origin refs 218; excl. zealous 217; ancestors 168; wizardly-allen 71abc7e5 not ancestor",
+  "occurrences": 1
+ },
+ {
+  "id": "C-39",
+  "severity": "major",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "| Secret export refuses in vault-less sessions; sweep behaviour unchanged but warned |",
+  "replace": "| New spec-18 secret exports (K03–K06 encrypted and raw) refuse in vault-less sessions; the existing encrypted keystore v1 backup and creating a vault stay available (constraint 4: a vault-less seller must always be able to make an encrypted backup); sweep behaviour unchanged but warned |",
+  "reason": "Read literally, the default would block the only encrypted backup path for keys that exist nowhere else (constraint 4 key portability, fund-loss risk).",
+  "evidence": "SellerKeys.tsx:216-224 keystore export path; AppShell.tsx:128-160 keeps un-backed-up keys loaded @7a620ff1",
+  "occurrences": 1
+ },
+ {
+  "id": "C-40",
+  "severity": "major",
+  "file": "security_findings.json",
+  "find": "require an encrypted vault or verified backup + its passphrase before any sweep/export on mainnet;",
+  "replace": "require an encrypted vault or verified backup + its passphrase before any sweep or spec-18 secret export on mainnet (never block creating the encrypted keystore v1 backup or a vault: constraint 4);",
+  "reason": "Same ambiguity in SEC-03 remediation; apply the same text to SECURITY_AND_PRIVACY_GAP_ANALYSIS.md (C-41).",
+  "evidence": "constraint 4",
+  "occurrences": 1
+ },
+ {
+  "id": "C-41",
+  "severity": "major",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "require an encrypted vault or verified backup + its passphrase before any sweep/export on mainnet;",
+  "replace": "require an encrypted vault or verified backup + its passphrase before any sweep or spec-18 secret export on mainnet (never block the keystore v1 backup);",
+  "reason": "MD twin of C-40.",
+  "evidence": "constraint 4",
+  "occurrences": 1
+ },
+ {
+  "id": "C-42",
+  "severity": "major",
+  "file": "POST_CONSOLIDATION_AUDIT.md",
+  "find": "- Mythril result on `7a620ff1`: run in progress.",
+  "replace": "- Mythril per-record output on `7a620ff1`: job 134593129954 concluded failure; the records are not readable here (artifact 403); per PROMOTION_PACKET @`71abc7e5` it reports exactly the 11 dispositioned records.",
+  "reason": "Header claims the final Mythril result was applied; §7 still says 'in progress' (§5f already says failure).",
+  "evidence": "POST_CONSOLIDATION_AUDIT §5f line 129; PROMOTION_PACKET @71abc7e5 lines 34,44",
+  "occurrences": 1
+ },
+ {
+  "id": "C-43",
+  "severity": "major",
+  "file": "POST_CONSOLIDATION_AUDIT.md",
+  "find": "On 7a620ff1 Mythril job 134593129954 was in_progress at query time.",
+  "replace": "On 7a620ff1 Mythril job 134593129954 concluded failure (exactly the 11 dispositioned records per PROMOTION_PACKET @71abc7e5).",
+  "reason": "Same as C-42.",
+  "evidence": "same",
+  "occurrences": 1
+ },
+ {
+  "id": "C-44",
+  "severity": "major",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "Mythril on the qualified head (\"10 identical records, R8 absent\") rests on the promotion packet.",
+  "replace": "Mythril on the previous qualified head `d91ae16a` (\"10 identical records, R8 absent\") and on `7a620ff1` (failure with exactly the 11 dispositioned records, run 44242366379) rests on the promotion packet.",
+  "reason": "§13 contradicts §5 and the brief update (qualified head is 7a620ff1; 10 records was d91ae16a).",
+  "evidence": "PROMOTION_PACKET @71abc7e5 line 17 ('d91ae16a ... Mythril 10 records') and line 34",
+  "occurrences": 1
+ },
+ {
+  "id": "C-45",
+  "severity": "major",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "| Merge #203 first; then re-apply #204 with a regenerated `PACKAGE_MAP.md` |",
+  "replace": "| Merge #203 first (done 06:56:49Z, after the snapshot); #204 has since been re-integrated as open PR #206 (`claude/ghostpay-consolidation-9xhtxg` @ `c487f0fe` = merge of `71abc7e5` + `2693b08e`, conflicts resolved, `PACKAGE_MAP.md` regenerated: 22 lines) — review and merge #206 instead of re-porting |",
+  "reason": "Recommendation overtaken by events; next session must not duplicate #206.",
+  "evidence": "live.git: git log c487f0fe -3; git diff --stat 2693b08e c487f0fe -- .claude/skills/ghostpay-package-map/PACKAGE_MAP.md (22+/22-)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-46",
+  "severity": "major",
+  "file": "security_findings.json",
+  "find": "\"remediation\": \"Define merge order; re-run CI after the second merge.\",",
+  "replace": "\"remediation\": \"Define merge order; re-run CI after the second merge. After the snapshot: #203 merged 06:56:49Z; #204 re-integrated with conflicts resolved as open PR #206 (c487f0fe) - review/merge #206.\",",
+  "reason": "SEC-49 overtaken by events (still open until #206 merges); apply the same sentence to the SEC-49 row in SECURITY_AND_PRIVACY_GAP_ANALYSIS.md (C-47).",
+  "evidence": "see C-45",
+  "occurrences": 1
+ },
+ {
+  "id": "C-47",
+  "severity": "major",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "| F-CTR-07 | Define merge order; re-run CI after the second merge. |",
+  "replace": "| F-CTR-07 | Define merge order; re-run CI after the second merge. After the snapshot #203 merged and #204 was re-integrated as open PR #206. |",
+  "reason": "MD twin of C-46.",
+  "evidence": "see C-45",
+  "occurrences": 1
+ },
+ {
+  "id": "C-48",
+  "severity": "major",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "| TB-10 | Documentation drift: promotion packet \"docs-only\" claim (R-18 test change), PRIVACY_THREAT_MODEL stale import claim,",
+  "replace": "| TB-10 | Documentation drift (the promotion packet \"docs-only\" claim was already corrected at `71abc7e5`, now on `main`): PRIVACY_THREAT_MODEL stale import claim,",
+  "reason": "EVIDENCE_INDEX §6.3 itself says the packet was corrected at 71abc7e5; TB-10 still lists it as open work.",
+  "evidence": "git show 71abc7e5:docs/handoffs/consolidation-20261118/PROMOTION_PACKET.md line 16 ('verify with git diff --name-only 7a620ff1 <PR head>')",
+  "occurrences": 1
+ },
+ {
+  "id": "C-49",
+  "severity": "minor",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "| TB-06 | `scripts/test-reconciliation-idb.mjs:71`",
+  "replace": "| TB-06 | `apps/web/scripts/test-reconciliation-idb.mjs:71`",
+  "reason": "Wrong path (no such file at repo root).",
+  "evidence": "apps/web/scripts/test-reconciliation-idb.mjs:71 @7a620ff1 calls window.testVault.invalidateFrom(100n)",
+  "occurrences": 1
+ },
+ {
+  "id": "C-50",
+  "severity": "minor",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "retire/unpublish the stale `gh-pages` prototype (`cc8d0794`, 2026-10-21)",
+  "replace": "retire/unpublish the stale `gh-pages` prototype (`cc8d0794`, 2026-10-21) after archiving it as a tag/bundle (OD-19, constraint 5)",
+  "reason": "Consistency with OD-19 'preserve every non-ancestor head as a tag/bundle first' and constraint 5.",
+  "evidence": "OD-19 row",
+  "occurrences": 1
+ },
+ {
+  "id": "C-51",
+  "severity": "minor",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "Make it work under a CSP that allows only the selected loopback origin in the full/self-host profile",
+  "replace": "Make it work under a CSP that allows http loopback origins (`http://127.0.0.1:*`, `http://localhost:*`, `http://[::1]:*`; a static meta CSP cannot be narrowed at runtime to the port the user picks) in the full/self-host profile",
+  "reason": "'Only the selected loopback origin' is not implementable in a build-time meta CSP; SEC-10's remediation already gives the feasible form.",
+  "evidence": "apps/web/index.html:11-14",
+  "occurrences": 1
+ },
+ {
+  "id": "C-52",
+  "severity": "minor",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "101 of 109 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique",
+  "replace": "100 of 108 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique",
+  "reason": "pr/140 row copies the branch row's counts.",
+  "evidence": "evidence/teams/C/patchcheck.json: 58a47006 -> 108 commits {applies_clean 8, conflicts 100}",
+  "occurrences": 1
+ },
+ {
+  "id": "C-53",
+  "severity": "minor",
+  "file": "branch_recovery_matrix.json",
+  "find": "101 of 109 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique",
+  "replace": "100 of 108 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique",
+  "reason": "JSON twin of C-52 (pr/139 '41 of 42' and pr/153 '40 of 41' have the same copy error: correct values 40 of 41 and 39 of 40).",
+  "evidence": "patchcheck.json a0d81ef9 41 {clean 1, conflicts 40}; ccdc7954 40 {clean 1, conflicts 39}",
+  "occurrences": 1
+ },
+ {
+  "id": "C-54",
+  "severity": "minor",
+  "file": "BRANCH_RECOVERY_MATRIX.md",
+  "find": "| `semantically superseded` x12 / patch-equivalent x14 |",
+  "replace": "| `semantically superseded` x14 / patch-equivalent x14 |",
+  "reason": "§2 and the JSON give 14 superseded C heads (28 non-ancestor C heads = 14 + 14).",
+  "evidence": "branch_recovery_matrix.json: class C non-ancestor heads 28; unique_commits==0: 14",
+  "occurrences": 1
+ },
+ {
+  "id": "C-55",
+  "severity": "minor",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "(== head `71abc7e5` minus docs), worktree `/home/user/wt/cand`.",
+  "replace": "(== head `71abc7e5` minus docs).",
+  "reason": "Machine-local path in a published document.",
+  "evidence": "-",
+  "occurrences": 1
+ },
+ {
+  "id": "C-56",
+  "severity": "minor",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "Mapped each row to feature IDs from `$SP/out/G/merged_features.json`",
+  "replace": "Mapped each row to feature IDs from `feature_completion_matrix.json`",
+  "reason": "Scratchpad path does not resolve in the package.",
+  "evidence": "-",
+  "occurrences": 1
+ },
+ {
+  "id": "C-57",
+  "severity": "minor",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "Inputs: `$SP/out/D/{SECURITY_CRYPTO.md,findings.json}`, `$SP/out/E/{SECURITY_PRIVACY_BROWSER.md,findings.json}`.",
+  "replace": "Inputs: `evidence/teams/D/{SECURITY_CRYPTO.md,findings.json}`, `evidence/teams/E/{SECURITY_PRIVACY_BROWSER.md,findings.json}`.",
+  "reason": "Scratchpad paths do not resolve in the package.",
+  "evidence": "-",
+  "occurrences": 1
+ },
+ {
+  "id": "C-58",
+  "severity": "minor",
+  "file": "POST_CONSOLIDATION_AUDIT.md",
+  "find": "+ my `$SP/evidence/branch_census_current.json`.",
+  "replace": "+ the full-history census `evidence/census/branch_census_current.json`.",
+  "reason": "Scratchpad path.",
+  "evidence": "-",
+  "occurrences": 1
+ },
+ {
+  "id": "C-59",
+  "severity": "minor",
+  "file": "POST_CONSOLIDATION_AUDIT.md",
+  "find": "`$SP/evidence/open_prs.json` (first 100 open only)",
+  "replace": "`evidence/prs/open_prs.json` (first 100 open only)",
+  "reason": "Scratchpad path.",
+  "evidence": "-",
+  "occurrences": 1
+ },
+ {
+  "id": "C-60",
+  "severity": "minor",
+  "file": "SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+  "find": "| **SEC-10** 'Local proxy' scan transport is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed) |",
+  "replace": "| **SEC-10** 'Local proxy' scan transport over http loopback is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed; only an https loopback proxy would pass) |",
+  "reason": "Precision: connect-src allows https:, so an https loopback endpoint is not blocked.",
+  "evidence": "apps/web/index.html:13 connect-src 'self' https: wss:",
+  "occurrences": 1
+ },
+ {
+  "id": "C-61",
+  "severity": "minor",
+  "file": "security_findings.json",
+  "find": "'Local proxy' scan transport is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed)",
+  "replace": "'Local proxy' scan transport over http loopback is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed; only an https loopback proxy would pass)",
+  "reason": "JSON twin of C-60.",
+  "evidence": "same",
+  "occurrences": 1
+ }
+]

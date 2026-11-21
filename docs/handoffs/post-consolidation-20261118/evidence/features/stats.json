@@ -1,0 +1,116 @@
+{
+ "total_features": 192,
+ "total_rows": 194,
+ "by_status": {
+  "VERIFIED_COMPLETE": 38,
+  "IMPLEMENTED_UNVERIFIED": 28,
+  "EXPERIMENTAL": 45,
+  "PARTIAL": 28,
+  "BLOCKED": 7,
+  "SPEC_ONLY": 46
+ },
+ "by_tier": {
+  "beta-core": 42,
+  "beta-supporting": 37,
+  "full-profile": 25,
+  "experimental": 45,
+  "future": 43
+ },
+ "by_tier_status": {
+  "beta-core": {
+   "VERIFIED_COMPLETE": 18,
+   "BLOCKED": 3,
+   "PARTIAL": 5,
+   "IMPLEMENTED_UNVERIFIED": 10,
+   "SPEC_ONLY": 6
+  },
+  "beta-supporting": {
+   "IMPLEMENTED_UNVERIFIED": 12,
+   "VERIFIED_COMPLETE": 13,
+   "PARTIAL": 12
+  },
+  "full-profile": {
+   "EXPERIMENTAL": 4,
+   "PARTIAL": 9,
+   "IMPLEMENTED_UNVERIFIED": 6,
+   "VERIFIED_COMPLETE": 6
+  },
+  "experimental": {
+   "EXPERIMENTAL": 41,
+   "BLOCKED": 3,
+   "VERIFIED_COMPLETE": 1
+  },
+  "future": {
+   "BLOCKED": 1,
+   "PARTIAL": 2,
+   "SPEC_ONLY": 40
+  }
+ },
+ "aggregate": {
+  "beta-core": {
+   "features": 42,
+   "weight": 634.0,
+   "impl_pct": 85.1,
+   "verif_pct": 83.2
+  },
+  "beta-supporting": {
+   "features": 37,
+   "weight": 445.0,
+   "impl_pct": 90.1,
+   "verif_pct": 84.0
+  },
+  "full-profile": {
+   "features": 25,
+   "weight": 291.0,
+   "impl_pct": 81.4,
+   "verif_pct": 75.0
+  },
+  "experimental": {
+   "features": 45,
+   "weight": 346.0,
+   "impl_pct": 54.9,
+   "verif_pct": 47.4
+  },
+  "future": {
+   "features": 43,
+   "weight": 149.0,
+   "impl_pct": 5.4,
+   "verif_pct": 3.4
+  }
+ },
+ "aggregate_all_excluding_future": {
+  "features": 149,
+  "weight": 1716.0,
+  "impl_pct": 79.7,
+  "verif_pct": 74.8
+ },
+ "aggregate_release_scope_beta": {
+  "features": 79,
+  "weight": 1079.0,
+  "impl_pct": 87.2,
+  "verif_pct": 83.5
+ },
+ "aggregate_all": {
+  "features": 192,
+  "weight": 1865.0,
+  "impl_pct": 73.8,
+  "verif_pct": 69.1
+ },
+ "effort_days_unfinished": [
+  309.0,
+  920.0
+ ],
+ "effort_days_unfinished_excluding_future": [
+  202.0,
+  462.0
+ ],
+ "effort_days_unfinished_beta_scope": [
+  41.0,
+  104.0
+ ],
+ "duplicates_excluded": [
+  "F-FUT-40",
+  "F-PROTO-13"
+ ],
+ "issues": 106
+}

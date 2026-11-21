@@ -1,0 +1,376 @@
+[
+ {
+  "id": "A01",
+  "task": "Use unified PR #187 as foundation of candidate",
+  "source": "CANDIDATE_INTEGRATION.md; PROMOTION_PACKET.md",
+  "classification": "COMPLETED",
+  "commits": [
+   "beb525dd"
+  ],
+  "evidence": "VERIFIED: #187 head beb525dd is ancestor of 7a620ff1 (merge-base --is-ancestor). beb525dd tree 36177d29 confirmed.",
+  "notes": "before: 3 disjoint stacks (main, #187, Pages). after: single branch, main fast-forwardable."
+ },
+ {
+  "id": "A02",
+  "task": "Merge main ancestry (#188,#189) without source change",
+  "source": "CANDIDATE_INTEGRATION.md row f5e10f84",
+  "classification": "COMPLETED",
+  "commits": [
+   "f5e10f84"
+  ],
+  "evidence": "VERIFIED: f5e10f84 tree 36177d29 == beb525dd tree; parents beb525dd+cfaebeea; main is ancestor of 7a620ff1 (1,484 commits ahead, was 1,482 at d91ae16a).",
+  "notes": "History reconciliation only."
+ },
+ {
+  "id": "A03",
+  "task": "Merge Pages lineage #192,#194-#200",
+  "source": "CANDIDATE_INTEGRATION.md row d39e304a",
+  "classification": "COMPLETED",
+  "commits": [
+   "d39e304a",
+   "23cc6db4"
+  ],
+  "evidence": "VERIFIED: d39e304a parents f5e10f84+23cc6db4; merge-base f6728033..23cc6db4 = 16 commits, 10 files (matches claim). Heads #192,#194-#200 and #178 all ancestors of 7a620ff1.",
+  "notes": "Conflicts Common.tsx / manifest.test.ts resolved per doc (not re-diffed line by line: INFERRED from reviewer claim R-05)."
+ },
+ {
+  "id": "A04",
+  "task": "Integrate #201 (same-view focus) and #202 (reimport control) and diagnose e2e timeout",
+  "source": "CANDIDATE_INTEGRATION.md rows 84b4e605; REVIEW_FINDINGS R-02,R-04",
+  "classification": "COMPLETED",
+  "commits": [
+   "2f47786a",
+   "84b4e605",
+   "af32d7f7",
+   "2fb89ff5",
+   "30cc4560"
+  ],
+  "evidence": "VERIFIED ancestry #201 2fb89ff5, #202 30cc4560. CI e2e full 78 pass/1 skip, lean 66/3 on d91ae16a (run 44231986652, per packet; run confirmed success in Actions list).",
+  "notes": "before: #201 CI 44201642137 and #202 CI 44217528448 e2e failures. after: green on candidate. Root-cause claim (pointerdown lost click) UNVERIFIED by me (no browser run)."
+ },
+ {
+  "id": "A05",
+  "task": "Fix bundle scanner end-tag gap (R-01, CodeQL js/bad-tag-filter)",
+  "source": "REVIEW_FINDINGS R-01; VALIDATION_MATRIX",
+  "classification": "COMPLETED",
+  "commits": [
+   "b441cc64",
+   "5ddb042a"
+  ],
+  "evidence": "VERIFIED apps/web/scripts/scan-bundle.mjs:157-172 pairs <script start with end-tag regex /<\\/script(?=[\\s/>])[^>]*>/ and reports 'unterminated <script>'; scanBundle.test.ts changed.",
+  "notes": "before: matched </script> only. after: HTML-conformant end tag + unterminated report."
+ },
+ {
+  "id": "A06",
+  "task": "Integrate spec PR #190 (spec 18 / req 3q)",
+  "source": "PROMOTION_PACKET; RETIREMENT_PLAN",
+  "classification": "COMPLETED",
+  "commits": [
+   "1b214aa8",
+   "16bc61fa",
+   "ab78c021",
+   "b20e1c98"
+  ],
+  "evidence": "VERIFIED: #190 head 16bc61fa ancestor; docs/specs/18-stealth-keypair-export.md present, 'single canonical specification of requirement 3q', owner-approved, before beta exit.",
+  "notes": "Spec only; implementation = next phase K01-K06."
+ },
+ {
+  "id": "A07",
+  "task": "Integrate privacy spec PR #191 (5a-5l) and correct 5k status",
+  "source": "PROMOTION_PACKET; CANDIDATE_INTEGRATION b20e1c98",
+  "classification": "COMPLETED",
+  "commits": [
+   "6c6e88df",
+   "e05044d4",
+   "ab78c021"
+  ],
+  "evidence": "VERIFIED: #191 head e05044d4 ancestor; docs/future/privacy-architecture/ has 5a..5l + README (12 files); README says 5k not future-only, spec 18 canonical, counted once.",
+  "notes": ""
+ },
+ {
+  "id": "A08",
+  "task": "Port regression PR #193 (TagArchive blocked click) with cleanup",
+  "source": "RETIREMENT_PLAN; CANDIDATE_INTEGRATION 0dda9ca1",
+  "classification": "COMPLETED",
+  "commits": [
+   "b3e4051e",
+   "0dda9ca1",
+   "8aed22ad"
+  ],
+  "evidence": "VERIFIED: #193 head 8aed22ad NOT ancestor, git cherry '+' (not patch-equivalent) - by design adapted port. TagArchive.tsx:249 uses downloadBlob; Common.tsx:95 downloadBlob; TagArchive.test.tsx:56 describe blocked cleanup; Common.test.tsx:122 throw test.",
+  "notes": "Product fix + stronger test; #193 original only added 28 test lines. Retirement plan 'finally path' implemented via helper (INFERRED)."
+ },
+ {
+  "id": "A09",
+  "task": "Make release.yml require source-matched Echidna+Mythril on tagged commit (R-06)",
+  "source": "REVIEW_FINDINGS R-06; CANDIDATE_INTEGRATION 15c302cd",
+  "classification": "COMPLETED",
+  "commits": [
+   "05a4c2fc",
+   "15c302cd",
+   "ffa7cb05"
+  ],
+  "evidence": "VERIFIED release.yml:97-99 contract-analysis needs: verify, uses ./.github/workflows/contract-analysis.yml; build needs [verify, contract-analysis] :105; download evidence contract-analysis-{echidna,mythril}-${{github.sha}} :151-155; jq gate :157-170 requires requestedCommit==GITHUB_SHA, checkoutCommit==HEAD, outcome success, exit 0. contract-analysis.yml:13 workflow_call, :22 cancel only on pull_request.",
+  "notes": "Static only. Never executed on real tag (UNVERIFIABLE, see A10). Note: gate can never pass today because Mythril is red by design."
+ },
+ {
+  "id": "A10",
+  "task": "Exercise release gate on a real signed tag run",
+  "source": "VALIDATION_MATRIX 'Not run'",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "Packet/matrix state not run; no v* tag in refs (not exhaustively checked).",
+  "notes": "Needs owner-signed tag, trust root empty by design."
+ },
+ {
+  "id": "A11",
+  "task": "Mythril SWC-116 x3 individual dispositions (R-08)",
+  "source": "REVIEW_FINDINGS R-08; CANDIDATE_INTEGRATION",
+  "classification": "COMPLETED",
+  "commits": [
+   "d4171c7b",
+   "1fa4179f",
+   "3f10fcaf"
+  ],
+  "evidence": "VERIFIED files docs/audits/mythril-14290880802-expiry-dispositions.md (206 lines) and packages/contracts/test/MythrilExpiryDispositions.t.sol present. Test pass counts (31) UNVERIFIED (no forge here).",
+  "notes": "Disposition = documentation + tests; no suppression."
+ },
+ {
+  "id": "A12",
+  "task": "Mythril PolicyAccountFactory x8 dispositions (R-10)",
+  "source": "REVIEW_FINDINGS R-10",
+  "classification": "COMPLETED",
+  "commits": [
+   "2d54ab60",
+   "afbce0a6",
+   "1e1121b3"
+  ],
+  "evidence": "VERIFIED docs/audits/mythril-14290880802-factory-dispositions.md (322 lines), MythrilFactoryDispositions.t.sol present; docs/audits/26-contract-security-review-2026-11.md modified (M-03 partially closed). 33 tests UNVERIFIED (no forge).",
+  "notes": ""
+ },
+ {
+  "id": "A13",
+  "task": "Make Mythril gate green / approve per-finding disposition mechanism",
+  "source": "PROMOTION_PACKET blocker 2",
+  "classification": "BLOCKED",
+  "commits": [],
+  "evidence": "Mythril on d91ae16a failure, 10 records (run 44231986631). On 7a620ff1 Mythril job 134593129954 was in_progress at query time.",
+  "notes": "Owner decision: finding-specific source-matched disposition or keep releases blocked."
+ },
+ {
+  "id": "A14",
+  "task": "Echidna exec_native/exec_token canaries reachable within 300k budget (R-12)",
+  "source": "REVIEW_FINDINGS R-12",
+  "classification": "COMPLETED",
+  "commits": [
+   "292b15b3",
+   "81aa5e68",
+   "cc9a8d74",
+   "c0878314"
+  ],
+  "evidence": "VERIFIED harness change: EchidnaPolicy.sol +35/-3 , EchidnaPolicyReachability.t.sol +216; contract src/lib/script diff beb525dd..7a620ff1 empty. CI: Echidna success on d91ae16a (44231986631) and on 7a620ff1 (run 44242366379, job echidna 134593129480 success).",
+  "notes": "before: Echidna red 43981233671 / 44226410225 (canary). after: green x2."
+ },
+ {
+  "id": "A15",
+  "task": "Contextual-help blur deferral (FR-M1) + hover target",
+  "source": "REVIEW_FINDINGS FR-M1; CANDIDATE_INTEGRATION",
+  "classification": "COMPLETED",
+  "commits": [
+   "4a3d47d8",
+   "86b6e9e5",
+   "af32d7f7"
+  ],
+  "evidence": "VERIFIED files changed ContextHelp.tsx/.test.tsx, app.css, contextual-help.spec.ts. Behavior not re-run.",
+  "notes": ""
+ },
+ {
+  "id": "A16",
+  "task": "Blocked keystore download no longer leaves form busy (FR-L3)",
+  "source": "REVIEW_FINDINGS FR-L3",
+  "classification": "COMPLETED",
+  "commits": [
+   "cfb482f9",
+   "7a620ff1"
+  ],
+  "evidence": "VERIFIED SellerKeys.tsx:228-236 try/catch around downloadText, setBusy(false), fail(error), backup unrecorded. Test later hardened in 7a620ff1 after CI flake (run 44239860965 failed on ceea9fdd).",
+  "notes": "Flake fix is test-only but not docs-only."
+ },
+ {
+  "id": "A17",
+  "task": "Audit-report mode test aligned (R-13)",
+  "source": "REVIEW_FINDINGS R-13",
+  "classification": "COMPLETED",
+  "commits": [
+   "bbd24cd0"
+  ],
+  "evidence": "VERIFIED scripts/tests/audit-report-paths.test.mjs in diff; execution under umask UNVERIFIED.",
+  "notes": ""
+ },
+ {
+  "id": "A18",
+  "task": "Retain six superseded historical refs (R-14: #151,#39,#40,#44,#150,#193)",
+  "source": "REVIEW_FINDINGS R-14; RETIREMENT_PLAN",
+  "classification": "COMPLETED",
+  "commits": [
+   "bbd24cd0"
+  ],
+  "evidence": "Doc-level; openai-agents.yml absent in candidate (VERIFIED). Other five supersession claims not re-derived.",
+  "notes": "Mostly INFERRED/UNVERIFIED beyond spot checks."
+ },
+ {
+  "id": "A19",
+  "task": "Run branch census, produce disposition ledger (215 refs) + retirement plan",
+  "source": "BRANCH_DISPOSITION_LEDGER; RETIREMENT_PLAN",
+  "classification": "PARTIAL",
+  "commits": [
+   "d91ae16a",
+   "57e9ada6"
+  ],
+  "evidence": "Ledger table has 215 refs; all 215 exist in current origin refs (VERIFIED); 3 moved since (see sec 5). Referenced machine data (branch_census_20261118.json, census_20261118.py, refs_now.tsv, census_final_addendum.json) NOT in tree.",
+  "notes": "Ledger counts not reproducible from tree artifacts; my mechanical census differs by 2-3 refs."
+ },
+ {
+  "id": "A20",
+  "task": "Execute retirement plan (close PRs, delete/archive branches)",
+  "source": "RETIREMENT_PLAN",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "Explicitly not done; no branch lost (all 215 ledger refs still present).",
+  "notes": "Needs owner approval + promotion first."
+ },
+ {
+  "id": "A21",
+  "task": "Promote candidate to main (mark #203 ready, merge no squash)",
+  "source": "PROMOTION_PACKET next action",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "main still cfaebeea; #203 draft.",
+  "notes": "Blocked on protection + owner."
+ },
+ {
+  "id": "A22",
+  "task": "Configure branch protection / tag ruleset / env reviewers (R-07)",
+  "source": "REVIEW_FINDINGS R-07",
+  "classification": "BLOCKED",
+  "commits": [],
+  "evidence": "Owner action; cannot be read by this audit (no admin API).",
+  "notes": "UNVERIFIABLE current state."
+ },
+ {
+  "id": "A23",
+  "task": "Fee-token freeze residual decision (R-11/N1)",
+  "source": "REVIEW_FINDINGS R-11",
+  "classification": "BLOCKED",
+  "commits": [
+   "1e1121b3"
+  ],
+  "evidence": "Docs corrected (audit 26 'Partially closed'); decision open.",
+  "notes": "Owner, pre-scheme-2 deployment."
+ },
+ {
+  "id": "A24",
+  "task": "L2 sequencer cancel-window docs/UI (R-09)",
+  "source": "REVIEW_FINDINGS R-09",
+  "classification": "PARTIAL",
+  "commits": [
+   "3f10fcaf"
+  ],
+  "evidence": "Docs in docs/developer/security-model.md; UI guidance backlog.",
+  "notes": ""
+ },
+ {
+  "id": "A25",
+  "task": "Private security inventories CodeQL/Dependabot/secret scan (R-16)",
+  "source": "REVIEW_FINDINGS R-16",
+  "classification": "BLOCKED",
+  "commits": [],
+  "evidence": "Access 403 per doc; not re-tested.",
+  "notes": "Owner access."
+ },
+ {
+  "id": "A26",
+  "task": "Coordinate with PR #204 (agent tooling) (R-17)",
+  "source": "CANDIDATE_INTEGRATION decisions; REVIEW_FINDINGS R-17",
+  "classification": "PARTIAL",
+  "commits": [],
+  "evidence": "Conflict VERIFIED: merge-tree 7a620ff1+2693b08e rc=1, CONFLICT ci.yml (content) + CLAUDE.md (add/add). Not integrated, not resolved.",
+  "notes": "Resolution trivial for ci.yml (one line)."
+ },
+ {
+  "id": "A27",
+  "task": "Spec 18 wording decisions (R-15) before K03",
+  "source": "REVIEW_FINDINGS R-15; NEXT_PHASE_QUEUE",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "Listed in queue only.",
+  "notes": ""
+ },
+ {
+  "id": "A28",
+  "task": "R-03 help hover-leave shift; R-04 paste-submit focus test",
+  "source": "REVIEW_FINDINGS R-03,R-04",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "Backlog by doc.",
+  "notes": ""
+ },
+ {
+  "id": "A29",
+  "task": "Implement spec 18 key portability K01-K06 + KC",
+  "source": "NEXT_PHASE_QUEUE",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "Queue states nothing implemented; no keystore-portable v2 in diff (VERIFIED: no new core crypto files in 278c9a27..7a620ff1 file list).",
+  "notes": "Req 3q constraint; before beta exit."
+ },
+ {
+  "id": "A30",
+  "task": "Sepolia-first static beta B01-B06",
+  "source": "NEXT_PHASE_QUEUE; PROMOTION_PACKET blocker 5",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "73 unverified release cells per doc (not re-run).",
+  "notes": "Owner broadcast needed."
+ },
+ {
+  "id": "A31",
+  "task": "Decision-gated D01-D07",
+  "source": "NEXT_PHASE_QUEUE",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "",
+  "notes": ""
+ },
+ {
+  "id": "A32",
+  "task": "Final independent combined review (candidate 1e1121b3) no Critical/High",
+  "source": "REVIEW_FINDINGS",
+  "classification": "UNVERIFIABLE",
+  "commits": [
+   "1e1121b3"
+  ],
+  "evidence": "AI review report only; cannot re-perform. Several reviewer-run claims (lean module set 316 ids, 2,731 tests) not reproducible here.",
+  "notes": ""
+ },
+ {
+  "id": "A33",
+  "task": "Retire/close #187 and Pages/spec PRs with comments",
+  "source": "RETIREMENT_PLAN",
+  "classification": "NOT STARTED",
+  "commits": [],
+  "evidence": "#187,#190,#191,#192,#194-#202 all still open (open_prs.json).",
+  "notes": "After promotion."
+ },
+ {
+  "id": "A34",
+  "task": "Historical TEAM_J (2026-11-16) review/branch snapshot dispositions",
+  "source": "TEAM_J_UNIFIED.md",
+  "classification": "SUPERSEDED",
+  "commits": [
+   "4b107609"
+  ],
+  "evidence": "Earlier campaign; 200-ref snapshot superseded by 215/217 ledger. Its stale openai-agents sentence corrected in bbd24cd0.",
+  "notes": "Source of 'unified' lineage."
+ }
+]

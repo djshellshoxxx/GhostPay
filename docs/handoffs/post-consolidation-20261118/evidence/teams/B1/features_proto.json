@@ -1,0 +1,3912 @@
+[
+ {
+  "id": "F-PROTO-01",
+  "name": "EIP-5564 scheme-1 stealth derivation, view tags, announcement check, stealth key",
+  "area": "core-crypto",
+  "tier": "beta-core",
+  "spec_refs": [
+   "EIP-5564 scheme 1",
+   "ADR-0001 (ADR-LOG)",
+   "CONTRACTS_SPEC preamble SCHEME_ID=1",
+   "spec 02 r1",
+   "docs/audits/27"
+  ],
+  "implementation_files": [
+   "packages/core-crypto/src/stealth.ts",
+   "packages/core-crypto/src/metadata.ts",
+   "packages/core-crypto/src/secret.ts",
+   "packages/core-crypto/src/rng.ts",
+   "packages/chain-adapters/src/deepscan.ts"
+  ],
+  "test_files": [
+   "packages/core-crypto/src/vectors.test.ts",
+   "packages/core-crypto/src/differential.test.ts",
+   "packages/core-crypto/src/independent.test.ts",
+   "packages/core-crypto/src/negative.test.ts",
+   "packages/core-crypto/src/hash-edge.test.ts",
+   "packages/core-crypto/src/properties.test.ts",
+   "packages/core-crypto/src/metadata.test.ts",
+   "test-vectors/scheme1.json"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/2",
+    "sha": "c1c4ac9b",
+    "pr": 2,
+    "note": "v0.1 crypto; ancestor of candidate"
+   },
+   {
+    "ref": "pr/115",
+    "sha": "c6ce2259",
+    "pr": 115,
+    "note": "crypto review (audit 27); ancestor"
+   },
+   {
+    "ref": "origin/dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+    "sha": "8ce1bb04",
+    "pr": 87,
+    "note": "package.json bump only; maintenance backlog"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Sender derive: rejection-sampled r, S=r*Pview compressed, h=keccak(S) mod n, Q=Pspend+hG, EIP-55 addr",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stealth.ts:120-136 @7a620ff1; vectors.test.ts byte-equal vs ScopeLift SDK; differential 500 keysets; local vitest @7a620ff1 75/75; CI 44231986652 @d91ae16a core-crypto 75/75"
+   },
+   {
+    "req": "View tag = keccak(S)[0], metadata[0]; early reject on mismatch",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stealth.ts:178-179; independent.test.ts:223 (all 255 wrong tags rejected)"
+   },
+   {
+    "req": "checkAnnouncement never throws on hostile on-chain data (bad point/hex/empty metadata/scheme!=1)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stealth.ts:157-190; negative.test.ts:216"
+   },
+   {
+    "req": "deriveStealthSecret re-derives address and rejects mismatch, zero hash, infinity, zero key",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stealth.ts:212-232; hash-edge.test.ts:65-152"
+   },
+   {
+    "req": "Deep scan: ignoreViewTag skips only tag compare, address still verified, tagMatches flag",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stealth.ts:178-188; deepscan.ts:27; negative.test.ts:200,314; wired apps/web/src/lib/scannerCore.ts:105, sweep.ts:50"
+   },
+   {
+    "req": "Strict 57-byte router metadata (a9059cbb|token|net, eeeeeeee|native|net) build/parse",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "metadata.ts:55-112; metadata.test.ts; parity with GhostPayRouter._checkMetadata"
+   },
+   {
+    "req": "Secret hygiene: redacting SecretScalar, zeroize best-effort, errors never echo input",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "secret.ts:31-133; secrets.test.ts (S3-08, L4-I3)"
+   },
+   {
+    "req": "Vectors with independent provenance; 3 implementations agree (SDK, package, bigint ref)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "test-vectors/scheme1.json provenance; independent.test.ts:105-160"
+   }
+  ],
+  "verified_working": [
+   "scheme-1 maths byte-equal to ScopeLift SDK 1.0.0-beta.5 + curve-independent bigint reference",
+   "malformed announcements -> matches:false",
+   "coverage 98.5/98.16/100/98.21 (CI core-crypto shard)"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "No official EIP-5564 test vectors in repo (audit 27: none known/reachable)"
+  ],
+  "security_privacy_requirements": [
+   "ephemeral scalar never returned/logged",
+   "view tag leaks 1 byte of shared-secret hash by design",
+   "stealth != anonymity: payer/amount/time/graph public",
+   "uncompressed 65-byte R rejected (I-2, interop limit)"
+  ],
+  "dependencies": [
+   "@noble/curves 2.x, @noble/hashes, viem getAddress"
+  ],
+  "blockers": [],
+  "external_acceptance": "No independent external crypto audit (audit 27 is single-pass AI review); no real-wallet interop run.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete in-repo. Keep vectors pinned; add official vectors if EIP publishes any.",
+  "evidence": [
+   "local vitest @7a620ff1: core-crypto 9 files/75 tests pass (logs_proto/core-crypto.log)",
+   "CI 44231986652 @d91ae16a job 134576858182 core-crypto 75/75",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": [
+   "EIP text not re-read here (network); spec of record = ADR-0001 + SDK"
+  ]
+ },
+ {
+  "id": "F-PROTO-02",
+  "name": "Stealth meta-address encoding (st:eth:0x) + key generation",
+  "area": "core-crypto",
+  "tier": "beta-core",
+  "spec_refs": [
+   "EIP-5564 meta-address",
+   "ADR-0010 decoder rules (ADR-LOG)",
+   "spec 06 encoding"
+  ],
+  "implementation_files": [
+   "packages/core-crypto/src/keys.ts",
+   "packages/core-crypto/src/rng.ts",
+   "packages/chain-adapters/src/registry.ts"
+  ],
+  "test_files": [
+   "packages/core-crypto/src/negative.test.ts",
+   "packages/core-crypto/src/properties.test.ts",
+   "packages/core-crypto/src/vectors.test.ts",
+   "packages/chain-adapters/src/registry.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/2",
+    "sha": "c1c4ac9b",
+    "pr": 2,
+    "note": "origin; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "encodeMetaAddress st:eth:0x<spend33><view33>, canonical lowercase, spend first",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "keys.ts:73-78 @7a620ff1; vectors round trip"
+   },
+   {
+    "req": "Strict decode: 132 hex, compressed on-curve, identical keys rejected, no input echo",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "keys.ts:93-102; negative.test.ts:140-189"
+   },
+   {
+    "req": "Independent spend/view keygen via CSPRNG rejection sampling; stuck-RNG guard; KEY_REUSE",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "keys.ts:45-58; rng.ts; negative.test.ts:60-101"
+   },
+   {
+    "req": "ERC-6538 66-byte registry bytes <-> meta-address round trip, decode re-validates",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registry.ts:72-93; registry.test.ts"
+   },
+   {
+    "req": "Interop: SDK-generated meta-addresses/addresses match (differential)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "differential.test.ts:37+"
+   },
+   {
+    "req": "invoice-schema meta-address validation consistent (lowercase canonical; I-3)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "invoice-schema schema.ts; schema.test.ts (715/715)"
+   }
+  ],
+  "verified_working": [
+   "round trips + negatives pass locally and in CI"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "public data only; errors never echo input",
+   "scheme-2 gp2 format separate (F-AA-02), never registered"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Not checked against third-party wallets (Umbra/Fluidkey) beyond SDK differential.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete.",
+  "evidence": [
+   "local vitest @7a620ff1 core-crypto 75/75; chain-adapters registry.test.ts in 551 pass",
+   "CI 44231986652 @d91ae16a core-crypto 75/75, chain-adapters 573/573",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-03",
+  "name": "Announcement discovery primitives: verified RPC client + reorg-safe announcement fetch/validation",
+  "area": "chain-adapters",
+  "tier": "beta-core",
+  "spec_refs": [
+   "spec 02 r1,r4,r5,r7",
+   "spec 05 2A fetch limits",
+   "chain-adapters DEVIATIONS 7,12,16,18",
+   "audit S3-14"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/logs.ts",
+   "packages/chain-adapters/src/rpc.ts",
+   "packages/chain-adapters/src/scanVerify.ts"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/logs.test.ts",
+   "packages/chain-adapters/src/scanHardening.test.ts",
+   "packages/chain-adapters/src/rpc.test.ts",
+   "packages/chain-adapters/src/scanVerify.test.ts",
+   "apps/web/src/lib/scannerCore.fuzz.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/39",
+    "sha": "1d28f24d",
+    "pr": 39,
+    "note": "NOT ancestor; rpc.ts/errors.ts B2R plain-revert; semantically superseded (ledger: rpc.ts:364-369)"
+   },
+   {
+    "ref": "pr/40",
+    "sha": "63994db6",
+    "pr": 40,
+    "note": "NOT ancestor; same 3 unique commits; semantically superseded"
+   },
+   {
+    "ref": "pr/27",
+    "sha": "a4ab45fa",
+    "pr": 27,
+    "note": "second-RPC fail-closed; ancestor"
+   },
+   {
+    "ref": "pr/41",
+    "sha": "70d8bf6e",
+    "pr": 41,
+    "note": "scanner regrowth; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Paginated eth_getLogs on verified announcer, topic0+scheme filter, request/log caps (50/10k)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "logs.ts:37-64,279 @7a620ff1; logs.test.ts (44)"
+   },
+   {
+    "req": "Provider faults throw INVALID_LOG; hostile content skipped+counted, never halts scan",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "logs.ts:182 validateAnnouncementLog; DEVIATIONS 7; web scannerCore.fuzz 1M logs (CI web)"
+   },
+   {
+    "req": "Reorg detection via cursor block hash; rollback by finalityDepth",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "logs.ts:29-34,FetchResult.reorg; logs.test.ts"
+   },
+   {
+    "req": "Range halving on -32005/-32602 + grow-back; block-read cap ends at last completed window",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scanHardening.test.ts L4-01, A-R7 (CI 26 tests)"
+   },
+   {
+    "req": "Oversized single block: router-caller (trusted lane) re-read, routerOnlyBlocks reported, no silent skip",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "logs.ts:55-60,75-78; scanHardening.test.ts"
+   },
+   {
+    "req": "RPC client: https/wss only, creds rejected+never echoed, size cap, bounded retry, eth_chainId verify + 60s recheck",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "rpc.ts:77,218; DEVIATIONS 16; rpc.test.ts (86)"
+   },
+   {
+    "req": "Second-provider cross-check (requestWithFallbackCheck, createReconciledClient, compareProviders)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "rpc.ts:413,469; scanVerify.ts:56; scanVerify.test.ts (21)"
+   },
+   {
+    "req": "Per-log block-hash cross-check inside fetchAnnouncements (S3-14 suggestion)",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "DEVIATIONS 16 \"Not done\" (matched announcements checked instead)"
+   }
+  ],
+  "verified_working": [
+   "chain-adapters 551 pass/22 anvil-skips local; 573/573 CI with REQUIRE_ANVIL=1"
+  ],
+  "missing_requirements": [
+   "per-log block-hash cross-check (minor; matched-log check exists)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "user-selected RPC only, no fallback hosts",
+   "provider error text dropped (rpc.ts keeps JSON-RPC code only)",
+   "a lying RPC can hide logs: second provider optional",
+   "private/link-local RPC hosts not rejected (DEVIATIONS 16; own node allowed)"
+  ],
+  "dependencies": [
+   "F-DEP-02 verified announcer/router addresses"
+  ],
+  "blockers": [],
+  "external_acceptance": "No real public RPC provider limits measured (getLogsMaxRange=1000 engineering default).",
+  "implementation_pct": 95,
+  "verification_pct": 95,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0.5,
+    1
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "Optional: add per-log block-hash cross-check or record acceptance of matched-log-only check.",
+  "evidence": [
+   "local vitest @7a620ff1 chain-adapters 26 files 551 pass/22 skip",
+   "CI 44231986652 @d91ae16a rest-1 chain-adapters 26 files 573/573",
+   "pct raw impl=94.7 verif=94.7 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-04",
+  "name": "Payment claim verification library (spec 02 library side)",
+  "area": "chain-adapters",
+  "tier": "beta-core",
+  "spec_refs": [
+   "spec 02 r3,r4,r6(partial),r7",
+   "audit S3-02/G-04",
+   "chain-adapters DEVIATIONS 15"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/payments.ts",
+   "packages/chain-adapters/src/scanVerify.ts",
+   "packages/chain-adapters/src/deepscan.ts"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/payments.test.ts",
+   "packages/chain-adapters/src/payments.anvil.test.ts",
+   "packages/chain-adapters/src/scanVerify.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/182",
+    "sha": "0c4c3c8d",
+    "pr": 182,
+    "note": "linked invoice reporting baseline; ancestor"
+   },
+   {
+    "ref": "pr/114",
+    "sha": "1bf25be7",
+    "pr": 114,
+    "note": "F1/F2 scan+reconciliation fixes; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "received only if router caller + canonical block hash + independent Transfer/native trace in direct router tx",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts:155 @7a620ff1; payments.anvil.test.ts 17 tests (CI REQUIRE_ANVIL=1)"
+   },
+   {
+    "req": "Non-router -> unverified-announcement; router w/o evidence -> unverified-claim + reason",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts:27-44; payments.test.ts (35)"
+   },
+   {
+    "req": "Token allowlist gates verification (non-allowlisted stays unverified)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts findToken; beta acceptance \"3 unregistered-token claims stay unverified\""
+   },
+   {
+    "req": "dedupeClaims: free replays collapsed by (address, ephemeral); router claims never collapsed; consumedTransfers no double credit",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts:62-110"
+   },
+   {
+    "req": "Finality: confirmations vs chain finalityDepth; final flag",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts:33-36"
+   },
+   {
+    "req": "Optional secondary provider must match evidence (evidenceBinding)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts VerifyClaimInput.secondaryClient"
+   },
+   {
+    "req": "Per-address balance read opt-in only (privacy)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts observeBalance"
+   },
+   {
+    "req": "verifyPaymentByTxHash lookup",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payments.ts:356"
+   }
+  ],
+  "verified_working": [
+   "beta acceptance CI: native payment traced as received, inflated claim refused"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "metadata is a claim, never shown as received",
+   "balance read reveals match to RPC: opt-in",
+   "lying RPC defeats single-provider mode"
+  ],
+  "dependencies": [
+   "spec 02 r6 under/over/double-pay reporting lives in packages/ux-vault/src/reconciliation-amounts.ts (B1b scope)",
+   "expected-payment wrong-tag fallback = opt-in deep scan (F-PROTO-01 r5) + web scanner (B1b)"
+  ],
+  "blockers": [],
+  "external_acceptance": "Only anvil; no public-testnet provider disagreement acceptance.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Library complete; app-side qualification is B1b.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a rest-1 payments.anvil 17/17; Beta acceptance 44231986665 PASS receipt",
+   "local vitest @7a620ff1 payments.test.ts pass (anvil part skipped locally)",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-05",
+  "name": "Announcer spam & anonymity-set bounds (spec 05)",
+  "area": "chain-adapters+web scanner",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "spec 05 sections 2A-2E, 5, 6, 7"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/logs.ts",
+   "apps/web/src/lib/scanSpam.ts",
+   "apps/web/src/lib/scanClient.ts",
+   "apps/web/src/lib/scannerCore.ts",
+   "apps/web/src/views/Settings.tsx",
+   "docs/user/seller-privacy.md"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/scanHardening.test.ts",
+   "apps/web/src/lib/scanSpam.test.ts",
+   "apps/web/src/lib/scanClient.test.ts",
+   "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+   "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+   "apps/web/src/views/Settings.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/70",
+    "sha": "d9fe8b4e",
+    "pr": 70,
+    "note": "A5 lanes/budget + 4 cursor fixes; ancestor"
+   },
+   {
+    "ref": "pr/113",
+    "sha": "0641d41a",
+    "pr": 113,
+    "note": "spec 05 acceptance; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Measured per-announcement cost (ECDH vs tag vs derivation); 1M/60s target withdrawn honestly",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scannerCore.bench.nocov.test.ts (CI web nocov pass)"
+   },
+   {
+    "req": "Trusted router lane first; open lane per-pass budget 20k; backlog; first page never deferred; cursor held",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scanSpam.ts splitLanes; scanClient.ts runScan; scanClient.test.ts (A5) CI"
+   },
+   {
+    "req": "Oversized block: trusted-lane-only re-read reported to seller (library)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "logs.ts routerOnlyBlocks; scanHardening.test.ts"
+   },
+   {
+    "req": "Replay memo (REPLAY_MEMO_LIMIT 4096)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scannerCore.ts; scannerCore.test.ts \"replay memo\""
+   },
+   {
+    "req": "Local spam score (FLOOD_PER_BLOCK 32, repeat ephemeral) deprioritises, never drops; switchable",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scanSpam.ts; scanSpam.test.ts"
+   },
+   {
+    "req": "Local anonymity-set counts 7/30d + coarse level; opt-in same-token estimate fails closed to unknown",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scanSpam.ts anonymitySet/estimateSimilarTransfers"
+   },
+   {
+    "req": "1M spam + 10 real router payments all found through runScan",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "scannerCore.spam.nocov.test.ts (CI web nocov 1 test pass)"
+   },
+   {
+    "req": "Settings expose budget, flood threshold, spam switch, estimate opt-in",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "Settings.test.tsx \"spec 05\"; Settings.scanPrivacy.test.tsx"
+   },
+   {
+    "req": "Seller privacy guide published",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/user/seller-privacy.md exists (doc; no automated test)"
+   },
+   {
+    "req": "Sender-side amount-hygiene hint in Pay view (2C)",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "spec 05 s7 \"Remaining\""
+   },
+   {
+    "req": "Provider-side rate-limited endpoint list (2D docs)",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "spec 05 s7: none verified, none published"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "Pay amount-hygiene hint",
+   "verified public endpoint list (docs)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "telemetry computed locally, never sent",
+   "anonymity level is a coarse heuristic: no measured anonymity claim",
+   "same-token estimate is an extra opt-in RPC request (disclosed)"
+  ],
+  "dependencies": [
+   "web scanner (B1b) owns UI; library part here",
+   "Overlap B1b F-WEB-06 (scan UI): web lanes counted here for spec 05; count once"
+  ],
+  "blockers": [],
+  "external_acceptance": "Thresholds (20/200, 25 %, 2,000 blocks) UNVERIFIED against real chain volume.",
+  "implementation_pct": 90,
+  "verification_pct": 80,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "Add Pay amount hint; keep endpoint list absent until verified.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a web shard 2749 pass/1 skip incl scanSpam (18), scanClient (87), spam/bench nocov",
+   "docs/specs/05 s7 closure",
+   "pct raw impl=88.2 verif=82.4 (rubric-rounded)"
+  ],
+  "unverified": [
+   "reference-laptop CPU numbers (dev container only)"
+  ]
+ },
+ {
+  "id": "F-PROTO-06",
+  "name": "Invoice schema v1/v2 + canonical JSON + signing/verification",
+  "area": "invoice-schema",
+  "tier": "beta-core",
+  "spec_refs": [
+   "ADR-0002 signing",
+   "ADR-0005 fragment",
+   "ADR-0024 v2",
+   "DEVELOPER_SPECIFICATION Module C",
+   "docs/audits/27 I-1"
+  ],
+  "implementation_files": [
+   "packages/invoice-schema/src/schema.ts",
+   "packages/invoice-schema/src/json.ts",
+   "packages/invoice-schema/src/sign.ts",
+   "packages/invoice-schema/src/expiry.ts"
+  ],
+  "test_files": [
+   "packages/invoice-schema/src/schema.test.ts",
+   "packages/invoice-schema/src/json.test.ts",
+   "packages/invoice-schema/src/sign.test.ts",
+   "packages/invoice-schema/src/independent.test.ts",
+   "packages/invoice-schema/src/fuzz.test.ts",
+   "packages/invoice-schema/src/text-hygiene.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/codex/ghostpay-recovered-lean-checkpoint-20261028",
+    "sha": "371d235c",
+    "pr": null,
+    "note": "NOT ancestor; schema.ts variant; ledger: archive as evidence"
+   },
+   {
+    "ref": "origin/ghostpay-cloud-recovery-2026-10-26",
+    "sha": "2ec98b23",
+    "pr": null,
+    "note": "NOT ancestor; same lineage; archive"
+   },
+   {
+    "ref": "origin/ghostpay-local-lean-boundary-20261027",
+    "sha": "020ba327",
+    "pr": null,
+    "note": "NOT ancestor; archive"
+   },
+   {
+    "ref": "origin/ghostpay-offline-deps-2026-10-27",
+    "sha": "3697f539",
+    "pr": null,
+    "note": "NOT ancestor; archive"
+   },
+   {
+    "ref": "origin/ghostpay-sbom-repro-2026-10-27",
+    "sha": "b5b04b99",
+    "pr": null,
+    "note": "NOT ancestor; archive"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Strict schema v1 (exact keys, schemeId 1, amount/fee policies, line-item bounds, text hygiene)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "schema.ts:55-345 @7a620ff1; schema.test.ts, fuzz.test.ts"
+   },
+   {
+    "req": "Strict canonical JSON (no dup keys/floats), canonicalize",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "json.ts; json.test.ts"
+   },
+   {
+    "req": "secp256k1 ECDSA over keccak(\"GhostPay.Invoice.v1\\0\"||canonical), RFC6979, low-s; chainId bound",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sign.ts:9-112; independent.test.ts (cross-chain replay, high-s refused)"
+   },
+   {
+    "req": "v2 bufferPolicy strict (ADR-0024); v1 unchanged byte-identical",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "schema.ts:259-364; schema.test.ts"
+   },
+   {
+    "req": "Expiry check",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "expiry.ts; expiry.test.ts"
+   },
+   {
+    "req": "Trust levels invalid/valid/trusted-seller (pinned signer only)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "envelope.ts:59-113"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "not EIP-712 (no verifyingContract), by design (I-1)",
+   "signature = key control, not merchant identity"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "No external audit.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete. Recovery-snapshot branches hold no missing behaviour (ledger).",
+  "evidence": [
+   "local vitest @7a620ff1 invoice-schema 12 files 715/715",
+   "CI 44231986652 @d91ae16a rest-2 invoice-schema 715/715, cov 98.07/97.7/100/99.25",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-07",
+  "name": "Invoice link envelope #gpi=v1. (none / A256GCM / A256GCM-PW passphrase)",
+  "area": "invoice-schema",
+  "tier": "beta-core",
+  "spec_refs": [
+   "ADR-0005",
+   "ADR-0020 (Proposed)"
+  ],
+  "implementation_files": [
+   "packages/invoice-schema/src/envelope.ts",
+   "packages/invoice-schema/src/passphrase.ts",
+   "packages/invoice-schema/src/base64url.ts"
+  ],
+  "test_files": [
+   "packages/invoice-schema/src/envelope.test.ts",
+   "packages/invoice-schema/src/passphrase.test.ts",
+   "packages/invoice-schema/src/independent.test.ts",
+   "apps/web/src/views/Pay.test.tsx",
+   "apps/web/src/views/CreateInvoice.test.tsx"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Fragment #gpi=v1. strict canonical base64url, 16 KiB cap, fatal UTF-8, unknown prefix/alg fail closed",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "envelope.ts:41-43,464 @7a620ff1; envelope.test.ts"
+   },
+   {
+    "req": "A256GCM private part: fresh key + 96-bit nonce",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "envelope.ts; independent.test.ts (OpenSSL opens)"
+   },
+   {
+    "req": "A256GCM-PW: scrypt N in {2^15..2^17}, r8 p1 checked pre-KDF, AAD binds header, one WrongPassphraseError",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "passphrase.ts:6-121; passphrase.test.ts"
+   },
+   {
+    "req": "openFragment needsPassphrase w/o KDF; PassphraseUnexpectedError; inner chainId/signer == header",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "envelope.ts:482"
+   },
+   {
+    "req": "Web prompt/encode wiring (ADR-0020 said absent)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "Pay.tsx pay.passphrase.*; Pay.test.tsx, CreateInvoice.test.tsx (CI web)"
+   },
+   {
+    "req": "Best-effort zeroization of passphrase/key/plaintext",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "passphrase/envelope finally fill(0); no test (not testable in JS)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "A256GCM link = bearer secret",
+   "clear: chainId, signer, KDF cost, size",
+   "offline guessing bound by passphrase entropy"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "No external audit; ADR-0020 still Proposed.",
+  "implementation_pct": 100,
+  "verification_pct": 90,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete; owner should accept ADR-0020.",
+  "evidence": [
+   "local vitest @7a620ff1 invoice-schema 715/715",
+   "CI 44231986652 @d91ae16a web Pay/CreateInvoice tests pass",
+   "pct raw impl=100.0 verif=92.3 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-08",
+  "name": "Invoice-bound signed seller receipts",
+  "area": "invoice-schema",
+  "tier": "beta-core",
+  "spec_refs": [
+   "ADR-0025/0026 receipts",
+   "docs/handoffs/INVOICE_BOUND_RECEIPTS_2026-11-02.md"
+  ],
+  "implementation_files": [
+   "packages/invoice-schema/src/receipts.ts"
+  ],
+  "test_files": [
+   "packages/invoice-schema/src/receipts.test.ts",
+   "packages/cli/src (receipt commands)",
+   "apps/web/src/views/Pay.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/24",
+    "sha": "bb011134",
+    "pr": 24,
+    "note": "signed receipt QR exchange; merged, ancestor"
+   },
+   {
+    "ref": "pr/64",
+    "sha": "2bcfd11f",
+    "pr": 64,
+    "note": "require invoice-bound receipts in lean; ancestor"
+   },
+   {
+    "ref": "pr/105..109",
+    "sha": "-",
+    "pr": 105,
+    "note": "CLI receipt qualification; ancestors"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "ReceiptPayload v1 strict schema (digest, chain, tx, stealth, asset, amount, issuedAt, signer)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "receipts.ts:19-110 @7a620ff1; receipts.test.ts"
+   },
+   {
+    "req": "Domain-separated signature GhostPay/receipt/v1\\n sign/verify",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "receipts.ts:17,116-142"
+   },
+   {
+    "req": "bindReceiptToInvoice: digest/chain/asset/amount/tx/recipient + signer = invoice key or explicitly trusted key",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "receipts.ts:144-166"
+   },
+   {
+    "req": "64 KiB cap; stable error codes w/o data echo",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "receipts.ts:8-16,63"
+   },
+   {
+    "req": "Wired: web Pay receipt panel, CLI receipt create/verify/export",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "beta acceptance PASS A receipt verify + 3 NEG cases (CI)"
+   },
+   {
+    "req": "Receipt never treated as payment proof (live RPC evidence required)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "beta acceptance \"receipt verify keeps payment unverified\""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "receipt reveals invoice digest/tx/stealth to holder",
+   "signer trust only out of band"
+  ],
+  "dependencies": [
+   "Overlap B1b F-WEB-10 (receipt UI); this row = library"
+  ],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a rest-2 invoice-schema 715/715; Beta acceptance 44231986665",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-09",
+  "name": "Strict payment URI builders/parsers (EIP-681, ERC-3770, BIP-21/321+sp, Solana Pay, tron:, invoice link)",
+  "area": "payment-uri",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "ADR-0022 (Proposed)"
+  ],
+  "implementation_files": [
+   "packages/payment-uri/src/query.ts",
+   "packages/payment-uri/src/decimal.ts",
+   "packages/payment-uri/src/addresses.ts",
+   "packages/payment-uri/src/eip681.ts",
+   "packages/payment-uri/src/eip3770.ts",
+   "packages/payment-uri/src/bitcoin.ts",
+   "packages/payment-uri/src/solana.ts",
+   "packages/payment-uri/src/tron.ts",
+   "packages/payment-uri/src/invoice-link.ts",
+   "packages/payment-uri/src/recipient.ts",
+   "packages/payment-uri/src/text.ts"
+  ],
+  "test_files": [
+   "packages/payment-uri/src/vectors.test.ts",
+   "packages/payment-uri/src/negative.test.ts",
+   "packages/payment-uri/src/fuzz.test.ts",
+   "apps/web/src/components/PaymentRequestQr.test.tsx",
+   "apps/web/src/lib/qrClassify.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "One strict query layer (length cap, ASCII, strict %XX, fatal UTF-8, dup keys rejected)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "query.ts @7a620ff1; negative.test.ts"
+   },
+   {
+    "req": "Decimal amounts -> bigint, never floats; per-format bounds",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "decimal.ts"
+   },
+   {
+    "req": "Per-family address validation (EIP-55, base58check, bech32/m, BIP-352 v0) + EIP-681 chain check",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "addresses.ts, eip681.ts"
+   },
+   {
+    "req": "Text fields reject control/bidi/default-ignorable/non-NFC, size caps",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "text.ts"
+   },
+   {
+    "req": "Recipient canonical + 4-char grouped display + domain-separated digest",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "recipient.ts"
+   },
+   {
+    "req": "All listed formats build+parse with vectors",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "vectors.test.ts"
+   },
+   {
+    "req": "Web integration (payment request QR, QR classifier)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web PaymentRequestQr.tsx, qrClassify.ts (CI web)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "attacker-controlled URIs; strictness uniform",
+   "tron: form GhostPay-only nonstandard"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Not tested against real wallet URI handlers; ADR-0022 Proposed; not audited.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete for beta; wallet interop external.",
+  "evidence": [
+   "local vitest @7a620ff1 payment-uri 3 files 199/199",
+   "CI 44231986652 @d91ae16a rest-0 payment-uri 199/199",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-10",
+  "name": "QR exchange: GPQ1 multipart, assembler, camera/readers, generation, seller/settings payloads",
+  "area": "qr-exchange",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "ADR-0021 (proposed)",
+   "qr-exchange DEVIATIONS"
+  ],
+  "implementation_files": [
+   "packages/qr-exchange/src/multipart.ts",
+   "packages/qr-exchange/src/assembler.ts",
+   "packages/qr-exchange/src/camera.ts",
+   "packages/qr-exchange/src/readers.ts",
+   "packages/qr-exchange/src/generate.ts",
+   "packages/qr-exchange/src/seller.ts",
+   "packages/qr-exchange/src/settings-exchange.ts"
+  ],
+  "test_files": [
+   "packages/qr-exchange/src/*.test.ts (7 files)",
+   "apps/web/src/components/CameraImporter.*.test.tsx",
+   "apps/web/e2e/qr-camera.spec.ts",
+   "apps/web/e2e/qr-camera-multipart.spec.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/117",
+    "sha": "1e4d19f1",
+    "pr": 117,
+    "note": "QR completion; ancestor"
+   },
+   {
+    "ref": "pr/60",
+    "sha": "78be1730",
+    "pr": 60,
+    "note": "seller pairing + registry QR export; ancestor"
+   },
+   {
+    "ref": "pr/95",
+    "sha": "-",
+    "pr": 95,
+    "note": "shared QR codec; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "GPQ1/<session>/<i>/<n>/<crc32>/<b64url>; n<=64, payload<=32 KiB, 400 default/700 max chars; strict parser",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "multipart.ts:7-98 @7a620ff1; multipart.test.ts"
+   },
+   {
+    "req": "Assembler: SHA-256 session prefix check after reassembly, single transfer, age bound",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "assembler.ts; assembler.test.ts"
+   },
+   {
+    "req": "Pure core; camera/detectors behind interfaces, tested with fakes",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "camera.ts, readers.ts; camera.test.ts, readers.test.ts"
+   },
+   {
+    "req": "BarcodeDetector first, jsQR pinned lazy fallback",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "readers.ts loadJsQrDecoder"
+   },
+   {
+    "req": "Camera never auto-starts; tracks stopped; no frame leaves device; no decoded-text logging",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "camera.ts; CameraImporter.lifecycle.test.tsx + e2e qr-camera (CI)"
+   },
+   {
+    "req": "Byte-mode ECC L/M generation",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "generate.ts; generate.test.ts"
+   },
+   {
+    "req": "Web integration: cycling multipart display + camera import",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/qrMultipart.ts, CameraImporter.tsx; e2e qr-camera-multipart.spec.ts"
+   },
+   {
+    "req": "Seller pairing / settings exchange payloads (strict)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "seller.ts, settings-exchange.ts (+tests)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "CRC/SHA prefix = integrity, not authenticity: payload must carry own signature/encryption",
+   "session id leaks 64 bits of SHA-256(payload)"
+  ],
+  "dependencies": [
+   "Overlap B1b F-WEB-24 (QR UI); this row = package"
+  ],
+  "blockers": [],
+  "external_acceptance": "Physical cameras, glare, iOS Safari/Android/Firefox permissions untested (DEVIATIONS 2).",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Code complete; device acceptance external. jsQR unmaintained (replaceable).",
+  "evidence": [
+   "local vitest @7a620ff1 qr-exchange 7 files 233/233",
+   "CI 44231986652 @d91ae16a rest-1 qr-exchange 233/233; e2e full 78/1skip lean 66/3skip",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-11",
+  "name": "Scan-source abstraction (range / indexer-tor / pir2 / light-client / quorum)",
+  "area": "scan-source",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/remote/privacy-specs/network-privacy.md Selector C",
+   "spec 10",
+   "metadata-hardening MH-SCAN-1..3"
+  ],
+  "implementation_files": [
+   "packages/scan-source/src/range.ts",
+   "packages/scan-source/src/indexer.ts",
+   "packages/scan-source/src/pir2.ts",
+   "packages/scan-source/src/light.ts",
+   "packages/scan-source/src/quorum.ts",
+   "packages/scan-source/src/create.ts",
+   "packages/scan-source/src/claims.ts",
+   "packages/scan-source/src/guard.ts"
+  ],
+  "test_files": [
+   "packages/scan-source/src/*.test.ts (6 files)"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/30",
+    "sha": "7373172d",
+    "pr": 30,
+    "note": "private scanning wave; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "range mode: grid-aligned padded windows, budgets",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "range.ts (web uses own windowed scan; not wired)"
+   },
+   {
+    "req": "indexer-tor mode: contiguous parent-hash chain, cross-check window ends + announcement blocks vs base RPC",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "indexer.ts @7a620ff1; wired apps/web/src/lib/scanPrivacy.ts:28 createIndexerSource"
+   },
+   {
+    "req": "pir2 two-server PIR, dummy-padded epochs, manifest match",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "pir2.ts; not wired"
+   },
+   {
+    "req": "light-client wrapper (block hashes confirmed by LC)",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "light.ts; Helios UNVERIFIED, interface only"
+   },
+   {
+    "req": "quorum composition fails closed on disagreement",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "quorum.ts; not wired"
+   },
+   {
+    "req": "createScanSource never falls back; describeScanMode honest claims",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "create.ts, claims.ts; web uses own disclosure text"
+   },
+   {
+    "req": "Testnet-only guard 31337/11155111/84532",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "guard.ts"
+   },
+   {
+    "req": "No source sends view tag/key/address/meta-address",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "README \"tested\"; validate.test.ts"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "real indexer server / PIR operators / Helios backends absent (README Unverified)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "range mode leaks IP/range/timing",
+   "indexer sees padded range, can omit records",
+   "pir2 needs non-colluding operators"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "testnet-only PoC by design; real backends need operators"
+  ],
+  "external_acceptance": "Everything runs against in-memory fakes; no Tor/indexer/PIR/Helios used.",
+  "implementation_pct": 70,
+  "verification_pct": 100,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    3,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Full-profile only; keep indexer path, defer others until a backend exists.",
+  "evidence": [
+   "local vitest @7a620ff1 scan-source 6 files 57/57",
+   "CI 44231986652 @d91ae16a rest-1 scan-source 57/57",
+   "pct raw impl=70.6 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-12",
+  "name": "SDK programmatic API (@ghostpay/sdk)",
+  "area": "sdk",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/remote/usability/specs/typed-sdk.md R1-R6",
+   "docs/remote/usability/wiring/sdk.md",
+   "docs/remote/usability/openapi/ghostpay-merchant-api.yaml"
+  ],
+  "implementation_files": [
+   "packages/sdk/src/client.ts",
+   "packages/sdk/src/builder.ts",
+   "packages/sdk/src/verify.ts",
+   "packages/sdk/src/merchant.ts",
+   "packages/sdk/src/react.ts",
+   "packages/sdk/src/schemas.ts",
+   "packages/sdk/schema/*.json"
+  ],
+  "test_files": [
+   "packages/sdk/src/*.test.ts (8 files)"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "R1 createClient: no I/O on construct; https-only baseUrl, no creds/query/fragment",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "client.ts; client.test.ts:8 (no network calls)"
+   },
+   {
+    "req": "R2 invoice helpers (build/sign/link/parse, immutable builder)",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "builder.ts; builder.test.ts"
+   },
+   {
+    "req": "R3 typed errors, fixed messages, no echo",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "errors.ts; errors.test.ts"
+   },
+   {
+    "req": "R4 merchant API client strict validation, 1 MiB cap, AbortSignal",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "merchant.ts:206-216; merchant.test.ts; NO server implements /v1/invoices"
+   },
+   {
+    "req": "R5 React adapter without importing react",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "react.ts; react.test.ts"
+   },
+   {
+    "req": "R6 ESM, sideEffects:false, named exports",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "packages/sdk/package.json"
+   },
+   {
+    "req": "JSON Schemas (invoice v1, webhook) drift-guarded",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "schemas.ts; schemas.test.ts"
+   },
+   {
+    "req": "verifyInvoice verdict matrix (pinned signer, expiry, warnings)",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "verify.ts; verify.test.ts"
+   },
+   {
+    "req": "Distribution: publishable package, licence, README/API docs",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "package.json private:true UNLICENSED; no packages/sdk/README.md; not in docs/developer/api"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "publish/licence/README",
+   "merchant API server (optional self-host) absent",
+   "web pay page not using verifyFragment (wiring plan item 1)"
+  ],
+  "confirmed_defects": [
+   "Info: no README/API doc for @ghostpay/sdk (ls packages/sdk)"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "fragment never sent to merchant API",
+   "no fetch on build/sign/verify (tested)"
+  ],
+  "dependencies": [
+   "F-PROTO-06/07"
+  ],
+  "blockers": [
+   "owner decision on public SDK + licence"
+  ],
+  "external_acceptance": "No external consumer.",
+  "implementation_pct": 45,
+  "verification_pct": 90,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Not needed for static beta; keep tested library; package/docs when an integrator exists.",
+  "evidence": [
+   "local vitest @7a620ff1 sdk 8 files 54/54",
+   "CI 44231986652 @d91ae16a rest-2 sdk 54/54 cov 99.63/97.81/100/100",
+   "pct raw impl=46.9 verif=87.5 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-PROTO-13",
+  "name": "Spec 18 stealth keypair export formats + crypto adapter (protocol side of 3q)",
+  "area": "core-crypto/ux-vault",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/specs/18-stealth-keypair-export.md",
+   "NEXT_PHASE_QUEUE K01,K02,K05,K06",
+   "future/privacy-architecture/5k (xref)"
+  ],
+  "implementation_files": [
+   "(none) reuse: packages/core-crypto/src/stealth.ts:212",
+   "packages/chain-adapters/src/sweep.ts:175 addressOfSecret",
+   "packages/ux-vault/src/keystore-portable.ts (legacy v1, B1b scope)"
+  ],
+  "test_files": [
+   "packages/core-crypto/src/vectors.test.ts (derivation vector only)"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/190",
+    "sha": "16bc61fa",
+    "pr": 190,
+    "note": "spec 18 approval (docs); ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Strict ghostpay-stealth-public/-keypair/-master-v1 schemas + parsers",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep \"ghostpay-stealth-\" packages apps: none @7a620ff1"
+   },
+   {
+    "req": "Export verification adapter: scheme/chain/announcement, derived==announced==recomputed",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "half",
+    "evidence": "primitive deriveStealthSecret (stealth.ts:212-232) + addressOfSecret exist; no adapter"
+   },
+   {
+    "req": "Encrypted single-keypair envelope: new format id/AAD domain, header AAD, bounded KDF, fresh salt/IV",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Raw single-key export 0x+64hex; refuse BTC/AA/7702/policy accounts",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Bounded encrypted bulk archive, dedupe/conflict reject, atomic import",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Separate encrypted master spend/view backup (distinct from legacy keystore v1)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Format reference vectors + offline recovery instructions",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent (scheme1.json covers derivation only)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "K01 schemas+adapter",
+   "K02 envelope",
+   "K04 raw export",
+   "K05 bulk",
+   "K06 master",
+   "vectors/docs"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no secret in URL/storage/logs/clipboard/telemetry",
+   "no auto plaintext export",
+   "legacy keystore v1 unchanged",
+   "flow-1 on-chain check via user-selected RPC, no fallback",
+   "export modules inside lean bundle rules"
+  ],
+  "dependencies": [
+   "UI/vault parts K03 and browser acceptance = B1b",
+   "spec 18 wording decisions (R-15) before K03",
+   "Same scope as B1b F-KEY-07/-08/-11/-12 (spec 18 K01/K02/K05/K06): count effort once"
+  ],
+  "blockers": [
+   "R-15 spec wording (clipboard/telemetry/in-memory step-up) for K03 only"
+  ],
+  "external_acceptance": "Independent EVM tool recovery (cast/anvil) and mobile download/import pending (K04/KC).",
+  "implementation_pct": 10,
+  "verification_pct": 10,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    5,
+    9
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "Implement K01/K02/K05/K06 crypto modules reusing keystore-portable primitives; vectors first.",
+  "evidence": [
+   "docs/specs/18 status \"specification only\"",
+   "GHOSTPAY_MASTER_COMPLETION_LEDGER: Spec 18 Implemented=No",
+   "pct raw impl=8.8 verif=8.8 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-01",
+  "name": "GhostPayRouter scheme-1 checkout router (native, ERC-20, ERC-2612 permit, buffer) + client builder",
+  "area": "contracts+chain-adapters",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/CONTRACTS_SPEC.md s1,s5",
+   "contracts DEVIATIONS 1-12",
+   "chain-adapters DEVIATIONS 1,3,4,13"
+  ],
+  "implementation_files": [
+   "packages/contracts/src/GhostPayRouter.sol",
+   "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+   "packages/chain-adapters/src/router.ts",
+   "packages/chain-adapters/src/fees.ts",
+   "packages/chain-adapters/src/adapter.ts",
+   "packages/chain-adapters/src/abi/router.ts"
+  ],
+  "test_files": [
+   "packages/contracts/test/GhostPayRouter.t.sol",
+   "packages/contracts/test/GhostPayRouter.fuzz.t.sol",
+   "packages/contracts/test/GhostPayRouter.invariant.t.sol",
+   "packages/contracts/test/TokenEdgeCases.t.sol",
+   "packages/contracts/test/audit/Router.audit.t.sol",
+   "packages/chain-adapters/src/router.test.ts",
+   "packages/chain-adapters/src/router.anvil.test.ts",
+   "packages/contracts/test/echidna/EchidnaRouter.sol"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/2",
+    "sha": "c1c4ac9b",
+    "pr": 2,
+    "note": "origin; ancestor"
+   },
+   {
+    "ref": "pr/114",
+    "sha": "1bf25be7",
+    "pr": 114,
+    "note": "real-chain lifecycle; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "payERC20: SafeERC20 + exact balance deltas (fee-on-transfer/rebasing rejected)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:161-200 @7a620ff1; test_feeOnTransferToken_rejected; invariant_feeOnTransferNeverSucceeds; CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490"
+   },
+   {
+    "req": "payNative: fee then net via checked call; receive/fallback revert NoDirectETH",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:110-128,149-157,241-249; test_payNative_*"
+   },
+   {
+    "req": "payERC20WithPermit: ERC-2612 permit in try/catch (front-run tolerant)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:84-108; test_payERC20WithPermit_frontRunPermitStillSucceeds"
+   },
+   {
+    "req": "Validation: deadline, stealth!=0/this/feeRecipient, gross>0, minNet, 33-byte 02/03 key, 57-byte metadata",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:202-236; test_payERC20_reverts*"
+   },
+   {
+    "req": "Announce via ERC-5564 announcer scheme 1 after transfer, atomic",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "test_announcement_metadataLayout, test_announcement_revertsAreAtomic"
+   },
+   {
+    "req": "Immutable config; no owner/pause/upgrade/delegatecall; nonReentrant",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:32-66; reentrant token tests; Slither 34 contracts/64 detectors/0 results"
+   },
+   {
+    "req": "Invariants: router holds nothing, fee+net==gross, native accounting",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.invariant.t.sol:202-231 (CI pass); Echidna Router (run 44231986631 success)"
+   },
+   {
+    "req": "Client buildPaymentTx (4 methods) + decodePaymentCalldata + assertPreviewMatchesCalldata",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "router.ts:119,226,366; router.test.ts 33; wired apps/web/src/lib/pay.ts:183, payExec.ts, txGuard.ts"
+   },
+   {
+    "req": "Fee parity client vs compiled router on anvil",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "router.anvil.test.ts (CI REQUIRE_ANVIL=1); beta acceptance \"router fee parity\""
+   }
+  ],
+  "verified_working": [
+   "coverage GhostPayRouter.sol 98.59% lines / 98.86% stmts / 100% funcs",
+   "beta acceptance pays ETH/USDC/USDT/DAI on anvil"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "Permit2 (Uniswap) path: not specified in CONTRACTS_SPEC, absent (not counted)"
+  ],
+  "security_privacy_requirements": [
+   "FeeCollected has no payer/stealth/invoice fields",
+   "view tag + ephemeral key unverifiable on-chain (documented)",
+   "direct transfers bypass fee (disclosed)",
+   "stray funds to router unrecoverable (documented)"
+  ],
+  "dependencies": [
+   "F-DEP-04 deployment of record",
+   "F-CTR-07 release gate"
+  ],
+  "blockers": [
+   "Mythril policy decision gates any release (F-CTR-07)"
+  ],
+  "external_acceptance": "No Sepolia deployment; no external audit; no real-wallet checkout acceptance.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete pending deployment/audit.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "CI 44231986652 @d91ae16a contracts-coverage, contracts-slither, contracts-static success",
+   "Beta acceptance 44231986665 PASS pay + fee parity",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": [
+   "forge not run locally (not installed); relies on CI logs downloaded to ci_logs_proto/"
+  ]
+ },
+ {
+  "id": "F-CTR-02",
+  "name": "Permit griefing fallback & error surfacing (spec 04)",
+  "area": "chain-adapters+contracts+relayer",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/04-permit-griefing-fallback.md",
+   "CONTRACTS_SPEC s2"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/permit.ts",
+   "packages/chain-adapters/src/sweep.ts",
+   "apps/web/src/lib/payExec.ts",
+   "apps/web/src/lib/sweep.ts",
+   "apps/relayer/src/service.ts",
+   "packages/contracts/src/GhostPaySweepRelayer.sol",
+   "packages/contracts/src/GhostPayRouter.sol"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/permit.test.ts",
+   "apps/relayer/src/e2e.anvil.test.ts",
+   "packages/contracts/test/GhostPaySweepRelayer.t.sol"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/27",
+    "sha": "a4ab45fa",
+    "pr": 27,
+    "note": "permit pre-flight; merged ancestor"
+   },
+   {
+    "ref": "pr/69",
+    "sha": "9d100956",
+    "pr": 69,
+    "note": "sweep permit messages; ancestor"
+   },
+   {
+    "ref": "pr/118",
+    "sha": "97b919c9",
+    "pr": 118,
+    "note": "relayer permit failure classes; ancestor"
+   },
+   {
+    "ref": "pr/113",
+    "sha": "0641d41a",
+    "pr": 113,
+    "note": "spec 04 CI gate; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "classifyPermit: capability, allowance, deadline, DOMAIN_SEPARATOR, nonce, recovery, static permit -> 6 states",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "permit.ts:78-122 @7a620ff1; permit.test.ts (20)"
+   },
+   {
+    "req": "diagnoseSignedPermit for relayer",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "permit.ts:180; apps/relayer/src/service.ts:1023"
+   },
+   {
+    "req": "Fallback: front-run/already-allowed -> sweep() allowance path",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "relayer e2e.anvil \"falls back to the allowance path when a third party front-runs the permit\" (CI 475/475)"
+   },
+   {
+    "req": "sig_invalid/unsupported: owner chooses direct sweep or approve; never silent retry",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/sweep.ts SWEEP_PERMIT_STATE_KEYS (spec 04 s5 ticked)"
+   },
+   {
+    "req": "Relayer: simulate before broadcast, quote TTL<=60s, per-owner failure limiter, gas loss metered",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "spec 04 s5; relayer e2e owner-drains-first"
+   },
+   {
+    "req": "griefReserveBps configurable (default 0 pending measured loss)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "spec 04 status: default 0 UNVERIFIED"
+   },
+   {
+    "req": "Payer-side permit preflight before signing prompt + post-sign recheck",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/payExec.ts:158-291 (CI web)"
+   },
+   {
+    "req": "Contracts tolerate front-run permit (try/catch) in router and sweep",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "test_frontRunPermit_sweepStillSucceeds; router permit tests"
+   },
+   {
+    "req": "CI gate: no tx.origin in contracts src",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": ".github/workflows/ci.yml contracts-test step; scripts/check-tx-origin.sh"
+   },
+   {
+    "req": "Threat model permit-griefing section",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/threat-model/THREAT_MODEL.md (doc)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "Option C PermitSkipped event: deferred optional, needs CONTRACTS_SPEC change (not counted)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no tx.origin",
+   "PermitSig.deadline outside sweep signature; permit.value>=amount only coupling (documented)"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "No real-token (USDC v2.2, DAI-style) testnet acceptance.",
+  "implementation_pct": 100,
+  "verification_pct": 95,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete off-chain; tune griefReserveBps from measured testnet loss.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a ts-test-relayer 475/475 incl e2e.anvil 5",
+   "local vitest @7a620ff1 permit.test.ts pass",
+   "pct raw impl=100.0 verif=92.5 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-03",
+  "name": "GhostPaySweepRelayer + relayer-authorized sweep (EIP-712 signed terms incl. deadline, nonce bitmap)",
+  "area": "contracts+chain-adapters",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "CONTRACTS_SPEC s2",
+   "FEE_SCHEDULE F-SPONSOR",
+   "ADR-0009 (no 4337)",
+   "audits mythril-14290880802-expiry-dispositions"
+  ],
+  "implementation_files": [
+   "packages/contracts/src/GhostPaySweepRelayer.sol",
+   "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+   "packages/chain-adapters/src/sweep.ts",
+   "packages/chain-adapters/src/fees.ts",
+   "packages/chain-adapters/src/abi/sweepRelayer.ts"
+  ],
+  "test_files": [
+   "packages/contracts/test/GhostPaySweepRelayer.t.sol",
+   "packages/contracts/test/GhostPaySweepRelayer.invariant.t.sol",
+   "packages/contracts/test/audit/Sweep.audit.t.sol",
+   "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+   "packages/chain-adapters/src/sweep.test.ts",
+   "packages/chain-adapters/src/eip712.independent.test.ts",
+   "apps/relayer/src/e2e.anvil.test.ts",
+   "packages/contracts/test/echidna/EchidnaSweep.sol"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "EIP-712 Sweep{token,owner,destination,feeTo,amount,fee,deadline,nonce}; domain name/version/chainId/contract",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPaySweepRelayer.sol:35-110 @7a620ff1; test_typehashMatchesSpecString, test_domainSeparatorTracksChainId"
+   },
+   {
+    "req": "OZ ECDSA.recover (low-s), signer == owner",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sol:109; test_highSMalleableSignature_rejected, test_wrongSigner_reverts"
+   },
+   {
+    "req": "Inclusive signed deadline block.timestamp <= deadline",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sol:83; test_sweep_deadlineInclusive/test_expired_reverts; Mythril SWC-116 dispositioned intended (10 tests)"
+   },
+   {
+    "req": "Unordered per-owner nonce bitmap consumed before external calls; replay rejected",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sol:111-115; test_replay_reverts; invariant_nonceSingleUse"
+   },
+   {
+    "req": "sweepWithPermit: permit try/catch, permit.value >= amount",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sol:46-61; test_frontRunPermit_sweepStillSucceeds, test_permitValueTooLow_reverts"
+   },
+   {
+    "req": "Relayer cannot alter destination/amount/fee; exact balance deltas incl owner",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "invariant_relayerCannotAlterSignedTerms; testFuzz_anyFieldTamperReverts"
+   },
+   {
+    "req": "Client typed data + digest cross-checked vs viem + noble signing; refuses dest==owner etc.",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "sweep.ts:79-312; sweep.test.ts (35; viem property)"
+   },
+   {
+    "req": "F-SPONSOR: client recompute max(gas*1.10, 50bps) cap 300bps; fee<amount",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "fees.ts:141-170; fees.test.ts (33)"
+   },
+   {
+    "req": "End-to-end relayed sweep on anvil (USDC permit, DAI, replay 409)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "Beta acceptance PASS relayer sweep USDC/DAI + replay refused; relayer e2e"
+   }
+  ],
+  "verified_working": [
+   "coverage GhostPaySweepRelayer.sol 100%",
+   "Echidna Sweep campaign green (run 44231986631)"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "sponsor sees stealth address + destination (linkage)",
+   "stealth key signs exact fee/feeTo",
+   "EIP-3009 future, not built"
+  ],
+  "dependencies": [
+   "relayer service (apps/relayer) operator; F-DEP-04",
+   "Overlap B1b F-WEB-12 (relayer sweep UI); this row = contract + client signing"
+  ],
+  "blockers": [
+   "F-SPONSOR rate is [OWNER] decision before mainnet"
+  ],
+  "external_acceptance": "No hosted relayer (ADR-0015); no testnet relayed sweep.",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Complete; relayer hosting is a separate owner decision.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "CI 44231986652 @d91ae16a relayer 475/475",
+   "Beta acceptance 44231986665",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-04",
+  "name": "ERC-6538 registry integration (canonical singleton used as deployed) + delegated-registration builders (#181) + ENS",
+  "area": "chain-adapters",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/06-erc6538-registry.md (+2026-11-16 continuation)",
+   "ADR-0018 (Proposed; stale)",
+   "CONTRACTS_SPEC preamble"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/registry.ts",
+   "packages/chain-adapters/src/registryDelegation.ts",
+   "packages/chain-adapters/src/registryEns.ts",
+   "packages/chain-adapters/src/abi/erc6538Registry.ts",
+   "apps/web/src/lib/registry.ts",
+   "apps/web/src/features/registry/RegistryView.tsx"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/registry.test.ts",
+   "packages/chain-adapters/src/registry.compat.test.ts",
+   "packages/chain-adapters/src/registryDelegation.test.ts",
+   "packages/chain-adapters/src/registryEns.test.ts",
+   "apps/web/src/features/registry/registry.anvil.test.ts",
+   "apps/web/src/features/registry/RegistryView.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/181",
+    "sha": "98f77953",
+    "pr": 181,
+    "note": "nonce + delegated builders; ancestor"
+   },
+   {
+    "ref": "pr/60",
+    "sha": "78be1730",
+    "pr": 60,
+    "note": "registry meta-address QR export; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "registerKeys(1, 66-byte meta) builder + preview + post-send assertRegisterKeysTx",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registry.ts:96-115,218-243 @7a620ff1; registry.test.ts; RegistryView.test.tsx (CI web)"
+   },
+   {
+    "req": "Lookup stealthMetaAddressOf strict decode; mixed-case EIP-55 enforced (EXTRA05-F1)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registry.ts:117-166"
+   },
+   {
+    "req": "Fail-closed presence: eth_getCode + ERC6538REGISTRY_ENTRY_TYPE_HASH probe",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registry.ts:139-196"
+   },
+   {
+    "req": "Per-chain runtime codehash pin",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "matrix.json registry.codehash null on all chains; audit 27 I-6"
+   },
+   {
+    "req": "Clear entry (un-publish)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/registry.ts buildClearRegistryCall; RegistryView.tsx:148-160"
+   },
+   {
+    "req": "ENS via canonical Universal Resolver on selected Ethereum/Sepolia RPC; CCIP disabled; no default transport",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registryEns.ts:36; registryEns.test.ts (22)"
+   },
+   {
+    "req": "Delegation: nonce call, incrementNonce, registerKeysOnBehalf, EIP-712 request, injected signer+verifier, bounded sig",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registryDelegation.ts:8-130; registryDelegation.test.ts (53); registry.anvil.test.ts 9 (CI web, CC0 reference registry, EOA+ERC-1271)"
+   },
+   {
+    "req": "Consent UI: public-association warning, unticked checkbox, review before send",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "RegistryView.tsx; RegistryView.test.tsx (15)"
+   },
+   {
+    "req": "ADR records \"reference contracts used as deployed, unaudited\"",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "ADR-0018 covers it but still says on-behalf unsupported + ENS absent (stale)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "per-chain registry codehash pin (needs verified data)",
+   "on-behalf UI excluded from v1 by design"
+  ],
+  "confirmed_defects": [
+   "Info: ADR-0018 stale vs code (registerKeysOnBehalf builders + ENS now exist)"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "publishing permanently links wallet to meta-address",
+   "only trust registrant == expected",
+   "ENS = RPC-supplied naming data, not identity"
+  ],
+  "dependencies": [
+   "F-DEP-03 registry cells",
+   "Overlap B1b F-WEB-14 (registry view); this row = library + anvil reference tests"
+  ],
+  "blockers": [
+   "registry presence + codehash per testnet unverified (external)"
+  ],
+  "external_acceptance": "No real ENS/registry acceptance on public testnets.",
+  "implementation_pct": 90,
+  "verification_pct": 85,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0.5,
+    1
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "Pin codehash once read from canonical deployments; refresh ADR-0018.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a web registry.anvil 9/9, RegistryView 15/15; rest-1 registryDelegation 53, registryEns 22",
+   "local vitest @7a620ff1 chain-adapters pass",
+   "pct raw impl=87.5 verif=85.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-05",
+  "name": "Fee schedule F-PAY / F-SPONSOR (math, immutables, disclosure, manifest-sourced recipient)",
+  "area": "contracts+chain-adapters+web",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/FEE_SCHEDULE.md s1-s5",
+   "MULTICHAIN_SPEC s4"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/fees.ts",
+   "packages/contracts/src/GhostPayRouter.sol",
+   "packages/chain-adapters/src/adapter.ts",
+   "apps/web/locales/en.json"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/fees.test.ts",
+   "packages/chain-adapters/src/router.anvil.test.ts",
+   "packages/contracts/test/GhostPayRouter.t.sol"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "F-PAY 25 bps floor; dust <400 pays 0; FEE_BPS constant; FEE_RECIPIENT immutable",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "fees.ts:9-56 @7a620ff1; test_payNative_dustSkipsFeeTransfer; router.anvil parity"
+   },
+   {
+    "req": "Recipient never hard-coded; from signed manifest; UI shows chain-read value",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:221 feeRecipient read from chain; apps/web/src/lib/deployment.ts; chain-adapters README rules"
+   },
+   {
+    "req": "Disclosure copy before wallet confirmation (FEE_SCHEDULE s5)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/locales/en.json \"GhostPay charges {pct} %...\" (3 trust variants); Pay.tsx:1113"
+   },
+   {
+    "req": "F-SPONSOR fee inside stealth EIP-712 signature; client cap",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "fees.ts:141-170; Sweep struct fee/feeTo"
+   },
+   {
+    "req": "Native buffer carries no fee",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:132-147"
+   },
+   {
+    "req": "Per-chain FeeCapability (enforced/available/not_deployed)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "adapter.ts:166-174"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "fee recipient public on-chain",
+   "forks can remove client fees (documented)"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "[OWNER] fee recipient (HW/multisig), sponsor rates, legal/sanctions review before mainnet"
+  ],
+  "external_acceptance": "Legal review absent (FEE_SCHEDULE s6).",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    0.5
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "Code complete; owner decisions only.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "CI 44231986652 @d91ae16a rest-1 fees.test 33, router.anvil 3",
+   "pct raw impl=100.0 verif=100.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-06",
+  "name": "Gas buffer v2 (spec 13) + invoice v2 seller bufferPolicy (ADR-0024)",
+  "area": "contracts+invoice-schema+web",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/specs/13-gas-buffer-v2.md",
+   "ADR-0024 (Proposed)",
+   "CONTRACTS_SPEC s1,s3"
+  ],
+  "implementation_files": [
+   "packages/contracts/src/GhostPayRouter.sol",
+   "packages/chain-adapters/src/fees.ts",
+   "packages/invoice-schema/src/schema.ts",
+   "apps/web/src/lib/pay.ts",
+   "apps/web/src/views/Pay.tsx",
+   "apps/web/src/views/CreateInvoice.tsx"
+  ],
+  "test_files": [
+   "packages/contracts/test/GhostPayRouter.t.sol",
+   "packages/invoice-schema/src/schema.test.ts",
+   "apps/web/src/lib/pay.test.ts",
+   "apps/web/src/lib/payExec.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/27",
+    "sha": "a4ab45fa",
+    "pr": 27,
+    "note": "gas buffer v2; merged ancestor"
+   },
+   {
+    "ref": "pr/68",
+    "sha": "4fe95fc0",
+    "pr": 68,
+    "note": "seller buffer policy control; ancestor"
+   },
+   {
+    "ref": "origin/ghostpay-*-2026-10-2x (5 recovery snapshots)",
+    "sha": "-",
+    "pr": null,
+    "note": "NOT ancestors; ADR-0024/quote.ts/permit.ts variants; archive as evidence"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "payERC20WithBuffer forwards msg.value to stealth, no fee, BufferRequired/BufferTooLarge",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayRouter.sol:132-147 @7a620ff1; forge tests"
+   },
+   {
+    "req": "Buffer = ceil(gas*maxFee*(1+safety)) with token-specific sweep simulation; fail closed",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "fees.ts calculateBuffer; apps/web/src/lib/pay.ts:284-330 (CI web pay.test)"
+   },
+   {
+    "req": "Quote <=60 s, recheck at send, cap MAX_BUFFER_WEI and maxBufferWei",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "pay.ts:213-219"
+   },
+   {
+    "req": "Invoice v2 bufferPolicy strict + payer enforcement (raise to min, refuse outside)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "schema.ts:350-366; pay.ts:251-279"
+   },
+   {
+    "req": "Seller policy in Create (full profile only); lean rejects v2",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ADR-0024 s4; CreateInvoice tests (CI web)"
+   },
+   {
+    "req": "OP Stack L1 fee reserve in buffer",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "pay.ts:291-327"
+   },
+   {
+    "req": "Fiat estimate of buffer from native/USD feed (hidden when unverified)",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "Pay.tsx:1207 shows native/gas/fee only"
+   },
+   {
+    "req": "Public-linkage notice for buffer",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "pay.final.bufferNote key; test not located"
+   },
+   {
+    "req": "Anvil e2e: sweep funded only by buffer",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "no e2e found (grep WithBuffer/buffer in e2e + anvil tests)"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "fiat buffer estimate",
+   "permit+buffer single-call (deferred; CONTRACTS_SPEC + audit first; not counted)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "anvil e2e buffered sweep"
+  ],
+  "security_privacy_requirements": [
+   "buffer publicly links payer funding to one-time address",
+   "no silent refunds"
+  ],
+  "dependencies": [
+   "Overlap B1b F-WEB-05 (gas buffer UI); count effort once"
+  ],
+  "blockers": [],
+  "external_acceptance": "No real-chain buffer acceptance.",
+  "implementation_pct": 95,
+  "verification_pct": 80,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "Add anvil e2e buffered sweep; fiat estimate once feed verified.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "CI 44231986652 @d91ae16a web pay.test/payExec.test pass",
+   "local vitest @7a620ff1 invoice-schema 715/715",
+   "pct raw impl=94.4 verif=80.6 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CTR-07",
+  "name": "Contract qualification gates (Foundry unit/fuzz/invariant, coverage, Slither, Echidna, Mythril, NatSpec)",
+  "area": "contracts",
+  "tier": "beta-core",
+  "spec_refs": [
+   "CONTRACTS_SPEC s5",
+   "REVIEW_FINDINGS R-06,R-08,R-10,R-12",
+   "audits mythril-14290880802-*"
+  ],
+  "implementation_files": [
+   "packages/contracts/test/**",
+   "packages/contracts/echidna.yaml",
+   "packages/contracts/scripts/run-echidna.sh",
+   "packages/contracts/scripts/run-mythril.sh",
+   ".github/workflows/ci.yml",
+   ".github/workflows/contract-analysis.yml",
+   ".github/workflows/release.yml"
+  ],
+  "test_files": [
+   "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+   "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+   "packages/contracts/test/echidna/*"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/3",
+    "sha": "df150cbd",
+    "pr": 3,
+    "note": "Mythril triage + gambit; ancestor"
+   },
+   {
+    "ref": "pr/180",
+    "sha": "ffd957e2",
+    "pr": 180,
+    "note": "fail closed on Mythril exits; ancestor"
+   },
+   {
+    "ref": "pr/4",
+    "sha": "39cce466",
+    "pr": 4,
+    "note": "Echidna + PolicyRouter; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Foundry unit/fuzz(10k)/invariant + mock token matrix",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490"
+   },
+   {
+    "req": "Coverage job",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "contracts-coverage: Router 98.59, Sweep 100, PolicyRouter 98.82, PolicyAccount 99.21, Factory 100 (% lines)"
+   },
+   {
+    "req": "Slither",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "contracts-slither: 34 contracts, 64 detectors, 0 results"
+   },
+   {
+    "req": "fmt + NatSpec + gas snapshot check",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "contracts-static success"
+   },
+   {
+    "req": "Echidna Router/Sweep/Policy full budget, canaries reached",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "Contract analysis 44231986631 echidna success @d91ae16a"
+   },
+   {
+    "req": "Mythril passes or approved finding-specific disposition mechanism",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "mythril failure by design (10 records on d91ae16a; 11 dispositioned); no suppression"
+   },
+   {
+    "req": "release.yml requires source-matched Echidna+Mythril",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "R-06 15c302cd; workflow tests (12 mutations); scripts tests 201/201 CI"
+   },
+   {
+    "req": "Announcer event ABI + CC0 reference announcer compiled locally",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "test/utils/ERC5564Announcer.sol; DeployAnnouncer.t.sol 8"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "AI review != external audit"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "Owner: Mythril disposition mechanism or keep releases blocked (PROMOTION_PACKET blocker 2)",
+   "main unprotected (blocker 1)"
+  ],
+  "external_acceptance": "No independent external audit.",
+  "implementation_pct": 90,
+  "verification_pct": 80,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "After owner decision: source-matched (contract,function,SWC,PC,hash) disposition file failing on code change.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "gh api runs/44231986631/jobs: echidna success, mythril failure (d91ae16a)",
+   "pct raw impl=90.6 verif=81.2 (rubric-rounded)"
+  ],
+  "unverified": [
+   "Echidna/Mythril report contents (sha256 in PROMOTION_PACKET) not downloaded/read here"
+  ]
+ },
+ {
+  "id": "F-AA-01",
+  "name": "Scheme-2 policy-guarded account contracts (PolicyAccount, PolicyAccountFactory, GhostPayPolicyRouter)",
+  "area": "contracts",
+  "tier": "experimental",
+  "spec_refs": [
+   "CONTRACTS_SPEC s4, s4.1",
+   "ADR-0014",
+   "ADR-0027",
+   "contracts DEVIATIONS P1-P19, A1-A6, R1-R6"
+  ],
+  "implementation_files": [
+   "packages/contracts/src/PolicyAccount.sol",
+   "packages/contracts/src/PolicyAccountFactory.sol",
+   "packages/contracts/src/GhostPayPolicyRouter.sol",
+   "packages/contracts/src/interfaces/IPolicyAccount.sol",
+   "packages/contracts/src/interfaces/IGhostPayPolicyRouter.sol",
+   "packages/contracts/script/DeployPolicy.s.sol",
+   "packages/contracts/script/DeployPolicyRouter.s.sol"
+  ],
+  "test_files": [
+   "packages/contracts/test/PolicyAccount*.t.sol",
+   "packages/contracts/test/PolicyAccountFactory.t.sol",
+   "packages/contracts/test/GhostPayPolicyRouter*.t.sol",
+   "packages/contracts/test/audit/Policy.audit.t.sol",
+   "packages/contracts/test/audit/Review24.audit.t.sol",
+   "packages/contracts/test/echidna/EchidnaPolicy.sol"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/4",
+    "sha": "39cce466",
+    "pr": 4,
+    "note": "PolicyRouter + policy-scheme; ancestor"
+   },
+   {
+    "ref": "pr/90",
+    "sha": "5628bc00",
+    "pr": 90,
+    "note": "authenticate policy payments; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "EIP-1167 clone per CREATE2(owner, policyHash); authenticated init by re-derivation",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccountFactory.sol:101-192 @7a620ff1; PolicyAccount.sol:130; CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490 (Factory 32, Account 78)"
+   },
+   {
+    "req": "requestWithdraw (owner EIP-712 incl limitLeafHash) -> delay -> executeWithdraw by anyone; DestinationChangedSinceRequest",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccount.sol:155-244"
+   },
+   {
+    "req": "Destination change: propose + 2x delay timelock, cancellable; cancel(id,sig)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccount.sol:245-311"
+   },
+   {
+    "req": "Per-token two-bucket window cap, merkle limitsRoot, WindowMismatch",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccount.sol:372; invariant_windowCapRespected"
+   },
+   {
+    "req": "No delegatecall/generic execute/admin; funds only to destination",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "invariant_fundsOnlyLeaveToDestination; Slither 0"
+   },
+   {
+    "req": "PolicyRouter: binding stealth==FACTORY.predictAddress first; 25 bps; announce 0x47500002",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "GhostPayPolicyRouter.sol:236-241; 83 unit + 9 fuzz + invariant"
+   },
+   {
+    "req": "Calldata must not expose seller-constant policyHash (AUD24-01, regression of N-01)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "IGhostPayPolicyRouter.sol:18 PolicyRef{owner, policyHash} in calldata"
+   },
+   {
+    "req": "L2 cancel-window guidance (R-09)",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "docs/developer/security-model.md updated; UI guidance backlog"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Medium (privacy) AUD24-01 OPEN: PolicyRef{owner,policyHash} in router calldata links scheme-2 payments to one seller (IGhostPayPolicyRouter.sol:18, GhostPayPolicyRouter.sol:236-241)",
+   "Medium conditional N1 OPEN: see F-AA-03"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "key theft delayed not prevented",
+   "destination linked after first withdrawal (D1)",
+   "no lost-key recovery"
+  ],
+  "dependencies": [
+   "F-AA-03 fee residual",
+   "F-AA-05 recovery decision"
+  ],
+  "blockers": [
+   "ADR-0014: stays out of releases",
+   "owner ABI decision AUD24-01"
+  ],
+  "external_acceptance": "Undeployed; no audit.",
+  "implementation_pct": 85,
+  "verification_pct": 85,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Keep disabled; when scheduled restore salt-only ABI (50881e4) in lockstep with policy-scheme + payer-hiding RouterCall.sol.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "coverage PolicyAccount 99.21 / Factory 100 / PolicyRouter 98.82 % lines",
+   "docs/handoffs/BETA_CANDIDATE_LATEST.md:48",
+   "pct raw impl=86.8 verif=84.2 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-AA-02",
+  "name": "Policy-scheme client (scheme-2 derivation, gp2 meta-address, limits tree, EIP-712, calldata, record restore) + flagged web path",
+  "area": "policy-scheme",
+  "tier": "experimental",
+  "spec_refs": [
+   "CONTRACTS_SPEC s4",
+   "ADR-0014",
+   "ADR-0023",
+   "ADR-0027 gates 1-6",
+   "policy-scheme DEVIATIONS S1-S8"
+  ],
+  "implementation_files": [
+   "packages/policy-scheme/src/derive.ts",
+   "packages/policy-scheme/src/meta.ts",
+   "packages/policy-scheme/src/limits.ts",
+   "packages/policy-scheme/src/eip712.ts",
+   "packages/policy-scheme/src/calldata.ts",
+   "packages/policy-scheme/src/router.ts",
+   "packages/policy-scheme/src/window.ts",
+   "packages/policy-scheme/src/record.ts",
+   "apps/web/src/features/policy/chain.ts"
+  ],
+  "test_files": [
+   "packages/policy-scheme/src/vectors.test.ts",
+   "packages/policy-scheme/src/anvil.test.ts",
+   "packages/policy-scheme/src/client.test.ts",
+   "packages/policy-scheme/src/properties.test.ts",
+   "packages/policy-scheme/src/negative.test.ts",
+   "apps/web/src/features/policy/*.test.ts(x)",
+   "test-vectors/policy-scheme.json",
+   "packages/policy-scheme/vectors/client-v1.json"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/65",
+    "sha": "f7b8ee9d",
+    "pr": 65,
+    "note": "policy send guards; ancestor"
+   },
+   {
+    "ref": "pr/89",
+    "sha": "cfc7b0f3",
+    "pr": 89,
+    "note": "policy scopes; ancestor"
+   },
+   {
+    "ref": "pr/90",
+    "sha": "5628bc00",
+    "pr": 90,
+    "note": "policy payments; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "deriveScheme2Payment / checkScheme2Announcement / deriveScheme2OwnerKey (owner via scheme 1, account via CREATE2)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "derive.ts @7a620ff1; vectors.test.ts (SDK+viem generated); anvil.test.ts 7 (CI rest-0)"
+   },
+   {
+    "req": "gp2 meta-address st:eth:gp2:0x<spend><view><policyHash>",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "meta.ts; S1 not ratified"
+   },
+   {
+    "req": "Limits tree (OZ StandardMerkleTree layout) + proofs",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "limits.ts; properties.test.ts"
+   },
+   {
+    "req": "EIP-712 Withdraw/Cancel/ProposeDestination typed data + signing",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "eip712.ts; anvil cross-check typehash/domain"
+   },
+   {
+    "req": "Calldata builders + policy-router payment builder/decoder",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "calldata.ts, router.ts; router.test.ts"
+   },
+   {
+    "req": "windowHeadroom/consumeWindow mirror",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "window.ts; client.test.ts"
+   },
+   {
+    "req": "Policy record v1 + strict parser + candidate search (ADR-0023 client-side)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "record.ts; client.test.ts"
+   },
+   {
+    "req": "Flagged web path (VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1, testnets) with code-identity checks",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/features/policy/chain.ts:83-130; web policy tests (CI)"
+   },
+   {
+    "req": "Authenticated deployment pins for a public testnet",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "chain.ts:34 PINNED_POLICY_DEPLOYMENTS = {}; vectors only chain 31337 (S5)"
+   },
+   {
+    "req": "Scheme-2 invoice / payment-request format",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "invoice-schema accepts schemeId 1 only (schema.ts:261)"
+   },
+   {
+    "req": "Payment verification equivalent consumed by status (ADR-0027 gate 4)",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "half",
+    "evidence": "apps/web/src/features/policy/paymentEvidence.ts (+anvil test); not consumed by ordinary status"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "public testnet pins",
+   "scheme-2 invoice",
+   "gate-4 status integration",
+   "browser lifecycle (ADR-0027)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "policy record links destination + meta-address (no secrets)",
+   "windowHeadroom is planning bound, not reservation"
+  ],
+  "dependencies": [
+   "F-AA-01",
+   "Overlap B1b F-WEB-15 (policy UI); flagged web path requirement counted here"
+  ],
+  "blockers": [
+   "ADR-0014/0027 gates; AUD24-01 ABI decision"
+  ],
+  "external_acceptance": "No public network, no wallet eth_signTypedData_v4 UI run.",
+  "implementation_pct": 80,
+  "verification_pct": 80,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    5,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Keep isolated; complete ADR-0027 gates only after owner schedules scheme 2.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a rest-0 policy-scheme 95/95 (anvil 7)",
+   "local vitest @7a620ff1 policy-scheme 88 pass/7 anvil skip",
+   "pct raw impl=78.3 verif=78.3 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-AA-03",
+  "name": "F-SECURE factory flat fee + fee-token handling (N1 freeze residual)",
+  "area": "contracts",
+  "tier": "experimental",
+  "spec_refs": [
+   "CONTRACTS_SPEC s4 factory fee rule",
+   "FEE_SCHEDULE F-SECURE",
+   "spec 16 s2 (fix M-03)",
+   "REVIEW_FINDINGS R-11",
+   "audits mythril-14290880802-factory-dispositions"
+  ],
+  "implementation_files": [
+   "packages/contracts/src/PolicyAccountFactory.sol"
+  ],
+  "test_files": [
+   "packages/contracts/test/PolicyAccountFactory.t.sol",
+   "packages/contracts/test/MythrilFactoryDispositions.t.sol"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Immutable FEE_TOKEN/FLAT_FEE/FEE_RECIPIENT; charged once from msg.sender at deploy",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccountFactory.sol:39-45,101-127 @7a620ff1"
+   },
+   {
+    "req": "Exact fee delta; waive only if balance+allowance cover fee and failed call mutated nothing (FeeWaived)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PolicyAccountFactory.sol:128-166; Factory tests 32 + Mythril factory dispositions 33 (CI)"
+   },
+   {
+    "req": "Counterfactual funds never frozen by fee-token behaviour (failing views, fee-switch delta): pull-based/fallback/zero-fee",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "N1: balanceOf/allowance revert or unexpected delta reverts every fee-charging deploy (R-11)"
+   },
+   {
+    "req": "UI can charge/handle non-zero F-SECURE fee",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "ADR-0027: UI refuses non-zero factory fees"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Medium conditional (not exposed; scheme 2 undeployed) N1/R-11 OPEN: PolicyAccountFactory._collectFee (sol:128-166) can freeze counterfactual funds"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "factory event omits owner/policy (P12)"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "Owner: zero-fee factory for upgradeable/fee-switch tokens or specified fail-open change (PROMOTION_PACKET blocker 3)"
+  ],
+  "external_acceptance": "None.",
+  "implementation_pct": 55,
+  "verification_pct": 55,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Decision first; then spec edit, code, tests, audit.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "pct raw impl=55.6 verif=55.6 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-AA-04",
+  "name": "EIP-7702 / ERC-4337 / ERC-7579 account-abstraction path (spec 15)",
+  "area": "contracts design",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/specs/15-eip7702-aa-policy-account-path.md",
+   "ADR-LOG ADR-0009, ADR-0014, ADR-0023"
+  ],
+  "implementation_files": [
+   "(none) related out-of-scope: packages/payer-sponsor/src/eip7702/*, packages/ux-connect/src/compat.ts (0xef0100), packages/tx-review/src/decode.ts:90"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Decision record: PolicyAccount not 4337/7579 (spec \"ADR-0017\")",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "rationale only in spec 15 + ADR-0009/ADR-0023 text; ADR-0017 number reused (Solana)"
+   },
+   {
+    "req": "Decision record: 7702 vs clone, keep clone (spec \"ADR-0018\")",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "spec 15 s1 text only; ADR-0018 number reused (ERC-6538)"
+   },
+   {
+    "req": "ADR-0019 convenience SweepDelegate funded decision",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "SweepDelegate (no storage, EIP-712 owner sig, nonzero chainId auth, nonce bitmap, pinned)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep SweepDelegate packages apps: none @7a620ff1"
+   },
+   {
+    "req": "Client refuses chain-id-0 authorizations; offer clear-delegation",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Foundry 7702 cheatcode tests; delegate holds no funds; re-delegation shows policy not enforced",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "key thief can re-delegate 7702 (policy bypass)",
+   "sponsor/bundler sees stealth address",
+   "chain-id-0 replay"
+  ],
+  "dependencies": [
+   "F-AA-05 (spec 16) first",
+   "external audit"
+  ],
+  "blockers": [
+   "spec 15: no build before 16 + audit; owner ABI/privacy decision (D03)"
+  ],
+  "external_acceptance": "None.",
+  "implementation_pct": 15,
+  "verification_pct": 0,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    15,
+    30
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Record ADRs only; no build.",
+  "evidence": [
+   "grep 7702/SweepDelegate in scope: no implementation",
+   "pct raw impl=16.7 verif=0.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-AA-05",
+  "name": "Policy-account recovery / guardian (spec 16, ADR-0023, ADR-0028)",
+  "area": "contracts design",
+  "tier": "experimental",
+  "spec_refs": [
+   "docs/specs/16-policy-account-recovery.md",
+   "ADR-0028 (Unaccepted)",
+   "ADR-0023 (Proposed)",
+   "ADR-0027"
+  ],
+  "implementation_files": [
+   "scripts/experimental/policy-recovery/model.mjs"
+  ],
+  "test_files": [
+   "scripts/experimental/policy-recovery/model.test.mjs"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/89",
+    "sha": "cfc7b0f3",
+    "pr": 89,
+    "note": "ADR-0028 source; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Accepted ADR choosing A, B or neither",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "ADR-0028 \"Unaccepted candidate\""
+   },
+   {
+    "req": "Threat model + state machine + authority analysis",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "ADR-0028 tables (doc)"
+   },
+   {
+    "req": "Executable authority/timing model with adversarial tests (renewable-timer counterexample, finite bound)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "model.test.mjs 19/19 run locally @7a620ff1 (NOT in CI)"
+   },
+   {
+    "req": "Recovery EIP-712 types + scanner changes",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "CONTRACTS_SPEC s4 edit then contract + fuzz/invariant (guardian cannot redirect)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "PolicyAccount has no owner-rotation function"
+   },
+   {
+    "req": "User docs copy",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Info: experimental model tests not wired into any CI workflow (grep policy-recovery .github: none)"
+  ],
+  "missing_tests": [
+   "CI wiring for scripts/experimental/*/model.test.mjs"
+  ],
+  "security_privacy_requirements": [
+   "no default guardians, no custodial recovery",
+   "candidate B gives destination stronger authority (documented)"
+  ],
+  "dependencies": [
+   "F-AA-01",
+   "F-AA-03 (fix M-03 same revision)"
+  ],
+  "blockers": [
+   "Owner authority decision (D04)"
+  ],
+  "external_acceptance": "None.",
+  "implementation_pct": 30,
+  "verification_pct": 15,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    15,
+    30
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Decision packet first; no fund-control path.",
+  "evidence": [
+   "node --test scripts/experimental/policy-recovery/model.test.mjs: 19 pass 0 fail (local)",
+   "pct raw impl=30.8 verif=15.4 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-AA-06",
+  "name": "GhostMilestones escrow (spec 17)",
+  "area": "contracts design",
+  "tier": "future",
+  "spec_refs": [
+   "docs/specs/17-milestone-escrow.md"
+  ],
+  "implementation_files": [
+   "scripts/experimental/milestone-escrow/model.mjs"
+  ],
+  "test_files": [
+   "scripts/experimental/milestone-escrow/model.test.mjs"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Custody/dispute/legal ADR decision",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "spec 17 s3 gate"
+   },
+   {
+    "req": "Formal state enumeration / executable model (variants, conservation, replay, timing)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "model.test.mjs 19/19 local (NOT in CI)"
+   },
+   {
+    "req": "Per-stage minimal escrow clones (EIP-712 StageAction, nonce, no admin, SafeERC20, allowlist)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Encrypted MilestoneManifest + mandatory backup test",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   },
+   {
+    "req": "Contract tests: transitions, fuzz, invariants, reorg scenarios",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "absent"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no shared project id/salt on-chain",
+   "fixed arbiter compromise documented by model"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "custody/dispute decision; spec 17 \"do not start before 01-09 done\""
+  ],
+  "external_acceptance": "Separate audit + legal review required.",
+  "implementation_pct": 15,
+  "verification_pct": 15,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "XL",
+   "engineer_days": [
+    20,
+    40
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "Separate product scope.",
+  "evidence": [
+   "node --test scripts/experimental/milestone-escrow/model.test.mjs: 19 pass 0 fail (local)",
+   "pct raw impl=16.7 verif=16.7 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DEP-01",
+  "name": "Deployment manifests: schema, strict loader, structured release signature, build-time bundling",
+  "area": "chain-adapters+web+deployments",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/DEPLOYMENT_MANIFEST.md",
+   "deployments/README.md",
+   "apps/web/deployments/README.md",
+   "ADR-0015",
+   "spec 01 signature half"
+  ],
+  "implementation_files": [
+   "deployments/schema.json",
+   "packages/chain-adapters/src/deployments.ts",
+   "packages/chain-adapters/src/verify.ts",
+   "packages/chain-adapters/src/deploymentsSignature.ts",
+   "apps/web/scripts/validate-deployments.mjs",
+   "apps/web/vite.config.ts",
+   "apps/web/src/lib/releaseKeys.ts",
+   "apps/web/src/lib/manifest.ts"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/deployments.test.ts",
+   "packages/chain-adapters/src/verify.test.ts",
+   "apps/web/src/lib/manifest.test.ts",
+   "apps/web/scripts/localBuildProfile.test.mjs"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/137",
+    "sha": "ac08062e",
+    "pr": 137,
+    "note": "Pages static beta verifier; ancestor"
+   },
+   {
+    "ref": "pr/195",
+    "sha": "12e18931",
+    "pr": 195,
+    "note": "signed bundled manifest + fail-closed tests; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Strict validator (roles distinct, checksums, dates, policy all-or-nothing, 16 KiB, schema key sync)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "deployments.ts:89-187 @7a620ff1; deployments.test.ts (13)"
+   },
+   {
+    "req": "Structured signature: compact low-s secp256k1 over keccak(domain||canonical JSON); unsigned/unverifiable never valid",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:21-120; verify.test.ts:186-243"
+   },
+   {
+    "req": "Release keys compiled at build (<=8); unsigned/invalid manifest fails build and is refused at runtime",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "validate-deployments.mjs:8-36; vite.config.ts:7-68; manifest.test.ts (#195, CI web)"
+   },
+   {
+    "req": "No runtime manifest fetch; text inside hashed bundle",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/deployments/README; Pages verify (CI Pages 44231986644)"
+   },
+   {
+    "req": "Legacy raw-text API kept separate with own domain",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "deploymentsSignature.ts:31-104"
+   },
+   {
+    "req": "Operator signing procedure/tool for manifestDigest (offline)",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "deployments/README step 3: \"No in-repository signing command exists\""
+   },
+   {
+    "req": "Documented validation command exists",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "apps/web/deployments/README step 4 \"npm run validate:deployments -w @ghostpay/web\": no such script in apps/web/package.json"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Low CONFIRMED doc/script drift: apps/web/deployments/README.md references missing npm script validate:deployments (grep apps/web/package.json) @7a620ff1"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "keys travel in same bundle (help only if bundle verified out of band, D7)",
+   "two trust roots: git tag signing vs secp256k1 manifest key"
+  ],
+  "dependencies": [
+   "Overlap B1b F-WEB-17 (bundled manifests UI)"
+  ],
+  "blockers": [
+   "release signer key absent (allowed_signers comments only; RELEASE_PUBLIC_KEYS [] default)",
+   "no manifest of record (deployments/ has only unsigned 31337.json)"
+  ],
+  "external_acceptance": "No signed manifest for any public chain.",
+  "implementation_pct": 85,
+  "verification_pct": 80,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0.5,
+    1
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "Add validate:deployments script (or fix README); document offline signing helper; then owner signs.",
+  "evidence": [
+   "local vitest @7a620ff1 chain-adapters deployments/verify tests pass",
+   "CI 44231986652 @d91ae16a web manifest tests pass; Pages success",
+   "pct raw impl=86.7 verif=80.0 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DEP-02",
+  "name": "On-chain manifest read-back verifyDeployment (spec 01)",
+  "area": "chain-adapters",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/specs/01-manifest-readback.md",
+   "chain-adapters DEVIATIONS 2",
+   "audits S3-01/A-07/G-05"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/verify.ts",
+   "packages/chain-adapters/src/deploymentsVerify.ts",
+   "apps/web/src/lib/deployment.ts",
+   "packages/cli/src/payment-context.ts",
+   "apps/relayer/src/runtime.ts"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/verify.test.ts",
+   "packages/chain-adapters/src/deploymentsVerify.test.ts",
+   "apps/web/src/lib/deployment.test.ts",
+   "scripts/beta/cli-devnet.e2e.mjs"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Every provider eth_chainId == manifest chainId",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:184-187 @7a620ff1; rpc.ts createClient"
+   },
+   {
+    "req": "Router FEE_RECIPIENT/ANNOUNCER/FEE_BPS(25) == manifest and canonical announcer",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:208-224; verify.test.ts:132-151"
+   },
+   {
+    "req": "keccak(eth_getCode) == bytecodeHashes (router, relayer, policy factory)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:195-206"
+   },
+   {
+    "req": "Announcer codehash pinned",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "verify.ts:206 \"its hash is not pinned here\""
+   },
+   {
+    "req": "Two independent providers must agree (requireSecondary)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify.ts:186-193; verify.test.ts:159-167"
+   },
+   {
+    "req": "Fail closed: Pay/Scan/Sweep disabled; relayer startup refuses mismatched manifest",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/deployment.ts:6-40; relayer runtime.ts:108 verifyManifestOnChain"
+   },
+   {
+    "req": "Cache per (chain, block) + re-run at Pay preview",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no cache (ledger: optional); preview re-run UNVERIFIED here"
+   },
+   {
+    "req": "Reject EIP-7702 designator/proxy code",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "implicit via codehash equality; no explicit 0xef0100 test"
+   },
+   {
+    "req": "Policy implementation codehash in same verifier",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "verifyManifestOnChain checks it (deploymentsVerify.ts:56-58); verifyDeployment does not"
+   },
+   {
+    "req": "Real compiled router on anvil: verify pass + negatives",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "Beta acceptance PASS B chain deployment verify + NEG wrong digest/no pin/offline"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Low CONFIRMED: two divergent read-back verifiers - verifyDeployment (web/CLI, verify.ts:184-235) skips policy implementation hash; verifyManifestOnChain (relayer, deploymentsVerify.ts:44-70) does not require canonical announcer or a second provider"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "reads via user-selected RPC only",
+   "lying RPC caught only with second provider"
+  ],
+  "dependencies": [
+   "F-DEP-01",
+   "F-DEP-03 announcer codehash data",
+   "Overlap B1b F-WEB-17 (readback in UI)"
+  ],
+  "blockers": [
+   "announcer codehash per chain unverified (external)"
+  ],
+  "external_acceptance": "No public-provider read-back of a real deployment.",
+  "implementation_pct": 85,
+  "verification_pct": 80,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "Unify verifiers; pin announcer hash once verified; add 0xef0100 test.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a rest-1 verify.test 21, deploymentsVerify.test 14; Beta acceptance Part B",
+   "local vitest @7a620ff1 pass",
+   "pct raw impl=83.3 verif=78.6 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DEP-03",
+  "name": "Chain/token/feed deployment matrix + release gate (spec 09)",
+  "area": "chain-adapters+scripts",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/specs/09-chain-token-deployment-matrix-and-pins.md",
+   "docs/operators/chain-matrix.md",
+   "ADR-0011"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/config/matrix.json",
+   "scripts/lib/chain-matrix.mjs",
+   "scripts/check-chain-matrix.mjs",
+   "scripts/release-build.sh"
+  ],
+  "test_files": [
+   "scripts/tests/chain-matrix.test.mjs",
+   "scripts/tests/chain-matrix-cli.test.mjs",
+   "scripts/tests/release-manifest.test.mjs"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/115",
+    "sha": "c6ce2259",
+    "pr": 115,
+    "note": "multi-chain qualification; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Matrix covers all configured chains/tokens/feeds, tri-state cells with source/date/reason",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "matrix.json 14 chains/9 tokens/4 feeds @7a620ff1"
+   },
+   {
+    "req": "No verified cell without source+date; strict provenance",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "chain-matrix.mjs:29-88"
+   },
+   {
+    "req": "Runtime configuration parity (CHAINS/TOKENS/FEEDS/announcer/registry)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "check-chain-matrix.mjs:20-24"
+   },
+   {
+    "req": "CI schema check + release builds run --release gate",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ci.yml:107; release-build.sh:64-98; local: schema exit 0, --release exit 1"
+   },
+   {
+    "req": "Verified deployment cell bound to manifest sha256 + signature required",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "check-chain-matrix.mjs:25-37"
+   },
+   {
+    "req": "Pin record (factory, implementationCodehash, policyRouter) into scanner config; scanner ignores mismatched pins (DOC-19)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "PINNED_POLICY_DEPLOYMENTS {}"
+   },
+   {
+    "req": "Nightly RPC codehash revalidation (mock in CI)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "spec 09 status: outstanding"
+   },
+   {
+    "req": "Operator doc",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/operators/chain-matrix.md"
+   }
+  ],
+  "verified_working": [
+   "node scripts/check-chain-matrix.mjs exit 0; --release exit 1 with exactly 73 unverified cells (42 chain, 27 token, 4 feed) on 7 enabled testnets (VERIFIED local)",
+   "node --test chain-matrix + cli + release-manifest: 17/17 local"
+  ],
+  "missing_requirements": [
+   "DOC-19 pin record",
+   "nightly revalidation"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no fabricated verification flags",
+   "two-person token address check"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "73 unverified release cells need authenticated deployments + primary sources (Sepolia first)"
+  ],
+  "external_acceptance": "73 cells UNVERIFIED by design; no provider evidence.",
+  "implementation_pct": 75,
+  "verification_pct": 70,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    4
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "Add nightly read-only revalidation + policy pin record; fill Sepolia cells from real evidence only.",
+  "evidence": [
+   "logs_proto/chain-matrix-release.log (73 lines)",
+   "CI 44231986652 @d91ae16a ts-check runs check-chain-matrix",
+   "pct raw impl=76.5 verif=70.6 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DEP-04",
+  "name": "Testnet deployment tooling + Sepolia-first deployment of record",
+  "area": "contracts/script+scripts/testnet",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/operators/testnet-runbook.md",
+   "docs/operators/deployment-runbook.md",
+   "NEXT_PHASE_QUEUE B02-B04",
+   "ADR-0029 (Proposed)"
+  ],
+  "implementation_files": [
+   "packages/contracts/script/Deploy.s.sol",
+   "packages/contracts/script/DeployBase.s.sol",
+   "packages/contracts/script/DeployAnnouncer.s.sol",
+   "packages/contracts/script/DeployPolicy.s.sol",
+   "packages/contracts/script/DeployPolicyRouter.s.sol",
+   "packages/contracts/script/SmokeSepolia.s.sol",
+   "packages/contracts/scripts/pre-deploy-check.sh",
+   "scripts/testnet/deploy.sh",
+   "scripts/testnet/make-manifest.mjs",
+   "scripts/testnet/verify-sources.sh"
+  ],
+  "test_files": [
+   "packages/contracts/test/Deploy*.t.sol",
+   "scripts/testnet/make-manifest.test.mjs",
+   "scripts/testnet/verify-sources.test.mjs"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Forge deploy scripts with immutable read-back, canonical announcer default, ALLOWED_CHAIN_IDS/ALLOW_LOCAL",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "script/*.s.sol @7a620ff1; Deploy 2, DeployAnnouncer 8, DeployChecksum 4, DeployPolicy 1, DeployPolicyRouter 1 (CI)"
+   },
+   {
+    "req": "pre-deploy-check.sh prints effective config, never broadcasts",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "no test found"
+   },
+   {
+    "req": "deploy.sh simulate/rehearse/broadcast; broadcast needs CONFIRM_BROADCAST=1 + human signer",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "deploy.sh:1-30; rehearse not run in CI (grep)"
+   },
+   {
+    "req": "make-manifest.mjs unsigned manifest validated by chain-adapters",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "make-manifest.test.mjs (CI rest-0 node --test 201/201; local pass)"
+   },
+   {
+    "req": "verify-sources.sh: no API key leak, metachar rejection",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "verify-sources.test.mjs CI pass; local 1 env fail (cast missing)"
+   },
+   {
+    "req": "SmokeSepolia smoke script",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "never run on Sepolia; no test"
+   },
+   {
+    "req": "Deploy driver networks == enabled chain set",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "deploy.sh:31-37 lacks 97 + 43113; offers hoodi 560048 absent from chains.ts"
+   },
+   {
+    "req": "Authentic Sepolia deployment + verified sources + signed manifest bundled (B02/B03)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "deployments/ only unsigned 31337.json; apps/web/deployments README only"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Info CONFIRMED: deploy.sh network list != enabled testnets (no BNB testnet/Fuji path; hoodi unsupported in config)"
+  ],
+  "missing_tests": [
+   "deploy.sh rehearse in CI",
+   "pre-deploy-check.sh"
+  ],
+  "security_privacy_requirements": [
+   "fee recipient HW/multisig",
+   "no key/RPC stored by scripts",
+   "PRIVATE_KEY visible in ps (prefer keystore)"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "Owner: ADR-0029 acceptance, release key, fee recipient, broadcast (B01/B02)"
+  ],
+  "external_acceptance": "No public testnet deployment exists.",
+  "implementation_pct": 75,
+  "verification_pct": 55,
+  "status": "BLOCKED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "Owner broadcasts Sepolia; engineering: CI rehearsal job, network-list alignment, evidence capture for matrix.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a contracts-test forge 34 suites 490/490",
+   "node --test scripts/testnet/*.test.mjs local 8/9 (1 env: cast not installed); CI rest-0 201/201",
+   "pct raw impl=75.0 verif=53.1 (rubric-rounded)"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DEP-05",
+  "name": "EVM multichain config + ChainAdapter interface (MULTICHAIN_SPEC tier 1, ADR-0016)",
+  "area": "chain-adapters",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/MULTICHAIN_SPEC.md s1,s2,s4",
+   "ADR-0016",
+   "chain-adapters TODO-VERIFY"
+  ],
+  "implementation_files": [
+   "packages/chain-adapters/src/adapter.ts",
+   "packages/chain-adapters/src/config/chains.ts",
+   "packages/chain-adapters/src/config/tokens.ts",
+   "packages/chain-adapters/src/quote.ts"
+  ],
+  "test_files": [
+   "packages/chain-adapters/src/adapter.test.ts",
+   "packages/chain-adapters/src/adapter.deep.test.ts",
+   "packages/chain-adapters/src/config.test.ts",
+   "packages/chain-adapters/src/quote.test.ts",
+   "packages/chain-adapters/src/quote.guards.test.ts",
+   "packages/chain-adapters/src/quote.anvil.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "ChainAdapter parseRecipient/buildPaymentRequest/fees; createEvmAdapter fail-closed chain agreement",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "adapter.ts:123-200 @7a620ff1; wired apps/web/src/lib/pay.ts:183"
+   },
+   {
+    "req": "adapter.scan AsyncIterable",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "adapter.ts:222; web uses its own scanner pipeline"
+   },
+   {
+    "req": "7 testnets enabled, mainnets enabled:false; requireEnabledChain",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "chains.ts:40-78; config.test.ts"
+   },
+   {
+    "req": "Verified-only token allowlist with sources + capability flags",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "tokens.ts:22-48 (USDC/EURC testnets)"
+   },
+   {
+    "req": "Feeds only from saved Chainlink sources, testnets only, explicit maxAge",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "quote.ts:52-90 (4 feeds); quote.guards.test.ts"
+   },
+   {
+    "req": "Mainnet enablement checklist",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/operators/chain-enablement-checklist.md"
+   },
+   {
+    "req": "Provider-verified finalityDepth/getLogsMaxRange/blockTime",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "chains.ts:36-39 \"engineering defaults, NOT provider-verified\""
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [
+   "Info CONFIRMED stale docs: chain-adapters README/TODO-VERIFY say FEEDS empty; quote.ts:52 lists 4 testnet feeds"
+  ],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no unverified financial data ships",
+   "fiat price disabled when feed absent"
+  ],
+  "dependencies": [],
+  "blockers": [
+   "chain params + token permit/blacklist cells need provider evidence"
+  ],
+  "external_acceptance": "No fork/real-chain token acceptance.",
+  "implementation_pct": 80,
+  "verification_pct": 80,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "Measure chain params on chosen providers; refresh README/TODO-VERIFY.",
+  "evidence": [
+   "CI 44231986652 @d91ae16a rest-1 config 7, adapter 14+5, quote 22+19+5",
+   "local vitest @7a620ff1 pass",
+   "pct raw impl=82.1 verif=78.6 (rubric-rounded)"
+  ],
+  "unverified": []
+ }
+]

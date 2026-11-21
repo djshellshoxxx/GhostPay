@@ -1,0 +1,28 @@
+{
+ "requirement_corrections": [
+  {"id": "F-WEB-07", "req_prefix": "Transports direct / tor-browser / local-proxy", "implemented": "half", "verified": "half", "evidence": "H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shipped CSP connect-src 'self' https: wss: (apps/web/index.html:13 @7a620ff1; own lean build); SEC-10, TB-02"},
+  {"id": "F-PROTO-03", "req_prefix": "Per-log block-hash cross-check", "implemented": "yes", "verified": "yes",
+   "evidence": "Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 already cross-checks per-log block hash; logs.test.ts + scanHardening.test.ts 70/70 pass", "clear_missing": true}
+ ],
+ "requirement_additions": [
+  {"id": "F-NET-01", "req": "local-proxy profile usable from the shipped browser builds", "weight": 2, "implemented": "no", "verified": "no", "evidence": "H1: CSP connect-src blocks http loopback in every shipped profile (apps/web/index.html:13, public/_headers:5, deploy/nginx/security-headers.conf:3 @7a620ff1); SEC-10, TB-02"}
+ ],
+ "tier_corrections": [
+  {"id": "F-BTC-01", "tier": "full-profile", "evidence": "H1: BtcView only in App.tsx ORDER (full); AppLean renders CORE_ORDER (AppShell.tsx:39) without btc; 0 BTC modules among the 306 lean-bundle modules"},
+  {"id": "F-BTC-02", "tier": "full-profile", "evidence": "H1: header chain reachable only from the full-profile BTC view"},
+  {"id": "F-MER-05", "tier": "full-profile", "evidence": "H1: MerchantProfilePanel/MerchantTemplateIssuer/merchantIdentity/merchantTemplate mounted only via App.tsx mainPrelude; absent from AppLean and from the lean bundle"}
+ ],
+ "field_corrections": [
+  {"id": "F-NET-02", "fields": {"related_branches": [{"ref": "origin/chatgpt/zero-codex/onion-canonical-host-20261111", "sha": "72dde82d", "pr": "122", "note": "NOT an ancestor of 7a620ff1: 0 unique / 2 patch-equivalent commits (git cherry), class C"}, {"ref": "origin/chatgpt/ghostpay-onion-canonical-port-20261112", "sha": "8277879e", "pr": "134", "note": "port of #122; ancestor of 7a620ff1"}], "strategy_detail": "onion.ts v3 checksum + url.ts. #122 (72dde82d) is patch-equivalent to the candidate; its port #134 (8277879e) is an ancestor => landed. net-transport 149/149 pass."}},
+  {"id": "F-BTC-02", "fields": {"strategy": "none", "strategy_detail": "Complete by rubric (4/4 requirements implemented and tested). Real Esplora/mainnet sync stays external acceptance; PR #74 delta stays under unverified."}},
+  {"id": "F-WEB-07", "fields": {"strategy": "repair", "effort": {"size": "S", "engineer_days": [0.5, 2]}, "strategy_detail": "Fix TB-02: allow http loopback in connect-src for the full/self-host profile (or remove local-proxy from lean UI/docs) and add an e2e under the real CSP. Effort is an H1 ESTIMATE."}}
+ ],
+ "security_holds": [
+  {"id": "F-KEY-01", "finding": "SEC-03", "reason": "vault-less in-memory session has no step-up before secret export/sweep"},
+  {"id": "F-KEY-02", "finding": "SEC-05", "reason": "vault/keystore passphrase floor accepts name+year passphrases"},
+  {"id": "F-WEB-07", "finding": "SEC-10", "reason": "local-proxy scan transport blocked by the app's own CSP while UI/docs offer it"},
+  {"id": "F-KEY-03", "finding": "SEC-05, SEC-03", "reason": "keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224)"},
+  {"id": "F-WEB-11", "finding": "SEC-03", "reason": "direct sweep signs without step-up in vault-less sessions"},
+  {"id": "F-WEB-12", "finding": "SEC-03", "reason": "relayer-assisted sweep signs without step-up in vault-less sessions"}
+ ]
+}
