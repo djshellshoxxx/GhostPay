@@ -1,3 +1,15 @@
+# F04 source-preserving current-main consolidation — 2026-11-20 Pacific
+
+- Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
+- Owned branch: `consolidate/ghostpay-f04-current-main-1f782-20261121`.
+- Frozen donor: PR #322 `future/f04-merchant-dashboard` at `066731b4d6d19d96469dd18fa082b264f3efed5d`; current main input: `da6b05da5bb2e4293f38572da361980960d91911`.
+- Scope: preserve the existing F04 M1 source and all donor history while composing with current main. Own only this additive registry claim and conflict reconciliation, plus `docs/consolidation/future-modules-20261121-1f782/F04_COMPOSITION.md`. The five files under `apps/web/src/features/future/merchant-dashboard/` are immutable source inputs; no source edit or feature activation is authorized by this claim.
+- Acceptance: preserve both parents; retain every exact registry line from each input in order; retain current-main paths; prove each F04 runtime/test blob and mode is unchanged; independently review the dormant module; rerun applicable repository checks on the final composition through the coordinator's shared runtime. Do not count prior donor checks as a new combined-source pass.
+- Ownership: this is an isolated successor of the existing F04 owner. The original future branch, shared integration branch, main and integration lock remain untouched. F03, backup, F11, Tor, #367 and the active narrow-merge queue remain separately owned.
+- Validation plan: no dependency installation or heavy tests in this worker. The coordinator owns final shared validation, publication and integration. Existing F04 M1 remains disconnected from all production routes; real evidence/persistence/UI integration is unfinished.
+
+---
+
 # F04 future specification — 2026-11-19
 
 Worker: ChatGPT specification team; coordinator owns publication.
