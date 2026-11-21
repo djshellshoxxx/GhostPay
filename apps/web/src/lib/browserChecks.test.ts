@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { runBrowserChecks } from './browserChecks';
+import { describe, expect, it, vi } from 'vitest';
+import { browserCheckEnvironment, runBrowserChecks } from './browserChecks';
 
 const validDigest = (bytes: ArrayBuffer): Promise<ArrayBuffer> => crypto.subtle.digest('SHA-256', bytes);
 
@@ -16,6 +16,26 @@ function temporaryStorage(): { store: Map<string, string>; storage: Pick<Storage
 }
 
 describe('local-only browser capability checks', () => {
+  it('omits unavailable optional browser providers and reports their absence without exposing storage errors', async () => {
+    vi.stubGlobal('window', {
+      isSecureContext: false,
+      crypto: {},
+      get localStorage() { throw new Error('storage access denied'); },
+    });
+    try {
+      const env = browserCheckEnvironment();
+      expect(Object.hasOwn(env, 'digest')).toBe(false);
+      expect(Object.hasOwn(env, 'storage')).toBe(false);
+      expect(await runBrowserChecks(env)).toEqual([
+        { id: 'secure', status: 'fail' },
+        { id: 'digest', status: 'fail' },
+        { id: 'storage', status: 'warn' },
+      ]);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('passes only a genuine SHA-256 known-answer check and a cleaned-up storage round trip', async () => {
     const { store, storage } = temporaryStorage();
     const checks = await runBrowserChecks({
