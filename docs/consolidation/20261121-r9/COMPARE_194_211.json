@@ -1,0 +1,1075 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    194,
+    212
+  ],
+  "results": [
+    {
+      "branch": "claude/friendly-turing-1ui0on",
+      "head_sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/AUTONOMOUS_RUN_2026-11-04.md",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/gallant-hamilton-4wzkyn",
+      "head_sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 926,
+      "merge_base_sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "head_sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1379,
+      "merge_base_sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ghostpay-autonomous-prompt-scpgun",
+      "head_sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ghostpay-completion-audit-ot5jjm",
+      "head_sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "status": "diverged",
+      "ahead_by": 24,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 45,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/dependabot.yml",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 91,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 45,
+          "deletions": 3
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 94,
+          "deletions": 33
+        },
+        {
+          "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 73
+        },
+        {
+          "path": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 59
+        },
+        {
+          "path": "apps/web/src/main.test.tsx",
+          "status": "added",
+          "additions": 57,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/privacyInvariants.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/releaseKeyDenylist.test.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/.env.example",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 3
+        },
+        {
+          "path": "deploy/README.md",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 3
+        },
+        {
+          "path": "deploy/docker-compose.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "deploy/nginx/security-headers.conf",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/selftest.sh",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/tor/Dockerfile",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/handoffs/completion-20261118/evidence/phase0/open_prs.md",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/build-pages.sh",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 3
+        },
+        {
+          "path": "scripts/pages/fixtures/smoke-invoice.txt",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/lean-exclusions.d.mts",
+          "status": "added",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/lean-exclusions.mjs",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/pages-hosting.test.mjs",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/smoke-url.mjs",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/smoke-url.test.mjs",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/smoke-walk.mjs",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/smoke-walk.test.mjs",
+          "status": "added",
+          "additions": 66,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/pages/smoke.mjs",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 6
+        },
+        {
+          "path": "scripts/pages/verify-pages-site.mjs",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 8
+        },
+        {
+          "path": "scripts/pages/verify-pages-site.test.mjs",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/nightly-workflow.test.mjs",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/release-ci-anvil-parity.test.mjs",
+          "status": "added",
+          "additions": 181,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg",
+      "head_sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 190,
+      "merge_base_sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "head_sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 7,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "docs/operators/deployment-runbook.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "packages/contracts/.gas-snapshot",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/contracts/README.md",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1
+        },
+        {
+          "path": "packages/contracts/script/DeployPolicy.s.sol",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "packages/contracts/scripts/pre-deploy-check.sh",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "packages/contracts/test/DeployChecksum.t.sol",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "packages/contracts/test/DeployPolicy.t.sol",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 2
+        }
+      ]
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "head_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 14,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/dependabot.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/deployments/README.md",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/ci-supply-chain-review-20261118.md",
+          "status": "added",
+          "additions": 166,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/echidna-and-fee-token-review-20261118.md",
+          "status": "added",
+          "additions": 315,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/mythril-reevaluation-20261118.md",
+          "status": "added",
+          "additions": 313,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/consolidation-20261118/OWNER_ACTION_PACKET.md",
+          "status": "added",
+          "additions": 360,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/consolidation-20261118/STATIC_BETA_DECISIONS.md",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "docs/pages/PAGES_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 98,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+          "status": "added",
+          "additions": 255,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/mythril-disposition-check.test.mjs",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "head_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 193,
+      "merge_base_sha": "71abc7e55c25d45b206ac47e5ddd24e072805710",
+      "files_returned": 41,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 359,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 340,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 116,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 175,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 306,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 230,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 229,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 118,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 297,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 396,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 124,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 103,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "docs/specs/18-stealth-keypair-export-formats.md",
+          "status": "added",
+          "additions": 210,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/README.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/recover-stealth-payment-keys.md",
+          "status": "added",
+          "additions": 167,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/portable-errors.ts",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/portable.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+          "status": "added",
+          "additions": 822,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/stealth-export-portable.ts",
+          "status": "added",
+          "additions": 852,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/recovery/raw-key-anvil.test.mjs",
+          "status": "added",
+          "additions": 123,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/recovery/stealth-export-recover.mjs",
+          "status": "added",
+          "additions": 791,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/recovery/stealth-export-recover.test.mjs",
+          "status": "added",
+          "additions": 337,
+          "deletions": 0
+        },
+        {
+          "path": "test-vectors/README.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "test-vectors/generate-stealth-export.mjs",
+          "status": "added",
+          "additions": 240,
+          "deletions": 0
+        },
+        {
+          "path": "test-vectors/stealth-export.json",
+          "status": "added",
+          "additions": 230,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/ghostpay-github-pages-up6cj6",
+      "head_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 788,
+      "merge_base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head_sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "status": "diverged",
+      "ahead_by": 8,
+      "behind_by": 1682,
+      "merge_base_sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "files_returned": 15,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/agent-prompts/openai-agents.steps.disabled.yml.txt",
+          "status": "renamed",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 44,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/lib/deployment.test.ts",
+          "status": "added",
+          "additions": 48,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/scan-secrets.sh",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 2
+        },
+        {
+          "path": "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+          "status": "added",
+          "additions": 39,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/lean-core-reachability.test.mjs",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/scan-secrets.test.mjs",
+          "status": "added",
+          "additions": 72,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/workflow-files.test.mjs",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "head_sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "status": "diverged",
+      "ahead_by": 4,
+      "behind_by": 1385,
+      "merge_base_sha": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "files_returned": 12,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/txGuard.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "docs/developer/api/chain-adapters.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 7
+        },
+        {
+          "path": "packages/chain-adapters/src/errors.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/logs.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/gracious-heisenberg-97ji6q",
+      "head_sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1660,
+      "merge_base_sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/haiku-wave-2-handoff-qepfoe",
+      "head_sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "status": "diverged",
+      "ahead_by": 3,
+      "behind_by": 1372,
+      "merge_base_sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files_returned": 3,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/WAVE-2-REPORT-2026-10-30.md",
+          "status": "added",
+          "additions": 109,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/WAVE-2-STATUS-2026-10-30.md",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/happy-maxwell-onl4x5",
+      "head_sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 1372,
+      "merge_base_sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "scripts/audit/gen-audit24-report.py",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/audit-report-paths.test.mjs",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "claude/hopeful-bardeen-8ch6l8",
+      "head_sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1681,
+      "merge_base_sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/inspiring-fermat-vxv689",
+      "head_sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2372,
+      "merge_base_sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/kind-faraday-8qzf6e",
+      "head_sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1081,
+      "merge_base_sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}
