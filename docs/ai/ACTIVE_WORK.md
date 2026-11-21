@@ -2433,3 +2433,36 @@ for stacked draft publication into existing #336.
 - Evidence: failed exact-head Pages run 44844067142 and Beta acceptance run 44844067221 on #348; journal correctly hides saved payment hash after reload without account+chain. Baseline E2E asserts hash visible before renewed wallet consent, which violates current privacy behavior.
 - Acceptance: before reconnect assert hash concealed while tab journal retained; after explicit wallet disclosure assert hash reappears; preserve no-double-send/nonce assertions. No runtime changes, hosted dependencies, fees, custody, RPC, deployment or main merge. Parent #348 and #336 must requalify after this stacked fix.
 - Test source commits: `5960979d35b82232a61a41248a3c47bad7e3f664` and `9002a10bb36d054edb2db26a6fc06b7acc4c4a53`. Hosted checks pending, no local repo tests executed (container lacks GitHub network).
+# Privacy browser lifecycle qualification — 2026-11-20 (Pacific)
+
+Worker: `539818ee134f-root`, with independent `privacy_browser_triage` source/log
+review and a fresh resulting-change review before publication.
+Branch: `repair/ghostpay-privacy-browser-lifecycle-20261121-539818`.
+Base: PR #352 `28f1e4bd0960a0d57ba2636b6456e7c1b3096e94`, preserving the
+#348 / #336 / #327 / #326 privacy stack and the two newer journal-reconnection
+browser corrections. Current main: `aec179910c39081d820396409ff3139ff2264132`.
+Owned source/test paths: `apps/web/src/components/WalletDisclosure.tsx`, its
+existing `WalletDisclosure.test.tsx`, and the specific keyboard-navigation and
+changed-wallet refusal cases in `apps/web/e2e/{app,flows}.spec.ts`. Also owns
+additive evidence under `docs/consolidation/privacy-browser-20261121-539818/`
+and this registry entry. Prior presenter ownership is released; current #348
+and #352 edits are outside this scoped correction.
+Acceptance: reproduce unusable opener focus restoration using the real presenter;
+preserve successful opener restoration and replacement-dialog focus ownership;
+keep the native quick-hide assertion unchanged. Reconcile keyboard traversal
+with the existing header privacy switch and wallet-change cancellation with the
+existing immediate invalidation contract, retaining all zero-send, transaction
+and journal assertions. Run original-config focused regressions, relevant source
+checks and native full/lean browser checks where the environment permits.
+Record every failed, blocked or unexecuted check. Do not change runtime payment,
+wallet consent, privacy masking, custody, dependencies, thresholds or timeouts.
+The shared integration record remains held by its existing generation-11 owner;
+this branch does not acquire or override it. No shared-target update, release,
+deployment, real transaction or source-branch deletion is included.
+
+Evidence extension: preserve the independent `scan_fix_review` qualification of
+unchanged PR #350 `89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8` in the scoped
+report directory. Its separate review branch and 35-test execution remain pinned
+to that source; no Scan implementation is copied into this privacy branch.
+
+---

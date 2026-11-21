@@ -1,0 +1,114 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "base": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+  "implementation": "14c52cad022193289a64ba1dc2848b6a55ab822a",
+  "node": "24.22.3",
+  "npm": "11.19.1",
+  "vitest": "5.1.0",
+  "typescript": "5.9.3",
+  "playwright": "1.65.1",
+  "source_blobs": {
+    "apps/web/src/components/WalletDisclosure.tsx": "094b9d4cce058b060c13821c7723449bafe0a743",
+    "apps/web/src/components/WalletDisclosure.test.tsx": "96144da7ab938bea7aa6649e28b251d08bf9f264",
+    "apps/web/e2e/app.spec.ts": "c99fc0ace227b09a13e24b3ba6ea8a3e9fbbf51d",
+    "apps/web/e2e/flows.spec.ts": "a539f43c50aaf3e448102f612fbb350e67c8305a"
+  },
+  "records": [
+    {
+      "command": "npm ci --offline --no-audit --no-fund",
+      "exit_code": 137,
+      "scope": "Initial dependency installation; tool output only; no completion claimed"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=384 npm ci --offline --ignore-scripts --no-audit --no-fund --maxsockets=1",
+      "exit_code": 137,
+      "scope": "Second dependency installation",
+      "log": "logs/npm-ci.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=384 npm run build:libs",
+      "exit_code": 0,
+      "scope": "Original all-library build from current source",
+      "log": "logs/build-libs.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=384 npm exec -w @ghostpay/web -- vitest run src/components/WalletDisclosure.test.tsx --maxWorkers=1",
+      "exit_code": 1,
+      "scope": "Regression baseline at original runtime",
+      "log": "logs/focus-baseline.log",
+      "source_commit": "4d8828cd205ad45b095c0a1e01e6c36282da207e",
+      "passed": 9,
+      "failed": 4
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=384 npm exec -w @ghostpay/web -- vitest run src/components/WalletDisclosure.test.tsx src/components/PrivacyQuickHide.test.tsx src/lib/walletDisclosure.test.ts src/views/WalletPrivacy.lifecycle.test.tsx --maxWorkers=1",
+      "exit_code": 1,
+      "scope": "Failed combined invocation; one lifecycle worker SIGKILL",
+      "log": "logs/privacy-focused.log",
+      "passed_before_error": 51,
+      "worker_errors": 1,
+      "working_source_equivalent_to": "14c52cad022193289a64ba1dc2848b6a55ab822a"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=256 npm exec -w @ghostpay/web -- vitest run src/views/WalletPrivacy.lifecycle.test.tsx --maxWorkers=1",
+      "exit_code": 0,
+      "scope": "Complete wallet lifecycle file",
+      "log": "logs/wallet-lifecycle.log",
+      "passed": 17,
+      "failed": 0,
+      "working_source_equivalent_to": "14c52cad022193289a64ba1dc2848b6a55ab822a"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=256 npm exec -w @ghostpay/web -- vitest run src/components/WalletDisclosure.test.tsx src/components/PrivacyQuickHide.test.tsx src/lib/walletDisclosure.test.ts --maxWorkers=1",
+      "exit_code": 0,
+      "scope": "Three complete presenter/quick-hide/controller files",
+      "log": "logs/presenter-controls.log",
+      "passed": 51,
+      "failed": 0,
+      "working_source_equivalent_to": "14c52cad022193289a64ba1dc2848b6a55ab822a"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=768 npm run typecheck -w @ghostpay/web",
+      "exit_code": 137,
+      "scope": "Original full web compiler; incomplete",
+      "log": "logs/web-typecheck.log",
+      "source_commit": "14c52cad022193289a64ba1dc2848b6a55ab822a"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=512 ../../node_modules/.bin/eslint --config ../../eslint.config.js src/components/WalletDisclosure.tsx src/components/WalletDisclosure.test.tsx e2e/app.spec.ts e2e/flows.spec.ts",
+      "exit_code": 137,
+      "scope": "Original typed lint, cwd apps/web; no findings returned before kill",
+      "log": "logs/scoped-typed-lint.log",
+      "source_commit": "14c52cad022193289a64ba1dc2848b6a55ab822a"
+    },
+    {
+      "command": "timeout 20 /usr/bin/chromium --headless --no-sandbox --disable-gpu --dump-dom about:blank",
+      "exit_code": 134,
+      "scope": "Native browser precondition aborted before assertions",
+      "log": "logs/chromium-smoke.log"
+    },
+    {
+      "command": "npm run ci:scan-secrets",
+      "exit_code": 0,
+      "scope": "Original repository secret scan",
+      "log": "logs/secret-scan.log"
+    },
+    {
+      "command": "git push --dry-run origin HEAD:refs/heads/repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "exit_code": 128,
+      "scope": "No mutation; native credentials unavailable",
+      "output": "fatal: could not read Username for https://github.com: terminal prompts disabled"
+    }
+  ],
+  "independent_replay": "independent-focus-results.json",
+  "distinct_focused_cases": 68,
+  "counting_note": "Independent 13-case replay and baseline cases overlap the 68 focused cases. Scan #350 has a separate source and separate 35-case selection.",
+  "unexecuted": [
+    "native full browser acceptance",
+    "native lean browser acceptance",
+    "complete web coverage",
+    "complete web build",
+    "new-source hosted qualification"
+  ],
+  "cause_note": "Exit 137 and SIGKILL do not alone establish cause."
+}

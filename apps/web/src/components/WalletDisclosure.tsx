@@ -49,8 +49,13 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
     // Passive cleanup runs after the background's inert attribute is removed. A replacement dialog owns focus.
     if (document.querySelector('.wallet-disclosure-dialog') !== null) return;
     const opener = props.opener;
-    if (opener instanceof HTMLElement && opener.isConnected && opener.closest('[hidden], [inert]') === null) opener.focus();
-    else focusPrivacyControl();
+    if (opener instanceof HTMLElement && opener.isConnected && opener !== document.body
+      && opener !== document.documentElement && !opener.matches(':disabled')
+      && opener.closest('[hidden], [inert]') === null) {
+      opener.focus();
+      if (document.activeElement === opener) return;
+    }
+    focusPrivacyControl();
   }, [props.opener]);
   const unknown = t('wallet.disclosure.unknown');
   return <div className="wallet-disclosure-backdrop">

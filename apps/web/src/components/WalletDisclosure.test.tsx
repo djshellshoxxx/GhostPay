@@ -12,7 +12,7 @@ import { MockWallet } from '../test/mockWallet';
 
 const TARGET = '0x1111111111111111111111111111111111111111';
 const info = (provider: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock', kind: 'injected', provider });
-afterEach(() => { cleanup(); clearSession(); });
+afterEach(() => { cleanup(); document.documentElement.removeAttribute('tabindex'); clearSession(); });
 function Client(props: { readonly provider: MockWallet }): ReactNode {
   const disclosure = useWalletDisclosure();
   const [session, setSession] = useState<WalletSession>();
@@ -58,6 +58,38 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     expect(provider.calls).toEqual([]);
     expect(screen.queryByRole('dialog')).toBeNull();
   });
+  it.each(['body', 'document element', 'disabled', 'nonfocusable', 'disconnected', 'hidden', 'inert'] as const)(
+    'returns focus to the privacy control when the captured opener is %s', async (kind) => {
+      const provider = new MockWallet();
+      render(<>
+        <button type="button" data-privacy-safe-control>Safe privacy control</button>
+        <div data-testid="temporary-focus" tabIndex={-1} />
+        <App provider={provider} scope={{}} />
+      </>);
+      const user = userEvent.setup();
+      const connect = screen.getByRole('button', { name: 'Connect' });
+      const safeControl = screen.getByRole('button', { name: 'Safe privacy control' });
+      const opener = kind === 'body' ? document.body
+        : kind === 'document element' ? document.documentElement
+          : kind === 'nonfocusable' ? screen.getByTestId('temporary-focus') : connect;
+      if (kind === 'document element') opener.tabIndex = -1;
+      if (kind !== 'body') opener.focus();
+      expect(document.activeElement).toBe(opener);
+      // An asynchronous caller can open the presenter after its original control loses focus.
+      fireEvent.click(connect);
+      const dialog = await screen.findByRole('dialog');
+      if (kind === 'disabled') connect.setAttribute('disabled', '');
+      else if (kind === 'nonfocusable') opener.removeAttribute('tabindex');
+      else if (kind === 'disconnected') opener.remove();
+      else if (kind === 'hidden') opener.hidden = true;
+      else if (kind === 'inert') opener.setAttribute('inert', '');
+      await user.click(within(dialog).getByRole('button', { name: 'Cancel wallet request' }));
+      await screen.findByText('Cancelled');
+      await waitFor(() => { expect(document.activeElement).toBe(safeControl); });
+      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(provider.calls).toEqual([]);
+    },
+  );
   it('shows exact transaction data and a separately labelled native amount before sending', async () => {
     const provider = new MockWallet(); render(<App provider={provider} scope={{}} />);
     const user = userEvent.setup(); await user.click(screen.getByRole('button', { name: 'Connect' }));

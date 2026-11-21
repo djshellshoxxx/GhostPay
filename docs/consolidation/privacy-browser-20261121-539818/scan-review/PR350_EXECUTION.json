@@ -1,0 +1,52 @@
+{
+  "reviewed_head": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "node_version": "v24.22.3",
+  "vitest_version": "5.0.5",
+  "lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "root_dependency_tarball_verification": {
+    "present_packages": 647,
+    "matched_files": 44635,
+    "optional_platform_entries_absent": 24,
+    "npm_gitignore_rename_matches": 3,
+    "nested_relayer_contract_entries_outside_scope": 7
+  },
+  "workspace_links_localized": 68,
+  "identical_input_dist_trees_reused": 26,
+  "source_blobs": {
+    "apps/web/src/lib/scanMatches.ts": "f82c8a31dfc162e7187ac61e49ee072caab29637",
+    "apps/web/src/lib/scanMatches.test.ts": "0e11f5d427345a594b0e3354b664d23903070830",
+    "apps/web/src/views/Scan.test.tsx": "8b2fcf37b6c7670c20938018a3810265fd777152"
+  },
+  "executions": [
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=512 npm run build --workspace @ghostpay/invoice-schema --workspace @ghostpay/chain-adapters --workspace @ghostpay/payment-uri --workspace @ghostpay/qr-exchange --workspace @ghostpay/tron-adapter --workspace @ghostpay/metadata-hardening --workspace @ghostpay/policy-scheme",
+      "cwd": ".",
+      "exit_code": 137,
+      "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/invoice-schema@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/chain-adapters@0.1.0 build\n> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/invoice-schema@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/payment-uri@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/qr-exchange@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/tron-adapter@0.1.0 build\n> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/metadata-hardening@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/policy-scheme@0.1.0 build\n> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\nKilled\nnpm error Lifecycle script `build` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/539818ee134f/GhostPay-pr350-review/packages/core-crypto\nnpm error workspace @ghostpay/core-crypto@0.1.0\nnpm error location /workspace/scratch/539818ee134f/GhostPay-pr350-review/packages/core-crypto\nnpm error command failed\nnpm error command sh -c tsc -p tsconfig.build.json\nnpm error Lifecycle script `build` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/539818ee134f/GhostPay-pr350-review/packages/policy-scheme\nnpm error workspace @ghostpay/policy-scheme@0.1.0\nnpm error location /workspace/scratch/539818ee134f/GhostPay-pr350-review/packages/policy-scheme\nnpm error command failed\nnpm error command sh -c npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json\n",
+      "output_sha256": "8864d8cff5ddedd90e4fd31c18a77db332d591b5f9098f522e893469e2c2030a"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=256 node node_modules/typescript/bin/tsc -p packages/policy-scheme/tsconfig.build.json",
+      "cwd": ".",
+      "exit_code": 0,
+      "output": "",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=256 ../../node_modules/.bin/vitest run src/lib/scanMatches.test.ts src/views/Scan.test.tsx --maxWorkers=1",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "output": "\n RUN  v5.0.5 /workspace/scratch/539818ee134f/GhostPay-pr350-review/apps/web\n\n\n Test Files  2 passed (2)\n      Tests  35 passed (35)\n   Start at  18:38:53\n   Duration  9.91s (tests 44%, transform 28%, import 17%, environment 11%)\n\n    Isolate  2 workers spawned \u00b7 ~674ms startup each (spawn + environment, per file)\n             at least ~674ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n",
+      "output_sha256": "a45791bf75dcd5cb20c771e7a32ae614b9f7ec517f3c20b21b98e1492bbaea53"
+    }
+  ],
+  "focused_tests": {
+    "files_passed": 2,
+    "tests_passed": 35,
+    "tests_failed": 0,
+    "tests_skipped": 0
+  },
+  "native_browser_attempted": false,
+  "remote_mutation": false
+}
