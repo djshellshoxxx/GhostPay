@@ -11,7 +11,7 @@ import { CopyButton, Field, Mono, Notice, downloadText } from '../../components/
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
-import { getAddress, isAddress } from 'viem/utils';
+import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { createPolicyMetaAddress, DELAY_PRESETS, type LimitRow } from './create';
 import type { PolicyCtx } from './PolicyView';
 import { recordBelongsToSeller } from './recordIdentity';
@@ -136,7 +136,11 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
                 <p><Mono>{r.metaAddress}</Mono></p>
                 <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
                 <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
-                <button type="button" onClick={() => { downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}-${r.metaAddress.slice(13, 37)}.json`, serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
+                <button type="button" onClick={() => {
+                  // The canonical meta-address binds both seller keys and the policy hash.
+                  const identity = keccak256(toBytes(r.metaAddress)).slice(2);
+                  downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}-${identity}.json`, serializePolicyRecord(r), 'application/json');
+                }}>{t('policy.create.download')}</button>
               </li>
             ))}
           </ul>

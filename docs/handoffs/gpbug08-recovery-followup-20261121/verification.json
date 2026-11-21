@@ -1,0 +1,120 @@
+{
+  "base_sha": "e871eccc1238b7145cd1d0a667afb393c373cf83",
+  "branch": "fix/ghostpay-policy-recovery-followup-20261121-r1",
+  "recorded_at_utc": "2026-11-21T04:53:56.128408+00:00",
+  "scope": "Policy record downloads, recovery regressions and catalog parity",
+  "commands": [
+    {
+      "command": "node scripts/i18n/check.mjs",
+      "phase": "parent",
+      "exit_code": 1,
+      "errors": 3,
+      "warnings": 409,
+      "log": "evidence/i18n-before.log"
+    },
+    {
+      "command": "node scripts/i18n/check.mjs",
+      "phase": "successor",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 409,
+      "log": "evidence/i18n-after.log"
+    },
+    {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/features/policy/PolicyCreate.recordDownloads.test.tsx --maxWorkers=1 --no-file-parallelism",
+      "cwd": "apps/web",
+      "phase": "before filename edit",
+      "exit_code": 1,
+      "passed": 1,
+      "failed": 1,
+      "log": "evidence/download-before.log"
+    },
+    {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/features/policy --maxWorkers=1 --no-file-parallelism",
+      "cwd": "apps/web",
+      "phase": "successor",
+      "exit_code": 0,
+      "passed": 247,
+      "skipped": 4,
+      "files_passed": 15,
+      "files_skipped": 1,
+      "log": "evidence/policy-tests.log"
+    },
+    {
+      "command": "npm run build:libs",
+      "exit_code": 0,
+      "log": "evidence/build-libraries.log"
+    },
+    {
+      "command": "npm run typecheck --workspace @ghostpay/web",
+      "exit_code": 0,
+      "log": "evidence/web-typecheck.log"
+    },
+    {
+      "command": "npm run lint --workspace @ghostpay/web",
+      "exit_code": 0,
+      "log": "evidence/web-lint.log"
+    },
+    {
+      "command": "npm run build --workspace @ghostpay/web",
+      "exit_code": 0,
+      "bundle_scan_files": 19,
+      "log": "evidence/web-build.log"
+    },
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0,
+      "log": "evidence/secret-scan.log"
+    }
+  ],
+  "source_files": {
+    "apps/web/src/features/policy/PolicyCreate.tsx": {
+      "sha256": "9ac367b1262d3d79d3b0c40a3d528208e29a9ece3480815ae586ecd2692d8980",
+      "git_blob": "c32c7090223bb8ccb220945704570d170b7811ce"
+    },
+    "apps/web/src/features/policy/PolicyCreate.recordDownloads.test.tsx": {
+      "sha256": "969ce09a302001e896c1d611d818c0bdac51446216269d417f5efc01a26927c2",
+      "git_blob": "fb1ebf4d68b803c6469040ed58965e7426d06e89"
+    },
+    "apps/web/src/features/policy/PolicyView.more.test.tsx": {
+      "sha256": "49dd14265130d5b6a5eca95c80d7a825ea1e359d4bcbcdea73e2e1c45a7a747a",
+      "git_blob": "5b22bd00154ed241833a3486b9b87b868c362f7e"
+    },
+    "apps/web/src/features/policy/PolicyView.recordIdentity.test.tsx": {
+      "sha256": "708352b9dba37a6400d53fb39fa9e6ce6a486a65ccf57533678f631601e3499c",
+      "git_blob": "5f592a4244e80104df719c7afeadb4f594a2a91c"
+    },
+    "apps/web/locales/ar.json": {
+      "sha256": "452e5c9fe47ea1d465926527342490d31f3d238b7bbdfd086637c789cf818969",
+      "git_blob": "b747d741613903da77322ca495eba0a1335785ed"
+    },
+    "apps/web/locales/es.json": {
+      "sha256": "c334deee1405220339c431689fec2774a1175e81e37774aae226cbe360676792",
+      "git_blob": "adea473793ce77f4a88bf62938261a252dce8db9"
+    },
+    "apps/web/locales/ja.json": {
+      "sha256": "f2f20b8ccd5620d7d0e5292667090a6b1ec291f4b5a77d4256658fbd8d91f705",
+      "git_blob": "61c54fd783055492330399bbc64a204894522139"
+    }
+  },
+  "log_sha256": {
+    "evidence/build-libraries.log": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913",
+    "evidence/dependency-verification.json": "4a7d5f39b387120c1b164ddfd931de22e64a85524689d88941883364b5ab2a5e",
+    "evidence/download-before.log": "f3241a110300e977448cc06b0f43772e97b9c08d9854304c2b4e109488e5a545",
+    "evidence/i18n-after.log": "1035a85d1c3e938c8f8902a00d1bcf6f1a059701342117f85cf5223e65643687",
+    "evidence/i18n-before.log": "495019e68186abcccedabe0ba7e86d94257dfd80d77fa1dc3d2db356a8a60ed6",
+    "evidence/policy-tests.log": "8bf2c01b12f0cb4bc457a0d945ccdb44ccfcba2a424efe80383560d7dc3ce028",
+    "evidence/secret-scan.log": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+    "evidence/web-build.log": "577d784d26f2304f968687c497b9c9af0a547511e5770c70b729a6d08f3a4ea0",
+    "evidence/web-lint.log": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+    "evidence/web-typecheck.log": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+  },
+  "not_newly_run": [
+    "full application suite",
+    "native browser acceptance",
+    "Anvil/contract execution",
+    "live-chain acceptance",
+    "combined integration candidate"
+  ],
+  "merge_or_deployment_qualification": false
+}

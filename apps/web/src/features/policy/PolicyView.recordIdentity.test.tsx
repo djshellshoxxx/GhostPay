@@ -14,6 +14,7 @@ const otherSeller = account('acct-002');
 const canonical = clientVectors.records.valid.find((v) => v.id === 'acct-001')!.canonical;
 const first = parsePolicyRecord(canonical);
 const otherKeys = decodeScheme2MetaAddress(otherSeller.metaAddress);
+const firstKeys = decodeScheme2MetaAddress(first.metaAddress);
 // Same policy terms and policy hash, but a different seller identity.
 const second = buildPolicyRecord({
   metaAddress: encodeScheme2MetaAddress({
@@ -35,6 +36,19 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe('policy records are keyed by seller identity as well as terms (GP-BUG-08)', () => {
+  it.each([
+    { key: 'viewing', spendingPublicKey: firstKeys.spendingPublicKey, viewingPublicKey: otherKeys.viewingPublicKey, sellerSpending: firstSeller.spendingPublicKey, sellerViewing: otherSeller.viewingPublicKey },
+    { key: 'spending', spendingPublicKey: otherKeys.spendingPublicKey, viewingPublicKey: firstKeys.viewingPublicKey, sellerSpending: otherSeller.spendingPublicKey, sellerViewing: firstSeller.viewingPublicKey },
+  ])('requires the matching $key key even when the other key and policy match', ({ spendingPublicKey, viewingPublicKey, sellerSpending, sellerViewing }) => {
+    const record = buildPolicyRecord({
+      metaAddress: encodeScheme2MetaAddress({ spendingPublicKey, viewingPublicKey, policyHash: first.policyHash }),
+      policy: first.policy,
+      limits: first.limits,
+    });
+    expect(selectPolicyRecordForSeller([record], first.policyHash, firstSeller.spendingPublicKey, firstSeller.viewingPublicKey)).toBeUndefined();
+    expect(selectPolicyRecordForSeller([first, record], first.policyHash, sellerSpending, sellerViewing)).toBe(record);
+  });
+
   it('selects the record owned by the active seller, not the first record sharing a policy hash', () => {
     expect(second.policyHash).toBe(first.policyHash);
     expect(second.metaAddress).not.toBe(first.metaAddress);
