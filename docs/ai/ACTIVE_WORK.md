@@ -1,3 +1,14 @@
+# GP-DISPLAY-COMPOSE-01 — compose bounded display expansion and surrogate-safe input truncation (2026-11-21)
+
+Cycle/coordinator: 20261121T2033Z, one assistant acting sequentially (source-audit, test, implementation and verification); no independent native reviewer/worker.
+Exclusive new branch: `automation/20261121T2033Z/integration/display-text-boundaries`, base `b655bc273a6704c9c140287b8adcdf4085b91882` (source of open PR #390). Dependency: open PR #419 head `62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3`. Both branches retained untouched; no shared integration.
+Owned in this isolated composition: `apps/web/src/lib/displayText.ts`, new `apps/web/src/lib/displayText.truncation.test.ts` adapted from #419, this additive ownership entry, and new `docs/handoffs/DISPLAY_TEXT_COMBINED_BOUNDARIES_20261121.md`. No existing PR branch, contract, wallet, schema, or workflow edits.
+Motivation: PRs #390 and #419 both edit `safeText`. #390 caps rendered marker expansion at 4096 UTF-16 units, while #419 prevents a valid surrogate pair becoming an artificial lone surrogate at the raw truncation cut. Naively applying #419's lone-surrogate-at-4095 test to #390 would assert a marker beyond the new output limit. Composite must retain both constraints, show genuine unmatched surrogates when whole marker fits, and truncate without partial markers if not.
+Acceptance: introduce regression-first combined tests demonstrating the unpatched #390 false fabricated marker and a test for both capped hostile expansion and true unmatched-surrogate semantics; preserve all #390 behavior plus all compatible #419 coverage, flags, NFC and Unicode output limits. Then minimally repair the raw clipping boundary. Obtain exact-head hosted CI and genuinely independent reviewer before any merge.
+Integration lock `automation/ghostpay-integration-lock`, generation 11, status HELD by another coordinator (last observed `994a0d214fb9-root-r3`): do not take over, update lock, integrate to main/shared targets, deploy or release. Exact CI and source-owner SHAs must be reread next cycle.
+Local checkout blocked by github.com DNS; do not claim repository Vitest/lint/build/browser without hosted execution evidence. No paid agent/Caveman runtime.
+
+---
 # GP-BUG — Bound rendered invoice display text after marker expansion (2026-11-21)
 
 Worker: ChatGPT bug-only coordinator (sequential implementation and review; independent verifier pending).
