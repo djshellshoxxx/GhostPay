@@ -1,3 +1,11 @@
+# Policy-scheme Anvil test gate repair (2026-11-21 UTC)
+
+Worker: same sequential ChatGPT engineer, appended scope on owned draft #385 child branch `test/ghostpay-policy-review-races-20261121-r1`. Parent #375 head pinned `2e0aff8490086a54fadd52c2fa4d802605b7920e`.
+New owned path: `packages/policy-scheme/src/anvil.test.ts` (test-only fixture correction); existing `PolicyPay.reviewRaces.test.tsx`, prior ownership record and handoff retained. No production, contracts, fees, CI thresholds or parent branch changes.
+Source-pinned RED: parent hosted [CI run 44883454132](https://github.com/djshellshoxxx/GhostPay/actions/runs/44883454132), job ts-test (rest-0) `136786458558`, has 109 passing tests and one failed real Anvil cross-check at `anvil.test.ts:312`. Historical test builds ERC-20 typed data with a native-only Merkle proof, which newly restored `eip712.ts` correctly rejects as `INVALID_PROOF` before calldata encoding. Acceptance: make the test assert this earlier client-side rejection, preserve a separate encoder proof-mismatch refusal and a real deployed contract revert with valid signed data yet mismatched proof. No disabling, skipping or relaxing contract/Anvil checks. Run exact-head hosted Anvil test, all relevant CI and independent source review. Local git DNS still blocked. Generation-11 lock remains held; no direct main merge.
+
+---
+
 # GP-BUG-07 follow-up: pending edit and mined-approval review races (2026-11-21 UTC)
 
 Worker: ChatGPT sequential engineer, no independent approving reviewer. Task branch `test/ghostpay-policy-review-races-20261121-r1` starts at PR #375 exact head `2e0aff8490086a54fadd52c2fa4d802605b7920e`, itself stacked #375 → #374 → #368 → #362 → #357 and inheriting #345's review-revocation repair. Baseline current main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
