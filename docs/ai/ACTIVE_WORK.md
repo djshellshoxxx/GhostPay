@@ -1,3 +1,15 @@
+# GP-BUG-20261121-JH — wallet attempt hash integrity
+
+Cycle/worker: `20261121T2235Z`; one coordinator executing sequential audit, regression, repair and consolidation; no independent native worker available.
+Branch: `automation/20261121T2235Z/bug/journal-hash-integrity` based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, new `apps/web/src/lib/duplicateAttemptJournal.hashIntegrity.test.ts`, an additive entry in this file, and `docs/handoffs/ATTEMPT_JOURNAL_HASH_INTEGRITY_20261121.md`.
+Evidence: source blob `b8c2ec1915b833a5b78286b9b9caca1c247e827c`: `finishAttempt` discards an existing id and writes the caller-supplied hash, even if the same id was previously marked submitted with a different hash; repeated callbacks can erase the first recorded tx hash. Exported-helper defensive correctness defect; application-level duplicate callback reachability is not established.
+Acceptance: preserve the first persisted hash on conflicting repeat completion (fail closed), allow idempotent same-hash completion, fail closed on an existing id with changed action identity, and retain late hashes after explicit clear/replacement as existing tests require. New failing regression before product repair, exact-head hosted CI and truly independent review before any merge. No keys, contracts, dependencies, hosted components or production settings.
+Ownership reconciliation: inspected #278/#293/#307/#372/#390/#416/#419/#422 changed filenames; none claims this source path; main ACTIVE_WORK has no matching path claim. Full open-PR path census was not possible. Recheck before integration.
+Integration: metadata branch `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11, status held by `994a0d214fb9-root-r3`. This cycle does not own the lock and must not merge/shared-update.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
