@@ -52,3 +52,10 @@ test('cost accounting never asserts an enforced ten-dollar limit', () => {
   assert.match(workflow, /'hard_spending_cap':False/);
   assert.match(workflow, /timeout-minutes: 45/);
 });
+
+test('PR ownership preflight passes no fork-controlled free text to the agent (audit F-2)', () => {
+  const line = workflow.split('\n').find((l) => l.includes('--jq') && l.includes('head.sha'));
+  assert.ok(line, 'ownership --jq line present');
+  assert.match(line, /select\(\.head\.repo\.full_name == \.base\.repo\.full_name\)/);
+  assert.doesNotMatch(line, /\.title|\.head\.ref|\.body/);
+});
