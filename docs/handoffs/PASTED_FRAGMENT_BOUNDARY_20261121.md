@@ -20,3 +20,12 @@ Only accept (1) a bare fragment with the exact `#gpi=v1.[A-Za-z0-9_-]+` syntax, 
 
 ## Integration
 Do not merge this draft directly into main pending hosted exact-head CI, review, branch-dependency/ownership reconciliation, and maintained shared integration lock. No release, deployment or funds operation. Recheck current main before promotion. Other open payment/parser bug fixes including #384 and #385 are independently owned.
+
+## Follow-up: URL parser control-character normalization (2026-11-21)
+
+The implementing worker re-audited this branch and found a **regression introduced by its initial URL-based fix**: WHATWG `new URL` silently discards embedded CR, LF and tab characters, including within a `#gpi=` fragment. The former `/\\s/` suffix check rejected these; the initial replacement could transform `#gpi=v1.ab\\ncd` into `#gpi=v1.abcd` and accept the changed payload. This was not an existing mainline bug; it was caught during review of this draft PR.
+
+- Separate RED regression test commit: `49138bd906127ef32fa6e2bd94d9ebe465a16fc7`. Four controls inserted into `apps/web/src/lib/fragment.test.ts`, plus an existing surrounding-whitespace acceptance check.
+- Minimal fix commit: `5fc493fa958de65cfd47b9c7d1ed134768f013e8`. Reject any remaining whitespace within trimmed input before calling `new URL`, preserving trimming of harmless surrounding paste whitespace.
+- Isolated Node 22 source-equivalent check: 4/4 normalization regressions reproduced on initial PR source, 4/4 rejected after fix; 2 valid inputs preserved. This is not repository Vitest.
+- Prior hosted Pages/CLI successes apply only to their prior commit and **are not** qualification of the later PR head. New exact-head CI, review and other gates remain pending. No merge/release/deployment.
