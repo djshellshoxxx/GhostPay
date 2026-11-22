@@ -60,3 +60,9 @@ test('retained but unmerged recovery donors must explicitly disclaim main and be
   s.records[1].evidence = { parentHead: c, mainIntegrated: false, behavioralEquivalenceNotClaimed: true };
   assert.equal(validateLedger(s).finalized, 2);
 });
+test('rejects impossible pagination including negative and noninteger page counts', () => {
+  const s = fixture();s.provenance.branchPages = [3, -1, 0];
+  assert.throws(() => validateLedger(s), /invalid branch pagination/);
+  const t = fixture();t.provenance.prPages = [1.5, -0.5, 0];
+  assert.throws(() => validateLedger(t), /invalid PR pagination/);
+});
