@@ -15,3 +15,8 @@ export {
 } from './lifecycle';
 
 export { RecurringPreparationController } from './prepare';
+
+export {
+  RecurringEncryptedVault, RecurringVaultError,
+  type RecurringCiphertextStore, type RecurringLoadedSnapshot, type RecurringVaultErrorCode,
+} from './vault';
