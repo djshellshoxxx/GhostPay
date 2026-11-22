@@ -31,9 +31,9 @@
   ],
   "openPrCount": 233,
   "summary": {
-    "totalFinalized": 278,
-    "totalUnresolved": 263,
-    "newlyFinalized": 73,
+    "totalFinalized": 280,
+    "totalUnresolved": 261,
+    "newlyFinalized": 75,
     "ancestor": 38,
     "futureSpecOnly": 29,
     "documentationOnly": 4,
@@ -41,7 +41,8 @@
     "newlyDiscovered": 1,
     "changedHeads": 1,
     "mergedPRsThisRun": 0,
-    "productionCommitsThisRun": 0
+    "productionCommitsThisRun": 0,
+    "nonApplicationBranchOnly": 2
   },
   "limitations": [
     "R42 52 new immutable/source-specific dispositions; all other inherited unresolved histories remain pending",
@@ -1935,16 +1936,24 @@
       "r39Sha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
+      "finalized": true,
+      "disposition": "coordination-metadata-only-held",
       "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
       "r42HeadSha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
       "r42OpenPrs": [],
       "r43HeadSha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
-      "r43OpenPrs": []
+      "r43OpenPrs": [],
+      "r43Evidence": {
+        "kind": "complete-single-blob-tree",
+        "headSha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+        "gitTree": "29b1267b51bd8ed068335949c929cf4e6c8985a1",
+        "pathsInspected": 1,
+        "recursiveTreeTruncated": false,
+        "proof": "Exact recursive Git tree truncated:false has exactly integration-lock.json. The live ref currently has status=held generation=11 for a different coordinator. Preserved as coordination state and history, never merge into main or expire-takeover."
+      }
     },
     {
       "branch": "automation/ghostpay-parallel-four-agents-20261103",
@@ -15174,16 +15183,24 @@
       "r39Sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
+      "finalized": true,
+      "disposition": "deployment-artifact-snapshot-out-of-scope",
       "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
       "r42HeadSha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
       "r42OpenPrs": [],
       "r43HeadSha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
-      "r43OpenPrs": []
+      "r43OpenPrs": [],
+      "r43Evidence": {
+        "kind": "complete-orphan-build-tree",
+        "headSha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+        "gitTree": "d32b2933efaddab9405a94aab7ce8800f9255e16",
+        "pathsInspected": 29,
+        "recursiveTreeTruncated": false,
+        "proof": "GitHub compare with main returns 404/no common ancestor. Exact recursive git tree truncated:false contains 29 entries: .nojekyll, HTML help/marketing pages, prebuilt assets/index JS and scanner worker, CSS, fonts, deployment notes. It is a built publication snapshot, not qualified source changes to transplant to beta main; preserve branch, do not redeploy."
+      }
     },
     {
       "branch": "ghostpay-cloud-recovery-2026-10-26",
@@ -21351,6 +21368,24 @@
     ],
     "sourceReview": "docs/consolidation/20261122-r43/SOURCE_REVIEW.md",
     "handoff": "docs/consolidation/20261122-r43/HANDOFF.md",
-    "warning": "R43 own ledger branch will advance on publication; its frozen snapshot SHA must be reconciled next cycle. Full semantic analysis of unresolved histories not claimed."
+    "warning": "R43 own ledger branch will advance on publication; its frozen snapshot SHA must be reconciled next cycle. Full semantic analysis of unresolved histories not claimed.",
+    "supplement": {
+      "reviewedAtUtc": "2026-11-22T16:09:24.826Z",
+      "newFinalized": [
+        {
+          "branch": "gh-pages",
+          "sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+          "disposition": "deployment-artifact-snapshot-out-of-scope",
+          "treeSha": "d32b2933efaddab9405a94aab7ce8800f9255e16"
+        },
+        {
+          "branch": "automation/ghostpay-integration-lock",
+          "sha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+          "disposition": "coordination-metadata-only-held",
+          "treeSha": "29b1267b51bd8ed068335949c929cf4e6c8985a1"
+        }
+      ],
+      "note": "No common ancestor is not proof of inclusion; orphan gh-pages build artifacts preserved without merging/redeploying."
+    }
   }
 }
