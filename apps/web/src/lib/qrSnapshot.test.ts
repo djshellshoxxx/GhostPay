@@ -35,7 +35,7 @@ describe('qrSvgText stable matrix boundary', () => {
     const dark = new Proxy([true], {
       get(target, key, receiver) {
         if (key === '0') return ++moduleReads === 1;
-        return Reflect.get(target, key, receiver);
+        return Reflect.get(target, key, receiver) as unknown;
       },
     });
     const svg = qrSvgText({ size: 1, dark });
