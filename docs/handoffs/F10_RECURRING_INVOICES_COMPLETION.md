@@ -19,8 +19,8 @@ Checkpoint: 2026-11-22 (Pacific). Source of truth is GitHub at review time; stat
 | Strict plan and snapshot parsing, UTC cadence previews | IMPLEMENTED_UNVERIFIED | #324/#371 dormant M1; historical tests on donor heads, not live Pages |
 | Plan create/pause/resume/cancel/revision | IMPLEMENTED_UNVERIFIED | #391 M2 pure transitions; inherited lint corrected only on M4 branch |
 | Review-bound local staged preparation | IMPLEMENTED_UNVERIFIED | #396 M3; prepared != signed/issued |
-| Encrypted snapshot serializer and session-bound key slot | IMPLEMENTED_UNVERIFIED | M4 `vault.ts`; requires host HKDF derivation/security review |
-| Same-origin atomic ciphertext compare-and-swap | IMPLEMENTED_UNVERIFIED | M4 adapter reuses existing IndexedDB CAS port; real browser contention test pending |
+| Encrypted snapshot serializer and session-bound key slot | IMPLEMENTED_UNVERIFIED | M4 `vault.ts` plus dormant `browserVault.ts` F10-only HKDF; requires hosted verification and browser wiring |
+| Same-origin atomic ciphertext compare-and-swap | IMPLEMENTED_UNVERIFIED | M4 adapter reuses existing IndexedDB CAS port; real browser contention test pending |\n| Browser seller-session key derivation, zeroization and invalidation | IMPLEMENTED_UNVERIFIED | M4 dormant `browserVault.ts` and five mock-session/WebCrypto tests; UI lock/unmount wiring pending |
 | Reservation binding to M3 single-use review | IMPLEMENTED_UNVERIFIED | M4 `reserveReviewed`; confirmed success only after storage commit |
 | Backup ciphertext export and restore to empty profile | IMPLEMENTED_UNVERIFIED | M4 limited path; import-over-live merge still MISSING |
 | Encrypted multi-profile backup merge, migration, schema evolution | MISSING | Paused legacy import, identity/history merge and recoverable migration checkpoint |
@@ -35,11 +35,11 @@ Checkpoint: 2026-11-22 (Pacific). Source of truth is GitHub at review time; stat
 ## Immediate acceptance checks
 
 - [ ] Verify newest `main`, all relevant PR heads and exact upstream branch parentage; preserve the changes already implemented.
-- [ ] Execute M4 focused tests: `npx vitest run src/features/future/private-recurring/{model,review,lifecycle,prepare,vault}.test.ts` from `apps/web`.
+- [ ] Execute M4 focused tests: `npx vitest run src/features/future/private-recurring/{model,review,lifecycle,prepare,vault,browserVault}.test.ts` from `apps/web`.
 - [ ] Run `npm run typecheck -w @ghostpay/web`, `npm run lint -w @ghostpay/web`, full web tests, build, lean-bundle scan and required hosted jobs.
 - [ ] Verify actual IndexedDB cross-tab CAS has one winner; lost acknowledgement must force a reload before any new period.
 - [ ] Confirm ciphertext cannot be decrypted under wrong key, profile, AAD, malformed envelope or restored over newer history.
-- [ ] Bind host key derivation to live unlocked seller profile and idle-lock/session-epoch changes; encrypt before writing, sign only after reservation.
+- [ ] Execute and verify M4 dormant browser key factory tests, zeroization and cross-profile isolation; connect real UI idle lock/unmount disposal. Sign only after a committed reservation and fresh authority checks.
 - [ ] Complete browser UI, P04 signed invoice, exact payment status, backup merge and reminders with regression tests.
 - [ ] Obtain independent code/security review and integration owner release; verify CI for final commit.
 - [ ] Merge qualified stack in approved order, verify application reachability and Pages behavior. Do not equate library tests with production activation.
