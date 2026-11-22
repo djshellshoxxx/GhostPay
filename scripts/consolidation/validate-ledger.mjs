@@ -18,6 +18,16 @@ function sameSet(got, want) {
 function uniqueSorted(items) {
   return [...new Set(items)].sort();
 }
+function validPageSequence(pages) {
+  // An empty result needs just one terminal page. Every earlier page must be
+  // full; a short nonterminal page or a second terminal page means the census
+  // was not a coherent page-by-page snapshot.
+  if (pages.length === 1) return pages[0] === 0;
+  return pages.length > 1 && pages.at(-1) === 0 &&
+    pages.slice(0, -1).every((n, i) => n > 0 && (i === pages.length - 2 || n === 100));
+}
+
+const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-|coordination-metadata-only-held)|review-required|needs-semantic-review/;
 
 // Offline checkpoint invariant checks. This utility never reads or writes live GitHub refs.
 export function validateLedger(data) {
@@ -31,6 +41,8 @@ export function validateLedger(data) {
   check(Array.isArray(data.provenance.prPages) && data.provenance.prPages.at(-1) === 0, 'PR pagination not exhausted');
   check(data.provenance.branchPages.every(x => Number.isSafeInteger(x) && x >= 0 && x <= 100), 'invalid branch pagination');
   check(data.provenance.prPages.every(x => Number.isSafeInteger(x) && x >= 0 && x <= 100), 'invalid PR pagination');
+  check(validPageSequence(data.provenance.branchPages), 'invalid branch pagination sequence');
+  check(validPageSequence(data.provenance.prPages), 'invalid PR pagination sequence');
   check(data.provenance.branchPages.reduce((s, x) => s + x, 0) === data.records.length, 'branch page count inconsistent');
   check(data.provenance.prPages.reduce((s, x) => s + x, 0) === data.openPrs.length, 'PR page count inconsistent');
   check(Array.isArray(data.provenance.branchIdentityMismatches) && data.provenance.branchIdentityMismatches.length === 0,
@@ -43,6 +55,8 @@ export function validateLedger(data) {
     check(validSha(row.sha), `branch ${row.branch} invalid SHA`);
     check(typeof row.finalized === 'boolean', `branch ${row.branch} missing finalized flag`);
     check(typeof row.disposition === 'string' && row.disposition.length > 0, `branch ${row.branch} missing disposition`);
+    if (row.finalized) check(!NONFINAL_DISPOSITION.test(row.disposition),
+      `branch ${row.branch} cannot be finalized with unresolved disposition`);
     if (row.finalized && row.disposition.includes('in-unmerged-recovery')) {
       check(object(row.evidence) && row.evidence.mainIntegrated === false && validSha(row.evidence.parentHead),
         `branch ${row.branch} claims pending recovery without explicit evidence`);
