@@ -34,3 +34,14 @@ The metadata-only integration branch `automation/ghostpay-integration-lock` had 
 2. Arrange genuine independent code/test review; a single coordinator's self-check does not satisfy this gate.
 3. Confirm dependency/ownership conflicts anew, then wait for legitimate *released or explicitly handed-off* integration lease ownership before any qualified main merge.
 4. For the next BUG-ONLY rotation, select a different, unclaimed production file; do not broaden this PR into features, fuzzing, consolidation or deployment.
+
+## Same-branch post-fix edge regression and correction (additive)
+
+Sequential self-review identified a genuine behavioral regression **introduced by the first fix**: the new unconditional `readClock(clock)` occurred even for an already-terminal scheduled payment. Before the fix, `tick()` returned a terminal record without sampling a broken/injected clock and `cancel()` returned the established `bad_state` result. The first fix instead threw if that clock threw. Source-equivalent Node reproduction confirmed the difference; no independent reviewer is claimed.
+
+- Follow-up **failing regression first**: `01f53a567b29560286f3d5269962d85046d861f8` adds a terminal-payment test with a throwing clock.
+- Scoped repair **after the regression**: `4b4ac44bd4ac00639929ec04b91874cb958fe85d` adds an early `isTerminal(p.state)` check, preserving `bad_state` without a clock read.
+- Final source blob: `1add33701823f9516d0579284dad10cd06ae530f` (initial repaired blob `c6929785370c72a02f4a447346a101b8f3db4bda` is superseded).
+- Repeated isolated Node 22.16.0 control-flow replay: both initial expiry/normal-clock baseline assertions fail before repair; all **six** checked behaviors pass against the adjusted implementation, including terminal with a throwing clock. This is **not** actual repository Vitest/typecheck/lint/build/browser execution.
+- CI triggered for earlier draft head `4657468527cd6816726691c61c1bc6af730e7945` is **superseded**; require fresh hosted exact-**final-head** CI after the handoff commit. No prior CI result qualifies this changed head.
+- Earlier ownership/lock restrictions and independent review requirements remain unchanged. No merge, deployment or release authorized.
