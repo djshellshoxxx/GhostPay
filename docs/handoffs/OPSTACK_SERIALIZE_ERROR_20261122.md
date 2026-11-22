@@ -3,7 +3,7 @@
 ## Identity and ownership
 - Cycle/worker: `20261122T1036Z`, a single GitHub connector coordinator operating sequentially; **no native parallel worker, independent verifier, or GitHub approval** took place.
 - Isolated branch: `automation/20261122T1036Z/bug/opstack-serialization-boundary`. Original main and task base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
-- Initial product blob: `2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb`. Patched product blob: `bea2bbd480e7b35802e50b4e92856d02a72e2221`. Last regression-file blob: `14b1153e5ee80063861780c0e6c70f59201eba0a`.
+- Initial product blob: `2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb`. Patched product logic blob: `bea2bbd480e7b35802e50b4e92856d02a72e2221` (current source/JSDoc blob: `22c0e91d1eae6f09b5b3349c8d596b7bc837981a`). Last regression-file blob: `bb0adff5db50d7823baa83d0888fcfdc4f63c748`.
 - Owned paths: `apps/web/src/lib/opStackFee.ts`, new `apps/web/src/lib/opStackFee.serialization.test.ts`, additive `docs/ai/ACTIVE_WORK.md`, this handoff. No shared integration files edited.
 
 ## Finding and correction
@@ -13,9 +13,11 @@ The single-statement production repair moves `serializeTransaction({ type: 'eip1
 
 Commit sequence:
 1. Claim before product edits: `8de6bfb7acd11fab5c3be05240856f272482e1f9`.
-2. Regression first: `0a99c9f44e3e45fd19f7c95f6ab195a3e3182a1f`. Negative nonce, gas, and value; non-OP fast path; valid OP Stack fee controls. Committed **before** production change, but not run as repository Vitest.
+2. Regression first: `0a99c9f44e3e45fd19f7c95f6ab195a3e3182a1f`. Negative nonce, gas, and value, plus a tip above the EIP-1559 fee cap; non-OP fast path; valid OP Stack fee controls. Committed **before** production change, but not run as repository Vitest.
 3. Production repair: `18c49808d4f8af2f998ac7f6c750d3857cc415c3`.
 4. Test-only assertion simplification: `c64172fb96b0a40fcf8cee15cda3cf350253ac02`.
+5. Extra deterministic EIP-1559 tip-over-fee-cap regression: `c896e55058268416d2ec6cc83d2e2bde2864d6f4`; inspected upstream viem source shows `assertTransactionEIP1559` rejects this mismatch, but the repository Vitest case remains unexecuted.
+6. Updated production JSDoc only: `b3285eff16acf3ed4b7000548aa6b60ad7598bca`.
 
 ## Actual verification and limitations
 - Executed Node.js **v22.16.0** on local `/mnt/data/ghostpay-r11/fee-boundary-replay.mjs`: **2/2 source-equivalent assertions passed**, showing a raw RangeError escapes the old catch boundary and a typed user-facing error comes from the corrected boundary with a mocked serializer. This script is a source-equivalent control-flow reproduction, **not** actual `viem`, repository Vitest, TypeScript, lint, build, browser, integration, static security/Mythril, or wallet test. The local scratch file is not durable and is not an authoritative checkpoint.
