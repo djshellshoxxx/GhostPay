@@ -771,3 +771,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG-R3 — reject duplicate CSV ChunkWriter header (2026-11-22 UTC)
+
+- Coordinator: one ChatGPT automation worker; no independent verifier available. Branch: `automation/20261122T0522Z/bug/ux-export-header-once-r3`; baseline main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-export/src/encoder.ts`, new `packages/ux-export/src/encoder.header-once.test.ts`, this additive branch-local claim, and `docs/handoffs/UX_EXPORT_HEADER_ONCE_20261122.md`. Do not edit other workers' branches or files.
+- Reproduced existing behavior from main `encoder.ts` blob `b54cdede86aee5802045e73461a65e18bf3311e9`: public `ChunkWriter.header()` can run twice, emitting a repeated CSV header in one export despite its documented first-call-only contract. Source-equivalent Node 22 replay: `id\\r\\none\\r\\nid\\r\\n`; no exception. This is not a repository Vitest run.
+- Acceptance: commit a failing new Vitest regression before the source fix; reject a second header with existing `INVALID_OPTION` error before mutating writer state, preserve first header/rows/chunking/BOM/size limits, use no new dependencies. Verify with hosted exact-head CI and applicable checks; independent review and held generation-11 integration lease are required to merge.
+- Ownership at claim: checked PR #390 exact-head status (five successful workflows, no recorded independent reviews); inspected #415 (`summary.ts` only) and source-file paths for broad #238/#239/#240/#246/#256/#269/#278/#302/#303/#307/#315/#346/#361/#365/#367/#371/#372/#397, none claimed `packages/ux-export/src/encoder.ts`. The R30 196-open-PR metadata census and newly opened #438–#443 are also noted; full fresh all-PR path re-scan not claimed. Do not merge or take integration lock.
