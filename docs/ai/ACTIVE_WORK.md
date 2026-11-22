@@ -1,3 +1,15 @@
+# GP-BUG-20261122-IMPORT — preserve reviewed settings exchange input (2026-11-22 UTC)
+
+Cycle: `20261122T0239Z`; one coordinator running sequential discovery, regression, fix and audit. No native subagents or independent verifier available.
+Task branch: `automation/20261122T0239Z/bug/settings-exchange-incoming-snapshot`, stacked on PR #431 at `11b71fc9b0c66007e1d8c8700a53cfeb226d840d`, which itself is based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/settingsExchange.ts`, new `apps/web/src/lib/settingsExchange.incomingSnapshot.test.ts`, this additive claim, and `docs/handoffs/SETTINGS_EXCHANGE_INCOMING_SNAPSHOT_20261122.md`.
+Finding and scope: `previewSettingsExchange` retains the caller's mutable `incoming` object; a subsequent source-object mutation can alter an already displayed import without recomputing its diff or trust decision. The prior PR #431 snapshots the *current* settings basis, not imported data. Repair only this bounded settings-import snapshot correctness defect; do not alter key custody, policy, contracts, services, endpoints, workflow or release configuration.
+Acceptance: separate mutable caller data from the reviewed preview, including preferences, both RPC URL maps and pinned signer list. Applying an unchanged review must use the displayed values despite later caller edits. Add test-first regressions and preserve existing trust confirmation, imported validation and mixed-section semantics; exact-head CI plus independent review before any merge.
+Ownership: reuse PR #431 as exclusive stacked dependency; do not touch the parent branch, shared ledgers, PR #372 recovery work or PR #286 privacy work. Metadata integration lock observed HELD generation 11 by `994a0d214fb9-root-r3` at ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; no takeover or shared integration. Reinspect before later merge.
+Tests: initially pending; local GitHub clone DNS fails, therefore use only clearly labelled isolated source-equivalent Node replay and hosted exact-head CI once PR exists.
+
+---
+
 # GP-BUG-20261122-SE — stale settings-exchange preview after in-place mutation
 
 Cycle/worker: `20261122T0035Z`, one ChatGPT coordinator with sequential source audit, reproduction, regression, implementation and review. No independent native worker available.
