@@ -3,7 +3,7 @@ import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import type { ReconciliationVaultStore } from '@ghostpay/ux-vault/portable';
 import {
   MAX_RECURRING_SNAPSHOT_BYTES, parseRecurringSnapshot, reference, validateRecurringSnapshot,
-  type RecurringInvoiceReferenceV1, type RecurringSnapshotV1,
+  type RecurringInvoiceReferenceV1, type RecurringPlanV1, type RecurringSnapshotV1,
 } from './model';
 import { RecurringPreparationController } from './prepare';
 import type { RecurringReview, RecurringReviewContext } from './review';
@@ -31,12 +31,30 @@ const ENVELOPE_KEYS = 'ciphertext|iv|profileRef|schema';
 
 function fail(code: RecurringVaultErrorCode): never { throw new RecurringVaultError(code); }
 
+function sameCadence(a: RecurringPlanV1['cadence'], b: RecurringPlanV1['cadence']): boolean {
+  if (a.kind !== b.kind) return false;
+  return a.kind === 'custom' ? b.kind === 'custom' && a.seconds === b.seconds :
+    b.kind !== 'custom' && a.every === b.every;
+}
+
+function samePlanTerms(a: RecurringPlanV1, b: RecurringPlanV1): boolean {
+  return a.planId === b.planId && a.anchorSeconds === b.anchorSeconds &&
+    sameCadence(a.cadence, b.cadence) && a.templateRef === b.templateRef &&
+    a.assetId === b.assetId && a.amountAtomic === b.amountAtomic &&
+    a.displayTimeZone === b.displayTimeZone && a.status === b.status;
+}
+
 function assertForward(previous: RecurringSnapshotV1, next: RecurringSnapshotV1): void {
   const states = new Map(next.plans.map(item => [item.plan.planId, item]));
   for (const before of previous.plans) {
     const after = states.get(before.plan.planId);
     if (after === undefined || after.nextPeriodIndex < before.nextPeriodIndex ||
         (before.plan.status === 'cancelled' && after.plan.status !== 'cancelled'))
+      fail('HISTORY');
+    if (before.plan.anchorSeconds !== after.plan.anchorSeconds ||
+        !sameCadence(before.plan.cadence, after.plan.cadence) ||
+        (before.plan.revision === after.plan.revision && !samePlanTerms(before.plan, after.plan)) ||
+        (before.plan.status === 'cancelled' && !samePlanTerms(before.plan, after.plan)))
       fail('HISTORY');
   }
 
@@ -181,7 +199,10 @@ export class RecurringEncryptedVault {
   async #seal(snapshot: RecurringSnapshotV1, generation: number): Promise<string> {
     const key = this.#guard(generation);
     const plain = new TextEncoder().encode(JSON.stringify(snapshot));
-    if (plain.byteLength > MAX_RECURRING_SNAPSHOT_BYTES) return fail('CORRUPT');
+    if (plain.byteLength > MAX_RECURRING_SNAPSHOT_BYTES) {
+      plain.fill(0);
+      return fail('CORRUPT');
+    }
     const iv = globalThis.crypto.getRandomValues(new Uint8Array(12));
     try {
       const ciphertext = new Uint8Array(await globalThis.crypto.subtle.encrypt(
@@ -251,7 +272,8 @@ export class RecurringEncryptedVault {
     if (next.profileRef !== this.#profileRef) return fail('CORRUPT');
     let expected: string | null = null;
     if (previous === null) {
-      if (next.outbox.length !== 0 || next.plans.some(state => state.plan.status !== 'paused'))
+      if (next.outbox.length !== 0 || next.plans.some(state =>
+        state.plan.status !== 'paused' || state.nextPeriodIndex !== 0))
         return fail('UNREVIEWED');
     } else {
       const entry = this.#handles.get(previous);
