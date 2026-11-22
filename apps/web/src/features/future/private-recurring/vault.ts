@@ -57,6 +57,12 @@ function assertForward(previous: RecurringSnapshotV1, next: RecurringSnapshotV1)
   }
 }
 
+function sameInvoiceReference(a: RecurringInvoiceReferenceV1, b: RecurringInvoiceReferenceV1 | undefined): boolean {
+  return b !== undefined && a.eventId === b.eventId && a.planId === b.planId &&
+    a.planRevision === b.planRevision && a.periodIndex === b.periodIndex &&
+    a.kind === b.kind && a.artifactRef === b.artifactRef && a.status === b.status;
+}
+
 function parseEnvelope(text: string, profileRef: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
   if (text.length > ENVELOPE_LIMIT) return fail('CORRUPT');
   let value: unknown;
@@ -92,7 +98,9 @@ export class RecurringEncryptedVault {
   readonly #profileRef: string;
   readonly #storageKey: string;
   readonly #aad: Uint8Array<ArrayBuffer>;
-  readonly #handles = new WeakMap<RecurringLoadedSnapshot, { text: string; snapshot: RecurringSnapshotV1 }>();
+  readonly #handles = new WeakMap<RecurringLoadedSnapshot, {
+    text: string; snapshot: RecurringSnapshotV1; generation: number;
+  }>();
   #key: CryptoKey | undefined;
   #generation = 0;
 
@@ -130,9 +138,9 @@ export class RecurringEncryptedVault {
     return this.#key;
   }
 
-  #handle(snapshot: RecurringSnapshotV1, text: string): RecurringLoadedSnapshot {
+  #handle(snapshot: RecurringSnapshotV1, text: string, generation: number): RecurringLoadedSnapshot {
     const handle = Object.freeze({ snapshot });
-    this.#handles.set(handle, { snapshot, text });
+    this.#handles.set(handle, { snapshot, text, generation });
     return handle;
   }
 
@@ -211,7 +219,7 @@ export class RecurringEncryptedVault {
     }
     this.#guard(generation);
     if (!committed) return fail('CONFLICT');
-    return this.#handle(snapshot, text);
+    return this.#handle(snapshot, text, generation);
   }
 
   /** Reload and validate the latest committed state; a prepared record is not an issued invoice. */
@@ -221,7 +229,7 @@ export class RecurringEncryptedVault {
     if (text === null) return null;
     const snapshot = await this.#open(text, generation);
     this.#guard(generation);
-    return this.#handle(snapshot, text);
+    return this.#handle(snapshot, text, generation);
   }
 
   /**
@@ -230,6 +238,13 @@ export class RecurringEncryptedVault {
    * Initial creation must be all-paused and without an imported outbox.
    */
   public async commit(previous: RecurringLoadedSnapshot | null, input: unknown): Promise<RecurringLoadedSnapshot> {
+    return this.#commit(previous, input, false);
+  }
+
+  /** Internal path: only M3's consumed review may add exactly one prepared outbox reference. */
+  async #commit(
+    previous: RecurringLoadedSnapshot | null, input: unknown, reviewedReservation: boolean,
+  ): Promise<RecurringLoadedSnapshot> {
     const generation = this.#generation;
     this.#guard(generation);
     const next = validateRecurringSnapshot(input);
@@ -240,9 +255,18 @@ export class RecurringEncryptedVault {
         return fail('UNREVIEWED');
     } else {
       const entry = this.#handles.get(previous);
-      if (entry === undefined || entry.snapshot !== previous.snapshot) return fail('CONFLICT');
+      if (entry === undefined || entry.snapshot !== previous.snapshot ||
+          entry.generation !== generation) return fail('CONFLICT');
       if (next.revision === entry.snapshot.revision) return fail('CONFLICT');
       assertForward(entry.snapshot, next);
+      const oldReferencesUnchanged = entry.snapshot.outbox.every((item, index) =>
+        sameInvoiceReference(item, next.outbox[index]));
+      if (!oldReferencesUnchanged) return fail('UNREVIEWED');
+      if (reviewedReservation) {
+        const added = next.outbox[entry.snapshot.outbox.length];
+        if (next.outbox.length !== entry.snapshot.outbox.length + 1 ||
+            added?.status !== 'prepared') return fail('UNREVIEWED');
+      } else if (next.outbox.length !== entry.snapshot.outbox.length) return fail('UNREVIEWED');
       expected = entry.text;
     }
     return this.#write(expected, next, generation);
@@ -263,9 +287,10 @@ export class RecurringEncryptedVault {
   ): Promise<RecurringLoadedSnapshot> {
     const generation = this.#generation;
     this.#guard(generation);
-    if (!this.#handles.has(previous)) return fail('CONFLICT');
+    const entry = this.#handles.get(previous);
+    if (entry === undefined || entry.generation !== generation) return fail('CONFLICT');
     const staged = controller.prepareNext(view, previous.snapshot, context, artifactRef, nextSnapshotRevision);
-    return this.commit(previous, staged);
+    return this.#commit(previous, staged, true);
   }
 
   /** Ciphertext-only backup; never exports decrypted private plan terms. */
