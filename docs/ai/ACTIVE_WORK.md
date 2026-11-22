@@ -1039,3 +1039,14 @@ this registry and the module catalog row only. Runtime/test code is frozen.
 Acceptance: preserve exact source trees, independent review, 84 passing tests,
 current-main TypeScript/build/bundle evidence and source-publication mapping.
 Hosted checks remain separately reported. No activation or main merge.
+
+
+---
+
+# F05 receipt assurance coverage and integration boundaries — 2026-11-22
+
+Worker: ChatGPT F05 source audit, one coordinator; no independent security reviewer or runtime executor.
+Branch: `docs/f05-receipt-assurance-coverage-20261122`; exact starting commit `1de6e0247e0f76afe6f1615b43e55007ece25d9b` (draft consolidation PR #371), with main checked at `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: append-only claim in `docs/ai/ACTIVE_WORK.md` and new `docs/handoffs/F05_RECEIPT_ASSURANCE_COMPLETION.md` only. No runtime, schema, build, CI, dependency, production route, or other worker-owned path changes.
+Acceptance: source-pinned F05 receipt-assurance coverage matrix, explicit distinction between existing main receipt/archive facilities and dormant F05 verifier, evidence/provenance and dependency inventory, prioritized unfinished work and exact validation gates. Mark unperformed checks honestly; do not assert that the F05 product is complete.
+Coordination: #323 and #371 own the dormant F05 source; #372 and related recovery/ledger workers own active integration paths; #449 -> #450 -> #452 and #426 own overlapping `ux-receipts` fixes. The generation-11 integration lease is held by `994a0d214fb9-root-r3`; no transfer or release verified. This docs-only child avoids these active code claims, does not mutate lease metadata and will not merge, deploy or release.
