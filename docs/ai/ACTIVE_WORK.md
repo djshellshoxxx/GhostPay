@@ -1,3 +1,15 @@
+# GP-BUG — non-string raw address parser throws instead of returning bad-address (2026-11-22)
+
+Worker: ChatGPT BUG-ONLY sequential coordinator; no independent reviewer is available in this run.
+Branch: `automation/20261122-r7/bug/ux-intake-address-runtime-types` based exactly on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-intake/src/address.ts`, new focused `packages/ux-intake/src/address.runtime.test.ts`, this additive registry claim on the isolated branch, and new `docs/handoffs/UX_INTAKE_ADDRESS_RUNTIME_TYPES_20261122.md`.
+Observed defect: exported `validateAddress` throws JavaScript TypeError for null, undefined, numbers, arrays, objects, bigint, and symbols supplied from untyped runtime callers. `packages/ux-intake/src/result.ts` expressly promises non-throwing results for untrusted inputs. The original main source blobs of address.ts (`f7754728d475b1c791de771727d5647c64797b43`) and result.ts (`74a6a294caef828e72f5b48e2a1a86491b23f677`) were hash-verified and reproduced with Node 22 plus a module-resolution-only .js-to-.ts import shim; no repository Vitest execution is claimed.
+Acceptance: commit a failing regression first; return the existing typed `bad-address` error for runtime nonstrings without changing valid EVM/bech32 results; smallest source change, no dependencies, no real network, funds, wallets or new features. Record source-equivalent red/green, exact commit/CI evidence, and independent-review/browser requirements before merge.
+Ownership: inspected active broad PRs #278/#264/#262/#372 and integrations #307/#302/#246 plus #424 and newest #452–#445, none claiming address.ts or the new address.runtime.test.ts; live open-PR inventory counted 211 and must be rechecked for newly published overlap. Related #424 owns deeplink.ts, not address.ts. The separately held generation-11 integration lease is not transferred to this worker; do not merge, deploy or release.
+Status: isolated ownership claim recorded before test or production changes; regression, repair, verification and review pending.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
