@@ -26,3 +26,21 @@ Other 24 browser paths with two independently diverged blobs remain without this
 5. Verify `Pay.tsx` QR/file transitions invalidate outdated camera/file callbacks and file errors, reject stale proof sources, and retain privacy/custody restrictions in native Firefox and WebKit.
 
 No source changes to #372, no independent approval and no deployment were made by this audit. The generation-11 integration lease remains held by another coordinator.
+
+
+## Second targeted batch — six additional browser paths
+
+A further complete-file, three-source comparison (two-source when file is absent from main) identified:
+
+| Path | Donor-only normalized lines absent from recovery | Donor-only lines also absent from main | Important recovery-only behavior / next regression |
+|---|---:|---:|---|
+| `components/ReceiptPanel.tsx` | 3 | **0** | Recovery adds archive write-in-flight ownership and a focused print target; test duplicate archive click and print isolation |
+| `features/btc/BtcView.tsx` | 1 | **0** | Recovery additionally clears provider-check state on invalidation; test stale async provider checks after flow reset |
+| `lib/relayerClient.ts` | 1 | **1** | **Do not import donor behavior:** donor enumerates `client_queue_full` with explicitly pre-broadcast relayer refusal types. Recovery/main omit that success-adjacent classification. Preserve uncertain-outcome handling to avoid unsafe duplicate submission; test request timeout / queue-full before and after possible broadcast |
+| `views/Scan.tsx` | 6 | **0** | Recovery binds tag listing to the current seller key, vault-unlock authorization and session guard; test unlock/relock, stale promise completion and key switching |
+| `components/MetadataRetentionControls.tsx` | 22 | **22** | The file is new in both branches, with rewritten implementation: recovery adds separate invoice/proof scope policies, registry revisions and focus refresh; test cross-tab retention policy and stale destructive confirmation |
+| `components/WalletDisclosure.tsx` | 2 | **2** | Recovery tightens focus restoration after sensitive disclosure: rejects body/root/disabled targets and verifies activeElement before falling back; test keyboard/disabled target, focus loss and background-tab behavior |
+
+These high raw line-delta counts for new files are **replacements** and cannot be interpreted as lost features without caller/tests review. `relayerClient.ts` is the clearest explicitly **unsafe old donor difference**, because treating `client_queue_full` as definitely pre-broadcast can compromise retry-safety; do not resurrect it.
+
+Across the **12** audited browser paths in this R33 note (with overlap to R32's prior paths), no safe unrepresented cherry-pick has been identified; 18 of the 30 custom-divergent source paths remain for this level of examination. Audit result is source-bound, not an executed multi-browser acceptance.
