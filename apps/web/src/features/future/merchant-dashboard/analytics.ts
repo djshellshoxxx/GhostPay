@@ -1,5 +1,5 @@
 import { assertDashboardCurrent, atomic, DashboardError, fields, integer, reference, type DashboardContext } from './model.js';
-import type { DashboardProjection, DashboardRow, DashboardState } from './projection.js';
+import type { DashboardProjection, DashboardState } from './projection.js';
 
 /** Local analytics over a trusted in-memory F04 projection, never an imported bookkeeping file. */
 export interface DashboardAssetAnalytics {
