@@ -41,3 +41,7 @@ GitHub open PR metadata census: 191 open PRs in three paginated pages. Per-PR ch
 - Required before any merge: full changed-file ownership reconciliation, exact-head all-required hosted checks GREEN, applicable native browser qualification, independent review, no active dependencies, and confirmed legitimate release/transfer of integration lease. Until then, keep PR draft and source isolated.
 
 Next round: inspect current PR head and CI (including new job logs for any failures), repair only a confirmed defect on this branch if ownership permits; otherwise select a new unowned Pages-runtime function and repeat regression-first sequence.
+
+## Post-publication complete open-PR path reconciliation
+
+After opening draft #433, GitHub returned 192 open PR entries (100 on page 1, 92 on page 2). All changed-file inventories across those entries were queried successfully, with zero request failures; #433's own changed files were also verified directly. No other open PR modified either `packages/ux-notify/src/redact.ts` or `packages/ux-notify/src/redact.surrogate.test.ts`. The only affected-package overlap is the separately owned legacy test `packages/ux-notify/src/redact.test.ts` in PRs **#224, #238, #262, #264, #278 and #372**, and independent cache-policy paths in #409. None was edited. This supersedes the earlier bounded-56 inventory limitation for that snapshot. New PR heads must still be rechecked before merge.
