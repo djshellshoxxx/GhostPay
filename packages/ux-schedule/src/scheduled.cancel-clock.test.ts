@@ -60,4 +60,12 @@ describe('cancel uses one checked clock sample', () => {
     expect(terminal.ok).toBe(false);
     if (!terminal.ok) expect(terminal.error.code).toBe('bad_state');
   });
+  it('does not sample a clock when a terminal payment is already rejected', () => {
+    const result = cancel({ ...payment, state: 'confirmed' }, () => {
+      throw new Error('terminal cancellation must not read the clock');
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('bad_state');
+  });
+
 });
