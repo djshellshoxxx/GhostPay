@@ -22,25 +22,25 @@
     29,
     0
   ],
-  "finalizedCount": 100,
-  "unresolvedCount": 438,
+  "finalizedCount": 101,
+  "unresolvedCount": 437,
   "priorR40": {
     "sha": "fd3abbc297febe54f6539b801cd752d6f4d9e4f8",
     "branchCount": 536,
     "finalizedCount": 47,
     "unresolvedCount": 489
   },
-  "newlyFinalizedCount": 53,
+  "newlyFinalizedCount": 54,
   "newlyFinalized": {
     "ancestry": 26,
     "documentationOnly": 23,
     "blobEquivalent": 1,
-    "superseded": 3
+    "superseded": 4
   },
   "mergeCountThisRound": 0,
   "releaseQualified": false,
   "selfAdvancingBranch": "audit/ghostpay-r41-semantic-backfill-20261122-1400Z",
-  "summary": "Immutable-SHA ancestry, complete <=300-file documentation compares, byte-identical formatter blob, and stronger 30-day privacy partial logic preserve donor refs without importing regressions. Unresolved includes new BUG-only branch and this ledger branch; no all-branch semantic sign-off. Second pass resolves 12 more exact-main ancestors, two docs-only head differences and two more inferior seven-day privacy transfer filter implementations; 100 total final.",
+  "summary": "Immutable-SHA ancestry, complete <=300-file documentation compares, byte-identical formatter blob, and stronger 30-day privacy partial logic preserve donor refs without importing regressions. Unresolved includes new BUG-only branch and this ledger branch; no all-branch semantic sign-off. Second pass resolves 12 more exact-main ancestors, two docs-only head differences and two more inferior seven-day privacy transfer filter implementations; 100 total final. Third pass: seven-path QR-combined donor source-level superseded, no unique useful code to port; 101 final.",
   "records": [
     {
       "branch": "ai/agent-harness-20261113",
@@ -4192,12 +4192,54 @@
       "r39Sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-stronger-main",
+      "evidence": "R41 seven-path source/blob review; main QR type, relayer broadcast status, and 30d scan guards supersede donor; SHA pinned",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20"
+      "r41CheckedHead": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "r41Evidence": {
+        "type": "complete-seven-path-source-blob-review",
+        "head": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+        "changedPaths": 7,
+        "reviewedSources": [
+          {
+            "path": "apps/web/src/lib/qrKinds.ts",
+            "donorBlob": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+            "mainBlob": "68de6518783cc57bd7f3a66d0588d530e27d21b6"
+          },
+          {
+            "path": "apps/web/src/lib/qrKinds.test.ts",
+            "donorBlob": "2e2c26459d1a9fd9f92a6f2ff80c36a2af7e933b",
+            "mainBlob": "e918e36848f4e01322afbdf41cf561b3222cc14a"
+          },
+          {
+            "path": "apps/web/src/lib/relayerClient.ts",
+            "donorBlob": "da3a822f186217203aeb2147fddc3e08022a1d86",
+            "mainBlob": "193ddae643018212f0d9fc94593e8e22db4b8da3"
+          },
+          {
+            "path": "apps/web/src/lib/relayerClient.test.ts",
+            "donorBlob": "d763331e0ece90b905fbdcef4c6185ad66d22374",
+            "mainBlob": "42151b26b4fcbcdeefc09268065e2f648ca17a97"
+          },
+          {
+            "path": "apps/web/src/lib/scanSpam.ts",
+            "donorBlob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+            "mainBlob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61"
+          },
+          {
+            "path": "apps/web/src/lib/scanSpam.test.ts",
+            "donorBlob": "762deed547d68f934999994d770369b2ee95c9ad",
+            "mainBlob": "762deed547d68f934999994d770369b2ee95c9ad"
+          }
+        ],
+        "docsPath": "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md",
+        "conclusion": "No donor-only useful behavioral implementation identified. Main qrKinds rejects inherited/unknown runtime keys with explicit guards and additional regressions absent from donor. Main relayerClient removes ambiguous unauthorized from definite-before-broadcast list, has a matching regression absent from donor; import could weaken ambiguous-wallet-submit retry safety. Main scanSpam uses 30-day partial coverage vs donor 7-day, scanSpam tests are byte-identical. Donor-only qrKinds.test comment has no executable assertion. Preserve docs evidence branch. No runtime tests run.",
+        "limits": "Source audit only; no hosted qualification or whole-repo integration proof"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
@@ -9591,6 +9633,7 @@
       "r41CheckedHead": "bd320d530c725c0edc820b496ea298d741c7ba9e"
     }
   ],
-  "latestSupplementAtUtc": "2026-11-22T14:07:46.236Z",
-  "secondPassNewFinalized": 16
+  "latestSupplementAtUtc": "2026-11-22T14:09:46.397Z",
+  "secondPassNewFinalized": 16,
+  "thirdPassNewFinalized": 1
 }
