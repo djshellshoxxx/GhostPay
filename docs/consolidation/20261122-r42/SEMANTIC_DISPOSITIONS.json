@@ -29,20 +29,21 @@
   ],
   "openPrCount": 232,
   "summary": {
-    "newlyFinalized": 100,
+    "newlyFinalized": 104,
     "ancestor": 91,
     "documentationOnly": 4,
     "blobEquivalent": 4,
     "regressionSuperseded": 1,
     "newlyDiscovered": 2,
     "changedPreviouslyFinalized": 0,
-    "totalFinalized": 201,
-    "totalUnresolved": 339,
+    "totalFinalized": 205,
+    "totalUnresolved": 335,
     "mergedPRsThisRun": 0,
     "productionCommitsThisRun": 0,
     "extraFinalizedAfterInitialPublication": 48,
     "extraAncestor": 45,
-    "extraDocumentationOnly": 3
+    "extraDocumentationOnly": 3,
+    "extraFinalizedAfterSemanticReview": 4
   },
   "limitations": [
     "R42 52 new immutable/source-specific dispositions; all other inherited unresolved histories remain pending",
@@ -5435,14 +5436,38 @@
       "r39Sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-main-source",
+      "evidence": "R42 supplemental semantic Git blob review on immutable 73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "73923350fcda62f00be0f2b83ad346f416a24bb6",
       "r42HeadSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "disposition": "superseded-by-main-source",
+        "type": "complete-five-path-semantic-review",
+        "paths": [
+          "apps/web/src/lib/relayerClient.test.ts",
+          "apps/web/src/lib/relayerClient.ts",
+          "apps/web/src/lib/scanSpam.test.ts",
+          "apps/web/src/lib/scanSpam.ts",
+          "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md"
+        ],
+        "donorCodeBlobs": [
+          "da3a822f186217203aeb2147fddc3e08022a1d86",
+          "0cf63cb855bb80e1dcf1e2b9f511c8758b124558"
+        ],
+        "mainCodeBlobs": [
+          "193ddae643018212f0d9fc94593e8e22db4b8da3",
+          "da35b619ad1aa7efa8607e0ab9ce8278b585bd61"
+        ],
+        "observation": "Main avoids treating relayer unauthorized as a definitely pre-broadcast failure and uses complete 30-day privacy partial coverage; donor only 7-day. Donor scan test blob already identical; relayer tests contain no donor-only executable lines. Older docs preserved. Unsafe to overwrite newer safeguards.",
+        "headSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+        "mainSha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...73923350fcda62f00be0f2b83ad346f416a24bb6",
+        "limits": "Read-only source comparison; no local test run or mainline merge; branch preserved"
+      }
     },
     {
       "branch": "chatgpt/ghostpay-rpc-layout-reflow-20261121-r1",
@@ -5531,14 +5556,32 @@
       "r39Sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "already-included-blob-equivalent",
+      "evidence": "R42 supplemental semantic Git blob review on immutable 36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
       "r42HeadSha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "disposition": "already-included-blob-equivalent",
+        "type": "six-path-complete-blob-equivalence",
+        "paths": [
+          "packages/cli/src/args.test.ts",
+          "packages/cli/src/args.ts",
+          "packages/merchant-billing/src/csv.test.ts",
+          "packages/merchant-billing/src/schedule.test.ts",
+          "packages/ux-schedule/src/scheduled.test.ts",
+          "packages/ux-schedule/src/scheduled.ts"
+        ],
+        "allExactlyIdentical": true,
+        "observation": "All six historical changed paths have exact matching source/test blobs in current main. No unique source missing.",
+        "headSha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+        "mainSha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+        "limits": "Read-only source comparison; no local test run or mainline merge; branch preserved"
+      }
     },
     {
       "branch": "chatgpt/ghostpay-sonar-review-20261118",
@@ -5760,14 +5803,31 @@
       "r39Sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-main-source",
+      "evidence": "R42 supplemental semantic Git blob review on immutable 73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "73923350fcda62f00be0f2b83ad346f416a24bb6",
       "r42HeadSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "disposition": "superseded-by-main-source",
+        "type": "complete-five-path-semantic-review",
+        "paths": [
+          "apps/web/src/lib/relayerClient.test.ts",
+          "apps/web/src/lib/relayerClient.ts",
+          "apps/web/src/lib/scanSpam.test.ts",
+          "apps/web/src/lib/scanSpam.ts",
+          "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md"
+        ],
+        "sameHeadAs": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+        "observation": "Exact same donor SHA and files as other R42 reviewed branch; main has stronger relayer uncertainty and 30-day scan warning protections.",
+        "headSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+        "mainSha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...73923350fcda62f00be0f2b83ad346f416a24bb6",
+        "limits": "Read-only source comparison; no local test run or mainline merge; branch preserved"
+      }
     },
     {
       "branch": "chatgpt/pages-release-gate-audit-20261114",
@@ -8933,14 +8993,28 @@
       "r39Sha": "4403d3703cd1dff893e1984e98505691267f8a20",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-main-tests",
+      "evidence": "R42 supplemental semantic Git blob review on immutable 4403d3703cd1dff893e1984e98505691267f8a20",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "4403d3703cd1dff893e1984e98505691267f8a20",
       "r42HeadSha": "4403d3703cd1dff893e1984e98505691267f8a20",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "disposition": "superseded-by-main-tests",
+        "type": "complete-one-path-regression-supersession",
+        "paths": [
+          "apps/web/src/views/Settings.test.tsx"
+        ],
+        "donorTestBlob": "05a7afe39153af64be7fd47bba1e06ccdfe05b5f",
+        "mainTestBlob": "f898ade764504ab8aee0024194afed15f35f92fb",
+        "observation": "Donor-only two regex assertions test verified-keystore idle-lock language and unverified-download retention; main checks same two conditions with additional stronger wording and backed-up key behavior. No donor-only scenario missing.",
+        "headSha": "4403d3703cd1dff893e1984e98505691267f8a20",
+        "mainSha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...4403d3703cd1dff893e1984e98505691267f8a20",
+        "limits": "Read-only source comparison; no local test run or mainline merge; branch preserved"
+      }
     },
     {
       "branch": "claude/wizardly-babbage-mfsdrl",
@@ -17246,6 +17320,16 @@
       "claude/lucid-meitner-apalzc",
       "claude/vigilant-johnson-yjgq94",
       "claude/happy-maxwell-onl4x5"
+    ]
+  },
+  "supplement2": {
+    "checkedAtUtc": "2026-11-22T15:11:07.339Z",
+    "finding": "Exact six-code/test-file same-blob donor; two aliases of 5-file outdated relayer/scan privacy code; one weaker Settings test all semantically resolved, no branch deleted/merged",
+    "finalizedBranches": [
+      "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "chatgpt/pages-browser-fixes-combined-20261114",
+      "claude/vigilant-johnson-yjgq94"
     ]
   }
 }
