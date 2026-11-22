@@ -6,7 +6,7 @@ Owned paths: `packages/ux-connect/src/compat.ts`, new `packages/ux-connect/src/c
 Finding: `parsePendingRef` accepts a valid bytes32 hash with arbitrary runtime `kind` values (e.g. `transactionHash`, `null`) and returns `ok: true`, although the exported pending-reference model supports only `txHash`, `safeTxHash`, and `userOpHash`. Exact-source-based isolated Node 22 reproduction failed the rejection expectation. Preserve valid paths, normalization, and malformed-hash handling.
 Ownership: all 188 open PR changed-file inventories inspected on current main; none changed `packages/ux-connect/src/`. Recheck if new PRs appear. A separate integration lock is held at generation 11 by `994a0d214fb9-root-r3`, and must not be changed or assumed released on expiry.
 Acceptance: fail a committed regression before the smallest fix; check rejected unexpected kinds and all three valid kinds plus adjacent hash validation; record exact source/commit hashes and hosted CI; no dependencies, new features, wallet submissions, network interactions, or merging without exact-head CI, independent review, browser gates where applicable, and legitimate lock ownership. Native repository checkout unavailable due to DNS failure; do not claim local Vitest.
-Status: ownership recorded; source edit pending.
+Status: implemented regression-first on branch (regression `dda3af1f7908f7838aed784be6482d54f30dabcc`; repair `5d192528ecdc4cb240b084e862baa8f452401801`); published [draft PR #430](https://github.com/djshellshoxxx/GhostPay/pull/430), pending exact-head CI, independent review, applicable browser gates and legitimate integration lock release/transfer.
 
 ---
 
