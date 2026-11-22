@@ -104,6 +104,7 @@ export function diffSettings(from: ProfileSettings, to: ProfileSettings): Settin
 
 /** Profile whose settings equal `settings` exactly, or `custom`. */
 export function detectProfile(settings: ProfileSettings): ProfileId | 'custom' {
+  if (Object.keys(settings).length !== Object.keys(SETTINGS.everyday).length) return 'custom';
   for (const id of PROFILE_IDS) {
     if (diffSettings(settings, SETTINGS[id]).length === 0) return id;
   }
