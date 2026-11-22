@@ -1,3 +1,15 @@
+# 2026-11-22T22:32Z — UX privacy sparse-records typecheck repair (isolated child)
+
+- Cycle/worker: `20261122T2232Z` / single coordinator, sequential CI diagnosis, focused repair, self-audit and documentation; independent verifier not available in this environment.
+- Branch: `automation/20261122T2232Z/bug/policy-sparse-test-typecheck`, exact parent PR #482 head `e5705abded6761c2b53cde2343210372e2264ef7`; stacked on #482, which depends on #437. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-privacy/src/policy.sparse-records.test.ts`, additive claim in `docs/ai/ACTIVE_WORK.md`, dedicated `docs/handoffs/UX_PRIVACY_SPARSE_POLICY_TYPECHECK_20261122.md`. Production `policy.ts` and parent branches are not owned by this cycle.
+- Reproduced hosted CI failure: PR #482 Core CI run 45067893449, job 137348097253, TS2379 at line 79 due explicit `guardianThreshold: undefined` with `exactOptionalPropertyTypes: true`; aggregate `typescript` job 137352632714 fails because the needed typecheck job failed. All web tests, lint and browser jobs passed on the parent candidate; they do not qualify this child.
+- Acceptance: change only the test fixture to omit `guardianThreshold` when testing the absence case; retain the negative nonempty threshold assertion and all five sparse-array regressions; no TypeScript flag weakening, `as any`, production alteration or unrelated changes. Run focused exact-TypeScript-options reproduction and hosted exact-head CI, then seek truly independent review before merge.
+- Integration metadata: `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11 `held` by `994a0d214fb9-root-r3`. No lease takeover or protected integration permitted. Confirm no deployment triggers before any merge.
+- Security: the separate 10-record Mythril findings (3 Medium/7 Low) and external release clearance remain open and unmodified; no contract, key, fee or real-funds work.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
