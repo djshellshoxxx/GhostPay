@@ -2713,7 +2713,26 @@
       "r41OpenPrs": [],
       "r41CheckedHead": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
       "r42HeadSha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42CappedDonorTree": {
+        "headSha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+        "treeSha": "747652a3dc66013956ee987ce0a5afdce93e3d07",
+        "mainIdentical": 3531,
+        "mainDifferent": 388,
+        "donorOnlyVsMain": 1033,
+        "mainOnly": 62,
+        "recoveryIdentical": 4680,
+        "recoveryDifferent": 197,
+        "donorOnlyVsRecovery": 75,
+        "sourceOnlyVsRecovery": 7,
+        "sourceDifferentVsRecovery": 137,
+        "mainTreeSha": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+        "recovery372TreeSha": "65e5cc6fdb7ab3337951ba0b0b58e87b71df095b",
+        "truncated": false,
+        "disposition": "structurally-compared-semantically-unresolved",
+        "source": "docs/consolidation/20261122-r42/UNCAPPED_DONOR_TRIAGE.md",
+        "reason": "Numerous changed source blobs need semantic and ownership review. File count is not a feature count"
+      }
     },
     {
       "branch": "automation/20261120T004531Z/feature/clipboard-guard",
@@ -4904,7 +4923,26 @@
       "r41OpenPrs": [],
       "r41CheckedHead": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
       "r42HeadSha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42CappedDonorTree": {
+        "headSha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+        "treeSha": "64ae98aa2616d52ee213d040f33c6a8d896fc83b",
+        "mainIdentical": 3604,
+        "mainDifferent": 285,
+        "donorOnlyVsMain": 280,
+        "mainOnly": 92,
+        "recoveryIdentical": 3849,
+        "recoveryDifferent": 317,
+        "donorOnlyVsRecovery": 3,
+        "sourceOnlyVsRecovery": 0,
+        "sourceDifferentVsRecovery": 247,
+        "mainTreeSha": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+        "recovery372TreeSha": "65e5cc6fdb7ab3337951ba0b0b58e87b71df095b",
+        "truncated": false,
+        "disposition": "structurally-compared-semantically-unresolved",
+        "source": "docs/consolidation/20261122-r42/UNCAPPED_DONOR_TRIAGE.md",
+        "reason": "Numerous changed source blobs need semantic and ownership review. File count is not a feature count"
+      }
     },
     {
       "branch": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
@@ -17331,5 +17369,12 @@
       "chatgpt/pages-browser-fixes-combined-20261114",
       "claude/vigilant-johnson-yjgq94"
     ]
+  },
+  "uncappedDonorSupplement": {
+    "checkedAtUtc": "2026-11-22T15:13:31.742Z",
+    "newlyStructurallyCompared": 2,
+    "semanticFinalizations": 0,
+    "unresolvedStill": 335,
+    "source": "docs/consolidation/20261122-r42/UNCAPPED_DONOR_TRIAGE.md"
   }
 }
