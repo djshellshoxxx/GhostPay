@@ -1,3 +1,14 @@
+# GP-BUG — Reject non-plain objects in public store hasOnlyKeys helper (2026-11-22)
+
+Worker: one ChatGPT bug-only coordinator. No separate independent verifier available in this session.
+Task branch: `automation/20261122/bug/store-onlykeys-plain-r1`, based exactly on live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-core/src/store.ts`, new `packages/ux-core/src/store.onlykeys-prototype.test.ts`, this additive registry claim, and new `docs/handoffs/UX_CORE_HASONLYKEYS_PROTOTYPE_20261122.md`. Do not modify any other path.
+Evidence: exported `hasOnlyKeys` is documented as accepting a plain object with only approved own keys, but on frozen main its `Object.keys`-only guard accepts `new Date(0)`, a `Map`, and an object with an inherited property, because each has no unapproved enumerable *own* key. Isolated Node reproduction observed all three returning true. This lets a caller incorrectly trust a non-record object as a schema record.
+Acceptance: commit failing Vitest regression before the smallest prototype guard; reject Date, Map, nonplain/inherited-prototype objects; preserve ordinary plain objects and null-prototype dictionaries and deny unapproved own keys. Check actual source hashes, run available isolated Node checks and hosted CI, and record unrun workspace/browser checks. No dependency, payment, feature, build, or contract changes.
+Ownership: all 232 open PR changed-file inventories at the 2026-11-22 snapshot were inspected for `store.ts`, `theme.ts`, and `merge.ts`; none included `store.ts`. Recheck before any merge. Integration lock generation 11 remains recorded as externally held; do not take over or merge/deploy/release. Independent review required for qualification.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
