@@ -66,3 +66,25 @@ test('rejects impossible pagination including negative and noninteger page count
   const t = fixture();t.provenance.prPages = [1.5, -0.5, 0];
   assert.throws(() => validateLedger(t), /invalid PR pagination/);
 });
+
+test('never finalizes unresolved branch work merely because summary totals agree', () => {
+  const s = fixture();
+  s.records[1].finalized = true;
+  s.summary.finalized = 2;
+  s.summary.unresolved = 0;
+  assert.throws(() => validateLedger(s), /cannot be finalized/);
+  s.records[1].disposition = 'newly-discovered-review-required';
+  assert.throws(() => validateLedger(s), /cannot be finalized/);
+});
+
+test('rejects internal pagination holes, repeated terminators, and intermediate partial pages', () => {
+  const duplicated = fixture();
+  duplicated.provenance.branchPages = [2, 0, 0];
+  assert.throws(() => validateLedger(duplicated), /invalid branch pagination sequence/);
+  const hole = fixture();
+  hole.provenance.prPages = [0, 1, 0];
+  assert.throws(() => validateLedger(hole), /invalid PR pagination sequence/);
+  const partial = fixture();
+  partial.provenance.branchPages = [1, 1, 0];
+  assert.throws(() => validateLedger(partial), /invalid branch pagination sequence/);
+});
