@@ -1,3 +1,14 @@
+# GP-BUG R8 — preset storage missing-blob rollback after observed data (2026-11-22)
+
+Worker: single ChatGPT bug-only coordinator; no separate native verifier available.
+Branch: `automation/20261122-r8/bug/ux-presets-missing-blob`; exact current-main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-presets/src/store.ts`, new `packages/ux-presets/src/store.missing-blob.test.ts`, this append-only claim and dedicated `docs/handoffs/UX_PRESET_MISSING_BLOB_20261122.md`.
+Finding: after successfully persisting/reading a revision, `load()` treats a subsequently missing encrypted blob (`storage.get(slot) === null`) as a fresh empty store, although other in-instance rollback/tampering rejects without writes; another save can silently replace remembered presets. This is a local encrypted preset persistence correctness/data-loss hazard, not a demonstrated fund loss or remote exploit.
+Acceptance: regression first demonstrating missing ciphertext after a successful write cannot be listed as an empty store or overwritten, return existing uniform decrypt-failed error until original ciphertext is restored; preserve genuinely new empty-store initialization and normal save/read/replace/remove operations. Minimize source change, no dependencies or feature expansion.
+Coordination: refreshed live main and 219 open PR metadata (2026-11-22); targeted changed-file checks of broad PRs #278/#262/#264/#302/#307, adjacent #417 and recent #447–#460 had no ownership on intended source/test; full remaining 219-PR filename inventory still in progress and must be completed before qualification/merge. Externally held generation-11 integration lease; no acquisition/merge/release. No local repository checkout available due GitHub DNS failure; do not claim repository Vitest from source-equivalent checks. Require exact-head all-required CI, independent review, native browser where applicable and ownership recheck before merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
