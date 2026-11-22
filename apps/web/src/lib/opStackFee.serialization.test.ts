@@ -18,6 +18,7 @@ describe('OP Stack fee-reserve serialization failures', () => {
     ['negative nonce', { nonce: -1 }],
     ['negative gas limit', { gas: -1n }],
     ['negative transfer value', { value: -1n }],
+    ['tip above fee cap', { maxPriorityFeePerGas: 2_000_000_001n }],
   ] as const)('fails closed with a typed public error on %s before contacting the oracle', async (_name, fields) => {
     const rpc = mockRpc(84532, () => { throw new Error('must not query oracle'); });
     await expect(sweepFeeReserve(rpc, { ...OP_STACK_TX, ...fields })).rejects.toMatchObject({
