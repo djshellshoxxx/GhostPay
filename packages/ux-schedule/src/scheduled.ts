@@ -160,6 +160,8 @@ export function confirm(p: ScheduledPayment, ack: Acknowledgement, clock: Clock)
 
 /** Cancel a non-terminal payment. */
 export function cancel(p: ScheduledPayment, clock: Clock): Result<ScheduledPayment> {
+  // A terminal record needs no clock read, even when its clock is unavailable.
+  if (isTerminal(p.state)) return err('bad_state', `cannot cancel from state ${p.state}`);
   // Check expiry and stamp cancellation using the same clock instant.
   const now = readClock(clock);
   const t = tick(p, () => now);
