@@ -35,7 +35,7 @@ function contextFields(value: unknown): Record<(typeof CONTEXT_KEYS)[number], un
     if (descriptor === undefined || !('value' in descriptor) || !descriptor.enumerable) return refuse('SCHEMA');
     Object.defineProperty(fields, key, { value: descriptor.value, enumerable: true, configurable: false });
   }
-  return fields as Record<(typeof CONTEXT_KEYS)[number], unknown>;
+  return fields;
 }
 
 function verifiedContext(snapshot: RecurringSnapshotV1, value: RecurringMutationContext): {
