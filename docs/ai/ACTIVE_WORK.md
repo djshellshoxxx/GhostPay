@@ -771,3 +771,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG-R12 — receipt canonical JSON sparse arrays (2026-11-22)
+
+Worker: ChatGPT automated BUG-ONLY repair round, sequential source/reproduction/check/review phases; no independent verifier delegated or claimed.
+Base live main `eb59d93cffed7848c4aac37d0e9650b87239c6da`; isolated branch `automation/20261122-r12/bug/ux-receipts-canonical-sparse`.
+Claimed paths: `packages/ux-receipts/src/canonical.ts`, new `packages/ux-receipts/src/canonical.sparse.test.ts`, additive ownership entry here, and new `docs/handoffs/UX_RECEIPTS_CANONICAL_SPARSE_20261122.md`. No shared sources or pre-existing receipt tests may be overwritten.
+Discovery candidate: `canonicalJson` uses Array.map(), which skips sparse holes. A one-hole array is serialized identically to [] and multiple holes can produce invalid JSON; violates the existing valid canonical-JSON and reproducibility contract. Confirm runtime behavior and source SHA before implementing.
+Acceptance: commit a failing Vitest regression before the smallest implementation change; reject missing array slots using existing `ReceiptError('NOT_CANONICALIZABLE')`, preserve dense arrays/null-prototype objects/nested valid data, and verify deterministic JSON output. Run exact source-matched standalone tests and hosted CI; do not claim workspace/browser tests without evidence.
+Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exact-head CI/reviews, held generation-11 integration lease; initial broad PR checks #238/#246/#262/#264/#278/#372 and most recent PRs found no collision on proposed paths. Complete all-current-PR changed-path reconciliation before publication or integration. Independent approval and integration-lock ownership remain outstanding; do not merge, deploy, release, transact or alter others' branches.
