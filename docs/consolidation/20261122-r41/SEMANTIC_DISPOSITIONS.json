@@ -22,25 +22,25 @@
     29,
     0
   ],
-  "finalizedCount": 84,
-  "unresolvedCount": 454,
+  "finalizedCount": 100,
+  "unresolvedCount": 438,
   "priorR40": {
     "sha": "fd3abbc297febe54f6539b801cd752d6f4d9e4f8",
     "branchCount": 536,
     "finalizedCount": 47,
     "unresolvedCount": 489
   },
-  "newlyFinalizedCount": 37,
+  "newlyFinalizedCount": 53,
   "newlyFinalized": {
-    "ancestry": 14,
-    "documentationOnly": 21,
+    "ancestry": 26,
+    "documentationOnly": 23,
     "blobEquivalent": 1,
-    "superseded": 1
+    "superseded": 3
   },
   "mergeCountThisRound": 0,
   "releaseQualified": false,
   "selfAdvancingBranch": "audit/ghostpay-r41-semantic-backfill-20261122-1400Z",
-  "summary": "Immutable-SHA ancestry, complete <=300-file documentation compares, byte-identical formatter blob, and stronger 30-day privacy partial logic preserve donor refs without importing regressions. Unresolved includes new BUG-only branch and this ledger branch; no all-branch semantic sign-off.",
+  "summary": "Immutable-SHA ancestry, complete <=300-file documentation compares, byte-identical formatter blob, and stronger 30-day privacy partial logic preserve donor refs without importing regressions. Unresolved includes new BUG-only branch and this ledger branch; no all-branch semantic sign-off. Second pass resolves 12 more exact-main ancestors, two docs-only head differences and two more inferior seven-day privacy transfer filter implementations; 100 total final.",
   "records": [
     {
       "branch": "ai/agent-harness-20261113",
@@ -3601,12 +3601,21 @@
       "r39Sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at a238c22dbc8a38c32db4a38f7bd5536ab32e3aee; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee"
+      "r41CheckedHead": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
@@ -3616,10 +3625,10 @@
       "r39OpenPrsAtOldCutoff": [
         139
       ],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-or-documentation-only",
+      "evidence": "R41 pass 2: audit-or-documentation-only at 364b01f847391cd02b3aecb74e18ddd047096c97; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...364b01f847391cd02b3aecb74e18ddd047096c97",
+      "reviewRequired": false,
       "r41OpenPrs": [
         {
           "number": 139,
@@ -3628,7 +3637,16 @@
           "draft": true
         }
       ],
-      "r41CheckedHead": "364b01f847391cd02b3aecb74e18ddd047096c97"
+      "r41CheckedHead": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "r41Evidence": {
+        "type": "complete-compare-file-paths",
+        "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...364b01f847391cd02b3aecb74e18ddd047096c97",
+        "changedPaths": 1,
+        "onlyDocs": true,
+        "limits": "Preserve audit/CI handoff documentation, no app source import"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/audit-secret-box-20261110",
@@ -3636,12 +3654,21 @@
       "r39Sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 621ee0af3f4748c072eee0479accad82f7c2fdd3; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "621ee0af3f4748c072eee0479accad82f7c2fdd3"
+      "r41CheckedHead": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...621ee0af3f4748c072eee0479accad82f7c2fdd3",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
@@ -3865,12 +3892,21 @@
       "r39Sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at ab427ab81c7bc18a6d908c5201cf86450cf3f21f; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f"
+      "r41CheckedHead": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-download-cleanup-20261116",
@@ -3922,12 +3958,21 @@
       "r39Sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 120dcd7fc15b2d5a646a93835287ef9bc7281fe1; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1"
+      "r41CheckedHead": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
@@ -4007,12 +4052,21 @@
       "r39Sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 907e2919e93091fd2e9c2abaecbeb95e331f4b7d; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d"
+      "r41CheckedHead": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-manifest-gates-20261117",
@@ -4020,12 +4074,21 @@
       "r39Sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0"
+      "r41CheckedHead": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
@@ -4056,10 +4119,10 @@
       "r39OpenPrsAtOldCutoff": [
         153
       ],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-or-documentation-only",
+      "evidence": "R41 pass 2: audit-or-documentation-only at 83fe9b022d2b5a4068137fd7987467f1803803dc; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "reviewRequired": false,
       "r41OpenPrs": [
         {
           "number": 153,
@@ -4068,7 +4131,16 @@
           "draft": true
         }
       ],
-      "r41CheckedHead": "83fe9b022d2b5a4068137fd7987467f1803803dc"
+      "r41CheckedHead": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "r41Evidence": {
+        "type": "complete-compare-file-paths",
+        "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...83fe9b022d2b5a4068137fd7987467f1803803dc",
+        "changedPaths": 1,
+        "onlyDocs": true,
+        "limits": "Preserve audit/CI handoff documentation, no app source import"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
@@ -4076,12 +4148,21 @@
       "r39Sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-stronger-main",
+      "evidence": "R41 pass 2: superseded-by-stronger-main at cf5e876ce164e63d535fb6e40319573798b746e1; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...cf5e876ce164e63d535fb6e40319573798b746e1",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "cf5e876ce164e63d535fb6e40319573798b746e1"
+      "r41CheckedHead": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "r41Evidence": {
+        "type": "three-file-source-comparison",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...cf5e876ce164e63d535fb6e40319573798b746e1",
+        "donorSourceBlob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+        "mainSourceBlob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+        "testBlobIdentical": "762deed547d68f934999994d770369b2ee95c9ad",
+        "note": "Donor 7-day partial warning weaker than current 30-day coverage; no donor-only test assertions. For owner-transfer branch third diff is docs/ai/ACTIVE_WORK.md.",
+        "limits": "Source-level supersession; no new runtime tests"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
@@ -4089,12 +4170,21 @@
       "r39Sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at c15833bc2aa6e0e0189f6cd18becf293e0e6e73e; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e"
+      "r41CheckedHead": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
@@ -4129,12 +4219,21 @@
       "r39Sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at c8d4c42bee724bacd244bc90b0259c961d27e84f; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+      "r41CheckedHead": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c8d4c42bee724bacd244bc90b0259c961d27e84f",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
@@ -4164,12 +4263,21 @@
       "r39Sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 9a84764e70603e5f4e0b7bac13bdb6eeec6e469b; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b"
+      "r41CheckedHead": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
@@ -4177,12 +4285,21 @@
       "r39Sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at dd4a7eb4dd71435284d9d326310cb2695faa249a; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+      "r41CheckedHead": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...dd4a7eb4dd71435284d9d326310cb2695faa249a",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
@@ -4190,12 +4307,21 @@
       "r39Sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at 68aca93bc19e4c9d91fa37212d9b8c502b4ce884; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884"
+      "r41CheckedHead": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
@@ -4217,12 +4343,21 @@
       "r39Sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "superseded-by-stronger-main",
+      "evidence": "R41 pass 2: superseded-by-stronger-main at 7b6c4983e5c0ba048edf97aaff7399bd77980234; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "7b6c4983e5c0ba048edf97aaff7399bd77980234"
+      "r41CheckedHead": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "r41Evidence": {
+        "type": "three-file-source-comparison",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7b6c4983e5c0ba048edf97aaff7399bd77980234",
+        "donorSourceBlob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+        "mainSourceBlob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+        "testBlobIdentical": "762deed547d68f934999994d770369b2ee95c9ad",
+        "note": "Donor 7-day partial warning weaker than current 30-day coverage; no donor-only test assertions. For owner-transfer branch third diff is docs/ai/ACTIVE_WORK.md.",
+        "limits": "Source-level supersession; no new runtime tests"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
@@ -4230,12 +4365,21 @@
       "r39Sha": "eece5aff554255ca6c02e53849403f66123b8e40",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R41 pass 2: included-in-main-by-ancestry at eece5aff554255ca6c02e53849403f66123b8e40; https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...eece5aff554255ca6c02e53849403f66123b8e40",
+      "reviewRequired": false,
       "r41OpenPrs": [],
-      "r41CheckedHead": "eece5aff554255ca6c02e53849403f66123b8e40"
+      "r41CheckedHead": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "r41Evidence": {
+        "type": "immutable-commit-ancestry",
+        "head": "eece5aff554255ca6c02e53849403f66123b8e40",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "status": "behind",
+        "aheadBy": 0,
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...eece5aff554255ca6c02e53849403f66123b8e40",
+        "limits": "SHA ancestry only, not runtime acceptance"
+      }
     },
     {
       "branch": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
@@ -9446,5 +9590,7 @@
       "r41OpenPrs": [],
       "r41CheckedHead": "bd320d530c725c0edc820b496ea298d741c7ba9e"
     }
-  ]
+  ],
+  "latestSupplementAtUtc": "2026-11-22T14:07:46.236Z",
+  "secondPassNewFinalized": 16
 }
