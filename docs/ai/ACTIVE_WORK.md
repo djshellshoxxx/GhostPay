@@ -1,3 +1,14 @@
+# GP-BUG — Reject unpaired UTF-16 in schedule names and memos (2026-11-22)
+
+Worker: GhostPay bug-only automation, sequential single operator (independent reviewer not available).
+Isolated branch: `automation/20261122-r4/bug/ux-schedule-invalid-utf16`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-schedule/src/validate.ts`, new `packages/ux-schedule/src/validate.unicode.test.ts`, this additive registry claim, and new `docs/handoffs/UX_SCHEDULE_UNPAIRED_UTF16_20261122.md`. Existing `template.test.ts` belongs to #238/#262/#264/#278/#372 and remains untouched.
+Finding: on exact main Git blob `cb9b63207586651282ad8bf46237e58431cfdd98`, `validText` accepts lone high/low UTF-16 surrogates as names/memos. These values do not round-trip through UTF-8; `TextEncoder` replaces them with U+FFFD. The validator is used by `createTemplate`, `validateSnapshot`, and persisted-template import. Executing the hash-matched source on Node 22 reproduced acceptance and replacement; not a Vitest run.
+Acceptance: test-first regression for leading/trailing/embedded lone surrogates, preserve valid paired astral Unicode, ordinary text, lengths and existing control/bidi rejects; smallest source change, no new dependencies, UI, APIs, payment or wallet interactions. Check exact-head hosted CI, maintain separate review and integration lock gates.
+Ownership: enumerated all 204 open PRs (#445 through #51) and inspected per-PR changed-path inventories; zero claims on the two owned source/test paths (other `ux-schedule` work only in `recurrence.*` and `template.test.ts`). The durable generation-11 main integration lock remains held by a different coordinator. Do not acquire it or merge, deploy, release, or force-push shared branches.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
