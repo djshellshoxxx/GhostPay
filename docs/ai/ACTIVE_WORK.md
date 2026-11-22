@@ -771,3 +771,16 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG-BOOK-SPARSE-R13 — reject missing handle-book entries (2026-11-22)
+
+- Worker: GhostPay BUG-ONLY automation, one sequential implementer; no separate native verifier available.
+- Branch: `automation/20261122/bug/ux-links-book-sparse-entries-r13`, exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-links/src/book.ts`, new `packages/ux-links/src/book.sparse-entries.test.ts`, this append-only claim, and new `docs/handoffs/UX_LINKS_BOOK_SPARSE_ENTRIES_20261122.md`.
+- Observed defect: `validateBook` iterates user-supplied `entries` with `Array.forEach`, which skips array holes, so malformed runtime state can be silently accepted and later serialized without the missing records. Only an actual dense array should pass. No assertion of a network exploit.
+- Acceptance: failing regression committed before repair; reject sparse arrays with typed BOOK errors, preserve empty/dense book validation, JSON serialization and collision rules; minimal source change; run isolated source-equivalent tests plus hosted GitHub CI. No new dependencies or changes to wallet, contracts, payments, release or deployment.
+- Ownership: inspected all 235 open PR changed-file inventories across three paginated GitHub pages on 2026-11-22; #399 owns `request.ts`, #392 owns `qr.ts`, and broad #238/#262/#264/#278/#372 own existing tests/package metadata, but none changed `book.ts` or the new regression path. Active registry claims and heads must be rechecked before integration.
+- Integration: metadata-only lock generation 11 at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains held by external owner `994a0d214fb9-root-r3` (expired timestamp is not authorization). No acquisition, merge or deployment.
