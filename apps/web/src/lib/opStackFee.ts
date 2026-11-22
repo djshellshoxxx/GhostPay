@@ -66,7 +66,7 @@ export interface SweepTxFields {
  * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
  * oracle has no `getOperatorFee`), read from the GasPriceOracle, times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}. On any
  * other chain `0n`, without an RPC call.
- * @throws {UserFacingError} when the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
+ * @throws {UserFacingError} when the transaction cannot be serialized or the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
  *   unknown, so nothing is signed (or quoted).
  */
 export async function sweepFeeReserve(rpc: Rpc, tx: SweepTxFields): Promise<bigint> {
