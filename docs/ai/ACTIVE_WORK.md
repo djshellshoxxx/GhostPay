@@ -783,3 +783,14 @@ Reproduction: on main `validateFriendlyPolicy` accepts `guardians: []` with `gua
 Acceptance: test-first failure for empty-list threshold 0/1/2 and successful empty-list-without-threshold and populated valid guardians; return the existing INVALID_THRESHOLD issue and reject through existing describe/convert paths. No policy-scheme/contracts, protocol, UI, wallet, dependencies or deployment edits. Hosted exact-head CI and independent review before merge.
 Ownership evidence: current main and PR inventory 195 open as checked at task start; large PRs #238/#246/#262/#264/#278/#307/#372 and recent scoped PRs have no changes to `policy.ts`; broad PRs own `policy.test.ts`. Shared generation-11 integration lease held externally, do not merge to main.
 Runtime: native checkout unavailable (github.com DNS does not resolve); do not claim local Vitest. Hosted CI required.
+
+---
+
+# GP-POLICY-SPARSE — fail closed on missing array entries (2026-11-22)
+
+Cycle/worker: 20261122T2038Z, one ChatGPT coordinator working sequentially (no native independent verifier). Isolated branch: `automation/20261122T2038Z/bug/policy-sparse-records`.
+Exact parent: existing approved-for-development (not integration-approved) draft PR #437 head `9e72c9820ed457f18c2635e17da629216eedbbdf`, stacked to preserve its guardian-threshold repair. Current main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths on this child branch only: `packages/ux-privacy/src/policy.ts`, new `packages/ux-privacy/src/policy.sparse-records.test.ts`, additive entry in this file, and `docs/handoffs/UX_PRIVACY_SPARSE_POLICY_RECORDS_20261122.md`. The parent PR and existing `policy.test.ts` must not be edited.
+Finding: `validateFriendlyPolicy` uses `forEach` for three runtime arrays; JavaScript silently skips sparse holes, potentially accepting policies with missing spend-limit, allowlist or guardian entries. Later `describePolicy` and scheme conversion can throw or display inconsistent row counts.
+Acceptance: demonstrate red regression before the fix, reject holes using the existing typed `INVALID_LIMITS`, `INVALID_ADDRESS`, `INVALID_GUARDIANS` policy issues; preserve dense and empty list behavior, threshold and `NOT_ENFORCED` warnings; no contract edits, dependencies, services, deployments or real funds.
+Coordination: stacked on parent #437, never rewrite it. Large active PRs #278/#372 and prior #437 source claims remain separately owned. Current integration metadata ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` says held generation 11 by another coordinator; expiry does not release ownership. No shared target updates or merges. Exact-head hosted validation and genuine independent review remain mandatory.
