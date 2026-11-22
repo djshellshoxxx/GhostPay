@@ -51,7 +51,7 @@ describe('F10 M2 — local-only, immutable recurring-plan lifecycle', () => {
     const previousFetch = globalThis.fetch;
     vi.stubGlobal('ethereum', { request: walletSpy });
     try {
-      globalThis.fetch = fetchSpy as typeof fetch;
+      globalThis.fetch = fetchSpy;
       const next = transitionRecurringPlan(original, 'plan-1', 'pause', 'terms-1', 'terms-2', context());
       expect(next.plans[0]).toMatchObject({ nextPeriodIndex: 1, plan: { status: 'paused', revision: 'terms-2' } });
       expect(next.outbox).toEqual(original.outbox);

@@ -1,3 +1,22 @@
+# F10 M4 browser-session key binding (extension) — 2026-11-22
+
+- Worker/branch: same isolated F10 M4 coordinator on `feature/f10-durable-cas-m4-20261122`; no change to upstream F10 ownership or integration lease.
+- Additional owned paths: new `apps/web/src/features/future/private-recurring/browserVault.ts`, `browserVault.test.ts`; narrow exports in F10 `index.ts`; additive M4 handoff updates.
+- Scope: derive a nonextractable, dedicated F10 AES-256 key from a temporary, zeroized viewing-key copy and profile-bound HKDF domain; reuse existing `IdbReconciliationVaultStore`, `captureSessionGuard`, `subscribeSession`. Close and invalidate on seller change/dispose; no UI mount or payment side effects. Test-first with mocked browser session and real WebCrypto.
+- Restrictions: current draft stack #456 → #396 → #391 → #371. No direct production app route, release gate change, lock takeover, merge or deployment. New keys must never persist.
+
+---
+
+# F10 M4 encrypted durable snapshot CAS and inherited lint repairs — 2026-11-22
+
+- Worker: ChatGPT, scoped sequential implementation and review, no independent reviewer claimed.
+- Branch: `feature/f10-durable-cas-m4-20261122`; pinned parent M3 `7079eedfc67180c9a0012c7154758e41fe6208c9`, stacked on open #396 → #391 → #371; main remains `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths for this successor branch: new `apps/web/src/features/future/private-recurring/vault.ts`, `vault.test.ts`; narrow `index.ts` export; inherited two-line lint repair in `lifecycle.ts`, `lifecycle.test.ts`; additive `docs/future/modules/F10-private-recurring/M4_DURABLE_CAS_HANDOFF.md`, `docs/handoffs/F10_RECURRING_INVOICES_COMPLETION.md`, and this registry claim.
+- Acceptance: reuse the existing reconciliation-vault ciphertext CAS contract, inject a nonextractable AES-256-GCM key derived by the caller, reject invalid/cross-profile/corrupt data, preserve historical outbox and monotonic period cursors, protect unlocked-session lifetime and exactly-one local CAS winner, no side effects or invoice signing before commit. Include deterministic fault/concurrency/lock/recovery tests and document incomplete P04/P05 provider and UI wiring.
+- Coordination: do not update underlying open PR branches, integration lease, release gates, or main; do not claim full F10 functionality. Exact CI lint findings inherited from M2 PR #391 on M3 `7079eedfc67180c9a0012c7154758e41fe6208c9` require separate qualification, and corrections are isolated to this descendant branch. No deployment or real wallets.
+
+---
+
 # F10 M3 single-use reviewed invoice preparation — 2026-11-21 Pacific
 
 - Worker: ChatGPT, isolated sequential development, no independent reviewer available.
