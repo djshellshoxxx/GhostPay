@@ -58,11 +58,17 @@
     "eligibleChangesIntegratedThisRun": 0
   },
   "integration": {
-    "lockStatus": "held (per R47 source evidence; not independently mutated)",
+    "lockStatus": "held",
     "lockGeneration": 11,
     "lockOwner": "994a0d214fb9-root-r3",
     "mainMergeAuthorized": false,
-    "branchProtectionEndpoint": "403 Resource not accessible by integration"
+    "branchProtectionEndpoint": "403 Resource not accessible by integration",
+    "lockRef": "refs/heads/automation/ghostpay-integration-lock",
+    "lockRefSha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+    "lockValidatedUtc": "2026-11-22T21:08:47.653Z",
+    "lockExpiresAt": "2026-11-21T00:16:57.174Z",
+    "takeoverPermitted": false,
+    "notes": "Owner verification unavailable. An expired timestamp does not release the lock; non-force transition required."
   },
   "sourceInvestigations": [
     {
@@ -335,6 +341,15 @@
       "immutableComparison": "parent descendant: ahead 752, behind 0; donor 3,906 blobs, no donor-only paths in parent; 3 browser-relevant blobs identical, 27 changed later",
       "mainIntegrated": false,
       "behavioralEquivalenceNotClaimed": true
+    },
+    {
+      "ref": "refs/heads/automation/ghostpay-integration-lock",
+      "sha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+      "kind": "independent-live-lock-read",
+      "status": "held",
+      "generation": 11,
+      "owner": "994a0d214fb9-root-r3",
+      "noLeaseTakeover": true
     }
   ],
   "records": [
