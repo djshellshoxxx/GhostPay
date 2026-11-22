@@ -29,17 +29,20 @@
   ],
   "openPrCount": 232,
   "summary": {
-    "newlyFinalized": 52,
-    "ancestor": 46,
-    "documentationOnly": 1,
+    "newlyFinalized": 100,
+    "ancestor": 91,
+    "documentationOnly": 4,
     "blobEquivalent": 4,
     "regressionSuperseded": 1,
     "newlyDiscovered": 2,
     "changedPreviouslyFinalized": 0,
-    "totalFinalized": 153,
-    "totalUnresolved": 387,
+    "totalFinalized": 201,
+    "totalUnresolved": 339,
     "mergedPRsThisRun": 0,
-    "productionCommitsThisRun": 0
+    "productionCommitsThisRun": 0,
+    "extraFinalizedAfterInitialPublication": 48,
+    "extraAncestor": 45,
+    "extraDocumentationOnly": 3
   },
   "limitations": [
     "R42 52 new immutable/source-specific dispositions; all other inherited unresolved histories remain pending",
@@ -7496,14 +7499,24 @@
       "r39Sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
       "r42HeadSha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ar-c4-i18n-create-b4-buffer-ui",
@@ -7511,14 +7524,24 @@
       "r39Sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
       "r42HeadSha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ar-c4-i18n-pay",
@@ -7526,14 +7549,24 @@
       "r39Sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at e02d04c7540607624e4bf4627566a5e605242fe1",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "e02d04c7540607624e4bf4627566a5e605242fe1",
       "r42HeadSha": "e02d04c7540607624e4bf4627566a5e605242fe1",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...e02d04c7540607624e4bf4627566a5e605242fe1",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "e02d04c7540607624e4bf4627566a5e605242fe1",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ar-c4-i18n-scan",
@@ -7541,14 +7574,24 @@
       "r39Sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
       "r42HeadSha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ar-c5-device-matrix",
@@ -7556,14 +7599,24 @@
       "r39Sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 92af349a2e877d6cf94e7ed95a6466163a205089",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "92af349a2e877d6cf94e7ed95a6466163a205089",
       "r42HeadSha": "92af349a2e877d6cf94e7ed95a6466163a205089",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...92af349a2e877d6cf94e7ed95a6466163a205089",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "92af349a2e877d6cf94e7ed95a6466163a205089",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ar-c7-embed-iframe-e2e",
@@ -7571,14 +7624,24 @@
       "r39Sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
       "r42HeadSha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/consolidation-2026-11-04",
@@ -7602,14 +7665,24 @@
       "r39Sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
       "r42HeadSha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-c2",
@@ -7617,14 +7690,24 @@
       "r39Sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "b9cba0978cade31e15faa4067adae448e4dcbc04",
       "r42HeadSha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...b9cba0978cade31e15faa4067adae448e4dcbc04",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-c4",
@@ -7632,14 +7715,24 @@
       "r39Sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 511c23bd925504b02d329e1c82bc30593d3ac496",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "511c23bd925504b02d329e1c82bc30593d3ac496",
       "r42HeadSha": "511c23bd925504b02d329e1c82bc30593d3ac496",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...511c23bd925504b02d329e1c82bc30593d3ac496",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "511c23bd925504b02d329e1c82bc30593d3ac496",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-c5",
@@ -7647,14 +7740,24 @@
       "r39Sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
       "r42HeadSha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w1",
@@ -7662,14 +7765,24 @@
       "r39Sha": "704e268bfa7df57964175f820f67400834bdce43",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 704e268bfa7df57964175f820f67400834bdce43",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "704e268bfa7df57964175f820f67400834bdce43",
       "r42HeadSha": "704e268bfa7df57964175f820f67400834bdce43",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...704e268bfa7df57964175f820f67400834bdce43",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "704e268bfa7df57964175f820f67400834bdce43",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w5",
@@ -7677,14 +7790,24 @@
       "r39Sha": "f030376a331445f5059061f24238acb5cf867b29",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at f030376a331445f5059061f24238acb5cf867b29",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "f030376a331445f5059061f24238acb5cf867b29",
       "r42HeadSha": "f030376a331445f5059061f24238acb5cf867b29",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...f030376a331445f5059061f24238acb5cf867b29",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "f030376a331445f5059061f24238acb5cf867b29",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w6",
@@ -7692,14 +7815,24 @@
       "r39Sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
       "r42HeadSha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...16cddc21931775fc17ade3a8f37361aed4ae90bf",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w7",
@@ -7707,14 +7840,24 @@
       "r39Sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
       "r42HeadSha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w8",
@@ -7722,14 +7865,24 @@
       "r39Sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "f162960457b40eb28eaed25a532a56b0a7bc7785",
       "r42HeadSha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...f162960457b40eb28eaed25a532a56b0a7bc7785",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w9",
@@ -7737,14 +7890,24 @@
       "r39Sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
       "r42HeadSha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w10",
@@ -7752,14 +7915,24 @@
       "r39Sha": "391454b2609b97dd9e98f65df470dfb880e16142",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 391454b2609b97dd9e98f65df470dfb880e16142",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "391454b2609b97dd9e98f65df470dfb880e16142",
       "r42HeadSha": "391454b2609b97dd9e98f65df470dfb880e16142",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...391454b2609b97dd9e98f65df470dfb880e16142",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "391454b2609b97dd9e98f65df470dfb880e16142",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/cw-w11",
@@ -7767,14 +7940,24 @@
       "r39Sha": "764020c208c144e165437e244b6a1bc43673dc5f",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 764020c208c144e165437e244b6a1bc43673dc5f",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "764020c208c144e165437e244b6a1bc43673dc5f",
       "r42HeadSha": "764020c208c144e165437e244b6a1bc43673dc5f",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...764020c208c144e165437e244b6a1bc43673dc5f",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "764020c208c144e165437e244b6a1bc43673dc5f",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/docs-screenshots",
@@ -7782,14 +7965,24 @@
       "r39Sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
       "r42HeadSha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/docs-snapshot-1",
@@ -7797,14 +7990,24 @@
       "r39Sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
       "r42HeadSha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...dc2340c998250039d906a7beb72a4bed7a2b56c5",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/docs-snapshot-2",
@@ -7812,14 +8015,24 @@
       "r39Sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
       "r42HeadSha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/exciting-brown-7v69cr",
@@ -7858,14 +8071,25 @@
       "r39Sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-or-documentation-only",
+      "evidence": "R42 second immutable SHA donor comparison at f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "f4e79b078514cdd174a087bd5142ad76bc49f811",
       "r42HeadSha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "complete-compare-documentation-only",
+        "disposition": "audit-or-documentation-only",
+        "paths": [
+          "docs/handoffs/AUTONOMOUS_RUN_2026-11-04.md"
+        ],
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...f4e79b078514cdd174a087bd5142ad76bc49f811",
+        "limits": "Complete changed-path list under docs only; historical notes preserved; not mainline adoption",
+        "head": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/gallant-hamilton-4wzkyn",
@@ -7873,14 +8097,24 @@
       "r39Sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
       "r42HeadSha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ghostpay-autonomous-completion-y4sk2h",
@@ -7888,14 +8122,24 @@
       "r39Sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "b6a0871d0618c5ee804947af22d21b794948fa3d",
       "r42HeadSha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...b6a0871d0618c5ee804947af22d21b794948fa3d",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ghostpay-autonomous-prompt-scpgun",
@@ -7903,14 +8147,24 @@
       "r39Sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
       "r42HeadSha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...1db8e967af91bc1d3132e99fa5f4d94696e22997",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ghostpay-completion-audit-ot5jjm",
@@ -8058,14 +8312,24 @@
       "r39Sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
       "r42HeadSha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
@@ -8103,14 +8367,24 @@
       "r39Sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
       "r42HeadSha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c6ce2259e7f14e3442e26d37a50313b119e9b442",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/haiku-wave-2-handoff-qepfoe",
@@ -8118,14 +8392,27 @@
       "r39Sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-or-documentation-only",
+      "evidence": "R42 second immutable SHA donor comparison at 8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
       "r42HeadSha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "complete-compare-documentation-only",
+        "disposition": "audit-or-documentation-only",
+        "paths": [
+          "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "docs/handoffs/WAVE-2-REPORT-2026-10-30.md",
+          "docs/handoffs/WAVE-2-STATUS-2026-10-30.md"
+        ],
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+        "limits": "Complete changed-path list under docs only; historical notes preserved; not mainline adoption",
+        "head": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/happy-maxwell-onl4x5",
@@ -8148,14 +8435,24 @@
       "r39Sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
       "r42HeadSha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...2a5b29de6a71f13ba855571b74fd33a603cc8736",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/inspiring-fermat-vxv689",
@@ -8163,14 +8460,24 @@
       "r39Sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
       "r42HeadSha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c1c4ac9b648174db33c87b59bc9c09267eca731c",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/kind-faraday-8qzf6e",
@@ -8178,14 +8485,24 @@
       "r39Sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
       "r42HeadSha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/laughing-bardeen-4t20ys",
@@ -8193,14 +8510,24 @@
       "r39Sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
       "r42HeadSha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/lucid-meitner-apalzc",
@@ -8223,14 +8550,24 @@
       "r39Sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
       "r42HeadSha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/pages-site-1",
@@ -8238,14 +8575,24 @@
       "r39Sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
       "r42HeadSha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/portable-hosting-kit",
@@ -8253,14 +8600,24 @@
       "r39Sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
       "r42HeadSha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-1",
@@ -8268,14 +8625,24 @@
       "r39Sha": "39cce4663d98c7da06775441a301040af51907ed",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 39cce4663d98c7da06775441a301040af51907ed",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "39cce4663d98c7da06775441a301040af51907ed",
       "r42HeadSha": "39cce4663d98c7da06775441a301040af51907ed",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...39cce4663d98c7da06775441a301040af51907ed",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "39cce4663d98c7da06775441a301040af51907ed",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-2",
@@ -8283,14 +8650,24 @@
       "r39Sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at df150cbdb58203789f5afc3050e75d92c655fa49",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "df150cbdb58203789f5afc3050e75d92c655fa49",
       "r42HeadSha": "df150cbdb58203789f5afc3050e75d92c655fa49",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...df150cbdb58203789f5afc3050e75d92c655fa49",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "df150cbdb58203789f5afc3050e75d92c655fa49",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-3",
@@ -8298,14 +8675,24 @@
       "r39Sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
       "r42HeadSha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-4",
@@ -8313,14 +8700,24 @@
       "r39Sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
       "r42HeadSha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-5",
@@ -8328,14 +8725,24 @@
       "r39Sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "1337f6c121463aa70107bdd065ea88ed30ec3584",
       "r42HeadSha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...1337f6c121463aa70107bdd065ea88ed30ec3584",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-6",
@@ -8343,14 +8750,24 @@
       "r39Sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "7fb7aca6d68b96b89d32959636827fcfb343968d",
       "r42HeadSha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...7fb7aca6d68b96b89d32959636827fcfb343968d",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-7",
@@ -8358,14 +8775,24 @@
       "r39Sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
       "r42HeadSha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-8",
@@ -8373,14 +8800,24 @@
       "r39Sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
       "r42HeadSha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ad76a87e1dd5bd21599fcaecec7508de1a241996",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-9",
@@ -8388,14 +8825,24 @@
       "r39Sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at f09decc278c2052c90dfa209a7098888c8d9877a",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "f09decc278c2052c90dfa209a7098888c8d9877a",
       "r42HeadSha": "f09decc278c2052c90dfa209a7098888c8d9877a",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...f09decc278c2052c90dfa209a7098888c8d9877a",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "f09decc278c2052c90dfa209a7098888c8d9877a",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/remote-extensions-10",
@@ -8403,14 +8850,24 @@
       "r39Sha": "698404ca488c87347858105bda66be21bf428303",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 698404ca488c87347858105bda66be21bf428303",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "698404ca488c87347858105bda66be21bf428303",
       "r42HeadSha": "698404ca488c87347858105bda66be21bf428303",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...698404ca488c87347858105bda66be21bf428303",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "698404ca488c87347858105bda66be21bf428303",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/sharp-bohr-uigfgh",
@@ -8418,14 +8875,26 @@
       "r39Sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-or-documentation-only",
+      "evidence": "R42 second immutable SHA donor comparison at c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
       "r42HeadSha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "complete-compare-documentation-only",
+        "disposition": "audit-or-documentation-only",
+        "paths": [
+          "docs/handoffs/HAIKU-WAVE-2-2026-10-30.md",
+          "docs/handoffs/HAIKU-WAVE-2026-10-30.md"
+        ],
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+        "limits": "Complete changed-path list under docs only; historical notes preserved; not mainline adoption",
+        "head": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/vibrant-cori-scu18b",
@@ -8479,14 +8948,24 @@
       "r39Sha": "ade77362de33156de849989e26206126f978bb8f",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at ade77362de33156de849989e26206126f978bb8f",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "ade77362de33156de849989e26206126f978bb8f",
       "r42HeadSha": "ade77362de33156de849989e26206126f978bb8f",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...ade77362de33156de849989e26206126f978bb8f",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "ade77362de33156de849989e26206126f978bb8f",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "claude/wonderful-thompson-ir89i9",
@@ -8494,14 +8973,24 @@
       "r39Sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "included-in-main-by-ancestry",
+      "evidence": "R42 second immutable SHA donor comparison at 97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
       "r42HeadSha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
-      "r42OpenPrs": []
+      "r42OpenPrs": [],
+      "r42SupplementEvidence": {
+        "type": "immutable-commit-ancestry",
+        "disposition": "included-in-main-by-ancestry",
+        "aheadBy": 0,
+        "compareStatus": "behind",
+        "source": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+        "limits": "Immutable SHA ahead_by=0, not an unmerged feature",
+        "head": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+        "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      }
     },
     {
       "branch": "codex/ghostpay-approval-gated-auto-integration-20261109",
@@ -16695,5 +17184,68 @@
       "updatedAt": "2026-11-04T00:23:22Z",
       "url": "https://github.com/djshellshoxxx/GhostPay/pull/51"
     }
-  ]
+  ],
+  "supplement": {
+    "checkedAtUtc": "2026-11-22T15:10:18.352Z",
+    "evidence": "48 immutable donor comparisons out of next three unresolved/no-PR batches, of which 45 strict ancestors and 3 complete changed-path documentation histories were finalizable; all source refs preserved and qualifying merges zero",
+    "ancestorBranches": [
+      "claude/ar-c2-qr-pairing",
+      "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "claude/ar-c4-i18n-pay",
+      "claude/ar-c4-i18n-scan",
+      "claude/ar-c5-device-matrix",
+      "claude/ar-c7-embed-iframe-e2e",
+      "claude/cool-albattani-xopr89",
+      "claude/cw-c2",
+      "claude/cw-c4",
+      "claude/cw-c5",
+      "claude/cw-w1",
+      "claude/cw-w5",
+      "claude/cw-w6",
+      "claude/cw-w7",
+      "claude/cw-w8",
+      "claude/cw-w9",
+      "claude/cw-w10",
+      "claude/cw-w11",
+      "claude/docs-screenshots",
+      "claude/docs-snapshot-1",
+      "claude/docs-snapshot-2",
+      "claude/gallant-hamilton-4wzkyn",
+      "claude/ghostpay-autonomous-completion-y4sk2h",
+      "claude/ghostpay-autonomous-prompt-scpgun",
+      "claude/ghostpay-github-pages-up6cj6",
+      "claude/gracious-heisenberg-97ji6q",
+      "claude/hopeful-bardeen-8ch6l8",
+      "claude/inspiring-fermat-vxv689",
+      "claude/kind-faraday-8qzf6e",
+      "claude/laughing-bardeen-4t20ys",
+      "claude/nice-ritchie-8vivls",
+      "claude/pages-site-1",
+      "claude/portable-hosting-kit",
+      "claude/remote-extensions-1",
+      "claude/remote-extensions-2",
+      "claude/remote-extensions-3",
+      "claude/remote-extensions-4",
+      "claude/remote-extensions-5",
+      "claude/remote-extensions-6",
+      "claude/remote-extensions-7",
+      "claude/remote-extensions-8",
+      "claude/remote-extensions-9",
+      "claude/remote-extensions-10",
+      "claude/wizardly-babbage-mfsdrl",
+      "claude/wonderful-thompson-ir89i9"
+    ],
+    "docsOnlyBranches": [
+      "claude/friendly-turing-1ui0on",
+      "claude/haiku-wave-2-handoff-qepfoe",
+      "claude/sharp-bohr-uigfgh"
+    ],
+    "residualCodeBearingNotYetFinalized": [
+      "claude/gifted-planck-115x2k",
+      "claude/ghostpay-lean-core-milestone-t5lwox",
+      "claude/lucid-meitner-apalzc",
+      "claude/vigilant-johnson-yjgq94",
+      "claude/happy-maxwell-onl4x5"
+    ]
+  }
 }
