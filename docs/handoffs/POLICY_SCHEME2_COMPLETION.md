@@ -61,6 +61,16 @@ The independent [#345](https://github.com/djshellshoxxx/GhostPay/pull/345) revie
 
 A prior 433-branch census at an older SHA is useful provenance, not evidence that all remaining branches are mergeable, semantically unique or safe. Recheck every intended donor against **current main and its exact parent** before code integration; retain parents and merge sequencing. There is a generation-11 integration lease held by another coordinator (reported as 994a0d214fb9-root-r3); this documentation branch does not acquire or override it.
 
+## 3A. Hosted CI verification of candidate branch heads (not main)
+
+Observed directly through GitHub commit check-runs on 2026-11-22; the results below belong to the **specified exact SHA** and are not new local executions.
+
+- **#385 at d981b19ff34c400251c2c398643a337a4205b06c:** 35 reported checks: **32 success, 3 skipped, 0 failed**. The successful checks include TypeScript, web and other workspace tests, contracts, contract coverage/Slither, full and lean browser e2e, static/lean Pages build, Pages-on-Anvil browser, and beta acceptance. The three skipped checks were "Deploy to GitHub Pages", "Post-deployment smoke test" and "Release gates (typecheck, lint, unit, mocked lean browser suite)". The main CI run is [44897887391](https://github.com/djshellshoxxx/GhostPay/actions/runs/44897887391). **Zero GitHub PR reviews were recorded** when checked. Green hosted checks do not constitute an independent security audit, policy-authority approval, or qualification of a future consolidated main.
+- **Parent #375 at 2e0aff8490086a54fadd52c2fa4d802605b7920e:** its earlier exact-head run [44883454132](https://github.com/djshellshoxxx/GhostPay/actions/runs/44883454132) had failing "typescript" and "ts-test (rest-0)" jobs. #385's new head is green, which supports a repaired child, **not** a retroactive claim that the parent's SHA was green.
+- **Broad recovery/privacy #372 at 055d33e042c63edf1d5bbbdd7833d3c1ef93733d:** integration, beta and most CI checks succeeded, but "qualify" and "mythril" checks **failed** on its inspected head; do not promote this source as fully release-qualified. It is not Scheme-2 owner recovery regardless.
+
+Source selection and risk still require review of how #345, #357, #362, #368, #374, #375 and #385 compose with current main, active ownership, cryptographic proof/privacy requirements and current deployment policy. Browser smoke in CI does not prove physical-device or real-wallet acceptance.
+
 ## 4. Recovery authority: BLOCKED — owner acceptance required
 
 ADR-0028, dated 2026-11-09, is an **unaccepted executable design model** with 19 historical local model tests, not a deployed or implemented Solidity recovery path. Current PolicyAccount owner is immutable after initialization and old clones cannot gain recovery through new browser code.
