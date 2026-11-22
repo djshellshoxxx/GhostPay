@@ -1,3 +1,12 @@
+# Scheme-2 policy-account completion / authority audit — 2026-11-22
+
+Worker: ChatGPT source-reconnaissance coordinator; isolated branch `audit/ghostpay-scheme2-completion-20261122`, base current main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: additive section in `docs/ai/ACTIVE_WORK.md`, new `docs/handoffs/POLICY_SCHEME2_COMPLETION.md`. No contract, app, test, workflow, fee, deployment, approval or release paths claimed.
+Scope: source-pinned dependency/implementation matrix, recovery authority blockers, existing PR provenance, risk-ranked engineering gates and executable acceptance checklist. No production implementation or tests claimed. The generation-11 main integration lease is held by another coordinator (`994a0d214fb9-root-r3` in inspected PR handoffs); no takeover, shared integration metadata edit or main merge.
+Acceptance: exact-main source/PR references, explicit BLOCKED vs MISSING status, defensible noncustodial authority alternatives, no claim of verified browser/contract execution, doc-only draft PR for review. No overlap with policy implementation stack #357 -> #362 -> #368 -> #374 -> #375 -> #385. Owner must accept the recovery authority model before contract changes.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
