@@ -273,4 +273,31 @@ describe('F10 M4 — encrypted, revision-safe recurring snapshots', () => {
     expect((await instance.load())?.snapshot.revision).toBe('snapshot-2');
   });
 
+  it('rejects initial snapshots with skipped periods even when all plans are paused', async () => {
+    const store = new TransactionalMemoryStore();
+    const instance = await vault(store);
+    const draft = snapshotFixture({ status: 'paused' });
+    draft.plans[0]!.nextPeriodIndex = 100;
+    await expect(instance.commit(null, draft)).rejects.toMatchObject({ code: 'UNREVIEWED' });
+    expect(store.data.size).toBe(0);
+  });
+
+  it('rejects silent plan-term replacement and rescheduling without a valid plan revision', async () => {
+    const store = new TransactionalMemoryStore();
+    const instance = await vault(store);
+    const saved = await instance.commit(null, snapshotFixture({ status: 'paused' }));
+    const plan = saved.snapshot.plans[0]!.plan;
+    for (const modified of [
+      { ...plan, amountAtomic: '777' },
+      { ...plan, templateRef: 'other-template' },
+      { ...plan, anchorSeconds: JAN31 + 3600, revision: 'terms-2' },
+      { ...plan, cadence: { kind: 'weekly', every: 1 }, revision: 'terms-2' },
+    ]) {
+      const next = { ...saved.snapshot, revision: 'snapshot-2',
+        plans: [{ plan: modified, nextPeriodIndex: 0 }] };
+      await expect(instance.commit(saved, next)).rejects.toMatchObject({ code: 'HISTORY' });
+    }
+    expect((await instance.load())?.snapshot.revision).toBe('snapshot-1');
+  });
+
 });
