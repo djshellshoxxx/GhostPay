@@ -4,9 +4,9 @@ import { sanitizeLabel } from './redact.js';
 
 describe('notification label truncation across UTF-16 surrogate boundaries', () => {
   it('does not emit half an emoji at the default 40-unit notification label limit', () => {
-    const label = 'a'.repeat(39) + '🚀';
-    expect(sanitizeLabel(label)).toBe('a'.repeat(39));
-    expect(validateParams({ label })).toEqual({ ok: true, value: { label: 'a'.repeat(39) } });
+    const label = '~'.repeat(39) + '🚀';
+    expect(sanitizeLabel(label)).toBe('~'.repeat(39));
+    expect(validateParams({ label })).toEqual({ ok: true, value: { label: '~'.repeat(39) } });
   });
 
   it('does not emit half an emoji at the 24-unit lock-screen title limit', () => {
