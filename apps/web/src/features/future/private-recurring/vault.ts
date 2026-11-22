@@ -281,6 +281,9 @@ export class RecurringEncryptedVault {
           entry.generation !== generation) return fail('CONFLICT');
       if (next.revision === entry.snapshot.revision) return fail('CONFLICT');
       assertForward(entry.snapshot, next);
+      const existingPlans = new Set(entry.snapshot.plans.map(state => state.plan.planId));
+      if (next.plans.some(state => !existingPlans.has(state.plan.planId) &&
+          (state.plan.status !== 'paused' || state.nextPeriodIndex !== 0))) return fail('UNREVIEWED');
       const oldReferencesUnchanged = entry.snapshot.outbox.every((item, index) =>
         sameInvoiceReference(item, next.outbox[index]));
       if (!oldReferencesUnchanged) return fail('UNREVIEWED');
