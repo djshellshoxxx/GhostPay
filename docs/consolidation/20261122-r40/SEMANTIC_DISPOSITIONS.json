@@ -22,13 +22,14 @@
     "provenancePr": 466
   },
   "sourceProof": "Exact pins preserved. 34 fresh ancestry comparisons; 9 spec-only paths plus explicit SPEC status; 1 current equal-blob proof; two earlier R39 finalized refs carried at identical SHA. Remaining rows intentionally non-final. Any future head drift voids a row's decision until rechecked.",
-  "finalizedCount": 46,
-  "unresolvedCount": 490,
+  "finalizedCount": 47,
+  "unresolvedCount": 489,
   "finalizedCounts": {
     "included-in-main-by-ancestry": 35,
     "redundant-current-blob": 1,
     "future-spec-only-out-of-beta-scope": 9,
-    "main-reference": 1
+    "main-reference": 1,
+    "superseded-by-stronger-main": 1
   },
   "mergeCountThisRound": 0,
   "releaseQualified": false,
@@ -1736,10 +1737,20 @@
       "r39Sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true
+      "finalized": true,
+      "disposition": "superseded-by-stronger-main",
+      "evidence": "Exact 7 changed source/test paths inspected against main and recovery #372. Three CreateInvoice implementation/tests byte-identical to main; SellerKeys tests/Registry tests add no donor-only assertions, main adds coverage; SellerKeys old direct download+mark lacks main's protected blocked-download handling; old page-close scenario is subsumed by main's stronger full persistent-profile restart/wrong-passphrase test. No safe donor-only implementation found. Preserve ref; no code import.",
+      "reviewRequired": false,
+      "comparison": {
+        "main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "recovery": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+        "changedPaths": 7,
+        "oldCreateInvoiceBlob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+        "oldOrderingTestBlob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+        "oldCreateInvoiceTestBlob": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+        "mainSellerKeysBlob": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+        "oldSellerKeysBlob": "d1fcc0b09ffd996cd84be5821229c49158d394e9"
+      }
     },
     {
       "branch": "chatgpt/ghostpay-idle-lifecycle-20261119",
@@ -6427,5 +6438,11 @@
       "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
       "reviewRequired": true
     }
-  ]
+  ],
+  "postSnapshotReviewSupplement": {
+    "checkedAtUtc": "2026-11-22T13:09:18.016Z",
+    "newlyReviewedDonor": "chatgpt/ghostpay-historical-consolidation-20261115",
+    "at": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+    "note": "One additional source-level supersession classified after 536-branch snapshot; ancestry/spec statuses from initial R40 remain unchanged."
+  }
 }
