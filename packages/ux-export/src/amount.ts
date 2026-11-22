@@ -41,6 +41,7 @@ const UNSIGNED = /^(0|[1-9][0-9]*)(?:\.([0-9]+))?$/;
  */
 export function parseUnits(text: string, decimals: number): bigint {
   assertDecimals(decimals);
+  if (typeof text !== 'string') throw new ExportError('INVALID_AMOUNT', 'amount is not a plain decimal number');
   if (text.length > 120) throw new ExportError('INVALID_AMOUNT', 'amount too long');
   const m = UNSIGNED.exec(text);
   if (!m) throw new ExportError('INVALID_AMOUNT', 'amount is not a plain decimal number');
