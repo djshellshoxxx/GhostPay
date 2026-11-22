@@ -23,7 +23,7 @@ Status vocabulary: VERIFIED_COMPLETE (only for the exact scope independently evi
 | M1 bounded selectors and cancellation | VERIFIED_COMPLETE (isolated code only) | #322 focused qualification; real lock/revision lifecycle not connected |
 | F04 dormant source consolidation | IMPLEMENTED_UNVERIFIED | #371 assembles F04 with F05/F10 and current main; final-head hosted checks, lock reconciliation and main promotion pending |
 | Explicit preview and one-use CSV/JSON approval | IMPLEMENTED_UNVERIFIED | #397 adds a dormant export coordinator; 8 standalone scenarios, not repository Vitest/CI/UI or file downloads |
-| Per-asset local analytics summaries | IMPLEMENTED_UNVERIFIED | Isolated analytics branch derives exact per-chain/asset counts and atomic amounts, with 8 local smoke scenarios; repo/browser tests pending |
+| Per-asset local analytics summaries | IMPLEMENTED_UNVERIFIED | Isolated analytics branch derives exact per-chain/asset counts and atomic amounts; 9 local stub-based Node smoke tests passed and strict TypeScript passed after fixing untouched-invoice review misclassification. 8 committed Vitest cases, repo/browser tests pending |
 | Approved P03 canonical evidence adapter | MISSING | P03 future branch only specifies the required interface; no approved current canonical event/finality source wired into F04 |
 | Encrypted P05 merchant journal | MISSING | No F04 transactional merchant persistence, encryption lifecycle, indexed reads, or durable revision CAS demonstrated |
 | Invoice registration and payment journal ingestion | MISSING | Signed issuance, observations, reconciliation and recovery need typed provenance-preserving F04 adapters; imported labels cannot prove settlement |
