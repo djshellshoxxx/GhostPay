@@ -86,7 +86,7 @@ describe('F10 M4 — encrypted, revision-safe recurring snapshots', () => {
     await expect(another.restoreToEmpty(backup!, 'restored-1')).rejects.toMatchObject({ code: 'CORRUPT' });
     const key = [...store.data.keys()][0]!;
     const payload = JSON.parse(store.data.get(key)!) as { ciphertext: string };
-    payload.ciphertext = `${payload.ciphertext.slice(0, -2)}00`;
+    payload.ciphertext = `${payload.ciphertext[0] === '0' ? '1' : '0'}${payload.ciphertext.slice(1)}`;
     store.data.set(key, JSON.stringify(payload));
     await expect(instance.load()).rejects.toMatchObject({ code: 'CORRUPT' });
   });
