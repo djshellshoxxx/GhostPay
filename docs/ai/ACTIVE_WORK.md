@@ -1,3 +1,12 @@
+## R29 — Tor static browser scan-privacy save assertion (2026-11-22 UTC)
+Worker: GhostPay consolidation R29, one sequential implementation/review; independent reviewer remains required.
+Base: recovery #372 head `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`. Task branch: `automation/20261122/tor-scan-saved-message-contract-r29`, stacked onto #372, no base or protected ref changes.
+Owned paths: `scripts/tor/browser-acceptance.mjs` (isolated correction), `docs/handoffs/TOR_SCAN_PRIVACY_MESSAGE_R29.md` (additive evidence), and this additive claim. Existing #363 owns the original Tor harness; this child branch does **not** modify #363, and its owner must approve integration.
+Reproduction: recovery #372 Tor static workflow run 44879664025 job 136771948240 failed at browser-acceptance.mjs:81 waiting 30 seconds for old literal `Scan privacy settings saved. They apply to the next scan.`, while #372's `en.json` key `settings.scanPrivacy.saved` says `Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.` and Settings.tsx emits exactly that key.
+Acceptance: preserve strict exact notice assertion without hard-coding stale copy; resolve source catalog key from checked-out local English file (no network), and preserve all existing CSP, external-request, persistence and WebCrypto checks. Do not weaken security assertions. Test via existing Tor browser acceptance, TypeScript/CI and compare to source; hosted exact-head result is required. No relayer, contract, private-key or deployment change. Integration lock held by another coordinator generation 11; independent review and lock-owner approval required before any merge.
+
+---
+
 # Preserved composition ownership records
 
 ## #367 integration and this worker
