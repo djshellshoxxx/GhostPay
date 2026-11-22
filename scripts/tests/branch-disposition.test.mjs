@@ -47,7 +47,7 @@ test('audit is source-pinned, PR-aware, resumable and detects stale branch heads
     if(route.endsWith('/git/ref/heads/main'))return {object:{sha:m}};
     if(route.endsWith('/git/ref/heads/topic')) return {object:{sha:head}};
     if(route.includes('/branches?'))return route.includes('page=1')?[{name:'main',commit:{sha:m}},{name:'topic',commit:{sha:h}}]:[];
-    if(route.includes('/pulls?')) return route.includes('page=1')?[{number:6,title:'fix',head:{ref:'topic',sha:h},base:{ref:'main'},draft:true,state:'open'}]:[];
+    if(route.includes('/pulls?')) return route.includes('page=1')?[{number:6,title:'fix',head:{ref:'topic',sha:h,repo:{full_name:'o/r'}},base:{ref:'main'},draft:true,state:'open'}]:[];
     if(route.includes('/compare/'))return {status:'ahead',ahead_by:1,behind_by:0,merge_base_commit:{sha:m},files:Array(300).fill({filename:'dummy'})};
     if(route.includes(`/git/commits/${m}`))return {tree:{sha:t}};
     if(route.includes(`/git/commits/${h}`))return {tree:{sha:record}};
