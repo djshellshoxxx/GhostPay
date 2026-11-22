@@ -1,3 +1,15 @@
+# GP-P0-RECOVERY-AUDIT — source-pinned expiry/refund/fund recovery coverage (2026-11-22)
+
+Worker: ChatGPT GitHub-connected read-only source reviewer; documentation author only. No independent verifier or integration coordinator authority is claimed.
+Branch: `audit/ghostpay-fund-recovery-expiry-20261122-p0` from exact `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned path: new `docs/audits/fund-recovery-and-expiry-safety.md`; this additive ownership entry only. No runtime, test, contract, manifest, workflow or release path claimed.
+Deliverable: evidence-pinned inventory of present-on-main versus unmerged recovery/payment safeguards, refund authority limitations, state/failure coverage, explicit unrun tests and prioritized safe follow-ups. Acceptance requires no unverifiable completion claims, no assertion of executed tests, explicit main/branch separation, and no activation of refunds or real-funds signing.
+Dependencies: #307 -> #367 -> #372, #240/#269/#361, wallet journal #427 -> #440 -> #441 -> #443, receipt #449 -> #450 -> #452, and #448 consolidation census. This audit does not integrate those branches.
+Coordination: generation-11 shared integration lock is held by `994a0d214fb9-root-r3` per #372/#380/#448, with handoff unverified. Do not touch lock metadata, protected branches, deployment or funds. A dedicated draft documentation PR only, pending qualified review; refresh all heads before downstream use.
+Execution limitation: local Git checkout cannot reach github.com (DNS failure); source inspected through GitHub connector. No workspace unit, browser, Anvil, fuzz, typecheck, lint or build commands executed in this audit.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
