@@ -54,7 +54,7 @@ describe('WalletConnect request clock boundary', () => {
       expect(built.ok, String(nowMs)).toBe(true);
       if (!built.ok) continue;
       expect(built.value.request.createdAtMs).toBe(nowMs);
-      expect(built.value.request.expiresAtMs).toBe(1_001_000);
+      expect(built.value.request.expiresAtMs).toBe(Math.min(nowMs + 300_000, 1_001_000));
       expect(sweepExpired(built.value.pending, 1_001_000)).toMatchObject({
         expired: [1],
         pending: new Map(),
