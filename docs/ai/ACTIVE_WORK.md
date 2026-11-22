@@ -1,3 +1,15 @@
+# GP-BUG-20261122-JH — reject malformed wallet completion hashes with a typed journal error
+
+Cycle and worker: `20261122T0438Z` / one sequential ChatGPT coordinator (bug implementation, bounded source audit, and integration triage); no separate native agent, independent verifier, or Caveman runtime available.
+Task branch: `automation/20261122T0438Z/bug/wallet-hash-type-guard` stacked on the exact existing PR #427 head `e9404bad766b3ee7d93f54f2172059b9566fcb57` (main baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`).
+Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, new isolated regression `apps/web/src/lib/duplicateAttemptJournal.hashType.test.ts`, additive ownership claim in this file, and `docs/handoffs/ATTEMPT_JOURNAL_HASH_TYPE_20261122.md`.
+Finding and reproduction: `finishAttempt(attempt, hash)` calls `hash.toLowerCase()` before validating its runtime type. Non-string wallet/provider results (for example a number or null) raise an untyped JS TypeError rather than the journal's existing fail-closed `UserFacingError`. Strings with malformed bytes already reject correctly. The original code path is unambiguous from source; verify the regression separately before repair. No demonstrated browser exploit or funds-loss path is claimed.
+Acceptance: a test-first failure for malformed runtime hashes, smallest compatible typed-input guard using the existing journal error, unchanged valid hash normalization and first-submitted-hash integrity, no writes on invalid completions, no dependencies or runtime policy expansion. Check focused and hosted CI, independent review, and lock/CI/Pages gates before any merge.
+Ownership: explicitly continuing parent PR #427 on an isolated child; #278/#307/#372 and recent #435/#438/#437/#436/#429/#434 changed-file inventories did not own this path in bounded checks. No full historical semantic census is claimed. Integration ref `automation/ghostpay-integration-lock` is **held** at generation 11 by another coordinator (`994a0d214fb9-root-r3`); expiry does not authorize takeover. No shared updates or main merge.
+Verification: connected GitHub sources/CI are accessible, but local git clone DNS resolution is unavailable; no repository tests claimed until executed on an exact head.
+
+---
+
 # GP-BUG-20261121-JH — wallet attempt hash integrity
 
 Cycle/worker: `20261121T2235Z`; one coordinator executing sequential audit, regression, repair and consolidation; no independent native worker available.
