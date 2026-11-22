@@ -1,3 +1,15 @@
+# GP-BUG — canonical tag filters find saved address-book contacts (2026-11-21 Pacific / 2026-11-22 UTC)
+
+Worker: ChatGPT bug-only coordinator, sequential implementation and source-equivalent verification; independent review pending.
+Branch: `automation/20261122/bug/search-tag-normalization-r1` from exact main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-vault/src/search.ts`, new `packages/ux-vault/src/search.tag-normalization.test.ts`, this additive claim and `docs/handoffs/SEARCH_TAG_NORMALIZATION_20261122.md`. The preexisting `packages/ux-vault/src/contacts.test.ts` is owned by broad active PRs and remains untouched.
+Finding: stored contact tags pass through `normalizeTag`, which uses NFKC before case folding, but `searchContacts` filters normalize tags only by trim/lowercase. Valid user tag `ＷＯＲＫ` stores as `work` while filtering for `ＷＯＲＫ` returns no contact. The exact `search.ts` source blob `568db97dc1400374b24d3418fbd0f5f173224bc3` was reproduced locally with Node 22.
+Acceptance: regression-first test showing saved and queried canonically equivalent tags match; minimal filter normalization repair; preserve AND semantics, network filters, query matching, sorting, and original tag-storage rules. Do not implement features, alter schemas, add dependencies or change other writers' paths.
+Owner reconciliation: all 192 open PR changed-file inventories inspected at discovery (created-ascending and -descending ranges joined), zero overlap with source or new regression path; recheck current heads before integration. Generation-11 integration lock held by another coordinator; its expiry is not a license to take ownership.
+Verification: focused source-equivalent Node red/green, actual focused hosted Vitest, lint, typecheck and CI required before integration; no local clone, repository Vitest or native browser test claimed while github.com DNS remains unresolved. Independent review and legitimate integration approval pending.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
