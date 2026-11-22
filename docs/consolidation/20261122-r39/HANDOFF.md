@@ -53,3 +53,7 @@ Fresh compare examples: historical v1.0 428 ahead/119 behind and v1.1 429 ahead/
 5. Obtain genuine independent approval and coordinator-authorized lock release before dependency-ordered protected-main merge. No deploy, release, force-push, branch deletion or real-funds test.
 
 **No mainline merges, deployment, release or live-funds action in this cycle.**
+
+## Published source-byte verification
+
+Fetched GitHub content blobs after publication and compared their Git blob hashes to the exact local Node-tested files (source comment-only reconstruction): scanner `55f64de073edb12eaab45fb7980e64d81d0eb98c`, regression tests `0a67cd513bd0ed3f71512f2333fff3515ff994ee`. Both Git blob SHA-1s matched exactly. Re-ran `node --test`: 8 passed, 0 failed, 0 skipped. This is not remote API execution or hosted CI qualification.
