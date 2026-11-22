@@ -120,8 +120,18 @@ export function parseFiatInput(
   if (typeof text !== 'string' || text.length === 0 || text.length > 100) {
     return err('bad-input', 'empty or oversized input');
   }
+  if (fmt === null || typeof fmt !== 'object') return err('bad-format', 'bad separators');
   const { groupSeparator: g, decimalSeparator: d } = fmt;
-  if (d.length === 0 || d === g || BAD_SEP_RE.test(d) || BAD_SEP_RE.test(g)) {
+  if (
+    typeof g !== 'string' ||
+    typeof d !== 'string' ||
+    g.length > 2 ||
+    d.length === 0 ||
+    d.length > 2 ||
+    d === g ||
+    BAD_SEP_RE.test(d) ||
+    BAD_SEP_RE.test(g)
+  ) {
     return err('bad-format', 'bad separators');
   }
   const idx = text.indexOf(d);
