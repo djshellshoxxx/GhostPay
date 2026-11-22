@@ -771,3 +771,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-QR-SVG-01 — snapshot validated QR matrix before SVG interpolation (2026-11-22 UTC)
+
+- Cycle and worker: `20261122T1440Z`, one sequential root coordinator/implementer; native independent workers unavailable in this invocation.
+- Isolated branch: `automation/20261122T1440Z/bug/qr-svg-matrix-snapshot`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `apps/web/src/lib/qr.ts`, new `apps/web/src/lib/qrSnapshot.test.ts`, additive claim here, and `docs/handoffs/QR_SVG_MATRIX_SNAPSHOT_20261122.md`.
+- Finding: `qrSvgText` interpolates `qrViewSize(m)` into SVG attributes before `qrPath(m)` validates `m.size`. A getter returning a string on its first access and a valid size on later accesses produces an SVG with caller-influenced extra attributes, despite the intended numeric-only SVG contract. A getter/Proxy-backed `dark` may also change between validation and drawing. Source-equivalent Node 22 reproduction, not evidence of remote/browser exploit. No external ingress confirmed.
+- Acceptance: regression-first tests showing the baseline failure; read size and module booleans into an independent bounded snapshot once before SVG interpolation; preserve output for normal matrices and malformed-input errors; run focused checks, keep static Pages behavior, no new dependencies or policies. Do not touch the previously owned QR-classifier, multipart, invoice/secret/recovery paths.
+- Ownership and integration: checked #278/#262/#264/#372 and recent focused QR #447 along with #293/#390/#449/#450/#452/#463/#468/#472 changed-file lists, no `qr.ts` ownership observed in bounded check. Other uninspected PRs remain potentially active; recheck before integration. Integration lock `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`: never take over from expiry; no shared/main merges.
