@@ -132,11 +132,22 @@ async function checkChain(
   } catch {
     return none('unavailable');
   }
+  // A runtime adapter may violate the TypeScript result union; never trust a malformed envelope.
+  if (typeof res !== 'object' || res === null || Array.isArray(res)) return none('unavailable');
   if (res.status === 'unavailable') return none('unavailable');
   if (res.status === 'not_found') return none('not_found');
   if (res.status !== 'found') return none('unavailable');
   const f = res.facts;
   if (typeof f !== 'object' || f === null || Array.isArray(f) || typeof f.confirmed !== 'boolean') {
+    return none('unavailable');
+  }
+  // Malformed optional evidence must not be mistaken for a valid match or throw during address comparisons.
+  if (
+    (f.amountBase !== undefined && typeof f.amountBase !== 'string') ||
+    (f.assetSymbol !== undefined && typeof f.assetSymbol !== 'string') ||
+    (f.sender !== undefined && typeof f.sender !== 'string') ||
+    (f.recipient !== undefined && typeof f.recipient !== 'string')
+  ) {
     return none('unavailable');
   }
   const matched: string[] = [];
