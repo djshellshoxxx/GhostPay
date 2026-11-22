@@ -580,7 +580,12 @@ export function parseSnapshot(data: unknown): Result<QueueSnapshot> {
       read,
       alerted,
     } = raw;
-    if (typeof id !== 'string' || !/^n\d{1,15}$/.test(id) || ids.has(id)) return fail('record_id');
+    if (
+      typeof id !== 'string' ||
+      !/^n\d{1,15}$/.test(id) ||
+      ids.has(id) ||
+      Number(id.slice(1)) > seq
+    ) return fail('record_id');
     ids.add(id);
     if (typeof kind !== 'string' || !(NOTIFICATION_KINDS as readonly string[]).includes(kind))
       return fail('record_kind');
