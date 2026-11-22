@@ -113,7 +113,10 @@ export async function audit({ read, repo, prior = null, max = Infinity, selected
     const ownerPrs = prsByBranch.get(b.branch) || [];
     const existing = priorRecords.get(b.branch);
     if (existing?.sha === b.sha && prior.main === main && existing?.disposition !== 'pending' && existing?.disposition !== 'scan-error') {
-      records.push({ ...existing, openPrs: ownerPrs.map(x => x.number) });
+      const refreshed = ['unique-under-active-pr', 'unique-needs-review'].includes(existing.disposition) && existing.completeTree === true && Array.isArray(existing.files)
+        ? classifyBranch({compare:{status:existing.status,ahead_by:existing.ahead},diff:{complete:true,paths:existing.files},ownerPrs})
+        : {};
+      records.push({ ...existing, ...refreshed, openPrs: ownerPrs.map(x => x.number) });
       continue;
     }
     if ((selected && !selected.has(b.branch)) || scanned >= max) {
