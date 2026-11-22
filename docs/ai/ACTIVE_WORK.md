@@ -771,3 +771,11 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# R39 — read-only uncapped branch provenance tooling (2026-11-22 UTC)
+
+Worker: GhostPay consolidation continuation, isolated branch `audit/ghostpay-r39-uncapped-branch-triage-20261122`, starting main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned new paths: `scripts/consolidation/branch-disposition.mjs`, `scripts/tests/branch-disposition.test.mjs`, and `docs/consolidation/20261122-r39/HANDOFF.md`. This additive registry entry only; no existing application, payment, custody, wallet, privacy, or CI sources are claimed.
+Acceptance: read-only GitHub REST scanning of all branches/open PRs, exact SHA/provenance and resume; use full recursive Git blob trees instead of 300-file compare cap; never equate divergence with unique safe features; preserve indeterminate truncated cases and stale-head errors; regression tests with local synthetic API. Record real current-main/count/ownership/CI evidence. No automatic merge, delete, force-push, deployment, live funds, or lock mutation. Shared integration lock generation 11 remains HELD by `994a0d214fb9-root-r3`; no takeover. No independent review is claimed.
