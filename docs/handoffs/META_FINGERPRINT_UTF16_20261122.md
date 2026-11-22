@@ -13,7 +13,7 @@
 
 ## Observed defect
 
-`metaAddressFingerprint()` advertised hashing exact UTF-8 input for an out-of-band payee identity comparison. It accepted invalid UTF-16 strings. The imported `@noble/hashes` `utf8ToBytes()` uses `TextEncoder`, which silently substitutes U+FFFD for isolated high/low surrogate code units. Consequently `metaAddressFingerprint('\\uD800') === metaAddressFingerprint('\\uFFFD')` and likewise for `'a\\uD800b'` versus `'a\\uFFFDb'`. This is an encoding collision, not a SHA-256 collision or an established exploitable transaction path.
+`metaAddressFingerprint()` advertised hashing exact UTF-8 input for an out-of-band payee identity comparison. It accepted invalid UTF-16 strings. The imported `@noble/hashes` `utf8ToBytes()` uses `TextEncoder`, which silently substitutes U+FFFD for isolated high/low surrogate code units. Consequently `metaAddressFingerprint('\uD800') === metaAddressFingerprint('\uFFFD')` and likewise for `'a\uD800b'` versus `'a\uFFFDb'`. This is an encoding collision, not a SHA-256 collision or an established exploitable transaction path.
 
 Baseline Node 22 `TextEncoder` / `crypto.createHash('sha256')` source-equivalent proof: 8/8 malformed examples accepted; high surrogate, low surrogate, and explicit replacement character produced identical fingerprint `83d5-44cc-c223-c057-d2bf`. The upstream noble-hashes implementation also delegates string encoding to `TextEncoder`.
 
