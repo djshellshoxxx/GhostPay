@@ -127,7 +127,8 @@ const STORABLE_TYPES =
 export function shouldStoreResponse(decision: CacheDecision, res: ResponseInfo): boolean {
   if (!decision.cacheable || res.status !== 200 || res.type !== 'basic' || res.hasSetCookie === true)
     return false;
-  if (/(^|,)\s*(no-store|private)\b/i.test(res.cacheControl ?? '')) return false;
+  // A cache-first consumer cannot perform the revalidation required by no-cache.
+  if (/(^|,)\s*(no-store|private|no-cache)\b/i.test(res.cacheControl ?? '')) return false;
   if ((res.vary ?? '').includes('*')) return false;
   return STORABLE_TYPES.test(res.contentType ?? '');
 }
