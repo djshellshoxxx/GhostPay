@@ -414,6 +414,8 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
           'Guardians are not part of the current scheme and are not enforced on-chain.',
         ),
       );
+    } else if (p.guardianThreshold !== undefined) {
+      out.push(issue('error', 'INVALID_THRESHOLD', 'guardianThreshold', 'A threshold needs guardians.'));
     }
   } else if (p.guardianThreshold !== undefined) {
     out.push(issue('error', 'INVALID_THRESHOLD', 'guardianThreshold', 'A threshold needs guardians.'));
