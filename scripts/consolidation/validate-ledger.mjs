@@ -27,7 +27,7 @@ function validPageSequence(pages) {
     pages.slice(0, -1).every((n, i) => n > 0 && (i === pages.length - 2 || n === 100));
 }
 
-const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-)|review-required|needs-semantic-review/;
+const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-|unsafe(?:-|$)|blocked(?:-|$)|unique(?:-|$)|needs-)|review-required|needs-semantic-review/i;
 
 // Offline checkpoint invariant checks. This utility never reads or writes live GitHub refs.
 export function validateLedger(data) {
@@ -69,6 +69,7 @@ export function validateLedger(data) {
     check(object(pr) && Number.isSafeInteger(pr.number) && pr.number > 0, `PR[${i}] invalid number`);
     check(!prs.has(pr.number), `duplicate PR #${pr.number}`);
     check(validSha(pr.headSha) && validSha(pr.baseSha), `PR #${pr.number} invalid SHA`);
+    check(typeof pr.headRepo === 'string' && /^[^/\s]+\/[^/\s]+$/.test(pr.headRepo), `PR #${pr.number} missing or invalid head repository`);
     check(typeof pr.headRef === 'string' && typeof pr.base === 'string', `PR #${pr.number} missing ref`);
     if (pr.headRepo === data.repository) {
       const match = branches.get(pr.headRef);
