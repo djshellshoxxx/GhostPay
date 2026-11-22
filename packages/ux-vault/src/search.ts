@@ -24,7 +24,7 @@ export function searchContacts(book: AddressBook, opts: SearchOptions = {}): Con
     .toLowerCase()
     .split(/\s+/u)
     .filter((t) => t.length > 0);
-  const wantTags = (opts.tags ?? []).map((t) => t.trim().toLowerCase());
+  const wantTags = (opts.tags ?? []).map((t) => t.normalize('NFKC').trim().toLowerCase());
   const out = book.contacts.filter((c) => {
     if (opts.network !== undefined && c.network !== opts.network.trim().toLowerCase()) return false;
     if (!wantTags.every((t) => c.tags.includes(t))) return false;
