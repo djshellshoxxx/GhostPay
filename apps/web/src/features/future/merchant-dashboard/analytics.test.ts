@@ -98,6 +98,14 @@ describe('F04 evidence-qualified local merchant analytics', () => {
     expect(summarizeDashboardProjection(later, 1_500, ctx).groups[0]).toMatchObject({ finalAtomic: '0', reviewRequiredInvoices: 1 });
   });
 
+  it('does not turn an untouched issued invoice into an ambiguous-payment review', async () => {
+    const ctx = session().context;
+    const projection = await buildDashboardProjection(source([makeInvoice('invoice:1')], []), undefined, ctx, immediate);
+    expect(summarizeDashboardProjection(projection, 1_500, ctx).groups[0]).toMatchObject({
+      outstandingInvoices: 1, reviewRequiredInvoices: 0, finalAtomic: '0',
+    });
+  });
+
   it('rejects stale/locked sessions and invalid reporting clocks', async () => {
     const s = session();
     const projection = await buildDashboardProjection(source([makeInvoice('invoice:1')], []), undefined, s.context, immediate);
