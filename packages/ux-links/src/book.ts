@@ -119,11 +119,11 @@ export function validateBook(v: unknown): HandleBook {
   const raw = r['entries'];
   if (!Array.isArray(raw) || raw.length > MAX_ENTRIES) return fail('BOOK', 'entries');
   const entries: HandleEntry[] = [];
-  raw.forEach((x: unknown, i) => {
+  for (const [i, x] of raw.entries()) {
     const e = validateEntry(x, `entries[${i}]`);
     checkCollisions(entries, e, `entries[${i}]`);
     entries.push(e);
-  });
+  }
   return { version: 1, entries };
 }
 
