@@ -20,3 +20,5 @@ export {
   RecurringEncryptedVault, RecurringVaultError,
   type RecurringCiphertextStore, type RecurringLoadedSnapshot, type RecurringVaultErrorCode,
 } from './vault';
+
+export { createCurrentRecurringVault, type CurrentRecurringVault } from './browserVault';
