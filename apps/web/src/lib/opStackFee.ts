@@ -71,8 +71,8 @@ export interface SweepTxFields {
  */
 export async function sweepFeeReserve(rpc: Rpc, tx: SweepTxFields): Promise<bigint> {
   if (findChain(tx.chainId)?.opStack !== true) return 0n;
-  const unsignedTx = serializeTransaction({ type: 'eip1559', ...tx });
   try {
+    const unsignedTx = serializeTransaction({ type: 'eip1559', ...tx });
     const l1 = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getL1Fee', args: [unsignedTx] }));
     const operator = await readOperatorFee(rpc, tx.gas);
     return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
