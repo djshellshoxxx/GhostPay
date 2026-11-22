@@ -42,7 +42,7 @@ describe('wallet journal post-broadcast read-back failures', () => {
       };
       const wrappedSession = { ...session, wallet: info(wrapped) };
 
-      const error = await sendViaWallet(wrappedSession, tx, undefined, { storage }).catch((e: unknown) => e);
+      const error = await sendViaWallet(wrappedSession, tx, undefined, { kind: 'transaction', storage }).catch((e: unknown) => e);
       expect(error).toBeInstanceOf(WalletBroadcastError);
       expect(error).toMatchObject({ hash: expectedHash, outcome: { phase: 'verification-incomplete', hash: expectedHash } });
       expect(postSendReads).toBeGreaterThan(0);
@@ -52,7 +52,7 @@ describe('wallet journal post-broadcast read-back failures', () => {
       // retained an unresolved attempt or actually stored the submitted hash.
       sent = false;
       expect(readAttempts(storage)).toHaveLength(1);
-      await expect(sendViaWallet(wrappedSession, tx, undefined, { storage })).rejects.toThrow(/previous wallet attempt/);
+      await expect(sendViaWallet(wrappedSession, tx, undefined, { kind: 'transaction', storage })).rejects.toThrow(/previous wallet attempt/);
       expect(provider.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
     },
   );
