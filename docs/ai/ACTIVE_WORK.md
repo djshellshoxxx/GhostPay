@@ -1,3 +1,12 @@
+# GP-R36-C — HTTP no-cache must not enter cache-first store (2026-11-22)
+
+Worker: GhostPay consolidation coordinator (single executor; not an independent reviewer). Base: eb59d93cffed7848c4aac37d0e9650b87239c6da; isolated branch: `automation/20261122-r36-consolidation/bug/no-cache-response`.
+Owned paths: `packages/ux-notify/src/cache-policy.ts`, new `packages/ux-notify/src/cache-policy.no-cache.test.ts`, additive branch-local `docs/ai/ACTIVE_WORK.md`, and `docs/handoffs/UX_NOTIFY_CACHE_NOCACHE_R36C.md`.
+Finding: `shouldStoreResponse` presently allows `Cache-Control: no-cache` into a cache-first static asset bucket; a cache-first read cannot honor mandatory revalidation. Existing static cache policy only rejects `no-store` and `private`. This is a source-confirmed HTTP freshness-correctness concern, not a demonstrated real-world privacy exploit.
+Acceptance: test-first regression for no-cache directives and neighboring public/private/no-store behavior; reject no-cache from cache-first storage; leave allowlist and all other caching rules intact; no dependencies, network calls, API, contract, wallet, funds or deploy changes. Existing broad #372/#278/#264/#262, related #433/#439 and current #453–#455 changed-file lists sampled; none changes cache-policy.ts or the new test path. Other open PRs remain to be cross-checked at integration. Integration generation-11 lock belongs to another coordinator; no main merge authorized. Hosted exact-head CI, native/browser qualification and genuine independent review remain required.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
