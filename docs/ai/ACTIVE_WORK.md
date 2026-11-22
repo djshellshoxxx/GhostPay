@@ -1,3 +1,13 @@
+# Cycle 20261122-r11 — source-pinned Mythril artifact evidence summarizer (isolated)
+
+Coordinator/worker: one ChatGPT assistant, sequential audit/implementation/testing; no parallel subordinate, Caveman runtime or independent reviewer. Baseline `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Branch: `automation/20261122-r11/audit/mythril-evidence-summary`; owned paths: new `scripts/audit/mythril-evidence.mjs`, new `scripts/tests/mythril-evidence.test.mjs`, this additive claim and `docs/handoffs/MYTHRIL_EVIDENCE_R11_20261122.md`. No shared ledger, workflow, contract or application code claimed.
+Evidence: source-pinned recovery PR #372 exact `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`, Mythril run 44879663933 failure, artifact 14699233056 (complete 254223-byte report, SHA256 `475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb`). Manual parser confirmed five completed targets and ten findings (3 Medium/7 Low), not an analyzer crash; details require separate finding-specific clearance.
+Acceptance: build a read-only offline analyzer for the existing Mythril runner's five per-contract JSON lines and noisy log, preserve every finding's source location/severity/SWC without transaction traces, fail closed on malformed/incomplete reports and never return success for open findings; test against synthetic clean, finding, truncated, malformed and adversarial logs plus the exact supplied artifact when available. This does NOT classify any issue false positive, suppress analyzer findings, alter gates, authorize contract edits or release any security details. Keep all findings unresolved until separate security verification.
+Dependencies: existing `scripts/tests/mythril-runner.test.mjs` tests fail-closed analyzer gate; the new read-only summary complements and never changes it. Existing R39 branch-provenance tooling #466, recovery #372, Tor assertion child #436, and fee-quote #463 have separate ownership. Integration lock `automation/ghostpay-integration-lock` is HELD generation 11 by `994a0d214fb9-root-r3`; expiry does not permit takeover. No protected/shared integration, main merge, deployment or release without authorized lock and all gates.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
