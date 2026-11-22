@@ -97,9 +97,9 @@ export async function audit({ read, repo, prior = null, max = Infinity, selected
   const branches = branchesRaw.map(b => ({ branch: b.name, sha: assertSha(b.commit?.sha) }));
   const branchNames = new Set(branches.map(b => b.branch));
   if (branchNames.size !== branches.length) throw new Error('Duplicate branch in paginated census; retry');
-  const activePrs = prsRaw.map(p => ({ number: p.number, title: p.title, head: p.head?.ref, headSha: p.head?.sha, base: p.base?.ref, draft: p.draft, state: p.state }));
+  const activePrs = prsRaw.map(p => ({ number: p.number, title: p.title, head: p.head?.ref, headSha: p.head?.sha, headRepo: p.head?.repo?.full_name ?? null, base: p.base?.ref, draft: p.draft, state: p.state }));
   const prsByBranch = new Map();
-  for (const p of activePrs) if (branchNames.has(p.head)) (prsByBranch.get(p.head) ?? (prsByBranch.set(p.head, []), prsByBranch.get(p.head))).push(p);
+  for (const p of activePrs) if (p.headRepo === repo && branchNames.has(p.head)) (prsByBranch.get(p.head) ?? (prsByBranch.set(p.head, []), prsByBranch.get(p.head))).push(p);
   const priorRecords = new Map((prior?.records || []).map(x => [x.branch, x]));
   let mainTree;
   async function getTree(sha) {
