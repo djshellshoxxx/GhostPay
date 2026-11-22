@@ -1,0 +1,42 @@
+# R40 — source-pinned semantic branch resolution and handoff
+
+Checked at: **2026-11-22T13:06:06.509Z UTC**. Baseline protected `main`: `eb59d93cffed7848c4aac37d0e9650b87239c6da`. This is a bounded source-review checkpoint, **not** a repository-wide semantic signoff or a source merge.
+
+## Source and scope
+
+- Repository instructions: `AGENTS.md`, `docs/ai/WORKFLOW.md`, `docs/ai/HANDOFF.md`, `docs/ai/ACTIVE_WORK.md`, authoritative [#380](https://github.com/djshellshoxxx/GhostPay/pull/380), R38 [#464](https://github.com/djshellshoxxx/GhostPay/pull/464), R39 [#466](https://github.com/djshellshoxxx/GhostPay/pull/466), and the R39 [handoff](https://github.com/djshellshoxxx/GhostPay/blob/87eb78767567c9aa58bce10c0c020f282d1491c7/docs/consolidation/20261122-r39/HANDOFF.md) were inspected. All writes occur on the isolated R40 audit branch; no other worker's source files/refs modified.
+- [Machine-readable R40 disposition ledger](SEMANTIC_DISPOSITIONS.json): initial fully paginated `100/100/100/100/100/36/0` = **536** branch identities, independently matched to **536 Git refs with zero discrepancies** at `2026-11-22T13:05:02.567Z`. New R40 branch is included; its row necessarily represents its earlier branch SHA because publishing the ledger itself advances its own head. Recheck after the PR is opened.
+- [Open PR ledger](OPEN_PRS.json): `100/100/27/0` = **227** open PRs immediately before publishing the R40 PR; **135 target main and 92 are stacked**. These counts will increase when the R40 PR opens. Both ledgers retain exact names/SHAs/provenance. Neither is merge authorization.
+
+## New substantive donor dispositions
+
+- **34 additional branch histories proven ancestors of main** by live `compare/main...branch` with `status=behind` and `ahead_by=0`, with their exact branch SHAs unchanged from the R39 census. No unique donor commits remain from those heads; this does not prove current app acceptance.
+- **Nine future module branches** inspected: their diffs change only documentation and registry/spec paths, and each actual specification explicitly marks itself *future, disabled, spec-only/unimplemented*. Classified `future-spec-only-out-of-beta-scope`, not integrated, not deleted, and not required v1.0/v1.1 beta implementations.
+- **One patch-equivalent historical test branch** `chatgpt/zero-codex/merchant-schedule-horizon-20261111`: the only change reported against merge base is `packages/merchant-billing/src/schedule.test.ts`; both donor and current main Git blobs are exactly `25d7ae46c3760003a1e16f5f280c50c63657048b`. No unique current test source survives.
+- R39's two previously finalized identities (`main` and `integration/ghostpay-beta-consolidated-20261109`) retained with identical SHAs. **46 total final branch dispositions, 490 explicitly unresolved** at 536-branch census. These 490 are *branch reviews*, not necessarily 490 missing features or safe unique integrations.
+
+High-priority source-triage result: `feature/ghostpay-invoice-file-completion-20261120` has 8 unique commits relative to **main**, but is a strict ancestor of recovery #372 (`ahead=0`, 686 behind). Its live signed-request-file code is already in that owned recovery candidate; importing again would be duplication. It is not yet in main and remains integration-blocked. Other divergent candidates retained as unresolved include `chatgpt/ghostpay-historical-consolidation-20261115` (7 changed source/test paths), `codex/recovery-spec02-unqualified-20261116` (unqualified patch/text evidence), `ghostpay-cloud-recovery-2026-10-26` (173 changed paths), `repair/ghostpay-native-fee-recovered-20261119` and `snapshot/ghostpay-privacy-8be15289-20261120` (GitHub 300-file compare cap). Do not assume donor code is safe or already qualified.
+
+## Actual independent scanner review
+
+R39 [#466](https://github.com/djshellshoxxx/GhostPay/pull/466) exact head `87eb78767567c9aa58bce10c0c020f282d1491c7`: hosted [CI 45021359328](https://github.com/djshellshoxxx/GhostPay/actions/runs/45021359328) completed **24/24 jobs successful**. Submitted COMMENT-only [review 6012402262](https://github.com/djshellshoxxx/GhostPay/pull/466#pullrequestreview-6012402262) identifying a concrete **mutable-ref ancestry race**: `audit()` records an initial branch SHA but compares by mutable branch name; ancestor fast path skips the SHA drift recheck. When an ahead branch is reset to an ancestor between census and compare, it can be misclassified as `ancestor-in-main` at the original ahead SHA. Requested an owner-side deterministic regression, SHA-pinned compare and drift check also on the ancestor path. No claimed runtime exploit; no edits to claimed scanner files.
+
+## CI and integration gates
+
+- BUG-only [#467](https://github.com/djshellshoxxx/GhostPay/pull/467) exact `860c7f4d09b6a9ef06a17089b2187d8aa7253007`: all five workflow groups completed successfully, including CI [45022346919](https://github.com/djshellshoxxx/GhostPay/actions/runs/45022346919). It remains owned and draft pending independent approval. No duplication.
+- Mythril evidence [#468](https://github.com/djshellshoxxx/GhostPay/pull/468) exact `cb63ec21cbac15b0a665b61ada37a9f0662ff79a`: CI [45024001482](https://github.com/djshellshoxxx/GhostPay/actions/runs/45024001482) completed successfully; source tooling **does not** clear #372's actual Mythril gate.
+- Recovery [#372](https://github.com/djshellshoxxx/GhostPay/pull/372) exact `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`: CI, Pages, Beta, Integration, Hosting, CLI successful, **Tor static hosting failed (44879664025)** and **Contract analysis failed (44879663933)**. The ten Mythril findings and browser/recovery gates remain unresolved; do not waive.
+- Generation-11 integration-lock branch file still states `held`, owner `994a0d214fb9-root-r3`. Expiry is not takeover authorization under the branch's integration-lock rule. Branch protection endpoint returned 403 `Resource not accessible by integration`; no review/merge policy can be proven here.
+- No local Git clone, Node/Vitest/lint/build/Playwright tests executed this R40 because local `github.com` DNS is unavailable. Read-only GitHub compares and remote hosted CI observations are the evidence; documentation artifacts require own exact-head CI and independent review. No production code authored, main merge, release, deployment, real-funds operation, security suppression, force-push or branch deletion.
+
+## Precise next work
+
+1. R39 #466 owner: implement and test the ancestor-fast-path ref-drift repair; rerun exact-new-head CI, independent review. Do not modify owned paths here.
+2. Run the uncapped scanner in a network-enabled Node checkout and revisit the historical 59 capped donors. First audit the outstanding high-value 7-path historical source, 173-path recovery candidate and two 300-path capped donor branches, examining unique behavioral lines and tests rather than history counts.
+3. Preserve F03 inside owned #372; resolve its Mythril, Tor and native browser acceptance without relaxing guards. F04 and F10 remain separately owned incomplete stacks.
+4. Re-census newly created R40 head and PR, and reconcile older 445-source and current semantic classifications by exact SHA. Classify newly discovered branches and only mark the remainder final with evidence.
+5. Under authorized lock release, independent approval, required exact-head QA and valid dependency order, selectively merge safe eligible work. Until then maintain isolated reviews and patches.
+
+Source provenance: [R39 #466](https://github.com/djshellshoxxx/GhostPay/pull/466), [R40 JSON](SEMANTIC_DISPOSITIONS.json), [R40 PR JSON](OPEN_PRS.json), [master #380](https://github.com/djshellshoxxx/GhostPay/pull/380).
+
+**R40 newly proven final donor dispositions: 44. R40 protected-main merges: 0. Outstanding reviews at pre-publication census: 490.**
