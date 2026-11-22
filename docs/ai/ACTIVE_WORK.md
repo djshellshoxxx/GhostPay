@@ -771,3 +771,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG-14 — reject threshold with zero guardians (2026-11-22)
+
+Worker: ChatGPT GhostPay BUGS-ONLY automation run 20261122T0326Z; one sequential implementer; no independent verifier available.
+Branch: `automation/20261122T0326Z/bug/ux-privacy-empty-guardians-threshold`, exact frozen main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-privacy/src/policy.ts`, new `packages/ux-privacy/src/policy.guardian-threshold.test.ts`, this append-only registry entry and `docs/handoffs/UX_PRIVACY_EMPTY_GUARDIANS_THRESHOLD_20261122.md`. Existing `policy.test.ts` belongs to broad PRs #238/#262/#264/#278/#372 and remains untouched.
+Reproduction: on main `validateFriendlyPolicy` accepts `guardians: []` with `guardianThreshold: 1` because the branch for an empty array skips threshold validation, and the missing-guardians check runs only when the property is absent. This violates the interface's threshold range of 1..guardian count; `describePolicy` and `toSchemePolicyInput` accept the inconsistent draft.
+Acceptance: test-first failure for empty-list threshold 0/1/2 and successful empty-list-without-threshold and populated valid guardians; return the existing INVALID_THRESHOLD issue and reject through existing describe/convert paths. No policy-scheme/contracts, protocol, UI, wallet, dependencies or deployment edits. Hosted exact-head CI and independent review before merge.
+Ownership evidence: current main and PR inventory 195 open as checked at task start; large PRs #238/#246/#262/#264/#278/#307/#372 and recent scoped PRs have no changes to `policy.ts`; broad PRs own `policy.test.ts`. Shared generation-11 integration lease held externally, do not merge to main.
+Runtime: native checkout unavailable (github.com DNS does not resolve); do not claim local Vitest. Hosted CI required.
