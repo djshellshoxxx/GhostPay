@@ -72,3 +72,22 @@ test('API reader never leaks response body or token in failures',async()=>{
   await assert.rejects(read('/repos/x/y/branches'),e=>!e.message.includes(token)&&e.message.includes('403'));
   await assert.rejects(read('https://example.com/exfiltrate'),/Cross-origin/);
 });
+
+test('fork PR with same branch name does not claim local repository path',async()=>{
+  const m=S('a'), h=S('b'), t=S('c'), u=S('d');
+  const read=async route=>{
+    if(route.endsWith('/git/ref/heads/main'))return {object:{sha:m}};
+    if(route.endsWith('/git/ref/heads/topic'))return {object:{sha:h}};
+    if(route.includes('/branches?'))return route.includes('page=1')?[{name:'main',commit:{sha:m}},{name:'topic',commit:{sha:h}}]:[];
+    if(route.includes('/pulls?'))return route.includes('page=1')?[{number:91,head:{ref:'topic',sha:h,repo:{full_name:'outsider/GhostPay'}},base:{ref:'main'},state:'open',draft:false}]:[];
+    if(route.includes('/compare/'))return {status:'ahead',ahead_by:1,behind_by:0};
+    if(route.includes(`/git/commits/${m}`))return {tree:{sha:t}};
+    if(route.includes(`/git/commits/${h}`))return {tree:{sha:u}};
+    if(route.includes(`/git/trees/${t}`))return tree(file('src/index.ts',S('e')));
+    if(route.includes(`/git/trees/${u}`))return tree(file('src/index.ts',S('f')));
+    throw new Error(`Unexpected ${route}`)
+  };
+  const result=await audit({read,repo:'o/r'});
+  assert.equal(result.records[1].disposition,'unique-needs-review');
+  assert.deepEqual(result.records[1].openPrs,[]);
+});
