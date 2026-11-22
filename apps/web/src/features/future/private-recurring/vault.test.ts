@@ -300,4 +300,23 @@ describe('F10 M4 — encrypted, revision-safe recurring snapshots', () => {
     expect((await instance.load())?.snapshot.revision).toBe('snapshot-1');
   });
 
+  it('refuses unreviewed active or skipped plans inserted into an existing snapshot', async () => {
+    const store = new TransactionalMemoryStore();
+    const instance = await vault(store);
+    const initial = await instance.commit(null, snapshotFixture({ status: 'paused' }));
+    for (const extra of [
+      { plan: {
+        ...initial.snapshot.plans[0]!.plan, planId: 'plan-2', status: 'active',
+      }, nextPeriodIndex: 0 },
+      { plan: {
+        ...initial.snapshot.plans[0]!.plan, planId: 'plan-2',
+      }, nextPeriodIndex: 5 },
+    ]) {
+      await expect(instance.commit(initial, {
+        ...initial.snapshot, revision: 'snapshot-2', plans: [...initial.snapshot.plans, extra],
+      })).rejects.toMatchObject({ code: 'UNREVIEWED' });
+    }
+    expect((await instance.load())?.snapshot.plans).toHaveLength(1);
+  });
+
 });
