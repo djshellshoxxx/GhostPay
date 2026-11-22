@@ -1,3 +1,14 @@
+# GP-BUG — Strict custom-profile identification for imported settings (2026-11-22)
+
+Worker: ChatGPT bug-only coordinator, sequential implementation and source-equivalent verifier; no independent native reviewer.
+Branch: `automation/20261122-r6/bug/ux-guide-detect-exact-settings`; exact main baseline: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-guide/src/profiles.ts`, new `packages/ux-guide/src/profiles.exact.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim and `docs/handoffs/UX_GUIDE_PROFILE_EXTRA_KEYS_20261122.md` only.
+Finding: `detectProfile` documents exact settings equality but compares only the eight known settings. Imported settings with additional own JSON fields are mislabeled as standard profiles instead of `custom`. Baseline source-equivalent Node 22 reproduction fails the expected `custom` assertion.
+Acceptance: test-first regression demonstrating extra own settings fields are non-exact; retain exact built-in profile matches and custom classification of modified/missing fields; smallest production fix; no changes to questionnaire scores, defaults or public APIs. The inventory of 209 open PRs found no path collisions with the two source/test files; recheck before integration.
+Coordination: metadata-only generation-11 lock is held by another coordinator (`994a0d214fb9-root-r3`); do not alter lock, main, other workers' branches or release. GitHub exact-head CI, independent review, and any applicable browser qualification required before any merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
