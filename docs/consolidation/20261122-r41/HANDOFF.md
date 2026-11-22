@@ -37,3 +37,13 @@ Previous R40: **47 finalized / 489 unresolved** across 536 refs. Current R41: **
 5. Preserve older checkpoint evidence and new dispositions; global count remains 454 unresolved until source-specific verification, not until arbitrary PR-count targets.
 
 **R41 production-code commits: zero. Main merges: zero. Deployments/releases/live-funds operations: zero. Independent approvals: none obtained.**
+
+## R41 second-pass source audit — 2026-11-22T14:07:46Z
+
+After PR #471 was opened, the same isolated worker completed 17 further exact-SHA donor comparisons, then reviewed the actual source blobs of two divergent privacy transfer-filter histories. **16 of these 17** were newly finalizable: 12 Git ancestors of main (ahead=0), two complete compare histories changing only one `docs/` path apiece, and two source-superseded scan transfer-filter branches. The one still unresolved is `chatgpt/zero-codex/pages-qr-combined-20261115` at `26f83ccdda98ee82c26ad5f71c3f90d90ad68c20`, with seven divergent browser source/test/docs paths requiring semantic selection and overlap review. No code from this donor was imported.
+
+For `chatgpt/zero-codex/pages-owner-transfer-filter-20261115` (`cf5e876ce164e63d535fb6e40319573798b746e1`) and `chatgpt/zero-codex/pages-scan-transfer-filter-20261114` (`7b6c4983e5c0ba048edf97aaff7399bd77980234`), the `apps/web/src/lib/scanSpam.ts` donor blob is **`0cf63cb855bb80e1dcf1e2b9f511c8758b124558`**, whereas current main is **`da35b619ad1aa7efa8607e0ab9ce8278b585bd61`**. Their test blobs are **identical** to main at `762deed547d68f934999994d770369b2ee95c9ad`. The only donor-only implementation is the weaker seven-day `anonymitySet.partial` coverage condition, while main correctly signals incomplete thirty-day counts. Owner-transfer also carries an older `docs/ai/ACTIVE_WORK.md` claim. Do not overwrite main with these donors or invent an independent runtime test.
+
+**Authoritative current R41 ledger** after second-pass update: `docs/consolidation/20261122-r41/SEMANTIC_DISPOSITIONS.json` at commit **`4531274ec3248c01b63970ca0f2f128eccb62bd1`** (new blob `16de8cf7cae518bde22921c80c6a9e240ad5e91c`); **100 finalized / 438 unresolved of 538**. R41 new resolutions now total **53** = **26 ancestry, 23 docs-only, one equal-blob and three source-superseded**, all branches retained. Earlier 84/454 and 37-new metrics above are the immutable first pass, superseded by this section.
+
+No application-code changes or protected main merge. Revalidate the newest exact PR #471 SHA and hosted CI after this documentation update. Preserve coordinator lock generation 11 and independent review requirement.
