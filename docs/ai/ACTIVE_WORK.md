@@ -1,3 +1,14 @@
+# GP-BUG — Reject non-string CSV amount parser inputs (2026-11-22; bug-only r10)
+
+Worker: ChatGPT GhostPay bug-repair coordinator, sequential; independent review remains required.
+Branch: `automation/20261122/bug/ux-export-parse-nonstring-r10`; base: `eb59d93cffed7848c4aac37d0e9650b87239c6da` (verified live main).
+Owned paths: `packages/ux-export/src/amount.ts`, NEW `packages/ux-export/src/amount.runtime-types.test.ts`, this append-only claim, and NEW `docs/handoffs/UX_EXPORT_PARSE_UNTYPED_20261122.md`.
+Reproduction: base Git blob `4b10f141d29651eacfceee7af80b539c6e8c0c75` (`amount.ts`) and error blob `6d10133c45cc817fb7c95952f58b2a7b5a6f33cb` were matched in an isolated TypeScript compilation. `parseUnits(7 as never, 2)` silently returned `700n`; `parseUnits(['1'] as never, 2)` returned `100n`; null/undefined generated TypeError rather than typed ExportError.
+Acceptance: add focused failing regression first, then one type guard to refuse every non-string before implicit regex coercion, retaining original canonical string parsing and ExportError('INVALID_AMOUNT'). Run isolated exact-source RED/GREEN with neighboring cases, then rely on exact-head hosted CI and independent review before any integration.
+Ownership: queried live open-PR inventory and relevant changed-file lists (including #220, #238, #243, #246, #251, #262, #264, #278, #310, #372, #390, #407, #444, #465, #466); no source/test-path conflict found in inspected subset; full paginated per-file inventory remains to be completed before merge. Integration lock generation 11 is held by a different coordinator; do not acquire, merge or deploy. Do not update or replace any other worker's branch.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
