@@ -1,3 +1,14 @@
+# GP-BUG — single-clock cancellation of scheduled payment (2026-11-22)
+
+Worker: GhostPay BUGS-ONLY automation, sequential implementation and self-check; independent verifier not available.
+Branch: `automation/20261122/bug/ux-schedule-cancel-single-clock-11`; verified `main` base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-schedule/src/scheduled.ts`, new `packages/ux-schedule/src/scheduled.cancel-clock.test.ts`, this additive registry claim, and `docs/handoffs/UX_SCHEDULE_CANCEL_CLOCK_20261122.md`. Existing `scheduled.test.ts` is untouched.
+Observed existing defect: `cancel()` samples the injected clock in `tick()` and again for `stateChangedAtMs`. A clock crossing the expiry boundary between calls produces a `cancelled` record timestamped after its maximum age even though the state machine would classify that instant `expired`. This differs from `confirm()` which binds validation and timestamp to one clock sample.
+Acceptance: first commit failing regression for advancing injected clocks; replace duplicate read with one captured clock sample; preserve valid pending/due cancellations, expired/terminal rejection, explicit acknowledgement and all other state-machine behavior. No new functionality or dependency, wallet, chain, deployment, release or merge. Tests and full native browser/CI require exact-head hosted qualification. Recheck ownership and external integration lock before any future merge.
+Ownership audit: all 236 open PR changed-file inventories at the discovery snapshot examined; no PR touched either owned path. Existing broad PRs #238/#262/#264/#278/#372 touch other ux-schedule metadata/tests but not these two paths. Active main integration lease is held by another coordinator, no acquisition or protected integration.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
