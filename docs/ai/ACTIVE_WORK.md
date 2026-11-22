@@ -771,3 +771,16 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# R37 — Block ambiguous fee-preview asset symbols (2026-11-22)
+
+- Worker: branch consolidation coordinator, isolated from concurrent automation workers.
+- Branch: `automation/20261122-r37/bug/ux-fees-asset-symbol-collision`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-fees/src/preview.ts`, new `packages/ux-fees/src/preview.asset-symbol-collision.test.ts`, this additive claim, and `docs/handoffs/UX_FEES_ASSET_SYMBOL_COLLISION_R37.md`.
+- Source-confirmed problem: preview asset totals are grouped by `asset.id` but the collision check only blocks mismatched decimals; different validated ASCII symbols sharing the same id and precision can be silently summed and the fee preview can say `canProceed: true` with misleading payer totals. Existing tests cover unequal decimals only.
+- Acceptance: test first for symbol-only id collisions in network, router buffer and flat security-fee lines; preserve identical assets, distinct ids and current existing decimal-collision rule. Extend only the existing block warning `fees.preview.warn.assetMismatch`. No signing, network, contract, key, fee-rule, or custody changes.
+- Ownership: relevant recent #421/#423/#425 modify only timing paths. Broad #278/#262/#264/#372 file inventories do not include `packages/ux-fees/src/preview.ts`; check all active PR overlaps again before merge. Integration lock `automation/ghostpay-integration-lock` is held generation 11 by another coordinator; no lock transfer, shared merge, deployment, or release authorized.
+- Verification: exact-head hosted CI required; no native repository Vitest run is claimed because GitHub DNS blocks local clone. Independent review required before integration.
