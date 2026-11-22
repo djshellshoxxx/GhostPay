@@ -219,7 +219,7 @@
   "limitations": [
     "All current 543 branch identities and 235 open PR heads are recorded; semantic source classification remains unfinished for unresolved rows",
     "The 11 finalized cases use complete path lists under 300 files, not historical ancestry counts alone",
-    "55? historically capped donor comparisons still need nontruncated structural plus semantic review; do not infer remainder count",
+    "The historically reported 59 compare-capped donor histories require per-donor revalidation; the number still outstanding has not yet been independently recomputed.",
     "PR aliases by matching SHA are reported as overlap evidence, not independently proved patch integration",
     "PR #471 docs branch will advance when publishing this ledger; its row remains unresolved pending next exact-head refresh",
     "No protected main merge or feature test was run; GitHub connector cannot run local workspace tests and external git DNS is inaccessible",
@@ -10993,5 +10993,26 @@
       "draft": false,
       "updatedAt": "2026-11-04T00:23:22Z"
     }
-  ]
+  ],
+  "additionalStructuralReview": {
+    "checkedAtUtc": "2026-11-22T17:13:39.787Z",
+    "donor": "codex/ghostpay-export-authorization-20261119",
+    "headSha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+    "treeSha": "1a7ad8022a70af9c78ba8b33d7a064ab60a807f3",
+    "donorBlobCount": 4539,
+    "recoveryPr": 372,
+    "recoveryTreeSha": "65e5cc6fdb7ab3337951ba0b0b58e87b71df095b",
+    "recoveryBlobCount": 5762,
+    "donorOnlyPaths": 11,
+    "sharedDifferingPaths": 219,
+    "treeTruncated": false,
+    "donorOnlyBrowserPaths": 0,
+    "sourceSafetyFinding": "Donor paymentKeyExport.ts includes values:{address} in contract-account error; #372 removes address; preserve #372 disclosure minimization",
+    "sourceParity": [
+      "apps/web/src/lib/paymentKeyExport.expiry.test.ts identical blob c08d77395d40d3f67b8afa58909b86ea57b992a6",
+      "apps/web/src/components/StealthExportPayment.tsx identical blob 8db65de1837b1bf70dff72a4be1e0e30a5d27006"
+    ],
+    "coordinationUrl": "https://github.com/djshellshoxxx/GhostPay/pull/372#issuecomment-7082673059",
+    "semanticStatus": "not finalized: 219 shared-path differences remain to inspect; no permission to wholesale import"
+  }
 }
