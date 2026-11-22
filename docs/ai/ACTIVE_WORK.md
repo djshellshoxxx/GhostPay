@@ -1,3 +1,12 @@
+# F10 M4 browser-session key binding (extension) — 2026-11-22
+
+- Worker/branch: same isolated F10 M4 coordinator on `feature/f10-durable-cas-m4-20261122`; no change to upstream F10 ownership or integration lease.
+- Additional owned paths: new `apps/web/src/features/future/private-recurring/browserVault.ts`, `browserVault.test.ts`; narrow exports in F10 `index.ts`; additive M4 handoff updates.
+- Scope: derive a nonextractable, dedicated F10 AES-256 key from a temporary, zeroized viewing-key copy and profile-bound HKDF domain; reuse existing `IdbReconciliationVaultStore`, `captureSessionGuard`, `subscribeSession`. Close and invalidate on seller change/dispose; no UI mount or payment side effects. Test-first with mocked browser session and real WebCrypto.
+- Restrictions: current draft stack #456 → #396 → #391 → #371. No direct production app route, release gate change, lock takeover, merge or deployment. New keys must never persist.
+
+---
+
 # F10 M4 encrypted durable snapshot CAS and inherited lint repairs — 2026-11-22
 
 - Worker: ChatGPT, scoped sequential implementation and review, no independent reviewer claimed.
