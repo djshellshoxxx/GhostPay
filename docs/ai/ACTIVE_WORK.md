@@ -1,3 +1,12 @@
+# GP-BUG — reject unsupported parseUnits rounding modes (2026-11-22)
+
+Worker: GhostPay BUG-ONLY coordinator; sequential test-first repair; independent reviewer not available in this worker. Branch: `automation/20261122/bug/ux-fiat-parse-rounding-r12`; exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned source: `packages/ux-fiat/src/decimal.ts`; new dedicated regression: `packages/ux-fiat/src/decimal.rounding-validation.test.ts`; additive ownership registry and `docs/handoffs/UX_FIAT_PARSE_ROUNDING_20261122.md`. Existing `fiat.test.ts` is owned by other open PRs and must remain untouched.
+Observed defect: `parseUnits('1.25', 1, 'round' as never)` accepts an unsupported mode and silently selects half-even, returning `12n`, and invalid modes on exact decimals are accepted as successes. This differs from the package's existing `bad-rounding` behavior in `toFiatMinor` / `fromFiatMinor`. Source under test: Git blob `6476b0ff8f2676ed75aea5c972f7d546b4c136bd`; locally reconstituted source blob hash matched, TypeScript 5.8.3 standalone strict compile and Node 22.16.0 repro, no repository Vitest claimed.
+Acceptance: commit failing regression first, reject invalid supplied rounding modes with existing `bad-rounding` result; preserve absent-mode and seven valid modes; repeat isolated source-hash-matched checks; hosted exact-head CI and separate review required. No new behavior/dependencies/fee/wallet/contract changes, deployment, release or direct main merge. Exhaustive PR file inventory at initial snapshot: 233 open PRs, no source or new-test path collision; broad #224/#238/#262/#264/#278/#372 own `fiat.test.ts`. Main integration metadata generation 11 remains held by external owner `994a0d214fb9-root-r3` at `6edfcd4d`. Do not take over or merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
