@@ -44,7 +44,7 @@ describe('wallet journal post-broadcast read-back failures', () => {
 
       const error = await sendViaWallet(wrappedSession, tx, undefined, { storage }).catch((e: unknown) => e);
       expect(error).toBeInstanceOf(WalletBroadcastError);
-      expect(error).toMatchObject({ hash: expectedHash, phase: 'verification-incomplete' });
+      expect(error).toMatchObject({ hash: expectedHash, outcome: { phase: 'verification-incomplete', hash: expectedHash } });
       expect(postSendReads).toBeGreaterThan(0);
       expect(provider.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
 
