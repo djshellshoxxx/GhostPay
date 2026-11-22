@@ -396,10 +396,11 @@ export function buildFeePrivacyPreview(input: FeePreviewInput): FeePrivacyPrevie
   for (const l of lines) {
     if (l.phase === 'now' && l.id !== 'F-PAY') add(l.asset, l.amount);
   }
-  // Asset id collisions with different decimals would make totals meaningless.
+  // Asset ids must not conflate different token displays or precisions in payer totals.
   for (const l of lines) {
     const t = totals.get(l.asset.id);
-    if (t !== undefined && t.decimals !== l.asset.decimals) warn('block', 'fees.preview.warn.assetMismatch');
+    if (t !== undefined && (t.decimals !== l.asset.decimals || t.symbol !== l.asset.symbol))
+      warn('block', 'fees.preview.warn.assetMismatch');
   }
   if (input.networkFee !== undefined && input.networkFee.asset.id === input.asset.id && gross > 0n) {
     if (input.networkFee.amount * 10n > gross) warn('warn', 'fees.preview.warn.networkFeeLargeVsAmount');
