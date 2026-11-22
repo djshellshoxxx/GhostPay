@@ -31,12 +31,12 @@
   ],
   "openPrCount": 233,
   "summary": {
-    "totalFinalized": 280,
-    "totalUnresolved": 261,
-    "newlyFinalized": 75,
+    "totalFinalized": 281,
+    "totalUnresolved": 260,
+    "newlyFinalized": 76,
     "ancestor": 38,
     "futureSpecOnly": 29,
-    "documentationOnly": 4,
+    "documentationOnly": 5,
     "semanticSourceSuperseded": 2,
     "newlyDiscovered": 1,
     "changedHeads": 1,
@@ -11775,16 +11775,28 @@
       "r39Sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
       "r39Disposition": "carried-forward-r38-semantic-disposition-unverified",
       "r39OpenPrsAtOldCutoff": [],
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "evidence": "R39 inherited only; do not assume a status is a semantic signoff",
-      "reviewRequired": true,
+      "finalized": true,
+      "disposition": "audit-documentation-only",
+      "evidence": "R43 supplementary complete four-path immutable compare; all docs/recovery/spec02-unqualified-2026-11-16/{README.md,UNCONFIRMED-conflict-fix.apply-patch.txt,reconciliation-amounts.test.ts.txt,reconciliation-amounts.ts.txt}. Code sketches stored as .txt only; not executable feature/test integration. Preserve branch and notes for recovery owner.",
+      "reviewRequired": false,
       "r41OpenPrs": [],
       "r41CheckedHead": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
       "r42HeadSha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
       "r42OpenPrs": [],
       "r43HeadSha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
-      "r43OpenPrs": []
+      "r43OpenPrs": [],
+      "r43SupplementEvidence": {
+        "kind": "full-small-compare-documentation-only",
+        "mainSha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "headSha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+        "status": "diverged",
+        "aheadBy": 4,
+        "behindBy": 299,
+        "pathCount": 4,
+        "allPathsUnder": "docs/recovery/spec02-unqualified-2026-11-16/",
+        "compare": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...8d6fd6df5effc5fad93fd7afafe65f258182923c",
+        "limit": "Docs-only disposition; unique design notes are preserved and NOT claimed merged or security-qualified"
+      }
     },
     {
       "branch": "codex/seller-ledger-receipt-qr",
@@ -21387,5 +21399,27 @@
       ],
       "note": "No common ancestor is not proof of inclusion; orphan gh-pages build artifacts preserved without merging/redeploying."
     }
+  },
+  "r43Continuation": {
+    "checkedAtUtc": "2026-11-22T16:19:24.876Z",
+    "baseLedgerSourceHead": "76e528f5be631c602c7c4e2ffdf66b35736ede54",
+    "priorFinalized": 280,
+    "finalized": 281,
+    "unresolved": 260,
+    "newlyFinalized": [
+      {
+        "branch": "codex/recovery-spec02-unqualified-20261116",
+        "sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+        "disposition": "audit-documentation-only"
+      }
+    ],
+    "ownedDocsScope": "docs/consolidation/20261122-r43 and additive ACTIVE_WORK claim; production source unchanged",
+    "additionalSourceAudit": [
+      "fix/remediation-f95457fd-22ecf9: unsafe legacy-attempt overblocking, unresolved",
+      "PR #342 selected TRON genesis child four workflow groups green, but stacked/nonmergeable, no independent review",
+      "PR #345 policy form-edit revocation four workflow groups green, no independent review",
+      "PR #328 vault rekey five workflow groups green, no independent review"
+    ],
+    "warning": "No protected-main merge or release qualification; main and coordination lock unchanged."
   }
 }
