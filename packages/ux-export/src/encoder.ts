@@ -86,6 +86,7 @@ export class ChunkWriter {
 
   /** Writes the header record (first call only). */
   header(fields: readonly string[]): string | undefined {
+    if (this.started) throw new ExportError('INVALID_OPTION', 'header already written');
     this.started = true;
     if (this.bom) this.add('﻿');
     this.add(this.line(fields));
