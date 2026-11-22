@@ -1,3 +1,16 @@
+# GP-BUG-20261122-R11 — reject untyped ux-flow base64url decoder inputs
+
+- Worker: this isolated GhostPay bug-only engineering round; no separate reviewer established.
+- Branch: `automation/20261122T1426Z/bug/ux-flow-b64url-runtime-types`; source baseline: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-flow/src/base64url.ts`, new `packages/ux-flow/src/base64url.runtime.test.ts`, this additive claim, and `docs/handoffs/UX_FLOW_BASE64URL_RUNTIME_TYPES_20261122.md` only.
+- Confirmed reproduction: Git-blob-matched main `base64url.ts` (`619e46e7db73be17896943db1be0031e18a82a95`) and `errors.ts` (`1539db553c5609a85170d8f9d3e75b3d00c5b65a`) compiled with TypeScript / Node 22.16.0. A non-string number or Symbol produced an empty success, a crafted object decoded bytes, and null/undefined raised native TypeError instead of typed `FlowError('PROOF_ENCODING')`.
+- Scope: fix the exported strict decoder only; preserve every canonical valid byte/string decode and existing proof behavior. No dependencies, interfaces, new features, contracts, deployment or release.
+- Acceptance: regression first and RED before one-line type guard; GREEN on source-hash-matched repaired code, neighboring canonical/invalid encodings; hosted exact-head checks and independent review still required.
+- Ownership preflight: current open PRs #278/#262/#264/#238/#307/#372/#380/#246/#289/#407/#220/#371/#470/#467 and focused recent work did not touch the two owned code paths. This is a targeted sample, **not** an exhaustive all-PR file scan. Recheck ownership before merge.
+- Integration lock: generation-11 is externally held per current coordinator checkpoints; no lock takeover or merge authorized.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
