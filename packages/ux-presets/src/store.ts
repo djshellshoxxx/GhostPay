@@ -110,7 +110,7 @@ export async function createPresetStore(options: PresetStoreOptions): Promise<Re
     } catch {
       return err('storage-failed', 'storage unavailable');
     }
-    if (blob === null) return ok({ revision: Math.max(lastRevision, 0), presets: [] });
+    if (blob === null) return lastRevision >= 0 ? failOpen() : ok({ revision: 0, presets: [] });
     const pt = await open(key, c, slot, blob);
     if (!pt.ok) return pt;
     const l = decode(pt.value);
