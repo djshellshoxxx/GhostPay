@@ -44,6 +44,16 @@ Definitions: VERIFIED_COMPLETE = demonstrated to satisfy the stated bounded scop
 
 **Status limitation:** source review proves presence/absence of inspected APIs and UI wiring, not correctness of all reachable states. A past test log applies only to its exact tested tree, not automatically to current main, a stacked candidate or production.
 
+## 2A. P0 structural risk: counterfactual funds may be undeployable
+
+**Source-level risk confirmed; exploit/fund-loss reproduction not executed in this cycle.** GhostPayPolicyRouter.sol::_checkPolicyAccount checks only that the recipient equals FACTORY.predictAddress(owner, policyHash). It does **not** authenticate the policy preimage, owner-controlled backups, a deployable configuration or the existence of clone code. A transfer to the counterfactual account can therefore succeed before the account exists. PolicyAccountFactory.sol::deploy subsequently requires the actual destination, delay in its accepted bounds, limitsRoot and payment/waiver of any factory fee. PolicyPay.tsx/pay.ts currently prepare payments from a scheme-2 meta-address and do not require that the recipient's policy preimage/record is recoverable.
+
+Consequently, **a correctly predicted counterfactual address is not evidence the recipient can ever deploy or withdraw the funds**. A lost record/limits leaves, an unsupported delay, a malicious or malformed advertised commitment, missing deployment-fee availability, or unapproved factory profile can leave a funded address inaccessible. Record import/backup does not restore a totally lost signing key. The fee-waiver implementation handles some failed transfers but cannot establish that every fee-token failure is recoverable.
+
+Before enabling real-value payments, explicitly decide and test one of: (a) fail closed until an authenticated, already-deployed account with matching owner/policy is verified on-chain, or (b) accept counterfactual payments only under a separately reviewed and authenticated deployability, record-availability, fee and recovery proof design. Avoid assuming a seller attestation makes a private preimage cryptographically reconstructible; do not solve the risk by exposing linkable policy parameters on-chain without an explicit privacy review.
+
+Required local-chain regression: construct a factory-predicted account for a policy hash whose required preimage is not provided, demonstrate the router's current transfer admission, and demonstrate the subsequent inability to call factory.deploy with known valid materials; then verify the approved production payment path **refuses the unsafe configuration before any wallet request**. Separately test a valid funded counterfactual account, token/nonnative fee failures, owner-key backup loss, and an existing deployed account. Keep any attack/failure reproduction local and unfunded.
+
 ## 3. Unmerged code to reuse before implementing new functionality
 
 Integrate the current policy stack **in order and only after ownership/CI review**:
