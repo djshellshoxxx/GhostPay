@@ -1,3 +1,16 @@
+# GP-BUG — fail closed on sparse pre-send checklist safety arrays (2026-11-22)
+
+Worker: ChatGPT BUG-ONLY automation round 12, single implementer; no independent verifier available.
+Branch: `automation/20261122-r12/bug/guide-sparse-checklist`; base live main SHA: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-guide/src/checklist.ts`, new `packages/ux-guide/src/checklist.sparse.test.ts`, this additive branch-only ownership claim, `docs/handoffs/UX_GUIDE_CHECKLIST_SPARSE_20261122.md`.
+Evidence: `validInput` uses JavaScript `Array.every` on `knownAddresses`, `wallet.ownAddresses`, and `acknowledged`. Sparse array holes are skipped, so malformed runtime safety inputs are incorrectly accepted and the pre-send checklist can report `canSend: true`. Existing docstring promises a fail-closed `input_invalid` blocker. Scope is only sparse-array validation, with unchanged valid dense inputs, lookalike warnings and other checklist behavior.
+Acceptance: first commit failing Vitest regressions, then a minimal fix that visits holes rather than silently skipping them; source-equivalent control-flow proof and exact-head hosted CI; independent review needed before any integration. No features, contract, fund, dependency, release or deployment changes.
+Ownership: before claim, complete changed-file inventory of all 239 open PRs across 3 pages was inspected. No PR changes either proposed source or dedicated regression path. Existing ux-guide PRs #451 (profiles.ts), #429 (onboarding.ts) are distinct and will not be modified.
+Dependency: PR #390 at `b655bc273a6704c9c140287b8adcdf4085b91882` has all 5 exact-head hosted workflows green but no submitted independent review; leave its owner branch unchanged. Integration lock generation 11 `held` by `994a0d214fb9-root-r3`, ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; no takeover or merge.
+Status: claimed, failing regression and repair pending.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
