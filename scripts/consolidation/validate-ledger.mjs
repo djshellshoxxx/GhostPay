@@ -27,7 +27,7 @@ function validPageSequence(pages) {
     pages.slice(0, -1).every((n, i) => n > 0 && (i === pages.length - 2 || n === 100));
 }
 
-const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-|coordination-metadata-only-held)|review-required|needs-semantic-review/;
+const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-)|review-required|needs-semantic-review/;
 
 // Offline checkpoint invariant checks. This utility never reads or writes live GitHub refs.
 export function validateLedger(data) {
