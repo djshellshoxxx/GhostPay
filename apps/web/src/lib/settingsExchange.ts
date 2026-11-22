@@ -132,14 +132,28 @@ function snapshotSettings(s: Settings): Settings {
   };
 }
 
+/** The importer and QR parser may keep editing their source object after review.
+ * Keep the preview's chosen values detached from every mutable imported section.
+ */ 
+function snapshotIncoming(source: DeviceSettings): DeviceSettings {
+  return {
+    ...source,
+    ...(source.preferences !== undefined ? { preferences: { ...source.preferences } } : {}),
+    ...(source.rpcUrls !== undefined ? { rpcUrls: { ...source.rpcUrls } } : {}),
+    ...(source.rpcUrlsSecondary !== undefined ? { rpcUrlsSecondary: { ...source.rpcUrlsSecondary } } : {}),
+    ...(source.pinnedSigners !== undefined ? { pinnedSigners: [...source.pinnedSigners] } : {}),
+  };
+}
+
 /** Per-section current vs incoming values. Pure: computing a preview makes no request to any imported endpoint. */
 export function previewSettingsExchange(current: Settings, incoming: DeviceSettings, chainIds: readonly number[]): SettingsExchangePreview {
-  const prefs = incoming.preferences;
-  const pins = incoming.pinnedSigners;
+  const reviewed = snapshotIncoming(incoming);
+  const prefs = reviewed.preferences;
+  const pins = reviewed.pinnedSigners;
   const preferences = prefs === undefined ? undefined : { current: preferencesOf(current), incoming: prefs, changed: !samePreferences(preferencesOf(current), prefs) };
-  const rpcUrls = incoming.rpcUrls === undefined ? undefined : mapDiff(current.rpcUrls, incoming.rpcUrls);
-  const rpcUrlsSecondary = incoming.rpcUrlsSecondary === undefined ? undefined : mapDiff(current.rpcUrlsSecondary, incoming.rpcUrlsSecondary);
-  const relayerUrl = incoming.relayerUrl === undefined ? undefined : { current: current.relayerUrl, incoming: incoming.relayerUrl, changed: current.relayerUrl !== incoming.relayerUrl };
+  const rpcUrls = reviewed.rpcUrls === undefined ? undefined : mapDiff(current.rpcUrls, reviewed.rpcUrls);
+  const rpcUrlsSecondary = reviewed.rpcUrlsSecondary === undefined ? undefined : mapDiff(current.rpcUrlsSecondary, reviewed.rpcUrlsSecondary);
+  const relayerUrl = reviewed.relayerUrl === undefined ? undefined : { current: current.relayerUrl, incoming: reviewed.relayerUrl, changed: current.relayerUrl !== reviewed.relayerUrl };
   let pinnedSigners: SignerDiff | undefined;
   if (pins !== undefined) {
     const added = pins.filter((p) => !current.pinnedSigners.includes(p));
@@ -148,7 +162,7 @@ export function previewSettingsExchange(current: Settings, incoming: DeviceSetti
   }
   const sections = [preferences, rpcUrls, rpcUrlsSecondary, relayerUrl, pinnedSigners];
   return {
-    basis: snapshotSettings(current), chainIds: [...chainIds], incoming,
+    basis: snapshotSettings(current), chainIds: [...chainIds], incoming: reviewed,
     ...(preferences !== undefined ? { preferences } : {}),
     ...(rpcUrls !== undefined ? { rpcUrls } : {}),
     ...(rpcUrlsSecondary !== undefined ? { rpcUrlsSecondary } : {}),
