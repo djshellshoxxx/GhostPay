@@ -134,7 +134,7 @@ function snapshotSettings(s: Settings): Settings {
 
 /** The importer and QR parser may keep editing their source object after review.
  * Keep the preview's chosen values detached from every mutable imported section.
- */ 
+ */
 function snapshotIncoming(source: DeviceSettings): DeviceSettings {
   return {
     ...source,
