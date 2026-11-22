@@ -1,3 +1,14 @@
+# GP-QR-CLASSIFY-UTF16-01 — reject unpaired UTF-16 in scanned/pasted QR text (2026-11-22)
+
+Cycle/worker: `20261122T0641Z` / one coordinator running sequential source audit, test-first correction, and evidence phases; no native independent reviewer or parallel worker available.
+Branch: `automation/20261122T0641Z/bug/qr-classify-surrogate-input`; exact base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/qrClassify.ts`, new `apps/web/src/lib/qrClassify.unpaired-surrogate.test.ts`, this task-branch-only claim, and `docs/handoffs/QR_CLASSIFY_UNPAIRED_SURROGATE_20261122.md`. No other paths or integration targets are claimed.
+Finding: current classifier's text/UTF-8 cap and forbidden-control check allow raw isolated UTF-16 surrogate units to reach the settings JSON envelope detector; JSON parsing accepts a literal isolated surrogate, although `TextEncoder` lossily converts it to U+FFFD and the existing QR encoder rejects it. This is a bounded intake-classification correctness issue, not a demonstrated funds-loss or key-exposure exploit.
+Acceptance: reject isolated high/low surrogate inputs with the existing fixed `unknown/malformed` reason, including recognised settings-shaped JSON; preserve valid supplementary Unicode pairs and normal accepted QR families; never return payload data or add dependencies; add regression-first Vitest tests. Run source-equivalent Node checks and exact-head hosted CI where available. Scope does not include signer/expiry policy, QR source rewriting, or broadened backend products.
+Ownership: targeted open-PR query for `qrClassify`/malformed Unicode QR classifier returned none; broader consolidations remain active and unqualified, so recheck file overlap and head SHAs before any integration. Integration metadata branch `automation/ghostpay-integration-lock` observed `held`, generation 11, owner `994a0d214fb9-root-r3`; expiry is not release authority. No shared ledger, lock, or main edits allowed here.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
