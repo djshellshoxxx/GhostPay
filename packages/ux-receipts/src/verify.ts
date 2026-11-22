@@ -136,6 +136,9 @@ async function checkChain(
   if (res.status === 'not_found') return none('not_found');
   if (res.status !== 'found') return none('unavailable');
   const f = res.facts;
+  if (typeof f !== 'object' || f === null || Array.isArray(f) || typeof f.confirmed !== 'boolean') {
+    return none('unavailable');
+  }
   const matched: string[] = [];
   const mismatches: string[] = [];
   const cmp = (name: string, ok: boolean | undefined): void => {
