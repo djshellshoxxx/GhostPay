@@ -786,3 +786,10 @@ Acceptance: re-read GitHub refs and open PRs with full pagination; source-pin an
 # R42 — autonomous immutable donor backfill and owner-safe QR/CI recovery (2026-11-22T15:06:47.598Z)
 
 Worker: continuation of GhostPay branch-consolidation worker from R41; branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, pre-change head `2ca570c9f8517406d549aee0ae7d74966aec0d06`, base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: additive `docs/consolidation/20261122-r42/*`, this append-only claim, and PR #471 coordination metadata. No application source claimed. Scope: preserve full 540-branch/232-open-PR identities, backfill immutable SHA ancestry and blob equivalence, inspect stranded QR guard PR #290 and blocked exact-head CI without modifying any other worker's claimed source. Acceptance: source-pinned ledger with unresolved counts, main and PR exact heads, unique-donor dependency preservation, no merges/deployments. Integration lock generation 11 belongs to another coordinator; independent review/CI required.
+
+
+---
+
+# R43 — GhostPay historical safety donor semantic backfill (2026-11-22T16:16:10.460Z)
+
+Worker: existing scheduled branch-consolidation engineer, continuing own PR #471 on branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, starting exact head `01e1b4cd69f7b073883e40b5f74dc869fea81a1e`; main baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: this append-only claim, new `docs/consolidation/20261122-r43/*`, and additive PR #471 ledger/handoff metadata only. No source files, scanner #466, bug-only, recovery #372, merchant F04 or recurring F10 ownership. Do not acquire generation-11 integration lock. Acceptance: reconcile full branch/PR/ref census, classify only confirmed immutable-SHA ancestors and complete noncode diffs, inspect recovery/safety donor code semantically against main, preserve unresolved source code, report exact-head CI and review barriers; no main merge, deployment or release.
