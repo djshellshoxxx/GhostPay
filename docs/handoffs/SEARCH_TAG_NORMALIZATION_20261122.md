@@ -22,7 +22,7 @@ Main source Git blob `568db97dc1400374b24d3418fbd0f5f173224bc3` matched the loca
 
 ## Actual verification and limitations
 
-- Initial source-matched Node 22 baseline: three normal controls passed, one Unicode equivalence assertion failed as intended.
+- Initial source-matched Node 22 baseline: five normal controls passed, one Unicode equivalence assertion failed as intended.
 - Repaired source-matched Node 22 focused reproduction: **8/8 passing** (including normal and Unicode filters, AND, network, query behavior).
 - Repaired source-matched Node 22 adversarial/deterministic expansion: **4,029/4,029 passing**, including 4,000 case-width combinations, retained order, multiple required tags, network and text filters, and unchanged `listTags` output.
 - Standalone TypeScript 5.8.3 compilation for verbatim `search.ts` with isolated `Contact`/`AddressBook` declarations: **passed**. This is not the repository's TypeScript 5.9 workspace check.
