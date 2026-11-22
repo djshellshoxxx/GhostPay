@@ -226,4 +226,51 @@ describe('F10 M4 — encrypted, revision-safe recurring snapshots', () => {
     expect(() => instance.unlock(aes128)).toThrowError(new RecurringVaultError('KEY'));
     expect(store.data.size).toBe(0);
   });
+  it('blocks forged new invoices and claims of issuance from an ordinary state commit', async () => {
+    const store = new TransactionalMemoryStore();
+    const instance = await vault(store);
+    const draft = await instance.commit(null, snapshotFixture({ status: 'paused' }));
+    const activePlan = transitionRecurringPlan(draft.snapshot, 'plan-1', 'resume', 'terms-1', 'terms-2', {
+      profileRef: profile, expectedSnapshotRevision: 'snapshot-1',
+      nextSnapshotRevision: 'snapshot-2', nowSeconds: JAN31 - 1,
+    });
+    const active = await instance.commit(draft, activePlan);
+    const forgedInvoice = {
+      eventId: 'plan-1:period:0:invoice', planId: 'plan-1', planRevision: 'terms-2',
+      periodIndex: 0, kind: 'invoice' as const, artifactRef: 'forged-0', status: 'issued' as const,
+    };
+    const forged = {
+      ...active.snapshot, revision: 'snapshot-3',
+      plans: [{ ...active.snapshot.plans[0]!, nextPeriodIndex: 1 }],
+      outbox: [forgedInvoice],
+    };
+    await expect(instance.commit(active, forged))
+      .rejects.toMatchObject({ code: 'UNREVIEWED' });
+    expect((await instance.load())?.snapshot.outbox).toHaveLength(0);
+
+    const ctx = { operationId: 'issue-1', sessionEpoch: 1, nowSeconds: JAN31,
+      signal: new AbortController().signal };
+    const reviewer = new RecurringPreparationController();
+    const view = reviewer.preview(active.snapshot, 'plan-1', ctx);
+    const prepared = await instance.reserveReviewed(reviewer, view, active, ctx, 'reviewed-0', 'snapshot-3');
+    await expect(instance.commit(prepared, {
+      ...prepared.snapshot, revision: 'snapshot-4',
+      outbox: prepared.snapshot.outbox.map(item => ({ ...item, status: 'issued' })),
+    })).rejects.toMatchObject({ code: 'UNREVIEWED' });
+    expect((await instance.load())?.snapshot.outbox[0]?.status).toBe('prepared');
+  });
+
+  it('invalidates old CAS handles after lock and re-unlock, even under the same key', async () => {
+    const store = new TransactionalMemoryStore();
+    const instance = await vault(store);
+    const old = await instance.commit(null, snapshotFixture({ status: 'paused' }));
+    instance.lock();
+    instance.unlock(await testKey());
+    await expect(instance.commit(old, { ...old.snapshot, revision: 'snapshot-2' }))
+      .rejects.toMatchObject({ code: 'CONFLICT' });
+    const current = (await instance.load())!;
+    await instance.commit(current, { ...current.snapshot, revision: 'snapshot-2' });
+    expect((await instance.load())?.snapshot.revision).toBe('snapshot-2');
+  });
+
 });
