@@ -779,3 +779,10 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 Worker: scheduled branch-consolidation engineering. Isolated branch: `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`; immutable base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
 Owned paths: append-only `docs/ai/ACTIVE_WORK.md`; new `docs/consolidation/20261122-r41/*` files only. No active production/runtime/scanner source ownership and no permission to take over dedicated BUG-only, recovery, or F04/F10 work. Preserve the generation-11 coordinator integration lock and do not merge into main.
 Acceptance: re-read GitHub refs and open PRs with full pagination; source-pin and finalize newly verified ancestor, byte-identical, superseded, or audit/docs-only branch histories; preserve every unresolved and newly discovered ref; do not confuse non-code disposition with adopted functionality. Investigate any high-risk discrepancies, publish an isolated reviewable PR and durable exact-head handoff. Only hosted CI if available; local Git/Node unavailable due container DNS restriction. No deploy/release/real funds.
+
+
+---
+
+# R42 — autonomous immutable donor backfill and owner-safe QR/CI recovery (2026-11-22T15:06:47.598Z)
+
+Worker: continuation of GhostPay branch-consolidation worker from R41; branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, pre-change head `2ca570c9f8517406d549aee0ae7d74966aec0d06`, base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: additive `docs/consolidation/20261122-r42/*`, this append-only claim, and PR #471 coordination metadata. No application source claimed. Scope: preserve full 540-branch/232-open-PR identities, backfill immutable SHA ancestry and blob equivalence, inspect stranded QR guard PR #290 and blocked exact-head CI without modifying any other worker's claimed source. Acceptance: source-pinned ledger with unresolved counts, main and PR exact heads, unique-donor dependency preservation, no merges/deployments. Integration lock generation 11 belongs to another coordinator; independent review/CI required.
