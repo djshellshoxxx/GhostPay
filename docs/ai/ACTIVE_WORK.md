@@ -1,3 +1,13 @@
+# F04 evidence-qualified local analytics slice — 2026-11-22
+
+Worker: ChatGPT F04 implementation coordinator, isolated source and validation (no independent reviewer).
+Branch: `feat/f04-evidence-analytics-20261122`; source base is F04 export draft PR #397 at `a9f19eb236fb2265f48444a0b4ad7bbffb411897`, itself stacked on dormant consolidation PR #371. Main at discovery: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned new files only: `apps/web/src/features/future/merchant-dashboard/analytics.ts`, `analytics.test.ts`, `docs/handoffs/F04_ANALYTICS_20261122.md` and `docs/handoffs/F04_MERCHANT_DASHBOARD_COMPLETION.md`; this claim is append-only. No changes to existing F04 model/projection/export/index, P03/P05, production routes or workflow settings.
+Acceptance: compute exact on-time final/pending/late atomic statistics only from a trusted in-memory F04 projection; separate chain/asset; never treat unverified/reorged/conflicting events as settlement; expired/outstanding boundary and incomplete coverage explicit; stale session, malformed rows and inconsistent totals fail closed. Add focused tests, separate local smoke evidence and honest remaining gates. Keep stacked branch draft, do not activate, deploy, merge, acquire or alter the held generation-11 integration lock.
+Dependencies: approved canonical provider (P03), encrypted durable journal (P05), UI, recovery/backup and browser checks remain unfinished. The owner of #397 controls export changes; #371 controls composition; this task does not modify their files or source ancestry.
+
+---
+
 # F04 explicit local CSV/JSON export slice — 2026-11-21
 
 Worker: ChatGPT foreground coordinator; no independent native worker is available in this run.
