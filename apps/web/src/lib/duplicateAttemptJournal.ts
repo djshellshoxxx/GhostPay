@@ -75,6 +75,7 @@ export function beginAttempt(input: AttemptInput, storage?: AttemptStorage): Wal
 /** Called immediately on the returned hash, even when the initiating page/session has changed. */
 export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: AttemptStorage): void {
   const store = requiredStorage(storage);
+  if (typeof hash !== 'string') return fail();
   const next = { ...attempt, status: 'submitted' as const, hash: hash.toLowerCase() };
   if (!validAttempt(next)) return fail();
   const records = readAttempts(store);
