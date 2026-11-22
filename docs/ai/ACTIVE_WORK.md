@@ -1,3 +1,15 @@
+# GP-BUG-22 — reject unsupported runtime pending-reference kinds (2026-11-21)
+
+Worker: single ChatGPT bug-repair operator; sequential source review, regression and verification; **no independent verifier**.
+Branch: `automation/20261121/bug/ux-connect-pending-kind-r12`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-connect/src/compat.ts`, new `packages/ux-connect/src/compat.pending-ref.test.ts`, this additive branch-local claim, and new `docs/handoffs/UX_CONNECT_PENDING_REF_KIND_20261121.md`.
+Finding: `parsePendingRef` accepts a valid bytes32 hash with arbitrary runtime `kind` values (e.g. `transactionHash`, `null`) and returns `ok: true`, although the exported pending-reference model supports only `txHash`, `safeTxHash`, and `userOpHash`. Exact-source-based isolated Node 22 reproduction failed the rejection expectation. Preserve valid paths, normalization, and malformed-hash handling.
+Ownership: all 188 open PR changed-file inventories inspected on current main; none changed `packages/ux-connect/src/`. Recheck if new PRs appear. A separate integration lock is held at generation 11 by `994a0d214fb9-root-r3`, and must not be changed or assumed released on expiry.
+Acceptance: fail a committed regression before the smallest fix; check rejected unexpected kinds and all three valid kinds plus adjacent hash validation; record exact source/commit hashes and hosted CI; no dependencies, new features, wallet submissions, network interactions, or merging without exact-head CI, independent review, browser gates where applicable, and legitimate lock ownership. Native repository checkout unavailable due to DNS failure; do not claim local Vitest.
+Status: ownership recorded; source edit pending.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
