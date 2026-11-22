@@ -216,7 +216,7 @@ function checkIcons(
       ic['purpose'] === undefined
         ? ['any']
         : typeof ic['purpose'] === 'string'
-          ? ic['purpose'].split(' ')
+          ? ic['purpose'].split(/[\t\n\f\r ]+/).filter(Boolean)
           : [];
     if (
       purposes.length === 0 ||
