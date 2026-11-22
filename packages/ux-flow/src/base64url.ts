@@ -25,7 +25,7 @@ export function b64urlEncode(bytes: Uint8Array): string {
  * @security Canonical-only decoding prevents malleable proof codes.
  */
 export function b64urlDecode(s: string): Uint8Array {
-  if (s.length % 4 === 1) throw new FlowError('PROOF_ENCODING');
+  if (typeof s !== 'string' || s.length % 4 === 1) throw new FlowError('PROOF_ENCODING');
   const out = new Uint8Array(Math.floor((s.length * 3) / 4));
   let acc = 0;
   let bits = 0;
