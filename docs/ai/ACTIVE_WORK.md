@@ -1,3 +1,15 @@
+# GP-BUG-20261122-01 — reject malformed UTF-16 in meta-address fingerprint (isolated)
+
+Worker: single ChatGPT BUG-ONLY coordinator; no separate independent reviewer exists in this execution.
+Base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`; branch `automation/20261122T0123Z/bug/meta-fingerprint-surrogate`.
+Owned paths: `packages/address-safety/src/meta.ts`, `packages/address-safety/src/meta.test.ts`, this additive ownership claim, and `docs/handoffs/META_FINGERPRINT_UTF16_20261122.md` only.
+Evidence: original `meta.ts` blob `dd5230c5a4416bd0f2d5a3a7e79e982eca38487f`; an unpaired UTF-16 surrogate and U+FFFD yield identical UTF-8 bytes through replacement encoding, so this text fingerprint does not distinguish the exact input strings. Independent Node 22 TextEncoder/SHA-256 source-equivalent reproduction recorded; full library execution not claimed yet.
+Acceptance: commit a failing regression before source fix; reject any unpaired high or low surrogate with existing `AddressSafetyError`; preserve valid astral pairs, ASCII and existing 4096-unit limit; no changes to hash algorithm, output, external dependencies, or addresses that are valid Unicode. Native repository tests where available; hosted exact-head CI and independent review required before integration.
+Ownership: examined changed-file lists for the 190 open PRs across GitHub REST pages 1 and 2; no PR modifies `meta.ts` or `meta.test.ts`. Existing broad PRs #372/#278/#264/#262/#238/#224 own `text.test.ts`/package metadata, which this task does not edit. Recheck newly opened/updated PRs before any integration.
+Integration: generation-11 `automation/ghostpay-integration-lock` is `held` by `994a0d214fb9-root-r3`; no lock takeover, main write, or merge authorized.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
