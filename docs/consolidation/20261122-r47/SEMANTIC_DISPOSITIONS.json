@@ -30,10 +30,10 @@
   },
   "summary": {
     "total": 547,
-    "finalized": 302,
-    "unresolved": 245,
+    "finalized": 303,
+    "unresolved": 244,
     "priorFinalized": 296,
-    "newlyFinalized": 6,
+    "newlyFinalized": 7,
     "newBranches": [
       {
         "branch": "automation/20261122-r11/bug/hygiene-bufferdust-runtime-types",
@@ -269,6 +269,28 @@
       "disposition": "owned new application fix, exact-head CI failed ts-typecheck; no merge qualification",
       "findings": "TS2556 packages/hygiene/src/buffer.runtime-types.test.ts:42-43; owner notified in issuecomment-7084918391",
       "ciRun": 45060690114
+    },
+    {
+      "ref": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "disposition": "audit-snapshot-only",
+      "evidence": "Complete 136-file source comparison against main showed only docs/automation/handoffs data/logs plus scripts/automation/integration-lock.mjs and scripts/tests/integration-lock.test.mjs, coordination tooling rather than beta browser/payment functionality; preserve ref and do not enable automation.",
+      "sourceUrl": "https://github.com/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "newlyFinalized": true
+    },
+    {
+      "ref": "repair/ghostpay-analyzer-recovered-20261119",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "disposition": "unresolved full nontruncated structural tree review",
+      "comparisonHead": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "donorBlobs": 4697,
+      "comparisonBlobs": 5762,
+      "identicalBlobs": 4461,
+      "differingSharedBlobs": 222,
+      "donorOnlyPaths": 14,
+      "ownerPr": 372,
+      "ownerComment": 7084942885,
+      "limitations": "No conclusion of behavioral equivalence, security clearance or merge qualification; unwired Mythril checker is not CI coverage."
     }
   ],
   "records": [
@@ -1070,9 +1092,9 @@
     {
       "branch": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
       "sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "source": "carried-verbatim-from-R44-classification",
+      "finalized": true,
+      "disposition": "audit-snapshot-only",
+      "source": "R47 complete uncapped 136-path comparison",
       "priorEvidenceRef": "docs/consolidation/20261122-r44/SEMANTIC_DISPOSITIONS.json#branch=automation%2F20261120T0115Z%2Fcoordinator%2Fcycle-checkpoint",
       "prHeads": [
         {
@@ -1083,7 +1105,12 @@
         }
       ],
       "sameShaOtherBranchPrHeads": [],
-      "divergence": null
+      "divergence": null,
+      "classificationEvidence": {
+        "notes": "Complete 136-file source comparison against main showed only docs/automation/handoffs data/logs plus scripts/automation/integration-lock.mjs and scripts/tests/integration-lock.test.mjs, coordination tooling rather than beta browser/payment functionality; preserve ref and do not enable automation.",
+        "url": "https://github.com/djshellshoxxx/GhostPay/compare/eb59d93cffed7848c4aac37d0e9650b87239c6da...77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+        "reviewedAtUtc": "2026-11-22T20:06:35.191Z"
+      }
     },
     {
       "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
@@ -11462,5 +11489,5 @@
       "updatedAt": "2026-11-04T00:23:22Z"
     }
   ],
-  "remainingWork": "245 branch histories require semantic classification; 59 historically capped donor histories remain not exhaustively reviewed; independent code/security/browser qualification and integration lock outstanding. Preserve owned BUG-only PR #480 and do not waive failed typecheck."
+  "remainingWork": "244 histories remain to classify (including 59 historical capped-donor candidates not exhaustively qualified). PR #372 retained unresolved security and contract-analysis gates; BUG-only #480 failed exact-head TypeScript. Held integration lock and independent review still block main integration."
 }
