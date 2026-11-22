@@ -76,7 +76,7 @@ describe('reject sparse policy arrays before trusted description/conversion', ()
       guardianThreshold: 1,
     }).ok).toBe(true);
     expect(codes({ ...base, guardians: [], guardianThreshold: 1 })).toContain('INVALID_THRESHOLD');
-    expect(codes({ ...base, guardians: [], guardianThreshold: undefined })).not.toContain('INVALID_THRESHOLD');
+    expect(codes({ ...base, guardians: [] })).not.toContain('INVALID_THRESHOLD');
     const scheme = toSchemePolicyInput(base);
     expect(scheme.limits).toHaveLength(1);
     expect(describePolicy(base).lines.some((line) => line.feature === 'spendLimit')).toBe(true);
