@@ -21,3 +21,13 @@ The four exact blob matches definitively establish *byte-for-byte* redundancy **
 Required follow-up: examine source-level diffs on `Pay.tsx`, `CreateInvoice.tsx`, and `securityKeys.ts`, compare missing regression cases against #372's children, confirm Firefox/WebKit native focus/retention behavior, privacy and metadata disposal semantics, and security contract. Record per-path equivalent/unique/dangerous disposition before any isolated reimplementation. The [v1](https://github.com/djshellshoxxx/GhostPay/commit/74dccc419bf5c82b21875d205ed5a97d0c4e69b6) candidate is an ancestor of v1.1; it is not an independent new donor for these identical path contents.
 
 No source modification, cherry-pick, contract deployment, real funds or release is authorized by this analysis.
+
+## Follow-up semantic line audit for the three large browser paths
+
+Against the same exact commit pair, compared the complete source files line-by-line after whitespace normalization (not a substitute for an executed regression):
+
+- `views/CreateInvoice.tsx`: **0 distinct v1.1-only nonempty lines**, **2 #372-only lines**: import and render the browser-only `PaymentRequestDownload` control. The earlier v1.1 screen behavior is therefore textually represented in the #372 file, plus a new local file-export entry.
+- `i18n/securityKeys.ts`: **0 distinct v1.1-only nonempty lines**, **26 #372-only lines** covering local payment-request-file translation labels and separate proof-retention labels. This is not a donor-only missing localization inventory.
+- `views/Pay.tsx`: **13 distinct v1.1-only lines** and **25 #372-only lines**, predominantly **replacements** rather than dropped workflow: the QR importer is extended with `PaymentRequestFileInput`, source-scoped error/review UI, camera-versus-file invalidation and stronger session origin tracking; `PaymentProofQr` gains a `sourceIdentity` to bind display retention. The original standalone QR import, proof display and source-specific review are still represented in changed forms. Must still run native-browser QR/file cancellation, cross-tab and proof-retention regressions before declaring functional equivalence.
+
+These three files are **provisionally already represented or superseded in #372 by source inspection**, so the earlier v1.1 versions are not independent safe copy-over candidates. That disposition is limited to those paths and does not discharge #372's Mythril, privacy, native-browser, CI or review gates. Source line differences can conceal behavioral changes; preserve focused negative tests and compare user-visible flows before integration.
