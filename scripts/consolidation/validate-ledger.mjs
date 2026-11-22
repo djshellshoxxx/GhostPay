@@ -29,6 +29,8 @@ export function validateLedger(data) {
   check(Array.isArray(data.records) && Array.isArray(data.openPrs), 'inventories missing');
   check(Array.isArray(data.provenance.branchPages) && data.provenance.branchPages.at(-1) === 0, 'branch pagination not exhausted');
   check(Array.isArray(data.provenance.prPages) && data.provenance.prPages.at(-1) === 0, 'PR pagination not exhausted');
+  check(data.provenance.branchPages.every(x => Number.isSafeInteger(x) && x >= 0 && x <= 100), 'invalid branch pagination');
+  check(data.provenance.prPages.every(x => Number.isSafeInteger(x) && x >= 0 && x <= 100), 'invalid PR pagination');
   check(data.provenance.branchPages.reduce((s, x) => s + x, 0) === data.records.length, 'branch page count inconsistent');
   check(data.provenance.prPages.reduce((s, x) => s + x, 0) === data.openPrs.length, 'PR page count inconsistent');
   check(Array.isArray(data.provenance.branchIdentityMismatches) && data.provenance.branchIdentityMismatches.length === 0,
