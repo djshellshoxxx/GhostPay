@@ -1,3 +1,10 @@
+# R31 scoped regression repair: wallet journal read-back test type-check (2026-11-22 UTC)
+
+- Worker: consolidation coordinator; task branch `repair/ghostpay-r31-journal-readback-test-typecheck-20261122` stacked on PR #441 at exact `3c21b02194c97c41e6efaffead5520b10697f229`, which itself stacks on #440 and #427.
+- Owned paths: isolated correction to `apps/web/src/lib/walletJournal.readbackRegression.test.ts`; append-only claim here; new docs handoff. Do not change parent's branches, app runtime, signing, contract, custody, release or configuration.
+- Defect evidence: exact-head #441 Actions ts-typecheck job 137099544458 and hosting build job 137099544595 report TS2345 at test lines 45 and 55 because `WalletAttemptOptions.kind` is required but omitted by both test calls.
+- Acceptance: add the mandatory `kind: 'transaction'` only at both options call sites, keep existing wallet mock, post-broadcast read-back failure cases and strong error assertions intact; qualify exact child head with hosted TypeScript/build/test checks. Do not claim independent approval; leave stack unmerged until prior PRs and gate checks qualify.
+
 # GP-BUG-20261122-JH — reject malformed wallet completion hashes with a typed journal error
 
 Cycle and worker: `20261122T0438Z` / one sequential ChatGPT coordinator (bug implementation, bounded source audit, and integration triage); no separate native agent, independent verifier, or Caveman runtime available.
