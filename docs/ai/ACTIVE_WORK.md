@@ -771,3 +771,16 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG-R11 — Reject non-bigint runtime buffer-dust inputs (2026-11-22)
+
+- Worker: GhostPay BUG-ONLY automation, single coordinator; no genuinely separate independent reviewer available.
+- Branch: `automation/20261122-r11/bug/hygiene-bufferdust-runtime-types`; exact live-main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Exclusive owned paths: `packages/hygiene/src/buffer.ts`, new `packages/hygiene/src/buffer.runtime-types.test.ts`, this additive ownership claim and new `docs/handoffs/HYGIENE_BUFFERDUST_RUNTIME_TYPES_20261122.md`. Existing `buffer.test.ts` remains untouched.
+- Reproduction: exact original Git blobs `buffer.ts@b315a0c8feb0325bf16bd495b764f5c559da4494` and `errors.ts@bd65796a7d14831d16aadd57f7009428b5d8bfef`, locally compiled with TypeScript 5.8.3 and executed under Node 22.16.0. `bufferDust(false, 2n, 3n)` and `bufferDust(NaN, 2n, 3n)` silently returned `0n`; numeric/string paid values and non-bigint gas/price inputs threw untyped native `TypeError` instead of `HygieneError('INVALID_INPUT')`.
+- Acceptance: commit a failing focused regression before source repair; reject all non-bigint runtime inputs with existing `INVALID_INPUT` code; preserve non-negative bigint dust subtraction, saturation and existing negative-input errors. No new dependencies, new features, real network/fund interaction, deployment, release or merge without all qualification gates.
+- Ownership: inspected changed-file inventories of all 238 PRs open in 2026-11-22 live three-page snapshot; none changed either owned source/test path. PR #372 owns `hygiene/src/ledger.ts` and was explicitly avoided. Reinspect at later integration.
+- Coordination: check PR #390 exact-head workflows and separate review gate; integration ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains `held` generation 11 by another coordinator. Do not acquire, release or merge.
