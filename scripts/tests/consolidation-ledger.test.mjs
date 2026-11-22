@@ -88,3 +88,25 @@ test('rejects internal pagination holes, repeated terminators, and intermediate 
   partial.provenance.branchPages = [1, 1, 0];
   assert.throws(() => validateLedger(partial), /invalid branch pagination sequence/);
 });
+
+test('requires explicit local or fork repository identity for each PR head', () => {
+  const s = fixture();
+  delete s.openPrs[0].headRepo;
+  s.records[1].prHeads = [];
+  assert.throws(() => validateLedger(s), /head repository/);
+  const blank = fixture();
+  blank.openPrs[0].headRepo = 'other';
+  blank.records[1].prHeads = [];
+  assert.throws(() => validateLedger(blank), /head repository/);
+});
+test('cannot finalize security-blocked, unsafe or unintegrated unique histories', () => {
+  for (const disposition of ['unsafe-payment-history', 'blocked-security-review',
+    'unique-eligible', 'unique-but-incomplete', 'needs-semantic-review']) {
+    const s = fixture();
+    s.records[1].finalized = true;
+    s.records[1].disposition = disposition;
+    s.summary.finalized = 2;
+    s.summary.unresolved = 0;
+    assert.throws(() => validateLedger(s), /cannot be finalized/, disposition);
+  }
+});
