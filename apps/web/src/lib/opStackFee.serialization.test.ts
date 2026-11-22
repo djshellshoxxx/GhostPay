@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { mockRpc } from '../test/mockRpc';
-import { UserFacingError } from './errors';
 import { sweepFeeReserve, type SweepTxFields } from './opStackFee';
 
 const OP_STACK_TX: SweepTxFields = {
@@ -24,7 +23,7 @@ describe('OP Stack fee-reserve serialization failures', () => {
     await expect(sweepFeeReserve(rpc, { ...OP_STACK_TX, ...fields })).rejects.toMatchObject({
       name: 'UserFacingError',
       translation: { key: 'error.sweep.couldNotReadTheL1DataFeeFromThisChain' },
-    } satisfies Partial<UserFacingError>);
+    });
     expect(rpc.calls).toHaveLength(0);
   });
 
