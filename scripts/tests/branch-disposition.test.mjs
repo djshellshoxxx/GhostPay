@@ -42,12 +42,12 @@ test('pagination includes last full page and validates the terminating empty pag
 });
 
 test('audit is source-pinned, PR-aware, resumable and detects stale branch heads',async()=>{
-  const m=S('a'),h=S('b'),t=S('c'),record=S('d'); let head=h, lookups=0;
+  const m=S('a'),h=S('b'),t=S('c'),record=S('d'); let head=h, lookups=0, prOpen=true;
   const read=async(route)=>{
     if(route.endsWith('/git/ref/heads/main'))return {object:{sha:m}};
     if(route.endsWith('/git/ref/heads/topic')) return {object:{sha:head}};
     if(route.includes('/branches?'))return route.includes('page=1')?[{name:'main',commit:{sha:m}},{name:'topic',commit:{sha:h}}]:[];
-    if(route.includes('/pulls?')) return route.includes('page=1')?[{number:6,title:'fix',head:{ref:'topic',sha:h,repo:{full_name:'o/r'}},base:{ref:'main'},draft:true,state:'open'}]:[];
+    if(route.includes('/pulls?')) return route.includes('page=1') && prOpen?[{number:6,title:'fix',head:{ref:'topic',sha:h,repo:{full_name:'o/r'}},base:{ref:'main'},draft:true,state:'open'}]:[];
     if(route.includes('/compare/'))return {status:'ahead',ahead_by:1,behind_by:0,merge_base_commit:{sha:m},files:Array(300).fill({filename:'dummy'})};
     if(route.includes(`/git/commits/${m}`))return {tree:{sha:t}};
     if(route.includes(`/git/commits/${h}`))return {tree:{sha:record}};
@@ -61,6 +61,10 @@ test('audit is source-pinned, PR-aware, resumable and detects stale branch heads
   assert.equal(first.records[1].completeTree,true);assert.equal(first.records[1].openPrs[0],6);
   const resumed=await audit({read,repo:'o/r',prior:first});
   assert.equal(resumed.scannedThisRun,0);assert.equal(lookups,1);
+  prOpen=false;
+  const closed=await audit({read,repo:'o/r',prior:first});
+  assert.equal(closed.scannedThisRun,0);
+  assert.equal(closed.records[1].disposition,'unique-needs-review');
   head=m;
   const changed=await audit({read,repo:'o/r'});
   assert.equal(changed.records[1].disposition,'scan-error');
