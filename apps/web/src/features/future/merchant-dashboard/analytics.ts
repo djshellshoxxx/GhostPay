@@ -113,6 +113,7 @@ export function summarizeDashboardProjection(
     const final = exactTotal(row['finalAtomic']);
     const pending = exactTotal(row['pendingAtomic']);
     const late = exactTotal(row['lateFinalAtomic']);
+    const evidenceRefs = denseArray(row['evidenceRefs'], 50_000);
     const state = row['state'] as DashboardState;
     const key = groupKey(chainId, assetId);
     const counts = groups.get(key) ?? {
@@ -130,7 +131,7 @@ export function summarizeDashboardProjection(
     if (pending > 0n || state === 'pending') counts.pendingInvoices++;
     if (final > 0n && final < expected) counts.partiallyPaidInvoices++;
     if (late > 0n) counts.latePaymentInvoices++;
-    if (REVIEW_STATES.has(state)) counts.reviewRequiredInvoices++;
+    if (REVIEW_STATES.has(state) && (state !== 'unknown' || evidenceRefs.length > 0)) counts.reviewRequiredInvoices++;
     counts.expected += expected; counts.final += final; counts.pending += pending; counts.late += late;
     groups.set(key, counts);
     assertDashboardCurrent(identity, context);
