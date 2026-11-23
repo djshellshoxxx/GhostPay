@@ -1,3 +1,14 @@
+# GP-BUG R12 — accept canonical HTTPS origins with maximum DNS host and explicit port (2026-11-23 UTC)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential test-first repair (no independent review asserted).
+Branch: `automation/20261123/bug/ux-flow-origin-port-length-r12`; exact `main` base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-flow/src/ret.ts`, new `packages/ux-flow/src/ret.origin-port.test.ts`, this additive registry entry, and new `docs/handoffs/UX_FLOW_ORIGIN_PORT_LENGTH_20261123.md`. Do not edit preexisting `ret.test.ts` or other worker files.
+Reproduction: `canonicalOrigin()` claims to accept exact WHATWG `new URL(x).origin` strings, but its pre-parse `253 + 8` size cap excludes a valid 253-character DNS host with explicit five-digit HTTPS port (267 characters total). On Node v22.16.0, `new URL(origin).origin === origin`, but GhostPay rejects it as null; this also disables valid return-to-merchant origins in `isAllowedReturn()` / `buildReturnUrl()`. This is a source-equivalent reproduction, not a repository Vitest run.
+Acceptance: commit a failing regression BEFORE production repair; correct only this origin-length arithmetic while preserving the bounded input policy, protocol/authority/userinfo checks and existing short-origin behavior; run baseline repaired regression and adjacent cases with actual results recorded; request hosted exact-head CI and independent review before merge. No new features, network calls, real funds, contracts, dependencies, or deployment.
+Coordination: all 250 open PR changed-file inventories were checked at discovery; no existing PR changes either owned source or new test file (broad #238/#246/#262/#264/#278/#372 included). PR #390 head `b655bc273a6704c9c140287b8adcdf4085b91882` has five successful hosted workflows but no submitted independent review; do not touch its branch. Separate integration metadata branch `automation/ghostpay-integration-lock` is status `held` generation 11 by owner `994a0d214fb9-root-r3`; never take over or merge without explicit legitimate lock ownership. Native checkout of github.com fails due DNS resolution.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
