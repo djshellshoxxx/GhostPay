@@ -222,6 +222,14 @@ Owned paths: `apps/web/src/lib/qrClassify.ts`, new `apps/web/src/lib/qrClassify.
 Finding: current classifier's text/UTF-8 cap and forbidden-control check allow raw isolated UTF-16 surrogate units to reach the settings JSON envelope detector; JSON parsing accepts a literal isolated surrogate, although `TextEncoder` lossily converts it to U+FFFD and the existing QR encoder rejects it. This is a bounded intake-classification correctness issue, not a demonstrated funds-loss or key-exposure exploit.
 Acceptance: reject isolated high/low surrogate inputs with the existing fixed `unknown/malformed` reason, including recognised settings-shaped JSON; preserve valid supplementary Unicode pairs and normal accepted QR families; never return payload data or add dependencies; add regression-first Vitest tests. Run source-equivalent Node checks and exact-head hosted CI where available. Scope does not include signer/expiry policy, QR source rewriting, or broadened backend products.
 Ownership: targeted open-PR query for `qrClassify`/malformed Unicode QR classifier returned none; broader consolidations remain active and unqualified, so recheck file overlap and head SHAs before any integration. Integration metadata branch `automation/ghostpay-integration-lock` observed `held`, generation 11, owner `994a0d214fb9-root-r3`; expiry is not release authority. No shared ledger, lock, or main edits allowed here.
+# GP-BUG — Strict custom-profile identification for imported settings (2026-11-22)
+
+Worker: ChatGPT bug-only coordinator, sequential implementation and source-equivalent verifier; no independent native reviewer.
+Branch: `automation/20261122-r6/bug/ux-guide-detect-exact-settings`; exact main baseline: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-guide/src/profiles.ts`, new `packages/ux-guide/src/profiles.exact.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim and `docs/handoffs/UX_GUIDE_PROFILE_EXTRA_KEYS_20261122.md` only.
+Finding: `detectProfile` documents exact settings equality but compares only the eight known settings. Imported settings with additional own JSON fields are mislabeled as standard profiles instead of `custom`. Baseline source-equivalent Node 22 reproduction fails the expected `custom` assertion.
+Acceptance: test-first regression demonstrating extra own settings fields are non-exact; retain exact built-in profile matches and custom classification of modified/missing fields; smallest production fix; no changes to questionnaire scores, defaults or public APIs. The inventory of 209 open PRs found no path collisions with the two source/test files; recheck before integration.
+Coordination: metadata-only generation-11 lock is held by another coordinator (`994a0d214fb9-root-r3`); do not alter lock, main, other workers' branches or release. GitHub exact-head CI, independent review, and any applicable browser qualification required before any merge.
 
 ---
 
