@@ -29,7 +29,10 @@ export function estimateCrowd(i: CrowdEstimateInput): { readonly A: number; read
   if (typeof e !== 'number' || !Number.isFinite(e) || e < 0) fail('INVALID_INPUT', 'eventsPerDay');
   if (typeof w !== 'number' || !Number.isFinite(w) || w <= 0) fail('INVALID_INPUT', 'windowDays');
   if (typeof b !== 'number' || !Number.isFinite(b) || b < 1) fail('INVALID_INPUT', 'amountBuckets');
-  const A = (e * w) / b;
+  // Preserve representable estimates when the intermediate product overflows.
+  const product = e * w;
+  const A = Number.isFinite(product) ? product / b : (e / b) * w;
+  if (!Number.isFinite(A)) fail('INVALID_INPUT', 'crowd estimate out of range');
   const label: CrowdLabel = A < 2 ? 'none' : A < 10 ? 'tiny' : A < 100 ? 'small' : 'larger';
   return { A, label };
 }

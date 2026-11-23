@@ -347,6 +347,15 @@ Coordination: inspected all 241 live open PR changed-file inventories (three pag
 - Active ownership: checked source paths of PRs #238/#262/#264/#278/#293/#307/#372/#418/#437/#471/#479/#482/#485/#487; none changed these two exact theme paths. Recheck current PRs/heads before any integration. PRs #278/#372 remain broad owners of unrelated sources.
 - Integration lock: ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11 `held` by another coordinator; no takeover or merge, even after expiry.
 - Verification: local `git ls-remote` cannot resolve github.com. Use actual hosted exact-head tests; source-equivalent Node demonstration is not repository Vitest. Independent review is mandatory before merge.
+# GP-BUG — Fix overflow-distorted amount-blur crowd labels (2026-11-22)
+
+Worker: ChatGPT BUG-ONLY hourly engineering run (single coordinator; no independent verifier available).
+Branch: `automation/20261122T1818Z/bug/amount-blur-crowd-overflow-r11`, starting exact live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/amount-blur/src/meter.ts`, new `packages/amount-blur/src/meter.overflow.test.ts`, this additive work claim and `docs/handoffs/AMOUNT_BLUR_CROWD_OVERFLOW_20261122.md`. No other runtime source/test changes authorized.
+Observed failure: with finite `eventsPerDay=Number.MAX_VALUE`, `windowDays=2`, `amountBuckets=Number.MAX_VALUE`, `estimateCrowd` computes `Infinity` because it multiplies before dividing; the mathematically representable estimate is 2 and its label must be `tiny` rather than `larger`. On unrepresentable estimates, the existing typed `INVALID_INPUT` failure contract must be preserved instead of returning an infinite A. Verified in Node 22 standalone arithmetic; native repo checkout is unavailable.
+Acceptance: regression committed before production repair; preserve all finite ordinary inputs and threshold labels; avoid overflow-distorted labels when the true result is representable; reject truly infinite estimates with existing error code; no dependencies, feature work, network, payments, deployments or CI changes. Preserve existing `meter.test.ts` owned by no one, untouched.
+Ownership: paginated 247 open PRs and their actual changed-file inventories checked at selection. None owns any `packages/amount-blur/src/` paths; broad PRs #238/#262/#264/#278/#372 only change amount-blur package.json, not source. Reconfirm before integration. PR #390 at `b655bc273a6704c9c140287b8adcdf4085b91882` has all five workflow groups green and zero submitted independent reviews; do not modify its owner branch.
+Integration: externally held generation-11 `automation/ghostpay-integration-lock` lease observed at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; no lock takeover/merge. Exact-head required CI, applicable browser validation and independent review remain gates.
 
 ---
 
