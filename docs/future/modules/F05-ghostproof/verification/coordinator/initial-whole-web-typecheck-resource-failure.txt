@@ -1,0 +1,13 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+Killed
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 137
+npm error path /workspace/scratch/db9ec5207fdd/GhostPay-f05/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/db9ec5207fdd/GhostPay-f05/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

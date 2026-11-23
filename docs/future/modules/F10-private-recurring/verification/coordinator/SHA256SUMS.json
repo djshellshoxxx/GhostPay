@@ -1,0 +1,10 @@
+{
+  "artifact-comparison.json": "20733ffe5ccc9406e22b1a82673a6ba1b63a2aea0804132781405eb636f75668",
+  "f10-current-main-bundle-scan.txt": "c452aee64ab496a3598c33571ea89104c3a5bd96a8a05b6a1601a745920fcdac",
+  "f10-current-main-focused-tests.txt": "d9ca9dd2827c05e1d80b9adfd8737acdf405ce374e25c11e3674b2f8c0b6880d",
+  "f10-current-main-lean-build.txt": "cb7a7fcd5f562a3a29e4816a6fbae70ab93311a2fdf9fb7cd01351362120967f",
+  "f10-current-main-web-typecheck.txt": "c62aad16261b67f1a1d9ecb3120b930b359079f3b9f748de0103e23576e07ad5",
+  "f10-final-coverage.txt": "ff8e97d97593982a3f32d4f18bb5c57e499e8a9a345310247ac8a68996aa6210",
+  "f10-scoped-lint-coordinator.txt": "7bf8cb25e9e25c64d73d658c59a911dcd085280801259586e0017dc6c923ad1f",
+  "f10-scoped-typecheck-coordinator.txt": "23614e76154f88cc768004973bc0ffca63297cb9101c037577349d4f519415dc"
+}

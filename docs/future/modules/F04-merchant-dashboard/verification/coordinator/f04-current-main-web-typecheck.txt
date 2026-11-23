@@ -1,0 +1,5 @@
+Head: 19b47216b1c41653913196dd231f40faaa2d76a1
+Main: aa3df1cb37274fae73af0ca957183c15c51b62d3
+Command: ["node", "../../node_modules/typescript/bin/tsc", "-p", "tsconfig.json", "--noEmit"]
+
+Exit: 0; seconds: 22.37
