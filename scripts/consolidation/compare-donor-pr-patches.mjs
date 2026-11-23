@@ -18,6 +18,8 @@ function parsePatch(text, label) {
       throw Error(label + ': incomplete or invalid hunk');
     if (!current.lines.some(line => line[0] === '+' || line[0] === '-'))
       throw Error(label + ': no edited lines');
+    if (!current.lines.some(line => line[0] === ' '))
+      throw Error(label + ': missing unchanged context');
     hunks.push(JSON.stringify(current.lines));
   }
   for (const line of lines) {
