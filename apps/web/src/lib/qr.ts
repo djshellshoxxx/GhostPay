@@ -61,10 +61,32 @@ export function qrViewSize(m: QrMatrix): number {
   return m.size + QUIET * 2;
 }
 
+/**
+ * Capture the caller's matrix into a bounded, numeric-only snapshot before formatting SVG attributes.
+ * Validation and rendering must not observe different values from getters, proxies or mutable sources.
+ */
+function snapshotQrMatrix(m: QrMatrix): QrMatrix {
+  const size = m.size;
+  if (!Number.isSafeInteger(size) || size < 1 || size > 177) {
+    throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
+  }
+  const dark = m.dark;
+  const count = size * size;
+  if (dark.length !== count) throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
+  const modules: boolean[] = [];
+  for (let i = 0; i < count; i++) {
+    const module = dark[i];
+    if (typeof module !== 'boolean') throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
+    modules.push(module);
+  }
+  return { size, dark: modules };
+}
+
 /** Standalone SVG file text for download (built by string concatenation of numbers and a fixed path, no user text). */
 export function qrSvgText(m: QrMatrix): string {
-  const n = qrViewSize(m);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(n)} ${String(n)}" width="${String(n * 6)}" height="${String(n * 6)}" shape-rendering="crispEdges"><rect width="${String(n)}" height="${String(n)}" fill="#fff"/><path fill="#000" d="${qrPath(m)}"/></svg>`;
+  const stable = snapshotQrMatrix(m);
+  const n = stable.size + QUIET * 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(n)} ${String(n)}" width="${String(n * 6)}" height="${String(n * 6)}" shape-rendering="crispEdges"><rect width="${String(n)}" height="${String(n)}" fill="#fff"/><path fill="#000" d="${qrPath(stable)}"/></svg>`;
 }
 
 // i18n-use: error.qr.thisLinkIsTooLongForAQRCodeShare error.qr.invalidQRMatrix error.qr.invalidText

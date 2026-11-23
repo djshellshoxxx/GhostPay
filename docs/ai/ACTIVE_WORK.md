@@ -1341,3 +1341,14 @@ Observed issue: `buildRequest` accepts non-finite, negative, fractional, or unsa
 Acceptance: commit failing regression **before** source edit; test bad clocks, expiry, valid boundary and subsequent `sweepExpired`; reproduce from source-equivalent logic; after repair run targeted available checks and hosted exact-head CI, not claim repository tests without checkout. No dependencies, contracts, traffic, funds, deployment, release or main integration.
 Ownership: paginated 228 open PR inventory checked at discovery, all 228 changed-file inventories checked for `wcsession.ts` or the new test (0 direct collisions). #430 owns `compat.ts` not this file; broad #278/#264/#262/#372 also do not change either owned path. Other-worker held integration lock (generation 11) is not owned or modified; leave PR draft until all gates and independent review are met.
 Status: claimed, regression and repair not yet committed.
+
+---
+
+# GP-QR-SVG-01 — snapshot validated QR matrix before SVG interpolation (2026-11-22 UTC)
+
+- Cycle and worker: `20261122T1440Z`, one sequential root coordinator/implementer; native independent workers unavailable in this invocation.
+- Isolated branch: `automation/20261122T1440Z/bug/qr-svg-matrix-snapshot`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `apps/web/src/lib/qr.ts`, new `apps/web/src/lib/qrSnapshot.test.ts`, additive claim here, and `docs/handoffs/QR_SVG_MATRIX_SNAPSHOT_20261122.md`.
+- Finding: `qrSvgText` interpolates `qrViewSize(m)` into SVG attributes before `qrPath(m)` validates `m.size`. A getter returning a string on its first access and a valid size on later accesses produces an SVG with caller-influenced extra attributes, despite the intended numeric-only SVG contract. A getter/Proxy-backed `dark` may also change between validation and drawing. Source-equivalent Node 22 reproduction, not evidence of remote/browser exploit. No external ingress confirmed.
+- Acceptance: regression-first tests showing the baseline failure; read size and module booleans into an independent bounded snapshot once before SVG interpolation; preserve output for normal matrices and malformed-input errors; run focused checks, keep static Pages behavior, no new dependencies or policies. Do not touch the previously owned QR-classifier, multipart, invoice/secret/recovery paths.
+- Ownership and integration: checked #278/#262/#264/#372 and recent focused QR #447 along with #293/#390/#449/#450/#452/#463/#468/#472 changed-file lists, no `qr.ts` ownership observed in bounded check. Other uninspected PRs remain potentially active; recheck before integration. Integration lock `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`: never take over from expiry; no shared/main merges.
