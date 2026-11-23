@@ -1,3 +1,13 @@
+# GP-BUG R12 — gracefully reject unreadable injected fiat quotes (2026-11-23)
+
+Worker: single BUG-ONLY automation coordinator. Task branch: `automation/20261123/bug/ux-fiat-quote-accessor-r12`; current main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Claimed production path: `packages/ux-fiat/src/view.ts`; dedicated regression path: `packages/ux-fiat/src/view.quote-accessor.test.ts`; additive claim in this registry and new `docs/handoffs/UX_FIAT_QUOTE_ACCESSOR_R12_20261123.md`. Preserve other contributors' files and branches.
+
+Confirmed defect: injected `RateQuote` contains a throwing property getter (asset/fiat/rate/timestampMs/source). `computeFiatView` states that it never throws and must return `invalid` for a malformed quote, yet uncaught `parseRate` property reads throw and escape the display computation. Verbatim `view.ts` source at Git blob `74f791587a6eba3cce0e7a4be98d7085196ffc4b`, compiled with isolated dependency doubles, produced five thrown getter cases and an unaffected valid case under Node 22.16.0/TS 5.8.3. No full checkout or native repository Vitest claim; github.com DNS unavailable locally.
+
+Acceptance: regression-first deterministic getter/Proxy cases, mapped to existing `bad-rate-format` invalid state; preserve good quote, ordinary malformed quote, no-rate, and stale/future semantics. Smallest exception boundary around parser for untrusted quote. No new interfaces, dependencies, networking, payment, custody, contract, release or deployment work. Preflight reviewed all 265 open PR changed-file inventories (snapshot through PR #510); none owns either selected path. PR #390 stays owner-controlled, five exact-head workflows passed with independent review absent and mergeable=false. Integration metadata lock `automation/ghostpay-integration-lock` generation 12 released at SHA `082e754f44944ebb4be283f89176b966bf8f7b4f`, not acquired. Required gates: exact-head hosted CI/browser if applicable, genuine independent review, updated ownership and legitimate integration lease before merge.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
