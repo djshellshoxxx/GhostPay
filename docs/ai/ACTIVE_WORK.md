@@ -1,3 +1,12 @@
+# BUG-ONLY R13 — reject duplicate Accept-Language q parameters (2026-11-23)
+
+Worker: one ChatGPT coordinator, sequential source review and regression-first implementation; no independent verifier available. Branch: `automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/i18n/src/negotiate.ts`, new `packages/i18n/src/negotiate.duplicate-q.test.ts`, this additive claim, and new `docs/handoffs/I18N_DUPLICATE_LANGUAGE_Q_R13_20261123.md`.
+Observed defect: `parseAcceptLanguage('en;q=0;q=1,fr;q=0.5')` incorrectly permits `en` because successive valid `q` parameters overwrite one another. Multiple qweights on one language range are malformed; accepting the last value can revive a q=0-excluded language. Acceptance: reject an entry with duplicate qweights, retain all normal single-q, q=0, quality ordering, header/entry caps and invalid-entry handling. No new features, dependencies, UI, network, contracts, fund interaction, release, or deployment.
+Ownership: inspected live open PR inventory including broad source PRs #278/#262/#264/#307/#372 and #504, and targeted i18n/security PRs #368/#249/#211/#218/#219/#222/#310/#224; none modified selected files. Not a claim of exhaustive 260-PR path review. Reinspect before integration. PR #390 exact head `b655bc273a6704c9c140287b8adcdf4085b91882` succeeded 5 workflows; no independent review; head dirty against current main; owner untouched. Integration lock `automation/ghostpay-integration-lock` generation 12 released; no lock ownership acquired. Require exact-head CI, appropriate browser checks, independent review and legitimate integration authorization before merge.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
