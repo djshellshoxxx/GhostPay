@@ -1,3 +1,12 @@
+# BUG-ONLY R11 — Reject fabricated CryptoKey records before preset operations (2026-11-23)
+
+Worker: one ChatGPT sequential implementer/reviewer (no separate independent verifier available). Isolated branch: `automation/20261123/bug/ux-presets-real-cryptokey-r11`; exact baseline main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-presets/src/seal.ts`, NEW `packages/ux-presets/src/seal.cryptokey-boundary.test.ts`, NEW `docs/handoffs/UX_PRESETS_CRYPTOKEY_AUTHENTICITY_R11_20261123.md`, and additive claim only in this file. No other owned paths. All 263 open PR changed-file inventories (100+100+63 snapshot, through #508) checked; none touches either selected production or dedicated test path. Recheck before integration; older claims remain respected.
+Confirmed source-executed failure: `resolveKey()` accepts an ordinary object mimicking `CryptoKey` fields (`type: secret`, AES-GCM/256 `algorithm`, encrypt/decrypt `usages`) and returns `ok`, despite no native key object. The next encryption/decryption cannot use that result. Source Git blob: `4f444ee01734d4135887d0a45c401c67b02295da`; observed via extracted original function body in V8 with TypeScript annotations removed. No RPC, funds, contracts or real wallet involved.
+Acceptance: commit a failing Vitest regression before modifying `seal.ts`; reject plain fabricated records with the existing `bad-key` result; preserve genuine WebCrypto AES-GCM-256 key acceptance, 32-byte import and wrong-key rejection. Check targeted source-exact before/after reproduction and hosted exact-head GitHub CI; do not claim local full repository tests without a checkout. No dependencies/features/UX change. Require independent review, browser checks if applicable and legitimate integration lease ownership before merge. PR #390 remains owner controlled; its exact-head five workflow groups GREEN, no submitted independent review, mergeable=false, no edits in this cycle. Generation-12 lock is released but never acquired by this worker. No merge, release or deployment.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
