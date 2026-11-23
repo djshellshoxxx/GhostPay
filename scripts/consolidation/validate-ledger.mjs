@@ -45,6 +45,10 @@ function validPageSequence(pages) {
 }
 
 const NONFINAL_DISPOSITION = /^(?:unresolved|newly-discovered|new-owned|owned-tooling|advanced-head|pending-|unsafe(?:-|$)|blocked(?:-|$)|unique(?:-|$)|needs-)|review-required|needs-semantic-review/i;
+// A previously flagged high-risk history must not shed its visible warning
+// merely by changing an unresolved disposition to a generic queue label.
+// Explicit, source-pinned requalification is required even without a SHA change.
+const HIGH_RISK_DISPOSITION = /(?:^|[-_])(?:unsafe|blocked|p0)(?:[-_]|$)/i;
 
 // Offline checkpoint invariant checks. This utility never reads or writes live GitHub refs.
 export function validateLedger(data) {
@@ -263,6 +267,19 @@ export function validateLedgerTransition(current, previous) {
     }
     if (row.finalized && !successor.finalized)
       check(false, `finalized classification regressed: ${name}`);
+    if (name !== 'main' && !row.finalized && !successor.finalized &&
+        row.disposition !== successor.disposition &&
+        HIGH_RISK_DISPOSITION.test(row.disposition)) {
+      const proof = successor.evidence?.riskDispositionReview;
+      check(object(proof) &&
+        proof.previousDisposition === row.disposition &&
+        proof.newDisposition === successor.disposition &&
+        proof.checkedDonorSha === successor.sha &&
+        validSha(proof.comparedWithSha) &&
+        typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
+        typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
+        `unresolved high-risk disposition changed without requalification: ${name}`);
+    }
     // An already-finalized donor may not silently change what "finalized"
     // means. Correcting a prior classification is allowed only with renewed,
     // source-pinned evidence covering both dispositions and the examined SHA.
