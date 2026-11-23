@@ -1,0 +1,28 @@
+# GhostPay R56 — executable engineering handoff
+
+**Prepublication complete census:** 2026-11-23T05:00:30.549Z UTC. Protected `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`, independently checked via live Git ref. Existing owned branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z` / draft PR #471; inspect the final PR HEAD after this handoff commit, not the snapshot HEAD.
+
+## Exact evidence and count continuity
+
+- All live branches paged `100/100/100/100/100/61/0 = 561`, checked against independent `git/matching-refs/heads/`: 561/561 name/SHA matches, zero mismatches. All open PRs paged `100/100/53/0 = 253`; 95 stacked PRs. The full latest identity, ref/PR ownership, SHA overlays and preserved older semantic evidence are in [R56 ledger](SEMANTIC_DISPOSITIONS.json).
+- Prior R55: 559 live branches, 311 finalized live, 248 unresolved live, plus 2 deleted-unmerged unresolved. R56: **561 live; 311 finalized, 250 unresolved live; 2 retired unresolved; global unresolved 252.** Added only BUG-owned #495 and #496 heads; no new final disposition. No live ref disappeared.
+- New: `automation/20261123T0441Z/bug/eip3770-registry-guard` at `920a9ffe366dedc727d5e33b57c455cbcccde6af` (PR #496), `automation/20261123/bug/intake-invoice-default-port-r11` at `a8b10c12db402b6ab2dd2f41bd605327056d287d` (PR #495). Both are owner-held, four-commit, four-changed-path direct main descendants; not duplicated or merged here.
+- Existing PR #471 head advanced from prior R55 `3f5537ac1d7af8d8fc76400db67c5be5bef9d8fa` to test-repair `2ce61ee8962bcc4db17ccd85fa338befb9606b25`, followed by ledger commit `8181ddc89c3b02849c9a1d8f96af9d3bbd5ab189` and source-triage commit `3f2e9e50758624db39b0799cb483cff1419afb41`. The versioned ledger explicitly describes its prepublication census. Re-census new writers next run.
+- Historical tombstones `dependabot/github_actions/actions-b9ade1236b` and `dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c` remain unresolved, without claiming deletion equals integration. Preserved R55 404 and independent-ref absence evidence; current complete ref census still lacks both.
+
+## Real code change and observed verification
+
+The R55 exact-head CI [45110797247](https://github.com/djshellshoxxx/GhostPay/actions/runs/45110797247) finished **failure**: `ts-test (rest-0)` was 259 passed / 1 failed, with transition test `scripts/tests/consolidation-ledger.test.mjs:351`. Setting a retired entry `finalized=true` while leaving `summary.globalUnresolved=1` violated the standalone global-count invariant before reaching the intended historical transition mismatch assertion. Gated `typescript` failed downstream due to `ts-test (rest-0)`. This was not a real TypeScript compiler failure.
+
+**Actual repair commit `2ce61ee8962bcc4db17ccd85fa338befb9606b25`:** updated the falsely-finalized fixture so `summary.globalUnresolved=0` and the intended `retired history prior state mismatch` validator is exercised. Only the owned consolidation regression test was changed. Source commit and GitHub blob SHA `3958d328a0d628c6fa9ea1e1c28ffbda77a8d3d1` verified. Exact new final-head CI remains to be verified; prior green R54 and R53 CI do not qualify this change. Checkout to local Node executor failed DNS (github.com), so no native local Node/E2E claim.
+
+## Targeted recovery beyond a census
+
+Compared two nontruncated historical security branches to current main, verified ancestor/descendant ancestry and examined actual `sweep.ts`, `txGuard.ts`, `rpc.ts`, `logs.ts` and relayer secrets against main. [R56 source-level security triage](SECURITY_DONOR_SOURCE_TRIAGE.md) records immutable blob hashes, identified already-recovered strengthened shared secret loader, and unsafe historical sweep-lock replacement semantics. Historical `claude/gifted-planck-115x2k` and `codex/ghostpay-security-audit-20261030` **remain unresolved** until all test and source differences are assessed; no premature consolidation or unsafe cherry-pick. Their older 12/15 changed-path comparisons are **not** truncated.
+
+## Ownership, qualification and next actions
+
+- Gen-11 integration lock remains `held` at exact ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, owned by `994a0d214fb9-root-r3`, even though timestamp expired. Main branch protection REST read returned 403. Neither expiry nor repository admin-looking metadata authorizes lease takeover or protected-main merging. BUG-only #495/#496 and recovery/security owners are untouched.
+- Existing recovery PR #372 is draft and owner-held, with unresolved contract-analysis/Mythril qualification. Never claim the Tor correction or any CI success alone resolves contract safety. No independent approval for #471.
+- Next executable work: fetch PR #471 current final head, inspect exact-head CI/failed-job logs; run the native test `node --test scripts/tests/consolidation-ledger.test.mjs` and the two-ledger validation `node scripts/consolidation/validate-ledger.mjs docs/consolidation/20261123-r56/SEMANTIC_DISPOSITIONS.json docs/consolidation/20261123-r55/SEMANTIC_DISPOSITIONS.json` when a checkout is accessible. Reconcile any later branch/PR writes and tombstones. Review remaining historical relayer secret and RPC tests against current shared guard tests; avoid changing owned application files. Only qualify and integrate unowned unique changes through approved focused PRs.
+- This cycle: one consolidation test-code repair commit, two source-pinned documentary commits, complete independent branch/PR census and source-triage. **No production application-code changes, main merges, deployments, releases, force-push, secrets, real-funds tests or bypasses.** Do not disable the consolidation worker.
