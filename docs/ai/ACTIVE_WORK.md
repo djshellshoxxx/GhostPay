@@ -1407,3 +1407,16 @@ Status: claimed, regression and repair not yet committed.
 - Acceptance: failing regression committed before repair; reject sparse arrays with typed BOOK errors, preserve empty/dense book validation, JSON serialization and collision rules; minimal source change; run isolated source-equivalent tests plus hosted GitHub CI. No new dependencies or changes to wallet, contracts, payments, release or deployment.
 - Ownership: inspected all 235 open PR changed-file inventories across three paginated GitHub pages on 2026-11-22; #399 owns `request.ts`, #392 owns `qr.ts`, and broad #238/#262/#264/#278/#372 own existing tests/package metadata, but none changed `book.ts` or the new regression path. Active registry claims and heads must be rechecked before integration.
 - Integration: metadata-only lock generation 11 at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains held by external owner `994a0d214fb9-root-r3` (expired timestamp is not authorization). No acquisition, merge or deployment.
+
+
+---
+
+# GP-BUG-R11 — Reject non-bigint runtime buffer-dust inputs (2026-11-22)
+
+- Worker: GhostPay BUG-ONLY automation, single coordinator; no genuinely separate independent reviewer available.
+- Branch: `automation/20261122-r11/bug/hygiene-bufferdust-runtime-types`; exact live-main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Exclusive owned paths: `packages/hygiene/src/buffer.ts`, new `packages/hygiene/src/buffer.runtime-types.test.ts`, this additive ownership claim and new `docs/handoffs/HYGIENE_BUFFERDUST_RUNTIME_TYPES_20261122.md`. Existing `buffer.test.ts` remains untouched.
+- Reproduction: exact original Git blobs `buffer.ts@b315a0c8feb0325bf16bd495b764f5c559da4494` and `errors.ts@bd65796a7d14831d16aadd57f7009428b5d8bfef`, locally compiled with TypeScript 5.8.3 and executed under Node 22.16.0. `bufferDust(false, 2n, 3n)` and `bufferDust(NaN, 2n, 3n)` silently returned `0n`; numeric/string paid values and non-bigint gas/price inputs threw untyped native `TypeError` instead of `HygieneError('INVALID_INPUT')`.
+- Acceptance: commit a failing focused regression before source repair; reject all non-bigint runtime inputs with existing `INVALID_INPUT` code; preserve non-negative bigint dust subtraction, saturation and existing negative-input errors. No new dependencies, new features, real network/fund interaction, deployment, release or merge without all qualification gates.
+- Ownership: inspected changed-file inventories of all 238 PRs open in 2026-11-22 live three-page snapshot; none changed either owned source/test path. PR #372 owns `hygiene/src/ledger.ts` and was explicitly avoided. Reinspect at later integration.
+- Coordination: check PR #390 exact-head workflows and separate review gate; integration ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains `held` generation 11 by another coordinator. Do not acquire, release or merge.
