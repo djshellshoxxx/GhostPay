@@ -1152,3 +1152,15 @@ Acceptance: failing regression committed before production change; no weekly occ
 - Acceptance: failing regression committed before fix; reject unsupported urgency with existing `UxFeesError`/INVALID_INPUT, retain normal/default `wait`, valid urgent `ok`, and other advice/fee/privacy behavior. No new features, dependency, contracts, transport, deployment, release, or real traffic.
 - Ownership: 179 live open PR file inventories inspected in batches on 2026-11-21, zero changed paths under `packages/ux-fees/src/`; broad #278/#264/#262/#372 touch its package.json only. Reinspect before integration. The metadata-only generation-11 integration lock remains held by another coordinator; no lock takeover or main merge authorized.
 - Verification: only source-branch-equivalent reproduction executed before publication, not local repository Vitest. Hosted exact-head CI and independent review pending.
+
+---
+
+# GP-BUG R11 — notification label surrogate-safe truncation (2026-11-22 UTC)
+
+- Worker: scheduled bug-only coordinator, single executor; no independent reviewer available in this run.
+- Branch: `automation/20261122T0218Z/bug/notify-label-surrogate-cut-r11`; exact baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-notify/src/redact.ts`, newly created `packages/ux-notify/src/redact.surrogate.test.ts`, this append-only task record, and `docs/handoffs/NOTIFICATION_LABEL_SURROGATE_CUT_20261122.md`.
+- Confirmed pre-fix behavior: `sanitizeLabel('a'.repeat(39) + '🚀', 40)` and `sanitizeLabel('x'.repeat(23) + '📬', 24)` return an isolated high surrogate from UTF-16 `.slice(0,max)`; these modes are reached by notification params and lock-screen label respectively.
+- Acceptance: regression first, then smallest fix to prevent cutting a valid surrogate pair; preserve the UTF-16 unit cap, control/bidi stripping, whitespace folding, ordinary ASCII, and full pairs within the cap. No new dependencies, API changes, host calls, feature work or release.
+- Coordination: 191 open PR metadata entries inspected at discovery; changed-path checks of targeted recent and broad PRs showed #238/#262/#264/#278/#372 own `redact.test.ts` but not the production file or new isolated test; #409 separately owns `cache-policy.ts`; full 191 changed-path inspection was not completed, so reconcile remaining ownership before any integration. Do not modify others' branches.
+- Gate: integration-lock branch `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` is a separately held generation-11 lease. Never take over, merge or deploy from this task. Exact-head CI, browser applicability, independent review and owner clearance required.

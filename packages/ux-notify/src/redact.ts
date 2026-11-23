@@ -47,5 +47,7 @@ export function maskAddress(address: string): string {
 export function sanitizeLabel(label: string, max = 40): string {
   // eslint-disable-next-line no-control-regex
   const cleaned = label.replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, ' ');
-  return cleaned.replace(/\s+/g, ' ').trim().slice(0, max);
+  const clipped = cleaned.replace(/\s+/g, ' ').trim().slice(0, max);
+  // UTF-16 slicing must not leave a lone high surrogate from a truncated emoji.
+  return /[\uD800-\uDBFF]$/.test(clipped) ? clipped.slice(0, -1) : clipped;
 }
