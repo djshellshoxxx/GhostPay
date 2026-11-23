@@ -239,6 +239,15 @@ Observed defect: exported `validateAddress` throws JavaScript TypeError for null
 Acceptance: commit a failing regression first; return the existing typed `bad-address` error for runtime nonstrings without changing valid EVM/bech32 results; smallest source change, no dependencies, no real network, funds, wallets or new features. Record source-equivalent red/green, exact commit/CI evidence, and independent-review/browser requirements before merge.
 Ownership: inspected active broad PRs #278/#264/#262/#372 and integrations #307/#302/#246 plus #424 and newest #452–#445, none claiming address.ts or the new address.runtime.test.ts; live open-PR inventory counted 211 and must be rechecked for newly published overlap. Related #424 owns deeplink.ts, not address.ts. The separately held generation-11 integration lease is not transferred to this worker; do not merge, deploy or release.
 Status: isolated ownership claim recorded before test or production changes; regression, repair, verification and review pending.
+# GP-BUG R36 — fail closed on malformed fiat separator descriptors (2026-11-22)
+
+Worker: ChatGPT GhostPay consolidation, isolated sequential implementation; not an independent reviewer.
+Branch: `automation/20261122-r36/bug/ux-fiat-runtime-separators`, based on protected main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-fiat/src/format.ts`, new `packages/ux-fiat/src/format.runtime.test.ts`, additive branch-local `docs/ai/ACTIVE_WORK.md`, new `docs/handoffs/UX_FIAT_SEPARATOR_BOUNDARY_R36.md`.
+Baseline source: `format.ts` Git blob `ef6adf3fb5833d9746eb272813e7c4f5bc2c1409`. Existing `parseFiatInput` dereferences `fmt.groupSeparator/decimalSeparator` then `d.length` without checking malformed runtime objects; null/missing/nonstring separators can throw instead of returning the existing `bad-format` Result. It also does not enforce the length <=2 separator constraint already enforced by `formatFiatParts`.
+Acceptance: regression first; malformed descriptor/missing/nonstring/overlength separators return existing typed `bad-format` without throwing; valid US/DE/grouping and exact BigInt parsing unchanged; no network, wallet, custody, rate policy, UI or new feature changes.
+Coordination: 31 most recent PRs #423–#453 (except non-PR numbers) and broad integrations #372/#371/#307/#302/#246/#278/#264/#262 plus #397/#310/#344/#390/#380 were sampled by changed-file inventories; broad #372/#278/#264/#262 contain `ux-fiat/src/fiat.test.ts` but not owned `ux-fiat/src/format.ts`; do not overwrite their tests. This is **not an exhaustive 212-PR file overlap audit**. No valid integration lease: externally held generation-11 lock; do not merge, deploy, or release.
+Status at claim: source inspection only; regression/test/implementation/qualification pending. Host CI and independent review required. 
 
 ---
 
