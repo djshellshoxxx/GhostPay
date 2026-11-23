@@ -148,11 +148,64 @@ export function validateLedger(data) {
     openPRs: data.openPrs.length, stackedPRs: stacked, mainSha: data.provenance.mainSha };
 }
 
+
+// Cross-check two fully validated, immutable checkpoint inventories. A single
+// checkpoint can be internally consistent while omitting new branch names,
+// inventing "new" refs, or hiding head changes relative to its predecessor.
+export function validateLedgerTransition(current, previous) {
+  const now = validateLedger(current);
+  const before = validateLedger(previous);
+  check(current.repository === previous.repository, 'repository changed across checkpoints');
+
+  const old = new Map(previous.records.map(row => [row.branch, row]));
+  const next = new Map(current.records.map(row => [row.branch, row]));
+  for (const [name, row] of old) {
+    const successor = next.get(name);
+    check(successor, `historical branch disappeared: ${name}`);
+    if (row.finalized && !successor.finalized)
+      check(false, `finalized classification regressed: ${name}`);
+  }
+
+  const expectedNew = uniqueSorted(current.records.filter(row => !old.has(row.branch))
+    .map(row => `${row.branch}:${row.sha}`));
+  check(Array.isArray(current.summary.newBranches), 'new branch provenance differs from previous census');
+  const actualNew = uniqueSorted(current.summary.newBranches.map(row => `${row.branch}:${row.sha}`));
+  check(actualNew.length === current.summary.newBranches.length &&
+    sameSet(actualNew, expectedNew), 'new branch provenance differs from previous census');
+
+  const expectedAdvanced = uniqueSorted(current.records.filter(row =>
+    old.has(row.branch) && old.get(row.branch).sha !== row.sha)
+    .map(row => `${row.branch}:${old.get(row.branch).sha}:${row.sha}`));
+  check(Array.isArray(current.summary.advancedHeads), 'advanced head provenance differs from previous census');
+  const actualAdvanced = uniqueSorted(current.summary.advancedHeads.map(row =>
+    `${row.branch}:${row.old}:${row.new}`));
+  check(actualAdvanced.length === current.summary.advancedHeads.length &&
+    sameSet(actualAdvanced, expectedAdvanced),
+    'advanced head provenance differs from previous census');
+
+  check(current.summary.priorFinalized === before.finalized,
+    'prior finalization count disagrees with previous checkpoint');
+  const newlyFinalized = current.records.filter(row =>
+    old.has(row.branch) && !old.get(row.branch).finalized && row.finalized);
+  for (const row of newlyFinalized) {
+    check(object(row.evidence) && row.evidence.checkedDonorSha === row.sha &&
+      validSha(row.evidence.comparedWithSha) &&
+      typeof row.evidence.sourceProof === 'string' && row.evidence.sourceProof.length > 0 &&
+      typeof row.evidence.assessment === 'string' && row.evidence.assessment.length > 0,
+      `new finalization needs source proof: ${row.branch}`);
+  }
+  check(current.summary.newlyFinalized === newlyFinalized.length,
+    'new finalization count disagrees with previous checkpoint');
+  return { ...now, newBranches: expectedNew.length, advancedHeads: expectedAdvanced.length,
+    newlyFinalized: newlyFinalized.length };
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    check(process.argv.length === 3, 'usage: node validate-ledger.mjs PATH_TO_LEDGER.json');
+    check(process.argv.length === 3 || process.argv.length === 4, 'usage: node validate-ledger.mjs CURRENT.json [PREVIOUS.json]');
     const snapshot = JSON.parse(readFileSync(resolve(process.argv[2]), 'utf8'));
-    console.log(JSON.stringify(validateLedger(snapshot)));
+    const prior = process.argv[3] ? JSON.parse(readFileSync(resolve(process.argv[3]), 'utf8')) : null;
+    console.log(JSON.stringify(prior ? validateLedgerTransition(snapshot, prior) : validateLedger(snapshot)));
   } catch (err) {
     console.error(err instanceof Error ? err.message : String(err));
     process.exitCode = 1;
