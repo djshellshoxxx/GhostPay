@@ -519,7 +519,7 @@ describe('Scan and receive', () => {
     } finally { runner.mockRestore(); }
   });
 
-  it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+  it('opens only the viewing key for scanning, encrypted reconciliation and tags (L1-07)', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
@@ -536,7 +536,8 @@ describe('Scan and receive', () => {
       expect(await screen.findByLabelText(/Client tag/)).toBeTruthy();
       expect(opened).not.toHaveBeenCalled();
       expect(openedAsync).not.toHaveBeenCalled();
-      expect(viewing).toHaveBeenCalledTimes(2);
+      // The scan worker, reconciliation vault and tag vault each need a viewing key copy.
+      expect(viewing).toHaveBeenCalledTimes(3);
     } finally { opened.mockRestore(); openedAsync.mockRestore(); viewing.mockRestore(); }
   });
 
