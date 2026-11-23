@@ -26,9 +26,10 @@ describe('parseAnnouncement', () => {
   });
   it('drops throwing and revoked proxy records without escaping the validator', () => {
     const record = new Proxy(rawAnn(10, 3), {
-      get(target, prop, receiver) {
+      get(target, prop, receiver): unknown {
         if (prop === 'metadata') throw new Error('source access failed');
-        return Reflect.get(target, prop, receiver);
+        const value: unknown = Reflect.get(target, prop, receiver);
+        return value;
       },
     });
     expect(parseAnnouncement(record)).toBeUndefined();
