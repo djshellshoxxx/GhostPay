@@ -25,7 +25,7 @@ function encode(v: unknown, depth: number): string {
         throw new ReceiptError('NOT_CANONICALIZABLE', '', 'only safe integers allowed');
       return String(v);
     case 'object': {
-      if (Array.isArray(v)) return '[' + v.map((x) => encode(x, depth + 1)).join(',') + ']';
+      if (Array.isArray(v)) return '[' + Array.from({ length: v.length }, (_, i) => encode(v[i], depth + 1)).join(',') + ']';
       const proto = Object.getPrototypeOf(v) as unknown;
       if (proto !== Object.prototype && proto !== null) {
         throw new ReceiptError('NOT_CANONICALIZABLE', '', 'non-plain object');
