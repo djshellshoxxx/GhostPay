@@ -122,6 +122,10 @@ export function adviseSweepTiming(input: SweepTimingInput): SweepTimingAdvice {
   bigintIn(input.now, 'now');
   if (input.urgency !== undefined && input.urgency !== 'normal' && input.urgency !== 'urgent')
     return fail('urgency invalid');
+  if (input.fundingMethod !== undefined && input.fundingMethod !== 'self' && input.fundingMethod !== 'sponsored')
+    return fail('fundingMethod invalid');
+  if (input.timingJitter !== undefined && typeof input.timingJitter !== 'boolean')
+    return fail('timingJitter invalid');
   const minSamples = input.minSamples === undefined ? 24 : intIn(input.minSamples, 'minSamples', 4, 5000);
   const maxAge =
     input.maxSampleAgeSeconds === undefined
