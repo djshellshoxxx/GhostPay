@@ -1,3 +1,15 @@
+# C1 browser keyboard focus regression repair — 2026-11-23T12:39Z
+
+- Cycle/coordinator: `20261123T1239Z`; one sequential ChatGPT agent, no native subprocess agents or independent review.
+- Isolated branch: `automation/20261123T1239Z/bug/c1-context-help-focus`, exact base PR #504 head `cdf1510116d84855ef6e579f80e0e05a0fb1a5f1`; upstream integration target is PR #504 owner branch `nodata/determined-allen-x5n560`. Main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Do not update parent branch directly.
+- Scope: `apps/web/e2e/contextual-help.spec.ts`, this additive claim, and `docs/handoffs/C1_CONTEXT_HELP_FOCUS_20261123.md` only. Parent #504 owns the combined integration; coordinate by focused child PR, no upstream merge, lease transfer or workflow edits.
+- Confirmed baseline: exact-head Core CI [45151780276](https://github.com/djshellshoxxx/GhostPay/actions/runs/45151780276) failed `e2e (full)` and `e2e (lean)` keyboard focus test. PR #504 added a secondary RPC input in DOM order between the primary's help button and the `Test Base Sepolia` button. Current test expects focus to skip that input after a single Tab; this is stale, not proof of broken tab navigation.
+- Acceptance: retain tooltip Escape/Enter, accessible description, focus and dismissal assertions; after one Tab assert secondary URL field receives focus and tooltip closes; after another Tab assert Test Base Sepolia gets focus. Preserve both RPC controls and do not relax/skip E2E. Obtain hosted exact-head browser confirmation and independently reviewed integration before marking verified. Other C1 failures (Sweep test and 900px RPC alignment) remain explicitly outside this branch.
+- Verification plan: exact-source code review; targeted syntax/static check if execution environment permits; hosted full/lean E2E and tests; record unrun checks without inference. PR should remain DRAFT while other C1 CI failures and integration-lock owner approval remain outstanding.
+- Integration lock: `automation/ghostpay-integration-lock` read as generation 12 `released`, owner `claude-keen-volta-8ctx9x` at this observation; this worker has not acquired it. No protected/main ref update, release, deployment or real-funds action.
+
+---
+
 # C1 — combined fast-track integration of reviewed fix PRs (2026-11-23)
 
 Worker: Claude lead coordinator `claude-determined-allen-x5n560` with 11 independent Claude reviewer subagents (read-only; they did not author any integrated change). Branch `nodata/determined-allen-x5n560`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
