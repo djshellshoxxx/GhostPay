@@ -86,6 +86,8 @@ export async function resolveKey(material: KeyMaterial, c: CryptoLike): Promise<
         await c.subtle.importKey('raw', new Uint8Array(material), 'AES-GCM', false, ['encrypt', 'decrypt']),
       );
     }
+    // A metadata-shaped object is not a usable native WebCrypto key.
+    if (typeof CryptoKey === 'undefined' || !(material instanceof CryptoKey)) return keyBad();
     const k = material as Partial<CryptoKey> | null;
     const alg = k?.algorithm as Partial<AesKeyAlgorithm> | undefined;
     if (
