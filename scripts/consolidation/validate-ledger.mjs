@@ -240,6 +240,7 @@ export function validateLedgerTransition(current, previous) {
     check(object(proof) &&
       proof.checkedDonorSha === row.sha &&
       proof.previousDisposition === row.disposition &&
+      proof.newDisposition === successor.disposition &&
       validSha(proof.comparedWithSha) &&
       typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
       typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
@@ -288,6 +289,7 @@ export function validateLedgerTransition(current, previous) {
       const proof = successor.evidence;
       check(object(proof) && proof.checkedDonorSha === successor.sha &&
         proof.previousDisposition === row.disposition &&
+        proof.newDisposition === successor.disposition &&
         validSha(proof.comparedWithSha) &&
         typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
         typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
