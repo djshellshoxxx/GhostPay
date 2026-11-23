@@ -166,11 +166,13 @@ test('advanced-head provenance cannot refer to stale, absent, or unchanged branc
   assert.equal(validateLedger(valid).unresolved, 1);
 });
 
-test('newly finalized accounting cannot exceed or contradict finalized totals', () => {
+test('standalone finalized counts are internally consistent; transitions verify historical truth', () => {
   const s = fixture();
   s.summary.priorFinalized = 0;
   s.summary.newlyFinalized = 1;
-  assert.throws(() => validateLedger(s), /finalization accounting/);
+  // Internally plausible; only validateLedgerTransition(s, previous) can
+  // distinguish an invented prior count from a real previous snapshot.
+  assert.equal(validateLedger(s).finalized, 1);
   const t = fixture();
   t.summary.priorFinalized = 1;
   t.summary.newlyFinalized = 2;
