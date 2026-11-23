@@ -313,6 +313,7 @@ export function buildRequest(input: {
   ttlMs?: number;
 }): Result<{ request: PendingRequest; pending: PendingTable }, RpcError> {
   const { session: s } = input;
+  if (!Number.isSafeInteger(input.nowMs) || input.nowMs < 0) return bad('bad request clock');
   if (isSessionExpired(s, Math.floor(input.nowMs / 1000)))
     return err({ code: RpcCodes.wcUnsupportedAccounts, message: 'session expired' });
   if (input.origin !== s.origin) return err({ code: RpcCodes.invalidParams, message: 'origin mismatch' });

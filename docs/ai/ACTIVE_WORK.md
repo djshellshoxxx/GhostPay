@@ -1320,3 +1320,14 @@ Finding: untrusted snapshot `seq` can be less than an existing `n<id>` record; r
 Acceptance: commit an explicit failing regression first; reject sequence rewind as existing `record_id` error, preserve legitimate empty/monotonic snapshots and normal queue flow; run available Node reproduction and exact-head GitHub CI; do not claim absent local Vitest/browser checks.
 Ownership inventory: 223 live open PRs in REST pages 100/100/23, changed-file lists checked for both owned runtime/test paths, no collisions found. Current main coordination template checked; no claim on these paths.
 Integration: independently held generation-11 lock remains external, no merge/lock mutation/release/deployment; independent review and exact-head CI remain required.
+
+---
+## GP-BUG-R11 — Reject invalid WalletConnect request clocks (2026-11-22)
+Worker: single ChatGPT BUG-ONLY coordinator; no separate independent verifier available.
+Branch: `automation/20261122/bug/wcsession-request-clock-r11`; base live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned files: `packages/ux-connect/src/wcsession.ts`, new `packages/ux-connect/src/wcsession.clock.test.ts`, this **append-only** ownership record, and `docs/handoffs/WC_REQUEST_CLOCK_20261122.md`.
+Source baseline `wcsession.ts` Git blob `4dc521ec53e5d386217fe495b6c6a7a232734ee3`.
+Observed issue: `buildRequest` accepts non-finite, negative, fractional, or unsafe JavaScript millisecond clocks; especially NaN allows an expired session through and stores a pending request with NaN expiry that `sweepExpired` never expires. Minimal scope: validate injected `nowMs` as a non-negative safe integer using the existing typed `invalidParams` error before checking session expiry. Preserve valid request IDs, timeouts, origin/chain/method/params policy and pending immutability.
+Acceptance: commit failing regression **before** source edit; test bad clocks, expiry, valid boundary and subsequent `sweepExpired`; reproduce from source-equivalent logic; after repair run targeted available checks and hosted exact-head CI, not claim repository tests without checkout. No dependencies, contracts, traffic, funds, deployment, release or main integration.
+Ownership: paginated 228 open PR inventory checked at discovery, all 228 changed-file inventories checked for `wcsession.ts` or the new test (0 direct collisions). #430 owns `compat.ts` not this file; broad #278/#264/#262/#372 also do not change either owned path. Other-worker held integration lock (generation 11) is not owned or modified; leave PR draft until all gates and independent review are met.
+Status: claimed, regression and repair not yet committed.
