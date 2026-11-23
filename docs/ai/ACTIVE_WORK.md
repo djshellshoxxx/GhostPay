@@ -1,3 +1,14 @@
+# GP-BUG — Solana Pay references must be validated once (2026-11-23)
+
+- Cycle and worker: `20261123T1041Z`; one sequential GitHub-connected engineering coordinator, no independent native subagent/verifier.
+- Branch: `automation/20261123T1041Z/bug/solana-reference-snapshot`, exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Claimed paths: `packages/payment-uri/src/solana.ts`, new `packages/payment-uri/src/solana.reference-snapshot.test.ts`, additive claim in this file, `docs/handoffs/SOLANA_REFERENCE_SNAPSHOT_20261123.md`.
+- Finding: `buildSolanaPay` uses `new Set(refs)` to check uniqueness, then iterates the mutable references a second time to serialize. Getter-backed array entries can yield distinct values during validation and a duplicated reference during serialization. This violates the builder/parser round-trip guarantee and bypasses the max-8-unique-reference invariant on mutable input.
+- Acceptance: demonstrate baseline duplicate-ref URI with changing array element getter; add Vitest regressions for one-read stable references, rejected duplicates/too many references, valid normal roundtrip and no unrelated behavior changes; construct URI only from validated canonical reference snapshots. Run source-equivalent Node 22 repro and applicable exact-head GitHub CI; report native test limitations. No deployed funds/contract/custody/network/policy changes.
+- Coordination: C1 [PR #504](https://github.com/djshellshoxxx/GhostPay/pull/504) currently owns a large combined integration; its changed-file inventory did not include `packages/payment-uri/src/solana.ts`. Historical broad #278/#372 edit shared payment-uri tests but not this source/new test path. Claims may change; recheck before integration. The repository integration lock was *released* at generation 12 at inspection; this worker **does not acquire it**. Do not merge to main or modify C1 integration. Independent review and exact-head required CI are pending.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
