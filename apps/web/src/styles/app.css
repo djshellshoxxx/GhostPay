@@ -192,6 +192,16 @@ legend { padding: 0 6px; font-weight: 600; }
 .row { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; margin-bottom: 8px; }
 @media (min-width: 40rem) { .row { grid-template-columns: 2fr 1fr 1fr auto; } }
 
+/* RPC URLs need full-sized columns, not the shared four-cell form grid. */
+.rpc-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 16px; margin-bottom: 16px; }
+.rpc-row > .field { min-width: 0; }
+.rpc-test-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; min-width: 0; }
+.rpc-test-row > .hint { margin: 0; flex: 1 1 12rem; min-width: 0; }
+@media (min-width: 40rem) {
+  .rpc-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rpc-test-row { grid-column: 1 / -1; }
+}
+
 .field label { display: block; font-weight: 600; margin-bottom: 4px; }
 .field input:not([type='checkbox']):not([type='radio']), .field select, .field textarea, input[type='file'] {
   width: 100%;

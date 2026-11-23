@@ -499,6 +499,15 @@ Finding: GP-BUG-07 / MV-02 in PR #312 confirms that a reviewed policy payment ma
 Acceptance: synchronous form-edit/re-review invalidation of the authority captured with the original review; last wallet authority check refuses before any new wallet request; retain existing session/deployment/transaction/deadline checks and post-approval recovery messaging. Add mock-wallet/browser regression; do not introduce contracts, relayers, new chain support, dependencies or deployments.
 Overlap: broad PR #278 (head `417f7c71daf8645e1432f2ec8f070110879b80bd`) also touches PolicyPay and has not implemented a review-revision guard in the inspected head. Do not bulk-merge either donor; patch-equivalence and conflict review required before integration. No separate focused GP-BUG-07 PR was found. No shared integration lock acquisition or main mutation.
 Status: claimed; implementation, full CI, review and qualification pending.
+# Settings RPC responsive layout — 2026-11-21 (isolated)
+
+Worker: current ChatGPT coordinator; no independent subagent or external reviewer is claimed.
+Branch: `chatgpt/ghostpay-rpc-layout-reflow-20261121-r1`; base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/views/Settings.tsx`, `apps/web/src/styles/app.css`, a new focused `apps/web/e2e/settings-rpc-reflow.spec.ts`, this append-only claim, and `docs/handoffs/SETTINGS_RPC_REFLOW_20261121.md`.
+Finding: at viewport widths of at least 40rem, the shared `.row` applies four columns (2fr 1fr 1fr auto) to a primary RPC URL, Test button, status, and secondary RPC URL, leaving both URL controls compressed. Scope accepted under issue #364.
+Acceptance: both RPC URL inputs have usable nonoverlapping widths on desktop, remain stacked and within 320px screens, and maintain keyboard/DOM ordering and test/status behavior; add focused Playwright checks and execute exact-head CI before qualification. Do not redesign unrelated controls, change endpoint validation/network calls, introduce dependencies, or deploy.
+Ownership: independent branch only. Repository generation-11 integration lock held by another coordinator; no shared-lock takeover, main merge, release, or deployment authorized here. Overlap with broad existing PRs must be rechecked before integration.
+Verification: test-first RED/GREEN via hosted CI where available; local repository checkout and browser execution unavailable due github.com DNS failure. Do not claim unrun checks.
 
 ---
 
