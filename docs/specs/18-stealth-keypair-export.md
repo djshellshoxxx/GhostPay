@@ -1,6 +1,6 @@
 # 18 — Requirement 3q: Browser-only stealth keypair export and independent recovery
 
-**Status:** Approved user requirement; specification only, not yet implemented or tested.
+**Status:** Implemented on `main` by selective, source-pinned extraction from PR #372 (head `055d33e0`); normative formats in [18a](18-stealth-keypair-export-formats.md), executed checks and open gates in the [M2 P0-KEYS extraction record](../engineering/milestones/M2-P0-KEYS.md). External device, browser and third-party wallet acceptance remain pending. This is not a release-complete claim.
 **Priority:** Core seller portability, before beta exit.
 **Scope:** ERC-5564 scheme-1 EVM one-time addresses. Bitcoin BIP-352, contract accounts, ERC-4337 and EIP-7702 have different custody/key models and are excluded until separately specified.
 **Existing integration:** `packages/core-crypto/src/stealth.ts` (`checkAnnouncement`, `deriveStealthSecret`); seller scan/payment details; encrypted local vault and backup. No remote key-generation, account or recovery backend.
@@ -43,7 +43,7 @@ The owner-approved next-phase portability scope (consolidation gameplan; recorde
 ## Implementation boundaries
 Create a narrowly scoped typed export/import module reusing existing approved key wrappers, KDF and AEAD primitives; keep crypto boundary separate from UI. Introduce seller-only export controls on payment details, separate bulk-export and master-backup entry points, stable documentation and reference vectors. Do not weaken `deriveStealthSecret` verification, change GhostPayRouter, modify deployment defaults, enable new networks, or add server processing.
 
-## Acceptance tests (required, initially unrun)
+## Acceptance tests (required)
 - Known EIP-5564 vector: derived private key produces exactly the advertised public key and checksummed address.
 - Single encrypted keypair export/import across new browser sessions; wrong passphrase, tampering, wrong chain/scheme and malformed files fail closed.
 - Raw 32-byte EVM key interoperates with at least one independently implemented EVM wallet tool under a local test chain without real funds.
