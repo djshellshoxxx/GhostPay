@@ -1,0 +1,14 @@
+# Security findings (essential-feature programme)
+
+Severity: High / Medium / Low / Info. "Open" means no fix commit with a test yet. Closure needs commit + test path +
+command + result (`docs/audits/08-completion-gates.md`).
+
+| ID | Sev | Status | Where | Finding | Fix / gate |
+|---|---|---|---|---|---|
+| JRNL-H1 | High | In progress (M1, PR #500) | `apps/web/src/lib/duplicateAttemptJournal.ts` (`browserAttemptStorage` → `sessionStorage`) | Invoice payment journal is tab-scoped: a second tab, or a tab reopened after a crash, has an empty journal and can request a second payment for the same invoice. Source-level; reported as REC-P1-03 in PR #455. | Durable `localStorage` journal under the existing exclusive Web Lock; cross-tab tests; anvil browser test |
+| JRNL-M1 | Medium | In progress (M1) | `apps/web/src/components/WalletAttempts.tsx` | A recorded hash cannot be resolved after reload or wallet disconnect; the user cannot tell pending, mined, reverted or replaced apart. | RPC-verified status resolution with canonical block-hash check |
+| HASH-M1 | Medium | Fixed on branch, carried by PR #500 | `finishAttempt` | A second completion could replace the first submitted hash (PR #427). | #427 `38385d4` + tests `duplicateAttemptJournal.hashIntegrity.test.ts`; 68/68 local rerun |
+| RCPT-L1 | Low | Open (follow-up) | `packages/ux-receipts/src/verify.accessor-boundary.test.ts:44-50` | "Throwing lookup proxy" case passes on the parent too (`then` trap rejects earlier), so it doesn't exercise the new guard. | Make the trap return `undefined` for `then` |
+| RCPT-L2 | Low | Open (follow-up) | `packages/ux-receipts/src/verify.ts:139-177` | Each accessor is read twice (type check, then comparison). A getter can pass the check and return a different value later. No gain over a well-typed lying adapter, so not a fail-open. | Snapshot status/facts once into locals |
+| RCPT-I1 | Info | Pre-existing | `packages/ux-receipts` | Lookup has no timeout; `ChainFacts` carry no confirmation count or block hash, so finality relies on the adapter's `confirmed` flag; token decimals/contract are not compared. | Address before the package is wired into the app |
+| KEYS-B1 | Blocker for #372 | Open (owned by #372) | PR #372 hosted gates | Mythril job 136771947984 exit 1 (10 findings, artifact 14699233056); Tor browser job 136771948240 timeout at `scripts/tor/browser-acceptance.mjs:81`. | Triage on #372; not in this programme's write scope |
