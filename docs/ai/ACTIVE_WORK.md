@@ -1,3 +1,14 @@
+# GP-BUG — Isolate natural-language amount locale descriptors (2026-11-23)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential author and verifier; independent review pending.
+Branch: `automation/20261123T1924Z/bug/nl-amount-locale-snapshot`; base main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-intake/src/nlamount.ts`, new `packages/ux-intake/src/nlamount.locale-snapshot.test.ts`, this additive claim, new `docs/handoffs/NL_AMOUNT_LOCALE_SNAPSHOT_20261123.md`. Existing nlamount.test.ts is owned by broad PRs and is untouched.
+Observed: the public mutable return of separatorsForLocale is the actual static table record shared by multiple locales. A caller editing one result changes subsequent English/English-US/Japanese lookups; isolated source-derived V8 reproduction passed 3/6 checks before and 6/6 with a detached result. This breaks deterministic locale interpretation of subsequent amount text. No transactions or funds used.
+Acceptance: commit regression first; return a detached descriptor while preserving exact and fallback tags and unknown-tag behavior. Tests must cover parsing after a caller mutates a previous descriptor. No new feature, dependency, policy or payment behavior changes. Local full checkout unavailable (DNS); report isolated execution separately from exact-head hosted CI.
+Ownership: 275 open PR changed-file inventories through #520 checked, no selected source or dedicated test path collisions; existing registry has no nlamount claim. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f, not acquired. No main integration, deployment, release or edits to other branches.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
