@@ -1,3 +1,14 @@
+# GP-BUG R14 — Select a usable platform QR candidate (2026-11-23)
+
+Worker: GhostPay BUG-ONLY scheduled coordinator, sequential implementer and source reviewer; no independent verifier assigned. Branch: `automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14`, base live main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/qr-exchange/src/readers.ts`, new `packages/qr-exchange/src/readers.platform-candidates.test.ts`, this additive registry claim, and new `docs/handoffs/QR_PLATFORM_CANDIDATES_R14_20261123.md`. Do not alter `readers.test.ts` or another worker's branch.
+Observed source defect: `decodeQrImage` considers only `found[0]?.rawValue` from the platform BarcodeDetector; when the first recognized code has an empty or overlong decoded text but a later detected code is valid, it returns null, leaving a legitimate scannable QR unread. Source `readers.ts` blob `caea9b8a3bbfeb9e626814e5db3882e22e568921`.
+Acceptance: regression FIRST for multi-result native scan (bad first/valid second, valid-first ordering), preserve existing single valid/invalid result and empty-result jsQR behavior, perform the smallest selection fix. Test exact-head hosted CI; separate native-browser/independent review required. Never claim full local Vitest without native checkout.
+Ownership preflight: live open PR listing and changed-file checks including #238/#246/#248–254/#261/#262/#264/#270/#278/#294/#302/#307/#310/#365/#372/#390/#504 and relevant recent bug PRs show no direct `readers.ts` claim in examined sets; complete 262-open-PR file audit remains a merge gate. Existing #294/#302/#307 own `assembler.ts`; do not touch. Main integration lease `automation/ghostpay-integration-lock` generation 12 is released, not held by this worker. No lock acquisition or main merge.
+No new features, UI, dep, contracts, funds, real-world traffic, release or deployment.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
