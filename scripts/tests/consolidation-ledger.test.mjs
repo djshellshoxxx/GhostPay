@@ -416,3 +416,72 @@ test('finalized donor disposition changes require renewed immutable source evide
       /finalized disposition changed without requalification/);
   }
 });
+
+
+test('previously retired unresolved history can be source-proven finalized without erasing 404 provenance', () => {
+  const previous = fixture();
+  previous.summary.newBranches = []; previous.summary.advancedHeads = [];
+  previous.summary.priorFinalized = 1; previous.summary.newlyFinalized = 0;
+  previous.retiredHistories = [{
+    branch: 'gone', sha: c, finalized: false, disposition: 'unresolved-review-required',
+    proof: { status: 404, absentInIndependentRefs: true,
+      checkedAtUtc: '2026-11-23T04:12:40Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/gone' }
+  }];
+  previous.summary.globalUnresolved = 2;
+
+  const next = structuredClone(previous);
+  next.retiredHistories[0].finalized = true;
+  next.retiredHistories[0].disposition = 'historical-dependency-update-superseded';
+  next.retiredHistories[0].evidence = {
+    checkedDonorSha: c, previousDisposition: 'unresolved-review-required',
+    comparedWithSha: a, sourceProof: 'docs/consolidation/retired-donor-review.md#gone',
+    assessment: 'Full historical tree reviewed; current dependencies supersede its patch'
+  };
+  next.summary.globalUnresolved = 1;
+  next.summary.newlyFinalizedRetired = 1;
+  assert.equal(validateLedgerTransition(next, previous).globalUnresolved, 1);
+  assert.equal(validateLedgerTransition(next, previous).newlyFinalizedRetired, 1);
+
+  for (const mutation of [
+    { checkedDonorSha: b }, { previousDisposition: 'included-in-main' },
+    { comparedWithSha: 'bad' }, { sourceProof: '   ' }, { assessment: ' ' }
+  ]) {
+    const tampered = structuredClone(next);
+    Object.assign(tampered.retiredHistories[0].evidence, mutation);
+    assert.throws(() => validateLedgerTransition(tampered, previous),
+      /retired history finalization needs source proof/);
+  }
+  const uncounted = structuredClone(next);
+  uncounted.summary.newlyFinalizedRetired = 0;
+  assert.throws(() => validateLedgerTransition(uncounted, previous),
+    /retired finalization count/);
+  const alteredProof = structuredClone(next);
+  alteredProof.retiredHistories[0].proof.checkedAtUtc = '2026-11-23T05:12:40Z';
+  assert.throws(() => validateLedgerTransition(alteredProof, previous),
+    /previously retired history was altered/);
+});
+
+test('already-finalized retired histories cannot regress or change disposition without new proof', () => {
+  const previous = fixture();
+  previous.summary.newBranches = []; previous.summary.advancedHeads = [];
+  previous.summary.priorFinalized = 1; previous.summary.newlyFinalized = 0;
+  previous.retiredHistories = [{
+    branch: 'gone', sha: c, finalized: true, disposition: 'audit-or-documentation-only',
+    proof: { status: 404, absentInIndependentRefs: true,
+      checkedAtUtc: '2026-11-23T04:12:40Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/gone' }
+  }];
+  const regressed = structuredClone(previous);
+  regressed.summary.newlyFinalizedRetired = 0;
+  regressed.retiredHistories[0].finalized = false;
+  regressed.retiredHistories[0].disposition = 'unresolved-review-required';
+  regressed.summary.globalUnresolved = 2;
+  assert.throws(() => validateLedgerTransition(regressed, previous),
+    /previously retired history was altered/);
+  const rewritten = structuredClone(previous);
+  rewritten.summary.newlyFinalizedRetired = 0;
+  rewritten.retiredHistories[0].disposition = 'included-in-main-by-ancestry';
+  assert.throws(() => validateLedgerTransition(rewritten, previous),
+    /previously retired history was altered/);
+});
