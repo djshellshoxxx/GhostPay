@@ -56,9 +56,12 @@ for (const fn of [posReduce, reduce]) {
   for (const amountMinor of [1000, '1000', NaN, undefined, null]) {
     assert.throws(() => fn(active, { ...pay(1000), amountMinor }, 101), /bad-amount/);
   }
-  assert.equal(fn(active, pay(1000), 130).state.status, 'expired');
-  assert.equal(fn(active, { type: 'tick' }, 130).accepted, true);
-  assert.equal(fn(active, pay(1000), 129).state.status, 'paid');
+  // This parity fixture starts at 100 with a 60-second TTL (expiry 160).
+  // The separate package runtime fixture uses a 30-second TTL (expiry 130).
+  assert.equal(fn(active, pay(1000), 130).state.status, 'paid');
+  assert.equal(fn(active, pay(1000), 159).state.status, 'paid');
+  assert.equal(fn(active, pay(1000), 160).state.status, 'expired');
+  assert.equal(fn(active, { type: 'tick' }, 160).accepted, true);
 }
 // Amounts are invoice minor units in the GhostPay app's exponent (apps/web fiatDecimals): 0 decimals for JPY and the
 // other zero-decimal codes, 2 for every other code. A fixed 2 made a JPY 1500 sale due 150000.

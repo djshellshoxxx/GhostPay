@@ -103,6 +103,16 @@ Finding: existing MH-AMT-2 `addAmountNoise` accepts an EVM base-unit bigint and 
 Acceptance: test-first red regression on supported testnet with public deterministic amounts and injected in-memory RNG, smallest existing random-sampler upper-bound correction supporting EVM uint256-sized input without bias, retain rejection beyond uint256, all original smaller-number sampling and error behavior unchanged, no dependencies, browser changes or new feature. Exact-head hosted package/tests/CI and independent review required; no claim of local Vitest execution if unavailable.
 Coordination: sampled current active/open PR path inventories including broad #278/#262/#264/#307/#372/#371 and #401, none changes the two claimed source/test paths; recheck at promotion. Shared integration lock generation 11 is HELD by external coordinator `994a0d214fb9-root-r3`; expiry alone is not release. No shared lock mutation, main merge, deployment, transactions, or other workers' branches.
 Status: test-first repair published as draft [PR #404](https://github.com/djshellshoxxx/GhostPay/pull/404), with initial red regression `4f2b4419b91c3b9a88c4655be9a9f6832c688c4a`, minimal CSPRNG source fix `1a1f081c9a73aa6dafd76d80f8b262f1e099403c`, updated neighboring boundary assertion `cecf558151ee0f4a6a7dfb23c15da4547789150b` and safe fixture `e70b906c33be057ff11a4f595be9fb4229344314`. Source-equivalent Node red/green reproduced; no repository-local Vitest, exact-head hosted CI or independent approval claimed. Recheck final-head hosted jobs, current ownership and external generation-11 held lock before promotion; no main merge.
+# POS static-parity expiry boundary CI repair — 2026-11-21 R16
+
+Worker: GhostPay consolidation continuation, source-based sequential implementation; no independent reviewer.
+Branch: `fix/ghostpay-pos-parity-expiry-r16-20261121`, child of PR #406 at `506604288e31c195c852fa2e8896e131da34bc3b`; base `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `examples/pos-terminal/parity.test.mjs`, this append-only ACTIVE_WORK claim, new `docs/handoffs/POS_PARITY_EXPIRY_R16_20261121.md`. No production source files.
+Evidence: exact-head CI workflow `44907818620` failed in job `136868286519` at parity test line 59: status `paid` versus expected `expired`. Existing test starts at 100s with TTL 60s, so expiry is 160s, not 130s. `packages/merchant-hooks/src/pos.runtime.test.ts` independently uses a 30s TTL and correctly checks 130s.
+Acceptance: repair static parity boundary assertions to test expiry exactly at 160s and successful payment immediately before 159s, preserving full library/static mirror equality; leave all custody, wallet, transaction and runtime behavior unchanged. Requalify hosted CI on the child PR, integrate only after independent review and current integration-lock approval. No deployment/release.
+
+---
+
 # 2026-11-21 — Merchant POS runtime clock/amount hardening (GP issue #400, R14)
 
 Worker: scheduled GhostPay branch-consolidation engineer; one sequential implementer and self-auditor, no independent GitHub reviewer. Branch: `automation/20261121/bug/pos-runtime-guard-r14`, exact source main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
