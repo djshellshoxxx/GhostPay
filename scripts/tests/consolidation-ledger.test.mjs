@@ -382,3 +382,37 @@ test('retired records cannot double-count a live identical ref or fabricate fina
   falselyFinalized.summary.globalUnresolved = 1;
   assert.throws(() => validateLedger(falselyFinalized), /retired history cannot be finalized/);
 });
+
+test('finalized donor disposition changes require renewed immutable source evidence', () => {
+  const previous = fixture();
+  previous.records.push({ branch: 'audit/final-donor', sha: c, finalized: true,
+    disposition: 'included-in-main-by-ancestry', prHeads: [], sameShaOtherBranchPrHeads: [] });
+  previous.provenance.branchPages = [3, 0];
+  previous.summary.total = 3; previous.summary.finalized = 2; previous.summary.unresolved = 1;
+
+  const next = structuredClone(previous);
+  next.records[2].disposition = 'audit-or-documentation-only';
+  next.summary.newBranches = []; next.summary.advancedHeads = [];
+  next.summary.priorFinalized = 2; next.summary.newlyFinalized = 0;
+  // Earlier classifications must not be silently rewritten in a new ledger
+  // even if the branch SHA and all count totals remain unchanged.
+  assert.throws(() => validateLedgerTransition(next, previous),
+    /finalized disposition changed without requalification/);
+
+  next.records[2].evidence = {
+    checkedDonorSha: c, previousDisposition: 'included-in-main-by-ancestry',
+    comparedWithSha: a, sourceProof: 'docs/consolidation/new-independent-proof.md',
+    assessment: 'Re-examined original donor tree and corrected earlier ancestry evidence'
+  };
+  assert.equal(validateLedgerTransition(next, previous).finalized, 2);
+
+  for (const invalid of [
+    { checkedDonorSha: b }, { previousDisposition: 'superseded-by-other-code' },
+    { comparedWithSha: 'not-a-sha' }, { sourceProof: '   ' }, { assessment: '  ' }
+  ]) {
+    const bad = structuredClone(next);
+    Object.assign(bad.records[2].evidence, invalid);
+    assert.throws(() => validateLedgerTransition(bad, previous),
+      /finalized disposition changed without requalification/);
+  }
+});
