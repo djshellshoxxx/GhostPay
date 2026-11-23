@@ -41,3 +41,16 @@ Integration branch `automation/ghostpay-integration-lock` head `6edfcd4dfb85c29e
 2. Obtain actual native browser evidence where applicable, project Vitest/lint/typecheck/build, an independent submitted approval, and no dependency/ownership conflict before any integration consideration.
 3. Keep PR draft and unmerged until all merge gates and legitimate integration lease ownership are satisfied. Do not release, deploy or change contracts/funds.
 4. For subsequent BUG-ONLY rounds choose a different previously unowned runtime module. Avoid returning to these paths or overriding consolidation, security or fuzz owners.
+
+## Additive self-audit correction before qualification (supersedes the earlier fixed-blob pin)
+
+A separate neighboring check revealed a *regression introduced by the first fix*: widening the total-origin cap alone unintentionally admitted canonical-looking URLs with 254-character DNS hostnames when no port was present. The original `253 + 8` cap excluded those URLs. Node v22.16.0 confirmed the interim production fix accepted `https://${LONG_HOST}d` with 254-character hostname; that violated the preserved hostname ceiling.
+
+- Follow-up **failing regression committed before the follow-up fix**: `71049556fc18edfe3e903e01360f8ffcf81031f5` (new invalid hostname case in dedicated test file).
+- Minimal secondary source repair: `f31cc20e2685932b0de775afe67b581fb3ccb2d3` adds `if (u.hostname.length > 253) return null;` after URL parsing; no separate-owner files touched.
+- **Final repaired `ret.ts` blob:** `568abc306e30d1675e95ff9e56d91fc268a83e49` (supersedes earlier interim `6af9eb6ae5f50f4b0e93f01d13e3fd0575a3f9a6`).
+- **Final dedicated regression test blob:** `4c79e96f6e66de3e89c7dc0e9a49e077819d91e2` (supersedes earlier `de42272285624bf9544df7f8d3c6ec5eaaa2eb86`).
+- Final source-equivalent Node v22.16.0 replay: **13/13 PASS** (four accepted ordinary / boundary cases; nine refused cases including invalid scheme, canonicalization, userinfo, overlong hostname and invalid port). The failing follow-up case now rejects. This is **not native repository Vitest or full-file source-blob execution**.
+- Original reporter's URL-parser baseline bug remains fixed: the 267-character HTTPS origin with a 253-character hostname and five-digit port is accepted, while a 254-character hostname without port is rejected.
+
+**Qualification is pinned to the forthcoming draft PR's final handoff commit, not to the earlier production-only commit.** The first hosted workflow runs may be superseded by later commits; obtain exact-current-head check results. No independent reviewer, integration-lease ownership, deployment or release is claimed.
