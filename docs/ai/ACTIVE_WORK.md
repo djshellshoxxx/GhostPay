@@ -1,3 +1,14 @@
+# R68 independent invoice-expiry scheduler test qualification — 2026-11-23 UTC
+
+Worker: GhostPay branch-consolidation engineer, source-pinned read-only audit of owner PR #274 with isolated test-only contribution.
+Source/PR base: `automation/20261119T104800Z/bug/jitter-expiry-rollback` @ `a4c6f945adef0438bfd0b347fb7c11057e3973ce`. Target branch: `audit/ghostpay-r68-jitter-expiry-qualification-20261123`.
+Owned paths: new `apps/web/src/lib/jitter.expiry-qualification.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim, new `docs/consolidation/20261123-r68/JITTER_EXPIRY_REVIEW.md` only. Existing `jitter.ts` and `jitter.test.ts` belong to PR #274 and MUST NOT be edited on its owner branch.
+Acceptance: deterministic targeted Vitest cases covering fractional monotonic invoice-expiry boundary after wall rollback, direct Send-now, forward-wall expiry and nonfinite clocks; no network, funds, secret or signing activity. Run exact-head hosted checks. Independent browser/payment and approval gates still apply.
+Important unresolved question: PR #274's `ready` status is terminal and does not re-evaluate invoice expiry after readiness. Owner notified at https://github.com/djshellshoxxx/GhostPay/pull/274#issuecomment-7106602537; source owner must decide contract. Test-only contribution does not claim to repair stale-ready behavior.
+No main merge, owner-file overwrite, force-push, deployment or release.
+
+---
+
 # Cycle 20261119T104800Z — browser jitter expiry clock rollback (isolated)
 
 Coordinator: ChatGPT direct GitHub connector; execution one sequential assistant, no second independent reviewer/subagent.
