@@ -1287,3 +1287,17 @@ Ownership: inspected the pre-publication 196-open-PR inventory from #438 plus ch
 - Acceptance: test first for symbol-only id collisions in network, router buffer and flat security-fee lines; preserve identical assets, distinct ids and current existing decimal-collision rule. Extend only the existing block warning `fees.preview.warn.assetMismatch`. No signing, network, contract, key, fee-rule, or custody changes.
 - Ownership: relevant recent #421/#423/#425 modify only timing paths. Broad #278/#262/#264/#372 file inventories do not include `packages/ux-fees/src/preview.ts`; check all active PR overlaps again before merge. Integration lock `automation/ghostpay-integration-lock` is held generation 11 by another coordinator; no lock transfer, shared merge, deployment, or release authorized.
 - Verification: exact-head hosted CI required; no native repository Vitest run is claimed because GitHub DNS blocks local clone. Independent review required before integration.
+
+
+---
+
+# 2026-11-22 — OP Stack fee serialization fail-closed boundary (isolated)
+
+- Cycle/worker: `20261122T1036Z`, one GitHub-connector engineering coordinator; sequential source audit, regression and repair phases, without native delegation or independent review.
+- Isolated branch: `automation/20261122T1036Z/bug/opstack-serialization-boundary`; exact baseline `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da` (web fee source blob `2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb`).
+- Owned files: `apps/web/src/lib/opStackFee.ts`, new `apps/web/src/lib/opStackFee.serialization.test.ts`, additive claim in `docs/ai/ACTIVE_WORK.md`, and `docs/handoffs/OPSTACK_SERIALIZE_ERROR_20261122.md`. No shared integration or other branch edits.
+- Discovery: `sweepFeeReserve` serializes its untrusted transaction fields *before* entering the existing try/catch; invalid EIP-1559 fields therefore bypass its fixed, user-facing fee-unavailable error. Valid unsigned transaction / oracle behavior must remain unchanged; never sign or quote a fee when serialization fails.
+- Acceptance: commit regression tests first for malformed OP Stack transaction fields without making an RPC call, typed localized failure and ordinary non-OP zero reserve; then move serialization inside the existing catch; qualify focused Vitest and applicable CI without weakening checks. No contract, wallet custody, fee formula, gas multiplier, chain allowlist, or policy change.
+- Ownership audit: inspected active #372/#278/#264/#262/#349/#307/#380/#454/#455/#461/#462/#452/#449/#450/#274 changed-file lists (including broad stacks); none changed `opStackFee.ts`. This is a *bounded* check, not the full 206+ active-PR semantic audit. Search of open PR descriptions for `opStackFee`, `sweepFeeReserve`, or `GasPriceOracle` returned none. Recheck before integration.
+- Durable integration lock observed `held`, generation 11, owner `994a0d214fb9-root-r3`, lock ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; expiry never grants takeover. No main merge or deployment authorized.
+- Status at claim: claimed before product-source edits; independent review and full-workspace execution pending.
