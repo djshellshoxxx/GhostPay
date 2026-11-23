@@ -40,19 +40,24 @@ describe('sweep timing privacy-option runtime validation', () => {
   });
 
   it('retains true, false, self, sponsored, and omitted privacy-option behavior', () => {
+    // The high current price yields `wait`; that advice must retain its privacy warning.
+    expect(adviseSweepTiming(base({})).advice).toBe('wait');
     expect(privacyKeys({ fundingMethod: 'self', timingJitter: false })).toEqual([
       'fees.timing.privacy.timingLinksAddresses',
       'fees.timing.privacy.enableJitter',
       'fees.timing.privacy.selfFundedGasLinks',
+      'fees.timing.privacy.waitingHelpsButNotGuaranteed',
       'fees.timing.privacy.avoidFixedSchedule',
     ]);
     expect(privacyKeys({ fundingMethod: 'sponsored', timingJitter: true })).toEqual([
       'fees.timing.privacy.timingLinksAddresses',
       'fees.timing.privacy.sponsoredRelayerSees',
+      'fees.timing.privacy.waitingHelpsButNotGuaranteed',
       'fees.timing.privacy.avoidFixedSchedule',
     ]);
     expect(privacyKeys({})).toEqual([
       'fees.timing.privacy.timingLinksAddresses',
+      'fees.timing.privacy.waitingHelpsButNotGuaranteed',
       'fees.timing.privacy.avoidFixedSchedule',
     ]);
   });
