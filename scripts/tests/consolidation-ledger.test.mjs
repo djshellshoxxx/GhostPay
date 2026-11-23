@@ -485,3 +485,49 @@ test('already-finalized retired histories cannot regress or change disposition w
   assert.throws(() => validateLedgerTransition(rewritten, previous),
     /previously retired history was altered/);
 });
+
+
+test('finalized donor source evidence survives later checkpoint rewrites', () => {
+  const previous = fixture();
+  previous.records[1].finalized = true;
+  previous.records[1].disposition = 'audit-or-documentation-only';
+  previous.records[1].evidence = {
+    checkedDonorSha: b, comparedWithSha: a,
+    sourceProof: 'docs/consolidation/immutable-audit.md',
+    assessment: 'All historical executable blobs accounted for',
+    immutableBlobs: { paths: ['src/one.ts', 'src/two.ts'], sha: c }
+  };
+  previous.summary.finalized = 2; previous.summary.unresolved = 0;
+  const next = structuredClone(previous);
+  next.summary.newBranches = []; next.summary.advancedHeads = [];
+  next.summary.priorFinalized = 2; next.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(next, previous).finalized, 2);
+
+  const deleted = structuredClone(next);
+  delete deleted.records[1].evidence;
+  assert.throws(() => validateLedgerTransition(deleted, previous), /historical source evidence/);
+
+  const mutated = structuredClone(next);
+  mutated.records[1].evidence.immutableBlobs.paths[0] = 'src/different.ts';
+  assert.throws(() => validateLedgerTransition(mutated, previous), /historical source evidence/);
+
+  const additive = structuredClone(next);
+  additive.records[1].evidence.reviewNote = 'Reviewed again without replacing the old proof';
+  assert.equal(validateLedgerTransition(additive, previous).finalized, 2);
+});
+
+test('previously finalized retired-history source evidence is not erasable', () => {
+  const previous = fixture();
+  previous.retiredHistories = [{
+    branch: 'historical', sha: c, finalized: true, disposition: 'audit-or-documentation-only',
+    proof: { status: 404, absentInIndependentRefs: true, checkedAtUtc: '2026-11-23T04:12:40Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/historical' },
+    evidence: { sourceProof: 'docs/consolidation/retired-proof.md', checkedDonorSha: c }
+  }];
+  const next = structuredClone(previous);
+  next.summary.newBranches = []; next.summary.advancedHeads = [];
+  next.summary.priorFinalized = 1; next.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(next, previous).finalized, 1);
+  delete next.retiredHistories[0].evidence;
+  assert.throws(() => validateLedgerTransition(next, previous), /historical source evidence/);
+});
