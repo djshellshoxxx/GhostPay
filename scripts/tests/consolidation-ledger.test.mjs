@@ -255,3 +255,37 @@ test('transition checks prohibit fabricated finalization and retroactive status 
   };
   assert.equal(validateLedgerTransition(newly, previous).newlyFinalized, 1);
 });
+
+test('advanced finalized donor heads require renewed evidence pinned to both SHAs', () => {
+  const previous = fixture();
+  previous.records.push({ branch: 'historical-donor', sha: c, finalized: true,
+    disposition: 'superseded-by-qualified-source', prHeads: [], sameShaOtherBranchPrHeads: [] });
+  previous.provenance.branchPages = [3, 0];
+  previous.summary.total = 3; previous.summary.finalized = 2; previous.summary.unresolved = 1;
+  const next = structuredClone(previous);
+  const d = 'd'.repeat(40);
+  next.records[2].sha = d;
+  next.summary.newBranches = [];
+  next.summary.advancedHeads = [{ branch: 'historical-donor', old: c, new: d }];
+  next.summary.priorFinalized = 2; next.summary.newlyFinalized = 0;
+  assert.throws(() => validateLedgerTransition(next, previous), /finalized branch advanced without requalification/);
+
+  next.records[2].evidence = {
+    checkedDonorSha: d, previousFinalizedSha: c, comparedWithSha: a,
+    sourceProof: 'docs/consolidation/provenance.md#historical-donor',
+    assessment: 'full changed-tree source review against qualified implementation'
+  };
+  assert.equal(validateLedgerTransition(next, previous).advancedHeads, 1);
+
+  for (const changes of [
+    { checkedDonorSha: c },
+    { previousFinalizedSha: b },
+    { comparedWithSha: 'bad' },
+    { sourceProof: ' ' },
+    { assessment: ' ' }
+  ]) {
+    const bad = structuredClone(next);
+    Object.assign(bad.records[2].evidence, changes);
+    assert.throws(() => validateLedgerTransition(bad, previous), /finalized branch advanced without requalification/);
+  }
+});
