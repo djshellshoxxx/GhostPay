@@ -48,15 +48,16 @@ export function qrSvgPath(m: QrMatrix): string {
     typeof m !== 'object' || m === null ||
     !Number.isSafeInteger(m.size) || m.size < 21 || m.size > 177 ||
     (m.size - 17) % 4 !== 0 || m.version !== (m.size - 17) / 4 ||
-    !Array.isArray(m.dark) || m.dark.length !== m.size * m.size ||
-    !m.dark.every((cell) => typeof cell === 'boolean')
+    !Array.isArray(m.dark) || m.dark.length !== m.size * m.size
   ) {
     throw new QrExchangeError('BAD_INPUT');
   }
   const parts: string[] = [];
   for (let r = 0; r < m.size; r++) {
     for (let c = 0; c < m.size; c++) {
-      if (m.dark[r * m.size + c] === true) parts.push(`M${String(c + 4)} ${String(r + 4)}h1v1h-1z`);
+      const cell = m.dark[r * m.size + c];
+      if (typeof cell !== 'boolean') throw new QrExchangeError('BAD_INPUT');
+      if (cell) parts.push(`M${String(c + 4)} ${String(r + 4)}h1v1h-1z`);
     }
   }
   return parts.join('');
