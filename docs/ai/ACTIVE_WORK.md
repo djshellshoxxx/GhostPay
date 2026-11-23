@@ -40,6 +40,37 @@ Ownership reconciliation: current integration PR #307 does not change TRON adapt
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
 
 ---
+# Receipt print isolation continuation — 2026-11-20
+
+Worker: ChatGPT lead `/root`, with independent `print_isolation_review` worker.
+Branch: `fix/receipt-print-isolation-312-20261120`.
+Base: PR #316 `56b76e8fbae0aa0d3e9c9394616d4aa600d70fb7`, based on main
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; original finding GP-BUG-02 in #312.
+Owned paths: `apps/web/src/styles/{app,print}.css`, printable bill/receipt component
+print wiring and focused tests, a shared print-target lifecycle helper and its tests,
+`apps/web/e2e/print-targets.spec.ts`, this additive registry entry and the existing
+`docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` continuation.
+Acceptance: reproduce the original invisible receipt in Chromium print media;
+select only the clicked receipt or bill; exclude other receipts, wallet UI, receipt
+JSON/actions and secret QR; clean up after print/cancel, exceptions and unmount;
+preserve normal screen output; pass focused regression tests, typecheck, lint,
+static Pages build/bundle checks and independent review. Preserve the prior PR's
+history and inspect its live head before publishing a continuation. No deployment,
+contract, dependency, fee, wallet/signing or unrelated feature changes.
+Status: implementation and independent source review complete; 53 focused tests,
+typed lint, original-head regression comparison, lean Vite/bundle scan and secret
+scan passed. Final hosted browser/typecheck/full CI remain pending; local Chromium
+was socket-blocked and full-web TypeScript exited 137. Existing PR #316 hosted
+CI/Pages/Beta acceptance/Hosting kit are green only at the starting base.
+
+# Receipt/bill print-target isolation — 2026-11-20T12:41Z
+
+Worker: ChatGPT automation cycle 20261120T1241Z, sequential implementer/auditor (no independent worker available).
+Branch: `automation/20261120T1241Z/bug/receipt-print-css`; exact main base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/styles/print.css` and new `apps/web/e2e/print-targets.spec.ts`, plus a source-pinned `docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` and this additive ownership entry. Do not modify adjacent active source branches.
+Evidence: GP-BUG-02 in PR #312, independently source-confirmed; `print.css` applies `body * {visibility:hidden!important}` globally whereas `app.css` receipt override lacks `!important`. A bill sheet is mounted only during bill printing; a receipt print target is otherwise suppressed.
+Acceptance: reproduce both print modes with print-media computed styles in a browser fixture; ensure receipt is visible without a bill, bill is visible without a receipt, and bill remains exclusive when both exist; all other UI stays print-hidden; retain sensitive-data print restrictions; source review against exact main files; run available tests or record unexecuted checks; preserve the branch as draft pending hosted qualification and separate review. No contracts, workflows, dependencies, Pages settings or deployments.
+Status: implementation and six print-media fixture cases committed. Exact-source static/PostCSS syntax checks passed; repository Playwright, typecheck, lint, hosted CI and independent verification remain outstanding. Lock metadata is separate; no shared integration or protected-main merge attempted.
 
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
@@ -802,3 +833,10 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## GP-BUG-02 receipt and bill print integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-receipt-print-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Integrate #316 at `e0c583be2514b44af7f3b15619fb8160358f1470` without changing its branch. Preserve both ACTIVE_WORK logs.
+- Scope: original print hook, bill/receipt UI and styles, tests, and the integration note. Acceptance: selected bill or receipt renders alone in both Pages browser profiles, controls and sensitive output remain hidden, screen rendering remains intact. Run the original regression coverage and exact-head web, CI and Pages checks.
+- Coordination: #504 overlaps ReceiptPanel.tsx and app.css. Its archive behavior must survive eventual composition. Recovery #372 already contains #316. No new change to their source, reserved features, releases or deploys.
