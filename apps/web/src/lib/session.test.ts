@@ -367,7 +367,8 @@ describe('GP-PAGES-02: a downloaded keystore is unverified until "Verify backup"
     let decrypted: keystore.KeystoreSecrets | undefined;
     const spy = vi.spyOn(keystore, 'decryptKeystore').mockImplementation(async (...args) => {
       const secrets = await decrypt(...args);
-      expect(Object.values(secrets).every((bytes) => bytes.some((byte) => byte !== 0))).toBe(true);
+      const { spendingKey, viewingKey, signingKey } = secrets;
+      expect([spendingKey, viewingKey, signingKey].every((bytes) => bytes.some((byte) => byte !== 0))).toBe(true);
       decrypted = secrets;
       controller.abort();
       return secrets;
