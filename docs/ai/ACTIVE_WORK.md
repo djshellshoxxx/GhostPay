@@ -1,3 +1,13 @@
+# BUG-ONLY R11 — merchant payment button invalid runtime labels (2026-11-23)
+
+Worker: single ChatGPT repair coordinator, no independent reviewer. Isolated branch: `automation/20261123-r11/bug/merchant-button-invalid-label`, exact main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`; source blob `packages/merchant-hooks/src/button.ts` = `386adf476b05b9010b3e757ff960489107d80258`.
+Owned paths: this additive registry entry; `packages/merchant-hooks/src/button.ts`; new `packages/merchant-hooks/src/button.runtime-label.test.ts`; new `docs/handoffs/MERCHANT_BUTTON_RUNTIME_LABEL_R11_20261123.md`. Do not edit pre-existing shared `hooks.test.ts` (PRs #398/#504) or another branch.
+Observed bug: `buildPaymentButton` documents `HooksError('bad-label')` for untrusted invalid labels but a nonstring runtime label reaches `label.replace` and throws native TypeError. Exact main source Git blob reconstructed locally with matching `git hash-object`; a Node.js 22/TypeScript 5.8.3 isolated execution with link dependencies doubled returned TypeError for null, undefined, number, boolean and array (5 failed expected-error assertions; valid/escape/cap/empty/bad-link 5 passed). No real requests, wallet or payment interaction.
+Acceptance: commit a failing dedicated Vitest regression first, then one type guard producing existing `HooksError('bad-label')` while preserving malformed-link precedence and valid text escaping, Unicode cap and whitespace/control handling; execute source-matched directed and neighboring checks; hosted exact-head CI and applicable Pages browser gate required before promotion. No new dependencies, redesign, features, refactors, contracts, network attack, deployment or release.
+Ownership: complete 267-PR changed-file inventory (open snapshot #512 down to #51, pages 1–3) checked for the two paths: no collision; adjacent existing `hooks.test.ts` owned by #398 and #504 and left untouched. Recheck heads before integration. Integration metadata branch `automation/ghostpay-integration-lock`, generation 12 status `released`; not acquired. PR #390 separately rechecked: exact head `b655bc273a6704c9c140287b8adcdf4085b91882`, all five workflow groups successful, no submitted independent reviews, `mergeable=false`; owner branch unchanged.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
