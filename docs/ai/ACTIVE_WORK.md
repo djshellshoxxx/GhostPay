@@ -802,3 +802,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG — Avoid false mixed-script notices from generated display markers (2026-11-23)
+
+Worker: single ChatGPT BUG-ONLY coordinator; sequential author/test review, not independent approval. Branch: `automation/20261123-r11/bug/sanitize-marker-mixed-script`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `apps/web/src/lib/sanitize.ts`, new `apps/web/src/lib/sanitize.marker-script.test.ts`, this additive claim, and new `docs/handoffs/WEB_SANITIZE_MARKER_SCRIPT_20261123.md`. Leave existing hardening/Common tests and PR #390/#419/#422 displayText.ts owner branches untouched. All 283 open PR changed-file inventories in the snapshot through #528 were checked; no sanitize.* ownership collision. Main ACTIVE_WORK contains no claim on these paths. Recheck before any merge.
+
+Observed failure: generated ASCII Unicode-marker letters make otherwise Greek or Cyrillic words appear mixed-script. Exact base blob e5c281aa7f8105b71ef93ea407e8dfa454892317 was hash-matched, compiled with TypeScript 5.8.3 and executed on Node 22.16.0; 6/10 directed assertions passed, 4 failed. Common.SafeText renders the false warning. Acceptance: commit red regression before production change; detect mixed scripts on original input, retain marker text/count, genuine mixed-script warnings and ordinary input. No dependency, fund, network, deployment or interface changes. Full checkout DNS unavailable; require exact-head hosted CI, applicable browser verification, independent review and legitimate integration lease before merge. PR #390 exact head all five workflow groups and Snyk succeeded, no submitted review, nonmergeable; leave owner branch alone. Integration lock generation 12 released, not acquired.
