@@ -141,6 +141,29 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
         reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead' }));
     }));
   }
+  /** Run a synchronous release check while IndexedDB still excludes competing writers. */
+  public ifUnchanged(key: string, expected: string | null, release: () => void): Promise<boolean> {
+    return this.withDb((db) => new Promise((resolve, reject) => {
+      const tx = db.transaction('vaults', 'readonly');
+      const request = tx.objectStore('vaults').get(key);
+      let matched = false;
+      let failure: unknown;
+      request.onsuccess = () => {
+        try {
+          const result: unknown = request.result;
+          if ((result === undefined ? null : result) !== expected || result === null) return;
+          release();
+          matched = true;
+        } catch (error) {
+          failure = new Error('Reconciliation release could not complete', { cause: error });
+          tx.abort();
+        }
+      };
+      tx.oncomplete = () => resolve(matched);
+      tx.onabort = tx.onerror = () => reject(failure instanceof Error ? failure :
+        new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead' }));
+    }));
+  }
   public compareAndSwap(
     key: string,
     expected: string | null,
@@ -206,6 +229,44 @@ export async function createCurrentReconciliationVault(
   chainId: number,
   sellerKeyId: string,
 ): Promise<ReconciliationVault> {
+  return openReconciliationVault(chainId, sellerKeyId, browserStore);
+}
+
+/** Authenticate a snapshot, then recheck its exact ciphertext before releasing any export bytes. */
+export async function releaseFromCurrentReconciliationState(
+  chainId: number,
+  sellerKeyId: string,
+  release: (state: ReconciliationState) => void,
+): Promise<boolean> {
+  const guard = captureSessionGuard();
+  const observed: { snapshot?: { readonly key: string; readonly ciphertext: string | null } } = {};
+  const store: ReconciliationVaultStore = {
+    async read(key) {
+      const ciphertext = await browserStore.read(key);
+      observed.snapshot = { key, ciphertext };
+      return ciphertext;
+    },
+    compareAndSwap: () => Promise.reject(new Error('Read-only reconciliation snapshot')),
+  };
+  const vault = await openReconciliationVault(chainId, sellerKeyId, store);
+  try {
+    const state = await vault.readState();
+    const { snapshot } = observed;
+    if (snapshot === undefined) return false;
+    return await browserStore.ifUnchanged(snapshot.key, snapshot.ciphertext, () => {
+      guard();
+      release(state);
+    });
+  } finally {
+    vault.lock();
+  }
+}
+
+async function openReconciliationVault(
+  chainId: number,
+  sellerKeyId: string,
+  store: ReconciliationVaultStore,
+): Promise<ReconciliationVault> {
   const guard = captureSessionGuard();
   const session = getSessionPublic();
   if (
@@ -213,7 +274,7 @@ export async function createCurrentReconciliationVault(
     checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey) !== sellerKeyId
   )
     fail({ key: 'error.reconciliationVault.theCurrentSellerScopeChanged' });
-  const vault = new ReconciliationVault(browserStore, { chainId, sellerKeyId }, guard);
+  const vault = new ReconciliationVault(store, { chainId, sellerKeyId }, guard);
   try {
     await vault.unlock(revealViewingKey());
     guard();

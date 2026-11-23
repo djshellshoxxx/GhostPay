@@ -85,9 +85,13 @@ export function invoiceState(row: DashboardRow, observations: readonly LedgerObs
 /** Include both calendar dates, interpreted in UTC, with a half-open upper bound. */
 export function utcRange(from: string, through: string): readonly [number, number] | undefined {
   const parse = (value: string): number => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return NaN;
-    const ms = Date.parse(value + 'T00:00:00Z');
-    return Number.isFinite(ms) && new Date(ms).toISOString().slice(0, 10) === value ? ms / 1000 : NaN;
+    if (!/^\d{4,6}-\d{2}-\d{2}(?![\s\S])/.test(value)) return NaN;
+    const [year, month, day] = value.split('-').map(Number);
+    if (year === undefined || month === undefined || day === undefined || year === 0) return NaN;
+    const date = new Date(0);
+    const ms = date.setUTCFullYear(year, month - 1, day);
+    return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+      ? ms / 1000 : NaN;
   };
   const start = from === '' ? 0 : parse(from);
   const end = through === '' ? Infinity : parse(through) + 86_400;

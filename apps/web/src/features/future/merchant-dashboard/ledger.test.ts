@@ -70,6 +70,7 @@ describe('dashboard over the encrypted ledger', () => {
 
   it('validates chronological UTC date ranges and includes the full end date', () => {
     expect(utcRange('2024-02-29', '2024-02-29')).toEqual([1_709_164_800, 1_709_251_200]);
+    expect(utcRange('10000-01-01', '10000-01-01')).toEqual([253_402_300_800, 253_402_387_200]);
     expect(utcRange('2026-02-29', '')).toBeUndefined();
     expect(utcRange('2026-08-02', '2026-08-01')).toBeUndefined();
   });

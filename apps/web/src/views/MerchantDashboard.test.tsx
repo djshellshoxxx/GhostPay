@@ -10,12 +10,14 @@ import { clearSession, generateSession } from '../lib/session';
 import { renderWith } from '../test/render';
 
 const openVault = vi.hoisted(() => vi.fn());
+const releaseState = vi.hoisted(() => vi.fn<typeof import('../lib/reconciliationVault').releaseFromCurrentReconciliationState>());
 vi.mock('../lib/reconciliationVault', async (importOriginal) => ({
   ...await importOriginal<typeof import('../lib/reconciliationVault')>(),
   createCurrentReconciliationVault: openVault,
+  releaseFromCurrentReconciliationState: releaseState,
 }));
 
-afterEach(() => { clearSession(); openVault.mockReset(); vi.restoreAllMocks(); vi.useRealTimers(); });
+afterEach(() => { clearSession(); openVault.mockReset(); releaseState.mockReset(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 it('opens the real Pages route and handles loading, empty, stale, error, retry and lock', async () => {
   generateSession();
@@ -53,8 +55,18 @@ it('revokes an export when encrypted storage changes without delivering an inval
     records: [], receipts: [], readOnly: false,
     invoices: [{ invoiceDigest: '0x' + 'a'.repeat(64), chainId: 84532, asset: 'native', expectedNetMinorUnits: '100', expiresAt: 4_000_000_000 }],
   };
-  const readState = vi.fn().mockResolvedValue(initial);
+  const readState = vi.fn<() => Promise<typeof initial>>().mockResolvedValue(initial);
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
+  releaseState.mockImplementation(async (_chain, _seller, release) => {
+    const latest = await readState();
+    release({
+      ...latest,
+      invoices: latest.invoices.map((invoice) => ({
+        ...invoice, version: 1, nonce: '0'.repeat(32), createdAt: 1, registeredAt: 1000,
+      })),
+    });
+    return true;
+  });
   renderWith(<AppLean />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));

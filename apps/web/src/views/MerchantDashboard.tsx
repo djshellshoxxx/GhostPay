@@ -10,7 +10,7 @@ import type { DashboardContext } from '../features/future/merchant-dashboard/mod
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { subscribeAppLock } from '../lib/appLock';
-import { createCurrentReconciliationVault, subscribeReconciliationChanges, type ReconciliationState } from '../lib/reconciliationVault';
+import { createCurrentReconciliationVault, releaseFromCurrentReconciliationState, subscribeReconciliationChanges, type ReconciliationState } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { getSessionPublic, subscribeSession, type SessionPublic } from '../lib/session';
 import { useServices } from '../lib/services';
@@ -96,6 +96,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const overview = useRef<HTMLHeadingElement>(null);
   const retry = useRef<HTMLButtonElement>(null);
   const previewButton = useRef<HTMLButtonElement>(null);
+  const previewControls = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (!focusAfterRead.current) return;
@@ -113,6 +114,9 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
 
   const load = useCallback((refresh = false): void => {
     if (getSessionPublic() !== session) return;
+    if (refresh && overview.current?.closest('.merchant-dashboard')?.contains(document.activeElement)) {
+      focusAfterRead.current = true;
+    }
     active.current?.abort();
     const operation = new AbortController();
     active.current = operation;
@@ -193,6 +197,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     const update = (): void => {
       const time = Date.now();
       if (preview !== undefined && expiryChanged(data, status, preview.selectedAt, time)) {
+        if (previewControls.current?.contains(document.activeElement)) overview.current?.focus();
         exporter.cancel();
         setPreview(undefined);
       }
@@ -341,7 +346,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
           setPreview({ preview: consent, totals, selectedAt: clock });
         } catch { setPreview(undefined); setExportError(true); }
       }}>{t('dashboard.preview')}</button>
-      {preview !== undefined && <div className="dashboard-actions">
+      {preview !== undefined && <div ref={previewControls} className="dashboard-actions">
         <p role="status">{t('dashboard.previewCount', { count: preview.preview.count, format: preview.preview.format.toUpperCase() })}</p>
         <ul>{[...preview.totals].map(([asset, total]) => <li key={asset}>
           <bdi>{asset}</bdi>{' '}{t('dashboard.expectedTotal', { amount: total.toString() })}
@@ -361,19 +366,14 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
             const current = (): boolean => !data.context.signal.aborted && getSessionPublic() === session && approval === exportRevision.current;
             void (async () => {
               try {
-                const vault = await createCurrentReconciliationVault(chain, seller);
-                try {
+                let released = false;
+                await releaseFromCurrentReconciliationState(chain, seller, (latest) => {
                   if (!current()) return;
-                  const latest = await vault.readState();
-                  if (!current()) return;
-                  if (expiryChanged(data, status, preview.selectedAt, Date.now()) || ledgerFingerprint(latest) !== data.fingerprint) {
-                    load(true);
-                    return;
-                  }
+                  if (expiryChanged(data, status, preview.selectedAt, Date.now()) || ledgerFingerprint(latest) !== data.fingerprint) return;
                   downloadText('ghostpay-invoices.' + preview.preview.format, file.content, file.mimeType);
-                } finally {
-                  vault.lock();
-                }
+                  released = true;
+                });
+                if (!released && current()) load(true);
               } catch {
                 if (current()) setExportError(true);
               }

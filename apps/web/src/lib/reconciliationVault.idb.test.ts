@@ -76,6 +76,19 @@ describe('encrypted reconciliation IndexedDB connection recovery', () => {
 });
 
 describe('encrypted reconciliation IndexedDB: closed connections and a full quota', () => {
+  it('only releases a reviewed snapshot while its ciphertext matches in IndexedDB', async () => {
+    const { requests } = installOpenFactory();
+    const store = new IdbReconciliationVaultStore();
+    const release = vi.fn();
+    const stale = store.ifUnchanged('scope', 'old-cipher', release);
+    requests[0]!.result = fakeDb({ getResult: 'new-cipher' });
+    requests[0]!.onsuccess?.();
+    await expect(stale).resolves.toBe(false);
+    expect(release).not.toHaveBeenCalled();
+    await expect(store.ifUnchanged('scope', 'new-cipher', release)).resolves.toBe(true);
+    expect(release).toHaveBeenCalledOnce();
+  });
+
   it('opens again after the browser closed the connection (close event)', async () => {
     const { requests, open } = installOpenFactory();
     const store = new IdbReconciliationVaultStore();
