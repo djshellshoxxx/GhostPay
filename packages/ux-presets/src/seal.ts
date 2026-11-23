@@ -86,8 +86,11 @@ export async function resolveKey(material: KeyMaterial, c: CryptoLike): Promise<
         await c.subtle.importKey('raw', new Uint8Array(material), 'AES-GCM', false, ['encrypt', 'decrypt']),
       );
     }
-    // A metadata-shaped object is not a usable native WebCrypto key.
-    if (typeof CryptoKey === 'undefined' || !(material instanceof CryptoKey)) return keyBad();
+    // Use the native WebCrypto brand check: instanceof alone accepts forged prototypes.
+    const nativeType = typeof CryptoKey === 'undefined'
+      ? undefined
+      : Object.getOwnPropertyDescriptor(CryptoKey.prototype, 'type')?.get;
+    if (nativeType === undefined || nativeType.call(material) !== 'secret') return keyBad();
     const k = material as Partial<CryptoKey> | null;
     const alg = k?.algorithm as Partial<AesKeyAlgorithm> | undefined;
     if (
