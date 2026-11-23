@@ -79,6 +79,20 @@ export function validateLedger(data) {
     prs.set(pr.number, pr);
   }
 
+
+  // A historical donor may be closed as structurally represented by an unmerged
+  // recovery PR, but only while that exact parent SHA is still open and pinned.
+  // Rebase, force-update or merge invalidates the old source/evidence relationship.
+  for (const row of data.records) {
+    if (!row.finalized || !row.disposition.includes('in-unmerged-recovery')) continue;
+    const parentNumber = row.evidence.parentPR ?? row.evidence.parentPr;
+    check(Number.isSafeInteger(parentNumber) && parentNumber > 0,
+      `branch ${row.branch} missing recovery parent PR number`);
+    const parent = prs.get(parentNumber);
+    check(parent && parent.headSha === row.evidence.parentHead,
+      `branch ${row.branch} recovery parent PR head changed or is absent`);
+  }
+
   for (const branch of data.records) {
     const own = data.openPrs.filter(pr => pr.headRepo === data.repository && pr.headRef === branch.branch);
     const aliases = data.openPrs.filter(pr => pr.headRepo === data.repository && pr.headSha === branch.sha && pr.headRef !== branch.branch);
