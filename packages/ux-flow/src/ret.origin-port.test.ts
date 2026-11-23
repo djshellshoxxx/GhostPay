@@ -41,6 +41,7 @@ describe('canonical long HTTPS origin with explicit port', () => {
       `https://user@${LONG_HOST}:65535`,
       `http://${LONG_HOST}:65535`,
       `https://${LONG_HOST}:65536`,
+      `https://${LONG_HOST}d`, // 254-character hostname must remain rejected without a port
     ]) {
       expect(canonicalOrigin(bad)).toBeNull();
     }
