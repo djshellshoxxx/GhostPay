@@ -6,15 +6,17 @@ const ORIGIN = 'https://pay.example.com';
 const LINK = `${ORIGIN}/#gpi=v1.test`;
 
 describe('makeSnippet runtime option-record validation', () => {
-  it.each([null, 0, false, []])('rejects non-record options using BAD_OPTION: %s', (options) => {
-    let error: unknown;
-    try {
-      makeSnippet(LINK, ORIGIN, options as never);
-    } catch (e) {
-      error = e;
+  it('rejects null, primitive and array option containers with BAD_OPTION', () => {
+    for (const options of [null, 0, false, []]) {
+      let error: unknown;
+      try {
+        makeSnippet(LINK, ORIGIN, options as never);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(FlowError);
+      expect((error as FlowError).code).toBe('BAD_OPTION');
     }
-    expect(error).toBeInstanceOf(FlowError);
-    expect((error as FlowError).code).toBe('BAD_OPTION');
   });
 
   it('continues to accept omitted and valid option records', () => {
