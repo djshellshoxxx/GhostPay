@@ -145,6 +145,13 @@ export function validateLedger(data) {
     const key = `${row.branch}:${row.sha}`;
     check(!retiredKeys.has(key), 'duplicate retired history');
     retiredKeys.add(key);
+    // A ref can be re-created at a different SHA after its historical deletion,
+    // but it cannot be simultaneously live and retired at the *same* SHA.
+    check(branches.get(row.branch)?.sha !== row.sha,
+      `retired history ${row.branch} still live at the recorded SHA`);
+    // Deleting a ref never qualifies missing or dangerous functionality.
+    if (row.finalized) check(!NONFINAL_DISPOSITION.test(row.disposition),
+      'retired history cannot be finalized with unresolved disposition');
     check(object(row.proof) && row.proof.status === 404 &&
       row.proof.absentInIndependentRefs === true &&
       typeof row.proof.checkedAtUtc === 'string' && !Number.isNaN(Date.parse(row.proof.checkedAtUtc)) &&
