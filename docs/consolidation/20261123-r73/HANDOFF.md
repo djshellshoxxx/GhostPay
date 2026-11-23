@@ -1,0 +1,5 @@
+# R73 durable handoff
+
+Checked 2026-11-23T20:03:41.814Z. Main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`; prepublication #471 `5f2378f8bbde211fa5f9e165568653b943de3ad5`. 100/100/100/100/100/87/0 branch pages, 100/100/76/0 PR pages, 587 names/SHAs independently matched. 319 finalized live + 268 unresolved live + 1 unresolved retired; 269 globally unresolved. New #521 owner-held; one structural redundancy #236. No application integration/merge. See SOURCE_ENGINEERING.md.
+
+Next: verify final R73 exact-head CI and native tests; coordinate #493 scoped dependency policy recovery and regenerate pinned npm lock only with owner; prioritize unowned payment recovery/export/expiry code after ownership and C1 #504 gate refresh; continue uncapped source classification. R72 prior CI 28/28. Protection endpoint 403, empty rulesets and branch summary protected=false do not establish authorization policy. Generation 12 released, not acquired. Independent review outstanding; no deployment, release, funds, deletion or force push.
