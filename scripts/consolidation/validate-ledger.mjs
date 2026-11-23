@@ -64,6 +64,8 @@ export function validateLedger(data) {
     }
     branches.set(row.branch, row);
   }
+  check(branches.get('main')?.sha === data.provenance.mainSha,
+    'main ref SHA inconsistent with provenance');
   const prs = new Map();
   for (const [i, pr] of data.openPrs.entries()) {
     check(object(pr) && Number.isSafeInteger(pr.number) && pr.number > 0, `PR[${i}] invalid number`);
@@ -164,6 +166,19 @@ export function validateLedgerTransition(current, previous) {
     check(successor, `historical branch disappeared: ${name}`);
     if (row.finalized && !successor.finalized)
       check(false, `finalized classification regressed: ${name}`);
+    // A finalized donor classification applies only to its examined commit.
+    // If its head changes, prior proof cannot silently cover the new code.
+    // The main branch is a live integration reference, not a donor.
+    if (name !== 'main' && row.finalized && row.sha !== successor.sha) {
+      const proof = successor.evidence;
+      check(object(proof) &&
+        proof.checkedDonorSha === successor.sha &&
+        proof.previousFinalizedSha === row.sha &&
+        validSha(proof.comparedWithSha) &&
+        typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
+        typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
+        `finalized branch advanced without requalification: ${name}`);
+    }
   }
 
   const expectedNew = uniqueSorted(current.records.filter(row => !old.has(row.branch))
