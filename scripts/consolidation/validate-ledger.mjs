@@ -18,6 +18,23 @@ function sameSet(got, want) {
 function uniqueSorted(items) {
   return [...new Set(items)].sort();
 }
+// Historical source proof is append-only. An advanced donor may add a new
+// qualification and archive the old proof in evidence.history, but must not
+// quietly remove or rewrite the source/identity evidence from earlier cycles.
+function proofContains(current, prior) {
+  if (Array.isArray(prior)) return Array.isArray(current) &&
+    current.length >= prior.length && prior.every((value, i) => proofContains(current[i], value));
+  if (object(prior)) return object(current) &&
+    Object.keys(prior).every(key => Object.prototype.hasOwnProperty.call(current, key) &&
+      proofContains(current[key], prior[key]));
+  return Object.is(current, prior);
+}
+function retainsHistoricalEvidence(current, prior) {
+  if (proofContains(current, prior)) return true;
+  return object(current) && Array.isArray(current.history) &&
+    current.history.some(entry => proofContains(entry, prior));
+}
+
 function validPageSequence(pages) {
   // An empty result needs just one terminal page. Every earlier page must be
   // full; a short nonterminal page or a second terminal page means the census
@@ -203,6 +220,12 @@ export function validateLedgerTransition(current, previous) {
     // later proves an unresolved, deleted history is safe to finalize.
     check(successor && JSON.stringify(successor.proof) === JSON.stringify(row.proof),
       `previously retired history was altered or dropped: ${row.branch}`);
+    if (row.finalized) {
+      if (Object.prototype.hasOwnProperty.call(row, 'evidence')) {
+        check(retainsHistoricalEvidence(successor.evidence, row.evidence),
+          `retired history historical source evidence was erased: ${row.branch}`);
+      }
+    }
     if (row.finalized || !successor.finalized) {
       check(successor.finalized === row.finalized &&
         successor.disposition === row.disposition,
@@ -229,6 +252,11 @@ export function validateLedgerTransition(current, previous) {
         `retired history prior state mismatch or historical branch disappeared: ${name}`);
       disappeared.push(row);
       continue;
+    }
+    if (name !== 'main' && row.finalized &&
+        Object.prototype.hasOwnProperty.call(row, 'evidence')) {
+      check(retainsHistoricalEvidence(successor.evidence, row.evidence),
+        `branch historical source evidence was erased: ${name}`);
     }
     if (row.finalized && !successor.finalized)
       check(false, `finalized classification regressed: ${name}`);
