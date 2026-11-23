@@ -305,3 +305,22 @@ test('main census SHA must equal main provenance and may advance without donor r
   current.summary.newlyFinalized = 0;
   assert.equal(validateLedgerTransition(current, previous).mainSha, c);
 });
+
+test('newly inventoried docs-only branch needs source proof before immediate finalization', () => {
+  const previous = fixture();
+  const next = structuredClone(previous);
+  next.records.push({ branch: 'audit/new-donor', sha: c, finalized: true,
+    disposition: 'audit-or-documentation-only', prHeads: [], sameShaOtherBranchPrHeads: [] });
+  next.provenance.branchPages = [3, 0];
+  next.summary.total = 3; next.summary.finalized = 2; next.summary.unresolved = 1;
+  next.summary.priorFinalized = 1; next.summary.newlyFinalized = 1;
+  next.summary.newBranches = [{ branch: 'audit/new-donor', sha: c }];
+  next.summary.advancedHeads = [];
+  assert.throws(() => validateLedgerTransition(next, previous), /new finalization needs source proof/);
+  next.records[2].evidence = {
+    checkedDonorSha: c, comparedWithSha: a,
+    sourceProof: 'docs/consolidation/triage.md#new-donor',
+    assessment: 'Full donor tree contained only historical audit notes'
+  };
+  assert.equal(validateLedgerTransition(next, previous).newlyFinalized, 1);
+});
