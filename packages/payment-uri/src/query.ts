@@ -17,6 +17,8 @@ const enc = new TextEncoder();
 
 /** Percent-encodes RFC 3986 bytes; refuses malformed UTF-16 rather than silently inserting U+FFFD. */
 export function pctEncode(s: string): string {
+  // TypeScript types disappear at the JavaScript boundary; TextEncoder otherwise coerces values.
+  if (typeof s !== 'string') return fail('INVALID_INPUT');
   // With the Unicode flag, a valid high/low pair is one scalar, but an unpaired surrogate still matches.
   if (/[\uD800-\uDFFF]/u.test(s)) return fail('INVALID_ENCODING');
   let out = '';
