@@ -1,3 +1,15 @@
+# GP-PAGES-02 — selected seller keystore recovery verification (2026-11-23)
+
+Worker and integrator: Codex. Branch: `codex/ghostpay-keystore-verification-20261123`. Refreshed main base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Scope: `apps/web/src/views/SellerKeys.tsx`, the existing v1 codec in `packages/ux-vault/src/keystore-portable.ts`, localized messages, regression tests and this handoff. Main already authenticates a bounded encrypted keystore, derives and compares seller identities and clears transient key bytes in `apps/web/src/lib/session.ts`. The selected file lacks a reliable result, typed format/key diagnostics and focused recovery-safety assertions. Verification must preserve loaded keys and saved vault ciphertext, with only matching files qualifying as a verified external copy.
+
+Coordination: Related open #365 `45ece45defd2a26cfb7f471ea4654ba4d1d2266e` and #504 `cdf1510116d84855ef6e579f80e0e05a0fb1a5f1` carry the operation-ownership lineage from #314/#333. Preserve those branches and avoid porting their unrelated save/unlock/export changes. #260 `f3bb7c662274c4a4394324c405b49517ad2b1461` reconciles the separate Spec 18 stealth-payment export work from #239/#240. Integration lock `082e754f44944ebb4be283f89176b966bf8f7b4f` was released at generation 12. No shared integration planned.
+
+Acceptance: real v1 export round-trip and identity match, unchanged vault, safe typed failures, cancelled plaintext cleanup and distinct per-file UI states. Run focused and repository typecheck, lint, build, browser, bundle and committed-secret checks. Obtain independent exact-head review.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.

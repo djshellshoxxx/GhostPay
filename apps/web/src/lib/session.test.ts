@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { UserFacingError } from './errors';
+import * as keystore from './keystore';
 import { armSessionVault, sessionHasExternalCopy, sessionHasUnverifiedCopy, verifyDownloadedBackup, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, revealViewingKey, sessionVaultRecord, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, subscribeSession } from './session';
 
 afterEach(() => {
@@ -305,15 +307,83 @@ describe('GP-PAGES-02: a downloaded keystore is unverified until "Verify backup"
     const pub = getSessionPublic();
     const text = await exportKeystore(PASS, { N: 1 << 14 });
     markKeystoreDownloaded(guard);
-    await expect(verifyDownloadedBackup(text, 'wrong passphrase!!')).rejects.toThrow();
+    await expect(verifyDownloadedBackup(text, 'wrong passphrase!!')).rejects.toMatchObject({
+      translation: { key: 'error.keystore.wrongPassphraseOrTheKeystoreWasModified' },
+    });
     const damaged = JSON.parse(text) as { ciphertext: string };
     damaged.ciphertext = (damaged.ciphertext[0] === '0' ? '1' : '0') + damaged.ciphertext.slice(1);
-    await expect(verifyDownloadedBackup(JSON.stringify(damaged), PASS)).rejects.toThrow();
-    await expect(verifyDownloadedBackup(text.slice(0, text.length - 40), PASS)).rejects.toThrow();
+    await expect(verifyDownloadedBackup(JSON.stringify(damaged), PASS)).rejects.toMatchObject({
+      translation: { key: 'error.keystore.wrongPassphraseOrTheKeystoreWasModified' },
+    });
+    await expect(verifyDownloadedBackup(text.slice(0, text.length - 40), PASS)).rejects.toMatchObject({
+      translation: { key: 'error.keystore.invalidFile' },
+    });
     await expect(verifyDownloadedBackup(other, PASS)).rejects.toThrow(/does not hold the loaded seller keys|theBackupFileDoesNotHold/);
     expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
     expect(sessionHasExternalCopy()).toBe(false);
     expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('rejects malformed, oversized and unsupported backup files with typed errors', async () => {
+    generateSession();
+    for (const [input, key] of [
+      ['[]', 'error.keystore.invalidFile'],
+      [' '.repeat(keystore.MAX_KEYSTORE_BYTES + 1), 'error.keystore.fileTooLarge'],
+      ['{"v":2,"futureField":true}', 'error.keystore.unsupportedVersion'],
+    ] as const) {
+      const result = verifyDownloadedBackup(input, PASS);
+      await expect(result).rejects.toBeInstanceOf(UserFacingError);
+      await expect(result).rejects.toMatchObject({ translation: { key } });
+    }
+    expect(sessionHasExternalCopy()).toBe(false);
+  });
+
+  it('refuses authenticated backups whose keys are invalid or disagree with the metadata', async () => {
+    const pub = generateSession();
+    const meta = { metaAddress: pub.metaAddress, signer: pub.signerPublicKey };
+    const secrets = {
+      spendingKey: new Uint8Array(32),
+      viewingKey: new Uint8Array(32).fill(2),
+      signingKey: new Uint8Array(32).fill(3),
+    };
+    const invalid = await keystore.encryptKeystore(secrets, meta, PASS, { N: 1 << 14 });
+    await expect(verifyDownloadedBackup(invalid, PASS)).rejects.toMatchObject({
+      translation: { key: 'error.keystore.invalidKeys' },
+    });
+    secrets.spendingKey.fill(1);
+    const mismatched = await keystore.encryptKeystore(secrets, meta, PASS, { N: 1 << 14 });
+    await expect(verifyDownloadedBackup(mismatched, PASS)).rejects.toMatchObject({
+      translation: { key: 'error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys' },
+    });
+    expect(sessionHasExternalCopy()).toBe(false);
+    expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('wipes decrypted key bytes when the caller cancels during decryption', async () => {
+    const pub = generateSession();
+    const text = await exportKeystore(PASS, { N: 1 << 14 });
+    const controller = new AbortController();
+    const decrypt = keystore.decryptKeystore;
+    let decrypted: keystore.KeystoreSecrets | undefined;
+    const spy = vi.spyOn(keystore, 'decryptKeystore').mockImplementation(async (...args) => {
+      const secrets = await decrypt(...args);
+      expect(Object.values(secrets).every((bytes) => bytes.some((byte) => byte !== 0))).toBe(true);
+      decrypted = secrets;
+      controller.abort();
+      return secrets;
+    });
+    try {
+      await expect(verifyDownloadedBackup(text, PASS, controller.signal)).rejects.toMatchObject({
+        translation: { key: 'error.session.theBackupVerificationWasClosed' },
+      });
+      expect(decrypted).toEqual({
+        spendingKey: new Uint8Array(32), viewingKey: new Uint8Array(32), signingKey: new Uint8Array(32),
+      });
+      expect(sessionHasExternalCopy()).toBe(false);
+      expect(getSessionPublic()).toBe(pub);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('a verification that was closed, or whose keys changed meanwhile, records nothing', async () => {

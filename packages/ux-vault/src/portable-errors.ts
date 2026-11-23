@@ -1,6 +1,9 @@
 /** Public, non-sensitive diagnostics shared with the GUI's localized adapters. */
 export type PortableMessageKey =
   'error.keystore.invalidFile'
+  | 'error.keystore.fileTooLarge'
+  | 'error.keystore.invalidKeys'
+  | 'error.keystore.unsupportedVersion'
   | 'error.keystore.invalidScryptCost'
   | 'error.keystore.passphraseShort'
   | 'error.keystore.passphraseWeak'

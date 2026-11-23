@@ -65,7 +65,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [importPass, setImportPass] = useState('');
   const [importText, setImportText] = useState<string | undefined>();
   const operation = useRef<AbortController | null>(null);
-  const operationKind = useRef<'export' | 'import' | 'unlock' | 'verify' | undefined>(undefined);
+  const operationKind = useRef<'export' | 'import' | 'unlock' | undefined>(undefined);
   const mounted = useRef(false);
   const generation = useRef(0);
   const fileInput = useRef<HTMLInputElement | null>(null);
@@ -75,9 +75,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   // "Verify backup" (GP-PAGES-02): its own file, passphrase and busy flag, so an aborted verify or a failed unlock never
   // leaves the other form disabled.
   const verifyFileInput = useRef<HTMLInputElement | null>(null);
+  const verification = useRef<AbortController | null>(null);
   const [verifyFile, setVerifyFile] = useState<File | undefined>(undefined);
   const [verifyPass, setVerifyPass] = useState('');
-  const [verifyBusy, setVerifyBusy] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ kind: 'error'; text: DisplayMessage } | { kind: 'ok' }>();
+  const [verifyProgress, setVerifyProgress] = useState<'reading' | 'checking'>();
+  const verifyBusy = verifyProgress !== undefined;
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
   // Public meta-address named by the saved vault, if it is a readable keystore.
   const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
@@ -112,13 +115,14 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const resetFilePicker = (): void => {
     if (fileInput.current !== null) fileInput.current.value = '';
   };
-  const resetVerify = (): void => {
-    if (verifyFileInput.current !== null) verifyFileInput.current.value = '';
-    setVerifyFile(undefined); setVerifyPass(''); setVerifyBusy(false);
+  const stopVerification = (): void => {
+    verification.current?.abort();
+    verification.current = null;
   };
-  const cancelVerify = (): void => {
-    if (operationKind.current === 'verify') stopOperation();
-    resetVerify();
+  const resetVerify = (): void => {
+    stopVerification();
+    if (verifyFileInput.current !== null) verifyFileInput.current.value = '';
+    setVerifyFile(undefined); setVerifyPass(''); setVerifyResult(undefined); setVerifyProgress(undefined);
   };
   const stopOperation = (): void => {
     generation.current += 1;
@@ -135,7 +139,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   };
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; stopOperation(); };
+    return () => { mounted.current = false; stopOperation(); stopVerification(); };
   }, []);
   const suggestPass = (): void => { const next = generatePassphrase(); setSuggestedPass(next); setPass(next); setPass2(''); };
   const suggestVaultPass = (): void => { const next = generatePassphrase(); setSuggestedVaultPass(next); setVaultSavePass(next); setVaultSavePass2(''); };
@@ -167,7 +171,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     resetFilePicker(); resetVerify();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
-  const startOperation = (kind: 'export' | 'import' | 'unlock' | 'verify'): AbortController => {
+  const startOperation = (kind: 'export' | 'import' | 'unlock'): AbortController => {
     stopOperation();
     const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;
   };
@@ -284,24 +288,43 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onVerifyBackup = (e: FormEvent): void => {
     e.preventDefault();
-    if (verifyFile === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
-    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
-    const controller = startOperation('verify');
-    const selected = verifyFile; const passphrase = verifyPass;
-    setVerifyBusy(true); setMessage({ kind: 'ok', text: { key: 'sellerKeys.verify.checking' } });
+    if (verification.current !== null) return;
+    const selected = verifyFile;
+    const passphrase = verifyPass;
+    setVerifyPass('');
+    setVerifyResult(undefined);
+    if (selected === undefined) {
+      setVerifyResult({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } });
+      return;
+    }
+    if (selected.size > MAX_KEYSTORE_BYTES) {
+      setVerifyResult({ kind: 'error', text: { key: 'error.keystore.fileTooLarge' } });
+      return;
+    }
+    const controller = new AbortController();
+    verification.current = controller;
+    const ownsVerification = (): boolean => verification.current === controller && !controller.signal.aborted;
+    const unchanged = captureSessionVersionGuard();
+    setVerifyProgress('reading');
     void (async () => {
       try {
         const text = await selected.text();
-        if (!currentOperation(controller)) return;
+        if (!ownsVerification()) return;
+        unchanged();
+        setVerifyProgress('checking');
         await verifyDownloadedBackup(text, passphrase, controller.signal);
-        if (!currentOperation(controller)) return;
+        if (!ownsVerification()) return;
+        unchanged();
         resetVerify();
-        done({ key: 'sellerKeys.verify.ok' });
+        setVerifyResult({ kind: 'ok' });
       } catch (error) {
-        if (!currentOperation(controller)) return;
-        setVerifyPass(''); setVerifyBusy(false); fail(error);
+        if (!ownsVerification()) return;
+        setVerifyResult({ kind: 'error', text: captureUserMessage(error) });
       } finally {
-        if (operation.current === controller) operationKind.current = undefined;
+        if (ownsVerification()) {
+          verification.current = null;
+          setVerifyProgress(undefined);
+        }
       }
     })();
   };
@@ -582,19 +605,24 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
           <section className="panel" aria-labelledby="verify-backup-h">
             <h4 id="verify-backup-h">{t('sellerKeys.verify.heading')}</h4>
-            <p>{backup?.verified === true ? t('sellerKeys.verify.verified') : t('sellerKeys.verify.explain')}</p>
+            <p>{t('sellerKeys.verify.explain')}</p>
+            <div role="status">
+              {verifyProgress !== undefined && <p>{verifyProgress === 'reading' ? t('sellerKeys.verify.reading') : t('sellerKeys.verify.checking')}</p>}
+              {verifyResult?.kind === 'ok' && <Notice kind="ok">{t('sellerKeys.verify.ok')} {t('sellerKeys.verify.limit')}</Notice>}
+            </div>
+            {verifyResult?.kind === 'error' && <Notice kind="error">{displayMessage(verifyResult.text, t)}</Notice>}
             <form onSubmit={onVerifyBackup} className="stack" autoComplete="off">
               <Field label={t('sellerKeys.verify.file')}>{(id) => <>
                 <input id={id} aria-describedby={verifyFile === undefined ? undefined : `${id}-file`} ref={verifyFileInput} type="file" accept="application/json,.json" onChange={(e) => {
                   const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
                   if (chosen === undefined) return;
-                  cancelVerify(); setVerifyFile(chosen);
+                  resetVerify(); setVerifyFile(chosen);
                 }} />
                 {verifyFile !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={verifyFile.name} /></bdi></p>}
               </>}</Field>
-              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operationKind.current === 'verify') stopOperation(); setVerifyBusy(false); setVerifyPass(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { stopVerification(); setVerifyProgress(undefined); setVerifyResult(undefined); setVerifyPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
-              {verifyBusy && <button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button>}
+              {verifyBusy && <button type="button" className="btn" onClick={resetVerify}>{t('sellerKeys.verify.cancel')}</button>}
             </form>
           </section>
 
