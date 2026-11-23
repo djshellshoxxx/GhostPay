@@ -273,7 +273,7 @@ export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { read
   }
   // Not part of the scan: Sweep reads the found address's balance and prepares/sends the sweep via the Settings RPC.
   const sweepIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
-  rows.push({ party: { key: 'scanPrivacy.disclosure.sweepParty' }, learns: { key: privatePathForbidsDirect(s) ? 'scanPrivacy.disclosure.sweepOnRequest' : 'scanPrivacy.disclosure.sweepAuto', values: { ip: sweepIp } } });
+  rows.push({ party: { key: 'scanPrivacy.disclosure.sweepParty' }, learns: { key: 'scanPrivacy.disclosure.sweepOnRequest', values: { ip: sweepIp } } });
   rows.push({ party: { key: 'scanPrivacy.disclosure.everyoneParty' }, learns: s.transport === 'direct'
     ? { key: 'scanPrivacy.disclosure.everyone' }
     : { key: 'scanPrivacy.disclosure.everyonePrivate', values: { notice: { key: 'scanPrivacy.disclosure.firstUseNotice' } } } });
@@ -298,7 +298,7 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
     const secondWindows = s.windowBlocks > 0 ? `the same fixed ${String(s.windowBlocks)}-block windows` : 'the same exact block ranges';
     rows.push({ party: 'Second RPC', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; ${secondWindows} for announcements, the same block reads (so it also learns exactly how far you have scanned) and the same verification requests.` });
   }
-  const sweepHow = privatePathForbidsDirect(s) ? 'but only when you press "Read balance from the Settings RPC" in Sweep' : 'because Sweep reads its balance as soon as you open it';
+  const sweepHow = 'but only when you press "Read balance from the Settings RPC" in Sweep';
   rows.push({ party: 'Settings RPC (Sweep)', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; the one-time address of a found payment, ${sweepHow}. Signing a sweep also reads from it, and a direct sweep is sent through it. These requests go to the RPC in Settings directly, not through the scan path.` });
   rows.push({ party: 'Everyone', learns: `Nothing on-chain is hidden: payer, amount, token, timing and the announcement are public.${s.transport === 'direct' ? '' : ` ${FIRST_USE_NOTICE}`}` });
   return rows;

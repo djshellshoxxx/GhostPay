@@ -596,6 +596,26 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Sweep balance query consent — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -656,6 +676,21 @@ coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existin
 artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+## PR 231 standalone pre-merge disclosure repair — 2026-11-18
+
+Worker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.
+Branch: `repair/ghostpay-pr-231-20261118`.
+Source: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).
+Target: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`
+regressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.
+Acceptance: reproduce the two exact hosted disclosure-equivalence failures;
+extract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;
+retain every balance-consent/session guard and disclosure assertion; verify the
+actual combined main/source tree. #222/#238 and their active source branches
+are read-only. All source commits remain ancestors. Both sides of the only
+merge conflict (independent ACTIVE_WORK claims) are retained. No contract,
+dependency, cryptographic or gate changes.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -802,3 +837,37 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## Sweep balance consent integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-sweep-balance-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Preserve PR #252 donor `4085622463411d3ba27f4efb7b73a70575170535` as a parent and reconcile additive work claims.
+- Acceptance: require an explicit action before an RPC balance read for a one-time address, preserve selected-provider policy and discard late results on selection, provider, session or lock changes. Run the existing Sweep, privacy, and lean-browser acceptance tests.
+- PR #272 is a follow-on. The recovery stack #361/#372/#373 already contains #252. Preserve their code and branch ownership and reconcile current C1 and reserved workstreams before integration.
+## Sweep quote and relayed signing lifecycle correction — 2026-11-19
+
+Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`.
+Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
+and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
+Acceptance: prevent stale quotes and stale relayed submissions after a balance,
+recipient, payment, provider, session, mode, manifest or transport change; retain
+submitted and uncertain-outcome evidence after irreversible handoff; preserve
+explicit balance consent and existing vault, session, fee and journal guards.
+The original stale quote was reproduced against exact source. The full component
+regressions, typecheck, lint and hosted checks remain qualification gates.
+The execution environment became unavailable during dependency setup. The
+reconstructed candidate is an unqualified draft, not a completed acceptance claim.
+Existing #231/#252 and broad #262/#264 remain unchanged. Main integration belongs
+to the root coordinator. No deployment, release or real transaction is authorized
+by this worker claim.
+
+Sweep integration follow-up: Independent review found that #252 alone lets a
+balance refresh invalidate displayed context while a prior direct sweep waits
+for the vault or RPC. Add the reviewed #272 lifecycle and regression commits
+`ab40d79a4452e618dd3f6f462fde2829f5ba7e05`,
+`9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac` and
+`a67d09750f13ae2cfee3a0ad7bdc3ccb6c28b4f0`. Keep unrelated donor changes in
+their existing branches. Verify the refresh, stale handoff and post-handoff
+evidence cases on the composed tree.

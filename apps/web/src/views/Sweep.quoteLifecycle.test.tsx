@@ -1,0 +1,414 @@
+// @vitest-environment jsdom
+import type { RpcClient } from '@ghostpay/chain-adapters';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
+import * as keyVault from '../lib/keyVault';
+import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
+import type { ScanMatch } from '../lib/scanClient';
+import { clearSession, generateSession } from '../lib/session';
+import { ServicesContext, type Services } from '../lib/services';
+import { DEFAULT_SETTINGS } from '../lib/settings';
+import * as sweepLib from '../lib/sweep';
+import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
+import { AppContext, beginSweepAttempt, getSweepAttempt, resetSweepAttemptsForTests, type AppState } from '../state';
+import { FAKE_FEE_RECIPIENT, FAKE_SWEEP_RELAYER } from '../test/fakeManifest';
+import { backedManifest, withManifestChain } from '../test/manifestChain';
+import { makeServices } from '../test/render';
+import { Sweep } from './Sweep';
+
+const CHAIN = 84532;
+const OWNER = '0x1111111111111111111111111111111111111111';
+const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
+const DESTINATION = '0x6666666666666666666666666666666666666666';
+const OTHER_DESTINATION = '0x7777777777777777777777777777777777777777';
+const READ = 'Read balance from the Settings RPC';
+const QUOTE = 'Get relayer quote';
+const SIGN = 'Sign and submit to relayer';
+const DIRECT = 'Sign and broadcast directly';
+const RESIGN = 'Sign a replacement with the same nonce';
+const HASH = '0x' + '34'.repeat(32);
+const ORIGINAL_DIRECT_LOCK: sweepLib.SweepLock = {
+  chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: `0x${'12'.repeat(32)}`,
+  otherHashes: [`0x${'56'.repeat(32)}`], status: 'unknown-after-handoff',
+};
+const ORDER: sweepLib.RelayedOrderRef = { relayer: FAKE_SWEEP_RELAYER, nonce: 1n, deadline: 1_800_001_200 };
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason: Error) => void;
+  const promise = new Promise<T>((accept, refuse) => { resolve = accept; reject = refuse; });
+  return { promise, resolve, reject };
+}
+
+beforeEach(() => {
+  clearSession();
+  window.localStorage.clear();
+  window.sessionStorage.clear();
+  resetSweepAttemptsForTests();
+  setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+});
+afterEach(() => { cleanup(); vi.restoreAllMocks(); clearSession(); setKeyVaultStoreForTests(undefined); });
+
+function mount() {
+  let amount = 5_000_000n;
+  let rpcGate: Promise<void> | undefined;
+  let rpcCalls = 0;
+  const requests: { url: string; body: unknown; reply: ReturnType<typeof deferred<Response>> }[] = [];
+  const fetchFn: Services['fetchFn'] = (url, init) => {
+    const reply = deferred<Response>();
+    requests.push({ url, body: typeof init?.body === 'string' ? JSON.parse(init.body) as unknown : undefined, reply });
+    return reply.promise;
+  };
+  const inner: RpcClient = {
+    chainId: CHAIN,
+    request: () => Promise.resolve('0x' + amount.toString(16).padStart(64, '0')),
+    blockNumber: () => Promise.resolve(0n), getBlock: () => Promise.resolve(null),
+    getLogs: () => Promise.resolve([]),
+  };
+  const rpc = withManifestChain(inner);
+  const match = { chainId: CHAIN, stealthAddress: OWNER, metadata: { kind: 'erc20', token: TOKEN }, announcement: {} } as unknown as ScanMatch;
+  let app: AppState = {
+    view: 'sweep', setView: () => undefined,
+    settings: { ...DEFAULT_SETTINGS, relayerUrl: 'https://relay.test', rpcUrls: { [String(CHAIN)]: 'https://rpc.test/' } },
+    updateSettings: () => true, session: generateSession(), fragment: undefined, setFragment: () => undefined,
+    matches: [match], setMatches: () => undefined, sweepTarget: { match, chainId: CHAIN }, selectForSweep: () => undefined,
+    getRpc: async () => { rpcCalls++; await rpcGate; return rpc; }, getSecondaryRpc: () => Promise.resolve(undefined), announce: () => undefined,
+  };
+  let services = makeServices({ fetchFn, loadManifest: (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) }) });
+  const view = () => <ServicesContext.Provider value={services}><AppContext.Provider value={app}><Sweep /></AppContext.Provider></ServicesContext.Provider>;
+  const rendered = render(view());
+  return {
+    requests, rpc, app: () => app, rpcCalls: () => rpcCalls,
+    setAmount(next: bigint) { amount = next; },
+    holdRpc(gate: Promise<void>) { rpcGate = gate; },
+    update(patch: Partial<AppState>) { app = { ...app, ...patch }; rendered.rerender(view()); },
+    updateServices(patch: Partial<Services>) { services = { ...services, ...patch }; rendered.rerender(view()); },
+    unmount: rendered.unmount,
+  };
+}
+
+const settle = async (): Promise<void> => { await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)); }); };
+const changeDestination = (value: string): void => { fireEvent.change(screen.getByLabelText(/^Destination address/), { target: { value } }); };
+async function ready(m: ReturnType<typeof mount>): Promise<void> {
+  fireEvent.click(screen.getByRole('button', { name: READ }));
+  await screen.findByText('5 USDC');
+  changeDestination(DESTINATION);
+  await settle();
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: QUOTE }).disabled).toBe(false); });
+  expect(m.requests).toEqual([]);
+}
+async function requestQuote(m: ReturnType<typeof mount>, count = 1): Promise<void> {
+  fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+  await waitFor(() => { expect(m.requests).toHaveLength(count); });
+}
+async function answer(m: ReturnType<typeof mount>, index = 0): Promise<void> {
+  await act(async () => {
+    m.requests[index]!.reply.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'synthetic-quote' })));
+    await Promise.resolve();
+  });
+  await settle();
+}
+
+describe('Sweep quote lifecycle', () => {
+  it('keeps an authorized quote through an unrelated context render', async () => {
+    const m = mount();
+    await ready(m);
+    await requestQuote(m);
+    m.update({ fragment: 'unrelated' });
+    await answer(m);
+    expect(screen.getByText('You receive: 4.975 USDC')).toBeTruthy();
+    expect(screen.getByRole('button', { name: SIGN })).toBeTruthy();
+    expect(m.requests[0]!.body).toMatchObject({ amount: '5000000', owner: OWNER, destination: DESTINATION });
+  });
+
+  it('cannot restore an old quote after a balance refresh; a new click quotes the new amount', async () => {
+    const m = mount();
+    await ready(m);
+    await requestQuote(m);
+    m.setAmount(10_000_000n);
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+    await screen.findByText('10 USDC');
+    await answer(m);
+    expect(screen.queryByRole('button', { name: SIGN })).toBeNull();
+    expect(screen.queryByText(/You receive:/)).toBeNull();
+    expect(m.requests).toHaveLength(1);
+    await requestQuote(m, 2);
+    await answer(m, 1);
+    expect(screen.getByText('You receive: 9.975 USDC')).toBeTruthy();
+    expect(m.requests[1]!.body).toMatchObject({ amount: '10000000' });
+  });
+
+  it.each(['recipient', 'recipient restored', 'payment', 'chain', 'provider', 'RPC factory', 'session', 'app lock', 'relayer', 'manifest', 'transport', 'mode', 'unmount'] as const)(
+    'discards a pending quote when %s changes', async (change) => {
+      const m = mount();
+      await ready(m);
+      await requestQuote(m);
+      const original = m.app();
+      if (change === 'recipient' || change === 'recipient restored') changeDestination(OTHER_DESTINATION);
+      if (change === 'recipient restored') changeDestination(DESTINATION);
+      if (change === 'payment') m.update({ sweepTarget: { chainId: CHAIN, match: { ...original.sweepTarget!.match, stealthAddress: OTHER_DESTINATION } } });
+      if (change === 'chain') m.update({ sweepTarget: { ...original.sweepTarget!, chainId: 8453 } });
+      if (change === 'provider') m.update({ settings: { ...original.settings, rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } } });
+      if (change === 'RPC factory') m.update({ getRpc: () => Promise.resolve(m.rpc) });
+      if (change === 'session') m.update({ session: generateSession() });
+      if (change === 'app lock') act(() => { notifyAppLock('idle'); });
+      if (change === 'relayer') m.update({ settings: { ...original.settings, relayerUrl: 'https://other-relayer.test' } });
+      if (change === 'manifest') m.updateServices({ loadManifest: () => Promise.resolve({ status: 'invalid', reason: 'synthetic manifest change' }) });
+      if (change === 'transport') m.updateServices({ fetchFn: () => Promise.reject(new Error('must not request another transport')) });
+      if (change === 'mode') {
+        fireEvent.click(screen.getByLabelText(/^Directly/));
+        fireEvent.click(screen.getByLabelText(/^Through the relayer/));
+      }
+      if (change === 'unmount') m.unmount();
+      await settle();
+      await answer(m);
+      expect(screen.queryByRole('button', { name: SIGN })).toBeNull();
+      expect(screen.queryByText(/You receive:/)).toBeNull();
+      expect(m.requests).toHaveLength(1);
+    },
+  );
+
+  it.each(['recipient', 'provider', 'unmount'] as const)('does not send a quote request if %s changes while RPC creation is pending', async (change) => {
+    const m = mount();
+    await ready(m);
+    const gate = deferred<void>();
+    const priorCalls = m.rpcCalls();
+    m.holdRpc(gate.promise);
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    await waitFor(() => { expect(m.rpcCalls()).toBe(priorCalls + 1); });
+    if (change === 'recipient') changeDestination(OTHER_DESTINATION);
+    if (change === 'provider') m.update({ settings: { ...m.app().settings, rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } } });
+    if (change === 'unmount') m.unmount();
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(m.requests).toEqual([]);
+  });
+
+  it('does not show a stale quote error after the recipient changes', async () => {
+    const m = mount();
+    await ready(m);
+    await requestQuote(m);
+    changeDestination(OTHER_DESTINATION);
+    await act(async () => { m.requests[0]!.reply.reject(new Error('synthetic provider failure')); await Promise.resolve(); });
+    await settle();
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByRole('button', { name: SIGN })).toBeNull();
+  });
+
+  it('removes an already displayed quote when the relayer changes', async () => {
+    const m = mount();
+    await ready(m);
+    await requestQuote(m);
+    await answer(m);
+    expect(screen.getByRole('button', { name: SIGN })).toBeTruthy();
+    m.update({ settings: { ...m.app().settings, relayerUrl: 'https://other-relayer.test' } });
+    await settle();
+    expect(screen.queryByRole('button', { name: SIGN })).toBeNull();
+    expect(m.requests).toHaveLength(1);
+  });
+});
+
+type ReviewChange = 'recipient' | 'balance' | 'provider' | 'mode' | 'selection';
+async function changeReview(m: ReturnType<typeof mount>, change: ReviewChange, currentMode: 'relayer' | 'direct' = 'relayer'): Promise<void> {
+  if (change === 'recipient') changeDestination(OTHER_DESTINATION);
+  if (change === 'balance') {
+    m.setAmount(10_000_000n);
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+  }
+  if (change === 'provider') m.update({ settings: { ...m.app().settings, rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } } });
+  if (change === 'mode') fireEvent.click(screen.getByLabelText(currentMode === 'relayer' ? /^Directly/ : /^Through the relayer/));
+  if (change === 'selection') m.update({ sweepTarget: { chainId: CHAIN, match: { ...m.app().sweepTarget!.match, stealthAddress: OTHER_DESTINATION } } });
+  await settle();
+}
+
+async function reviewedQuote(m: ReturnType<typeof mount>): Promise<void> {
+  await ready(m);
+  await requestQuote(m);
+  await answer(m);
+  expect(screen.getByRole('button', { name: SIGN })).toBeTruthy();
+}
+
+describe('Sweep relayed signing context', () => {
+  it.each([
+    ['vault', 'recipient'], ['vault', 'balance'], ['vault', 'provider'], ['vault', 'mode'],
+    ['RPC', 'recipient'], ['RPC', 'balance'], ['RPC', 'provider'], ['RPC', 'mode'],
+  ] as const)('does not enter signing after %s work if %s changed', async (stage, change) => {
+    const m = mount();
+    await reviewedQuote(m);
+    const vaultGate = deferred<Awaited<ReturnType<typeof keyVault.authorizeEncryptedVault>>>();
+    const rpcGate = deferred<void>();
+    if (stage === 'vault') vi.spyOn(keyVault, 'authorizeEncryptedVault').mockReturnValue(vaultGate.promise);
+    else m.holdRpc(rpcGate.promise);
+    const submitted = vi.spyOn(sweepLib, 'relayedSweep').mockResolvedValue(HASH);
+    const priorCalls = m.rpcCalls();
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    if (stage === 'vault') await waitFor(() => { expect(keyVault.authorizeEncryptedVault).toHaveBeenCalledTimes(1); });
+    else await waitFor(() => { expect(m.rpcCalls()).toBe(priorCalls + 1); });
+    await changeReview(m, change);
+    await act(async () => { vaultGate.resolve(undefined); rpcGate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(submitted).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toBeUndefined();
+  });
+
+  it.each(['recipient', 'balance', 'provider', 'mode'] as const)('refuses the handoff if %s changes after signing work begins', async (change) => {
+    const m = mount();
+    await reviewedQuote(m);
+    const gate = deferred<void>();
+    const dispatched = vi.fn();
+    const submitted = vi.spyOn(sweepLib, 'relayedSweep').mockImplementation(async (input) => {
+      await gate.promise;
+      input.onBeforeHandoff?.(ORDER);
+      dispatched();
+      return HASH;
+    });
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    await waitFor(() => { expect(submitted).toHaveBeenCalledTimes(1); });
+    await changeReview(m, change);
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(dispatched).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toBeUndefined();
+  });
+
+  it.each(['submitted', 'unknown-after-handoff'] as const)('retains %s evidence when the recipient changes after handoff', async (outcome) => {
+    const m = mount();
+    await reviewedQuote(m);
+    const response = deferred<string>();
+    vi.spyOn(sweepLib, 'relayedSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(ORDER);
+      return response.promise;
+    });
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('unknown-after-handoff'); });
+    changeDestination(OTHER_DESTINATION);
+    await act(async () => {
+      if (outcome === 'submitted') response.resolve(HASH);
+      else response.reject(new Error('synthetic interrupted response'));
+      await Promise.resolve();
+    });
+    await settle();
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, order: ORDER, status: outcome });
+    expect(getSweepAttempt(CHAIN, OWNER)?.expectedHash).toBe(outcome === 'submitted' ? HASH : undefined);
+  });
+});
+
+function directAttempt(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepAttempt {
+  return {
+    chainId: input.target.chainId, owner: input.target.owner, nonce: input.replaceNonce ?? 7,
+    destination: input.destination, asset: input.target.token, amount: input.amount,
+    expectedHash: HASH as `0x${string}`, status: 'unknown-after-handoff',
+  };
+}
+
+function directResult(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepResult {
+  return {
+    hash: HASH as `0x${string}`, sent: input.amount, maxGasCost: 1n,
+    attempt: { ...directAttempt(input), status: 'submitted' }, simulation: 'ok',
+  };
+}
+
+async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<void> {
+  await ready(m);
+  fireEvent.click(screen.getByLabelText(/^Directly/));
+  if (resign) act(() => { beginSweepAttempt(ORIGINAL_DIRECT_LOCK); });
+  await settle();
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false);
+}
+
+describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing context', (flow) => {
+  const resign = flow === 'same-nonce replacement';
+  const action = resign ? RESIGN : DIRECT;
+
+  it('submits an unchanged review and retains the original replacement hash', async () => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(directAttempt(input));
+      return Promise.resolve(directResult(input));
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('submitted'); });
+    expect(submitted).toHaveBeenCalledTimes(1);
+    expect(submitted.mock.calls[0]![0]).toMatchObject({ destination: DESTINATION, amount: 5_000_000n });
+    expect(submitted.mock.calls[0]![0].replaceNonce).toBe(resign ? 7 : undefined);
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ nonce: 7, expectedHash: HASH, status: 'submitted' });
+    expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
+    expect(m.requests).toEqual([]);
+  });
+
+  it.each([
+    ['vault', 'recipient'], ['vault', 'balance'], ['vault', 'provider'], ['vault', 'mode'], ['vault', 'selection'],
+    ['RPC', 'recipient'], ['RPC', 'balance'], ['RPC', 'provider'], ['RPC', 'mode'], ['RPC', 'selection'],
+  ] as const)('does not enter signing after %s work if %s changed', async (stage, change) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const original = getSweepAttempt(CHAIN, OWNER);
+    const originalJournal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    const vaultGate = deferred<Awaited<ReturnType<typeof keyVault.authorizeEncryptedVault>>>();
+    const rpcGate = deferred<void>();
+    if (stage === 'vault') vi.spyOn(keyVault, 'authorizeEncryptedVault').mockReturnValue(vaultGate.promise);
+    else m.holdRpc(rpcGate.promise);
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => Promise.resolve(directResult(input)));
+    const priorCalls = m.rpcCalls();
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    if (stage === 'vault') await waitFor(() => { expect(keyVault.authorizeEncryptedVault).toHaveBeenCalledTimes(1); });
+    else await waitFor(() => { expect(m.rpcCalls()).toBe(priorCalls + 1); });
+    await changeReview(m, change, 'direct');
+    await act(async () => { vaultGate.resolve(undefined); rpcGate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(submitted).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toEqual(original);
+    expect(getSweepAttempt(CHAIN, OTHER_DESTINATION)).toBeUndefined();
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(originalJournal);
+  });
+
+  it.each(['recipient', 'balance', 'provider', 'mode', 'selection'] as const)('refuses handoff and preserves the original journal if %s changes inside the helper', async (change) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const original = getSweepAttempt(CHAIN, OWNER);
+    const originalJournal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    const gate = deferred<void>();
+    const dispatched = vi.fn();
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (input) => {
+      await gate.promise;
+      input.onBeforeHandoff?.(directAttempt(input));
+      dispatched();
+      return directResult(input);
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(submitted).toHaveBeenCalledTimes(1); });
+    await changeReview(m, change, 'direct');
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(dispatched).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toEqual(original);
+    expect(getSweepAttempt(CHAIN, OTHER_DESTINATION)).toBeUndefined();
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(originalJournal);
+  });
+
+  it.each(['submitted', 'unknown-after-handoff'] as const)('retains %s evidence and prior hashes after a post-handoff edit', async (outcome) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const response = deferred<sweepLib.DirectSweepResult>();
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(directAttempt(input));
+      return response.promise;
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.expectedHash).toBe(HASH); });
+    expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('unknown-after-handoff');
+    changeDestination(OTHER_DESTINATION);
+    const input = submitted.mock.calls[0]![0];
+    await act(async () => {
+      if (outcome === 'submitted') response.resolve(directResult(input));
+      else response.reject(new sweepLib.DirectSweepOutcomeUnknownError('synthetic interrupted response', directAttempt(input), 'unavailable'));
+      await Promise.resolve();
+    });
+    await settle();
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: HASH, status: outcome });
+    expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
+    if (outcome === 'unknown-after-handoff') expect(screen.getByText(/could not dry.run/i)).toBeTruthy();
+  });
+});
