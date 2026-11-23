@@ -1,0 +1,569 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    176,
+    194
+  ],
+  "results": [
+    {
+      "branch": "claude/ar-c7-embed-iframe-e2e",
+      "head_sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1357,
+      "merge_base_sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/consolidation-2026-11-04",
+      "head_sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1228,
+      "merge_base_sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cool-albattani-xopr89",
+      "head_sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1605,
+      "merge_base_sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-c2",
+      "head_sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1263,
+      "merge_base_sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-c4",
+      "head_sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1269,
+      "merge_base_sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-c5",
+      "head_sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1263,
+      "merge_base_sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w1",
+      "head_sha": "704e268bfa7df57964175f820f67400834bdce43",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1269,
+      "merge_base_sha": "704e268bfa7df57964175f820f67400834bdce43",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w10",
+      "head_sha": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1246,
+      "merge_base_sha": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w11",
+      "head_sha": "764020c208c144e165437e244b6a1bc43673dc5f",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1247,
+      "merge_base_sha": "764020c208c144e165437e244b6a1bc43673dc5f",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w5",
+      "head_sha": "f030376a331445f5059061f24238acb5cf867b29",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1268,
+      "merge_base_sha": "f030376a331445f5059061f24238acb5cf867b29",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w6",
+      "head_sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1263,
+      "merge_base_sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w7",
+      "head_sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1247,
+      "merge_base_sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w8",
+      "head_sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/cw-w9",
+      "head_sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1247,
+      "merge_base_sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/docs-screenshots",
+      "head_sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1681,
+      "merge_base_sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/docs-snapshot-1",
+      "head_sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2342,
+      "merge_base_sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/docs-snapshot-2",
+      "head_sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2341,
+      "merge_base_sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/exciting-brown-7v69cr",
+      "head_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "status": "diverged",
+      "ahead_by": 34,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 57,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 57,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/PRIVACY.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 52,
+          "deletions": 8
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/hardening.test.ts",
+          "status": "added",
+          "additions": 489,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/harness.testutil.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/lane.ts",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/log.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/main.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/server.ts",
+          "status": "modified",
+          "additions": 73,
+          "deletions": 9
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 57,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/stress.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/validate.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "docs/developer/api/apps.md",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 12
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/HANDOVER.md",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/dropped-fix-triage-main-2026-11-18.json",
+          "status": "added",
+          "additions": 461,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.1.t.sol.txt",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.2.test.ts.txt",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.3.test.ts.txt",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.4.test.ts.txt",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.5.test.ts.txt",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.6.test.ts.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.7.test.ts.txt",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/completion-20261118-lostfix/evidence/scripts/lost-fix-scan.py",
+          "status": "added",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "docs/operators/relayer-runbook.md",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": "packages/cli/README.md",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 4
+        },
+        {
+          "path": "packages/cli/src/args.ts",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 1
+        },
+        {
+          "path": "packages/cli/src/commands/i18n.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 8
+        },
+        {
+          "path": "packages/cli/src/commands/reconcile.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 2
+        },
+        {
+          "path": "packages/cli/src/ctx.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 3
+        },
+        {
+          "path": "packages/cli/src/global-switches.test.ts",
+          "status": "added",
+          "additions": 225,
+          "deletions": 0
+        },
+        {
+          "path": "packages/cli/src/io.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "packages/cli/src/observation-input.test.ts",
+          "status": "added",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "packages/cli/src/payment-commands.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "packages/cli/src/payment-input.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "packages/cli/src/reconcile-stored-only.test.ts",
+          "status": "added",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "packages/cli/src/run.ts",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 23
+        },
+        {
+          "path": "packages/cli/src/untrusted-echo.test.ts",
+          "status": "added",
+          "additions": 80,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/README.md",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 1
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 8
+        },
+        {
+          "path": "packages/invoice-schema/src/errors.ts",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "packages/relayer-guard/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "packages/relayer-guard/README.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "packages/relayer-guard/src/index.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "packages/relayer-guard/src/limiter.abuse.test.ts",
+          "status": "added",
+          "additions": 236,
+          "deletions": 0
+        },
+        {
+          "path": "packages/relayer-guard/src/limiter.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 2
+        },
+        {
+          "path": "packages/relayer-guard/src/limiter.ts",
+          "status": "modified",
+          "additions": 100,
+          "deletions": 30
+        },
+        {
+          "path": "packages/ux-core/src/errors.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        }
+      ]
+    }
+  ]
+}

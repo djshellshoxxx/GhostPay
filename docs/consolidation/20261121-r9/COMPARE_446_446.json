@@ -1,0 +1,22 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    446,
+    447
+  ],
+  "results": [
+    {
+      "branch": "work/local-reconstruction-2026-10-24",
+      "head_sha": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1718,
+      "merge_base_sha": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}

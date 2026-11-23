@@ -1,0 +1,892 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    338,
+    356
+  ],
+  "results": [
+    {
+      "branch": "future/f13-fiat-conversion",
+      "head_sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F13-fiat-conversion/SPEC.md",
+          "status": "added",
+          "additions": 180,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "head_sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F14-multichain-routing/SPEC.md",
+          "status": "added",
+          "additions": 170,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "head_sha": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F15-private-rpc/SPEC.md",
+          "status": "added",
+          "additions": 171,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "head_sha": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F16-per-client-identities/SPEC.md",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "head_sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F17-private-funds/SPEC.md",
+          "status": "added",
+          "additions": 180,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "head_sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F18-privacy-modes/SPEC.md",
+          "status": "added",
+          "additions": 185,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "head_sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "head_sha": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+          "status": "added",
+          "additions": 126,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "head_sha": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P02-rpc-policy/SPEC.md",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "head_sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "head_sha": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+          "status": "added",
+          "additions": 155,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "head_sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "head_sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P06-key-role-separation/SPEC.md",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "head_sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "head_sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P08-linkability-analysis/SPEC.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "head_sha": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "head_sha": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P10-private-submission/SPEC.md",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "head_sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    }
+  ]
+}

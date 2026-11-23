@@ -1,0 +1,233 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    158,
+    176
+  ],
+  "results": [
+    {
+      "branch": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "head_sha": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1372,
+      "merge_base_sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/SOURCE_RECONCILIATION_2026-11-01.md",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/admiring-albattani-6kydor",
+      "head_sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 191,
+      "merge_base_sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/adoring-wozniak-850ue6",
+      "head_sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1692,
+      "merge_base_sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-a0-pr47-green",
+      "head_sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1361,
+      "merge_base_sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-a4-btc-headersync",
+      "head_sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1353,
+      "merge_base_sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-a5-announcer-budget",
+      "head_sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1358,
+      "merge_base_sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-a6-combined-backup",
+      "head_sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1352,
+      "merge_base_sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-a7-policy-send-guard",
+      "head_sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1355,
+      "merge_base_sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-b1-core-journey",
+      "head_sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1356,
+      "merge_base_sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-b2-lean-bound-receipts",
+      "head_sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1357,
+      "merge_base_sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-b3-sweep-permit-states",
+      "head_sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1330,
+      "merge_base_sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-b5-testnet-feeds",
+      "head_sha": "76199cdac3ee336e2751995d511111467141d943",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1360,
+      "merge_base_sha": "76199cdac3ee336e2751995d511111467141d943",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c1-reconciliation-adr",
+      "head_sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1357,
+      "merge_base_sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c2-qr-pairing",
+      "head_sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1355,
+      "merge_base_sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "head_sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1340,
+      "merge_base_sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c4-i18n-pay",
+      "head_sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1358,
+      "merge_base_sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c4-i18n-scan",
+      "head_sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1352,
+      "merge_base_sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/ar-c5-device-matrix",
+      "head_sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1358,
+      "merge_base_sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}

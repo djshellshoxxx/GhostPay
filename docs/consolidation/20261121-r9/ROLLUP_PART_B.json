@@ -1,0 +1,601 @@
+{
+  "schema": 1,
+  "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    230,
+    447
+  ],
+  "source_files": [
+    "COMPARE_230_247.json",
+    "COMPARE_248_265.json",
+    "COMPARE_266_283.json",
+    "COMPARE_284_301.json",
+    "COMPARE_302_319.json",
+    "COMPARE_320_337.json",
+    "COMPARE_338_355.json",
+    "COMPARE_356_373.json",
+    "COMPARE_374_391.json",
+    "COMPARE_392_409.json",
+    "COMPARE_410_427.json",
+    "COMPARE_428_445.json",
+    "COMPARE_446_446.json"
+  ],
+  "count": 217,
+  "counts": {
+    "ancestry-redundant": 58,
+    "code-candidate": 58,
+    "capped-review": 42,
+    "non-code-candidate": 58,
+    "compare-error": 1
+  },
+  "capped": [
+    {
+      "branch": "codex/ghostpay-consolidation-followthrough-20261119",
+      "head_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "ahead_by": 242
+    },
+    {
+      "branch": "codex/ghostpay-export-authorization-20261119",
+      "head_sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "ahead_by": 221
+    },
+    {
+      "branch": "codex/ghostpay-feature-consolidation-20261119",
+      "head_sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "ahead_by": 241
+    },
+    {
+      "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "head_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "ahead_by": 239
+    },
+    {
+      "branch": "codex/ghostpay-private-scan-lint-20261119",
+      "head_sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "ahead_by": 221
+    },
+    {
+      "branch": "codex/network-isolation-complete-20261119",
+      "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "ahead_by": 87
+    },
+    {
+      "branch": "evidence/ghostpay-completion-20261120",
+      "head_sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "ahead_by": 470
+    },
+    {
+      "branch": "evidence/ghostpay-continuation-20261121-539818",
+      "head_sha": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c",
+      "ahead_by": 463
+    },
+    {
+      "branch": "evidence/ghostpay-remediation-20261120",
+      "head_sha": "6fe35de42587e8da06e2590983b584ffde93d40f",
+      "ahead_by": 444
+    },
+    {
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "ahead_by": 427
+    },
+    {
+      "branch": "feature/ghostpay-retention-completion-20261120",
+      "head_sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "ahead_by": 444
+    },
+    {
+      "branch": "feature/ghostpay-retention-focus-20261120",
+      "head_sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "ahead_by": 450
+    },
+    {
+      "branch": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "head_sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "ahead_by": 462
+    },
+    {
+      "branch": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "head_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "ahead_by": 453
+    },
+    {
+      "branch": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "head_sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "ahead_by": 464
+    },
+    {
+      "branch": "fix/ghostpay-format-validation-20261120",
+      "head_sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "ahead_by": 476
+    },
+    {
+      "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "head_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "ahead_by": 442
+    },
+    {
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "head_sha": "172695efb41665a4e50d335029e54184bbb5b328",
+      "ahead_by": 397
+    },
+    {
+      "branch": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "head_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "ahead_by": 103
+    },
+    {
+      "branch": "fix/ghostpay-request-file-async-20261120-r3",
+      "head_sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "ahead_by": 107
+    },
+    {
+      "branch": "integrate/ghostpay-export-recovery-acceptance-20261121-539818",
+      "head_sha": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "ahead_by": 465
+    },
+    {
+      "branch": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "head_sha": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "ahead_by": 119
+    },
+    {
+      "branch": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "head_sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "ahead_by": 576
+    },
+    {
+      "branch": "integration/ghostpay-completion-20261120",
+      "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ahead_by": 469
+    },
+    {
+      "branch": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "head_sha": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "ahead_by": 121
+    },
+    {
+      "branch": "integration/ghostpay-master-consolidation-20261118",
+      "head_sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "ahead_by": 205
+    },
+    {
+      "branch": "integration/ghostpay-pages-completion-20261118",
+      "head_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "ahead_by": 83
+    },
+    {
+      "branch": "integration/ghostpay-recovery-reconciled-20261119",
+      "head_sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "ahead_by": 92
+    },
+    {
+      "branch": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "head_sha": "22569e2a83e3f8bc3c86982f69bbb1d90ca8356c",
+      "ahead_by": 578
+    },
+    {
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "head_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "ahead_by": 425
+    },
+    {
+      "branch": "repair/ghostpay-270-policy-fixture-20261119",
+      "head_sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "ahead_by": 243
+    },
+    {
+      "branch": "repair/ghostpay-analyzer-recovered-20261119",
+      "head_sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "ahead_by": 326
+    },
+    {
+      "branch": "repair/ghostpay-final-lint-20261119",
+      "head_sha": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+      "ahead_by": 338
+    },
+    {
+      "branch": "repair/ghostpay-native-fee-recovered-20261119",
+      "head_sha": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+      "ahead_by": 318
+    },
+    {
+      "branch": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "head_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "ahead_by": 462
+    },
+    {
+      "branch": "repair/ghostpay-qr-surrogates-20261119",
+      "head_sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "ahead_by": 339
+    },
+    {
+      "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "head_sha": "d6819796a9542acc488b896786faffe83b913d9b",
+      "ahead_by": 426
+    },
+    {
+      "branch": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "head_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "ahead_by": 454
+    },
+    {
+      "branch": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "head_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "ahead_by": 240
+    },
+    {
+      "branch": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "head_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "ahead_by": 461
+    },
+    {
+      "branch": "work/ghostpay-required-v1-candidate-20261120",
+      "head_sha": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+      "ahead_by": 428
+    },
+    {
+      "branch": "work/ghostpay-required-v11-candidate-20261120",
+      "head_sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "ahead_by": 429
+    }
+  ],
+  "errors": [
+    {
+      "branch": "gh-pages",
+      "head_sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "category": "compare-error",
+      "error": "NOT_FOUND: Error code: NOT_FOUND; Error: GitHub API error 404: {\"message\":\"No common ancestor between eb59d93cffed7848c4aac37d0e9650b87239c6da and cc8d07943a11b77fbed825c1ede0c8234140ad1d.\",\"documentation_url\":\"https://docs.github.com/rest/commits/commits#compare-two-commits\",\"status\":\"404\"}"
+    }
+  ],
+  "code_candidates": [
+    {
+      "branch": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "head_sha": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+      "ahead_by": 90,
+      "files": 299
+    },
+    {
+      "branch": "codex/ghostpay-cloud-41868394956",
+      "head_sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "ahead_by": 1,
+      "files": 4
+    },
+    {
+      "branch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "head_sha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "ahead_by": 19,
+      "files": 188
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head_sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "ahead_by": 5,
+      "files": 15
+    },
+    {
+      "branch": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "head_sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "ahead_by": 52,
+      "files": 78
+    },
+    {
+      "branch": "evidence/ghostpay-continuation-r2-20261120",
+      "head_sha": "c2b575e945b71563e30a9bef162cf3fdc92181f0",
+      "ahead_by": 68,
+      "files": 211
+    },
+    {
+      "branch": "evidence/ghostpay-idle-session-r2-20261120",
+      "head_sha": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "ahead_by": 97,
+      "files": 266
+    },
+    {
+      "branch": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "head_sha": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "ahead_by": 4,
+      "files": 6
+    },
+    {
+      "branch": "evidence/ghostpay-web-qualification-20261120",
+      "head_sha": "6152dd035822fe6ee97fba712ef1c37434e19035",
+      "ahead_by": 69,
+      "files": 195
+    },
+    {
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "head_sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "ahead_by": 2,
+      "files": 38
+    },
+    {
+      "branch": "feature/ghostpay-invoice-file-completion-20261120",
+      "head_sha": "7de737b5c8c5fc02086ba0030d78c181d239590c",
+      "ahead_by": 8,
+      "files": 87
+    },
+    {
+      "branch": "fix/ghostpay-backup-completion-20261120",
+      "head_sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+      "ahead_by": 10,
+      "files": 5
+    },
+    {
+      "branch": "fix/ghostpay-backup-preflight-20261120-r2",
+      "head_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "ahead_by": 99,
+      "files": 267
+    },
+    {
+      "branch": "fix/ghostpay-embed-popup-legacy-test-20261120-r1",
+      "head_sha": "0750012546aeb4336b4340fe16751f8d83804acd",
+      "ahead_by": 7,
+      "files": 6
+    },
+    {
+      "branch": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "head_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+      "ahead_by": 10,
+      "files": 5
+    },
+    {
+      "branch": "fix/ghostpay-policy-pendingedit-lint-20261121-r1",
+      "head_sha": "23f55bfea1068a5791b8e8e29409e4a13d0b28a3",
+      "ahead_by": 12,
+      "files": 9
+    },
+    {
+      "branch": "fix/ghostpay-policy-record-seller-identity-20261121",
+      "head_sha": "e871eccc1238b7145cd1d0a667afb393c373cf83",
+      "ahead_by": 8,
+      "files": 7
+    },
+    {
+      "branch": "fix/ghostpay-policy-recovery-followup-20261121-r1",
+      "head_sha": "67542c09ba180eec95004fb9b7a6d52d1a8dd809",
+      "ahead_by": 9,
+      "files": 26
+    },
+    {
+      "branch": "fix/ghostpay-policy-security-translation-parity-20261121-r1",
+      "head_sha": "18d0442a156106abe2309f8a6e82358aab37961a",
+      "ahead_by": 13,
+      "files": 30
+    },
+    {
+      "branch": "fix/ghostpay-tor-qualification-20261120",
+      "head_sha": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "ahead_by": 3,
+      "files": 39
+    },
+    {
+      "branch": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "head_sha": "b86a3e6affe8b71c6f13d16783accad446271ba4",
+      "ahead_by": 8,
+      "files": 7
+    },
+    {
+      "branch": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "head_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "ahead_by": 7,
+      "files": 7
+    },
+    {
+      "branch": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "head_sha": "81598d93dd82cc440526c866d42b55be0657895b",
+      "ahead_by": 3,
+      "files": 3
+    },
+    {
+      "branch": "fix/remediation-b16c7936-5ce634",
+      "head_sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "ahead_by": 1,
+      "files": 1
+    },
+    {
+      "branch": "fix/remediation-f95457fd-22ecf9",
+      "head_sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "ahead_by": 1,
+      "files": 2
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "head_sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "ahead_by": 9,
+      "files": 122
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "head_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "ahead_by": 15,
+      "files": 23
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "head_sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "ahead_by": 14,
+      "files": 30
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "head_sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "ahead_by": 13,
+      "files": 27
+    },
+    {
+      "branch": "ghostpay-cloud-recovery-2026-10-26",
+      "head_sha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "ahead_by": 12,
+      "files": 173
+    },
+    {
+      "branch": "ghostpay-local-lean-boundary-20261027",
+      "head_sha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "ahead_by": 18,
+      "files": 187
+    },
+    {
+      "branch": "ghostpay-offline-deps-2026-10-27",
+      "head_sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "ahead_by": 13,
+      "files": 178
+    },
+    {
+      "branch": "ghostpay-sbom-repro-2026-10-27",
+      "head_sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "ahead_by": 14,
+      "files": 180
+    },
+    {
+      "branch": "integration/ghostpay-adapter-qualification-20261119",
+      "head_sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "ahead_by": 3,
+      "files": 13
+    },
+    {
+      "branch": "integration/ghostpay-historical-promotion-20261118",
+      "head_sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "ahead_by": 1,
+      "files": 10
+    },
+    {
+      "branch": "integration/ghostpay-idle-session-20261120-r2",
+      "head_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "ahead_by": 96,
+      "files": 239
+    },
+    {
+      "branch": "integration/ghostpay-idle-session-completion-20261119",
+      "head_sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "ahead_by": 7,
+      "files": 23
+    },
+    {
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "head_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "ahead_by": 88,
+      "files": 216
+    },
+    {
+      "branch": "integration/ghostpay-mythril-security-closure-20261118",
+      "head_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "ahead_by": 2,
+      "files": 55
+    },
+    {
+      "branch": "integration/ghostpay-sweep-consent-20261120",
+      "head_sha": "2748c9bfd55bd226c7801c15a7acdd955ab70339",
+      "ahead_by": 97,
+      "files": 239
+    },
+    {
+      "branch": "integration/ghostpay-tor-qualified-20261121",
+      "head_sha": "260caca240f9944c05ce8951a154193709e30a56",
+      "ahead_by": 6,
+      "files": 93
+    },
+    {
+      "branch": "nodata/jolly-rubin-u4zd45",
+      "head_sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "ahead_by": 5,
+      "files": 40
+    },
+    {
+      "branch": "nodata/wonderful-darwin-kd1h22",
+      "head_sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "ahead_by": 48,
+      "files": 84
+    },
+    {
+      "branch": "privacy/hardening-recommendations",
+      "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "ahead_by": 2,
+      "files": 104
+    },
+    {
+      "branch": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "head_sha": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+      "ahead_by": 12,
+      "files": 23
+    },
+    {
+      "branch": "recover/ghostpay-canonical-json-descriptors-20261121-r10",
+      "head_sha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27",
+      "ahead_by": 8,
+      "files": 4
+    },
+    {
+      "branch": "recover/ghostpay-chain-interop-20261121-5ceb",
+      "head_sha": "f717157271fe494eb8094e504e9fec8276d51fcc",
+      "ahead_by": 1,
+      "files": 35
+    },
+    {
+      "branch": "recover/ghostpay-policy-asset-coverage-20261121-5ceb",
+      "head_sha": "821700d172dc638e1c06f35a03ca5f0c215fd46d",
+      "ahead_by": 27,
+      "files": 44
+    },
+    {
+      "branch": "recover/ghostpay-policy-validation-20261121-5ceb",
+      "head_sha": "2e0aff8490086a54fadd52c2fa4d802605b7920e",
+      "ahead_by": 28,
+      "files": 52
+    },
+    {
+      "branch": "repair/ghostpay-276-artifact-races-20261119",
+      "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "ahead_by": 7,
+      "files": 5
+    },
+    {
+      "branch": "repair/ghostpay-cookie-dependency-20261121-5ceb",
+      "head_sha": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+      "ahead_by": 1,
+      "files": 5
+    },
+    {
+      "branch": "repair/ghostpay-pr-231-20261118",
+      "head_sha": "4085622463411d3ba27f4efb7b73a70575170535",
+      "ahead_by": 7,
+      "files": 17
+    },
+    {
+      "branch": "repair/ghostpay-pr-87-20261119",
+      "head_sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "ahead_by": 9,
+      "files": 73
+    },
+    {
+      "branch": "repair/ghostpay-settings-import-expectations-20261121-539818",
+      "head_sha": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+      "ahead_by": 94,
+      "files": 220
+    },
+    {
+      "branch": "repair/ghostpay-tron-main-20261121-5ceb",
+      "head_sha": "500ece7a7c99b566ecaad5a8dd0d54fd0022395a",
+      "ahead_by": 9,
+      "files": 10
+    },
+    {
+      "branch": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "head_sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "ahead_by": 11,
+      "files": 19
+    },
+    {
+      "branch": "security/mythril-full-remediation-20261118",
+      "head_sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "ahead_by": 9,
+      "files": 34
+    },
+    {
+      "branch": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "head_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+      "ahead_by": 11,
+      "files": 15
+    }
+  ]
+}
