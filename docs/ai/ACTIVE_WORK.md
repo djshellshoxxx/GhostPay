@@ -320,6 +320,14 @@ Acceptance: first commit failing Vitest regressions, then a minimal fix that vis
 Ownership: before claim, complete changed-file inventory of all 239 open PRs across 3 pages was inspected. No PR changes either proposed source or dedicated regression path. Existing ux-guide PRs #451 (profiles.ts), #429 (onboarding.ts) are distinct and will not be modified.
 Dependency: PR #390 at `b655bc273a6704c9c140287b8adcdf4085b91882` has all 5 exact-head hosted workflows green but no submitted independent review; leave its owner branch unchanged. Integration lock generation 11 `held` by `994a0d214fb9-root-r3`, ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; no takeover or merge.
 Status: claimed, failing regression and repair pending.
+# GP-BUG — Reject pre-epoch CSV timestamps in exported date parser (2026-11-22)
+
+Worker: GhostPay bug-only automated engineering round (single implementer, independent reviewer unavailable).
+Branch: `automation/20261122T2123Z/bug/export-pre-epoch-date-guard`; base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-export/src/time.ts`, new `packages/ux-export/src/time.pre-epoch.test.ts`, this additive ownership record, dedicated `docs/handoffs/UX_EXPORT_PRE_EPOCH_DATE_20261122.md`.
+Finding: `parseTimestamp` for ISO and date formats accepts otherwise valid dates before Unix epoch and returns negative milliseconds, contrary to `assertTimestamp`, `formatTimestamp`, and the documented `0..9999-12-31` timestamp domain. Exact live-main `time.ts` blob `85006680a6011b05685c04df504d56fb078c065b` matched an isolated TypeScript/Node 22 source reproduction: `1969-12-31` (date) returned -86400000 and `1969-12-31T23:59:59.999Z` (ISO) returned -1.
+Acceptance: commit failing regression test before source fix; return the existing `ExportError('INVALID_DATE')` for negative ISO/date instants, retain 1970 boundary and all valid formats/ranges; no extra contract or dependencies. Run source-hash-matched isolated red/green and nearby cases; exact-head hosted CI and separate review required before merge.
+Coordination: inspected all 241 live open PR changed-file inventories (three pages of 100/100/41) before claim: none modifies `time.ts` or a `time.*` test filename. Do not overwrite broad export PR ownership elsewhere. PR #390 exact head `b655bc273a6704c9c140287b8adcdf4085b91882` has five completed-success hosted workflow groups, with zero submitted independent GitHub reviews; its owner branch remains untouched. Integration metadata ref `automation/ghostpay-integration-lock` head `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` is marked held by other owner, generation 11. No merge, lease takeover, deployment or release.
 
 ---
 
