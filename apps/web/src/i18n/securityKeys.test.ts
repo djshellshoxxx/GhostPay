@@ -24,6 +24,13 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'policy.pay.committedAssetNotWithdrawable',
+      'policy.create.withdrawableAny',
+      'policy.create.withdrawableOnly',
+      'policy.pay.coverageUnknownTitle',
+      'policy.pay.coverageUnknown',
+      'policy.pay.coverageChecked',
+      'policy.pay.tokenNotWithdrawable',
       'btc.oracle.modeLabel',
       'btc.oracle.none',
       'btc.oracle.http',
@@ -109,7 +116,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'backupGate.waiverLabel', 'backupGate.waiverPhrase', 'backupGate.waive',
       'about.feeNote', 'sweep.relayerFee', 'btc.review.approve', 'btc.sweep.destinationHint',
       'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.signerLost',
-      'policy.create.keepBody', 'policy.account.withdrawal', 'policy.account.cancel',
+      'policy.create.keepBody', 'policy.create.alreadySaved', 'policy.account.withdrawal', 'policy.account.cancel',
       'sweep.attempt.unknownDirect', 'sweep.note.pendingDirect', 'settings.outside.title',
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',
       'sellerKeys.pairing.title', 'sellerKeys.pairing.caption', 'sellerKeys.pairing.importLabel', 'sellerKeys.pairing.previewHeading',

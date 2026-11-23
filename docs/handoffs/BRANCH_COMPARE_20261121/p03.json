@@ -1,0 +1,216 @@
+{
+  "base_main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "page": 3,
+  "page_size": 15,
+  "cursor_in": "MzA",
+  "cursor_out": "NDU",
+  "method": "GitHub named-ref compare; branch head SHA and semantic code review required; >=300 changed files can be truncated.",
+  "branches": [
+    {
+      "ref": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "ahead": 406,
+      "behind": 76,
+      "status": "diverged",
+      "files_count": 300,
+      "truncated": true,
+      "non_doc_files": 267
+    },
+    {
+      "ref": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "ahead": 10,
+      "behind": 118,
+      "status": "diverged",
+      "files_count": 136,
+      "truncated": false,
+      "non_doc_files": 2
+    },
+    {
+      "ref": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "ahead": 430,
+      "behind": 76,
+      "status": "diverged",
+      "files_count": 300,
+      "truncated": true,
+      "non_doc_files": 270
+    },
+    {
+      "ref": "automation/20261120T0243Z/worker/format-units-validation",
+      "ahead": 4,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/lib/format.test.ts",
+        "apps/web/src/lib/format.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/FORMAT_UNITS_RUNTIME_GUARD_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "ahead": 4,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/lib/txGuard.test.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/ERC20_SIMULATION_RESULT_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "ahead": 0,
+      "behind": 67,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "ahead": 5,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md",
+        "packages/payment-uri/src/decimal-options.test.ts",
+        "packages/payment-uri/src/decimal.ts"
+      ]
+    },
+    {
+      "ref": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "ahead": 8,
+      "behind": 42,
+      "status": "diverged",
+      "files_count": 5,
+      "truncated": false,
+      "non_doc_files": 3,
+      "paths": [
+        "apps/web/e2e/backup-ownership.spec.ts",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/SELLERKEYS_OPERATION_SUPERSESSION_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "ahead": 3,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 3,
+      "truncated": false,
+      "non_doc_files": 1,
+      "paths": [
+        "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/LEDGER_ACTIONABILITY_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T1241Z/bug/receipt-print-css",
+      "ahead": 8,
+      "behind": 42,
+      "status": "diverged",
+      "files_count": 11,
+      "truncated": false,
+      "non_doc_files": 9,
+      "paths": [
+        "apps/web/e2e/print-targets.spec.ts",
+        "apps/web/src/components/PrintableBill.test.tsx",
+        "apps/web/src/components/PrintableBill.tsx",
+        "apps/web/src/components/ReceiptPanel.test.tsx",
+        "apps/web/src/components/ReceiptPanel.tsx",
+        "apps/web/src/lib/usePrintTarget.test.tsx",
+        "apps/web/src/lib/usePrintTarget.ts",
+        "apps/web/src/styles/app.css",
+        "apps/web/src/styles/print.css",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "ahead": 9,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 5,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/views/Scan.tags.scope.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/SCAN_TAG_SCOPE_20261120.md",
+        "docs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "ahead": 9,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 5,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/views/Scan.tags.scope.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/SCAN_TAG_SCOPE_20261120.md",
+        "docs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T1635Z/bug/tron-scan-abort",
+      "ahead": 0,
+      "behind": 38,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "ahead": 5,
+      "behind": 42,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+        "apps/web/src/components/ReceiptPanel.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/20261120T2036Z/bug/btc-preview-network",
+      "ahead": 4,
+      "behind": 42,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/BTC_PREVIEW_NETWORK_20261120.md",
+        "packages/btc-silent-payments/src/spend.preview.network.test.ts",
+        "packages/btc-silent-payments/src/spend.ts"
+      ]
+    }
+  ]
+}

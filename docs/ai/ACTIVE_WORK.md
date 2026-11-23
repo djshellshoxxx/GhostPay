@@ -430,6 +430,75 @@ resolve only incompatible test API calls/expectations; run focused TRON tests, T
 lint and static build; obtain independent review and new exact-head hosted qualification.
 No remote writes, workflow changes, new chain support, live RPC/funds, deployment or release.
 The coordinator owns publication to the existing #340 branch and all merge decisions.
+# Policy-scheme Anvil test gate repair (2026-11-21 UTC)
+
+Worker: same sequential ChatGPT engineer, appended scope on owned draft #385 child branch `test/ghostpay-policy-review-races-20261121-r1`. Parent #375 head pinned `2e0aff8490086a54fadd52c2fa4d802605b7920e`.
+New owned path: `packages/policy-scheme/src/anvil.test.ts` (test-only fixture correction); existing `PolicyPay.reviewRaces.test.tsx`, prior ownership record and handoff retained. No production, contracts, fees, CI thresholds or parent branch changes.
+Source-pinned RED: parent hosted [CI run 44883454132](https://github.com/djshellshoxxx/GhostPay/actions/runs/44883454132), job ts-test (rest-0) `136786458558`, has 109 passing tests and one failed real Anvil cross-check at `anvil.test.ts:312`. Historical test builds ERC-20 typed data with a native-only Merkle proof, which newly restored `eip712.ts` correctly rejects as `INVALID_PROOF` before calldata encoding. Acceptance: make the test assert this earlier client-side rejection, preserve a separate encoder proof-mismatch refusal and a real deployed contract revert with valid signed data yet mismatched proof. No disabling, skipping or relaxing contract/Anvil checks. Run exact-head hosted Anvil test, all relevant CI and independent source review. Local git DNS still blocked. Generation-11 lock remains held; no direct main merge.
+
+---
+
+# GP-BUG-07 follow-up: pending edit and mined-approval review races (2026-11-21 UTC)
+
+Worker: ChatGPT sequential engineer, no independent approving reviewer. Task branch `test/ghostpay-policy-review-races-20261121-r1` starts at PR #375 exact head `2e0aff8490086a54fadd52c2fa4d802605b7920e`, itself stacked #375 → #374 → #368 → #362 → #357 and inheriting #345's review-revocation repair. Baseline current main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: a new `apps/web/src/features/policy/PolicyPay.reviewRaces.test.tsx`, this append-only claim, and `docs/handoffs/POLICY_REVIEW_RACE_COVERAGE_20261121.md`. Existing production source/tests and parents are untouched.
+Acceptance: deterministic MockWallet/jsdom tests for editing payee/token while an account recheck is pending, re-review invalidation, and an ERC-20 approval already mined followed by an edited amount before the payment wallet request. Require no unauthorized payment wallet request and clear residual-allowance messaging; do not assume a browser can revoke a wallet request already delivered. Do not weaken CI/gates, add dependencies, network endpoints, contracts, deployment, custody or fee logic.
+Verification: exact-head hosted focused Vitest, web lint/typecheck, full relevant CI and independent review required; do not claim local execution or approval without evidence. This is a stacked draft child of #375, not an independent mainline merge. Generation-11 integration lock remains held by another coordinator; do not mutate it or any parent/main branch.
+
+---
+
+# Policy validation restoration — 2026-11-21 UTC
+
+Owner: `/root/policy_validation_restore`, coordinator `5ceb6203640a-root`.
+Branch: `recover/ghostpay-policy-validation-20261121-5ceb`; exact parent `e1ab03ca7b07c225ae42d0c16fb79b97f0a1f95c`.
+Owned paths: `packages/policy-scheme/src/{derive,eip712,limits,router}.ts`, narrowly required exports/docs and supported-format tests; `apps/web/src/features/policy/{pay,send}.ts`, narrowly required supported-input fixtures; additive claim and dedicated handoff.
+Scope: selectively restore existing defensive input-consistency and secret-lifetime guards. Preserve the parent asset coverage, exact seller identity, wallet authority, privacy, and transaction-journal behavior. No contracts, protocol, fees, custody, deployment or live-funds changes.
+Acceptance: static defensive source review, final-source supported-format compatibility, original TypeScript/lint/build and permitted existing final-source suites. No vulnerable-revision execution, exploit reconstruction, newly designed adversarial payloads or attack testing. Any unexecuted regression is recorded, never classified as passed. Existing assertions/gates are not removed or weakened.
+Ownership: isolated child only. The current generation-11 lease remains held by `994a0d214fb9-root-r3`; no remote/main/parent writes or lock transition. Root will separately review and publish any exact-source draft.
+
+---
+
+# Policy withdrawal-asset coverage recovery — 2026-11-21 UTC
+
+Owner: `/root/policy_asset_recovery`, coordinator `5ceb6203640a-root`.
+Branch: `recover/ghostpay-policy-asset-coverage-20261121-5ceb`; starting head `18d0442a156106abe2309f8a6e82358aab37961a` (#368 policy recovery/security-key chain).
+Inputs to preserve: #345 `ccc8c3521511e2a2b9b66ef11f12723d87ce5f44` pending-review revocation; current main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths in this isolated composition: `packages/policy-scheme/src/{record,index}.ts` and focused coverage tests; `apps/web/src/features/policy/{pay.ts,PolicyPay.tsx,PolicyCreate.tsx,PolicyAssetCoverage.test.tsx}` and focused payment coverage tests; the associated new security keys in `apps/web/src/i18n/securityKeys{,.test}.ts` and `apps/web/locales/{en,es,ar,ja}.json`; this additive claim and `docs/handoffs/POLICY_ASSET_COVERAGE_20261121_5CEB.{md,json}`.
+Acceptance: reproduce missing client-side withdrawal-asset coverage checks using existing #211 source/regressions, recover only bounded guard/presentation/test hunks, preserve exact seller identity, pending-review revocation and original gates, independently review and qualify. No contract, custody, fee, deployment, release or real transaction changes.
+Ownership: live generation-11 metadata lease remains held by `994a0d214fb9-root-r3`; this worker does not acquire it or modify any remote/main/parent ref. Existing owners and records are retained. Broader recovery and native-browser workers own separate worktrees.
+
+---
+
+# GP-BUG-08 follow-up — policy record downloads and catalog parity (2026-11-20 Pacific)
+
+- Worker: `/root`, with independent `round2_recovery_review`, `round2_checks`, and `round2_claims` workers.
+- Branch: `fix/ghostpay-policy-recovery-followup-20261121-r1`; parent PR #357 head `e871eccc1238b7145cd1d0a667afb393c373cf83`; main observed at `aec179910c39081d820396409ff3139ff2264132`.
+- Owned paths: `apps/web/src/features/policy/PolicyCreate.tsx`, new `PolicyCreate.recordDownloads.test.tsx`, existing `PolicyView.more.test.tsx` and `PolicyView.recordIdentity.test.tsx` in that directory, the single `policy.create.alreadySaved` entry in `apps/web/locales/{ar,es,ja}.json`, this additive claim, and dedicated follow-up evidence under `docs/handoffs/`.
+- Evidence: #357's exact-head `ts-check` builds successfully but fails catalog parity with three missing keys. Independent review identifies identical export filenames for equal-policy/equal-spending-key records with different viewing keys. The prior recovery fixture imports the exact record it then claims to restore, conflicting with the intended duplicate-record message.
+- Acceptance: preserve seller identity and duplicate-record safeguards; bind filenames to the full canonical meta-address; verify distinct filenames, repeat stability and exact serialized bytes; exercise genuine recovery using another saved record's nonzero limits root and separate duplicate-recovery feedback; verify each seller key independently; restore catalog parity without changing draft metadata, fallback rules or release gates.
+- Coordination: preserve #357's author branch. #355, #356 and #359 already own the separate focus, Settings and pending-send repairs. Shared integration remains held by coordinator `994a0d214fb9-root-r3` at generation 11. This task does not acquire that lease or modify main/shared candidates. Publish a scoped draft successor after independent review.
+- Status: implementation and scoped verification complete; independent source review passed. Evidence is retained in `docs/handoffs/gpbug08-recovery-followup-20261121/`. Draft successor prepared; hosted checks on its published head and any eventual combined integration remain separate gates.
+
+---
+
+# PolicyPay pending-edit test lint qualification — 2026-11-21 UTC
+
+Worker: single sequential ChatGPT continuation; no independent reviewer. Branch: `fix/ghostpay-policy-pendingedit-lint-20261121-r1` stacked only on PR #345 at `9a10d335d048b197e90d257a5322ff5d5260572d` (base `main` `aec179910c39081d820396409ff3139ff2264132`).
+Owned paths: additive `docs/ai/ACTIVE_WORK.md` claim, `apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx` mechanical test-mock correction, and `docs/handoffs/POLICY_PENDING_EDIT_LINT_20261121.md`. Do not edit parent PR or integration lock.
+Evidence: PR #345 CI run https://github.com/djshellshoxxx/GhostPay/actions/runs/44842199985, ts-lint job `136687978951`, fails only `@typescript-eslint/require-await` at `PolicyPay.pendingEdit.test.tsx:53` because `createRpc: async () => rpc` has no await. All other 22 listed CI jobs passed, but do not infer new-head qualification.
+Acceptance: replace the unnecessary async wrapper with a Promise-returning callback of identical asynchronous contract; retain all wallet/amount-change regression assertions and production source unchanged. Do not weaken ESLint/tests/CI, add dependencies, change network, deploy, merge or release. Verify focused test, lint, CI and independent review before integrating into #345.
+Overlap: parent PR #345 owns original file; this child is intentionally stacked on it, not a competing independent main PR. Integration lock generation 11 held by another coordinator; do not acquire/modify. Handoff with source-pinned exact SHAs required.
+
+---
+
+# GP-BUG-07 — policy review revocation during pending wallet send (2026-11-20)
+
+Worker: automated GhostPay continuation, one sequential engineer (not independently reviewed). Branch: `automation/20261120/bug/policy-review-revocation-r1`; exact base main `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: `apps/web/src/features/policy/PolicyPay.tsx`, new `apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx`, additive `docs/handoffs/POLICY_REVIEW_REVOCATION_20261120.md` and this ownership record.
+Finding: GP-BUG-07 / MV-02 in PR #312 confirms that a reviewed policy payment may continue to the wallet after visible form edits while an earlier send is awaiting an account recheck. Scope is optional policy full-profile code; production Pages lean build and policy deployment pins do not expose this feature.
+Acceptance: synchronous form-edit/re-review invalidation of the authority captured with the original review; last wallet authority check refuses before any new wallet request; retain existing session/deployment/transaction/deadline checks and post-approval recovery messaging. Add mock-wallet/browser regression; do not introduce contracts, relayers, new chain support, dependencies or deployments.
+Overlap: broad PR #278 (head `417f7c71daf8645e1432f2ec8f070110879b80bd`) also touches PolicyPay and has not implemented a review-revision guard in the inspected head. Do not bulk-merge either donor; patch-equivalence and conflict review required before integration. No separate focused GP-BUG-07 PR was found. No shared integration lock acquisition or main mutation.
+Status: claimed; implementation, full CI, review and qualification pending.
 
 ---
 

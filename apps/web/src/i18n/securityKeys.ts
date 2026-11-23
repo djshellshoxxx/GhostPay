@@ -1322,6 +1322,13 @@ export const SECURITY_KEY_GROUPS = {
     'btc.headers.uncheckedNone',
   ],
   policyConsentFeesAndRecovery: [
+    'policy.pay.committedAssetNotWithdrawable',
+    'policy.create.withdrawableAny',
+    'policy.create.withdrawableOnly',
+    'policy.pay.coverageUnknownTitle',
+    'policy.pay.coverageUnknown',
+    'policy.pay.coverageChecked',
+    'policy.pay.tokenNotWithdrawable',
     'policy.title',
     'policy.warning.title',
     'policy.intro',
@@ -1375,6 +1382,8 @@ export const SECURITY_KEY_GROUPS = {
     'receipt.lean.refused',
     'policy.network.none',
     'policy.create.imported',
+    // A restored-record identity/status claim is security-sensitive; keep source English until native review.
+    'policy.create.alreadySaved',
     'policy.create.badMeta',
     'policy.create.badDestinations',
     'policy.create.delayLabel',

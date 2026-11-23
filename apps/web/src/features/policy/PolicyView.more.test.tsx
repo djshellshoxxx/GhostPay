@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { policyAccountFactoryAbi } from '@ghostpay/policy-scheme';
+import { buildPolicyRecord, decodeScheme2MetaAddress, encodeScheme2MetaAddress, parsePolicyRecord, policyAccountFactoryAbi, serializePolicyRecord } from '@ghostpay/policy-scheme';
 import { decodeFunctionData } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, importSession } from '../../lib/session';
@@ -137,6 +137,32 @@ describe('policy view: create and restore', () => {
     expect(screen.getByText(/No match among these destinations/)).toBeTruthy();
   });
   it('restores a limited policy from a known limits root of a loaded record', async () => {
+    const saved = parsePolicyRecord(canonical('acct-001'));
+    const otherKeys = decodeScheme2MetaAddress(a2.metaAddress);
+    const other = buildPolicyRecord({
+      metaAddress: encodeScheme2MetaAddress({ spendingPublicKey: otherKeys.spendingPublicKey, viewingPublicKey: otherKeys.viewingPublicKey, policyHash: saved.policyHash }),
+      policy: saved.policy,
+      limits: saved.limits,
+    });
+    expect(saved.limits.length).toBeGreaterThan(0);
+    expect(other.policy.limitsRoot).toBe(saved.policy.limitsRoot);
+    const user = await open();
+    await user.click(screen.getByLabelText('Paste a policy record (JSON)'));
+    await user.paste(serializePolicyRecord(other));
+    await user.click(screen.getByRole('button', { name: 'Import record' }));
+    expect(screen.queryByText(a1.metaAddress)).toBeNull();
+    expect(screen.getByText(other.metaAddress)).toBeTruthy();
+    await user.click(screen.getByText('Lost the record?'));
+    await user.click(screen.getByLabelText('Policy meta-address'));
+    await user.paste(a1.metaAddress);
+    await user.click(screen.getByLabelText(/Candidate destinations/));
+    await user.paste(a1.policy.destination);
+    await user.click(screen.getByRole('button', { name: 'Search' }));
+    expect(screen.getByText('Policy found and restored. Download the record now.')).toBeTruthy();
+    expect(screen.getAllByText(a1.metaAddress)).toHaveLength(1);
+    expect(screen.getAllByText(other.metaAddress)).toHaveLength(1);
+  });
+  it('reports an already-loaded record without duplicating it during recovery', async () => {
     const user = await open();
     await user.click(screen.getByLabelText('Paste a policy record (JSON)'));
     await user.paste(canonical('acct-001'));
@@ -147,7 +173,9 @@ describe('policy view: create and restore', () => {
     await user.click(screen.getByLabelText(/Candidate destinations/));
     await user.paste(a1.policy.destination);
     await user.click(screen.getByRole('button', { name: 'Search' }));
-    expect(screen.getByText('Policy found and restored. Download the record now.')).toBeTruthy();
+    expect(screen.getByText('Policy record already loaded.')).toBeTruthy();
+    expect(screen.queryByText('Policy found and restored. Download the record now.')).toBeNull();
+    expect(screen.getAllByText(a1.metaAddress)).toHaveLength(1);
   });
 });
 
