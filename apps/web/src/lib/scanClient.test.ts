@@ -1731,7 +1731,11 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     // A second observation in a block the reorg replaced (old hash at height TAIL + 50).
     const replaced = (await vault.read())[0]!;
     const orphanHash = blockHash(Number(TAIL) + 50);
-    const { provenance, ...orphanBase } = { ...replaced, blockNumber: String(TAIL + 50n), blockHash: orphanHash, id: replaced.id.replace(replaced.blockHash, orphanHash) };
+    const orphanTx = blockHash(Number(TAIL) + 51);
+    const { provenance, ...orphanBase } = {
+      ...replaced, blockNumber: String(TAIL + 50n), blockHash: orphanHash, transactionHash: orphanTx,
+      id: replaced.id.replace(replaced.blockHash, orphanHash).replace(replaced.transactionHash, orphanTx),
+    };
     void provenance;
     await vault.save(orphanBase);
     const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));

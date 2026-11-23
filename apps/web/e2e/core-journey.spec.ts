@@ -2,9 +2,9 @@ import { expect, test, type Browser, type BrowserContext, type Page, type Route 
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { invoiceDigest as calculateInvoiceDigest, parseFragment } from '@ghostpay/invoice-schema';
-import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, ghostPayRouterAbi, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { encodeAbiParameters, keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
+import { encodeAbiParameters, encodeFunctionData, keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } from '../src/test/fakeManifest';
 import { verifyReceipt } from '../src/lib/receipts';
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
@@ -58,6 +58,7 @@ interface MinedPayment {
 class ChainSim {
   head = 500;
   mineAt = 120;
+  readonly blockTimes = new Map<number, number>();
   fork: number | undefined;
   /**
    * Progress-keyed reorg trigger, independent of which heights the scanner happens to read: once the payment's log has
@@ -122,10 +123,12 @@ class ChainSim {
       removed: false,
     };
     const from = (tx.from ?? PAYER).toLowerCase();
+    const time = this.blockTimes.get(block);
+    const reverted = time !== undefined && BigInt(time) > preview.deadline;
     const payment: MinedPayment = {
-      hash, block, blockHash, stealth: preview.stealth, net: preview.net, log,
+      hash, block, blockHash, stealth: preview.stealth, net: reverted ? 0n : preview.net, log,
       transaction: { hash, from, to: tx.to.toLowerCase(), input: tx.data.toLowerCase(), value: quantity(value), chainId: CHAIN_HEX, nonce: '0x0', blockHash, blockNumber: quantity(block), transactionIndex: '0x0' },
-      receipt: { ...common, status: '0x1', from, to: tx.to.toLowerCase(), logs: [log], transactionIndex: '0x0' },
+      receipt: { ...common, status: reverted ? '0x0' : '0x1', from, to: tx.to.toLowerCase(), logs: reverted ? [] : [log], transactionIndex: '0x0' },
     };
     this.payments.push(payment);
     return payment;
@@ -174,7 +177,7 @@ class ChainSim {
           this.forkPlan.stage = 'forked';
         }
         if (n > this.head) return reply(null);
-        const block = { number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(Math.floor(Date.now() / 1000) - (this.head - n) * 2) };
+        const block = { number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(this.blockTimes.get(n) ?? Math.floor(Date.now() / 1000) - (this.head - n) * 2) };
         return reply(block);
       }
       case 'eth_getLogs': {
@@ -182,7 +185,7 @@ class ChainSim {
         const from = Number.parseInt(filter.fromBlock, 16);
         const to = Number.parseInt(filter.toBlock, 16);
         const addresses = filter.address === undefined ? undefined : [filter.address].flat().map((a) => a.toLowerCase());
-        const logs = this.payments.filter((p) => this.canonical(p) && p.block >= from && p.block <= to && p.block <= this.head).map((p) => p.log).filter((raw) => {
+        const logs = this.payments.filter((p) => this.canonical(p) && p.receipt['status'] === '0x1' && p.block >= from && p.block <= to && p.block <= this.head).map((p) => p.log).filter((raw) => {
           const log = raw as { address: string; topics: string[] };
           return (addresses === undefined || addresses.includes(log.address.toLowerCase()))
             && (filter.topics ?? []).every((topic, i) => topic === null || [topic].flat().some((t) => t.toLowerCase() === log.topics[i]?.toLowerCase()));
@@ -372,14 +375,16 @@ async function readVault(page: Page): Promise<string | null> {
 }
 
 /** Create invoice with an explicit validity (the shared helper keeps its fixed 24 h default). */
-async function createShortInvoice(page: Page, hours: number): Promise<string> {
+async function createShortInvoice(page: Page, hours: number, register = false): Promise<string> {
   await nav(page).getByRole('button', { name: 'Create invoice' }).click();
   await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
   await page.getByLabel('Token amount').fill('0.5');
   await page.getByLabel('Item 1 description').fill('Short-lived consulting');
   await page.getByLabel('Item 1 unit price').fill('50.00');
   await page.getByLabel('Invoice valid for (hours)').fill(String(hours));
+  if (register) await page.getByRole('checkbox', { name: /Register this invoice in my encrypted reconciliation vault/ }).check();
   await page.getByRole('button', { name: 'Create invoice link' }).click();
+  if (register) await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.')).toBeVisible();
   const box = page.getByRole('textbox', { name: 'Link', exact: true });
   await expect(box).toBeVisible();
   return box.inputValue();
@@ -748,5 +753,57 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
     await scan(s);
     await expectVerifiedMatch(s, payment);
     expect(sim.walletTxs).toHaveLength(1);
+  });
+});
+
+
+test('a mined deadline revert stays unpaid, and a compatible late transfer requires a final scan and seller acceptance', async ({ browser }) => {
+  await withChain(browser, async (sim, open) => {
+    const s = await openSeller(open);
+    const link = await createShortInvoice(s, 1, true);
+    const { invoice } = await parseFragment(new URL(link).hash);
+    const payer = await openPayer(open, sim);
+    await reviewToFinalCheck(payer.page, sim, link);
+    sim.mineAt = 119;
+    sim.head = 119;
+    sim.blockTimes.set(119, invoice.expiresAt);
+    await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await expect(payer.page.getByText('Status: the transaction reverted. Nothing was paid.')).toBeVisible();
+    const request = sim.walletTxs[0]!;
+    const preview = decodePaymentCalldata({ to: request.to as Address, data: request.data as Hex, value: BigInt(request.value ?? '0x0') }, 84532);
+    expect(preview.deadline).toBeLessThan(BigInt(invoice.expiresAt));
+    expect(sim.payments[0]?.receipt).toMatchObject({ status: '0x0', logs: [] });
+    await scan(s);
+    await expect(scanMatches(s)).toHaveCount(0);
+
+    // Another client chooses a later router deadline while using the same seller-derived destination and amount.
+    sim.head = 120;
+    sim.blockTimes.set(120, invoice.expiresAt + 1);
+    const data = encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payNative',
+      args: [preview.stealth, preview.minNet, BigInt(invoice.expiresAt + 300), preview.ephemeralPublicKey, preview.metadata] });
+    const late = sim.mine(word('c001'), { ...request, data }, 120);
+    expect(late.receipt['status']).toBe('0x1');
+    await scan(s, { fromStart: true });
+    const ledger = s.locator('.reconciliation-ledger');
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
+    const registration = ledger.locator('li.card').filter({ has: s.getByRole('button', { name: 'Remove registration', exact: true }) });
+    await expect(registration).toContainText('Pending transfer evidence.');
+    await expect(ledger.getByRole('button', { name: 'Accept late payment for this invoice' })).toHaveCount(0);
+
+    sim.head = 219; // 100 confirmations. The checkpoint anchor is still the payment block's parent.
+    await scan(s, { fromStart: true });
+    await expect(registration).toContainText('Verified late transfer — invoice decision pending');
+    await expect(registration).not.toContainText('No linked observation.');
+    await ledger.getByRole('button', { name: 'Accept late payment for this invoice' }).click();
+    await expect(registration).toContainText('Verified late payment accepted by seller.');
+    await ledger.getByRole('button', { name: 'Lock reconciliation vault' }).click();
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
+    await expect(registration).toContainText('Verified late payment accepted by seller.');
+    sim.fork = 120;
+    await s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true }).check();
+    await scan(s);
+    await expect(registration).toContainText('Reorg invalidated earlier payment evidence.');
+    await expect(registration).not.toContainText('Verified late payment accepted by seller.');
+    await expect(ledger.getByText(/Seller accepted this late payment at/)).toBeVisible();
   });
 });

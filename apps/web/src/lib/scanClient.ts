@@ -104,6 +104,13 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
+  /** Preserve relevant evidence before a checkpoint can advance past it. */
+  readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
+    readonly from: bigint;
+    readonly through: bigint;
+    readonly canonicalHash: (height: bigint) => Promise<Hex>;
+  }) => Promise<boolean>;
+  readonly onUnresolvedEvidence?: (from: bigint) => Promise<void>;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
   readonly onQuarantine?: (rolledBackTo: bigint) => void;
   /**
@@ -220,6 +227,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
+  let canSaveCheckpoint = true;
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -267,6 +275,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const res = await fetchAnnouncements({
         chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+      }).catch(async (cause: unknown) => {
+        if (!p.signal.aborted) await p.onUnresolvedEvidence?.(cursor.nextBlock);
+        throw cause;
       });
       if (p.signal.aborted) break;
       // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
@@ -314,13 +325,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             discrepancies.push(...conflicts);
             p.onDiscrepancy?.(conflicts);
             if (p.signal.aborted) break;
+            await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
             // An unconfirmed fork report must not delete the saved checkpoint either: keep it and this run's
             // position, so the next scan checks the same anchor again.
             p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
             break;
           }
         }
-        await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        try {
+          await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        } catch (cause) {
+          if (!p.signal.aborted) await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
+          throw cause;
+        }
         if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
@@ -470,6 +487,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // or continue into later pages, since a later successful page could otherwise checkpoint
       // past these withheld logs and permanently skip them on resume.
       if (disagree) {
+        await p.onUnresolvedEvidence?.(pageFrom);
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
@@ -477,6 +495,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
       }
+      const through = res.cursor.last?.number;
+      if (canSaveCheckpoint && through !== undefined && through >= pageFrom &&
+          await p.onPageMatches?.(pageMatches, {
+            from: pageFrom, through, canonicalHash: (height) => canonicalHashAt(p, height),
+          }) === false) canSaveCheckpoint = false;
+      if (p.signal.aborted) break;
       if (deferred > 0) {
         backlog = deferred;
         if (res.reorg !== undefined) {
@@ -488,10 +512,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       }
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
-      if (!disagree && p.checkpoints !== undefined) {
+      if (canSaveCheckpoint && p.checkpoints !== undefined) {
         const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
+          await p.onUnresolvedEvidence?.(pageFrom);
           // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);

@@ -194,7 +194,7 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
     await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
-    expect(await screen.findByText(/No linked observation/)).toBeTruthy();
+    expect(await screen.findByText(/Unverified observation/)).toBeTruthy();
     expect(screen.queryByText(/Linked to a verified observation/)).toBeNull();
   });
   it('activates only a previewed encrypted backup as imported untrusted history', async () => {

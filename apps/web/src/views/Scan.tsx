@@ -1,4 +1,4 @@
-import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
@@ -13,7 +13,7 @@ import { browserStorage, createWindowedScanClient, describeScanDisclosureMessage
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
-import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
+import { recordFromObservedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
@@ -92,6 +92,10 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [lateReview, setLateReview] = useState<{
+    readonly matches: readonly ScanMatch[];
+    readonly verify: (match: ScanMatch) => Promise<boolean>;
+  }>();
   const [autoRescan, setAutoRescan] = useState(false);
   // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
   const [autoWake, setAutoWake] = useState(0);
@@ -177,6 +181,7 @@ export function Scan(): ReactNode {
     abort.current = ctl;
     startingScope.current = scope;
     setRunning(true);
+    setLateReview(undefined);
     setError(undefined);
     setDone(undefined);
     setPrivacyNote(undefined);
@@ -244,6 +249,19 @@ export function Scan(): ReactNode {
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
         const viewingKey = revealViewingKey();
+        const withReconciliation = async (action: (vault: Awaited<ReturnType<typeof createCurrentReconciliationVault>>) => Promise<void>): Promise<void> => {
+          assertScopeCurrent();
+          const vault = await createCurrentReconciliationVault(chainId, keyId);
+          const lockOnAbort = (): void => { vault.lock(); };
+          ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
+          try { assertScopeCurrent(); await action(vault); }
+          finally { ctl.signal.removeEventListener('abort', lockOnAbort); vault.lock(); }
+        };
+        const observations = (matches: readonly ScanMatch[]) => matches
+          .filter((match) => match.viaRouter && match.metadata !== undefined && match.announcement.transactionHash !== undefined)
+          .map((match) => recordFromObservedMatch(match, keyId));
+        let caughtUp = false;
+        let persistenceIssue = false;
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -263,6 +281,7 @@ export function Scan(): ReactNode {
           checkpoints: services.checkpoints,
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
+            caughtUp = nextProgress.caughtUp;
             setProgress(nextProgress);
             // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
             if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyBlocks(nextProgress.routerOnlyBlocks);
@@ -279,21 +298,36 @@ export function Scan(): ReactNode {
           onReorg: async (to, canonicalHash) => {
             if (!scopeIsCurrent()) return;
             // Observations of this run, saved or not; only those whose block was replaced are tombstoned.
-            const observed = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
+            const observed = observations([...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
-              const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
-              const lockOnAbort = (): void => { reconciliation.lock(); };
-              ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
-              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, observed, canonicalHash); }
-              finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
+              await withReconciliation((vault) => vault.invalidateFrom(to, observed, canonicalHash));
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
               const warning = new UserFacingError({ key: 'scan.error.reorg' });
               warning.cause = cause;
               throw warning;
+            }
+          },
+          onUnresolvedEvidence: async (from) => {
+            try {
+              await withReconciliation((vault) => vault.quarantineInvoicePayments(from, assertScopeCurrent));
+            } catch {
+              persistenceIssue = true;
+              if (scopeIsCurrent()) setError(msg('ledger.late.persistence'));
+            }
+          },
+          onPageMatches: async (matches, page) => {
+            try {
+              const evidence = observations(matches);
+              await withReconciliation((vault) => vault.observeInvoicePayments(evidence, assertScopeCurrent, page));
+              return true;
+            } catch {
+              persistenceIssue = true;
+              if (scopeIsCurrent()) setError(msg('ledger.late.persistence'));
+              return false;
             }
           },
           onMatch: (m) => {
@@ -309,7 +343,33 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
         });
-        if (!ctl.signal.aborted) assertScopeCurrent();
+        if (!ctl.signal.aborted) {
+          assertScopeCurrent();
+          if (caughtUp && !persistenceIssue && res.discrepancies.length === 0 &&
+              !res.limitReached && !res.backlog && res.secondaryLag === undefined) {
+            const matches = res.matches.filter((match) => match.receipt === 'verified');
+            setLateReview({
+              matches,
+              verify: async (match) => {
+                guardSession();
+                const { announcement, metadata } = match;
+                if (!matches.includes(match) || metadata === undefined || announcement.blockTimestamp === undefined) return false;
+                const evidence = await verifyClaimedPayment({
+                  chain, client: clients.scan, router: manifest.manifest.router, announcer: manifest.manifest.announcer,
+                  claim: { ...match, metadata },
+                  ...(secondary === undefined ? {} : { secondaryClient: secondary }),
+                });
+                if (evidence.status !== 'received' || !evidence.final) return false;
+                const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
+                const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
+                guardSession();
+                return blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
+                  block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
+                  block.timestamp?.toString() === announcement.blockTimestamp);
+              },
+            });
+          }
+        }
         if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
         if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
         setPrivacyNote(res.telemetry?.anonymity);
@@ -422,6 +482,8 @@ export function Scan(): ReactNode {
         sellerKeyId={keyId}
         matches={app.matches}
         scanMatchesCurrentScope={scanMatchesCurrentScope}
+        freshLateMatches={scanMatchesCurrentScope && !running ? lateReview?.matches : undefined}
+        verifyLateEvidence={scanMatchesCurrentScope && !running ? lateReview?.verify : undefined}
         onAnnounce={app.announce}
       />
       <Tags chainId={chainId} />

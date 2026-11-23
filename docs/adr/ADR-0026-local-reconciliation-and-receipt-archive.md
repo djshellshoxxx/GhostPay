@@ -219,28 +219,30 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 - Practical consequence: any receipt the seller issued, even one for a transaction that never settled, verifies. The
   design therefore keeps receipts out of every decision path.
 
-## Why matching is proposal plus confirm, not automatic
+## Confirmation and late payments
 
-- The chain has no invoice reference, so every link is an inference from chain, asset, amount and time. Inference can be
-  wrong. Amounts collide (two invoices can share an exact net amount), and two payments can match one invoice.
-- Time is observation time, not block time (`proposeInvoiceMatch` in `reconciliationMatch.ts`). A payment first seen at
-  or after expiry may have been paid late, so it is downgraded to `ambiguous` rather than `exact`.
-- Another client may compute a different gross, so a real payment can be missed. A missed payment is safe. A wrong
-  automatic link is not.
-- UI: `ProposalView` (`ReconciliationLedger.tsx`) shows a confirm button only for `exact`. The text says "This is a local
-  inference, not payment proof." For `ambiguous` it shows a warning and no action. Only the manual digest annotation can
-  resolve an ambiguous case.
-- Vault-side enforcement (in the browser; there is no server): `confirmProposal` refuses imported history, requires an unlinked verified observation, and
-  re-runs matching on the decrypted current document inside the compare-and-swap loop. A stale proposal therefore cannot
-  link.
-- Saving an observation (`ReconciliationVault.save`) never links an invoice automatically. A manual digest typed in the
-  "Add verified payment to ledger" form is stored as the seller's annotation. The form hint says it is "not opened or
-  checked" (`MatchLedgerAction`).
+- The invoice reference is absent from the chain. Each association is an inference from seller receipt evidence,
+  chain, asset, amount and canonical block time. Identical amounts and competing observations can remain ambiguous.
+- A transfer is late when the canonical block timestamp is at or after `expiresAt`. A late scan of an earlier
+  transfer still uses the earlier block time. A transaction that reverted after its bounded router deadline
+  contributes no payment evidence.
+- Pending and unverified router observations that could match a registration are retained in the encrypted ledger.
+  They cannot establish a paid state. A verified late transfer with a unique compatible registration can be accepted
+  explicitly after a complete scan and an independent recheck against the configured RPC sources. The encrypted
+  vault repeats the match at commit and records the seller's decision time. The decision establishes a local
+  association. Expiry does not reverse a transfer.
+- Confirmed reorgs invalidate the affected inclusion and retain its evidence and decision history. Conflicting or
+  incomplete RPC evidence is shown as unresolved while fresh verification is pending.
+- A direct router call by another wallet can be eligible. Unsupported bare transfers and forged or unsupported
+  announcements have no automatic invoice attribution through this scanner. Completing a scan or waiting for a
+  timeout is insufficient evidence for reissuance.
+- Manual links are seller annotations. They cannot substitute for the late acceptance action on a registered
+  invoice.
 
 ## Consequences
 
 - Matching is best-effort and local. It misses payments made by other clients with a different gross, and it leaves
-  identical amounts ambiguous. Late scans downgrade to ambiguous.
+  identical amounts ambiguous. The configured chain-specific finality and page scan bounds still apply.
 - Anyone who can read the browser profile sees that a vault exists, its scope identifier (`sellerKeyId`), the chain
   id and the ciphertext size. Observations, registrations and receipts are encrypted. Only the envelope header is
   stored in clear (`reconciliationVault.ts:ReconciliationVault.encrypt`, and the comment above
