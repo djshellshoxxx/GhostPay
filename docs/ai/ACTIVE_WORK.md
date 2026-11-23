@@ -1,3 +1,13 @@
+# GP-BUG — Reject nonadjacent duplicate invoice IDs in ledger exports (2026-11-23)
+
+Worker: single ChatGPT BUG-ONLY coordinator; sequential author and test executor, not independent review.
+Branch: `automation/20261123T2018Z/bug/merchant-ledger-duplicate-invoice-export`; exact main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-ledger/src/export.ts`, new `packages/merchant-ledger/src/export.duplicate-invoice.test.ts`, this additive claim and new `docs/handoffs/MERCHANT_LEDGER_DUPLICATE_EXPORT_20261123.md`.
+Evidence: resolveAll promises duplicate IDs are rejected, but compares adjacent entries after sorting primarily by creation timestamp. Three valid synthetic invoices (duplicate ID, other ID, duplicate ID) at successive timestamps escape detection; CSV/JSON/Xero/IIF/tax summary accept the duplicate. Exact source and its three runtime dependency blobs hash-matched locally; Node 22/TS 5.8.3 isolated checks 6/13 pass before repair. No wallet, contract, network or funds.
+Acceptance: commit failing regression first; use a Set of IDs to reject duplicates anywhere without changing deterministic date/id sort or existing valid export results. Run isolated red/green plus hosted exact-head qualification; do not claim full repo tests. All 276 open PR file inventories through #521 inspected for export source and new test path; no collision. Existing ledger test/decimal/CSV paths are excluded (including #504). PR #390 exact head CI succeeded, no review and nonmergeable; owner untouched. Lock generation 12 released, not acquired. No merge without independent review, required checks and legitimate integration authorization; no deploy/release.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
