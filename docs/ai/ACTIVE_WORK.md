@@ -1,3 +1,13 @@
+# C1 — combined fast-track integration of reviewed fix PRs (2026-11-23)
+
+Worker: Claude lead coordinator `claude-determined-allen-x5n560` with 11 independent Claude reviewer subagents (read-only; they did not author any integrated change). Branch `nodata/determined-allen-x5n560`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Scope: merge (no-ff, original heads, provenance kept) 93 independently reviewed open PR heads plus one hand port (#416), resolve only `docs/` conflicts by union, and add integrator-owned lint/type repairs where PRs never received hosted CI. Ledger and dispositions: `docs/handoffs/CLAUDE_CONSOLIDATION_C1_20261123.md`.
+Owned paths: this claim, that handoff, and integrator repair commits on this branch only (`packages/hygiene/src/buffer.runtime-types.test.ts`, `packages/ux-export/src/types.ts`, `packages/ux-guide/src/checklist.ts`, `packages/qr-exchange/src/camera.attach-boundary.test.ts`, `apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx`, `apps/web/src/lib/format*.ts`). No donor branch is edited, force-pushed or deleted.
+Excluded by design: P0-A payment-recovery stack (#427, #440, #441, #443, #500; owner `claude-keen-volta-8ctx9x`), P0-B refund/expiry work (#455 audit; no implementation branch found), dependency bumps, large consolidations and feature stacks (F03/F04/F05/F10, Tor), and PRs reviewed CHANGES/REJECT (#316, #389, #442).
+Acceptance: local affected typecheck, lint and tests (Foundry 1.8.5 anvil present) green on the combined head; exact-head hosted CI green; integration lock acquired (generation 13) before merging to main and released after; post-merge main CI observed.
+
+---
+
 # GP-BUG R11 — reject missing entries in tip-page suggested amounts (2026-11-23)
 
 Worker: ChatGPT BUG-ONLY coordinator; sequential implementation and self-review, no independently submitted verifier. Task branch `automation/20261123T0742Z/bug/ux-links-sparse-tip-presets-r11`; exact verified live main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
