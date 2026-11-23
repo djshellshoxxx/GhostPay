@@ -40,3 +40,14 @@ describe('MH-WEB-1 real anchor attribute names', () => {
     ]);
   });
 });
+
+describe('MH-WEB-1 long whitespace separators', () => {
+  it('preserves correct attribute recognition with long runs of spaces', () => {
+    const spaces = ' '.repeat(16_384);
+    expect(findUnsafeAnchors(`<a${spaces}data-target="_blank">`)).toEqual([]);
+    expect(findUnsafeAnchors(`<a${spaces}target="_blank"${spaces}data-rel="noopener noreferrer">`)).toEqual([
+      { index: 0, reason: 'MISSING_REL' },
+    ]);
+    expect(findUnsafeAnchors(`<a${spaces}target="_blank"${spaces}rel="noopener noreferrer">`)).toEqual([]);
+  });
+});
