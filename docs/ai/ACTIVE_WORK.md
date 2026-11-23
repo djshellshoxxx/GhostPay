@@ -1274,3 +1274,16 @@ Ownership: inspected the pre-publication 196-open-PR inventory from #438 plus ch
 - Reproduced existing behavior from main `encoder.ts` blob `b54cdede86aee5802045e73461a65e18bf3311e9`: public `ChunkWriter.header()` can run twice, emitting a repeated CSV header in one export despite its documented first-call-only contract. Source-equivalent Node 22 replay: `id\\r\\none\\r\\nid\\r\\n`; no exception. This is not a repository Vitest run.
 - Acceptance: commit a failing new Vitest regression before the source fix; reject a second header with existing `INVALID_OPTION` error before mutating writer state, preserve first header/rows/chunking/BOM/size limits, use no new dependencies. Verify with hosted exact-head CI and applicable checks; independent review and held generation-11 integration lease are required to merge.
 - Ownership at claim: checked PR #390 exact-head status (five successful workflows, no recorded independent reviews); inspected #415 (`summary.ts` only) and source-file paths for broad #238/#239/#240/#246/#256/#269/#278/#302/#303/#307/#315/#346/#361/#365/#367/#371/#372/#397, none claimed `packages/ux-export/src/encoder.ts`. The R30 196-open-PR metadata census and newly opened #438–#443 are also noted; full fresh all-PR path re-scan not claimed. Do not merge or take integration lock.
+
+
+---
+
+# R37 — Block ambiguous fee-preview asset symbols (2026-11-22)
+
+- Worker: branch consolidation coordinator, isolated from concurrent automation workers.
+- Branch: `automation/20261122-r37/bug/ux-fees-asset-symbol-collision`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-fees/src/preview.ts`, new `packages/ux-fees/src/preview.asset-symbol-collision.test.ts`, this additive claim, and `docs/handoffs/UX_FEES_ASSET_SYMBOL_COLLISION_R37.md`.
+- Source-confirmed problem: preview asset totals are grouped by `asset.id` but the collision check only blocks mismatched decimals; different validated ASCII symbols sharing the same id and precision can be silently summed and the fee preview can say `canProceed: true` with misleading payer totals. Existing tests cover unequal decimals only.
+- Acceptance: test first for symbol-only id collisions in network, router buffer and flat security-fee lines; preserve identical assets, distinct ids and current existing decimal-collision rule. Extend only the existing block warning `fees.preview.warn.assetMismatch`. No signing, network, contract, key, fee-rule, or custody changes.
+- Ownership: relevant recent #421/#423/#425 modify only timing paths. Broad #278/#262/#264/#372 file inventories do not include `packages/ux-fees/src/preview.ts`; check all active PR overlaps again before merge. Integration lock `automation/ghostpay-integration-lock` is held generation 11 by another coordinator; no lock transfer, shared merge, deployment, or release authorized.
+- Verification: exact-head hosted CI required; no native repository Vitest run is claimed because GitHub DNS blocks local clone. Independent review required before integration.
