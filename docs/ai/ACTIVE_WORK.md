@@ -1378,3 +1378,16 @@ Status: claimed, regression and repair not yet committed.
 - Evidence: exact-head CI workflow 45034528113, job 137245225818 `ts-lint` fails at `qrSnapshot.test.ts:38:9` with `@typescript-eslint/no-unsafe-return` (raw GitHub Actions log inspected). The `typescript` aggregate fails downstream; all three relevant browser/web unit/typecheck jobs passed, but CI as a whole is RED.
 - Acceptance: make the Proxy fallback's `Reflect.get` return explicitly `unknown` without modifying its runtime behavior or suppressing any ESLint rule; preserve all four PR #473 regression scenarios. Obtain exact-head green lint/CI, independent review and ownership/merge gates before integration. No contracts, wallet, keys, dependencies, deployment, security gates or app behavior touched.
 - Integration lock: `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3` at ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`. Expiry is not takeover permission. No shared/main integration authorized without fresh ownership validation.
+
+
+---
+
+# GP-BUG-BOOK-SPARSE-R13 — reject missing handle-book entries (2026-11-22)
+
+- Worker: GhostPay BUG-ONLY automation, one sequential implementer; no separate native verifier available.
+- Branch: `automation/20261122/bug/ux-links-book-sparse-entries-r13`, exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-links/src/book.ts`, new `packages/ux-links/src/book.sparse-entries.test.ts`, this append-only claim, and new `docs/handoffs/UX_LINKS_BOOK_SPARSE_ENTRIES_20261122.md`.
+- Observed defect: `validateBook` iterates user-supplied `entries` with `Array.forEach`, which skips array holes, so malformed runtime state can be silently accepted and later serialized without the missing records. Only an actual dense array should pass. No assertion of a network exploit.
+- Acceptance: failing regression committed before repair; reject sparse arrays with typed BOOK errors, preserve empty/dense book validation, JSON serialization and collision rules; minimal source change; run isolated source-equivalent tests plus hosted GitHub CI. No new dependencies or changes to wallet, contracts, payments, release or deployment.
+- Ownership: inspected all 235 open PR changed-file inventories across three paginated GitHub pages on 2026-11-22; #399 owns `request.ts`, #392 owns `qr.ts`, and broad #238/#262/#264/#278/#372 own existing tests/package metadata, but none changed `book.ts` or the new regression path. Active registry claims and heads must be rechecked before integration.
+- Integration: metadata-only lock generation 11 at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains held by external owner `994a0d214fb9-root-r3` (expired timestamp is not authorization). No acquisition, merge or deployment.
