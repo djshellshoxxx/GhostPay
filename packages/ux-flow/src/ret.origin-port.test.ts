@@ -40,7 +40,7 @@ describe('canonical long HTTPS origin with explicit port', () => {
       `${LONG_ORIGIN}?x=1`,
       `https://user@${LONG_HOST}:65535`,
       `http://${LONG_HOST}:65535`,
-      `https://${'x'.repeat(64)}.example.com:65535`,
+      `https://${LONG_HOST}:65536`,
     ]) {
       expect(canonicalOrigin(bad)).toBeNull();
     }
