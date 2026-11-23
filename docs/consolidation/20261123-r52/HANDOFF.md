@@ -1,0 +1,29 @@
+# GhostPay R52 — durable engineering handoff
+
+## Snapshot and provenance (UTC)
+
+- Full branch + open-PR census checked **2026-11-23T01:04:26.412Z**. Immutable baseline main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`. No main merges.
+- [Existing consolidation PR #471](https://github.com/djshellshoxxx/GhostPay/pull/471), draft branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`. Pre-handoff exact head `b4184fbe00fa1b0744e9b6fddf6d730190a7f254`; this file's publication creates the next commit. Do **not** mistake the prepublication ledger's own branch SHA for the postpublication branch SHA.
+- Full branch pages **100,100,100,100,100,55,0 = 555**; open PR pages **100,100,47,0 = 247**; **95 stacked PRs**. All **555/555 branch names and SHAs** exactly matched independent `git/matching-refs/heads/`; no missing terminal pages or SHA mismatches.
+- [Versioned R52 ledger](SEMANTIC_DISPOSITIONS.json): **309 finalized / 246 unresolved**. Prior R51: 553/309/244. Two new owner-held BUG-only branches and PRs: [#487](https://github.com/djshellshoxxx/GhostPay/pull/487) `automation/20261123T0021Z/bug/hwsigner-bigint-boundary@e8dd09862face30c57e6123c01bcda3f6d2eec2c`, [#488](https://github.com/djshellshoxxx/GhostPay/pull/488) `automation/20261123T0032Z/bug/theme-css-snapshot@6d46d500da8171fe560090739c3ef9f1d3af94a7`. Both differ from main by four commits, behind zero, and change the existing BUG worker's source/test paths. Do not modify them. No new finalized histories were asserted in R52.
+
+## Completed actual engineering
+
+- Added **three regression test definitions first** at `c55df6267d9ce52b0fb4d42aa45f25b4aa11023c` to existing [consolidation tests](../../scripts/tests/consolidation-ledger.test.mjs) (repository-root location: `scripts/tests/consolidation-ledger.test.mjs`). Tests exercise invented/duplicate new-branch claims, invented/stale/same advanced heads, and false prior/newly-finalized accounting.
+- Patched the owned [offline ledger validator](../../scripts/consolidation/validate-ledger.mjs) at `1ec20c8dc9a35f431a8df69e0eeb33d97d12e491` to enforce live-census SHA references and internal finalized count arithmetic. No feature/contract or release-gate source changed. Previous 14 test definitions plus 3 new definitions now exist; **17/17 native passes NOT claimed** until exact-head CI or native runtime execution confirms them.
+- Created the source-pinned [R52 555-row ledger](SEMANTIC_DISPOSITIONS.json) at `123aa926152adb2179834a6012661397fe5618ed`. Independent read-side invariant check: 555 distinct branch identities, 247 distinct PR numbers, 309 finalized, zero PR-owner overlay mismatches. Preserve all older R41–R51 evidence files.
+- Created [uncapped security-donor triage](SECURITY_DONOR_TRIAGE.md) at `b4184fbe00fa1b0744e9b6fddf6d730190a7f254`. Three entire recursive Git trees compared against recovery #372 at `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`: donor-only paths 11,11,14; differing shared paths 216,219,222. The same **11 donor-only Git blobs** are byte-identical across all three donors. The analyzer donor uniquely retains 3 evidence/completeness files. Owner notified via [PR #372 comment 7088861639](https://github.com/djshellshoxxx/GhostPay/pull/372#issuecomment-7088861639). Do not call the donors completely reconciled; each has substantial semantic differences and security gates remain mandatory.
+
+## CI, authority and blockers
+
+- R51 prior-head hosted CI [run 45087455986](https://github.com/djshellshoxxx/GhostPay/actions/runs/45087455986) completed successfully with **24/24 jobs passed**. It does not qualify the new R52 code or handoff.
+- R52 draft-head hosted CI [run 45092490583](https://github.com/djshellshoxxx/GhostPay/actions/runs/45092490583) was **queued** at the pre-handoff `b4184fbe...` inspection. New publication will require qualification of its **own exact head**; cancelled intermediate runs cannot be counted as passed. Node local execution/git clone unavailable in executor due DNS isolation. The independently rechecked R52 JSON structure is not a substitute for Node, application, or browser test execution.
+- Integration lease remains **held, generation 11** by external coordinator `994a0d214fb9-root-r3`, exact ref commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`. Expiration is not authority to take over. Branch-protection API gives 403; `protected:false` from basic branch metadata does **not** waive review requirements. No authentic independent approval.
+- Recovery [#372](https://github.com/djshellshoxxx/GhostPay/pull/372) owns funds/sweep/private key/security work; its Mythril contract-analysis findings remain open. Other owned features and stacked PRs need exact-head review/CI. No main merges, application commits, releases, deployments, real-funds tests, ref deletion or forced pushes in this cycle.
+
+## Next independent executable steps
+
+1. Re-fetch the **post-handoff #471 head**, verify exact-head hosted CI and run `node --test scripts/tests/consolidation-ledger.test.mjs` plus `node scripts/consolidation/validate-ledger.mjs docs/consolidation/20261123-r52/SEMANTIC_DISPOSITIONS.json` when native checkout is available. Do not count queued/skipped checks as passed.
+2. Continue source-semantic examination of **246 unresolved donor histories** from the R52 ledger, prioritizing safe unique Pages browser-payment/recovery protections and untruncated donor source. Identify owner claims and stacked dependencies before source changes.
+3. Coordinate #372's security-evidence donor recovery without modifying owned files or loosening the strict Mythril gate. Respect all BUG-only PR ownership.
+4. Re-census newly created branches before any final declaration; integrate only after genuine independent approval, exact-head browser/security gates and explicit lock release. **Remain active**; not complete.
