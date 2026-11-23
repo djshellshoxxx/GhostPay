@@ -802,3 +802,10 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## B03 Pages manifest validator integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-pages-manifest-command-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned changes on this branch: `apps/web/package.json`, `apps/web/src/validateDeploymentsScript.test.ts`, and the B03 handoff in `docs/handoffs/PAGES_MANIFEST_COMMAND_20261123.md`.
+- Recover the already-authored narrow donor `9669766c21f57c28f201586a116517af341706e0`. Broad PR #212, head `4894d0d8d94333dffa8ae3937a4d8314f27c686f`, has an equivalent implementation. Preserve its source and ownership. The C1 candidate #504 at `cdf1510116d84855ef6e579f80e0e05a0fb1a5f1` does not contain the command.
+- Acceptance: the documented workspace command runs the existing build-time validator. Synthetic fixtures cover valid, unsigned, keyless and wrongly signed manifests. Verify the command and focused test, then affected web typecheck, lint, Pages artifact build and repository checks. Real deployment evidence and release signing remain owner dependencies.
