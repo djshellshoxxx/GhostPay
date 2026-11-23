@@ -802,3 +802,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# 2026-11-23T0840Z — Bitcoin URI checked-input snapshot
+
+Coordinator: one sequential ChatGPT engineer (no native subagents or independent verifier). Branch `automation/20261123T0840Z/bug/bitcoin-uri-input-snapshot`, base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned source `packages/payment-uri/src/bitcoin.ts`, new focused test `packages/payment-uri/src/bitcoin.input-snapshot.test.ts`, isolated handoff `docs/handoffs/BITCOIN_URI_INPUT_SNAPSHOT_20261123.md`, and this additive claim.
+Finding candidate: `buildBitcoinUri` re-reads `amountSats` during validation and serialization, so getter-backed input can exceed the 21-million BTC bound after validation; `parseBitcoinUri` rereads `expectedNetwork` after compatibility validation, permitting a returned network that conflicts with the address. No external exploit asserted.
+Acceptance: fail-first tests and minimal single-read snapshots, preserve normal BIP-21/321 behavior/errors, exact-head CI, source-pinned handoff; no dependencies, contracts, relayers, deployments, real funds, force-push, or security waiver. Independent reviewer and authorized integration lock required for merge.
+Ownership checks: changed-file inventories of active Bitcoin/recovery PRs #372, #382, #371, #367, #365, #307, #262, #264, #278 and recent payment-uri #496/#499 have no overlap with this owned source/new test path (bounded, not exhaustive). Shared metadata integration-lock at ref `082e754f44944ebb4be283f89176b966bf8f7b4f` is released generation 12; this cycle has NOT acquired it and must NOT merge.
