@@ -416,6 +416,20 @@ Owned paths: `packages/ux-flow/src/embed.ts`, new `packages/ux-flow/src/embed.op
 Observed baseline: `makeSnippet(link, appOrigin, null)` evaluates `Object.keys(null)` before its option validation, throwing native `TypeError` instead of the documented `FlowError('BAD_OPTION')`. Non-record option primitives or arrays also bypass the type contract. This is a malformed-options runtime correctness bug, not new functionality.
 Acceptance: first commit a deterministic regression failing on the original source, then reject non-record runtime option shapes with existing `BAD_OPTION` while retaining valid options, emitted snippets, link restrictions and escaping. No dependencies, redesign, fund/contract/network changes or deployment. Use source-exact or source-equivalent Node reproduction when checkout unavailable; hosted exact-head CI and independent qualified review required before integration.
 Coordination: refreshed 254 open PR changed-file inventories; none owned either selected source or dedicated regression path when checked. Existing #390 externally owned: five workflows green at `b655bc273a6704c9c140287b8adcdf4085b91882`, independent review pending. Integration lease `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, held generation 11 by another coordinator; do not acquire or merge.
+# PR #340 current-main integration — 2026-11-20 Pacific
+
+Worker: `/root/tron_refresh`; coordinator: `5ceb6203640a-root` (integration lease generation 12).
+Isolated branch: `repair/ghostpay-tron-main-20261121-5ceb`.
+Starting head: `b86a3e6affe8b71c6f13d16783accad446271ba4`, the verified #342 merge into #340.
+Target main snapshot: `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: merge resolution in `apps/web/src/features/tron/chain.hardening.test.ts`,
+this additive claim, and `docs/handoffs/TRON_CURRENT_MAIN_20261121.{md,json}`.
+Acceptance: preserve both source histories; retain selected Nile/Shasta genesis validation,
+main's strict incomplete-range rejection and cancellation checks, and all original assertions;
+resolve only incompatible test API calls/expectations; run focused TRON tests, TypeScript,
+lint and static build; obtain independent review and new exact-head hosted qualification.
+No remote writes, workflow changes, new chain support, live RPC/funds, deployment or release.
+The coordinator owns publication to the existing #340 branch and all merge decisions.
 
 ---
 
