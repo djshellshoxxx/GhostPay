@@ -55,11 +55,11 @@ export function validateTxRequest(r: TxSignRequest): Result<TxSignRequest> {
   if (!Number.isSafeInteger(r.chainId) || r.chainId <= 0) return err('bad chainId');
   if (!isAddress(r.to)) return err('bad to');
   if (!isHexData(r.data) || (r.data.length - 2) / 2 > MAX_DATA_BYTES) return err('bad data');
-  if (r.value < 0n || r.value > U256) return err('bad value');
+  if (typeof r.value !== 'bigint' || r.value < 0n || r.value > U256) return err('bad value');
   if (!Number.isSafeInteger(r.nonce) || r.nonce < 0) return err('bad nonce');
-  if (r.gasLimit <= 0n || r.gasLimit > U64) return err('bad gasLimit');
-  if (r.maxFeePerGas < 0n || r.maxFeePerGas > U256) return err('bad maxFeePerGas');
-  if (r.maxPriorityFeePerGas < 0n || r.maxPriorityFeePerGas > r.maxFeePerGas)
+  if (typeof r.gasLimit !== 'bigint' || r.gasLimit <= 0n || r.gasLimit > U64) return err('bad gasLimit');
+  if (typeof r.maxFeePerGas !== 'bigint' || r.maxFeePerGas < 0n || r.maxFeePerGas > U256) return err('bad maxFeePerGas');
+  if (typeof r.maxPriorityFeePerGas !== 'bigint' || r.maxPriorityFeePerGas < 0n || r.maxPriorityFeePerGas > r.maxFeePerGas)
     return err('priority fee exceeds max fee');
   return ok(r);
 }
