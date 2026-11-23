@@ -353,3 +353,29 @@ test('deleted live refs remain explicit unresolved historical obligations with 4
   falselyFinalized.summary.globalUnresolved = 0;
   assert.throws(() => validateLedgerTransition(falselyFinalized, previous), /retired history.*prior state/);
 });
+
+test('retired records cannot double-count a live identical ref or fabricate finalized unsafe history', () => {
+  const live = fixture();
+  const retired = {
+    branch: 'work', sha: b, finalized: false, disposition: 'pending-owner-review',
+    proof: {
+      status: 404, absentInIndependentRefs: true,
+      checkedAtUtc: '2026-11-23T04:11:17Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/work'
+    }
+  };
+  live.retiredHistories = [retired];
+  live.summary.globalUnresolved = 2;
+  // Same name+SHA cannot simultaneously be a live branch and retired history.
+  assert.throws(() => validateLedger(live), /retired history.*still live/);
+
+  const recreated = structuredClone(live);
+  recreated.retiredHistories[0].sha = c; // Old SHA differs from re-created live branch.
+  assert.equal(validateLedger(recreated).globalUnresolved, 2);
+
+  const falselyFinalized = structuredClone(recreated);
+  falselyFinalized.retiredHistories[0].finalized = true;
+  falselyFinalized.retiredHistories[0].disposition = 'unique-but-incomplete';
+  falselyFinalized.summary.globalUnresolved = 1;
+  assert.throws(() => validateLedger(falselyFinalized), /retired history cannot be finalized/);
+});
