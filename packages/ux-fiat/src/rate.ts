@@ -66,16 +66,32 @@ export function parseRate(q: RateQuote, policy: RatePolicy = DEFAULT_RATE_POLICY
   const pol = checkPolicy(policy);
   if (!pol.ok) return pol;
   if (q === null || typeof q !== 'object') return err('bad-rate-format', 'quote missing');
-  if (!isSafeLabel(q.asset, 64)) return err('bad-asset', 'bad asset id');
-  if (typeof q.fiat !== 'string' || !CODE_RE.test(q.fiat)) return err('bad-fiat', 'bad fiat code');
-  if (!isSafeLabel(q.source, 64)) return err('bad-source', 'bad source label');
-  if (!Number.isSafeInteger(q.timestampMs) || q.timestampMs <= 0) {
+
+  // Validation and the returned ParsedRate must use the same primitive values. A programmatic
+  // quote can contain getters or Proxy traps; rereading fields after validation is unsafe.
+  let quote: RateQuote;
+  try {
+    quote = {
+      asset: q.asset,
+      fiat: q.fiat,
+      rate: q.rate,
+      timestampMs: q.timestampMs,
+      source: q.source,
+    };
+  } catch {
+    return err('bad-rate-format', 'quote fields could not be read');
+  }
+
+  if (!isSafeLabel(quote.asset, 64)) return err('bad-asset', 'bad asset id');
+  if (typeof quote.fiat !== 'string' || !CODE_RE.test(quote.fiat)) return err('bad-fiat', 'bad fiat code');
+  if (!isSafeLabel(quote.source, 64)) return err('bad-source', 'bad source label');
+  if (!Number.isSafeInteger(quote.timestampMs) || quote.timestampMs <= 0) {
     return err('bad-timestamp', 'timestamp must be a positive safe integer (ms)');
   }
-  if (typeof q.rate === 'string' && /^-/.test(q.rate)) {
+  if (typeof quote.rate === 'string' && /^-/.test(quote.rate)) {
     return err('rate-negative', 'rate must not be negative');
   }
-  const p = parseUnsignedDecimal(q.rate, MAX_RATE_INT_DIGITS, MAX_RATE_FRAC_DIGITS);
+  const p = parseUnsignedDecimal(quote.rate, MAX_RATE_INT_DIGITS, MAX_RATE_FRAC_DIGITS);
   if (!p.ok) {
     return p.error.code === 'overflow'
       ? err('rate-too-large', 'rate has too many integer digits')
@@ -88,10 +104,10 @@ export function parseRate(q: RateQuote, policy: RatePolicy = DEFAULT_RATE_POLICY
   return ok({
     num: p.value.num,
     scale: p.value.scale,
-    asset: q.asset,
-    fiat: q.fiat,
-    timestampMs: q.timestampMs,
-    source: q.source,
+    asset: quote.asset,
+    fiat: quote.fiat,
+    timestampMs: quote.timestampMs,
+    source: quote.source,
   });
 }
 
