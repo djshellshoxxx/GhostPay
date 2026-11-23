@@ -473,9 +473,16 @@ export interface SeenTx {
   readonly input: Hex;
   readonly value: bigint;
   readonly chainId: bigint | undefined;
+  /** Account nonce when the RPC gave a canonical quantity; not part of the preview comparison. */
+  readonly nonce: bigint | undefined;
 }
 
-function parseSeenTx(v: unknown): SeenTx | undefined {
+function optionalQuantity(v: unknown): bigint | undefined {
+  try { return parseQuantity(v); } catch { return undefined; }
+}
+
+/** Shape-checks an `eth_getTransactionByHash` answer; `undefined` for null, a typed error for anything malformed. */
+export function parseSeenTx(v: unknown): SeenTx | undefined {
   if (v === null) return undefined;
   if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
@@ -487,6 +494,7 @@ function parseSeenTx(v: unknown): SeenTx | undefined {
       input: String(o['input'] ?? o['data']).toLowerCase() as Hex,
       value: parseQuantity(o['value']),
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
+      nonce: optionalQuantity(o['nonce']),
     };
   } catch {
     throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
@@ -505,6 +513,7 @@ export async function verifySubmission(
   expected: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint; readonly chainId: number },
   sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
   attempts = 6,
+  onVerified?: (seen: SeenTx) => void,
 ): Promise<SubmissionCheck> {
   const expFrom = getAddress(expected.from);
   const expTo = getAddress(expected.to);
@@ -517,6 +526,7 @@ export async function verifySubmission(
       if (seen.input !== expected.data.toLowerCase()) throw new SubmissionMismatchError('call data');
       if (seen.value !== expected.value) throw new SubmissionMismatchError('value');
       if (seen.chainId !== undefined && seen.chainId !== BigInt(expected.chainId)) throw new SubmissionMismatchError('chain');
+      onVerified?.(seen);
       return 'verified';
     }
     if (i < attempts - 1) await sleep(1500);

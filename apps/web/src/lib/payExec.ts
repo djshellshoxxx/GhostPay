@@ -23,6 +23,7 @@ import {
   type BufferQuote,
   type PayContext,
 } from './pay';
+import { browserAttemptStorage, recordAttemptNonce } from './duplicateAttemptJournal';
 import {
   WalletBroadcastError,
   pollReceipt,
@@ -33,6 +34,7 @@ import {
   type SubmissionCheck,
   type TxRequest,
   type WalletSession,
+  type SeenTx,
   type WalletAttemptOptions,
 } from './wallet';
 
@@ -111,6 +113,22 @@ function postBroadcastDetail(error: unknown, fallback: 'rpc' | 'allowance'): Mes
   return { key: fallback === 'rpc' ? 'transaction.detail.rpcFailed' : 'transaction.detail.allowanceFailed' };
 }
 
+/**
+ * Saves the nonce of a transaction already compared with the preview, so a later replacement (speed-up or cancel) can be
+ * verified from the attempt journal. Best effort: it never changes the outcome of a returned hash.
+ */
+async function saveObservedNonce(hash: Hex, seen: SeenTx | undefined, attempt: WalletAttemptOptions | undefined): Promise<void> {
+  const nonce = seen?.nonce;
+  if (nonce === undefined || nonce > BigInt(Number.MAX_SAFE_INTEGER) || attempt?.journalLockHeld === true) return;
+  if (attempt?.storage === undefined && browserAttemptStorage() === undefined) return;
+  try {
+    await recordAttemptNonce(hash, Number(nonce), {
+      ...(attempt?.storage === undefined ? {} : { storage: attempt.storage }),
+      ...(attempt?.lockManager === undefined ? {} : { lockManager: attempt.lockManager }),
+    });
+  } catch { /* The attempt status check reads the nonce from the RPC again. */ }
+}
+
 /** Sends one transaction, cross-checks it on the user's own RPC and waits for a receipt when an RPC exists. */
 export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn, attempt?: WalletAttemptOptions): Promise<SubmitResult> {
   assertCurrent?.();
@@ -133,14 +151,18 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
     }
     reportTransactionStatus(status, { phase: 'broadcast-attempted', hash, message: { key: 'transaction.status.verifying' } });
     const expected = { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId };
-    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    let observed: SeenTx | undefined;
+    const keep = (tx: SeenTx): void => { observed = tx; };
+    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep, undefined, keep);
+    await saveObservedNonce(hash, observed, attempt);
     reportTransactionStatus(status, { phase: 'pending-confirmation', hash, message: { key: 'transaction.phase.pending' } });
     const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
     if (seen === 'verified' || receipt === undefined) return { hash, verification: seen, receipt };
     // L2-F3: the wallet decides when to broadcast and can outwait the first check. A mined transaction is fetched and
     // compared again (a mismatch still throws), so a receipt is never reported without that comparison.
     reportTransactionStatus(status, { phase: 'verification-incomplete', hash, message: { key: 'transaction.status.lateReceipt' } });
-    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep, undefined, keep);
+    await saveObservedNonce(hash, observed, attempt);
     return { hash, verification: late === 'verified' ? 'verified' : 'unverified', receipt };
   } catch (e) {
     throw new PostBroadcastError(hash, postBroadcastDetail(e, 'rpc'), e);
