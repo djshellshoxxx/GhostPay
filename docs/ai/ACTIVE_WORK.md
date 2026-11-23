@@ -1,3 +1,16 @@
+# 2026-11-23T00:32Z — theme CSS snapshot TOCTOU correction (isolated)
+
+- Cycle/worker: `20261123T0032Z` / single ChatGPT coordinator in sequential audit, regression, implementation and self-check phases. Native parallel workers/independent reviewer unavailable.
+- Branch: `automation/20261123T0032Z/bug/theme-css-snapshot`; exact base `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`; source `packages/ux-core/src/theme.ts` blob `920c6d6d9ba185d7e25fdf36ae1dc6e0e170e293`, existing tests blob `e5187b1e340e29476f9a6a9e27d080aa2aaea33a`.
+- Owned paths: `packages/ux-core/src/theme.ts`, new `packages/ux-core/src/theme.snapshot.test.ts`, this additive claim, and new `docs/handoffs/THEME_CSS_SNAPSHOT_20261123.md`; no other source files.
+- Finding: `cssFor` validates caller-supplied theme object/token values and then rereads their properties to construct CSS; accessor-backed or subsequently mutated inputs can switch from safe `#rrggbb`/id to unvalidated selector/CSS text after the check. This violates the documented injection-proof output guarantee for direct JS callers. JSON-parsed themes have inert properties, so exploitation via ordinary JSON import is not established.
+- Acceptance: capture own theme metadata and token entries exactly once before validation and CSS output; use the same validated copy for all CSS; return typed refusal for throwing accessors; add RED regressions for changing colour/id getters plus valid and error controls; preserve built-in themes, contrast checks, CSS format, and import behavior. No dependency, workflow, signing, contract, wallet or production config change.
+- Active ownership: checked source paths of PRs #238/#262/#264/#278/#293/#307/#372/#418/#437/#471/#479/#482/#485/#487; none changed these two exact theme paths. Recheck current PRs/heads before any integration. PRs #278/#372 remain broad owners of unrelated sources.
+- Integration lock: ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11 `held` by another coordinator; no takeover or merge, even after expiry.
+- Verification: local `git ls-remote` cannot resolve github.com. Use actual hosted exact-head tests; source-equivalent Node demonstration is not repository Vitest. Independent review is mandatory before merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
