@@ -1510,3 +1510,16 @@ Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exa
 - Acceptance: commit a failing regression before production changes; reject non-bigint value/gasLimit/maxFeePerGas/maxPriorityFeePerGas via existing Result errors; preserve all valid bigint requests and transaction review text; replay isolated regression and nearby edge cases, then depend on exact-head hosted checks, native browser qualification if applicable, and genuinely independent review. No signing or real funds.
 - Ownership: all 245 open PR identifiers inventoried as of this run and changed-file inventories checked for `hwsigner.ts` plus new test; no direct collision found. Existing broad PRs #278/#262/#264/#372 did not own either file. Recheck live PR heads before merge.
 - Integration: generation-11 metadata lease at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains `held` by another coordinator. No lock takeover, shared work integration, deployment, release or merge permitted.
+
+---
+
+# GP-BUG-R11 — Reject malformed CSV column specifications (2026-11-23)
+
+- Worker: GhostPay BUG-ONLY repair round 11, one assistant; no independent verifier.
+- Branch: `automation/20261123/bug/export-column-holes-r11`; exact `main` base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-export/src/types.ts`, new `packages/ux-export/src/types.column-spec.runtime.test.ts`, this additive ACTIVE_WORK section, and `docs/handoffs/UX_EXPORT_COLUMN_SPEC_R11_20261123.md`.
+- Observed pre-fix defect: sparse `ColumnSpec[]` input reaches `resolveColumns()`'s `Array.map()` which skips absent indexes, so it returns sparse `ResolvedColumn[]` instead of the documented `INVALID_OPTION`; exported CSV can acquire silent unnamed/empty cells. Null/wrong-shaped descriptors can leak native TypeError rather than the package's typed ExportError.
+- Acceptance: regression committed first; reject missing, null and malformed columns with existing `INVALID_OPTION`; dense valid custom/default columns, CSV shape, header escaping and normal round trips unchanged. No new dependencies, policies, fund interactions, deployment, or release.
+- Ownership: recheck all active PR changed-file inventories before integration. Known focused export PRs #415/#444/#467/#483 own only summary/encoder/amount/time files, respectively. Initial direct inventory sample of PRs #489–#461 showed no owner of this source. Broad active branches and PRs remain reserved; no authority to overwrite them.
+- Qualification: source-matched Node/TypeScript replay if available, hosted exact-head CI, lint, build and native browser checks; independent review and integration lease verification required before merge.
+- Integration: metadata ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, status `held`, owner `994a0d214fb9-root-r3`, generation 11. Do not mutate lease or merge.
