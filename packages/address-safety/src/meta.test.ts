@@ -16,6 +16,24 @@ describe('metaAddressFingerprint', () => {
     expect(metaAddressFingerprint('a')).not.toBe(metaAddressFingerprint('b'));
   });
 
+  it('rejects malformed UTF-16 rather than hashing a replacement-character collision', () => {
+    for (const malformed of [
+      '\uD800',
+      '\uDC00',
+      '\uD800x',
+      'x\uDC00',
+      'a\uD800b',
+      'a\uDC00b',
+      '\uD800\uD800',
+      '\uD83D\uDE00\uD800',
+    ]) {
+      expect(() => metaAddressFingerprint(malformed)).toThrow(AddressSafetyError);
+    }
+    expect(metaAddressFingerprint('\uFFFD')).toMatch(/^([0-9a-f]{4}-){4}[0-9a-f]{4}$/);
+    expect(metaAddressFingerprint('\uD83D\uDE00')).toMatch(/^([0-9a-f]{4}-){4}[0-9a-f]{4}$/);
+    expect(metaAddressFingerprint('a\uD83D\uDE00b')).not.toBe(metaAddressFingerprint('a\uFFFD b'));
+  });
+
   it('rejects empty, huge and non-string input', () => {
     expect(() => metaAddressFingerprint('')).toThrow(AddressSafetyError);
     expect(() => metaAddressFingerprint('x'.repeat(4097))).toThrow(AddressSafetyError);

@@ -30,6 +30,17 @@ export function metaAddressFingerprint(meta: string): string {
   if (typeof meta !== 'string' || meta.length === 0 || meta.length > MAX_META) {
     throw new AddressSafetyError('meta-address must be 1..4096 characters');
   }
+  for (let i = 0; i < meta.length; i++) {
+    const unit = meta.charCodeAt(i);
+    if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = meta.charCodeAt(++i);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw new AddressSafetyError('meta-address contains malformed UTF-16');
+      }
+    } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+      throw new AddressSafetyError('meta-address contains malformed UTF-16');
+    }
+  }
   const hex = bytesToHex(sha256(utf8ToBytes(meta))).slice(0, 20);
   return hex.match(/.{4}/g)?.join('-') ?? hex;
 }

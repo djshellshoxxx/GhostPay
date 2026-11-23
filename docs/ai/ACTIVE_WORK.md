@@ -176,6 +176,15 @@ Finding: `previewSettingsExchange` sets `basis: current` by reference, while `ap
 Acceptance: snapshot the comparison-relevant settings at preview creation, including nested maps and signer list; reject a stale preview after in-place mutation, preserve unchanged application and existing selections; add regression before fix. No new trust policy, third-party dependencies, keys, contracts, services, URLs or deployments.
 Ownership reconciliation: checked main and active broad PR #278/#293/#307/#372 and recent #356/#427, plus historical #117 (closed): no active changed-file claim observed for this source path in the bounded review. Recheck before integration. Lock branch at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` held generation 11 by `994a0d214fb9-root-r3`; this cycle will not take it over or integrate.
 Verification gate: test-first regression, exact-head hosted checks, independent verifier and fresh deployment/branch protection review before merging.
+# GP-BUG-20261122-01 — reject malformed UTF-16 in meta-address fingerprint (isolated)
+
+Worker: single ChatGPT BUG-ONLY coordinator; no separate independent reviewer exists in this execution.
+Base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`; branch `automation/20261122T0123Z/bug/meta-fingerprint-surrogate`.
+Owned paths: `packages/address-safety/src/meta.ts`, `packages/address-safety/src/meta.test.ts`, this additive ownership claim, and `docs/handoffs/META_FINGERPRINT_UTF16_20261122.md` only.
+Evidence: original `meta.ts` blob `dd5230c5a4416bd0f2d5a3a7e79e982eca38487f`; an unpaired UTF-16 surrogate and U+FFFD yield identical UTF-8 bytes through replacement encoding, so this text fingerprint does not distinguish the exact input strings. Independent Node 22 TextEncoder/SHA-256 source-equivalent reproduction recorded; full library execution not claimed yet.
+Acceptance: commit a failing regression before source fix; reject any unpaired high or low surrogate with existing `AddressSafetyError`; preserve valid astral pairs, ASCII and existing 4096-unit limit; no changes to hash algorithm, output, external dependencies, or addresses that are valid Unicode. Native repository tests where available; hosted exact-head CI and independent review required before integration.
+Ownership: examined changed-file lists for the 190 open PRs across GitHub REST pages 1 and 2; no PR modifies `meta.ts` or `meta.test.ts`. Existing broad PRs #372/#278/#264/#262/#238/#224 own `text.test.ts`/package metadata, which this task does not edit. Recheck newly opened/updated PRs before any integration.
+Integration: generation-11 `automation/ghostpay-integration-lock` is `held` by `994a0d214fb9-root-r3`; no lock takeover, main write, or merge authorized.
 
 ---
 
