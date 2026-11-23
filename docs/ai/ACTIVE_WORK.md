@@ -1,3 +1,14 @@
+# M2 P0-KEYS — independent payment-key export/recovery onto main (2026-11-23)
+
+Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr) with a core-implementation subagent; independent security/QA review subagents before PR is marked ready.
+Branch: `claude/nifty-bohr-5ra2ap`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Source: PR #372 head `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` (Spec 18 K01–K06 commits `5c0a12cc`, `2e4a76c9` and later fixes). Selective, source-pinned extraction; #372 and its parents stay untouched.
+Owned paths: `packages/ux-vault/src/stealth-export-portable*` and its export entries; `apps/web/src/lib/{stealthExport,paymentKeyExport}*`; `apps/web/src/components/StealthExport*`; additive export authorization in `apps/web/src/lib/keyVault.ts` and `apps/web/src/lib/session.ts`; export mounts in `apps/web/src/views/{Scan,SellerKeys}.tsx`; matching locale/security keys; `scripts/recovery/*`; `docs/handoffs/P0_KEYS_SPEC18_EXTRACTION_20261123.md`.
+Not owned: M1 journal paths claimed by `claude/keen-volta-8ctx9x` (PR #500), privacy/network-authorization lineage of #372, Sweep, relayer, contracts, hosting kit.
+Acceptance: encrypted single/archive/master export and raw-key export behind re-authentication; recovery of any export in a fresh session; standalone decoder recovers signing authority with GhostPay session cleared (anvil-backed); tampered/wrong-passphrase/oversize/wrong-chain inputs refused; existing main RPC client only (no new endpoint, no fallback); full web + ux-vault gates; independent review; merge only under the integration lock.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
