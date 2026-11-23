@@ -348,5 +348,8 @@ test('deleted live refs remain explicit unresolved historical obligations with 4
   assert.throws(() => validateLedgerTransition(noProof, previous), /retired history.*verification/);
   const falselyFinalized = structuredClone(next);
   falselyFinalized.retiredHistories[0].finalized = true;
+  // Keep the standalone census internally coherent so the transition check,
+  // not the global unresolved-count guard, catches the falsified tombstone.
+  falselyFinalized.summary.globalUnresolved = 0;
   assert.throws(() => validateLedgerTransition(falselyFinalized, previous), /retired history.*prior state/);
 });
