@@ -30,13 +30,13 @@ import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { TransactionOutcomeError, approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
-import { readAttempts } from '../lib/duplicateAttemptJournal';
+import { browserAttemptLocks, DUPLICATE_ATTEMPT_MESSAGE, readAttempts } from '../lib/duplicateAttemptJournal';
 import type { MessageKey } from '../i18n/catalog';
 import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageValues, Part } from '../i18n/message';
 import type { Translator } from '../i18n/translator';
-import { connectWallet, walletAttemptKey, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
+import { connectWallet, paymentAttemptKey, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
@@ -108,16 +108,19 @@ interface InvoiceQrPreview {
 
 const SUPPORTED_INVOICE_ERROR: MessageDescriptor = { key: 'pay.error.supportedInvoice' };
 
-/** True when the tab's attempt journal holds a payment request for this invoice (outcome unknown or submitted). */
-function paymentAttemptRecorded(session: WalletSession, built: BuiltPayment, invoice: ParsedInvoice['invoice']): boolean {
-  try {
-    const key = walletAttemptKey(session, built.tx, { kind: 'payment', scope: bytesToHex(invoiceDigest(invoice)) });
-    return readAttempts().some((attempt) => attempt.key === key);
-  } catch { return false; }
+function paymentAttemptRecorded(invoice: ParsedInvoice['invoice']): boolean {
+  const key = paymentAttemptKey(invoice.chainId, bytesToHex(invoiceDigest(invoice)));
+  return readAttempts().some((attempt) => attempt.key === key);
+}
+
+function assertNoPaymentAttempt(invoice: ParsedInvoice['invoice']): void {
+  browserAttemptLocks();
+  if (paymentAttemptRecorded(invoice)) throw new UserFacingError({ key: DUPLICATE_ATTEMPT_MESSAGE });
 }
 
 /** Refusal reasons whose own text says "Nothing was sent"; restated without that claim after an earlier request. */
 const RETRY_REFUSAL_DETAIL: Readonly<Partial<Record<MessageKey, MessageKey>>> = {
+  [DUPLICATE_ATTEMPT_MESSAGE]: DUPLICATE_ATTEMPT_MESSAGE,
   'error.pay.thisInvoiceHasExpiredNothingWasSent': 'transaction.detail.invoiceExpired',
   'error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent': 'transaction.detail.quoteExpired',
   'error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent': 'transaction.detail.bufferExpired',
@@ -757,6 +760,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           plan = await planApproval(ctx, wallet, tk.address, rt);
           guard();
         }
+        if (permit) assertNoPaymentAttempt(invoice);
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, scopedStatus, guard);
         guard();
         setApproval(plan);
@@ -812,6 +816,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         };
         preSignGuard();
         if (approval?.required === true && actualAllowance === undefined) {
+          assertNoPaymentAttempt(invoice);
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
@@ -860,8 +865,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           announce({ key: stage === 'approval' ? 'pay.announce.approvalUnverified' : 'pay.announce.paymentUnverified' });
           return;
         }
-        // The tab's attempt journal is the durable record of an earlier payment hand-off for this invoice.
-        const earlierRequest = paymentWalletRequested || paymentAttemptRecorded(wallet, built, invoice);
+        let earlierRequest = paymentWalletRequested;
+        try { earlierRequest ||= paymentAttemptRecorded(invoice); } catch { /* The original storage error is shown below. */ }
         if (actualAllowance !== undefined) {
           const outcome = approvedPaymentOutcome(e, earlierRequest, approvalBroadcastHash as Hex | undefined);
           setError(outcome.message);
@@ -945,7 +950,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">{t('pay.title.input')}</h2>
-        <WalletAttempts />
+        <WalletAttempts getRpc={app.getRpc} />
         {previousBroadcast !== undefined && (
           <Notice kind="warn" title={t('pay.previous.title')}>
             {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
@@ -1012,7 +1017,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   return (
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">{t('pay.title.review')}</h2>
-      <WalletAttempts />
+      <WalletAttempts getRpc={app.getRpc} />
       {previousBroadcast !== undefined && (
         <Notice kind="warn" title={t('pay.previous.title')}>
           {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}

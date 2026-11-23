@@ -7,6 +7,7 @@ import {
   beginAttempt,
   clearAttemptLocked,
   finishAttempt,
+  migrateBrowserAttempts,
   readAttempts,
   recordAttemptNonce,
   subscribeAttempts,
@@ -202,15 +203,26 @@ describe('optional resolution fields', () => {
     }
   });
 
+  it('migrates a copied legacy submission without replacing the durable nonce or linked hash', async () => {
+    const legacy = record({ status: 'submitted', hash: hashA });
+    const durable = { ...legacy, nonce: 7, replacements: [hashB] };
+    window.sessionStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([legacy]));
+    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([durable]));
+    expect(readAttempts()).toEqual([durable]);
+    await migrateBrowserAttempts();
+    expect(window.sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBeNull();
+    expect(readAttempts()).toEqual([durable]);
+  });
+
   it('records an observed nonce once per hash and never changes it', async () => {
     const attempt = await withAttemptJournal((s) => beginAttempt({ ...input(), txDigest: digest }, s));
     await withAttemptJournal((s) => { finishAttempt(attempt, hashA, s); });
-    await recordAttemptNonce(hashA.toUpperCase().replace('0X', '0x'), 7);
+    await recordAttemptNonce(hashA.toUpperCase().replace('0X', '0x'), 7, attempt);
     expect(readAttempts()[0]).toMatchObject({ hash: hashA, nonce: 7, txDigest: digest });
-    await expect(recordAttemptNonce(hashA, 7)).resolves.toBeUndefined();
-    await expect(recordAttemptNonce(hashA, 8)).rejects.toThrow(/journal/i);
-    await expect(recordAttemptNonce(hashB, 3)).resolves.toBeUndefined();
-    for (const bad of [-1, 1.5, Number.NaN]) await expect(recordAttemptNonce(hashA, bad)).rejects.toThrow(/journal/i);
+    await expect(recordAttemptNonce(hashA, 7, attempt)).resolves.toBeUndefined();
+    await expect(recordAttemptNonce(hashA, 8, attempt)).rejects.toThrow(/journal/i);
+    await expect(recordAttemptNonce(hashB, 3, attempt)).resolves.toBeUndefined();
+    for (const bad of [-1, 1.5, Number.NaN]) await expect(recordAttemptNonce(hashA, bad, attempt)).rejects.toThrow(/journal/i);
     expect(readAttempts()).toEqual([{ ...attempt, status: 'submitted', hash: hashA, nonce: 7 }]);
   });
 });

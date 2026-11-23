@@ -1,3 +1,4 @@
+import { memoryIndexedDb } from './memoryIndexedDb';
 /**
  * Test-only, in-process subset of the Web Locks API (jsdom has none). Exclusive, FIFO and NOT reentrant, like
  * `navigator.locks`: a nested request for a held name waits for the outer one, so a reentrant caller deadlocks here
@@ -61,6 +62,7 @@ export function stubJournalWindow(
   const mem = new Map<string, string>();
   const memory = (m: Map<string, string>) => ({ getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); }, removeItem: (k: string) => { m.delete(k); } });
   stubGlobal('window', { localStorage: store ?? memory(mem), sessionStorage: memory(new Map()), dispatchEvent: () => true });
+  stubGlobal('indexedDB', memoryIndexedDb());
   installTestLocks();
   return mem;
 }

@@ -26,7 +26,7 @@ const tx = (hash: string, over: Record<string, unknown> = {}): Record<string, un
   hash, from: ACCOUNT, to: TO, input: DATA, value: '0x5', nonce: '0x7', chainId: '0x14a34', blockHash: null, blockNumber: null, ...over,
 });
 const receipt = (hash: string, block: bigint, over: Record<string, unknown> = {}): Record<string, unknown> => ({
-  transactionHash: hash, status: '0x1', blockNumber: `0x${block.toString(16)}`, blockHash: blockHash(block), ...over,
+  transactionHash: hash, to: TO, status: '0x1', blockNumber: `0x${block.toString(16)}`, blockHash: blockHash(block), ...over,
 });
 
 interface Chain {
@@ -59,7 +59,10 @@ function chain(chainId = CHAIN): Chain {
   return c;
 }
 function mined(c: Chain, hash: string, block: bigint, over: Record<string, unknown> = {}): void {
-  c.receipts.set(hash, receipt(hash, block, over));
+  const seen = c.txs.get(hash) as Record<string, unknown> | undefined;
+  const evidence = receipt(hash, block, { to: seen?.['to'] ?? TO, ...over });
+  c.receipts.set(hash, evidence);
+  if (seen !== undefined) c.txs.set(hash, { ...seen, blockNumber: evidence['blockNumber'], blockHash: blockHash(block) });
   c.canonical.set(block, blockHash(block));
 }
 
@@ -132,6 +135,9 @@ describe('resolveAttempt', () => {
     ['a missing nonce', (c: Chain) => { c.txs.set(H, tx(H, { nonce: undefined })); }],
     ['an oversized nonce', (c: Chain) => { c.txs.set(H, tx(H, { nonce: `0x${(2n ** 53n).toString(16)}` })); }],
     ['an unknown receipt status', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n, { status: '0x2' }); }],
+    ['a receipt without a hash', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n, { transactionHash: undefined }); }],
+    ['a receipt with a different recipient', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n, { to: OTHER }); }],
+    ['inconsistent transaction and receipt blocks', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n); c.txs.set(H, tx(H)); }],
     ['a receipt for another hash', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n, { transactionHash: R1 }); }],
     ['a malformed receipt block hash', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n, { blockHash: '0x12' }); }],
     ['a head below the receipt block', (c: Chain) => { c.txs.set(H, tx(H)); mined(c, H, 90n); c.head = 80n; }],
@@ -172,9 +178,11 @@ describe('resolveAttempt', () => {
       state: 'replaced', hash: R1, kind: 'same-call', outcome: { state: 'confirmed', blockNumber: 95n, blockHash: blockHash(95n), confirmations: 6n },
     });
     c.txs.set(R1, tx(R1, { to: ACCOUNT, input: '0x', value: '0x0' }));
+    mined(c, R1, 95n);
     await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R1] }))).resolves.toMatchObject({ state: 'replaced', hash: R1, kind: 'different-call', outcome: { state: 'confirmed' } });
     await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R1], txDigest: undefined }))).resolves.toMatchObject({ kind: 'unknown-call' });
     c.receipts.delete(R1);
+    c.txs.set(R1, tx(R1, { to: ACCOUNT, input: '0x', value: '0x0' }));
     c.latestNonce = 7n;
     await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R2, R1] }))).resolves.toEqual({ state: 'replaced', hash: R1, kind: 'different-call', outcome: { state: 'pending' } });
   });
@@ -189,7 +197,8 @@ describe('resolveAttempt', () => {
 
   it('records the observed nonce in the journal once the transaction matches', async () => {
     const record = attempt();
-    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([record]));
+    const other = attempt({ id: '00000000-0000-4000-8000-000000000002', key: hashOf(9), txDigest: undefined });
+    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([record, other]));
     const c = chain();
     c.txs.set(H, tx(H, { from: OTHER }));
     await resolveAttempt(c.rpc, record);
@@ -197,6 +206,7 @@ describe('resolveAttempt', () => {
     c.txs.set(H, tx(H));
     await resolveAttempt(c.rpc, record);
     expect(readAttempts()[0]?.nonce).toBe(7);
+    expect(readAttempts()[1]?.nonce).toBeUndefined();
   });
 });
 
