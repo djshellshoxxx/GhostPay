@@ -4,7 +4,7 @@ import { compareGitTrees } from '../consolidation/compare-git-trees.mjs';
 
 const sha = n => n.toString(16).padStart(40, '0');
 const tree = (entries, identity = sha(900)) => ({ sha: identity, truncated: false, tree: entries });
-const file = (path, n, type = 'blob') => ({ path, sha: sha(n), type });
+const file = (path, n, type = 'blob') => ({ path, sha: sha(n), type, mode: type === 'tree' ? '040000' : type === 'commit' ? '160000' : '100644' });
 
 test('preserves all 701 changes beyond GitHub 300-file compare limit', () => {
   const same = Array.from({ length: 400 }, (_, i) => file(`docs/same/${i}.md`, i + 1));
@@ -52,4 +52,43 @@ test('directory entries are ignored, a tree cannot masquerade as a complete merg
   const delta = compareGitTrees(base, donor);
   assert.equal(delta.summary.totalDifferingPaths, 0);
   assert.match(delta.caveats.join(' '), /not patch equivalence or commit ancestry/);
+});
+
+test('a chmod or symlink change is not silently classified as an identical blob', () => {
+  const base = tree([
+    { ...file('bin/run.sh', 81), mode: '100644' },
+    { ...file('config/current', 83), mode: '100644' },
+  ]);
+  const donor = tree([
+    { ...file('bin/run.sh', 81), mode: '100755' },
+    { ...file('config/current', 83), mode: '120000' },
+  ]);
+  const delta = compareGitTrees(base, donor);
+  assert.equal(delta.summary.changed, 2);
+  assert.equal(delta.summary.identical, 0);
+  assert.deepEqual(delta.changed.map(entry => [entry.path, entry.baseMode, entry.donorMode]), [
+    ['bin/run.sh', '100644', '100755'],
+    ['config/current', '100644', '120000'],
+  ]);
+});
+
+test('requires file mode and validates blob/gitlink/directory consistency', () => {
+  const valid = tree([{ ...file('sub/repo', 3, 'commit'), mode: '160000' }]);
+  for (const item of [
+    { path: 'src/no-mode.ts', sha: sha(2), type: 'blob' },
+    { ...file('sub/repo', 3, 'commit'), mode: '100644' },
+    { ...file('src/unsafe.ts', 4), mode: '160000' },
+    { ...file('src/octal.ts', 5), mode: '0100644' },
+    { ...file('src/invalid-mode.ts', 6), mode: '999999' },
+    { ...file('sub', 7, 'tree'), mode: '100644' },
+  ]) assert.throws(() => compareGitTrees(tree([item]), valid), /invalid tree entry|invalid mode/);
+});
+
+test('rejects conflicting tracked parent path instead of inventing a possible Git tree', () => {
+  const valid = tree([]);
+  const conflicting = tree([
+    { ...file('src', 31), mode: '100644' },
+    { ...file('src/tool.ts', 32), mode: '100644' },
+  ]);
+  assert.throws(() => compareGitTrees(conflicting, valid), /conflicting tracked path/);
 });
