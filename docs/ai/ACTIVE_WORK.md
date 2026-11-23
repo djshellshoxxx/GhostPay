@@ -1,3 +1,11 @@
+# 20261123T2235Z — range scan record-isolation integration regression
+
+Worker: one sequential coordinator/test author; no native independent verifier. Branch `automation/20261123T2235Z/test/scan-range-record-isolation` based on #523 exact head `36cf79d0ce4a31f79a5799af2f8f5e30bd244029`; main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: new `packages/scan-source/src/range.announcement-boundary.test.ts`, this additive claim, and new `docs/handoffs/SCAN_RANGE_RECORD_ISOLATION_20261123.md`. No production edits. #520/#523 own validator source/test; #222/#249/#238/#262/#264/#278/#372 own range source and existing range tests. Do not edit those paths or their branches.
+
+Acceptance: demonstrate that a malformed individual record does not interrupt a multi-window range scan, that valid records before and after it remain in deterministic order with precise skipped accounting and unchanged coverage, and that a real backend rejection remains a rejection. Use synthetic testnet fixtures only, no network or real funds. Exact-head hosted CI and independent review required. Lock generation 12 released, not acquired. No shared integration or deployment.
+
+---
+
 # Scan-source proxy fixture lint follow-up — 2026-11-23T20:41Z
 
 Cycle 20261123T2041Z; one sequential coordinator (no independent worker). Isolated child `automation/20261123T2041Z/bug/scan-proxy-test-lint` of PR #520 at `74164baa0c0781955383794d5243f5ed25e46ae4`, main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: `packages/scan-source/src/validate.test.ts`, this additive claim, and new `docs/handoffs/SCAN_PROXY_FIXTURE_LINT_20261123.md`. No production edits; preserve #520's original head and all regression assertions.
