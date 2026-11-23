@@ -590,3 +590,59 @@ test('unresolved retired donor evidence and disappearance tombstones retain prio
   });
   assert.throws(() => validateLedgerTransition(gone, old), /historical source evidence/);
 });
+
+test('unresolved P0 or unsafe dispositions cannot be downgraded by label-only rewrites', () => {
+  const before = fixture();
+  before.records[1].disposition = 'unsafe-p0-refund-absence-proof';
+  before.records[1].evidence = {
+    sourceProof: 'docs/security/chain-absence-review.md',
+    risk: { severity: 'P0', status: 'unresolved' }
+  };
+  const after = structuredClone(before);
+  after.summary.newBranches = []; after.summary.advancedHeads = [];
+  after.summary.priorFinalized = 1; after.summary.newlyFinalized = 0;
+  // Counts, SHA, old evidence and open PR membership all stay identical.
+  after.records[1].disposition = 'unresolved-review-required';
+  assert.throws(() => validateLedgerTransition(after, before),
+    /high-risk disposition changed without requalification/);
+
+  after.records[1].evidence.riskDispositionReview = {
+    previousDisposition: before.records[1].disposition,
+    newDisposition: after.records[1].disposition,
+    checkedDonorSha: b, comparedWithSha: a,
+    sourceProof: 'docs/security/chain-absence-followup.md',
+    assessment: 'Risk remains unresolved; classification is clarified, not waived'
+  };
+  assert.equal(validateLedgerTransition(after, before).unresolved, 1);
+  for (const patch of [
+    { previousDisposition: 'unsafe-other' },
+    { newDisposition: 'audit-or-documentation-only' },
+    { checkedDonorSha: c },
+    { comparedWithSha: 'invalid' },
+    { sourceProof: '  ' },
+    { assessment: '  ' }
+  ]) {
+    const bad = structuredClone(after);
+    Object.assign(bad.records[1].evidence.riskDispositionReview, patch);
+    assert.throws(() => validateLedgerTransition(bad, before),
+      /high-risk disposition changed without requalification/);
+  }
+
+  const blocked = structuredClone(before);
+  blocked.records[1].disposition = 'blocked-payment-safety-ownership';
+  const downgraded = structuredClone(blocked);
+  downgraded.records[1].disposition = 'newly-discovered-review-required';
+  downgraded.summary.newBranches = []; downgraded.summary.advancedHeads = [];
+  downgraded.summary.priorFinalized = 1; downgraded.summary.newlyFinalized = 0;
+  assert.throws(() => validateLedgerTransition(downgraded, blocked),
+    /high-risk disposition changed without requalification/);
+
+  // Ordinary pending -> qualified-awaiting-review progress does not need the
+  // special security-risk reclassification proof.
+  const ordinary = fixture();
+  const progress = structuredClone(ordinary);
+  progress.records[1].disposition = 'unique-eligible-awaiting-review';
+  progress.summary.newBranches = []; progress.summary.advancedHeads = [];
+  progress.summary.priorFinalized = 1; progress.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(progress, ordinary).unresolved, 1);
+});
