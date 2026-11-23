@@ -1,0 +1,13 @@
+# GhostPay R64 — durable handoff
+
+**Verified UTC:** 2026-11-23T12:13:36.365Z. Protected main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Existing own consolidation PR [#471](https://github.com/djshellshoxxx/GhostPay/pull/471) pre-publication `81e11a109247badf09ab3fbd9241c5c710ee6f65`. Ledger and evidence are in this directory. Each commit after this handoff advances PR HEAD; re-query exact head before test qualification.
+
+**Census:** 574 live branches (100/100/100/100/100/74/0) and 574 matching independent Git refs, zero SHA mismatches; 263 open PRs (100/100/63/0), 94 stacked. **317 structurally finalized live, 257 unresolved live, two preserved deleted-but-unmerged = 259 unresolved global histories.** One new owned BUG-only #508 at `1cf9ec458bdd193f186499ac30ac3f7b207cfe0c`; this worker's own head advanced from R63 frozen `89b6e1c8...` to `81e11a109247badf09ab3fbd9241c5c710ee6f65`. No new historical donor finalized. The full 574-row ledger passed the exact updated JavaScript `validateLedgerTransition(R64,R63)`.
+
+**Work actually done:** regression commit `650c8805...` and fix `81e11a10...` preserve immutable previous donor evidence in live and retired records. Old code accepted evidence erasure; new 30/30 committed V8 regression definitions passed. Full R62→R63 still passes. New recursive tree comparison proves 4,525 identical shared blobs and 14 paths different between private-scan and export-authorization donors, with a unique payment-export RPC authorization implementation missing from protected main and C1. It needs complete dependency, owner, browser and security qualification, **not** isolated transplant. [Source report](DONOR_DELTA_AND_VALIDATOR.md).
+
+**CI:** R63 exact-head CI run 45163491780 was successful at `7dd3b4e6...`. Newly published R64 exact-head CI is NOT yet accepted or verified. Native Node/npm, browser, security and application tests unrun in this cycle; GitHub DNS unavailable in local checkout environment. No independent approval submitted; protection query 403. Integration lock generation 12 released, not owned.
+
+**Next actions:** verify R64 CI against the final new head, refresh main/PR and independent refs, recheck owner leases and review results. Build an isolated unowned integration plan for eleven executable-path donor differences, especially export RPC grants and scan/session binding; do not overwrite the BUG-only or P0 workers. Continue capped donor recovery. Require security/browser/payment gates, exact-head CI, independent review and legal lease before protected-main merge.
+
+**No application-code commit, main merge, release or deployment in R64.** Keep the consolidation automation active until zero eligible safe changes remain and all gates are verified.
