@@ -1,3 +1,14 @@
+# GP-BUG R11 — anchor attribute-name boundary in static markup audit (2026-11-23)
+
+Worker: GhostPay BUG-ONLY automation coordinator; sequential author and test review, not an independent verifier. Branch: `automation/20261123-r11/bug/metadata-anchor-attribute-boundaries`; exact base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths on this branch: `packages/metadata-hardening/src/web.ts`, new `packages/metadata-hardening/src/web.anchor-attributes.test.ts`, additive claim in this document, and new `docs/handoffs/METADATA_ANCHOR_ATTRIBUTES_R11_20261123.md`. No changes to shared branches or existing `web.test.ts`.
+Observed defect: `findUnsafeAnchors` uses `\\btarget` and `\\brel` attribute regexes. A hyphen preceding `target` or `rel` is a word boundary, so `data-target="_blank"` is treated as a real `target`, and `data-rel="noopener noreferrer"` can mask an absent real `rel`. A source-equivalent Node 22 probe reproduced both incorrect outcomes (2/5 directed cases failed on original source). This is a local markup-audit correctness flaw; no real-world exploit claimed.
+Acceptance: regressions first for data-/aria- prefixed lookalike attributes, preserve genuine target/rel cases and mixed case/whitespace; require real attribute names preceded by whitespace; verify before/after directed probe, exact-head hosted CI and applicable browser checks; leave draft pending independent review and legitimate integration lock ownership. No new dependencies, release, contract/fund interactions, network attacks, deployment or broad refactoring.
+Ownership preflight: snapshot of 259 open PRs (including broad #278/#372/#504) on 2026-11-23; changed-file checks on #404, #365, #249, #367, #243, #278, #372, #504 found no claim on `web.ts` or the new test path. The #504 fast-track integration PR does edit sibling `guard.ts`, so no files owned by it are changed here. This is targeted—not a complete 259-file-list census; recheck conflicts before integration.
+Integration metadata lock ref `automation/ghostpay-integration-lock` observed at `082e754f44944ebb4be283f89176b966bf8f7b4f` (generation 12, released); this is not an acquisition or merge grant. PR #390 head `b655bc273a6704c9c140287b8adcdf4085b91882` has five successful exact-head Actions workflow groups, 39 check runs success/skipped and no submitted independent review; owner branch untouched.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
