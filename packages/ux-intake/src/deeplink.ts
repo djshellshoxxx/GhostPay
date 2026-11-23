@@ -226,7 +226,9 @@ export function parseDeepLink(raw: unknown, policy: LinkPolicy): Result<Incoming
     return err('malformed-url');
   }
   if (url.username !== '' || url.password !== '') return err('credentials-not-allowed');
-  if (url.port !== '') return err('port-not-allowed');
+  // URL.port hides explicit default/empty HTTPS ports. Enforce the raw-authority policy first.
+  const authority = /^https:[\\/]*([^\\/?#]*)/i.exec(s)?.[1] ?? '';
+  if (/:\d*$/.test(authority) || url.port !== '') return err('port-not-allowed');
   if (!policy.allowedHosts.includes(url.hostname)) return err('host-not-allowed');
   const routes = policy.routes ?? DEFAULT_ROUTES;
   const path = url.pathname;
