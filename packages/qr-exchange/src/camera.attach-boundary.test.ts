@@ -18,7 +18,7 @@ describe('startCamera attachment failure cleanup', () => {
       play,
     };
 
-    await expect(startCamera(video, { getUserMedia: async () => acquiredStream }))
+    await expect(startCamera(video, { getUserMedia: () => Promise.resolve(acquiredStream) }))
       .rejects.toMatchObject({ code: 'CAMERA_UNAVAILABLE' });
     expect(acquiredStop).toHaveBeenCalledTimes(1);
     expect(oldStop).not.toHaveBeenCalled();
@@ -38,7 +38,7 @@ describe('startCamera attachment failure cleanup', () => {
       play,
     };
 
-    await startCamera(video, { getUserMedia: async () => stream });
+    await startCamera(video, { getUserMedia: () => Promise.resolve(stream) });
     expect(video.srcObject).toBe(stream);
     expect(play).toHaveBeenCalledTimes(1);
     expect(stop).not.toHaveBeenCalled();

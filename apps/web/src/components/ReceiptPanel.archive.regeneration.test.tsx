@@ -96,7 +96,7 @@ describe('ReceiptPanel archive ownership across receipt regeneration', () => {
     // The immutable archive write for A must settle before a B write may start.
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Archive in encrypted vault' }).disabled).toBe(true);
     expect(archiveReceipt).toHaveBeenCalledTimes(1);
-    await act(async () => { finishArchiveA(); });
+    await act(async () => { finishArchiveA(); await Promise.resolve(); });
     await waitFor(() => expect(vault.lock).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole('button', { name: 'Receipt archived' })).toBeNull();
     const button = screen.getByRole<HTMLButtonElement>('button', { name: 'Archive in encrypted vault' });
