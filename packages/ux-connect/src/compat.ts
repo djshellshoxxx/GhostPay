@@ -155,7 +155,9 @@ export interface PendingRef {
  * proposal and must first be resolved to a tx hash (SMART-3: never treat them
  * as proof of payment).
  */
-export function parsePendingRef(kind: PendingRefKind, hash: unknown): Result<PendingRef> {
+export function parsePendingRef(kind: unknown, hash: unknown): Result<PendingRef> {
+  if (kind !== 'txHash' && kind !== 'safeTxHash' && kind !== 'userOpHash')
+    return err('invalid pending reference kind');
   if (!isBytes32(hash)) return err('hash must be 32 bytes');
   return ok({ kind, hash: hash.toLowerCase() });
 }
