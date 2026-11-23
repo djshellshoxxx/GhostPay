@@ -401,13 +401,16 @@ test('finalized donor disposition changes require renewed immutable source evide
 
   next.records[2].evidence = {
     checkedDonorSha: c, previousDisposition: 'included-in-main-by-ancestry',
-    comparedWithSha: a, sourceProof: 'docs/consolidation/new-independent-proof.md',
+    newDisposition: 'audit-or-documentation-only', comparedWithSha: a, sourceProof: 'docs/consolidation/new-independent-proof.md',
     assessment: 'Re-examined original donor tree and corrected earlier ancestry evidence'
   };
   assert.equal(validateLedgerTransition(next, previous).finalized, 2);
+  const missingNext = structuredClone(next);
+  delete missingNext.records[2].evidence.newDisposition;
+  assert.throws(() => validateLedgerTransition(missingNext, previous), /finalized disposition changed without requalification/);
 
   for (const invalid of [
-    { checkedDonorSha: b }, { previousDisposition: 'superseded-by-other-code' },
+    { checkedDonorSha: b }, { previousDisposition: 'superseded-by-other-code' }, { newDisposition: 'included-in-main-by-ancestry' },
     { comparedWithSha: 'not-a-sha' }, { sourceProof: '   ' }, { assessment: '  ' }
   ]) {
     const bad = structuredClone(next);
@@ -435,16 +438,19 @@ test('previously retired unresolved history can be source-proven finalized witho
   next.retiredHistories[0].disposition = 'historical-dependency-update-superseded';
   next.retiredHistories[0].evidence = {
     checkedDonorSha: c, previousDisposition: 'unresolved-review-required',
-    comparedWithSha: a, sourceProof: 'docs/consolidation/retired-donor-review.md#gone',
+    newDisposition: 'historical-dependency-update-superseded', comparedWithSha: a, sourceProof: 'docs/consolidation/retired-donor-review.md#gone',
     assessment: 'Full historical tree reviewed; current dependencies supersede its patch'
   };
   next.summary.globalUnresolved = 1;
   next.summary.newlyFinalizedRetired = 1;
   assert.equal(validateLedgerTransition(next, previous).globalUnresolved, 1);
   assert.equal(validateLedgerTransition(next, previous).newlyFinalizedRetired, 1);
+  const missingNext = structuredClone(next);
+  delete missingNext.retiredHistories[0].evidence.newDisposition;
+  assert.throws(() => validateLedgerTransition(missingNext, previous), /retired history finalization needs source proof/);
 
   for (const mutation of [
-    { checkedDonorSha: b }, { previousDisposition: 'included-in-main' },
+    { checkedDonorSha: b }, { previousDisposition: 'included-in-main' }, { newDisposition: 'included-in-main' },
     { comparedWithSha: 'bad' }, { sourceProof: '   ' }, { assessment: ' ' }
   ]) {
     const tampered = structuredClone(next);
