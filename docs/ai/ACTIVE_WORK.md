@@ -1,3 +1,11 @@
+# M1 P0 — durable cross-tab wallet-attempt journal and transaction-outcome recovery (2026-11-23 UTC)
+
+- Worker: Claude Code lead coordinator (session `keen-volta-8ctx9x`) with delegated specialist workers A (implementation), B (security), C (adversarial QA), D (browser/anvil QA), F (independent review). Branch `claude/keen-volta-8ctx9x`, base `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da` fast-forwarded to the PR #427→#440→#441→#443 stack head `4e1fa095` (provenance commits kept, not rewritten).
+- Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, `apps/web/src/lib/attemptStatus.ts` (new), `sendViaWallet` in `apps/web/src/lib/wallet.ts`, nonce observation in `apps/web/src/lib/payExec.ts`, additive changes in `apps/web/src/components/WalletAttempts.tsx` and the pre-send block in `apps/web/src/views/Pay.tsx`, shared lock constant in `apps/web/src/features/policy/withdrawalJournal.ts`, matching tests/i18n/e2e journal readers, and `docs/engineering/*`.
+- Problem (audit REC-P1-03, PR #455): the payment journal is tab-scoped `sessionStorage`; a second tab or a tab reopened after a crash can pay the same invoice again, and a recorded hash cannot be resolved after reload.
+- Acceptance: one durable journal (`localStorage`, key shared with policy withdrawals) serialized by the existing Web Lock; at most one wallet request per invoice across tabs; no await between final authority check, journal write and provider call; hash never lost; RPC-verified status resolution (pending/confirmed with canonical block hash/reverted/mismatch/replaced/nonce-consumed/rpc-error); Pay refuses a second send for a recorded invoice; unit, fault-injection and anvil browser evidence; full web gates.
+- Coordination: #372 also edits `WalletAttempts.tsx` (privacy reveal gating); this change stays additive there. The integration lock (`automation/ghostpay-integration-lock`, generation 11, owner `994a0d214fb9-root-r3`, expired 2026-11-21T00:16Z) is not taken over by this branch; merge needs owner authorization.
+
 # R31 scoped regression repair: wallet journal read-back test type-check (2026-11-22 UTC)
 
 - Worker: consolidation coordinator; task branch `repair/ghostpay-r31-journal-readback-test-typecheck-20261122` stacked on PR #441 at exact `3c21b02194c97c41e6efaffead5520b10697f229`, which itself stacks on #440 and #427.
