@@ -30,7 +30,8 @@
     "priorPrHead": "3f5537ac1d7af8d8fc76400db67c5be5bef9d8fa",
     "preLedgerRefHead": "2ce61ee8962bcc4db17ccd85fa338befb9606b25",
     "divergenceRefreshScope": "New branches full compare; historical per-branch divergence carried forward from older evidence, not re-executed",
-    "postCensusSemanticSupplement": "docs/consolidation/20261123-r56/CANONICAL_JSON_DONOR_PROOF.md"
+    "postCensusSemanticSupplement": "docs/consolidation/20261123-r56/CANONICAL_JSON_DONOR_PROOF.md",
+    "uncappedDonorProofPath": "docs/consolidation/20261123-r56/UNCAPPED_RECOVERY_DONOR_TRIAGE.md"
   },
   "summary": {
     "total": 561,
@@ -616,6 +617,39 @@
       "appAndTestBlobEquality": true,
       "mainIntegrated": false,
       "reviewRequired": true
+    },
+    {
+      "kind": "R56 untruncated tree donor analysis",
+      "ref": "codex/ghostpay-private-scan-lint-20261119",
+      "sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "treeSha": "51e666f0d111c35dec061218ff7ace0038d3a61d",
+      "truncated": false,
+      "totalBlobs": 4535,
+      "identicalMain": 3539,
+      "differingSharedMain": 378,
+      "donorOnlyMain": 618,
+      "mainOnlyDonor": 64,
+      "sourceProof": "docs/consolidation/20261123-r56/UNCAPPED_RECOVERY_DONOR_TRIAGE.md",
+      "disposition": "unresolved-review-required"
+    },
+    {
+      "kind": "R56 untruncated tree donor analysis",
+      "ref": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b",
+      "treeSha": "4974a8d303880b1a491ae07881cca9d99d6c4cbb",
+      "truncated": false,
+      "totalBlobs": 5054,
+      "identicalMain": 3519,
+      "differingSharedMain": 400,
+      "donorOnlyMain": 1135,
+      "mainOnlyDonor": 62,
+      "matchingSnapshotRecoveryBlobsInPrs": [
+        269,
+        278,
+        372
+      ],
+      "sourceProof": "docs/consolidation/20261123-r56/UNCAPPED_RECOVERY_DONOR_TRIAGE.md",
+      "disposition": "unresolved-review-required"
     }
   ],
   "records": [
