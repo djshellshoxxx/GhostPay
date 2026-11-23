@@ -267,8 +267,14 @@ export async function decodeQrImage(source: ImageFileLike, options: DecodeImageO
         /* fall back to jsQR below */
       }
       throwIfAborted(signal);
-      const raw = found[0]?.rawValue;
-      if (raw !== undefined) return boundedText(raw);
+      if (found.length > 0) {
+        // A bad first decode must not hide a later usable QR from the same image.
+        for (const detection of found) {
+          const text = boundedText(detection.rawValue);
+          if (text !== null) return text;
+        }
+        return null;
+      }
     }
     const doc = env.document;
     if (doc === undefined) throw new QrExchangeError('SCAN_FAILED');
