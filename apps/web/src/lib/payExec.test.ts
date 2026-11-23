@@ -1,3 +1,4 @@
+import { stubJournalWindow } from '../test/locks';
 import { ChainAdapterError, PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
@@ -20,12 +21,7 @@ afterEach(() => {
 
 /** In-memory attempt journal so a test can prove that no wallet attempt was reserved. */
 function stubAttemptJournal(): Map<string, string> {
-  const mem = new Map<string, string>();
-  vi.stubGlobal('window', {
-    sessionStorage: { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => { mem.set(k, v); }, removeItem: (k: string) => { mem.delete(k); } },
-    dispatchEvent: () => true,
-  });
-  return mem;
+  return stubJournalWindow(vi.stubGlobal);
 }
 
 /** A session whose provider runs `hook` after each wallet answer (models time passing during a wallet await). */

@@ -48,3 +48,19 @@ export function installTestLocks(): TestLockManager {
 export function removeTestLocks(): void {
   Object.defineProperty(navigator, 'locks', { configurable: true, value: undefined });
 }
+
+/**
+ * Node-environment tests: stubs a minimal `window` whose durable journal store (`localStorage`) is `store` (an
+ * in-memory one by default), with an empty legacy `sessionStorage`, and installs in-process `navigator.locks`.
+ * Call `vi.unstubAllGlobals()` afterwards as usual.
+ */
+export function stubJournalWindow(
+  stubGlobal: (name: string, value: unknown) => unknown,
+  store?: { getItem(key: string): string | null; setItem(key: string, value: string): void },
+): Map<string, string> {
+  const mem = new Map<string, string>();
+  const memory = (m: Map<string, string>) => ({ getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); }, removeItem: (k: string) => { m.delete(k); } });
+  stubGlobal('window', { localStorage: store ?? memory(mem), sessionStorage: memory(new Map()), dispatchEvent: () => true });
+  installTestLocks();
+  return mem;
+}

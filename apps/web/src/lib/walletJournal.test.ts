@@ -6,7 +6,7 @@ import { MockWallet } from '../test/mockWallet';
 import { connectWallet, sendViaWallet, WalletBroadcastError, type WalletInfo, type TxRequest } from './wallet';
 const tx: TxRequest = { to: `0x${'1'.repeat(40)}`, data: '0x', value: 0n };
 const info = (provider: WalletInfo['provider']): WalletInfo => ({ id: 'mock', name: 'Mock', kind: 'injected', provider });
-beforeEach(() => { vi.restoreAllMocks(); window.sessionStorage.clear(); });
+beforeEach(() => { vi.restoreAllMocks(); window.localStorage.clear(); window.sessionStorage.clear(); });
 describe('wallet attempt persistence', () => {
   it('writes before wallet invocation and blocks an invoice retry with a freshly rebuilt transaction', async () => {
     const base = new MockWallet();
@@ -58,7 +58,7 @@ describe('wallet attempt persistence', () => {
     const base = new MockWallet();
     let sent = false;
     const session = await connectWallet(info({ request: (args) => { if (args.method === 'eth_sendTransaction') sent = true; return base.request(args); } }), 84532);
-    const original = Storage.prototype.setItem.bind(window.sessionStorage);
+    const original = Storage.prototype.setItem.bind(window.localStorage);
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
       if (sent && key === ATTEMPT_JOURNAL_KEY) throw new Error('quota');
       original(key, value);

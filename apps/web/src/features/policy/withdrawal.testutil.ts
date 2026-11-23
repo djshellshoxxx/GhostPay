@@ -1,3 +1,4 @@
+import { installTestLocks } from '../../test/locks';
 import type { RpcLog } from '@ghostpay/chain-adapters';
 import { policyAccountAbi, ZERO_ADDRESS, type Hex } from '@ghostpay/policy-scheme';
 import { decodeEventLog, decodeFunctionData, encodeFunctionResult } from 'viem/utils';
@@ -47,10 +48,9 @@ export function withdrawalChain(chainId: number, input: FakeChainState) {
 }
 
 /** Explicit fixture lock provider for DOM unit tests; production never falls back to this. */
+/** Exclusive, non-reentrant in-process locks (src/test/locks.ts): a reentrant journal request would deadlock here too. */
 export function installPolicyTestLocks(): void {
-  Object.defineProperty(navigator, 'locks', { configurable: true, value: {
-    async request<T>(_name: string, _options: unknown, callback: () => Promise<T>): Promise<T> { return callback(); },
-  } });
+  installTestLocks();
 }
 
 export function receipt(logs: readonly RpcLog[]) {

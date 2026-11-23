@@ -245,7 +245,7 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     await screen.findByText(/Payment submitted/);
     await user.click(within(journal()).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
-    expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull();
+    await vi.waitFor(() => { expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull(); });
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     await vi.waitFor(() => { expect(walletSends(w)).toBe(2); });

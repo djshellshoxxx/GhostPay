@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ATTEMPT_JOURNAL_EVENT, clearAttempt, readAttempts, type WalletAttempt } from '../lib/duplicateAttemptJournal';
+import { ATTEMPT_JOURNAL_EVENT, clearAttemptLocked, readAttempts, type WalletAttempt } from '../lib/duplicateAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { Mono, Notice } from './Common';
@@ -27,7 +27,7 @@ export function WalletAttempts(): ReactNode {
       <p>{t('walletAttempts.line', { kind: attempt.kind, chainId: String(attempt.chainId) })} · <Mono>{attempt.account}</Mono> · {attempt.hash === undefined ? t('walletAttempts.unknown') : <>{t('walletAttempts.returnedHash')} <Mono>{attempt.hash}</Mono></>}</p>
       <button type="button" className="btn" onClick={() => {
         if (!window.confirm(t('walletAttempts.confirmClear'))) return;
-        try { clearAttempt(attempt.id, true); } catch (e) { setError(captureUserMessage(e)); }
+        clearAttemptLocked(attempt.id, true).catch((e: unknown) => { setError(captureUserMessage(e)); });
       }}>{t('walletAttempts.clear')}</button>
     </li>)}</ul>
   </section>;

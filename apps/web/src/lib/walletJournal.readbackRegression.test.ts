@@ -8,7 +8,7 @@ const tx: TxRequest = { to: `0x${'1'.repeat(40)}`, data: '0x', value: 0n };
 const expectedHash = `0x${'9'.repeat(64)}`;
 const info = (provider: WalletInfo['provider']): WalletInfo => ({ id: 'mock', name: 'Mock', kind: 'injected', provider });
 
-beforeEach(() => window.sessionStorage.clear());
+beforeEach(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
 
 describe('wallet journal post-broadcast read-back failures', () => {
   it.each(['throws', 'stale-read'] as const)(
