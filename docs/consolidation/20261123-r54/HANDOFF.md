@@ -22,3 +22,10 @@ Integration lock ref `refs/heads/automation/ghostpay-integration-lock` at `6edfc
 Next: verify exact-head R54 tests and CI; compare the BTC `BtcView.spentConsent.test.tsx` / `scan.spends.test.ts` paths against main and relevant owner PRs before recovering any narrow regression-only source. Continue the historical 59 capped donors and the 249 unresolved semantic histories using untruncated trees and content proof. Refresh ALL branches and PRs before any subsequent classification or merge; preserve existing owners. Do not conflate queued/skipped checks with passes.
 
 **No protected-main merge, production app-code commit, deployment, release, real-funds test, deletion, force push or security-gate bypass occurred in R54. Consolidation remains incomplete.**
+
+## R54 supplemental source qualification (after initial census)
+
+- **One historical disposition finalized with complete untruncated source proof:** `chatgpt/btc-spent-qualification-20261119` at `7954f1e5a29988fb9239225d1f829c6c3dc71e08` has zero unique application/test blobs versus still-open draft PR #244 at `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f`. Its sole donor-only file and all 14 shared blob differences are documentation or historical evidence. See [DONOR_EQUIVALENCE.md](DONOR_EQUIVALENCE.md).
+- The R54 ledger was updated in commit `5b09d1c97f83769e7ea78e289e8e509952828ae7` to **310 finalized / 248 unresolved**, `newlyFinalized=1`, preserving `mainIntegrated=false` and an exact parent-head lease. The **558 branches / 250 PRs / 95 stacked** census and its checked-at time did not change. No source was merged into main and #244 still requires independent review and gates.
+- F03 qualification donor vs owned PR #310 retains **13 shared-path differing app/test blobs** despite identical payment request files. It remains unresolved and should not be called redundant. See the exact blob comparison in DONOR_EQUIVALENCE.md.
+- The earlier 309/249 figures above describe the **initial** R54 census, not the final R54 supplemental disposition. Only a source-proven reclassification changed these totals, not branch count.
