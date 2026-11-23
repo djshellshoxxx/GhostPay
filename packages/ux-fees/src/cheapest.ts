@@ -483,8 +483,10 @@ export function suggestCheapestChain(
   };
   if (mode === 'fiat' && rates !== undefined) result.fiatCurrency = rates.fiatCurrency;
   const next = rest[0];
-  if (next !== undefined && mode !== 'single')
-    result.savingsVsNext = { unit, amount: metric(next) > metric(winner) ? metric(next) - metric(winner) : 0n };
+  if (next !== undefined && mode !== 'single') {
+    const saving = metric(next) - metric(winner);
+    result.savingsVsNext = { unit, amount: saving > 0n ? saving : 0n };
+  }
 
   if (opts.currentChainId !== undefined && mode !== 'single') {
     const cur = valid.find((v) => v.q.chainId === opts.currentChainId);
