@@ -26,3 +26,19 @@
 
 ## Next bounded handoff
 Recheck the PR's final head SHA and GitHub Actions checks, inspect any actual failures and make fixes on this owned branch only (with regression first for any new defect). If all green, still require independent review and authorized integration lock. Choose a different, truly unowned existing bug for the next BUG-ONLY round.
+
+## Follow-up — genuine exact-head CodeQL finding and bounded remediation (2026-11-23)
+
+The first draft head `cf3c2f227a914ac8b5ecb8a5493ceb85448217ea` triggered CodeQL failure (check run `137618132635`): **two high-severity alerts**. GitHub Advanced Security review threads `PRRT_kwDOVR5mTM66yOb8` and `PRRT_kwDOVR5mTM66yOcz` identified the **actual** query as *Polynomial regular expression used on uncontrolled data* at `web.ts:22` and `:23`. These are machine-generated CodeQL comments, **not** an independent human approval.
+
+Root cause: the initial correction `/\\s+target/` and `/\\s+rel/` scans an uncontrolled string using unanchored greedy whitespace. Repeated spaces cause quadratic rescanning; a single whitespace matcher `/\\starget/` / `/\\srel/` is sufficient because the regex engine can start on the final whitespace preceding an attribute, even when an attribute is separated by multiple spaces or newlines.
+
+Evidence:
+- Original source at `5f5f856cf51541fb2935a883c77ed2197e390604`: semantic false negative/positive reproduced.
+- First behavior-only repair at `e73bff365334852e0acb9ce9d59821d2cd965b9b`, blob `f2fb64c2e7b7a249b3f8bf07ee5710c4db162278`: semantics correct but **CodeQL failed**; do not consider qualified.
+- Extra long-whitespace correctness regression committed before second repair: `4d1bc93a399af35d68b3b8c9d47e4cd479fc4703`; this test checks neighboring behavior, not wall-clock performance. The reproducible red performance/static-scan gate is CodeQL on the preceding head.
+- Smallest follow-up production repair: `8b0882089df69ced68bf4ff6c5c4ecaac2c39925`, new source blob `9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587`: changed **only** the two leading `\\s+` quantifiers to `\\s`.
+- Repeat of 11 directed source-body-equivalent Node 22 assertions: **11/11 passed** after follow-up; before any fix **5/11 passed**. A single local timing demonstration at 32,000 spaces: approximately **758 ms** with the unbounded-first repair vs **0.07 ms** after the fixed-width prefix. Timings are illustrative, not rigorous performance acceptance or native Vitest.
+- **Pending** on the final handoff head: hosted exact-head CodeQL rerun, all workflow-group success, applicable native browser verification and true independent review. The source-hash-matched hosted CI is authoritative; do not infer it from these standalone reproductions.
+
+No changes to other workers' paths, fund/contract calls, network attacks or deployment. Retain draft status and do not merge without full gates and an acquired integration lease.
