@@ -1548,3 +1548,16 @@ Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exa
 - Ownership: recheck all active PR changed-file inventories before integration. Known focused export PRs #415/#444/#467/#483 own only summary/encoder/amount/time files, respectively. Initial direct inventory sample of PRs #489–#461 showed no owner of this source. Broad active branches and PRs remain reserved; no authority to overwrite them.
 - Qualification: source-matched Node/TypeScript replay if available, hosted exact-head CI, lint, build and native browser checks; independent review and integration lease verification required before merge.
 - Integration: metadata ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, status `held`, owner `994a0d214fb9-root-r3`, generation 11. Do not mutate lease or merge.
+
+
+---
+
+# EIP-3770 custom registry fail-closed validation — 2026-11-23 UTC
+
+- Cycle/coordinator: `20261123T0441Z-root`; one sequential ChatGPT implementer/auditor, no delegated native worker or independent approval claimed.
+- Isolated branch: `automation/20261123T0441Z/bug/eip3770-registry-guard`; exact starting main `eb59d93cffed7848c4aac37d0e9650b87239c6da` (tree `d8aa628cbc531c6969bdf0af621795ceacfc00c3`).
+- Exclusive owned paths: `packages/payment-uri/src/eip3770.ts`, new `packages/payment-uri/src/eip3770.registry.test.ts`, this append-only claim, and new `docs/handoffs/EIP3770_CHAIN_REGISTRY_20261123.md`. No ownership of other payment URI files, contracts, Pages configuration, existing PRs or shared consolidation ledgers.
+- Bounded discovery: main EIP-3770 parser checks registry key ownership but returns unvalidated mapped numeric chain IDs; builder reverse-looks up mapping values without checking that the requested ID or registry key is valid. Runtime wrong-type/invalid custom registry data may therefore create invalid chain-address results. No externally reachable exploit or funds impact established. Existing open payment-uri PRs #370/#379/#313/#360 own `query.ts` or `decimal.ts`, not `eip3770.ts`; recheck all competing heads before merging.
+- Acceptance: committed failing regression before production correction; reject zero/negative/fractional/NaN/infinite/unsafe or wrong-type custom chain IDs, and names invalid under the EIP-3770 short-name grammar with existing `PaymentUriError('INVALID_CHAIN_ID')`; preserve default registry and valid custom numeric round trips. No new dependencies, policy, egress, signing, keys, contract or deployment changes.
+- Integration: repository lock at `automation/ghostpay-integration-lock` head `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11 status `held` by another coordinator; expiry alone is not authority to acquire or merge. Keep isolated draft and require fresh exact-head hosted CI plus genuinely independent review.
+- Initial verification: none claimed before regression commit. Local GitHub DNS unavailable; use sourced code in a bounded Node runtime harness when possible, explicitly labeled not repository Vitest.
