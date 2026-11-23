@@ -211,10 +211,40 @@ export type CssResult =
  * Builds `:root[data-theme="<id>"]{--gp-…:#rrggbb;…}` for a valid theme, plus the same variables as a
  * map for `style.setProperty`. Colours are lower-cased. Invalid themes yield `ok: false` and no CSS.
  */
+/**
+ * Takes a single detached copy of the untrusted fields used for validation and CSS output.
+ * Direct callers can supply getters/Proxies, not only the inert objects produced by JSON.parse.
+ * Each field is read once; token names outside the closed set remain visible to the validator.
+ */
+function snapshotTheme(theme: unknown): unknown {
+  if (typeof theme !== 'object' || theme === null || Array.isArray(theme)) return theme;
+  const source = theme as Record<string, unknown>;
+  const snapshot: Record<string, unknown> = {};
+  for (const key of ['id', 'label', 'scheme', 'level', 'motion', 'cssFile', 'tokens']) {
+    if (Object.hasOwn(source, key)) snapshot[key] = source[key];
+  }
+  const tokens = snapshot['tokens'];
+  if (typeof tokens === 'object' && tokens !== null && !Array.isArray(tokens)) {
+    const entries: [string, unknown][] = [];
+    for (const key of Object.keys(tokens)) {
+      entries.push([key, (tokens as Record<string, unknown>)[key]]);
+    }
+    snapshot['tokens'] = Object.fromEntries(entries);
+  }
+  return snapshot;
+}
+
 export function cssFor(theme: unknown): CssResult {
-  const violations = validateTheme(theme);
+  let snapshot: unknown;
+  try {
+    snapshot = snapshotTheme(theme);
+  } catch {
+    // Accessors and Proxy traps are untrusted. Never emit partially validated CSS.
+    return { ok: false, violations: [{ code: 'NOT_OBJECT', path: '' }] };
+  }
+  const violations = validateTheme(snapshot);
   if (violations.length > 0) return { ok: false, violations };
-  const t = theme as ThemeDef;
+  const t = snapshot as ThemeDef;
   const vars: Record<string, string> = {};
   for (const name of TOKEN_NAMES) vars[cssVarName(name)] = t.tokens[name].toLowerCase();
   const body = Object.entries(vars)
