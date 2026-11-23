@@ -1,8 +1,10 @@
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { keccak256, toBytes } from 'viem/utils';
 import { UserFacingError } from './errors';
+import { updateJournalSnapshot } from './attemptJournalStorage';
 
 export const ATTEMPT_JOURNAL_KEY = 'ghostpay.wallet-attempts.v1';
+export const DUPLICATE_ATTEMPT_MESSAGE = 'error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn';
 export const ATTEMPT_JOURNAL_EVENT = 'ghostpay:wallet-attempts';
 /**
  * One exclusive Web Lock serializes every read-modify-write of the durable journal across this browser's tabs
@@ -31,6 +33,8 @@ export interface JournalAccess {
   readonly storage?: AttemptStorage;
   /** Defaults to `navigator.locks`; missing locks refuse. */
   readonly lockManager?: AttemptLockManager;
+  /** Only callers already holding the journal lock. */
+  readonly lockHeld?: boolean;
   /** Legacy store to migrate when `storage` is omitted; defaults to `window.sessionStorage`, `null` skips migration. */
   readonly legacyStorage?: LegacyAttemptStorage | null;
 }
@@ -88,13 +92,11 @@ export function browserAttemptLocks(): AttemptLockManager {
   return { request: async <T>(name: string, callback: () => Promise<T>): Promise<T> => await manager.request(name, { mode: 'exclusive' }, callback) };
 }
 
-/** >0 only while a {@link withAttemptJournal} operation runs (synchronously) inside the lock callback. */
-let lockDepth = 0;
+// Synchronous operation only. Restored before returning control to the browser.
+let lockedStorage: AttemptStorage | undefined;
+let stagedStorage: AttemptStorage | undefined;
 function requiredStorage(storage?: AttemptStorage): AttemptStorage {
-  if (storage !== undefined) return storage;
-  // The default store is shared with other tabs: a read-modify-write is only safe inside the journal lock.
-  if (lockDepth === 0) return fail();
-  return browserAttemptStorage() ?? fail();
+  return storage ?? lockedStorage ?? fail();
 }
 
 function validReplacements(v: unknown, hash: unknown): boolean {
@@ -146,6 +148,10 @@ function mergeRecords(existing: readonly WalletAttempt[], incoming: readonly Wal
     if (JSON.stringify(current) === JSON.stringify(record)) continue;
     if (!sameAction(current, record) || (current.txDigest !== undefined && record.txDigest !== undefined && current.txDigest !== record.txDigest)) return fail();
     if (current.status === 'submitted' && record.status === 'unknown') continue;
+    if (current.status === 'submitted' && record.status === 'submitted' && current.hash === record.hash &&
+        (record.nonce === undefined || record.nonce === current.nonce) &&
+        (record.replacements ?? []).every((hash) => current.replacements?.includes(hash) === true)) continue;
+    if (current.status === 'unknown' && record.status === 'unknown') continue;
     if (current.status === 'unknown' && record.status === 'submitted') { merged[index] = record; continue; }
     return fail();
   }
@@ -162,58 +168,107 @@ export function readAttempts(storage?: AttemptStorage): readonly WalletAttempt[]
   const legacy = legacyAttemptStorage();
   return legacy === undefined ? durable : mergeRecords(durable, readStore(legacy));
 }
+function storedRaw(storage: AttemptStorage): string | null {
+  try { return storage.getItem(ATTEMPT_JOURNAL_KEY); } catch { return fail(); }
+}
+
+function writeRaw(text: string, storage: AttemptStorage): void {
+  try {
+    storage.setItem(ATTEMPT_JOURNAL_KEY, text);
+    if (storedRaw(storage) !== text) return fail();
+  } catch { return fail(); }
+  if (storage !== stagedStorage && typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
+}
+
 function write(records: readonly WalletAttempt[], storage: AttemptStorage): void {
   const text = JSON.stringify(records);
   if (records.length > MAX_ATTEMPTS || text.length > MAX_BYTES) return fail();
-  try {
-    storage.setItem(ATTEMPT_JOURNAL_KEY, text);
-    if (storage.getItem(ATTEMPT_JOURNAL_KEY) !== text) return fail();
-  } catch { return fail(); }
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
-}
-function migrateLegacy(target: AttemptStorage, legacy: LegacyAttemptStorage): void {
-  let raw: string | null;
-  try { raw = legacy.getItem(ATTEMPT_JOURNAL_KEY); } catch { return fail(); }
-  if (raw === null) return;
-  const existing = readStore(target);
-  const merged = mergeRecords(existing, parseRaw(raw));
-  if (JSON.stringify(merged) !== JSON.stringify(existing)) write(merged, target);
-  // Removed only after the merged copy was read back from the durable store; a failed removal stays fail-closed.
-  try {
-    legacy.removeItem(ATTEMPT_JOURNAL_KEY);
-    if (legacy.getItem(ATTEMPT_JOURNAL_KEY) !== null) return fail();
-  } catch { return fail(); }
+  writeRaw(text, storage);
 }
 
-/**
- * Runs `operation` synchronously inside the exclusive journal lock (after the one-time legacy migration for the default
- * store). Return a plain, non-thenable value: the lock is released as soon as it settles, so an operation must never
- * leave a wallet prompt inside it. Missing locks or storage refuse before `operation` runs.
- */
-export function withAttemptJournal<T>(operation: (storage: AttemptStorage) => T, access: JournalAccess = {}): Promise<T> {
+function runOperation<T>(operation: (storage: AttemptStorage) => T, storage: AttemptStorage): T {
+  const previous = lockedStorage;
+  lockedStorage = storage;
+  try { return operation(storage); }
+  finally { lockedStorage = previous; }
+}
+
+async function updateBrowserJournal<T>(
+  operation: (storage: AttemptStorage) => T, storage: AttemptStorage, legacy: LegacyAttemptStorage | undefined,
+): Promise<{ readonly result: T; readonly mirror: () => void }> {
+  const local = storedRaw(storage);
+  const old = legacy === undefined ? null : storedRaw(legacy);
+  parseRaw(local); // Malformed or unreadable browser storage still prevents a send.
+  let updated: Awaited<ReturnType<typeof updateJournalSnapshot<T>>>;
   try {
-    const storage = access.storage ?? browserAttemptStorage() ?? fail();
-    const legacy = access.storage !== undefined ? undefined : access.legacyStorage === undefined ? legacyAttemptStorage() : access.legacyStorage ?? undefined;
-    const locks = access.lockManager ?? browserAttemptLocks();
-    return locks.request(ATTEMPT_JOURNAL_LOCK, () => {
-      lockDepth += 1;
+    updated = await updateJournalSnapshot((saved) => {
+      if (saved !== undefined && typeof saved !== 'string') return fail();
+      let raw = JSON.stringify(mergeRecords(parseRaw(saved ?? local), parseRaw(old)));
+      const staged: AttemptStorage = {
+        getItem: () => raw,
+        setItem: (_key, value) => { raw = value; },
+      };
+      stagedStorage = staged;
       try {
-        if (legacy !== undefined) migrateLegacy(storage, legacy);
-        return Promise.resolve(operation(storage));
-      } catch (e) {
-        return Promise.reject(e instanceof Error ? e : new Error('journal operation failed'));
-      } finally { lockDepth -= 1; }
+        const result = runOperation(operation, staged);
+        parseRaw(raw);
+        return { result, snapshot: raw };
+      } finally { stagedStorage = undefined; }
     });
-  } catch (e) {
-    return Promise.reject(e instanceof Error ? e : new Error('journal operation failed'));
+  } catch (error) {
+    if (error instanceof UserFacingError) throw error;
+    return fail();
   }
+  return {
+    result: updated.result,
+    mirror: () => {
+      if ((local ?? '[]') !== updated.snapshot) writeRaw(updated.snapshot, storage);
+      if (legacy !== undefined && old !== null) {
+        try {
+          legacy.removeItem(ATTEMPT_JOURNAL_KEY);
+          if (storedRaw(legacy) !== null) return fail();
+        } catch { return fail(); }
+      }
+    },
+  };
+}
+
+/** Run a synchronous mutation under the Web Lock; invoke the optional callback immediately after committing. */
+export async function withAttemptJournal<T>(
+  operation: (storage: AttemptStorage) => T, access: JournalAccess = {}, committed?: (result: T) => void,
+): Promise<T> {
+  const run = async (): Promise<T> => {
+    if (access.storage !== undefined) {
+      const result = runOperation(operation, access.storage);
+      committed?.(result);
+      return result;
+    }
+    const storage = browserAttemptStorage() ?? fail();
+    const legacy = access.legacyStorage === undefined ? legacyAttemptStorage() : access.legacyStorage ?? undefined;
+    if (legacy !== undefined && storedRaw(legacy) !== null) {
+      // Commit and remove legacy data even if the new operation then sees and refuses a duplicate.
+      const migrated = await updateBrowserJournal(() => undefined, storage, legacy);
+      migrated.mirror();
+    }
+    const { result, mirror } = await updateBrowserJournal(operation, storage, undefined);
+    mirror();
+    committed?.(result);
+    return result;
+  };
+  return access.lockHeld === true ? run() : (access.lockManager ?? browserAttemptLocks()).request(ATTEMPT_JOURNAL_LOCK, run);
+}
+
+/** Reconcile this tab with the committed journal and migrate any session-scoped records. */
+export async function migrateBrowserAttempts(): Promise<void> {
+  if (readAttempts().length === 0 && typeof indexedDB === 'undefined') return;
+  await withAttemptJournal(() => undefined);
 }
 
 /** No expiry or automatic eviction: a wallet may have broadcast even when its response was lost. */
 export function beginAttempt(input: AttemptInput, storage?: AttemptStorage): WalletAttempt {
   const store = requiredStorage(storage);
   const records = readAttempts(store);
-  if (records.some((a) => a.key === input.key)) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn' });
+  if (records.some((a) => a.key === input.key)) throw new UserFacingError({ key: DUPLICATE_ATTEMPT_MESSAGE });
   if (records.length >= MAX_ATTEMPTS) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd' });
   const attempt: WalletAttempt = { ...input, id: crypto.randomUUID(), account: input.account.toLowerCase(), createdAt: Date.now(), status: 'unknown' };
   if (!validAttempt(attempt)) return fail();
@@ -256,19 +311,28 @@ export function clearAttemptLocked(key: string, confirmed: boolean, access?: Jou
  * Saves the account nonce observed on an RPC for a returned hash. Set once: a different nonce for the same hash refuses.
  * A hash with no record (cleared meanwhile) is ignored.
  */
-export function recordNonce(hash: string, nonce: number, storage?: AttemptStorage): void {
+function recordNonce(hash: string, nonce: number, matches: (attempt: WalletAttempt) => boolean, storage: AttemptStorage): void {
   const store = requiredStorage(storage);
   if (typeof hash !== 'string' || !Number.isSafeInteger(nonce) || nonce < 0) return fail();
   const normalized = hash.toLowerCase();
   const records = readAttempts(store);
-  if (!records.some((a) => a.hash === normalized && a.nonce !== nonce)) return;
-  if (records.some((a) => a.hash === normalized && a.nonce !== undefined && a.nonce !== nonce)) return fail();
-  const next = records.map((a) => a.hash === normalized ? { ...a, nonce } : a);
+  const matching = records.filter((a) => a.hash === normalized && matches(a));
+  if (!matching.some((a) => a.nonce !== nonce)) return;
+  if (matching.length !== 1 || matching[0]?.nonce !== undefined) return fail();
+  const next = records.map((a) => a === matching[0] ? { ...a, nonce } : a);
   if (!next.every(validAttempt)) return fail();
   write(next, store);
 }
-export function recordAttemptNonce(hash: string, nonce: number, access?: JournalAccess): Promise<void> {
-  return withAttemptJournal((store) => { recordNonce(hash, nonce, store); }, access);
+export function recordAttemptNonce(
+  hash: string,
+  nonce: number,
+  identity: Pick<WalletAttempt, 'chainId' | 'account' | 'key' | 'txDigest'>,
+  access?: JournalAccess,
+): Promise<void> {
+  return withAttemptJournal((store) => {
+    recordNonce(hash, nonce, (a) => a.chainId === identity.chainId && a.account === identity.account &&
+      a.key === identity.key && a.txDigest === identity.txDigest, store);
+  }, access);
 }
 /**
  * Appends an already verified replacement hash to a submitted record whose nonce is `nonce` (saving that nonce if it was

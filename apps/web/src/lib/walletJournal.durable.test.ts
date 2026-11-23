@@ -4,6 +4,7 @@ import {
   ATTEMPT_JOURNAL_KEY,
   ATTEMPT_JOURNAL_LOCK,
   attemptTxDigest,
+  migrateBrowserAttempts,
   readAttempts,
   type AttemptLockManager,
   type AttemptStorage,
@@ -88,6 +89,23 @@ describe('sendViaWallet on the durable cross-tab journal', () => {
     await expect(a).resolves.toBe(hashOf(1));
     expect(readAttempts(storeA).map((r) => [r.status, r.hash]).sort()).toEqual([['submitted', hashOf(1)], ['submitted', hashOf(2)]]);
     expect(shared.outside()).toBe(0);
+  });
+
+  it('refuses a duplicate when the localStorage view is stale', async () => {
+    const first = new MockWallet();
+    const firstSession = await session(first);
+    await sendViaWallet(firstSession, tx, undefined, invoice('a'));
+    const firstRecord = readAttempts()[0];
+    expect(firstRecord).toMatchObject({ status: 'submitted' });
+
+    // Simulate a second renderer reading its older cached localStorage snapshot.
+    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, '[]');
+    const second = new MockWallet();
+    const secondSession = await session(second);
+    await expect(sendViaWallet(secondSession, tx, undefined, invoice('a'))).rejects.toThrow(/previous wallet attempt/);
+    expect(second.sent).toBeUndefined();
+    await migrateBrowserAttempts();
+    expect(readAttempts()).toEqual([firstRecord]);
   });
 
   it('invokes the provider in the same synchronous step as the journal write (no microtask gap)', async () => {

@@ -38,25 +38,36 @@ const unusable = (): never => { throw new UnusableRpcAnswer('unusable RPC answer
 
 interface Observed extends SeenTx {
   readonly nonceNumber: number;
+  readonly inclusion?: { readonly blockNumber: bigint; readonly blockHash: Hex };
 }
 async function fetchTx(rpc: RpcClient, hash: string): Promise<Observed | undefined> {
+  const raw = await rpc.request('eth_getTransactionByHash', [hash]);
   let seen: SeenTx | undefined;
-  try { seen = parseSeenTx(await rpc.request('eth_getTransactionByHash', [hash])); } catch { return unusable(); }
+  try { seen = parseSeenTx(raw); } catch { return unusable(); }
   if (seen === undefined) return undefined;
   if (seen.hash !== hash) return { ...seen, nonceNumber: -1 };
   const nonce = seen.nonce;
-  if (nonce === undefined || nonce > BigInt(Number.MAX_SAFE_INTEGER)) return unusable();
-  return { ...seen, nonceNumber: Number(nonce) };
+  if (!/^0x(?:[0-9a-f]{2})*$/.test(seen.input) || nonce === undefined || nonce > BigInt(Number.MAX_SAFE_INTEGER)) return unusable();
+  const fields = raw as Record<string, unknown>;
+  const block = fields['blockNumber'];
+  const blockHash = fields['blockHash'];
+  if (block === null && blockHash === null) return { ...seen, nonceNumber: Number(nonce) };
+  if (typeof blockHash !== 'string' || !HASH.test(blockHash.toLowerCase())) return unusable();
+  return { ...seen, nonceNumber: Number(nonce), inclusion: { blockHash: blockHash.toLowerCase() as Hex, blockNumber: parseQuantity(block) } };
 }
 
 interface Receipt { readonly status: 'confirmed' | 'reverted'; readonly blockNumber: bigint; readonly blockHash: Hex }
-async function fetchReceipt(rpc: RpcClient, hash: string): Promise<Receipt | undefined> {
+async function fetchReceipt(rpc: RpcClient, hash: string, tx?: Observed): Promise<Receipt | undefined> {
   const r = await rpc.request('eth_getTransactionReceipt', [hash]);
   if (r === null) return undefined;
   if (typeof r !== 'object' || Array.isArray(r)) return unusable();
   const o = r as Record<string, unknown>;
   const blockHash = o['blockHash'];
-  if (o['transactionHash'] !== undefined && (typeof o['transactionHash'] !== 'string' || o['transactionHash'].toLowerCase() !== hash)) return unusable();
+  if (typeof o['transactionHash'] !== 'string' || o['transactionHash'].toLowerCase() !== hash) return unusable();
+  if (tx !== undefined) {
+    const to = o['to'];
+    if (tx.to === null ? to !== null : typeof to !== 'string' || to.toLowerCase() !== tx.to.toLowerCase()) return unusable();
+  }
   if (typeof blockHash !== 'string' || !HASH.test(blockHash.toLowerCase())) return unusable();
   const status = parseQuantity(o['status']);
   if (status !== 0n && status !== 1n) return unusable();
@@ -64,11 +75,12 @@ async function fetchReceipt(rpc: RpcClient, hash: string): Promise<Receipt | und
 }
 
 /** A receipt counts only while its block hash is the canonical one at that height; `undefined` means reorged. */
-async function canonicalOutcome(rpc: RpcClient, receipt: Receipt): Promise<MinedOutcome | undefined> {
+async function canonicalOutcome(rpc: RpcClient, receipt: Receipt, tx?: Observed): Promise<MinedOutcome | undefined> {
   const block = await rpc.getBlock(receipt.blockNumber);
   if (block === null || block.hash.toLowerCase() !== receipt.blockHash) return undefined;
   const head = await rpc.blockNumber();
   if (head < receipt.blockNumber) return unusable();
+  if (tx !== undefined && (tx.inclusion?.blockHash !== receipt.blockHash || tx.inclusion.blockNumber !== receipt.blockNumber)) return unusable();
   return { state: receipt.status, blockNumber: receipt.blockNumber, blockHash: receipt.blockHash, confirmations: head - receipt.blockNumber + 1n };
 }
 
@@ -107,9 +119,10 @@ async function resolveReplacements(rpc: RpcClient, attempt: WalletAttempt, nonce
     if (tx === undefined) continue;
     if (!replaces(attempt, nonce, hash, tx)) return { state: 'mismatch', field: 'replacement' };
     const kind = attempt.txDigest === undefined ? 'unknown-call' : digestOf(tx, attempt.chainId) === attempt.txDigest ? 'same-call' : 'different-call';
-    const receipt = await fetchReceipt(rpc, hash);
-    const outcome = receipt === undefined ? undefined : await canonicalOutcome(rpc, receipt);
+    const receipt = await fetchReceipt(rpc, hash, tx);
+    const outcome = receipt === undefined ? undefined : await canonicalOutcome(rpc, receipt, tx);
     if (outcome !== undefined) return { state: 'replaced', hash: hash as Hex, kind, outcome };
+    if (receipt !== undefined || tx.inclusion !== undefined) continue;
     pending ??= { state: 'replaced', hash: hash as Hex, kind, outcome: { state: 'pending' } };
   }
   return pending;
@@ -126,14 +139,14 @@ async function resolveSubmitted(rpc: RpcClient, attempt: WalletAttempt, hash: st
     nonce = tx.nonceNumber;
     if (attempt.nonce === undefined) {
       // Best effort: the nonce is what later lets a linked replacement be verified. A failed save changes no answer.
-      try { await recordAttemptNonce(hash, nonce, access); } catch { /* The resolution below stands on its own. */ }
+      try { await recordAttemptNonce(hash, nonce, attempt, access); } catch { /* The resolution below stands on its own. */ }
     }
-    const receipt = await fetchReceipt(rpc, hash);
+    const receipt = await fetchReceipt(rpc, hash, tx);
     if (receipt !== undefined) {
-      const outcome = await canonicalOutcome(rpc, receipt);
+      const outcome = await canonicalOutcome(rpc, receipt, tx);
       if (outcome !== undefined) return { ...outcome, nonce };
       reorged = true;
-    }
+    } else if (tx.inclusion !== undefined) return unusable();
     if (await accountNonce(rpc, attempt.account) <= BigInt(nonce)) return { state: 'pending', reorged, nonce };
   } else {
     const receipt = await fetchReceipt(rpc, hash);

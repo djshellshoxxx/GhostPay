@@ -279,6 +279,8 @@ export interface WalletAttemptOptions {
   readonly scope?: string;
   /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
   readonly logicalAction?: boolean;
+  /** Observes the immediate provider hand-off after the durable attempt is written. */
+  readonly onWalletRequest?: () => void;
   /** Explicit journal store (tests, policy). Default: the durable browser journal shared by all tabs. */
   readonly storage?: AttemptStorage;
   /** Journal lock; defaults to `navigator.locks` (missing locks refuse before any wallet request). */
@@ -377,32 +379,28 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       txDigest: attemptTxDigest(s.chainId, s.account, tx.to, tx.data, tx.value),
     };
     const params = [{ from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` }];
-    // No await between this final authority check, the journal write, and provider invocation.
-    const start = (store: AttemptStorage | undefined): StartedRequest => {
-      authority.assert();
-      const attempt = input === undefined || store === undefined ? undefined : beginAttempt(input, store);
+    const invoke = (attempt: WalletAttempt | undefined): StartedRequest => {
       authority.assert();
       const pending = call(s.wallet.provider, 'eth_sendTransaction', params);
-      // Awaited below; this only stops an early rejection from being reported as unhandled meanwhile.
       pending.catch(() => undefined);
+      try { options?.onWalletRequest?.(); } catch { /* UI notification cannot interrupt tracking the wallet response. */ }
       return { attempt, pending };
     };
     const access: JournalAccess = {
       ...(explicitStorage === undefined ? {} : { storage: explicitStorage }),
       ...(options?.lockManager === undefined ? {} : { lockManager: options.lockManager }),
+      ...(options?.journalLockHeld === true ? { lockHeld: true } : {}),
     };
-    const inPlace = !journaled || options?.journalLockHeld === true;
     const box: { started?: StartedRequest } = {};
-    // A caller holding the lock passes its store; the default durable store is resolved here (never sessionStorage).
-    const inPlaceStore = explicitStorage ?? (journaled ? browserAttemptStorage() : undefined);
-    if (inPlace) {
-      box.started = start(inPlaceStore);
-    } else {
+    if (input === undefined) box.started = invoke(undefined);
+    else {
       try {
-        // A plain (non-thenable) result: the lock is released without waiting for the wallet prompt.
-        await withAttemptJournal((store) => { box.started = start(store); return true; }, access);
+        // Keep the provider promise out of the journal lock so a wallet prompt never holds the lock.
+        await withAttemptJournal((store) => {
+          authority.assert();
+          return beginAttempt(input, store);
+        }, access, (attempt) => { box.started = invoke(attempt); });
       } catch (e) {
-        // Once the provider was invoked, a failing lock wrapper cannot erase the request: continue to its outcome.
         if (box.started === undefined) throw e;
       }
     }
@@ -420,8 +418,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     const attempt = started.attempt;
     if (attempt !== undefined) {
       try {
-        if (inPlace) finishAttempt(attempt, normalized, inPlaceStore);
-        else await withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, access);
+        await withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, access);
       } catch { throw new WalletBroadcastError(normalized); }
     }
     return normalized;

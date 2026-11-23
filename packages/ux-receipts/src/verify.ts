@@ -132,32 +132,51 @@ async function checkChain(
   } catch {
     return none('unavailable');
   }
-  if (res.status === 'unavailable') return none('unavailable');
-  if (res.status === 'not_found') return none('not_found');
-  if (res.status !== 'found') return none('unavailable');
-  const f = res.facts;
-  const matched: string[] = [];
-  const mismatches: string[] = [];
-  const cmp = (name: string, ok: boolean | undefined): void => {
-    if (ok === undefined) return;
-    (ok ? matched : mismatches).push(name);
-  };
-  cmp('amount', r.amount !== undefined && f.amountBase !== undefined ? r.amount === f.amountBase : undefined);
-  cmp(
-    'asset',
-    r.asset !== undefined && f.assetSymbol !== undefined ? r.asset.symbol === f.assetSymbol : undefined,
-  );
-  cmp(
-    'sender',
-    r.sender !== undefined && f.sender !== undefined ? matchesAddress(r.sender, f.sender) : undefined,
-  );
-  cmp(
-    'recipient',
-    r.recipient !== undefined && f.recipient !== undefined
-      ? matchesAddress(r.recipient, f.recipient)
-      : undefined,
-  );
-  if (mismatches.length > 0) return { status: 'mismatch', mismatches, matched };
-  if (!f.confirmed) return { status: 'unconfirmed', mismatches, matched };
-  return { status: matched.length > 0 ? 'confirmed' : 'tx_exists_only', mismatches, matched };
+  // An injected lookup can resolve a throwing object or proxy; do not let it reject verification.
+  try {
+    // A runtime adapter may violate the TypeScript result union; never trust a malformed envelope.
+    if (typeof res !== 'object' || res === null || Array.isArray(res)) return none('unavailable');
+    if (res.status === 'unavailable') return none('unavailable');
+    if (res.status === 'not_found') return none('not_found');
+    if (res.status !== 'found') return none('unavailable');
+    const f = res.facts;
+    if (typeof f !== 'object' || f === null || Array.isArray(f) || typeof f.confirmed !== 'boolean') {
+      return none('unavailable');
+    }
+    // Malformed optional evidence must not be mistaken for a valid match or throw during address comparisons.
+    if (
+      (f.amountBase !== undefined && typeof f.amountBase !== 'string') ||
+      (f.assetSymbol !== undefined && typeof f.assetSymbol !== 'string') ||
+      (f.sender !== undefined && typeof f.sender !== 'string') ||
+      (f.recipient !== undefined && typeof f.recipient !== 'string')
+    ) {
+      return none('unavailable');
+    }
+    const matched: string[] = [];
+    const mismatches: string[] = [];
+    const cmp = (name: string, ok: boolean | undefined): void => {
+      if (ok === undefined) return;
+      (ok ? matched : mismatches).push(name);
+    };
+    cmp('amount', r.amount !== undefined && f.amountBase !== undefined ? r.amount === f.amountBase : undefined);
+    cmp(
+      'asset',
+      r.asset !== undefined && f.assetSymbol !== undefined ? r.asset.symbol === f.assetSymbol : undefined,
+    );
+    cmp(
+      'sender',
+      r.sender !== undefined && f.sender !== undefined ? matchesAddress(r.sender, f.sender) : undefined,
+    );
+    cmp(
+      'recipient',
+      r.recipient !== undefined && f.recipient !== undefined
+        ? matchesAddress(r.recipient, f.recipient)
+        : undefined,
+    );
+    if (mismatches.length > 0) return { status: 'mismatch', mismatches, matched };
+    if (!f.confirmed) return { status: 'unconfirmed', mismatches, matched };
+    return { status: matched.length > 0 ? 'confirmed' : 'tx_exists_only', mismatches, matched };
+  } catch {
+    return none('unavailable');
+  }
 }

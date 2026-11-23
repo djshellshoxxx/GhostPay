@@ -1,3 +1,9 @@
+# GhostPay cross-tab recovery qualification
+
+- Coordinator branch: codex/ghostpay-cross-tab-qualification. main: 8ddb344973e80b8e1eda6821e970ee6a2b808b29; #500: d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea; #528: cfe735754fa486768e02802ffe9734c94bb47f75, direct child of #500. Their main merge base is eb59d93cffed7848c4aac37d0e9650b87239c6da.
+- #500 owner claim covers journal, wallet, Pay, outcome resolver and UI; #528 covers policy contention. This qualification uses isolated continuations pending coordination, with no edits to existing remote branches. Preserve other ownership entries and avoid refund, key export and release work.
+- Live lock 082e754 shows generation 12 released. Public main rule endpoints showed no enabled branch protection or applicable rules. Refresh both before integration. The current main conflict is in the additive ownership log.
+- Known gaps to investigate: #528 has full/lean/Anvil browser failures and #500 has no hosted PR workflow runs returned. Inspect send and reconciliation boundaries, migration, and #500 Pay integration. Add real two-page browser coverage, run focused and workspace gates plus bundle/privacy/security checks, and obtain an independent review before integration.
 # M1 P0 — durable cross-tab wallet-attempt journal and transaction-outcome recovery (2026-11-23 UTC)
 
 - Worker: Claude Code lead coordinator (session `keen-volta-8ctx9x`) with delegated specialist workers A (implementation), B (security), C (adversarial QA), D (browser/anvil QA), F (independent review). Branch `claude/keen-volta-8ctx9x`, base `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da` fast-forwarded to the PR #427→#440→#441→#443 stack head `4e1fa095` (provenance commits kept, not rewritten).
@@ -34,6 +40,35 @@ Evidence: source blob `b8c2ec1915b833a5b78286b9b9caca1c247e827c`: `finishAttempt
 Acceptance: preserve the first persisted hash on conflicting repeat completion (fail closed), allow idempotent same-hash completion, fail closed on an existing id with changed action identity, and retain late hashes after explicit clear/replacement as existing tests require. New failing regression before product repair, exact-head hosted CI and truly independent review before any merge. No keys, contracts, dependencies, hosted components or production settings.
 Ownership reconciliation: inspected #278/#293/#307/#372/#390/#416/#419/#422 changed filenames; none claims this source path; main ACTIVE_WORK has no matching path claim. Full open-PR path census was not possible. Recheck before integration.
 Integration: metadata branch `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11, status held by `994a0d214fb9-root-r3`. This cycle does not own the lock and must not merge/shared-update.
+---
+# R35 — reject throwing chain-lookup accessors (2026-11-22)
+
+Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: additive claim here, `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, and `docs/handoffs/UX_RECEIPT_ACCESSOR_BOUNDARY_R35.md`.
+Finding: PR #450 rejects malformed lookup values but reads `res.status`, `res.facts` and evidence getters outside the lookup exception handler. A resolved malicious or broken adapter object with a throwing property/get trap can make `verifyReceipt` reject instead of returning the existing `unavailable` result. The exported ChainVerifier is a local injected adapter; no external exploit is claimed.
+Acceptance: deterministic regression-first cases for throwing status/facts/confirmed/amount/sender/recipient accessors and proxy property traps; all degrade to `unavailable`/`self_consistent_unverified`, while valid found and not-found behavior is unchanged. Use a bounded exception isolation around post-lookup facts processing; no network, custody, contract, protocol or dependency changes. Run bounded executable reproduction and hosted exact-head CI, preserve unrun tests honestly, require independent reviewer and integration lock before merging.
+Ownership: deliberate child of active PR #450, which itself stacks on #449. Do not edit either parent branch. Other broad owner claims remain active. Integration metadata lock generation 11 belongs to another coordinator; expiry is not takeover authority. No main/shared-branch merge, release or deployment.
+
+---
+
+# R34 — malformed receipt chain-lookup boundary (2026-11-22)
+
+Worker: GhostPay consolidation R34, sequential author/test reviewer (not independent approval).
+Branch: `automation/20261122-r34/bug/ux-receipts-lookup-boundary`; exact parent: PR #449 `ff8c800a495f1cc4d2df704d321b3d22e6f67a78`; PR target: `automation/20261122-r5/bug/ux-receipts-invalid-chain-facts` (stacked). Parent fixes invalid `facts.confirmed`; this child handles separate malformed *top-level* adapter responses and nonstring optional evidence, without replacing the parent fix.
+Owned paths on this isolated child: `packages/ux-receipts/src/verify.ts` (additive guards after parent's existing checks), `packages/ux-receipts/src/verify.lookup-boundary.test.ts` (new), `docs/handoffs/UX_RECEIPT_LOOKUP_BOUNDARY_R34.md` (new), and this additive ownership note. Notify parent owner; preserve existing claims. Do not edit parent's branch, drop commits, merge into main or deploy.
+Acceptance: regression tests fail on parent for resolved null/nonobject lookup and malformed sender/recipient facts; invalid evidence must return `unavailable`, `self_consistent_unverified`, `chain_unavailable`; preserve true/false confirmations, not-found, matching and mismatch cases. Run exact-head hosted CI; require external review, settled parent, and release lock transfer before any merge. Exclude relayer, contracts, production deployments and real funds.
+Integration lock: held, generation 11, owner `994a0d214fb9-root-r3` (rechecked 2026-11-22). Never self-transfer.
+
+---
+
+# GP-BUG — Receipt verifier must not trust malformed chain confirmation evidence (2026-11-22)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential reproduction/implementation, no independent verifier available.
+Branch: `automation/20261122-r5/bug/ux-receipts-invalid-chain-facts`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.invalid-facts.test.ts`, additive claim in this file, new `docs/handoffs/UX_RECEIPT_CHAIN_FACTS_20261122.md`. Do not modify `receipt.test.ts` or other branches.
+Observed defect: injected `ChainVerifier.lookup` resolving `{ status: 'found', facts: { confirmed: 'yes', amountBase: '1500000' } }` can produce a `chain_confirmed` verdict despite a nonboolean confirmation field; a missing/null `facts` object may throw instead of degrading to `unavailable`. Root cause: runtime callback result is assumed to satisfy its static TypeScript type; `!f.confirmed` is a truthiness check.
+Acceptance: test-first regressions for malformed found facts (nonboolean confirmed, null/missing facts), preserve exact valid true/false confirmation and matching behavior; minimal guard returning `unavailable` for malformed evidence; run available source-equivalent runtime checks and hosted exact-head package/CI; no new dependencies, network, funds, release, deployment or interfaces. Do not claim repository Vitest without checkout.
+Ownership: all 207 open PR changed-file lists from snapshot through #448 inspected; no claim on these specific source/new test paths. PR #390 checked separately: head `b655bc273a6704c9c140287b8adcdf4085b91882`, 5 completed successful workflow groups, 0 GitHub reviews; no edits to owner branch. Generation-11 integration lock remains externally held by `994a0d214fb9-root-r3`; leave draft and unmerged until legitimate ownership transfer and independent review.
 
 ---
 
