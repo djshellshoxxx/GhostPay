@@ -110,3 +110,28 @@ test('cannot finalize security-blocked, unsafe or unintegrated unique histories'
     assert.throws(() => validateLedger(s), /cannot be finalized/, disposition);
   }
 });
+
+
+test('finalized recovery donors must follow the actual current open PR parent head', () => {
+  const s = fixture();
+  s.records[1].finalized = true;
+  s.records[1].disposition = 'retained-in-unmerged-recovery-PR10-pending-gates';
+  s.records[1].evidence = {
+    parentPR: 10, parentHead: b, mainIntegrated: false, behavioralEquivalenceNotClaimed: true
+  };
+  s.summary.finalized = 2;
+  s.summary.unresolved = 0;
+  assert.equal(validateLedger(s).finalized, 2);
+
+  const advanced = structuredClone(s);
+  advanced.records[1].evidence.parentHead = c;
+  assert.throws(() => validateLedger(advanced), /recovery parent PR head changed or is absent/);
+
+  const missing = structuredClone(s);
+  missing.records[1].evidence.parentPR = 999;
+  assert.throws(() => validateLedger(missing), /recovery parent PR head changed or is absent/);
+
+  const unpinned = structuredClone(s);
+  delete unpinned.records[1].evidence.parentPR;
+  assert.throws(() => validateLedger(unpinned), /missing recovery parent PR number/);
+});
