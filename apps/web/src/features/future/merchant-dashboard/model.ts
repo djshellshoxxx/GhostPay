@@ -104,7 +104,10 @@ export function reference(value: unknown): string {
   return value;
 }
 
-export function integer(value: unknown, max = 253_402_300_799): number {
+// Match the range of the encrypted reconciliation vault and JavaScript Date.
+export const DASHBOARD_MAX_DATE_SECONDS = 8_640_000_000_000;
+
+export function integer(value: unknown, max = DASHBOARD_MAX_DATE_SECONDS): number {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || Object.is(value, -0) || value < 0 || value > max) return invalid();
   return value;
 }

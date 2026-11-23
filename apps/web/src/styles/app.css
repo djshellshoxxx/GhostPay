@@ -300,3 +300,26 @@ summary { cursor: pointer; min-height: 44px; display: flex; align-items: center;
 .context-help-text[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+.dashboard-fields {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  margin-block: .75rem;
+}
+
+.dashboard-records {
+  padding-inline-start: 1.25rem;
+}
+
+.dashboard-records li {
+  margin-block: .75rem;
+  overflow-wrap: anywhere;
+}

@@ -3,7 +3,7 @@ import { createInvoice, generateKeys, openFresh, ORIGIN } from './helpers';
 import { installSweepNetwork, SWEEP_RPC } from './sweep-network';
 import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 
-const ROUTES = ['Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Sweep', 'Public registry', 'Settings', 'About and privacy'] as const;
+const ROUTES = ['Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Merchant dashboard', 'Sweep', 'Public registry', 'Settings', 'About and privacy'] as const;
 test.setTimeout(180_000);
 
 async function visit(page: Page, route: typeof ROUTES[number]): Promise<void> {

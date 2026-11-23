@@ -60,7 +60,8 @@ function exportColumns(input: unknown): readonly DashboardExportColumn[] {
     seen.add(value);
   }
   if ([...MONEY].some((field) => seen.has(field)) &&
-      (!seen.has('chainId') || !seen.has('assetId') || !seen.has('state'))) return invalid();
+      (!seen.has('chainId') || !seen.has('assetId') ||
+        ([...MONEY].some((field) => field !== 'expectedAtomic' && seen.has(field)) && !seen.has('state')))) return invalid();
   return Object.freeze(values as DashboardExportColumn[]);
 }
 

@@ -9,7 +9,7 @@ import { BackupPanel } from './components/BackupPanel';
 import { AppShell } from './AppShell';
 import { MerchantProfilePanel } from './components/MerchantProfilePanel';
 
-const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
+const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'dashboard', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
 
 export function App(): ReactNode {
   const [merchantSearch] = useState(() => window.location.search);
