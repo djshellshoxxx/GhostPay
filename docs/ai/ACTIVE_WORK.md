@@ -1,3 +1,13 @@
+# GP-BUG R11 — reject missing entries in tip-page suggested amounts (2026-11-23)
+
+Worker: ChatGPT BUG-ONLY coordinator; sequential implementation and self-review, no independently submitted verifier. Task branch `automation/20261123T0742Z/bug/ux-links-sparse-tip-presets-r11`; exact verified live main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-links/src/tip.ts` (baseline Git blob `4ec5184bd2379c5bf06065f029b7cf637e27fa42`), NEW `packages/ux-links/src/tip.sparse.test.ts`, additive ownership entry here, and NEW `docs/handoffs/UX_LINKS_SPARSE_TIP_PRESETS_R11_20261123.md`. Existing `tip.test.ts` remains unmodified; broad open PRs #224/#238/#262/#264/#278/#372 change it.
+Finding: `buildTipPageModel` validates the `suggested` array length but uses `Array.map`, which skips absent indices. Sparse one-, two-, and three-entry arrays therefore return page models with missing suggested amounts rather than failing with existing `LinkError('TIP')`. Source-line evidence from `tip.ts`; Node 22 standalone source-equivalent red reproduction: 3/3 missing-element regressions fail before the guard.
+Acceptance: regression committed before production change, reject holes at any index with existing TIP/suggested error; valid dense ordered presets, URI generation and bounds remain unchanged. Hosted exact-head CI + applicable native browser checks; independently submitted review and legitimate integration-lock ownership required before merging. No new features/dependencies, contracts, custody/funds, network attacks, deployment or release.
+Ownership reconciliation: inspected changed-file inventories of ALL 255 currently open PRs (#500 down to #51), zero ownership collisions on the production file and new test path. Use separate targeted test to avoid test-file owners. PR #390 remains externally owned. Generation-12 integration metadata lock was observed `released` at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no lock acquisition or integration rights are inferred.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
