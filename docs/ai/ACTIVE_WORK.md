@@ -1064,3 +1064,14 @@ Integration lock: `automation/ghostpay-integration-lock` at generation 11, statu
 - Ownership: all 173 open PR changed-filename inventories checked this cycle; none changes either owned `netstate` path. Broad PRs #238/#262/#264/#278/#372 change other `ux-core` paths only. Recheck before integration.
 - Lock: separate `automation/ghostpay-integration-lock` branch has `status: held`, generation 11, owner `994a0d214fb9-root-r3` (the recorded expiry is in the past; no authority to steal/release). Never merge without legitimate coordination.
 - Verification: exact base production Git blob `3082d56ff1ecabf73ab4fb65e69c318053095954`. Full Git checkout is unavailable locally (github.com DNS fails); separate source-equivalent Node checks and hosted exact-head CI only. No independent review claimed.
+
+---
+
+# GP-BUG-18 — Weekly recurrence must stop at MAX_YEAR (2026-11-21)
+
+Worker: GhostPay Bug Repair Rounds cycle 8; one sequential coordinator, no independent verifier identity or native repo checkout available.
+Task branch: `automation/20261121/bug/ux-schedule-weekly-maxyear-r8` created from exact live main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths only: `packages/ux-schedule/src/recurrence.ts`, new `packages/ux-schedule/src/recurrence.year-boundary.test.ts`, additive claim in this file, and `docs/handoffs/WEEKLY_RECURRENCE_MAX_YEAR_20261121.md`.
+Source baseline: recurrence.ts Git blob `df6d0c8d3ee1918ed79055446b7a80832daca260`.
+Observed source-equivalent Node 22 reproduction: weekly rule anchored 2200-12-28 with Thursday weekday yields 2201-01-01; Friday also yields 2201-01-02; the library's MAX_YEAR is 2200 and daily/monthly rules stop there. Root cause: weekly outer loop tests `base < maxDays` without bounding `base + wd` in its inner weekday loop.
+Acceptance: failing regression committed before production change; no weekly occurrence on or after 2201-01-01; all valid 2200 final-week occurrences preserved, historical valid weekday schedules untouched; no new dependencies, protocols, payment interaction or feature work. Reproduce with source-equivalent checks and exact-head hosted CI; no false claims of local Vitest. Keep draft for independent review and held generation-11 integration lock. 178 open PRs' changed-file inventories were checked (pages 1 and 2); none changed the two owned source/test paths. PRs #372/#278/#264/#262/#238/#224 own nearby package manifests/template tests, not this bounded recurrence fix. Recheck before merge.
