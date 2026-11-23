@@ -289,3 +289,19 @@ test('advanced finalized donor heads require renewed evidence pinned to both SHA
     assert.throws(() => validateLedgerTransition(bad, previous), /finalized branch advanced without requalification/);
   }
 });
+
+test('main census SHA must equal main provenance and may advance without donor requalification', () => {
+  const previous = fixture();
+  const inconsistent = structuredClone(previous);
+  inconsistent.provenance.mainSha = c;
+  assert.throws(() => validateLedger(inconsistent), /main ref SHA inconsistent with provenance/);
+
+  const current = structuredClone(previous);
+  current.records[0].sha = c;
+  current.provenance.mainSha = c;
+  current.summary.newBranches = [];
+  current.summary.advancedHeads = [{ branch: 'main', old: a, new: c }];
+  current.summary.priorFinalized = 1;
+  current.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(current, previous).mainSha, c);
+});
