@@ -35,7 +35,7 @@ describe('Solana Pay reference validation snapshot', () => {
   });
 
   it('rejects more than eight references even when they are caller-supplied', () => {
-    expect(() => buildSolanaPay({ recipient: SYSTEM, references: Array(9).fill(WRAPPED_SOL) }))
+    expect(() => buildSolanaPay({ recipient: SYSTEM, references: Array.from({ length: 9 }, () => WRAPPED_SOL) }))
       .toThrowError(PaymentUriError);
   });
 
