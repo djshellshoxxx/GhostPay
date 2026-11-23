@@ -324,3 +324,29 @@ test('newly inventoried docs-only branch needs source proof before immediate fin
   };
   assert.equal(validateLedgerTransition(next, previous).newlyFinalized, 1);
 });
+
+test('deleted live refs remain explicit unresolved historical obligations with 404 and census evidence', () => {
+  const previous = fixture();
+  const next = structuredClone(previous);
+  next.records = [next.records[0]];
+  next.openPrs = [];
+  next.provenance.branchPages = [1, 0]; next.provenance.prPages = [0];
+  next.summary = { total: 1, finalized: 1, unresolved: 0, openPRs: 0,
+    stackedPRs: 0, priorFinalized: 1, newlyFinalized: 0, newBranches: [], advancedHeads: [],
+    globalUnresolved: 1 };
+  next.retiredHistories = [{ branch: 'work', sha: b, finalized: false,
+    disposition: 'pending-owner-review',
+    proof: { status: 404, absentInIndependentRefs: true,
+      checkedAtUtc: '2026-11-23T04:11:17Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/work' } }];
+  assert.equal(validateLedgerTransition(next, previous).globalUnresolved, 1);
+
+  const omitted = structuredClone(next); delete omitted.retiredHistories;
+  assert.throws(() => validateLedgerTransition(omitted, previous), /retired|historical branch disappeared/);
+  const noProof = structuredClone(next);
+  noProof.retiredHistories[0].proof.status = 200;
+  assert.throws(() => validateLedgerTransition(noProof, previous), /retired history.*verification/);
+  const falselyFinalized = structuredClone(next);
+  falselyFinalized.retiredHistories[0].finalized = true;
+  assert.throws(() => validateLedgerTransition(falselyFinalized, previous), /retired history.*prior state/);
+});
