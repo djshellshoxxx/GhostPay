@@ -348,6 +348,9 @@ test('deleted live refs remain explicit unresolved historical obligations with 4
   assert.throws(() => validateLedgerTransition(noProof, previous), /retired history.*verification/);
   const falselyFinalized = structuredClone(next);
   falselyFinalized.retiredHistories[0].finalized = true;
+  // Supply a semantically finalized-looking status so this exercises the
+  // cross-checkpoint history guard, not the standalone fail-closed guard.
+  falselyFinalized.retiredHistories[0].disposition = 'included-in-main-by-ancestry';
   // Keep the standalone census internally coherent so the transition check,
   // not the global unresolved-count guard, catches the falsified tombstone.
   falselyFinalized.summary.globalUnresolved = 0;
