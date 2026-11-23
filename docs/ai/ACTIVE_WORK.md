@@ -1,3 +1,15 @@
+# GP-BUG-R12 — avoid caching JWT-shaped long opaque query values (2026-11-23 UTC)
+
+Worker: ChatGPT BUG-ONLY coordinator, single sequential implementation; independent verifier not yet available.
+Branch: `automation/20261123/bug/notify-jws-query-cache-r12` from live main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-notify/src/urlsafety.ts`, new `packages/ux-notify/src/urlsafety.jwt-query.test.ts`, additive claim here, and `docs/handoffs/NOTIFY_JWS_QUERY_CACHE_20261123.md`. Do not edit existing `cache-policy.ts` or its tests, or any competing worker branch.
+Failure evidence: verified untouched source blob `9d2f5e1854641629c1321fb65fe64242a45f920a` with `git hash-object`; Node 22.16.0 replay of compiled source returned false for a 3-segment, 72-character synthetic JWS in a neutral query parameter (e.g. `?v=header.payload.signature`), although the cache planner explicitly excludes long opaque query values. Ordinary base64url strings without dots are caught; the dot-separated equivalent is not. This permits a cache-first decision for an otherwise allowlisted immutable asset with a query-contained JWS.
+Acceptance: commit failing focused Vitest regression before smallest scoped fix, reject long three-segment JWS-shaped query values including percent-encoded separators, preserve ordinary versions, small values and existing keys, run source-hash-matched Node checks and hosted GitHub CI; require independent review and browser qualification if applicable before merge.
+Ownership: scanned complete changed-file inventories of 253 live open PRs (100+100+53) with no other PR modifying these two owned paths. Adjacent ux-notify source is owned by PRs #465, #458/#409, #439 and #433, and remains untouched. PR #390 exact-head five workflow groups passed but has no submitted independent review; its branch is owner-controlled and unchanged.
+Integration: generation-11 lease previously reported externally held; do not acquire, merge, deploy, or release. Reinspect lease and exact-head CI prior to any future integration.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
