@@ -105,14 +105,22 @@ export function planRefund(
   return { plan, replayed: false, remainingRefundable: original.paidAmount - counted - req.amount };
 }
 
+// A submitted refund may already be on chain, so it never becomes `failed` here: that would release its
+// reservation without evidence and allow a second refund of the same funds. Evidence-gated failure of a
+// broadcast refund lives in `refund-lifecycle.ts`.
 const NEXT: Record<RefundStatus, readonly RefundStatus[]> = {
   planned: ['submitted', 'failed'],
-  submitted: ['confirmed', 'failed'],
+  submitted: ['confirmed'],
   confirmed: [],
   failed: [],
 };
 
-/** Moves a refund through planned, submitted, confirmed or failed. Terminal states are final. */
+/**
+ * Moves a plan-only refund through planned, submitted, confirmed or failed. Terminal states are final.
+ *
+ * @remarks Only a never-submitted plan can fail. This API records operator assertions, not chain evidence:
+ * use {@link RefundBook} for anything that is signed or broadcast.
+ */
 export function transitionRefund(plan: RefundPlan, to: RefundStatus): RefundPlan {
   if (plan.status === to) return plan;
   if (!NEXT[plan.status].includes(to)) throw new BillingError('REFUND', 'illegal transition');
