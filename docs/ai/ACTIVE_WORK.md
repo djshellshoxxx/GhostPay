@@ -1600,3 +1600,13 @@ Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exa
 - Finding under validation: `buildEip681Native` / `buildEip681Erc20` validate a mutable object's amount once but re-read the property when serializing. Getter-backed runtime objects can make a checked positive bigint become 0, negative, invalid type or another unchecked number. No observed deployed exploit or funds impact claimed.
 - Acceptance: first commit failing regression cases, then snapshot `value` and `amount` exactly once before validation and formatting; preserve valid native/ERC20 outputs and typed PaymentUriError for invalid initial amounts; run feasible checks with actual outcomes and do not call standalone stubs repository tests. Separate independent review and exact-head CI required before merge.
 - Coordination: Current main and previously open EIP-3770 #496, other payment-uri PRs checked; no EIP-681 file ownership was identified by bounded PR-title and known changed-path checks (not exhaustive). Integration lock `automation/ghostpay-integration-lock` is held by other owner `994a0d214fb9-root-r3` at generation 11. No lock takeover, shared-ledger updates or protected merges.
+
+---
+
+# 2026-11-23T0840Z — Bitcoin URI checked-input snapshot
+
+Coordinator: one sequential ChatGPT engineer (no native subagents or independent verifier). Branch `automation/20261123T0840Z/bug/bitcoin-uri-input-snapshot`, base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned source `packages/payment-uri/src/bitcoin.ts`, new focused test `packages/payment-uri/src/bitcoin.input-snapshot.test.ts`, isolated handoff `docs/handoffs/BITCOIN_URI_INPUT_SNAPSHOT_20261123.md`, and this additive claim.
+Finding candidate: `buildBitcoinUri` re-reads `amountSats` during validation and serialization, so getter-backed input can exceed the 21-million BTC bound after validation; `parseBitcoinUri` rereads `expectedNetwork` after compatibility validation, permitting a returned network that conflicts with the address. No external exploit asserted.
+Acceptance: fail-first tests and minimal single-read snapshots, preserve normal BIP-21/321 behavior/errors, exact-head CI, source-pinned handoff; no dependencies, contracts, relayers, deployments, real funds, force-push, or security waiver. Independent reviewer and authorized integration lock required for merge.
+Ownership checks: changed-file inventories of active Bitcoin/recovery PRs #372, #382, #371, #367, #365, #307, #262, #264, #278 and recent payment-uri #496/#499 have no overlap with this owned source/new test path (bounded, not exhaustive). Shared metadata integration-lock at ref `082e754f44944ebb4be283f89176b966bf8f7b4f` is released generation 12; this cycle has NOT acquired it and must NOT merge.
