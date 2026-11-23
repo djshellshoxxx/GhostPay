@@ -102,6 +102,7 @@ const CONTROL_RE = /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/;
  * @throws FlowError BAD_LINK | BAD_ORIGIN | BAD_LABEL | BAD_OPTION
  */
 export function makeSnippet(link: string, appOrigin: string, opts: SnippetOptions = {}): string {
+  if (typeof opts !== 'object' || opts === null || Array.isArray(opts)) throw new FlowError('BAD_OPTION');
   for (const k of Object.keys(opts)) if (!ALLOWED_KEYS.has(k)) throw new FlowError('BAD_OPTION', k);
   const variant = opts.variant ?? 'default';
   if (!VARIANTS.has(variant)) throw new FlowError('BAD_OPTION', 'variant');
