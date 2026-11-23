@@ -1,0 +1,22 @@
+# GhostPay R71 — durable consolidation handoff
+
+**Census (UTC):** 2026-11-23T18:09:04.253Z. **Main:** `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. **PR #471 prepublication source head:** `c4201865de02dd350469be063db96d1f18e8b58a`. Source commit and ledger publication may advance PR #471; reread final HEAD before tests or work.
+
+### Confirmed completed work
+
+- **Product-safety invariant for consolidation tooling repaired, not payment code:** tree comparator was blind to Git file modes and would mark executable-bit/symlink changes as identical when blob hashes matched; it also accepted missing/mismatched object modes and impossible parent-file paths. Regression-first commit `b1a2f9345316e2dcc58e3d601d09b6f3b449d9d5`, corrective commit `c4201865de02dd350469be063db96d1f18e8b58a`. Three new cases reproduced the old failures; **8/8** complete tests passed on Node 22 after the fix, 0 skipped. Native `git hash-object` verified source and test blobs exactly against GitHub. No remote checkout; no full application suite claimed.
+- **All 584 live branches** fully paginated `100/100/100/100/100/84/0/0`; all **273 open PRs** paginated `100/100/73/0/0` (**98 stacked**). **584/584 independent Git SHA/name matches, zero mismatches**. Ledger [SEMANTIC_DISPOSITIONS.json](SEMANTIC_DISPOSITIONS.json) preserves per-ref identity, old proof and current PR relationship. Source evidence [SOURCE_AND_CI_ENGINEERING.md](SOURCE_AND_CI_ENGINEERING.md).
+- **318 finalized live / 266 unresolved live / two preserved deleted-but-unmerged = 268 globally unresolved.** No additional historical branch finalized, no eligible production change integrated. One newly discovered owner-held BUG-only PR #518 (head `26d10a1f1e74d28408ea4c81d627afd227b7a48b`, +5/-0 versus main); no duplicate repair started.
+- Two complete recursive tree investigations proved GitHub compare's 300-file result inadequate: **818** differences for idle evidence pair and **2,104** for continuation evidence pair. Both histories remain unresolved; see exact source/tree SHAs in source evidence. Last-commit docs-only analysis on other branches did **not** falsely finalize their older executable histories.
+- **Exact-head CI:** Previous R70 head `9d9f82375326df70645bc5b1991db49386e69ca9` had both queried workflows successful. Source R71 `c4201865...` had PR workflow successful and full CI in progress when last checked; recheck final publication SHA. No independent approval or browser/payment release qualification implied.
+- **Lock:** `refs/heads/automation/ghostpay-integration-lock@082e754f44944ebb4be283f89176b966bf8f7b4f` reads generation 12, released; this worker did not acquire it. Branch-protection query returned 403. Protected main not touched. Formal independent review and owner coordination remain required.
+
+### Risks and precise continuation
+
+1. Re-read final PR #471 SHA and hosted check runs; verify `node --test scripts/tests/compare-git-trees.test.mjs` on exact final head in CI/checkout. Do not equate prior SHA passing with final SHA qualification.
+2. Prioritize **unowned** ready payment-safety recovery code only after checking live PR ownership and lock. P0 recovery/refund finality (Worker A/B), invoice-expiry owner PR #274 and stacked test #515, private payment-key export, BUG-only #518 and C1 composite #504 remain owner-held or gate-blocked. Avoid modifying their source. Composite #504's previously observed web/browser/security failures require its owner.
+3. Continue uncapped source-equivalence and patch-history qualification for remaining donors, notably R38 capped histories. Do not infer entire branch disposition from its final docs commit, a SHA alias, or a 300-file diff. Preserve rejected/experimental history with proof rather than merging it to satisfy count.
+4. Re-census newly created branches and all PRs before any main merge or final audit. Confirm exact-head required checks, genuine independent approval, ordered dependencies, security/browser acceptance, branch protection and coordinator lease. Do not deploy or test with real funds.
+5. Only declare completion upon zero safe unintegrated eligible changes, every branch including retired histories classified with source proof, no in-flight qualifying PR, and a signed-off exact-head final audit. **Keep the existing consolidation automation active.**
+
+**This cycle:** two actual comparison-tool code/test commits; documentation checkpoint commits. **Zero payment application commits to main, zero main merges, zero deployment/release, zero branch deletions.**
