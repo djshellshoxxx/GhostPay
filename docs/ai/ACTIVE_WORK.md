@@ -1,3 +1,13 @@
+# GP-BUG-R11 — Reject explicit default/empty ports in invoice-link classifier (2026-11-23)
+
+Worker: GhostPay BUG-ONLY sequential automation; independent reviewer unavailable pending qualification.
+Branch: `automation/20261123/bug/intake-invoice-default-port-r11`; source baseline main `eb59d93cffed7848c4aac37d0e9650b87239c6da`; source blob `72edfb42a2a4df5d4b7def55a966d756f7b821ef`.
+Owned: `packages/ux-intake/src/payload.ts`, new `packages/ux-intake/src/payload.default-port.test.ts`, additive claim in this file, and `docs/handoffs/INTAKE_INVOICE_DEFAULT_PORT_20261123.md`.
+Observed failure: `classifyPayload` accepts invoice URLs with explicit `:443`, `:0443`, or empty `:` despite its explicit no-port contract because WHATWG `URL.port` canonicalizes these to an empty string. Node 22.16 URL reproduction verified canonicalization. Use failing Vitest regression before minimal fix, retain allowed no-port, credential, other-port, host/path, and bare-fragment behavior. `parseDeepLink` is already owned separately by PR #424, so do not change its files.
+Ownership: live open PR inventory paginated 100+100+51=251 and all 251 changed-file inventories queried; neither owned code/test path appeared. PR #390 exact head `b655bc273a6704c9c140287b8adcdf4085b91882` has five successful hosted workflows but zero submitted independent reviews, so left unchanged. Metadata integration lease generation 11 status held by unrelated owner `994a0d214fb9-root-r3`; expiration is not authority to take over. No merge, deployment, fund interaction, or release. Hosted exact-head CI, independent review, and applicable browser qualification remain hard gates.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
