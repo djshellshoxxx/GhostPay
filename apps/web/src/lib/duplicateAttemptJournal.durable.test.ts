@@ -47,10 +47,10 @@ describe('durable wallet attempt journal (REC-P1-03)', () => {
   it('defaults to localStorage, shared by every tab, under the exported exclusive lock', async () => {
     const locks = installTestLocks();
     let heldDuringWrite = false;
-    const original = Storage.prototype.setItem;
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, k: string, v: string) {
+    const original = Storage.prototype.setItem.bind(window.localStorage);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation((k: string, v: string) => {
       heldDuringWrite = locks.isHeld(ATTEMPT_JOURNAL_LOCK);
-      original.call(this, k, v);
+      original(k, v);
     });
     expect(ATTEMPT_JOURNAL_LOCK).toBe('ghostpay:durable-wallet-attempts:v1');
     await withAttemptJournal((store) => beginAttempt(input(), store));
@@ -194,7 +194,7 @@ describe('optional resolution fields', () => {
       { ...ok, replacements: [hashB.toUpperCase().replace('0X', '0x')] },
       { ...ok, replacements: Array.from({ length: 9 }, (_, i) => `0x${i.toString(16).padStart(64, '0')}`) },
       { ...ok, replacements: 'x' },
-      (({ nonce: _n, ...rest }) => rest)(ok),
+      Object.fromEntries(Object.entries(ok).filter(([field]) => field !== 'nonce')),
     ];
     for (const bad of invalid) {
       window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([bad]));
