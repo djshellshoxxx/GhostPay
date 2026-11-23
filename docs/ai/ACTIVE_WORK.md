@@ -1,3 +1,26 @@
+# P0 Worker B — verified refund lifecycle and expired-invoice settlement policy (2026-11-23 UTC)
+
+- Worker: Claude Code session `practical-johnson-e0fbpm` (Worker B of the P0 fund-recovery split). Branch
+  `nodata/practical-johnson-e0fbpm`, base `main` `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: `packages/merchant-billing/src/refund-lifecycle*.ts`, `packages/merchant-billing/src/settlement-policy*.ts`,
+  additive exports in `packages/merchant-billing/src/index.ts`, new workspace `packages/merchant-refunds/**`, its
+  `package-lock.json` workspace entry and the regenerated package map, `docs/remote/usability/specs/refunds.md`,
+  new `docs/refunds/**`, new `docs/handoffs/REFUND_EXECUTION_WORKER_B.md`, and this additive claim.
+- Not owned (Worker A, PR #500 `claude/keen-volta-8ctx9x`, and its M3 late-payment claim): `apps/web/**` journals,
+  `payExec.ts`, `wallet.ts`, `Pay.tsx`, `WalletAttempts.tsx`, `ReconciliationLedger.tsx`,
+  `packages/ux-vault/src/reconciliation-portable.ts`, `docs/engineering/**`. Receipt verifier (`ux-receipts`) unchanged.
+- Acceptance: refunds bind to a payment outcome minted only by a capability-holding verifier (chain-adapters
+  `verifyClaimedPayment` evidence), never a caller object; cumulative reserved refunds (every state that may have
+  broadcast) never exceed the verified net received; a refund leaves an uncertain broadcast only on chain evidence
+  (router announcement for its unique one-time address, or a finalized block past its router deadline with no such
+  announcement); confirmed is never finalized across a reorg; expired/late/duplicate/over/under payments are
+  classified deterministically from canonical block time; refunds need explicit, single-use, bound authorization.
+  Unit, property, state-machine and anvil local-chain tests; workspace typecheck/lint; independent review.
+- Integration lock: `automation/ghostpay-integration-lock` generation 12 observed `released` at `082e754f`.
+  Not acquired by this branch; merge follows Worker A per the coordinated sequence.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
