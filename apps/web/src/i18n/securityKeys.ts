@@ -1808,6 +1808,28 @@ export const SECURITY_KEY_GROUPS = {
     'tron.signed.notSent',
     'tron.broadcast.accepted',
   ],
+  // Spec 18 private-key export and recovery refusals: key loss, tamper and wrong-chain outcomes stay reviewed-only.
+  stealthKeyExportErrors: [
+    'error.stealthExport.conflict',
+    'error.stealthExport.duplicate',
+    'error.stealthExport.invalidAnnouncement',
+    'error.stealthExport.invalidChain',
+    'error.stealthExport.invalidFile',
+    'error.stealthExport.invalidRecord',
+    'error.stealthExport.invalidScryptCost',
+    'error.stealthExport.invalidTime',
+    'error.stealthExport.keyDoesNotMatch',
+    'error.stealthExport.masterKeysDoNotMatch',
+    'error.stealthExport.mixedChains',
+    'error.stealthExport.noWebCrypto',
+    'error.stealthExport.scopeMismatch',
+    'error.stealthExport.tooLarge',
+    'error.stealthExport.tooMany',
+    'error.stealthExport.unsupportedScheme',
+    'error.stealthExport.unsupportedVersion',
+    'error.stealthExport.wrongChain',
+    'error.stealthExport.wrongPassphraseOrModified',
+  ],
 } as const satisfies Readonly<Record<string, readonly MessageKey[]>>;
 
 export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object.values(SECURITY_KEY_GROUPS).flat());
