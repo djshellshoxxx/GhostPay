@@ -1,3 +1,16 @@
+# GP-BUG-RATE-TOCTOU — snapshot untrusted fiat quote fields (2026-11-23 UTC)
+
+- Worker/coordinator: single ChatGPT worker `20261123T0237Z-root`; sequential audit, repair and self-check only; no independent verifier available.
+- Isolated branch: `automation/20261123T0237Z/bug/fiat-rate-quote-snapshot`, exact base/main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-fiat/src/rate.ts`, new `packages/ux-fiat/src/rate.snapshot.test.ts`, additive entry in this file and `docs/handoffs/UX_FIAT_RATE_SNAPSHOT_20261123.md`.
+- Dependency/ownership: checked changed paths on #413, #454, #475, #278, #372, #488, #489, #490; none changes `rate.ts` or the new test. Existing broad feature/PR claims remain active; recheck before integration. #454 and #413 own `format.ts` and #475 owns `decimal.ts` and remain untouched.
+- Reproduction: `parseRate` validates quote properties and rereads `asset`, `fiat`, `source`, `timestampMs` into returned `ParsedRate`. Getter-backed quotes can change between validation and return, accepting an invalid display label/time. Failing getters can throw native exceptions. Node 22 source-equivalent probe reproduced the changed-label case; direct browser exploit not claimed.
+- Acceptance: read each quote property once into inert primitive snapshot, validate and return the exact same values; return existing typed `bad-rate-format` for throwing accessors; preserve all plain-JSON/decimal bounds behavior; regression tests for changing label/time and throwing getter, plus plain quote. No dependencies, new services, RPC requests, contracts, keys, fee-policy or deployment changes.
+- Lock: observed external held integration lock `automation/ghostpay-integration-lock` generation 11, owner `994a0d214fb9-root-r3` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`. Expiry does not confer ownership. No shared merges or tracking edits on main.
+- Verification status: local clone blocked by `Could not resolve host: github.com`. Source-equivalent Node tests are not repository Vitest, lint, build or browser tests. Exact-head hosted qualification and independent approval required.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
