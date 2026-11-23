@@ -802,3 +802,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG R11 — quoted empty final CSV record silently dropped (2026-11-23)
+
+Worker: single sequential BUG-ONLY engineering coordinator; no independent verifier engaged.
+Branch: `automation/20261123-r11/bug/merchant-csv-empty-quoted-eof`; immutable main base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-billing/src/csv.ts`, new `packages/merchant-billing/src/csv.quoted-empty-eof.test.ts`, this additive registry entry, and `docs/handoffs/MERCHANT_CSV_QUOTED_EMPTY_EOF_R11_20261123.md`. Existing `csv.test.ts` is owned by broad integration PRs and remains untouched.
+Defect: exact Git blob `3c9b5c50c69881188d2aadd386a68f77a3cbce37` drops an explicit empty quoted final one-column record: `parseCsv('name\\n""')` incorrectly returns `[['name']]`, while the same record followed by newline throws the documented `CSV blank line`. A standalone Node 22 local source-matched copy verified the hash and both behaviors; not repository Vitest.
+Acceptance: commit failing Vitest regression before fix, make a minimal EOF bookkeeping correction, preserve valid empty fields in multicolumn CSV, quoted nonempty fields, terminal CRLF/LF and all existing limits; run isolated source-matched regression and hosted exact-head CI. No new features, dependencies, payment/fund interactions, deployment or release. No native browser qualification is claimed unless applicable evidence exists.
+Ownership preflight: 273 open PRs visible in three REST pages (100/100/73); targeted changed-file inspections including #278/#264/#262/#238/#372/#224/#504/#324/#371/#397 and other relevant PRs show no direct ownership of `csv.ts` or the new test. This is a focused preflight, not a complete changed-file census; recheck before integration.
+Integration metadata ref `082e754f44944ebb4be283f89176b966bf8f7b4f`, generation 12, status `released`, was not acquired. PR #390: exact head `b655bc273a6704c9c140287b8adcdf4085b91882`, 36 successful / 3 skipped checks, five workflows success, zero independent reviews, nonmergeable. Other worker branches untouched. Keep new PR draft until independent review, full CI, ownership clearance and legitimate held lock.
