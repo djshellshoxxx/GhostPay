@@ -145,7 +145,9 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.goto('/');
     await generateKeys(page);
     const invoice = await createInvoice(page);
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
     const otherInvoice = await createInvoice(page, { description: 'Another invoice' });
+    expect(otherInvoice).not.toBe(invoice);
     const tab = await context.newPage();
     await injectWallet(page, first);
     await injectWallet(tab, second);
