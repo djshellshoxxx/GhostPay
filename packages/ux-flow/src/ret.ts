@@ -20,6 +20,7 @@ export function canonicalOrigin(o: unknown, allowLocalhost = false): string | nu
   } catch {
     return null;
   }
+  if (u.hostname.length > 253) return null;
   const okScheme =
     u.protocol === 'https:' || (allowLocalhost && u.protocol === 'http:' && u.hostname === 'localhost');
   if (!okScheme || u.origin !== o || u.username !== '' || u.password !== '') return null;
