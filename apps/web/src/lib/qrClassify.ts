@@ -352,7 +352,8 @@ function classify(text: string, opts: ClassifyOptions): QrClassification {
   const cap = byteCap(opts);
   // UTF-8 never needs fewer bytes than UTF-16 code units, so the length check is a safe cheap pre-check.
   if (text.length > cap || utf8Length(text) > cap) return unknown('too-large');
-  if (FORBIDDEN_CHARS.test(text)) return unknown('malformed');
+  // UTF-8 cannot preserve an unpaired UTF-16 surrogate. Reject it before any family is labelled.
+  if (FORBIDDEN_CHARS.test(text) || /\p{Cs}/u.test(text)) return unknown('malformed');
   if (/^\s*$/.test(text)) return unknown('empty');
 
   const match = SCHEME_RE.exec(text);
