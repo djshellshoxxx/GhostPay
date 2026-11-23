@@ -90,3 +90,31 @@ describe('display helpers', () => {
     }
   });
 });
+
+describe('formatUnix untrusted runtime timestamp boundaries', () => {
+  it('returns invalid time for nonnumber values instead of coercing or throwing', () => {
+    for (const input of [undefined, null, '0', '1700000000', false, 0n, Symbol('timestamp'), {}, [], new Date(0)]) {
+      const runtimeInput: unknown = input;
+      expect(formatUnix(runtimeInput as number)).toBe('invalid time');
+    }
+  });
+
+  it('does not evaluate attacker-controlled conversion hooks', () => {
+    let conversions = 0;
+    const hostile = {
+      [Symbol.toPrimitive](): never {
+        conversions += 1;
+        throw new Error('must not convert the supplied timestamp');
+      },
+    };
+    expect(formatUnix(hostile as unknown as number)).toBe('invalid time');
+    expect(conversions).toBe(0);
+  });
+
+  it('preserves valid numeric UTC seconds and Date-bound behavior', () => {
+    expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
+    expect(formatUnix(1.5)).toBe('1970-01-01 00:00:01 UTC');
+    expect(formatUnix(-1)).toBe('1969-12-31 23:59:59 UTC');
+    expect(formatUnix(8.64e12 + 1)).toBe('invalid time');
+  });
+});
