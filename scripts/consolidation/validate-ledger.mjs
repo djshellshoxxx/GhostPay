@@ -220,11 +220,11 @@ export function validateLedgerTransition(current, previous) {
     // later proves an unresolved, deleted history is safe to finalize.
     check(successor && JSON.stringify(successor.proof) === JSON.stringify(row.proof),
       `previously retired history was altered or dropped: ${row.branch}`);
-    if (row.finalized) {
-      if (Object.prototype.hasOwnProperty.call(row, 'evidence')) {
-        check(retainsHistoricalEvidence(successor.evidence, row.evidence),
-          `retired history historical source evidence was erased: ${row.branch}`);
-      }
+    // Unresolved and unsafe findings are also durable evidence. Retirement or
+    // subsequent finalization must not erase the original security assessment.
+    if (Object.prototype.hasOwnProperty.call(row, 'evidence')) {
+      check(retainsHistoricalEvidence(successor.evidence, row.evidence),
+        `retired history historical source evidence was erased: ${row.branch}`);
     }
     if (row.finalized || !successor.finalized) {
       check(successor.finalized === row.finalized &&
@@ -250,11 +250,14 @@ export function validateLedgerTransition(current, previous) {
       check(tombstone && tombstone.finalized === row.finalized &&
         tombstone.disposition === row.disposition,
         `retired history prior state mismatch or historical branch disappeared: ${name}`);
+      if (Object.prototype.hasOwnProperty.call(row, 'evidence')) {
+        check(retainsHistoricalEvidence(tombstone.evidence, row.evidence),
+          `retired history historical source evidence was erased: ${name}`);
+      }
       disappeared.push(row);
       continue;
     }
-    if (name !== 'main' && row.finalized &&
-        Object.prototype.hasOwnProperty.call(row, 'evidence')) {
+    if (name !== 'main' && Object.prototype.hasOwnProperty.call(row, 'evidence')) {
       check(retainsHistoricalEvidence(successor.evidence, row.evidence),
         `branch historical source evidence was erased: ${name}`);
     }
