@@ -67,7 +67,9 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 - Size: 2,186 files vs main (+505,914/−3,072, mostly evidence docs; ~12.2k source, ~26.3k test lines).
 - Confirmed failures (hosted, reported in #455 and re-checked from job logs there): Mythril job 136771947984 (10 findings,
   artifact 14699233056), Tor browser job 136771948240 (`locator.waitFor` timeout at `scripts/tor/browser-acceptance.mjs:81`).
-- Class BLOCKED: code present, red gates and lock. Integration owned by the lock holder.
+- Class BLOCKED: code present, red gates. Since 2026-11-23 a peer Claude session (same owner) owns a narrow extraction onto
+  current `main` as milestone M2 on branch `claude/nifty-bohr-5ra2ap`; its evidence goes to
+  `docs/engineering/milestones/M2-P0-KEYS.md`.
 
 ### P0-RCPT — receipt envelope fixes
 
@@ -78,15 +80,25 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 
 - Main: `packages/merchant-ledger/src/reconcile.ts` computes `latePaymentIds`; `packages/invoice-schema/src/expiry.ts`;
   `GhostPayRouter.sol` enforces only a per-call `deadline` and stores no invoice state.
-- Gap: payer side shows "expired" for an invoice whose recorded payment may still mine (addressed in M1 Pay pre-send
-  block); seller web integration of late classification across reorgs is unverified (next milestone candidate).
+- Seller web (main `8ddb3449`): registered `fixed_token` invoices join verified, final scan matches in
+  `reconciliation-portable.ts` (`candidate` 315-323, `proposeInvoiceMatch` 331-356, `confirmProposal` 845-883). Block time
+  at or after `expiresAt` gives ambiguous `late-observation` with no confirm path. Reorgs tombstone records as
+  `invalidated-after-reorg` (`invalidateFrom` 961-1036). `merchant-ledger` `reconcile()` is not used by the web app.
+- Gaps, worst first (milestone M3, this session):
+  1. The invoice card (`ReconciliationLedger.tsx:680-707`) says "No linked observation" for an expired invoice that has
+     a late or ambiguous candidate, so the seller may reissue and the payer pay twice.
+  2. A payment not yet final shows nothing on the invoice for up to the finality depth (12–250 blocks, engineering defaults).
+  3. A late payment cannot be deliberately accepted and linked.
+  4. A reorg-invalidated link silently reopens the invoice, with no notice.
+- Payer side: an expired invoice with a recorded attempt is handled by the M1 Pay pre-send block.
 
 ### P1-REFUND — refund and timeout semantics (what the architecture permits)
 
 | Case | What actually happens | Supported outcome |
 |---|---|---|
 | Expired, unpaid | No funds moved | Terminal: expired. Pay refuses (`invoice-schema/expiry.ts`, `payExec.ts`) |
-| Broadcast before expiry, mined after | Router forwards funds at inclusion if call `deadline` not passed | Paid-late. Payer keeps hash; seller reconciles as late. No automatic refund |
+| Broadcast before expiry, mined after (GhostPay web payer) | `boundedDeadline` (`apps/web/src/lib/pay.ts:399-402`) caps the router `deadline` at `expiresAt − 1`; the router reverts when `block.timestamp > deadline` (`GhostPayRouter.sol:99`) | Terminal: reverted. No transfer, gas lost. Payer journal keeps the hash so the outcome can be resolved |
+| Paid after expiry by a payer who set their own deadline (CLI/other wallet) | Router forwards if that deadline has not passed | Funds arrive. Seller ledger marks the match ambiguous `late-observation` by block time (`packages/ux-vault/src/reconciliation-portable.ts:353`); no automatic refund |
 | Paid to seller stealth address | Final transfer to recipient-controlled key | Only a new voluntary transfer by the seller. Browser code cannot reverse it |
 | Funds locked in a contract | Router holds nothing (no escrow); forced sends to router are unrecoverable by design | Not applicable |
 | Failed/reverted tx | No transfer; gas spent | Terminal: reverted; may retry after explicit clear |
