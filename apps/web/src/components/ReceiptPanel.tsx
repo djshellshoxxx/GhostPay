@@ -59,6 +59,9 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const invoiceRevision = useRef(0);
   const mounted = useRef(true);
   const generation = useRef(0);
+  // Archive writes are immutable and may outlive the currently displayed receipt.
+  const archiveWriteInFlight = useRef(false);
+  const [archivePending, setArchivePending] = useState(false);
   const match = props.match;
   const txHash = match.announcement.transactionHash;
   const matchIdentity = JSON.stringify([
@@ -99,8 +102,15 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const eligible = match.receipt === 'verified' && match.metadata !== undefined && signerStillCurrent;
   const chainName = findChain(match.chainId)?.name ?? t('receipt.chain.unknown', { id: String(match.chainId) });
 
+  const invalidateArchive = (): void => {
+    // A completion for an earlier signed receipt must never mark the next receipt archived.
+    generation.current++;
+    setArchive('idle');
+  };
+
   const invalidateInvoice = (): void => {
     invoiceRevision.current++;
+    invalidateArchive();
     setBoundInvoice(undefined);
     setInvoiceDigest('');
     setSignConsent(false);
@@ -126,6 +136,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     const identity = currentIdentity.current;
     const passphrase = invoicePassphrase;
     invoiceValidationInFlight = true;
+    invalidateArchive();
     setBoundInvoice(undefined);
     setInvoiceDigest('');
     setSignConsent(false);
@@ -189,6 +200,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
         if (binding !== undefined) bindReceiptToInvoice(signed, binding);
         return signed;
       });
+      invalidateArchive();
       setReceipt(created);
       setReceiptBound(boundInvoice !== undefined);
       setShowReceiptQr(false);
@@ -199,12 +211,16 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
 
   /** Opt-in encrypted archive of a receipt this seller just issued. The archive is never payment evidence. */
   const archiveReceipt = (): void => {
+    // Do not run simultaneous writes to the same encrypted reconciliation vault.
+    if (archive !== 'idle' || archiveWriteInFlight.current) return;
     const session = getSessionPublic();
     if (receipt === undefined || session === undefined || session.signerPublicKey !== receipt.signerPublicKey) {
       setError(new UserFacingError({ key: 'receipt.error.archiveKeys' }));
       return;
     }
     const current = ++generation.current;
+    archiveWriteInFlight.current = true;
+    setArchivePending(true);
     setArchive('busy');
     setError(undefined);
     void (async () => {
@@ -221,7 +237,10 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
         setArchive('idle');
         setError(e instanceof UserFacingError || e instanceof LocalizedTypeError ? e : new UserFacingError({ key: 'receipt.error.archiveFailed' }));
       },
-    );
+    ).finally(() => {
+      archiveWriteInFlight.current = false;
+      if (mounted.current) setArchivePending(false);
+    });
   };
 
   const receiptText = receipt === undefined ? undefined : receiptJson(receipt);
@@ -309,7 +328,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button>
                 <button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button>
                 <button type="button" className="btn" onClick={() => { window.print(); }}>{t('receipt.print')}</button>
-                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle'}>
+                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
                   {archive === 'done' ? t('receipt.archived') : t('receipt.archive')}
                 </button>
               </div>

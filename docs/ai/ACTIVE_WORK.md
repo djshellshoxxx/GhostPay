@@ -38,6 +38,15 @@ Evidence: GP-BUG-13/MC-01 in existing read-only bugcheck PR #312; abort during i
 Acceptance: preserve all valid native and TRC-20 detection, validation and pagination; return typed `ABORTED` rather than any further result after cancellation, including after delayed page or receipt readbacks and between same-page yields; add deterministic test-first Vitest regressions, with no real RPC/network or private keys; keep no-fee/non-custodial Pages behavior. No new dependencies, policy changes or contract edits.
 Ownership reconciliation: current integration PR #307 does not change TRON adapter scan source/tests; broad PRs #278/#262/#264 own `scan.test.ts` but not the `scan.ts` production file. Use a new focused test file to avoid their test ownership. Recheck all heads before any future integration. The durable integration lock is **held by another coordinator at generation 8**; do not acquire, update its metadata, or merge into main.
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
+# Cycle 20261120T1840Z — receipt archive identity (isolated)
+
+- Coordinator/worker: one ChatGPT assistant, sequential implementation, bug audit, and source review. No separate native verifier available; no independent approval claimed.
+- Branch: `automation/20261120T1840Z/bug/receipt-archive-identity`; frozen main base `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+- Source owner: `apps/web/src/components/ReceiptPanel.tsx` plus **new** `apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx`; additive section in this registry; `docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_20261120.md`.
+- Finding: existing GP-BUG-01 / COMP-OPEN-01 from audit PR #312; signing receipt B after clearing invoice binding can inherit receipt A's `archive=done`, and an in-flight archive of A can claim completion on B. Baseline verified from source; prior audit recorded a failing signed-receipt component reproduction. No payments or keys outside synthetic/test scope.
+- Dependencies and ownership: broad PR #307 and earlier #278 change receipt source for printing and validation; do not change their branches. This narrow branch targets main, must be reconciled with their newer print code by the integration coordinator. Inspected open PR #321/#325/#331 and the latest issues. Integration metadata `automation/ghostpay-integration-lock` was released generation 8 at claim; no protected integration/merge authorized.
+- Acceptance: test first for both completed-A-before-B and delayed-A-finishes-after-B; real signed A/B signatures differ; B's Archive button remains available; delayed A cannot mark B archived; immutable A stays associated with its own vault write. Do not alter archive/policy data, custody, signing, error messages, dependencies, contracts, workflows, protection or deployment.
+- Verification gates: focused original Vitest, web TypeScript/lint and exact-head hosted CI plus independent review required before merge. Local checkout may be unavailable because GitHub DNS is blocked; never claim an unexecuted suite passed.
 
 ---
 
