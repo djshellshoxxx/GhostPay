@@ -57,7 +57,7 @@ test('retained but unmerged recovery donors must explicitly disclaim main and be
   const s = fixture();s.records[1].finalized = true;s.summary.finalized = 2;s.summary.unresolved = 0;
   s.records[1].disposition = 'retained-in-unmerged-recovery-PR372-pending-gates';
   assert.throws(() => validateLedger(s), /without explicit evidence/);
-  s.records[1].evidence = { parentHead: c, mainIntegrated: false, behavioralEquivalenceNotClaimed: true };
+  s.records[1].evidence = { parentPR: 10, parentHead: b, mainIntegrated: false, behavioralEquivalenceNotClaimed: true };
   assert.equal(validateLedger(s).finalized, 2);
 });
 test('rejects impossible pagination including negative and noninteger page counts', () => {
