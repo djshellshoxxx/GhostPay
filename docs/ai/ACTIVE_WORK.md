@@ -1050,3 +1050,17 @@ Failure: `derivePayAgain` uses string inequality for address-change blocking, so
 Acceptance: commit a failing deterministic regression before the minimal production repair; compare 0x + 40-hex-digit addresses case-insensitively *only* for `eip155:` chains; distinct EVM addresses must remain blocking and non-EVM addresses case-sensitive. Preserve never-auto-send, required review, fee/risk flags. Node source-equivalent checks and exact-head hosted CI, independent review and native browser verification (if applicable) documented separately.
 Ownership: inspected all 175 then-open PR file inventories; no PR changed `packages/ux-presets/src/payAgain.ts` or `payAgain.address-case.test.ts`. Existing broad PRs #238/#262/#264/#278/#372 own only `validate.test.ts` and/or package metadata; leave their files untouched. Recheck before integration.
 Integration lock: `automation/ghostpay-integration-lock` at generation 11, status `held` by `994a0d214fb9-root-r3` (observed blob `97523a9ce00231ac883b32178ab48a547eb0dd8f`), not this worker. No main merge or lease mutation.
+
+
+---
+
+# GP-BUG-R7 — stale reachability incorrectly summarized as OK (2026-11-21)
+
+- Coordinator: one ChatGPT bug-only worker; no separate verifier currently available.
+- Branch: `automation/20261121/bug/netstate-stale-summary-r7`; exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-core/src/netstate.ts`, new `packages/ux-core/src/netstate.stale.test.ts`, this strictly additive ownership claim, and new `docs/handoffs/NETSTATE_STALE_SUMMARY_20261121.md`. No other source or test is claimed.
+- Confirmed source defect to reproduce: `effective()` marks old successful probes `stale`, but `summarize()` can continue returning `overall: 'ok'` for expired RPC/relayer evidence; a stale former clock skew can also mask the stale condition. Preserve existing statuses and priorities; do not introduce a new UI state.
+- Acceptance: test-first regression for stale-only RPC, mixed fresh/stale RPC, stale relayer, and stale clock-skew; expected existing `overall: 'unknown'` rather than false `ok`/obsolete skew. Preserve fresh OK, real unreachable/degraded precedence, no new dependencies/network/feature changes.
+- Ownership: all 173 open PR changed-filename inventories checked this cycle; none changes either owned `netstate` path. Broad PRs #238/#262/#264/#278/#372 change other `ux-core` paths only. Recheck before integration.
+- Lock: separate `automation/ghostpay-integration-lock` branch has `status: held`, generation 11, owner `994a0d214fb9-root-r3` (the recorded expiry is in the past; no authority to steal/release). Never merge without legitimate coordination.
+- Verification: exact base production Git blob `3082d56ff1ecabf73ab4fb65e69c318053095954`. Full Git checkout is unavailable locally (github.com DNS fails); separate source-equivalent Node checks and hosted exact-head CI only. No independent review claimed.
