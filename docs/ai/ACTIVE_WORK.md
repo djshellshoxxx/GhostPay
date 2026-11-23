@@ -302,6 +302,14 @@ Owned paths: `packages/ux-schedule/src/scheduled.ts`, new `packages/ux-schedule/
 Observed existing defect: `cancel()` samples the injected clock in `tick()` and again for `stateChangedAtMs`. A clock crossing the expiry boundary between calls produces a `cancelled` record timestamped after its maximum age even though the state machine would classify that instant `expired`. This differs from `confirm()` which binds validation and timestamp to one clock sample.
 Acceptance: first commit failing regression for advancing injected clocks; replace duplicate read with one captured clock sample; preserve valid pending/due cancellations, expired/terminal rejection, explicit acknowledgement and all other state-machine behavior. No new functionality or dependency, wallet, chain, deployment, release or merge. Tests and full native browser/CI require exact-head hosted qualification. Recheck ownership and external integration lock before any future merge.
 Ownership audit: all 236 open PR changed-file inventories at the discovery snapshot examined; no PR touched either owned path. Existing broad PRs #238/#262/#264/#278/#372 touch other ux-schedule metadata/tests but not these two paths. Active main integration lease is held by another coordinator, no acquisition or protected integration.
+# 2026-11-22 — GP-R11 palette action snapshot integrity
+
+- Cycle/worker: `20261122T1834Z/palette-action`; one sequential coordinator/implementer, no independent native worker available.
+- Isolated branch: `automation/20261122T1834Z/bug/palette-action-snapshot`, exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-core/src/palette.ts`, new `packages/ux-core/src/palette.action-copy.test.ts`, this additive claim, and new `docs/handoffs/PALETTE_ACTION_SNAPSHOT_R11_20261122.md`. Other writers' files and branches are untouched.
+- Reproduction: `createRegistry().register()` freezes command and copied keywords but retains the original mutable nested `action`. Mutating the caller's action after validation changes the registered navigation/action type. Node 22 isolated copied-control-flow demonstration reproduced this behavior; no deployed exploit was established.
+- Acceptance: copy and freeze each validated action on registration; no change to command matching, navigation, shortcut handling, or built-ins; regression-first tests for both caller mutation and mutation through registry-returned references; typecheck/lint/web workspace qualification; independent review before merge.
+- Ownership review: GitHub PR search for palette/shortcut returned no open palette-specific PR; broad active PRs #278, #372, #238 and #307 do not change the owned production path. Search is scoped, not a full open-PR ownership guarantee. The central integration lock remains held at generation 11 by `994a0d214fb9-root-r3`; no attempt to take it, edit protected targets, merge or deploy.
 
 ---
 
