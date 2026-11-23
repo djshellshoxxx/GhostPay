@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { validateLedger } from '../consolidation/validate-ledger.mjs';
+import { validateLedger, validateLedgerTransition } from '../consolidation/validate-ledger.mjs';
 
 const a = 'a'.repeat(40), b = 'b'.repeat(40), c = 'c'.repeat(40);
 const fixture = () => ({
@@ -179,4 +179,71 @@ test('newly finalized accounting cannot exceed or contradict finalized totals', 
   valid.summary.priorFinalized = 1;
   valid.summary.newlyFinalized = 0;
   assert.equal(validateLedger(valid).finalized, 1);
+});
+
+
+test('transition checks require complete, accurate new-ref provenance', () => {
+  const previous = fixture();
+  const next = structuredClone(previous);
+  next.records.push({ branch: 'added', sha: c, finalized: false,
+    disposition: 'newly-discovered-review-required', prHeads: [], sameShaOtherBranchPrHeads: [] });
+  next.provenance.branchPages = [3, 0];
+  next.summary.total = 3; next.summary.unresolved = 2;
+  next.summary.priorFinalized = 1; next.summary.newlyFinalized = 0;
+  next.summary.newBranches = [{ branch: 'added', sha: c }];
+  next.summary.advancedHeads = [];
+  assert.equal(validateLedgerTransition(next, previous).newBranches, 1);
+
+  const omitted = structuredClone(next); omitted.summary.newBranches = [];
+  assert.throws(() => validateLedgerTransition(omitted, previous), /new branch provenance differs/);
+  const fabricated = structuredClone(next);
+  fabricated.summary.newBranches = [{ branch: 'work', sha: b }];
+  assert.throws(() => validateLedgerTransition(fabricated, previous), /new branch provenance differs/);
+  const disappeared = structuredClone(previous);
+  disappeared.records = disappeared.records.filter(row => row.branch !== 'work');
+  disappeared.provenance.branchPages = [1, 0];
+  disappeared.openPrs = []; disappeared.provenance.prPages = [0];
+  disappeared.summary = { total: 1, finalized: 1, unresolved: 0, openPRs: 0, stackedPRs: 0, newBranches: [], advancedHeads: [] };
+  assert.throws(() => validateLedgerTransition(disappeared, previous), /historical branch disappeared/);
+});
+
+test('transition checks require every advanced SHA and matching old-source evidence', () => {
+  const previous = fixture();
+  const next = structuredClone(previous);
+  next.records[1].sha = c;
+  next.records[1].prHeads[0].headSha = c;
+  next.openPrs[0].headSha = c;
+  next.summary.newBranches = [];
+  next.summary.advancedHeads = [{ branch: 'work', old: b, new: c }];
+  next.summary.priorFinalized = 1; next.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(next, previous).advancedHeads, 1);
+  const missing = structuredClone(next); missing.summary.advancedHeads = [];
+  assert.throws(() => validateLedgerTransition(missing, previous), /advanced head provenance differs/);
+  const falseOld = structuredClone(next); falseOld.summary.advancedHeads[0].old = a;
+  assert.throws(() => validateLedgerTransition(falseOld, previous), /advanced head provenance differs/);
+});
+
+test('transition checks prohibit fabricated finalization and retroactive status changes', () => {
+  const previous = fixture();
+  const next = structuredClone(previous);
+  next.summary.newBranches = [];
+  next.summary.advancedHeads = [];
+  next.summary.priorFinalized = 1;
+  next.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(next, previous).newlyFinalized, 0);
+  const miscount = structuredClone(next);
+  miscount.summary.priorFinalized = 0; miscount.summary.newlyFinalized = 1;
+  assert.throws(() => validateLedgerTransition(miscount, previous), /prior finalization count/);
+  const regressed = structuredClone(next);
+  regressed.records[0].finalized = false;
+  regressed.records[0].disposition = 'unresolved-review-required';
+  regressed.summary.finalized = 0; regressed.summary.unresolved = 2;
+  regressed.summary.priorFinalized = 0;
+  assert.throws(() => validateLedgerTransition(regressed, previous), /finalized classification regressed/);
+  const newly = structuredClone(next);
+  newly.records[1].finalized = true;
+  newly.records[1].disposition = 'already-represented-in-unmerged-PR10';
+  newly.summary.finalized = 2; newly.summary.unresolved = 0;
+  newly.summary.newlyFinalized = 1;
+  assert.equal(validateLedgerTransition(newly, previous).newlyFinalized, 1);
 });
