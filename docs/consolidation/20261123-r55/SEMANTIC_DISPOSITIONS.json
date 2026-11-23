@@ -32,10 +32,10 @@
   },
   "summary": {
     "total": 559,
-    "finalized": 310,
-    "unresolved": 249,
+    "finalized": 311,
+    "unresolved": 248,
     "priorFinalized": 310,
-    "newlyFinalized": 0,
+    "newlyFinalized": 1,
     "newBranches": [
       {
         "branch": "automation/20261123/bug/ux-flow-origin-port-length-r12",
@@ -78,7 +78,7 @@
         "sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
       }
     ],
-    "globalUnresolved": 251
+    "globalUnresolved": 250
   },
   "integration": {
     "lockStatus": "held",
@@ -578,6 +578,23 @@
       "finalized": false,
       "mainIntegrated": false,
       "sourceProof": "docs/consolidation/20261123-r55/DONOR_LINEAGE.md"
+    },
+    {
+      "ref": "audit/f03-browser-qualification-20261120",
+      "sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+      "ownerPr": 310,
+      "disposition": "retained-in-unmerged-recovery-PR310-pending-gates",
+      "evidence": {
+        "parentHead": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+        "comparisonTruncated": false,
+        "donorOnlyCode": 0,
+        "sharedDifferentCode": 13,
+        "allDifferentCodeEqualCurrentMain": true,
+        "donorOnlyDocs": 22,
+        "sharedDifferentDocs": 3
+      },
+      "sourceProof": "docs/consolidation/20261123-r55/F03_SOURCE_EQUIVALENCE.md",
+      "mainIntegrated": false
     }
   ],
   "records": [
@@ -640,13 +657,26 @@
     {
       "branch": "audit/f03-browser-qualification-20261120",
       "sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "source": "carried-verbatim-from-R44-classification",
+      "finalized": true,
+      "disposition": "retained-in-unmerged-recovery-PR310-pending-gates",
+      "source": "R55 complete untruncated donor/parent/main blob inclusion proof",
       "priorEvidenceRef": "docs/consolidation/20261122-r44/SEMANTIC_DISPOSITIONS.json#branch=audit%2Ff03-browser-qualification-20261120",
       "prHeads": [],
       "sameShaOtherBranchPrHeads": [],
-      "divergence": null
+      "divergence": null,
+      "evidence": {
+        "checkedDonorSha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+        "comparedWithSha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+        "sourceProof": "docs/consolidation/20261123-r55/F03_SOURCE_EQUIVALENCE.md",
+        "assessment": "22 donor-only docs/evidence paths; 13 different shared app/test paths all identical between PR310 and current main; all other shared app/test blobs identical donor-parent; no unique donor-only source/test paths",
+        "parentPR": 310,
+        "parentHead": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+        "mainIntegrated": false,
+        "behavioralEquivalenceNotClaimed": true,
+        "comparisonTruncated": false,
+        "donorOnlyCode": 0,
+        "sharedDifferentCodeSupersededByMain": 13
+      }
     },
     {
       "branch": "audit/ghostpay-blue-team-20261119",
@@ -11998,7 +12028,7 @@
       "updatedAt": "2026-11-04T00:23:22Z"
     }
   ],
-  "remainingWork": "R55 404-verified deleted remote Dependabot refs are preserved as unresolved tombstones rather than quietly erased; globalUnresolved includes them. Git main held at eb59d93. Owned R55 validator source/test commits remain pending exact-head CI. Security donor ancestor classified as historically nested but not merged. Generation-11 integration lock held; no main merge.",
+  "remainingWork": "R55 exact source proof finalized F03 donor as structurally represented in still-unmerged PR310 or superseded by current-main blobs, not behaviorally complete. Global unresolved = 250 including two retired Dependabot histories. PR310 remains draft; gen-11 lock held; further capped donors and recovery/security qualification required.",
   "retiredHistories": [
     {
       "branch": "dependabot/github_actions/actions-b9ade1236b",
