@@ -802,3 +802,16 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG R11 — scheduled reminder validator accessor failure (2026-11-23)
+
+Worker: ChatGPT GhostPay BUG-ONLY repair round R11 (single sequential implementer; no independent verifier). Branch: `automation/20261123-r11/bug/reminder-accessor-result` from verified live main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `packages/ux-notify/src/reminder-bridge.ts`, new `packages/ux-notify/src/reminder-bridge.accessor.test.ts`, this additive claim on task branch, and new `docs/handoffs/UX_NOTIFY_REMINDER_ACCESSOR_R11_20261123.md`. Existing `reminder-bridge.test.ts` and other workers' branches/files remain untouched.
+
+Observed defect: `validateScheduledReminder(unknown)` throws native errors when an imported reminder's own enumerable getters or Proxy ownKeys trap throws, despite the package's documented `Result`-returning, never-throws validator contract. Exact main source Git blob `6ac8ab6abaa38b97869c92ed52da96935418f5a6`, V8/TypeScript source-matched reproduction: 8 unexpected exceptions, 4 valid/error neighboring checks passed. Untrusted input is local/injected; no remote exploitation claimed.
+
+Acceptance: commit failing regression first covering throwing version/id/due/label/amount/priority/grace getters and ownKeys proxy, then smallest exception-isolation repair that yields `{ok:false,error:'reminder_shape'}` and preserves valid/bad-field codes; run source-matched Node 22 reproduction, request hosted exact-head CI and independent review where available. No new features, dependencies, payment/contract behavior, RPC, real-world traffic, deployment or release. Check PR ownership before writes and again before integration; relevant broad PRs #238/#246/#262/#264/#278/#504 and recent bug PRs found no selected-path overlap. Full 270-open-PR file census not yet asserted. Integration metadata lease generation 12 is `released`, **not acquired**. Leave draft/unmerged pending all required CI, browser applicability, independent review and legitimate lock transfer.
