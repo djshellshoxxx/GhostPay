@@ -270,6 +270,16 @@ Owned paths: `packages/ux-export/src/amount.ts`, NEW `packages/ux-export/src/amo
 Reproduction: base Git blob `4b10f141d29651eacfceee7af80b539c6e8c0c75` (`amount.ts`) and error blob `6d10133c45cc817fb7c95952f58b2a7b5a6f33cb` were matched in an isolated TypeScript compilation. `parseUnits(7 as never, 2)` silently returned `700n`; `parseUnits(['1'] as never, 2)` returned `100n`; null/undefined generated TypeError rather than typed ExportError.
 Acceptance: add focused failing regression first, then one type guard to refuse every non-string before implicit regex coercion, retaining original canonical string parsing and ExportError('INVALID_AMOUNT'). Run isolated exact-source RED/GREEN with neighboring cases, then rely on exact-head hosted CI and independent review before any integration.
 Ownership: queried live open-PR inventory and relevant changed-file lists (including #220, #238, #243, #246, #251, #262, #264, #278, #310, #372, #390, #407, #444, #465, #466); no source/test-path conflict found in inspected subset; full paginated per-file inventory remains to be completed before merge. Integration lock generation 11 is held by a different coordinator; do not acquire, merge or deploy. Do not update or replace any other worker's branch.
+# GP-BUG-20261122-R11 — reject untyped ux-flow base64url decoder inputs
+
+- Worker: this isolated GhostPay bug-only engineering round; no separate reviewer established.
+- Branch: `automation/20261122T1426Z/bug/ux-flow-b64url-runtime-types`; source baseline: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-flow/src/base64url.ts`, new `packages/ux-flow/src/base64url.runtime.test.ts`, this additive claim, and `docs/handoffs/UX_FLOW_BASE64URL_RUNTIME_TYPES_20261122.md` only.
+- Confirmed reproduction: Git-blob-matched main `base64url.ts` (`619e46e7db73be17896943db1be0031e18a82a95`) and `errors.ts` (`1539db553c5609a85170d8f9d3e75b3d00c5b65a`) compiled with TypeScript / Node 22.16.0. A non-string number or Symbol produced an empty success, a crafted object decoded bytes, and null/undefined raised native TypeError instead of typed `FlowError('PROOF_ENCODING')`.
+- Scope: fix the exported strict decoder only; preserve every canonical valid byte/string decode and existing proof behavior. No dependencies, interfaces, new features, contracts, deployment or release.
+- Acceptance: regression first and RED before one-line type guard; GREEN on source-hash-matched repaired code, neighboring canonical/invalid encodings; hosted exact-head checks and independent review still required.
+- Ownership preflight: current open PRs #278/#262/#264/#238/#307/#372/#380/#246/#289/#407/#220/#371/#470/#467 and focused recent work did not touch the two owned code paths. This is a targeted sample, **not** an exhaustive all-PR file scan. Recheck ownership before merge.
+- Integration lock: generation-11 is externally held per current coordinator checkpoints; no lock takeover or merge authorized.
 
 ---
 
