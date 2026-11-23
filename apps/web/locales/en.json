@@ -5,6 +5,17 @@
     "note": "Source catalog. Keys marked in docs/design/i18n.md as new were added to demonstrate plurals and number formatting."
   },
   "messages": {
+    "app.checks.title": "Browser self-checks",
+    "app.checks.running": "Checking local browser capabilities…",
+    "app.checks.ready": "All browser capability checks passed",
+    "app.checks.attention": "Check browser capabilities",
+    "app.checks.secure": "Secure browser context",
+    "app.checks.digest": "WebCrypto SHA-256 known-answer test",
+    "app.checks.storage": "Temporary browser storage round trip",
+    "app.checks.pass": "Passed",
+    "app.checks.warn": "Unavailable",
+    "app.checks.fail": "Failed",
+    "app.checks.limits": "These checks are not an independent verification of application code integrity, wallet or RPC authenticity, payment safety, chain settlement or key recovery. No network request is made.",
     "settings.title": "Settings",
     "settings.notice.plaintext": "Settings are kept in this browser in plain text, including RPC URLs. Do not put a URL there that contains a secret you would not store in plain text. No key is ever stored.",
     "settings.rpc.legend": "RPC endpoints",

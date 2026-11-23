@@ -508,6 +508,33 @@ Finding: at viewport widths of at least 40rem, the shared `.row` applies four co
 Acceptance: both RPC URL inputs have usable nonoverlapping widths on desktop, remain stacked and within 320px screens, and maintain keyboard/DOM ordering and test/status behavior; add focused Playwright checks and execute exact-head CI before qualification. Do not redesign unrelated controls, change endpoint validation/network calls, introduce dependencies, or deploy.
 Ownership: independent branch only. Repository generation-11 integration lock held by another coordinator; no shared-lock takeover, main merge, release, or deployment authorized here. Overlap with broad existing PRs must be rechecked before integration.
 Verification: test-first RED/GREEN via hosted CI where available; local repository checkout and browser execution unavailable due github.com DNS failure. Do not claim unrun checks.
+# Browser self-check test-only lint repair — 2026-11-21 R16
+
+Worker: consolidation continuation, sequential source review/repair; no independent reviewer available.
+Branch: `fix/ghostpay-browser-selfchecks-lint-r16-20261121`, stacked on existing PR #402 exact head `3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565`; frozen main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/components/BrowserChecks.test.tsx`, `apps/web/src/lib/browserChecks.test.ts`, this additive ownership claim and `docs/handoffs/BROWSER_SELFCHECK_LINT_R16_20261121.md`; no production changes. Parent #402 remains unmodified.
+Evidence: hosted CI `44903445539` `ts-lint` job `136853147319` reports exactly four `@typescript-eslint/require-await` errors: async act callbacks at lines 50,52 and async digest mocks at lines 64,73. All other jobs passed, but aggregate CI failed. Acceptance: maintain asynchronous React act flush and WebCrypto Promise contract, remove lint errors without disabling rules, preserve existing integrity/storage failure assertions. No wallet, custody, relayer, contracts, deployment or third-party work. Require exact-head CI + independent review; shared generation-11 integration lock held by another owner, no main merge.
+
+---
+
+# 2026-11-21 — Workstream I exact-optional TypeScript build repair (stacked on #395)
+
+Worker: GhostPay branch-consolidation continuation; sequential scoped CI reproduction and repair; no independent reviewer assumed.
+Branch: `fix/ghostpay-browser-selfchecks-optionals-r13-20261121`; immutable parent #395 head `1edc524e69554e4a45017858c7e3e25c46dae419`, latest main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths on **this isolated child only**: `apps/web/src/lib/browserChecks.ts`, `apps/web/src/lib/browserChecks.test.ts`, `docs/handoffs/BROWSER_SELF_CHECK_OPTIONAL_TYPE_R13_20261121.md`, append-only ownership entry here.
+Finding: #395 Hosting kit run 44899184722 job 136831267457 fails TypeScript TS2375: under exactOptionalPropertyTypes `browserCheckEnvironment` returns `digest: undefined` / `storage: undefined` despite interface optional properties excluding explicit undefined. Beta acceptance run 44899184813 fails at Playwright server startup (exit 2), likely same build failure; not yet independently proven.
+Acceptance: omit optional provider properties when unavailable; preserve fail-closed statuses and no network/custody behavior; add deterministic regression for absent WebCrypto and denied storage; require focused Vitest, typecheck, lint, build, hosted CI and independent review before merging **into #395 only**. Never take held generation-11 integration lock, merge main, deploy or release.
+
+---
+
+# Pages browser self-check footer — 2026-11-21
+
+Worker: one ChatGPT implementation coordinator; independent review is not yet available.
+Branch: `chatgpt/ghostpay-browser-selfchecks-20261121`, based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: new `apps/web/src/lib/browserChecks.ts`, `apps/web/src/lib/browserChecks.test.ts`, `apps/web/src/components/BrowserChecks.tsx`, `apps/web/src/components/BrowserChecks.test.tsx`, bounded import/footer addition to `apps/web/src/AppShell.tsx`, scoped `apps/web/src/styles/app.css` CSS, additive `apps/web/locales/{en,es,ja,ar}.json` keys, this additive ownership claim, and `docs/handoffs/BROWSER_SELF_CHECKS_20261121.md`.
+Scope: startup and resumed/runtime local capability checks, displayed at the bottom of every shared browser-app view with a mobile-friendly disclosure. Distinguish checks of secure context, WebCrypto SHA-256 known answer and temporary storage round trip from independent client artifact verification, chain/funds safety and recovery guarantees. No network requests or telemetry, no wallet, key or payment changes.
+Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
+Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
 
 ---
 

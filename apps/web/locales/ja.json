@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "ブラウザーの自己チェック",
+    "app.checks.running": "ローカルのブラウザー機能を確認中…",
+    "app.checks.ready": "ブラウザー機能のチェックはすべて成功しました",
+    "app.checks.attention": "ブラウザー機能を確認してください",
+    "app.checks.secure": "安全なブラウザーコンテキスト",
+    "app.checks.digest": "WebCrypto SHA-256 の既知結果テスト",
+    "app.checks.storage": "一時的なブラウザーストレージの書き込み・読み取りテスト",
+    "app.checks.pass": "成功",
+    "app.checks.warn": "利用不可",
+    "app.checks.fail": "失敗",
+    "app.checks.limits": "これらのチェックは、アプリのコードの完全性、ウォレットや RPC の真正性、決済の安全性、ブロックチェーン上の確定、鍵の復旧を独立して検証するものではありません。ネットワーク通信は行いません。",
     "settings.title": "設定",
     "settings.notice.plaintext": "設定はこのブラウザーに平文で保存されます（RPC URL を含む）。平文で保存したくない秘密情報を含む URL は入力しないでください。鍵が保存されることはありません。",
     "settings.rpc.legend": "RPC エンドポイント",
