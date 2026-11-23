@@ -196,12 +196,28 @@ export function validateLedgerTransition(current, previous) {
   const next = new Map(current.records.map(row => [row.branch, row]));
   const retired = new Map((current.retiredHistories ?? []).map(row => [`${row.branch}:${row.sha}`, row]));
   const priorRetired = previous.retiredHistories ?? [];
+  const newlyFinalizedRetired = [];
   for (const row of priorRetired) {
     const successor = retired.get(`${row.branch}:${row.sha}`);
-    check(successor && successor.finalized === row.finalized &&
-      successor.disposition === row.disposition &&
-      JSON.stringify(successor.proof) === JSON.stringify(row.proof),
+    // Identity and deletion evidence are immutable even when source review
+    // later proves an unresolved, deleted history is safe to finalize.
+    check(successor && JSON.stringify(successor.proof) === JSON.stringify(row.proof),
       `previously retired history was altered or dropped: ${row.branch}`);
+    if (row.finalized || !successor.finalized) {
+      check(successor.finalized === row.finalized &&
+        successor.disposition === row.disposition,
+        `previously retired history was altered or dropped: ${row.branch}`);
+      continue;
+    }
+    const proof = successor.evidence;
+    check(object(proof) &&
+      proof.checkedDonorSha === row.sha &&
+      proof.previousDisposition === row.disposition &&
+      validSha(proof.comparedWithSha) &&
+      typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
+      typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
+      `retired history finalization needs source proof: ${row.branch}`);
+    newlyFinalizedRetired.push(row.branch);
   }
   const disappeared = [];
   for (const [name, row] of old) {
@@ -280,8 +296,12 @@ export function validateLedgerTransition(current, previous) {
   }
   check(current.summary.newlyFinalized === newlyFinalized.length,
     'new finalization count disagrees with previous checkpoint');
+  if (current.summary.newlyFinalizedRetired !== undefined) {
+    check(current.summary.newlyFinalizedRetired === newlyFinalizedRetired.length,
+      'retired finalization count disagrees with previous checkpoint');
+  }
   return { ...now, newBranches: expectedNew.length, advancedHeads: expectedAdvanced.length,
-    newlyFinalized: newlyFinalized.length };
+    newlyFinalized: newlyFinalized.length, newlyFinalizedRetired: newlyFinalizedRetired.length };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
