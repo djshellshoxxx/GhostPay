@@ -531,3 +531,62 @@ test('previously finalized retired-history source evidence is not erasable', () 
   delete next.retiredHistories[0].evidence;
   assert.throws(() => validateLedgerTransition(next, previous), /historical source evidence/);
 });
+
+
+test('unresolved donor source and P0 security findings remain immutable across checkpoints', () => {
+  const old = fixture();
+  old.records[1].evidence = {
+    sourceProof: 'docs/security/refund-finality-review.md',
+    risk: { severity: 'P0', finding: 'Untrusted absence proof' }
+  };
+  const next = structuredClone(old);
+  next.summary.newBranches = []; next.summary.advancedHeads = [];
+  next.summary.priorFinalized = 1; next.summary.newlyFinalized = 0;
+  assert.equal(validateLedgerTransition(next, old).unresolved, 1);
+
+  const erased = structuredClone(next);
+  delete erased.records[1].evidence;
+  assert.throws(() => validateLedgerTransition(erased, old), /historical source evidence/);
+
+  const rewritten = structuredClone(next);
+  rewritten.records[1].evidence.risk.severity = 'low';
+  assert.throws(() => validateLedgerTransition(rewritten, old), /historical source evidence/);
+
+  const additive = structuredClone(next);
+  additive.records[1].evidence.reviewNote = 'Further security tests requested';
+  assert.equal(validateLedgerTransition(additive, old).unresolved, 1);
+
+  const archived = structuredClone(next);
+  archived.records[1].evidence = { history: [old.records[1].evidence],
+    sourceProof: 'docs/security/new-review.md', assessment: 'Requalification pending' };
+  assert.equal(validateLedgerTransition(archived, old).unresolved, 1);
+});
+
+test('unresolved retired donor evidence and disappearance tombstones retain prior findings', () => {
+  const old = fixture();
+  old.records[1].evidence = { sourceProof: 'docs/security/donor-review.md', risk: 'missing refund finality' };
+  old.retiredHistories = [{
+    branch: 'gone', sha: c, finalized: false, disposition: 'unresolved-review-required',
+    proof: { status: 404, absentInIndependentRefs: true, checkedAtUtc: '2026-11-23T04:12:40Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/gone' },
+    evidence: { sourceProof: 'docs/security/retired-review.md', risk: 'P0' }
+  }];
+  const same = structuredClone(old);
+  same.summary.newBranches = []; same.summary.advancedHeads = [];
+  same.summary.priorFinalized = 1; same.summary.newlyFinalized = 0;
+  delete same.retiredHistories[0].evidence;
+  assert.throws(() => validateLedgerTransition(same, old), /historical source evidence/);
+
+  const gone = structuredClone(old);
+  gone.records.pop(); gone.openPrs = [];
+  gone.provenance.branchPages = [1, 0]; gone.provenance.prPages = [0];
+  gone.summary.total = 1; gone.summary.unresolved = 0; gone.summary.openPRs = 0;
+  gone.summary.newBranches = []; gone.summary.advancedHeads = [];
+  gone.summary.priorFinalized = 1; gone.summary.newlyFinalized = 0;
+  gone.retiredHistories.push({
+    branch: 'work', sha: b, finalized: false, disposition: 'pending-owner-review',
+    proof: { status: 404, absentInIndependentRefs: true, checkedAtUtc: '2026-11-23T13:04:40Z',
+      refUrl: 'https://api.github.com/repos/djshellshoxxx/GhostPay/git/ref/heads/work' }
+  });
+  assert.throws(() => validateLedgerTransition(gone, old), /historical source evidence/);
+});
