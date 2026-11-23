@@ -47,6 +47,15 @@ Verification: run focused tests and applicable CI when available; record every n
 - Dependencies and ownership: broad PR #307 and earlier #278 change receipt source for printing and validation; do not change their branches. This narrow branch targets main, must be reconciled with their newer print code by the integration coordinator. Inspected open PR #321/#325/#331 and the latest issues. Integration metadata `automation/ghostpay-integration-lock` was released generation 8 at claim; no protected integration/merge authorized.
 - Acceptance: test first for both completed-A-before-B and delayed-A-finishes-after-B; real signed A/B signatures differ; B's Archive button remains available; delayed A cannot mark B archived; immutable A stays associated with its own vault write. Do not alter archive/policy data, custody, signing, error messages, dependencies, contracts, workflows, protection or deployment.
 - Verification gates: focused original Vitest, web TypeScript/lint and exact-head hosted CI plus independent review required before merge. Local checkout may be unavailable because GitHub DNS is blocked; never claim an unexecuted suite passed.
+# Cycle 20261120T2036Z — BTC silent-payment preview network guard (isolated)
+
+- Coordinator/worker: ChatGPT automation cycle 20261120T2036Z; sequential consolidation, test-first bug repair, source audit, and handoff. No independent native subagent available and self-review is not an independent approval.
+- Branch: `automation/20261120T2036Z/bug/btc-preview-network`; base main `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+- Owned paths: `packages/btc-silent-payments/src/spend.ts`, new `packages/btc-silent-payments/src/spend.preview.network.test.ts`, additive `docs/handoffs/BTC_PREVIEW_NETWORK_20261120.md`, and this additive claim.
+- Finding: GP-BUG-17 / BTC-SPEND-API-1 from audit #312: `previewSweep` accepts a correctly encoded silent-payment address belonging to the opposite Bitcoin network while transaction signing rejects it. Public-input API mismatch; existing browser checks the address before preview, so no browser funds-loss claim.
+- Acceptance: failing regression on pinned main for wrong-network testnet and mainnet silent payment destinations, valid matching-network previews unchanged, strict address decoder called before fee/amount return, no change to signing, fee policy, custody, RPC, contract or deployment; exact-head repository Vitest/typecheck/lint and independent verification before integration.
+- Current ownership/dependencies: main `aa3df1cb37274fae73af0ca957183c15c51b62d3`, broad #278 and #307 retain BTC source; #330 ancestry census is not a semantic clearance. Recent PR #334 owns `packages/metadata-hardening/src/btc.ts`, not this module; no PR search hits for `GP-BUG-17` / `previewSweep`. Integration metadata ref `automation/ghostpay-integration-lock` read as released generation 8, not acquired; no shared merge planned.
+- Execution: GitHub connector available; local `git ls-remote` fails DNS for github.com. Tests are not claimed as executed until actually run. Preserve this branch and exact source evidence for successor verification.
 
 ---
 
