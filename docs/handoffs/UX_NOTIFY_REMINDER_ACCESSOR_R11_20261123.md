@@ -31,3 +31,10 @@ After repair, the same source-matched executable V8 probe passed **12/12** check
 ## Handoff
 
 Inspect hosted workflows and reviews for the created draft PR's exact head. If failing, reproduce and repair only this task-owned branch with another test-first commit; otherwise leave draft awaiting independent verification and authorized integration. Rotate the next BUG-ONLY task to a distinct currently unowned existing function instead of editing this file concurrently.
+
+
+## Additive completion checkpoint — full open PR changed-file census (2026-11-23)
+
+After the initial handoff and PR publication, the author fetched GitHub REST `pulls?state=open&per_page=100&page=1,2,3,4`: page counts **100, 100, 70, 0**. For the **entire resulting 270-PR snapshot (PRs #51 through #515, noncontiguous)**, every PR's complete paginated changed-file inventory was fetched using the GitHub connected `list_pr_changed_filenames` action. The complete sorted list of 270 PR numbers was reconciled in memory with the recorded per-PR inspection batches: **270/270 unique PRs inspected, zero missing, zero inventory failures**. No other open PR in that snapshot modified `packages/ux-notify/src/reminder-bridge.ts` or `packages/ux-notify/src/reminder-bridge.accessor.test.ts`. The newly created R11 draft PR #516 owns those paths. This **supersedes the initial “full census not yet verified” limitation above**, but does not guarantee ownership remains conflict-free after the snapshot: always refresh before integration.
+
+No other branch was modified, and the integration lease remained generation 12 `released`, not acquired. This supplemental census does not substitute for independent review, full exact-head CI, applicable browser acceptance or integration-lock authorization.
