@@ -1,3 +1,14 @@
+# GP-BUG-11 — reject invalid runtime embed snippet option records (2026-11-23)
+
+Worker: one ChatGPT bug-only coordinator; no separate independent verifier available.
+Branch: `automation/20261123-r11/bug/ux-flow-embed-option-record`; starting `main` SHA `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-flow/src/embed.ts`, new `packages/ux-flow/src/embed.options-shape.test.ts`, this additive ownership claim, and new `docs/handoffs/UX_FLOW_EMBED_OPTION_RECORD_20261123.md` only.
+Observed baseline: `makeSnippet(link, appOrigin, null)` evaluates `Object.keys(null)` before its option validation, throwing native `TypeError` instead of the documented `FlowError('BAD_OPTION')`. Non-record option primitives or arrays also bypass the type contract. This is a malformed-options runtime correctness bug, not new functionality.
+Acceptance: first commit a deterministic regression failing on the original source, then reject non-record runtime option shapes with existing `BAD_OPTION` while retaining valid options, emitted snippets, link restrictions and escaping. No dependencies, redesign, fund/contract/network changes or deployment. Use source-exact or source-equivalent Node reproduction when checkout unavailable; hosted exact-head CI and independent qualified review required before integration.
+Coordination: refreshed 254 open PR changed-file inventories; none owned either selected source or dedicated regression path when checked. Existing #390 externally owned: five workflows green at `b655bc273a6704c9c140287b8adcdf4085b91882`, independent review pending. Integration lease `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, held generation 11 by another coordinator; do not acquire or merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
