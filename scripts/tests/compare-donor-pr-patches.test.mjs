@@ -43,3 +43,9 @@ test('rejects exact duplicate file inventory entries',()=>{
   const d=input('donor',[f('x',h())]);
   assert.throws(()=>compare(d,input('pr',[f('x',h()),f('x',h())])),/duplicate path/);
 });
+
+test('context-free hunks cannot prove source containment across divergent histories',()=>{
+  const patch='@@ -2 +2 @@\n-old\n+new';
+  assert.throws(()=>compare(input('donor',[f('x',patch)]),input('PR',[f('x',patch)])),/missing unchanged context/);
+  assert.throws(()=>compare(input('donor',[f('x',h())]),input('PR',[f('x',patch)])),/missing unchanged context/);
+});

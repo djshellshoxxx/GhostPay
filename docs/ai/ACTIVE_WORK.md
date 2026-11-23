@@ -814,3 +814,9 @@ Worker: existing GhostPay branch-consolidation automation; branch `audit/ghostpa
 Owned new paths: `scripts/consolidation/compare-donor-pr-patches.mjs`, `scripts/tests/compare-donor-pr-patches.test.mjs`, `docs/consolidation/20261123-r72/`. Scoped provenance proof of removed dependabot `199ab7ef` vs owner PR #492 `592b9941`; do not edit PR #492 or payment code.
 Acceptance: fail-closed exact hunk containment and GitHub file metadata checks, regression tests, owner-PR remaining unmerged represented explicitly, versioned source-pinned ledger/handoff, exact-head CI; no main merge/deploy/funds/release.
 No ownership of any BUG-only, refund, recovery, key-export, C1 or #492 files; generation-12 integration lock remains released and is not acquired.
+
+
+---
+
+# R73 — donor evidence reliability and dependency recovery (2026-11-23)
+Existing draft #471 only; R72 owned comparator/test paths and new R73 ledger. Regression-first reject context-free hunks before source containment can be reported. No edits to #493, main, or payment code. Preserve the deleted dependency donor and qualify its successor with the owner; no independent approval asserted.
