@@ -150,6 +150,14 @@ Defect evidence: upstream `address.ts` blob `455ecae74f2339f0fd88fe8160aadbaab21
 Acceptance: test first for mixed-case EVM truncations, including short heads, both 0x/0X, non-EVM case-sensitive controls and mismatched tails; then repair only the comparison. No chain, receipt, API, dependency, deployment, fund or UI change. Preserve full-address behavior and all existing validations.
 Ownership: main ACTIVE_WORK has no claim for `packages/ux-receipts/src/address.ts`. Verified changed-file inventories of open broad PRs #238/#262/#264/#278/#372 (which own `core.test.ts`), plus #307/#371/#246/#260/#259/#250/#249/#248/#244/#240/#239 and current #343/#380/#408/#419/#422/#423/#424/#425: no PR modifies the proposed source or new test path. Further head reconciliation required before integration.
 Integration: durable metadata `automation/ghostpay-integration-lock/integration-lock.json` is held by external owner `994a0d214fb9-root-r3` at generation 11. No lease acquisition, release, protected main merge or modification to another owner's branch. Draft PR remains unqualified without exact-head CI, applicable browser verification and a genuinely independent review.
+# GP-BUG — Onboarding PHRASE_REVIEWED attempt-counter bypass (2026-11-21)
+
+Worker: ChatGPT bug-only coordinator, sequential implementation/review; no genuinely independent verifier currently available.
+Branch: `automation/20261121/bug/onboarding-review-gate-r1`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-guide/src/onboarding.ts`, new `packages/ux-guide/src/onboarding.review-gate.test.ts`, this additive registry claim, and `docs/handoffs/ONBOARDING_REVIEW_GATE_20261121.md`. Existing `onboarding.test.ts` remains untouched.
+Finding: During the backup quiz, the public reducer accepts PHRASE_REVIEWED even when no post-failure phrase review was requested; this clears accumulated wrong-attempt count and lets callers bypass the documented three-failure mandatory review. The normal UI sends the event after review is requested, but the reducer must uphold its own state invariant.
+Acceptance: first commit a failing regression proving PHRASE_REVIEWED does not clear quiz attempts before the forced review gate, then add the smallest reducer guard; after three failed attempts an authorized review acknowledgment must still clear the gate. Preserve create/import flow and persistence semantics, no new features or dependencies. Report isolated runtime verification separately from repository Vitest/CI.
+Ownership: 187 current open PR changed-file inventories inspected on 2026-11-21; none changes any `packages/ux-guide/src/` file (several touch package.json only). Reinspect before any eventual integration. Mainline generation-11 lock reported externally held; do not take ownership or merge. PR #390 at b655bc273a6704c9c140287b8adcdf4085b91882 had 36 successful, three skipped exact-head checks, no independent GitHub reviews; untouched.
 
 ---
 
