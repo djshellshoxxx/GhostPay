@@ -85,6 +85,7 @@ export class UndoQueue {
       !isTime(this.minDelayMs) ||
       !isTime(this.maxDelayMs) ||
       this.minDelayMs > this.maxDelayMs ||
+      !Number.isSafeInteger(this.maxPending) ||
       this.maxPending < 1
     ) {
       throw new FlowError('BAD_OPTION');

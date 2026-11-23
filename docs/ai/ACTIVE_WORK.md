@@ -991,3 +991,18 @@ Validation plan: test-first Vitest/jsdom; TypeScript, lint, web tests, full+lean
 - Acceptance: test-first typed rejection for nonstring decode/query inputs, fail-closed query-builder key validation using the parser's existing KEY grammar, preserve valid RFC3986 Unicode encodings, repeatable known keys, EIP ABI parameter keys, existing malformed UTF-16 handling, and no change to accepted valid URIs. No contracts, keys, services, dependency, fee, policy, release, workflow or hosting changes.
 - Ownership/integration: #360 and #370 own earlier encoder fixes; this branch stacks on exact #370 source. Broad recovery/privacy #372/#373 is independently active and untouched. Existing integration lock is held at generation 11 by `994a0d214fb9-root-r3`; this run does not acquire or change it and may not merge shared targets.
 - Verification requirement: focused executable regression, typecheck, lint, build, hosted exact-head qualification and independent reviewer before promotion; document any unavailable checks accurately. Keep as draft if unqualified.
+
+
+---
+
+# GP-BUG — UndoQueue maxPending nonfinite/fractional option validation (2026-11-21)
+
+Worker: GhostPay BUG-ONLY repair round, sequential bug implementer; no separate native verifier. Branch: `automation/20261121/bug/undo-maxpending-bound-r2` at main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+
+Owned paths: `packages/ux-flow/src/undo.ts`, new `packages/ux-flow/src/undo.option-bounds.test.ts`, append-only ownership entry here, and new `docs/handoffs/UNDO_MAXPENDING_BOUND_20261121.md`. No other source ownership.
+
+Observed defect: `UndoQueue` constructor validates `maxPending < 1` but accepts `NaN`, `Infinity` and fractional `1.5`; with `NaN` a threshold comparison `pending >= maxPending` is never true, disabling the queue cap. Source blob before changes `2e261040b9e2d11c0bd482c2622580d5ff41dbe4`; Node 22 source-equivalent reproduction only, not repository Vitest. Test-first regression must be committed before fix.
+
+Acceptance: reject nonfinite/fractional maximum-pending options using existing `FlowError('BAD_OPTION')`; preserve positive-integer queue limits, cancellations, snapshots and ordinary transitions; no dependencies, protocol, fee, wallet or contract changes.
+
+Ownership: checked changed-file inventory for all 166 currently open GitHub PRs in two pages, no claim of the two source/test paths; older broad #278/#372 touch package manifest, not these paths. Recheck before integration. External integration metadata branch held at generation 11 by `994a0d214fb9-root-r3`; do not acquire, overwrite or merge while held. Exact-head hosted CI, applicable browser/native checks and genuine independent review must qualify before merge. No local checkout assumed.
