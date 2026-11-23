@@ -34,13 +34,14 @@ describe('bufferDust runtime amount types', () => {
   });
 
   it('preserves existing typed errors for negative bigint amounts', () => {
-    for (const values of [
+    const negatives: ReadonlyArray<readonly [bigint, bigint, bigint]> = [
       [-1n, 0n, 0n],
       [0n, -1n, 0n],
       [0n, 0n, -1n],
-    ] as const) {
-      expect(() => bufferDust(...values)).toThrow(HygieneError);
-      expect(() => bufferDust(...values)).toThrow(/INVALID_INPUT/);
+    ];
+    for (const [paid, used, price] of negatives) {
+      expect(() => bufferDust(paid, used, price)).toThrow(HygieneError);
+      expect(() => bufferDust(paid, used, price)).toThrow(/INVALID_INPUT/);
     }
   });
 });
