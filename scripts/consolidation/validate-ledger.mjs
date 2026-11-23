@@ -200,8 +200,11 @@ export function validateLedgerTransition(current, previous) {
 
   check(current.summary.priorFinalized === before.finalized,
     'prior finalization count disagrees with previous checkpoint');
+  // A branch first seen in this census can legitimately be finalized as
+  // audit-only or redundant, but only with the same immutable source proof
+  // required for historical unresolved-to-final transitions.
   const newlyFinalized = current.records.filter(row =>
-    old.has(row.branch) && !old.get(row.branch).finalized && row.finalized);
+    row.finalized && (!old.has(row.branch) || !old.get(row.branch).finalized));
   for (const row of newlyFinalized) {
     check(object(row.evidence) && row.evidence.checkedDonorSha === row.sha &&
       validSha(row.evidence.comparedWithSha) &&
