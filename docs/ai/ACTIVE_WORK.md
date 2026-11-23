@@ -802,3 +802,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+# Live repository census and C1 gate reconciliation — 2026-11-23
+
+- Worker: ChatGPT engineering coordinator. Branch: `docs/ghostpay-live-census-20261123`. Base main SHA: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: new `docs/consolidation/current-census-20261123/README.md`, `BRANCH_HEADS.json`, `PULL_REQUESTS.json`, and this additive claim only.
+- Acceptance: fully paginate the current remote branch and pull-request inventories; pin exact heads; inspect the current C1 integration blocker and its stacked repairs; record local and hosted evidence without claiming skipped checks passed; preserve current payment and deployment gates.
+- Evidence: 591 branches; 514 PRs (280 open, 234 closed, 89 merged, 145 closed unmerged); main remains `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. PR #517 exact head `fbd450936b2495026ff88a2eae08bfee02e92db6` reports 29 successful and 3 skipped checks. PR #504 remains failing CodeQL at its exact main-targeted head. Local focused Vitest and web build passed on #517; local browser execution was blocked by Chromium process permissions; hosted full/lean E2E passed.
+- Boundaries: documentation and census only; no source changes, remote branch mutation, shared integration-lock update, merge, Pages deployment or release. This census does not semantically classify all 591 branches. Reconcile changed heads before relying on it.
+- Next action: fresh source/ownership review of C1 and #500, then main-targeting qualification; keep merge blocked until required gates pass.
