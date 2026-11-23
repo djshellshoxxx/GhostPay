@@ -67,6 +67,7 @@ function parseBech32(s: string): AddressInfo | null {
  * @security Syntax only. Never proves that the recipient is who the user thinks; show the full address.
  */
 export function validateAddress(s: string): Result<AddressInfo, AddressErrorCode> {
+  if (typeof s !== 'string') return err('bad-address');
   if (EVM_RE.test(s)) {
     const body = s.slice(2);
     if (/^0+$/.test(body)) return err('bad-address');
