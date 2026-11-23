@@ -164,8 +164,9 @@ function chainSuffix(chainId: number | undefined): string {
 /** Builds `ethereum:<EIP-55 address>[@chainId][?value=<wei>]`. Amount is a plain integer, never scientific notation. */
 export function buildEip681Native(p: BuildNativeParams): string {
   const addr = parseEvmAddress(p.address).address;
-  checkUint(p.value, true);
-  const q = p.value === undefined ? '' : `?${buildQuery([['value', p.value.toString()]])}`;
+  const value = p.value;
+  checkUint(value, true);
+  const q = value === undefined ? '' : `?${buildQuery([['value', value.toString()]])}`;
   return `ethereum:${addr}${chainSuffix(p.chainId)}${q}`;
 }
 
@@ -173,8 +174,9 @@ export function buildEip681Native(p: BuildNativeParams): string {
 export function buildEip681Erc20(p: BuildErc20Params): string {
   const token = parseEvmAddress(p.token).address;
   const to = parseEvmAddress(p.recipient).address;
-  checkUint(p.amount, true);
+  const amount = p.amount;
+  checkUint(amount, true);
   const pairs: [string, string][] = [['address', to]];
-  if (p.amount !== undefined) pairs.push(['uint256', p.amount.toString()]);
+  if (amount !== undefined) pairs.push(['uint256', amount.toString()]);
   return `ethereum:${token}${chainSuffix(p.chainId)}/transfer?${buildQuery(pairs)}`;
 }
