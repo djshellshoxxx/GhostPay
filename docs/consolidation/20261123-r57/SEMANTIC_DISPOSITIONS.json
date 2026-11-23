@@ -662,6 +662,20 @@
       "sourceProof": "docs/consolidation/20261123-r57/SWEEP_DONOR_EQUIVALENCE.md",
       "disposition": "represented-by-owned-draft-PRs-pending-gates",
       "mainIntegrated": false
+    },
+    {
+      "kind": "R57 uncapped QR surrogate donor continuation",
+      "ref": "repair/ghostpay-qr-surrogates-20261119",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "totalDonorBlobs": 4675,
+      "exactAgainstMainAndPrimaryOwnerPRs": 4644,
+      "differingAtFirstPass": 31,
+      "codePathsFurtherExactInOwnerPRs": 17,
+      "codePathsSupersededWithStricterOwnerCode": 2,
+      "unreviewedDocumentationPaths": 12,
+      "sourceProof": "docs/consolidation/20261123-r57/QR_SURROGATE_DONOR_TRIAGE.md",
+      "disposition": "unresolved-review-required",
+      "mainIntegrated": false
     }
   ],
   "records": [
@@ -12226,7 +12240,7 @@
       "updatedAt": "2026-11-04T00:23:22Z"
     }
   ],
-  "remainingWork": "R57 full verified snapshot: 562 live branches; 313 structural dispositions and 249 unresolved live plus 2 retired unresolved = 251 globally unresolved. One source-complete historical Sweep-consent donor represented in unmerged owner PRs (#367/#307/#310/#372), not in main. R56 exact-head CI 24/24 passed. Held generation-11 lock and pending independent approvals/security/browser gates prevent main integration. Next: re-evaluate other uncapped donors, recover only unique unowned safe code and qualify existing owner stacks.",
+  "remainingWork": "R57 full verified snapshot: 562 live branches; 313 structural dispositions and 249 unresolved live plus 2 retired unresolved = 251 globally unresolved. One source-complete historical Sweep-consent donor represented in unmerged owner PRs (#367/#307/#310/#372), not in main. R56 exact-head CI 24/24 passed. Held generation-11 lock and pending independent approvals/security/browser gates prevent main integration. Next: re-evaluate other uncapped donors, recover only unique unowned safe code and qualify existing owner stacks. R57 QR surrogate donor: 4644/4675 exact blob source paths in main and primary PRs; 17 of 19 remaining code/test blobs exact in additional owner PRs, final two stricter in #372; 12 historical docs require semantic review. Keep unresolved.",
   "retiredHistories": [
     {
       "branch": "dependabot/github_actions/actions-b9ade1236b",
