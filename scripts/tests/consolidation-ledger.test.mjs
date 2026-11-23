@@ -245,5 +245,11 @@ test('transition checks prohibit fabricated finalization and retroactive status 
   newly.records[1].disposition = 'already-represented-in-unmerged-PR10';
   newly.summary.finalized = 2; newly.summary.unresolved = 0;
   newly.summary.newlyFinalized = 1;
+  const withoutProof = structuredClone(newly);
+  assert.throws(() => validateLedgerTransition(withoutProof, previous), /new finalization needs source proof/);
+  newly.records[1].evidence = {
+    checkedDonorSha: b, comparedWithSha: a, sourceProof: 'docs/consolidation/provenance.md#work',
+    assessment: 'source reviewed: no new code in this retained branch'
+  };
   assert.equal(validateLedgerTransition(newly, previous).newlyFinalized, 1);
 });
