@@ -13,13 +13,14 @@ export interface ReturnInvoice {
  * Returns null when not canonical. `allowLocalhost` additionally permits http://localhost for development.
  */
 export function canonicalOrigin(o: unknown, allowLocalhost = false): string | null {
-  if (typeof o !== 'string' || o.length === 0 || o.length > 253 + 8) return null;
+  if (typeof o !== 'string' || o.length === 0 || o.length > 253 + 8 + 6) return null;
   let u: URL;
   try {
     u = new URL(o);
   } catch {
     return null;
   }
+  if (u.hostname.length > 253) return null;
   const okScheme =
     u.protocol === 'https:' || (allowLocalhost && u.protocol === 'http:' && u.hostname === 'localhost');
   if (!okScheme || u.origin !== o || u.username !== '' || u.password !== '') return null;
