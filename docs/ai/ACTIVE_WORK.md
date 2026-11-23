@@ -802,3 +802,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+# GP-BUG R11 — NDEF encoder NaN maxBytes bypass (2026-11-23)
+Worker: autonomous BUG-ONLY repair round, single coordinator; no independent reviewer claimed.
+Branch: `automation/20261123T1719Z/bug/nfc-nan-limit-r11`; exact starting main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-hooks/src/nfc.ts`, new `packages/merchant-hooks/src/nfc.nan-max.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim, and new `docs/handoffs/NFC_NAN_MAX_BYTES_R11_20261123.md`. Existing `hooks.test.ts`, package metadata, and other workers' branches are excluded.
+Observed source bug: `encodeNdefUri` computes `Math.min(NaN, 8192)` as NaN; `total > max` then returns false for NDEF messages larger than the documented hard 8192-byte cap. Valid HTTPS `#gpi=v1.` links can be longer than 8192. The flaw was reproduced in an isolated Node 22 source-line-equivalent probe, without NFC hardware, funds, network traffic or browser claims.
+Acceptance: regression-first rejection of a large valid payment link with NaN `maxBytes`; preserve exact 8192-byte boundary, 8193 refusal, custom finite caps and ordinary round trips. Smallest typed `too-large` guard, GitHub hosted CI exact-head, independent review, ownership and integration gates. No dependencies, contracts, payment behavior, release, deployment or merge without held legitimate integration authority.
+Ownership preflight: live open PR count 272 (2026-11-23); relevant #513 owns `button.ts`, #406 `pos.ts`; broad #278/#264/#262 do not modify `nfc.ts`. Other PR file inventories remain incompletely checked; do not merge until exhaustive collision audit.
+Integration metadata lock: generation 12 previously released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no acquisition claimed.
