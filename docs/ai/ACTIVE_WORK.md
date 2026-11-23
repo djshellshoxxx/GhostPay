@@ -793,3 +793,14 @@ Worker: continuation of GhostPay branch-consolidation worker from R41; branch `a
 # R43 — GhostPay historical safety donor semantic backfill (2026-11-22T16:16:10.460Z)
 
 Worker: existing scheduled branch-consolidation engineer, continuing own PR #471 on branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, starting exact head `01e1b4cd69f7b073883e40b5f74dc869fea81a1e`; main baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: this append-only claim, new `docs/consolidation/20261122-r43/*`, and additive PR #471 ledger/handoff metadata only. No source files, scanner #466, bug-only, recovery #372, merchant F04 or recurring F10 ownership. Do not acquire generation-11 integration lock. Acceptance: reconcile full branch/PR/ref census, classify only confirmed immutable-SHA ancestors and complete noncode diffs, inspect recovery/safety donor code semantically against main, preserve unresolved source code, report exact-head CI and review barriers; no main merge, deployment or release.
+
+---
+
+# R70 GhostPay consolidation — complete Git-tree comparison tool (2026-11-23T17:20:23.120Z)
+
+- Worker: existing hourly GhostPay consolidation worker continuing PR #471; no duplicate worker or automation.
+- Isolated target: `audit/ghostpay-r41-semantic-backfill-20261122-1400Z` / draft PR #471. Exact previous head: `1923472e0343a842efbe9edbb86e4590e88b7571`.
+- Newly owned paths: `scripts/consolidation/compare-git-trees.mjs`, `scripts/tests/compare-git-trees.test.mjs`, `docs/consolidation/20261123-r70/**`. No app/payment paths changed.
+- Purpose: recover source evidence from previously capped (300-file) GitHub commit compares using complete recursive Git-tree blobs, preserving gitlink identity and refusing truncated/malformed trees. This tool never claims semantic/patch equivalence or integration.
+- Acceptance: deterministic Node built-in tests covering 701 changed paths, identical/added/removed/gitlinks, malformed/truncated trees, and path duplication. Five local Node 22 tests passed; current exact-head hosted CI must still run and be reviewed.
+- Ownership: no overlaps detected for new script/test files; existing BUG-only, P0-A/B, C1, PR274/515 and all other owner paths remain untouched. Lock generation12 released, no lock acquired; protected main not authorized.
