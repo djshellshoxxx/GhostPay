@@ -120,6 +120,18 @@ function mapDiff(current: Readonly<Record<string, string>>, incoming: Readonly<R
   return { entries, changed: entries.some((e) => e.changed) };
 }
 
+/** Copy the values that the stale-preview check compares, including nested mutable settings.
+ * A React state reference can be reused or changed in place; the review's baseline must not follow it.
+ */
+function snapshotSettings(s: Settings): Settings {
+  return {
+    ...s,
+    rpcUrls: { ...s.rpcUrls },
+    rpcUrlsSecondary: { ...s.rpcUrlsSecondary },
+    pinnedSigners: [...s.pinnedSigners],
+  };
+}
+
 /** Per-section current vs incoming values. Pure: computing a preview makes no request to any imported endpoint. */
 export function previewSettingsExchange(current: Settings, incoming: DeviceSettings, chainIds: readonly number[]): SettingsExchangePreview {
   const prefs = incoming.preferences;
@@ -136,7 +148,7 @@ export function previewSettingsExchange(current: Settings, incoming: DeviceSetti
   }
   const sections = [preferences, rpcUrls, rpcUrlsSecondary, relayerUrl, pinnedSigners];
   return {
-    basis: current, chainIds: [...chainIds], incoming,
+    basis: snapshotSettings(current), chainIds: [...chainIds], incoming,
     ...(preferences !== undefined ? { preferences } : {}),
     ...(rpcUrls !== undefined ? { rpcUrls } : {}),
     ...(rpcUrlsSecondary !== undefined ? { rpcUrlsSecondary } : {}),

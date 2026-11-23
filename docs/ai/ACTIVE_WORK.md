@@ -167,6 +167,15 @@ Finding: `parsePendingRef` accepts a valid bytes32 hash with arbitrary runtime `
 Ownership: all 188 open PR changed-file inventories inspected on current main; none changed `packages/ux-connect/src/`. Recheck if new PRs appear. A separate integration lock is held at generation 11 by `994a0d214fb9-root-r3`, and must not be changed or assumed released on expiry.
 Acceptance: fail a committed regression before the smallest fix; check rejected unexpected kinds and all three valid kinds plus adjacent hash validation; record exact source/commit hashes and hosted CI; no dependencies, new features, wallet submissions, network interactions, or merging without exact-head CI, independent review, browser gates where applicable, and legitimate lock ownership. Native repository checkout unavailable due to DNS failure; do not claim local Vitest.
 Status: implemented regression-first on branch (regression `dda3af1f7908f7838aed784be6482d54f30dabcc`; repair `5d192528ecdc4cb240b084e862baa8f452401801`); published [draft PR #430](https://github.com/djshellshoxxx/GhostPay/pull/430), pending exact-head CI, independent review, applicable browser gates and legitimate integration lock release/transfer.
+# GP-BUG-20261122-SE — stale settings-exchange preview after in-place mutation
+
+Cycle/worker: `20261122T0035Z`, one ChatGPT coordinator with sequential source audit, reproduction, regression, implementation and review. No independent native worker available.
+Branch: `automation/20261122T0035Z/bug/settings-exchange-stale-basis`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/settingsExchange.ts`, new `apps/web/src/lib/settingsExchange.mutableBasis.test.ts`, this additive ownership claim, and `docs/handoffs/SETTINGS_EXCHANGE_MUTABLE_BASIS_20261122.md`. Existing `settingsExchange.test.ts` is not modified.
+Finding: `previewSettingsExchange` sets `basis: current` by reference, while `applySettingsExchange` relies on comparing the current settings with `preview.basis`. In-place edits to the same object (including nested RPC maps and pinned signer arrays) alter the basis too, bypassing the stale-preview check. A bounded Node 22 source-equivalent reproduction confirmed the missed change. No browser exploit is claimed.
+Acceptance: snapshot the comparison-relevant settings at preview creation, including nested maps and signer list; reject a stale preview after in-place mutation, preserve unchanged application and existing selections; add regression before fix. No new trust policy, third-party dependencies, keys, contracts, services, URLs or deployments.
+Ownership reconciliation: checked main and active broad PR #278/#293/#307/#372 and recent #356/#427, plus historical #117 (closed): no active changed-file claim observed for this source path in the bounded review. Recheck before integration. Lock branch at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` held generation 11 by `994a0d214fb9-root-r3`; this cycle will not take it over or integrate.
+Verification gate: test-first regression, exact-head hosted checks, independent verifier and fresh deployment/branch protection review before merging.
 
 ---
 
