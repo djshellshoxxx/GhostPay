@@ -802,3 +802,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+## R30 consolidation / scoped census and evidence (2026-11-22 UTC)
+
+- Owner: GhostPay branch consolidation coordinator (single read/review + documentation worker).
+- Branch: `audit/ghostpay-r30-504-reconciliation-20261122`; frozen main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `docs/consolidation/20261122-r30/BRANCH_HEADS.json`, `OPEN_PRS.json`, `HANDOFF.md`; append-only coordination claim here. No application, test, contract or workflow ownership claimed.
+- Acceptance: exhaust GitHub branch and PR pages to terminal empty, compare branch Git refs by name and SHA against immutable R24, classify only source-verified deltas, recheck exact-head CI for #436 and #437, preserve the unchanged held integration lock, and publish source-pinned Mythril artifact analysis without weakening the gate.
+- Explicit non-goals: release/deploy, main merge, force push, custody alteration, live financial operations, approval impersonation, or modifying #372/#363/#437 owners' code.
+- Record prior baseline 503 branches / 195 PRs (R29) separately from 504 / 196 pre-publication snapshot (R30); this audit branch is created after snapshot and is not included in it.
