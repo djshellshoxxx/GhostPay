@@ -1197,3 +1197,14 @@ Reproduction: on main `validateFriendlyPolicy` accepts `guardians: []` with `gua
 Acceptance: test-first failure for empty-list threshold 0/1/2 and successful empty-list-without-threshold and populated valid guardians; return the existing INVALID_THRESHOLD issue and reject through existing describe/convert paths. No policy-scheme/contracts, protocol, UI, wallet, dependencies or deployment edits. Hosted exact-head CI and independent review before merge.
 Ownership evidence: current main and PR inventory 195 open as checked at task start; large PRs #238/#246/#262/#264/#278/#307/#372 and recent scoped PRs have no changes to `policy.ts`; broad PRs own `policy.test.ts`. Shared generation-11 integration lease held externally, do not merge to main.
 Runtime: native checkout unavailable (github.com DNS does not resolve); do not claim local Vitest. Hosted CI required.
+
+---
+
+# GP-BUG — PWA manifest icon purpose whitespace (2026-11-22)
+
+Worker: single automated GhostPay BUG-ONLY engineering coordinator; no genuine separate verifier in this execution.
+Branch: `automation/20261122/bug/ux-notify-manifest-purpose-whitespace`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-notify/src/manifest.ts`, new `packages/ux-notify/src/manifest.purpose-whitespace.test.ts`, additive `docs/ai/ACTIVE_WORK.md`, and new `docs/handoffs/UX_NOTIFY_MANIFEST_PURPOSE_WHITESPACE_20261122.md` only.
+Finding: `checkIcons` uses `purpose.split(' ')` for a space-separated manifest keyword list. Two ASCII spaces yield an empty token, causing an otherwise valid `maskable  any` icon to be rejected as `invalid_icon_purpose`/ `icon_purpose`. Tabs and ASCII newlines, also valid whitespace separators, likewise fail. This is observable with pure validation; no service worker/network/funds involved.
+Acceptance: test-first regression for multiple ASCII whitespace separators while keeping empty/unknown purposes rejected, exact same valid icon-size requirements and existing manifest behavior; smallest source edit, source-hash-matched reproduction where possible, hosted CI, independent review before integration. No feature implementation, new dependencies, contract, deployment or release.
+Ownership: inspected the pre-publication 196-open-PR inventory from #438 plus changed-file inventories for broad PRs #238/#262/#264/#278/#307/#372/#367/#365/#371/#395/#249/#248/#251/#254/#270/#274/#276/#302/#310/#324: no `packages/ux-notify/src/manifest.ts` ownership found. PR #409 owns nearby `cache-policy.ts` and #433 owns `redact.ts`; neither is touched. Continue checking live PR heads before integration. Shared integration lock generation 11 held by another coordinator; do not write/merge main.
