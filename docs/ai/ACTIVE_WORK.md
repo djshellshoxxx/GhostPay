@@ -248,6 +248,12 @@ Baseline source: `format.ts` Git blob `ef6adf3fb5833d9746eb272813e7c4f5bc2c1409`
 Acceptance: regression first; malformed descriptor/missing/nonstring/overlength separators return existing typed `bad-format` without throwing; valid US/DE/grouping and exact BigInt parsing unchanged; no network, wallet, custody, rate policy, UI or new feature changes.
 Coordination: 31 most recent PRs #423–#453 (except non-PR numbers) and broad integrations #372/#371/#307/#302/#246/#278/#264/#262 plus #397/#310/#344/#390/#380 were sampled by changed-file inventories; broad #372/#278/#264/#262 contain `ux-fiat/src/fiat.test.ts` but not owned `ux-fiat/src/format.ts`; do not overwrite their tests. This is **not an exhaustive 212-PR file overlap audit**. No valid integration lease: externally held generation-11 lock; do not merge, deploy, or release.
 Status at claim: source inspection only; regression/test/implementation/qualification pending. Host CI and independent review required. 
+# GP-R36-C — HTTP no-cache must not enter cache-first store (2026-11-22)
+
+Worker: GhostPay consolidation coordinator (single executor; not an independent reviewer). Base: eb59d93cffed7848c4aac37d0e9650b87239c6da; isolated branch: `automation/20261122-r36-consolidation/bug/no-cache-response`.
+Owned paths: `packages/ux-notify/src/cache-policy.ts`, new `packages/ux-notify/src/cache-policy.no-cache.test.ts`, additive branch-local `docs/ai/ACTIVE_WORK.md`, and `docs/handoffs/UX_NOTIFY_CACHE_NOCACHE_R36C.md`.
+Finding: `shouldStoreResponse` presently allows `Cache-Control: no-cache` into a cache-first static asset bucket; a cache-first read cannot honor mandatory revalidation. Existing static cache policy only rejects `no-store` and `private`. This is a source-confirmed HTTP freshness-correctness concern, not a demonstrated real-world privacy exploit.
+Acceptance: test-first regression for no-cache directives and neighboring public/private/no-store behavior; reject no-cache from cache-first storage; leave allowlist and all other caching rules intact; no dependencies, network calls, API, contract, wallet, funds or deploy changes. Existing broad #372/#278/#264/#262, related #433/#439 and current #453–#455 changed-file lists sampled; none changes cache-policy.ts or the new test path. Other open PRs remain to be cross-checked at integration. Integration generation-11 lock belongs to another coordinator; no main merge authorized. Hosted exact-head CI, native/browser qualification and genuine independent review remain required.
 
 ---
 
