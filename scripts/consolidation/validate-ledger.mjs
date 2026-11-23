@@ -216,6 +216,19 @@ export function validateLedgerTransition(current, previous) {
     }
     if (row.finalized && !successor.finalized)
       check(false, `finalized classification regressed: ${name}`);
+    // An already-finalized donor may not silently change what "finalized"
+    // means. Correcting a prior classification is allowed only with renewed,
+    // source-pinned evidence covering both dispositions and the examined SHA.
+    if (name !== 'main' && row.finalized && successor.finalized &&
+        row.disposition !== successor.disposition) {
+      const proof = successor.evidence;
+      check(object(proof) && proof.checkedDonorSha === successor.sha &&
+        proof.previousDisposition === row.disposition &&
+        validSha(proof.comparedWithSha) &&
+        typeof proof.sourceProof === 'string' && proof.sourceProof.trim().length > 0 &&
+        typeof proof.assessment === 'string' && proof.assessment.trim().length > 0,
+        `finalized disposition changed without requalification: ${name}`);
+    }
     // A finalized donor classification applies only to its examined commit.
     // If its head changes, prior proof cannot silently cover the new code.
     // The main branch is a live integration reference, not a donor.
