@@ -31,6 +31,35 @@ for (const bad of [{ ...start, ttlSeconds: 5 }, { ...start, ttlSeconds: 901 }, {
   assert.throws(() => posReduce(INITIAL_POS_STATE, bad, 1));
   assert.throws(() => reduce(INITIAL, bad, 1));
 }
+// Runtime-invalid events must fail closed in both the library and the static mirror.
+for (const now of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, '100', null, undefined]) {
+  assert.throws(() => posReduce(INITIAL_POS_STATE, start, now), /bad-time-policy/);
+  assert.throws(() => reduce(INITIAL, start, now), /bad-time-policy/);
+}
+for (const fn of [posReduce, reduce]) {
+  const idle = fn === posReduce ? INITIAL_POS_STATE : INITIAL;
+  assert.throws(() => fn(idle, start, Number.MAX_SAFE_INTEGER - 59), /bad-time-policy/, 'expiry addition must remain safe');
+  const active = fn(idle, start, 100).state;
+  for (const now of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+    for (const ev of [pay(1000), { type: 'tick' }]) {
+      assert.throws(() => fn(active, ev, now), /bad-time-policy/);
+    }
+    assert.equal(fn(active, { type: 'cancel' }, now).state.status, 'cancelled');
+  }
+  for (const expiresAt of [undefined, NaN, Infinity, -1, 0.5]) {
+    assert.throws(() => fn({ ...active, expiresAt }, pay(1000), 101), /bad-time-policy/);
+    assert.equal(fn({ ...active, expiresAt }, { type: 'cancel' }, 101).state.status, 'cancelled');
+  }
+  for (const dueMinor of [1000, '1000', NaN, undefined, null]) {
+    assert.throws(() => fn(idle, { ...start, dueMinor }, 100), /bad-amount/);
+  }
+  for (const amountMinor of [1000, '1000', NaN, undefined, null]) {
+    assert.throws(() => fn(active, { ...pay(1000), amountMinor }, 101), /bad-amount/);
+  }
+  assert.equal(fn(active, pay(1000), 130).state.status, 'expired');
+  assert.equal(fn(active, { type: 'tick' }, 130).accepted, true);
+  assert.equal(fn(active, pay(1000), 129).state.status, 'paid');
+}
 // Amounts are invoice minor units in the GhostPay app's exponent (apps/web fiatDecimals): 0 decimals for JPY and the
 // other zero-decimal codes, 2 for every other code. A fixed 2 made a JPY 1500 sale due 150000.
 assert.equal(parseMinor('12.50', 'USD'), 1250n);

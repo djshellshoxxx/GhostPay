@@ -62,7 +62,7 @@ export const INITIAL_POS_STATE: PosState = { status: 'idle', paidMinor: 0n };
  * @param event Event.
  * @param now Injected unix seconds.
  * @returns New state; `accepted:false` when the event is ignored (terminal state, wrong invoice, illegal order).
- * @throws {HooksError} `bad-ttl` or `bad-amount` on invalid `start` input.
+ * @throws {HooksError} `bad-ttl`, `bad-amount`, or `bad-time-policy` for malformed runtime inputs.
  * @security Terminal states absorb everything, so a late or replayed payment event cannot resurrect a closed sale. Sessions are short-lived (30..900s).
  */
 export function posReduce(state: PosState, event: PosEvent, now: number): PosResult {
@@ -71,7 +71,10 @@ export function posReduce(state: PosState, event: PosEvent, now: number): PosRes
     if (state.status !== 'idle') return no;
     if (!Number.isInteger(event.ttlSeconds) || event.ttlSeconds < MIN_SESSION_TTL || event.ttlSeconds > MAX_SESSION_TTL)
       throw new HooksError('bad-ttl');
-    if (event.dueMinor <= 0n) throw new HooksError('bad-amount');
+    if (typeof event.dueMinor !== 'bigint' || event.dueMinor <= 0n) throw new HooksError('bad-amount');
+    // A non-finite clock would create an immortal session; addition must remain a safe integer.
+    if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 || now > Number.MAX_SAFE_INTEGER - event.ttlSeconds)
+      throw new HooksError('bad-time-policy');
     return {
       accepted: true,
       state: {
@@ -86,10 +89,17 @@ export function posReduce(state: PosState, event: PosEvent, now: number): PosRes
     };
   }
   if (state.status !== 'awaiting') return no;
+  // Safe cancellation must remain available even when clock/expiry data is malformed.
   if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
-  if (state.expiresAt !== undefined && now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
-  if (event.type === 'tick') return no;
-  if (event.invoiceId !== state.invoiceId || event.currency !== state.currency || event.amountMinor <= 0n) return no;
+  // Do not accept payments or ticks against a malformed or unbounded expiry.
+  if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 ||
+      typeof state.expiresAt !== 'number' || !Number.isSafeInteger(state.expiresAt) || state.expiresAt < 0)
+    throw new HooksError('bad-time-policy');
+  if (now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
+  if (event.type !== 'payment') return no;
+  if (event.invoiceId !== state.invoiceId || event.currency !== state.currency) return no;
+  if (typeof event.amountMinor !== 'bigint') throw new HooksError('bad-amount');
+  if (event.amountMinor <= 0n) return no;
   const paidMinor = state.paidMinor + event.amountMinor;
   const status: PosStatus = state.dueMinor !== undefined && paidMinor >= state.dueMinor ? 'paid' : 'awaiting';
   return { accepted: true, state: { ...state, paidMinor, status } };
