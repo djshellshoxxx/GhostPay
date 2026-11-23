@@ -199,6 +199,12 @@ legend { padding: 0 6px; font-weight: 600; }
 .rpc-test-row > .hint { margin: 0; flex: 1 1 12rem; min-width: 0; }
 @media (min-width: 40rem) {
   .rpc-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Share label, input and helper rows so a wrapped label cannot offset the RPC inputs. */
+  .rpc-row > .field {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+  }
   .rpc-test-row { grid-column: 1 / -1; }
 }
 
