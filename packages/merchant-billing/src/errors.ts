@@ -10,7 +10,9 @@ export type BillingErrorCode =
   | 'IDEMPOTENCY'
   | 'META_ADDRESS'
   | 'CSV'
-  | 'LIMIT';
+  | 'LIMIT'
+  | 'EVIDENCE'
+  | 'AUTHORIZATION';
 
 /** Base class of every error thrown by this package. */
 export class BillingError extends Error {

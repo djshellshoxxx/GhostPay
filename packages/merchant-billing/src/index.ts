@@ -5,6 +5,8 @@ export * from './subscription.js';
 export * from './installments.js';
 export * from './address.js';
 export * from './refunds.js';
+export * from './refund-lifecycle.js';
+export * from './settlement-policy.js';
 export * from './csv.js';
 export * from './payouts.js';
 

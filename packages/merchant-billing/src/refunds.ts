@@ -46,6 +46,17 @@ const KEY_RE = /^[A-Za-z0-9._:-]{8,128}$/;
 const PID_RE = /^[A-Za-z0-9._:-]{1,128}$/;
 
 /**
+ * Stable refund identity: sha256 over the payment id and idempotency key, so retries cannot create a second refund.
+ *
+ * @param paymentId Original payment id.
+ * @param idempotencyKey Caller idempotency key.
+ * @returns 64 lowercase hex characters.
+ */
+export function refundIdFor(paymentId: string, idempotencyKey: string): string {
+  return bytesToHex(sha256(utf8ToBytes(`ghostpay-refund-v1\n${paymentId}\n${idempotencyKey}`)));
+}
+
+/**
  * Builds (or replays) a private refund plan for an original payment.
  *
  * @remarks Rules: the cumulative non-failed refunds never exceed `paidAmount`;
@@ -88,9 +99,7 @@ export function planRefund(
   if (req.amount <= 0n) throw new BillingError('REFUND', 'amount must be positive');
   if (counted + req.amount > original.paidAmount) throw new BillingError('REFUND', 'exceeds paid amount');
 
-  const refundId = bytesToHex(
-    sha256(utf8ToBytes(`ghostpay-refund-v1\n${original.paymentId}\n${req.idempotencyKey}`)),
-  );
+  const refundId = refundIdFor(original.paymentId, req.idempotencyKey);
   const plan: RefundPlan = {
     refundId,
     idempotencyKey: req.idempotencyKey,
