@@ -1366,3 +1366,15 @@ Status: claimed, regression and repair not yet committed.
 - Finding: `qrSvgText` interpolates `qrViewSize(m)` into SVG attributes before `qrPath(m)` validates `m.size`. A getter returning a string on its first access and a valid size on later accesses produces an SVG with caller-influenced extra attributes, despite the intended numeric-only SVG contract. A getter/Proxy-backed `dark` may also change between validation and drawing. Source-equivalent Node 22 reproduction, not evidence of remote/browser exploit. No external ingress confirmed.
 - Acceptance: regression-first tests showing the baseline failure; read size and module booleans into an independent bounded snapshot once before SVG interpolation; preserve output for normal matrices and malformed-input errors; run focused checks, keep static Pages behavior, no new dependencies or policies. Do not touch the previously owned QR-classifier, multipart, invoice/secret/recovery paths.
 - Ownership and integration: checked #278/#262/#264/#372 and recent focused QR #447 along with #293/#390/#449/#450/#452/#463/#468/#472 changed-file lists, no `qr.ts` ownership observed in bounded check. Other uninspected PRs remain potentially active; recheck before integration. Integration lock `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`: never take over from expiry; no shared/main merges.
+
+
+---
+
+# GP-QR-SVG-02 — repair exact-head QR snapshot regression lint (2026-11-22 UTC)
+
+- Cycle/worker: `20261122T1640Z`, one root coordinator executing source analysis, targeted repair and qualification sequentially; no delegated or independent reviewer in this run.
+- Isolated task branch: `automation/20261122T1640Z/bug/qr-snapshot-lint` stacked strictly on existing draft PR #473 head `f05504b5bcd62aa59c715f7c43934ca88107187a`; current main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: existing `apps/web/src/lib/qrSnapshot.test.ts` test-only lint correction; additive ownership claim in this file; dedicated handoff `docs/handoffs/QR_SVG_SNAPSHOT_LINT_20261122.md`. Parent #473 production and branch remain unchanged.
+- Evidence: exact-head CI workflow 45034528113, job 137245225818 `ts-lint` fails at `qrSnapshot.test.ts:38:9` with `@typescript-eslint/no-unsafe-return` (raw GitHub Actions log inspected). The `typescript` aggregate fails downstream; all three relevant browser/web unit/typecheck jobs passed, but CI as a whole is RED.
+- Acceptance: make the Proxy fallback's `Reflect.get` return explicitly `unknown` without modifying its runtime behavior or suppressing any ESLint rule; preserve all four PR #473 regression scenarios. Obtain exact-head green lint/CI, independent review and ownership/merge gates before integration. No contracts, wallet, keys, dependencies, deployment, security gates or app behavior touched.
+- Integration lock: `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3` at ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`. Expiry is not takeover permission. No shared/main integration authorized without fresh ownership validation.
