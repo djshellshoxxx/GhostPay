@@ -1075,3 +1075,16 @@ Owned paths only: `packages/ux-schedule/src/recurrence.ts`, new `packages/ux-sch
 Source baseline: recurrence.ts Git blob `df6d0c8d3ee1918ed79055446b7a80832daca260`.
 Observed source-equivalent Node 22 reproduction: weekly rule anchored 2200-12-28 with Thursday weekday yields 2201-01-01; Friday also yields 2201-01-02; the library's MAX_YEAR is 2200 and daily/monthly rules stop there. Root cause: weekly outer loop tests `base < maxDays` without bounding `base + wd` in its inner weekday loop.
 Acceptance: failing regression committed before production change; no weekly occurrence on or after 2201-01-01; all valid 2200 final-week occurrences preserved, historical valid weekday schedules untouched; no new dependencies, protocols, payment interaction or feature work. Reproduce with source-equivalent checks and exact-head hosted CI; no false claims of local Vitest. Keep draft for independent review and held generation-11 integration lock. 178 open PRs' changed-file inventories were checked (pages 1 and 2); none changed the two owned source/test paths. PRs #372/#278/#264/#262/#238/#224 own nearby package manifests/template tests, not this bounded recurrence fix. Recheck before merge.
+
+
+---
+
+# BUG-ONLY cycle R9 — sweep-timing invalid urgency policy (2026-11-21)
+
+- Worker: autonomous GhostPay bug-repair coordinator, single sequential implementation/review; no independent verifier available.
+- Branch: `automation/20261121/bug/ux-fees-urgency-validation-r9`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths exclusively: `packages/ux-fees/src/timing.ts`, new `packages/ux-fees/src/timing.urgency-validation.test.ts`, this additive branch-local claim, and `docs/handoffs/UX_FEES_URGENCY_RUNTIME_VALIDATION_20261121.md`.
+- Reproduction: source blob `cafc7f958424f87ad867b852607bd2d6ed87a912` treats invalid runtime urgency `'emergency'` like normal urgency and produces `wait` for 1..100-gwei history/current 90 gwei, instead of rejecting malformed caller input. The documented strict input validation and `'normal' | 'urgent'` contract require invalid enum values to be refused.
+- Acceptance: failing regression committed before fix; reject unsupported urgency with existing `UxFeesError`/INVALID_INPUT, retain normal/default `wait`, valid urgent `ok`, and other advice/fee/privacy behavior. No new features, dependency, contracts, transport, deployment, release, or real traffic.
+- Ownership: 179 live open PR file inventories inspected in batches on 2026-11-21, zero changed paths under `packages/ux-fees/src/`; broad #278/#264/#262/#372 touch its package.json only. Reinspect before integration. The metadata-only generation-11 integration lock remains held by another coordinator; no lock takeover or main merge authorized.
+- Verification: only source-branch-equivalent reproduction executed before publication, not local repository Vitest. Hosted exact-head CI and independent review pending.
