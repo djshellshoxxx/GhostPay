@@ -771,3 +771,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# EIP-681 URI amount snapshot — 2026-11-23 UTC (isolated)
+
+- Cycle/root: `20261123T0635Z-root`. One sequential coordinator/implementer; no native delegate or independent verification available.
+- Branch: `automation/20261123T0635Z/bug/eip681-amount-snapshot`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Exclusive owned paths: `packages/payment-uri/src/eip681.ts`, new `packages/payment-uri/src/eip681.amount-snapshot.test.ts`, this append-only section, and new `docs/handoffs/EIP681_AMOUNT_SNAPSHOT_20261123.md`. Other versions, contracts, workflows and other workers' PRs remain untouched.
+- Finding under validation: `buildEip681Native` / `buildEip681Erc20` validate a mutable object's amount once but re-read the property when serializing. Getter-backed runtime objects can make a checked positive bigint become 0, negative, invalid type or another unchecked number. No observed deployed exploit or funds impact claimed.
+- Acceptance: first commit failing regression cases, then snapshot `value` and `amount` exactly once before validation and formatting; preserve valid native/ERC20 outputs and typed PaymentUriError for invalid initial amounts; run feasible checks with actual outcomes and do not call standalone stubs repository tests. Separate independent review and exact-head CI required before merge.
+- Coordination: Current main and previously open EIP-3770 #496, other payment-uri PRs checked; no EIP-681 file ownership was identified by bounded PR-title and known changed-path checks (not exhaustive). Integration lock `automation/ghostpay-integration-lock` is held by other owner `994a0d214fb9-root-r3` at generation 11. No lock takeover, shared-ledger updates or protected merges.
