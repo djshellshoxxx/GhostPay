@@ -133,6 +133,26 @@ export function validateLedger(data) {
     }
   }
 
+  // Deleted GitHub refs do not erase historical obligations. A retirement
+  // records the last observed immutable SHA and independent 404 evidence.
+  const retiredHistories = data.retiredHistories ?? [];
+  check(Array.isArray(retiredHistories), 'retired history inventory malformed');
+  const retiredKeys = new Set();
+  for (const row of retiredHistories) {
+    check(object(row) && typeof row.branch === 'string' && validSha(row.sha) &&
+      typeof row.finalized === 'boolean' && typeof row.disposition === 'string',
+      'retired history identity malformed');
+    const key = `${row.branch}:${row.sha}`;
+    check(!retiredKeys.has(key), 'duplicate retired history');
+    retiredKeys.add(key);
+    check(object(row.proof) && row.proof.status === 404 &&
+      row.proof.absentInIndependentRefs === true &&
+      typeof row.proof.checkedAtUtc === 'string' && !Number.isNaN(Date.parse(row.proof.checkedAtUtc)) &&
+      typeof row.proof.refUrl === 'string' &&
+      row.proof.refUrl.endsWith(`/git/ref/heads/${row.branch}`),
+      'retired history requires explicit 404 and independent-ref verification');
+  }
+
   const finalized = data.records.filter(row => row.finalized).length;
   const stacked = data.openPrs.filter(pr => pr.base !== 'main').length;
   check(data.summary.total === data.records.length, 'total branch count wrong');
@@ -144,10 +164,16 @@ export function validateLedger(data) {
       'finalization accounting inconsistent');
   }
   check(data.summary.unresolved === data.records.length - finalized, 'unresolved count wrong');
+  if (data.summary.globalUnresolved !== undefined) {
+    check(data.summary.globalUnresolved === data.summary.unresolved +
+      retiredHistories.filter(row => !row.finalized).length,
+      'global unresolved count wrong including retired histories');
+  }
   check(data.summary.openPRs === data.openPrs.length, 'open PR count wrong');
   check(data.summary.stackedPRs === stacked, 'stacked PR count wrong');
   return { total: data.records.length, finalized, unresolved: data.records.length - finalized,
-    openPRs: data.openPrs.length, stackedPRs: stacked, mainSha: data.provenance.mainSha };
+    openPRs: data.openPrs.length, stackedPRs: stacked, mainSha: data.provenance.mainSha,
+    ...(data.summary.globalUnresolved === undefined ? {} : { globalUnresolved: data.summary.globalUnresolved }) };
 }
 
 
@@ -161,9 +187,26 @@ export function validateLedgerTransition(current, previous) {
 
   const old = new Map(previous.records.map(row => [row.branch, row]));
   const next = new Map(current.records.map(row => [row.branch, row]));
+  const retired = new Map((current.retiredHistories ?? []).map(row => [`${row.branch}:${row.sha}`, row]));
+  const priorRetired = previous.retiredHistories ?? [];
+  for (const row of priorRetired) {
+    const successor = retired.get(`${row.branch}:${row.sha}`);
+    check(successor && successor.finalized === row.finalized &&
+      successor.disposition === row.disposition &&
+      JSON.stringify(successor.proof) === JSON.stringify(row.proof),
+      `previously retired history was altered or dropped: ${row.branch}`);
+  }
+  const disappeared = [];
   for (const [name, row] of old) {
     const successor = next.get(name);
-    check(successor, `historical branch disappeared: ${name}`);
+    if (!successor) {
+      const tombstone = retired.get(`${name}:${row.sha}`);
+      check(tombstone && tombstone.finalized === row.finalized &&
+        tombstone.disposition === row.disposition,
+        `retired history prior state mismatch or historical branch disappeared: ${name}`);
+      disappeared.push(row);
+      continue;
+    }
     if (row.finalized && !successor.finalized)
       check(false, `finalized classification regressed: ${name}`);
     // A finalized donor classification applies only to its examined commit.
@@ -181,6 +224,8 @@ export function validateLedgerTransition(current, previous) {
     }
   }
 
+  check(retired.size === priorRetired.length + disappeared.length,
+    'unexpected retired history not present in prior checkpoint');
   const expectedNew = uniqueSorted(current.records.filter(row => !old.has(row.branch))
     .map(row => `${row.branch}:${row.sha}`));
   check(Array.isArray(current.summary.newBranches), 'new branch provenance differs from previous census');
@@ -198,7 +243,8 @@ export function validateLedgerTransition(current, previous) {
     sameSet(actualAdvanced, expectedAdvanced),
     'advanced head provenance differs from previous census');
 
-  check(current.summary.priorFinalized === before.finalized,
+  check(current.summary.priorFinalized === before.finalized -
+    disappeared.filter(row => row.finalized).length,
     'prior finalization count disagrees with previous checkpoint');
   // A branch first seen in this census can legitimately be finalized as
   // audit-only or redundant, but only with the same immutable source proof
