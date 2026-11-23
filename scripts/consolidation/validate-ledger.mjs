@@ -105,10 +105,42 @@ export function validateLedger(data) {
     check(wantAliases.length === branch.sameShaOtherBranchPrHeads.length && sameSet(wantAliases, gotAliases), `branch ${branch.branch} SHA-alias overlay stale`);
   }
 
+  // Preserve historical classification accounting and prevent newly discovered
+  // refs or advanced heads from being invented independently of the exact census.
+  if (data.summary.newBranches !== undefined) {
+    check(Array.isArray(data.summary.newBranches), 'new branch provenance malformed');
+    const seen = new Set();
+    for (const item of data.summary.newBranches) {
+      check(object(item) && typeof item.branch === 'string' &&
+        validSha(item.sha) && branches.get(item.branch)?.sha === item.sha,
+        'new branch provenance does not match census');
+      check(!seen.has(item.branch), 'duplicate new branch provenance');
+      seen.add(item.branch);
+    }
+  }
+  if (data.summary.advancedHeads !== undefined) {
+    check(Array.isArray(data.summary.advancedHeads), 'advanced head provenance malformed');
+    const seen = new Set();
+    for (const item of data.summary.advancedHeads) {
+      check(object(item) && typeof item.branch === 'string' &&
+        validSha(item.old) && validSha(item.new) && item.old !== item.new &&
+        branches.get(item.branch)?.sha === item.new,
+        'advanced head provenance does not match census');
+      check(!seen.has(item.branch), 'duplicate advanced head provenance');
+      seen.add(item.branch);
+    }
+  }
+
   const finalized = data.records.filter(row => row.finalized).length;
   const stacked = data.openPrs.filter(pr => pr.base !== 'main').length;
   check(data.summary.total === data.records.length, 'total branch count wrong');
   check(data.summary.finalized === finalized, 'finalized count wrong');
+  if (data.summary.priorFinalized !== undefined || data.summary.newlyFinalized !== undefined) {
+    check(Number.isSafeInteger(data.summary.priorFinalized) && data.summary.priorFinalized >= 0 &&
+      Number.isSafeInteger(data.summary.newlyFinalized) && data.summary.newlyFinalized >= 0 &&
+      data.summary.priorFinalized + data.summary.newlyFinalized === finalized,
+      'finalization accounting inconsistent');
+  }
   check(data.summary.unresolved === data.records.length - finalized, 'unresolved count wrong');
   check(data.summary.openPRs === data.openPrs.length, 'open PR count wrong');
   check(data.summary.stackedPRs === stacked, 'stacked PR count wrong');
