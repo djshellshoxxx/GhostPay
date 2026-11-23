@@ -1578,3 +1578,15 @@ Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exa
 - Acceptance: committed failing regression before production correction; reject zero/negative/fractional/NaN/infinite/unsafe or wrong-type custom chain IDs, and names invalid under the EIP-3770 short-name grammar with existing `PaymentUriError('INVALID_CHAIN_ID')`; preserve default registry and valid custom numeric round trips. No new dependencies, policy, egress, signing, keys, contract or deployment changes.
 - Integration: repository lock at `automation/ghostpay-integration-lock` head `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11 status `held` by another coordinator; expiry alone is not authority to acquire or merge. Keep isolated draft and require fresh exact-head hosted CI plus genuinely independent review.
 - Initial verification: none claimed before regression commit. Local GitHub DNS unavailable; use sourced code in a bounded Node runtime harness when possible, explicitly labeled not repository Vitest.
+
+
+---
+
+# EIP-681 URI amount snapshot — 2026-11-23 UTC (isolated)
+
+- Cycle/root: `20261123T0635Z-root`. One sequential coordinator/implementer; no native delegate or independent verification available.
+- Branch: `automation/20261123T0635Z/bug/eip681-amount-snapshot`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Exclusive owned paths: `packages/payment-uri/src/eip681.ts`, new `packages/payment-uri/src/eip681.amount-snapshot.test.ts`, this append-only section, and new `docs/handoffs/EIP681_AMOUNT_SNAPSHOT_20261123.md`. Other versions, contracts, workflows and other workers' PRs remain untouched.
+- Finding under validation: `buildEip681Native` / `buildEip681Erc20` validate a mutable object's amount once but re-read the property when serializing. Getter-backed runtime objects can make a checked positive bigint become 0, negative, invalid type or another unchecked number. No observed deployed exploit or funds impact claimed.
+- Acceptance: first commit failing regression cases, then snapshot `value` and `amount` exactly once before validation and formatting; preserve valid native/ERC20 outputs and typed PaymentUriError for invalid initial amounts; run feasible checks with actual outcomes and do not call standalone stubs repository tests. Separate independent review and exact-head CI required before merge.
+- Coordination: Current main and previously open EIP-3770 #496, other payment-uri PRs checked; no EIP-681 file ownership was identified by bounded PR-title and known changed-path checks (not exhaustive). Integration lock `automation/ghostpay-integration-lock` is held by other owner `994a0d214fb9-root-r3` at generation 11. No lock takeover, shared-ledger updates or protected merges.
