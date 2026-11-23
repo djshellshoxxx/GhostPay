@@ -1,3 +1,14 @@
+# C1-R11 — repair Sweep test RPC's ERC-20 simulation response (2026-11-23 UTC)
+
+Cycle/worker: `20261123T1637Z` / one sequential integration coordinator, bug investigator and implementer; native subagents unavailable and no independent verification claimed.
+Isolated branch: `automation/20261123T1637Z/bug/c1-sweep-simulation-fixture`, exact base: draft PR #512 head `2a6914c2a036856c939f746a88a3b6dc761860d7`; dependency #504 → #510 → #512 → this child. Current main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: additive claim in this file; `apps/web/src/views/Sweep.test.tsx` (test RPC fixture and narrowly scoped assertion only); new `docs/handoffs/C1_SWEEP_SIMULATION_FIXTURE_20261123.md`. Do not modify production Sweep/txGuard, owner integration branches, contracts, wallet keys, deployment settings or shared ledgers.
+Finding: #512 exact-head hosted web-unit job 137773795613 fails B-R6 at `Sweep.test.tsx:784` because `extra()` routes a successful ERC-20 transfer `eth_call` to a fabricated EIP-712 domain separator rather than a canonical ABI `bool true` result. `simulateCall` correctly marks that nonboolean result `unavailable`, so the skipped-dry-run warning is truthful but the test's assumption that a dry run succeeded is not. This is a deterministic test-fixture defect, not a verified production vulnerability.
+Acceptance: restore a realistic canonical success response to the fixture's transfer selector, preserve `dryRunBlind` failure, assert transfer simulation actually happens, preserve B-R6's displayed warning for unavailable calls and absent warning for successful calls; no assertion weakening, coverage changes or production behavior changes. Run source-based baseline reproduction and available exact-head hosted CI, report any unrun local tests honestly. Require external independent verification and legitimate integration-lock ownership before merging into any shared target.
+Ownership/lock: #504 integrator owns broad combined source, #512 child source remains untouched. Integration metadata branch `automation/ghostpay-integration-lock` read at `082e754f44944ebb4be283f89176b966bf8f7b4f`, generation 12 released; no lock acquired and no merge authorized by this isolated work.
+
+---
+
 # C1 browser keyboard focus regression repair — 2026-11-23T12:39Z
 
 - Cycle/coordinator: `20261123T1239Z`; one sequential ChatGPT agent, no native subprocess agents or independent review.
