@@ -1301,3 +1301,14 @@ Ownership: inspected the pre-publication 196-open-PR inventory from #438 plus ch
 - Ownership audit: inspected active #372/#278/#264/#262/#349/#307/#380/#454/#455/#461/#462/#452/#449/#450/#274 changed-file lists (including broad stacks); none changed `opStackFee.ts`. This is a *bounded* check, not the full 206+ active-PR semantic audit. Search of open PR descriptions for `opStackFee`, `sweepFeeReserve`, or `GasPriceOracle` returned none. Recheck before integration.
 - Durable integration lock observed `held`, generation 11, owner `994a0d214fb9-root-r3`, lock ref `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; expiry never grants takeover. No main merge or deployment authorized.
 - Status at claim: claimed before product-source edits; independent review and full-workspace execution pending.
+
+
+---
+## GP-BUG-ROUND-9 — reject restored notification sequence rewind (2026-11-22)
+Worker: sequential ChatGPT BUG-ONLY coordinator, no independent verifier available.
+Isolated branch: `automation/20261122/bug/notify-snapshot-seq-r9`; exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-notify/src/notification.ts`, new `packages/ux-notify/src/notification.snapshot-seq.test.ts`, additive claim here and `docs/handoffs/UX_NOTIFY_SNAPSHOT_SEQUENCE_20261122.md`.
+Finding: untrusted snapshot `seq` can be less than an existing `n<id>` record; restoring it causes the next queue push to reuse a live id, so get/dismiss/read operations may address the wrong item.
+Acceptance: commit an explicit failing regression first; reject sequence rewind as existing `record_id` error, preserve legitimate empty/monotonic snapshots and normal queue flow; run available Node reproduction and exact-head GitHub CI; do not claim absent local Vitest/browser checks.
+Ownership inventory: 223 live open PRs in REST pages 100/100/23, changed-file lists checked for both owned runtime/test paths, no collisions found. Current main coordination template checked; no claim on these paths.
+Integration: independently held generation-11 lock remains external, no merge/lock mutation/release/deployment; independent review and exact-head CI remain required.
