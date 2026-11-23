@@ -142,7 +142,8 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     work (strictly more) among the branches seen. Every scanned block must equal the checked chain's hash at its height
     (`HeaderAnchoredTweakSource`); a block's transactions are bound to that header by the txid Merkle root and the BIP-141
     witness commitment (`esplora.ts`, unchanged). **Not checked / trusted:** transactions, scripts and amounts of the
-    outputs being spent (earlier blocks), spent status, signet block signatures, Core checkpoints/assumevalid; the server
+    outputs being spent (earlier blocks), mempool spent status and provider spent-status reports, signet block signatures,
+    Core checkpoints/assumevalid. Confirmed spentness can be checked from complete block inputs as described in item 25; the server
     is trusted for availability and can withhold a heavier chain or eclipse the device (only one source can be configured
     today; `syncHeaders` accepts several and fails closed if any fails); test-network proof of work is cheap, so a server
     can mine a heavier fork. A first sync starts at genesis (no later checkpoint is pinned): slow on testnet4/signet
@@ -212,13 +213,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     keep its loaded chain or change results. A branch with no more work is ignored and its blocks are
     refused (`REORG_DETECTED`). A branch with more work is adopted; scan results from checked blocks above the fork are
     removed (spend tweaks wiped), the result is cut back to the fork height (or discarded) and the view says so. This
-    happens whenever the chain changed, also when a later round of the same sync fails or the action went stale (review
-    H2): the shared chain is updated in place, so results are invalidated before anything else is reported.
+    happens whenever the current session's chain changed, also when a later round of the same sync fails or that action
+    is cancelled. An operation from an obsolete wallet/network session cannot replace the new session's chain or results.
     `scanForPayments` without `headers` still exists (unit tests and per-block checks); the view never calls it that way.
     Not done (review L-d): parsed context is not limited to the last 2016 + 11 headers in the sense of dropping old ones:
     fork evaluation, reorg checks of scan results (`hashAt` at any scanned height), the probe and persistence read old
-    active headers, so all are kept, but compactly (above). Remaining gaps: `spentCount` of a cut-back scan still
-    counts outputs from removed blocks. Known costs, not fixed: each save builds the whole record in memory (one hex
+    active headers, so all are kept, but compactly (above). A cut-back scan clears its unsupported `spentCount`, sets
+    spent status to `unknown`, and requires refreshed evidence before sweeping. Known costs, not fixed: each save builds the whole record in memory (one hex
     string from `hexRange` plus its JSON copy, ~128 MB temporary at 400 000 headers); without IndexedDB the in-memory
     store keeps one more copy of that text (so memory roughly doubles); `HeaderChain.toJSON` (a package API the view
     no longer uses for storage) still creates one string per header. The size limit is enforced before every round:
@@ -236,6 +237,29 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     (chain-adapters validates every log with an on-curve decode, ~115 us each on the development container, which alone would take ~2 minutes) and runs in the
     nocov pass with the 120 s deadline already used there; the real fetch is covered by the smaller "(A5)" floods. Not done: the Pay-view amount-hygiene hint
     (another stream's file) and a published endpoint list.
+
+25. **Spec 12 local spend tracking (Bitcoin view, 2026-11-18).** The scan no longer asks the Esplora server per outpoint
+    whether each found output is unspent by default. `EsploraTweakSource.getSpends` lists the outpoints each scanned
+    block consumes, read from the block transactions already downloaded for its tweaks (no extra request, coinbase
+    excluded); the header-anchored and oracle cross-checked wrappers forward it bound to the agreed block hash, and the
+    scanner matches those spends against the outputs it found and the persisted unspent matches (the package records
+    them as `match.spent`, cleared again on a reorg rollback). Coinbase identity comes from the raw serialized input;
+    contradictory uncommitted `is_coinbase` flags fail closed. `match.spentCheckedThrough` stores continuous complete
+    input coverage. Version-1 history without it remains compatible but unknown. `ScanResult.spentStatus` is `local`
+    only through the sampled chain tip with coverage for every displayed output, `provider` for explicitly authorized
+    per-outpoint checks, or `unknown` for incomplete scans/legacy gaps/invalidated chain evidence. Unknown outputs cannot
+    be selected or reviewed for sweeping. The main-thread bridge independently enforces the per-session permission;
+    revocation aborts work, and returning from light mode to full mode cannot retain forced authorization.
+    Light mode requires the disclosed provider check before starting because it has no complete block inputs.
+    **Limits, disclosed on the page:** mempool spends are invisible locally, so broadcast can still fail. Historical
+    gaps require a fresh scan from the original birth height or an authorized provider check for the current result.
+    Provider reports do not become permanent local evidence. The check reveals each queried candidate outpoint to the
+    configured server, and disabling it cannot withdraw earlier requests. Reorgs invalidate both spends and coverage,
+    including the later coverage anchor of restored matches. Persistence/worker state remains capped at 512 KiB;
+    large histories fail closed rather than truncating evidence. See [the user guide](../../docs/user/bitcoin-spent-status.md).
+    The source sentence
+    `btc.verification.limit.spent` and `btc.scan.singleProvider` changed meaning, so their Spanish, Japanese and Arabic
+    drafts were reset to English pending native review (same rule as the other security keys).
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the

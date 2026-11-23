@@ -8,14 +8,18 @@ export class BtcScanSourceBridge {
   private closed = false;
   private readonly baseUrl: string;
   public constructor(baseUrl: string, private readonly fetchFn: EsploraFetch,
-    private readonly send: (message: BtcScanRequest) => void, private readonly fail: (error: Error) => void) {
+    private readonly send: (message: BtcScanRequest) => void, private readonly fail: (error: Error) => void,
+    private readonly providerSpentCheck = false, private readonly allowMatchedProof = false) {
     this.baseUrl = normalizeEsploraUrl(baseUrl);
   }
   public dispose(): void { this.closed = true; for (const ac of this.pending.values()) ac.abort(); this.pending.clear(); }
   public handle(m: Extract<BtcScanResponse, { type: 'source' | 'sourceCancel' }>): void {
     if (this.closed) return;
     if (m.type === 'sourceCancel') { this.pending.get(m.requestId)?.abort(); return; }
-    if (!isHeight(m.requestId) || !isScanSourcePath(m.path) || this.pending.has(m.requestId) || this.pending.size >= MAX_SOURCE_PENDING) {
+    if (!isHeight(m.requestId) || !isScanSourcePath(m.path) ||
+        (m.path.includes('/outspend/') && this.providerSpentCheck !== true) ||
+        (/\/(?:hex|merkle-proof)$/.test(m.path) && this.allowMatchedProof !== true) ||
+        this.pending.has(m.requestId) || this.pending.size >= MAX_SOURCE_PENDING) {
       this.fail(new SilentPaymentError('INVALID_RESPONSE')); return;
     }
     const abort = new AbortController(); this.pending.set(m.requestId, abort);

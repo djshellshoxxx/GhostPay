@@ -25,9 +25,11 @@ function wipeResponseResult(value: unknown): void {
     if (item !== null && typeof item === 'object' && 'spendTweak' in item && item.spendTweak instanceof Uint8Array) zeroize(item.spendTweak);
   }
 }
-function validateResult(r: ScanResult): void {
+function validateResult(r: ScanResult, providerSpentCheck: boolean): void {
   const hex = (s: unknown): boolean => typeof s === 'string' && /^[0-9a-f]{64}$/.test(s);
   if (r === null || typeof r !== 'object' || !isHeight(r.fromHeight) || !Number.isSafeInteger(r.toHeight) || !isHeight(r.spentCount) || r.headerAnchored !== true ||
+      !['local', 'provider', 'unknown'].includes(r.spentStatus) ||
+      ((r.spentStatus === 'provider') !== providerSpentCheck) ||
       !Array.isArray(r.blocks) || r.blocks.length > 1000 || r.blocks.some((b: ScanResult['blocks'][number]) => !isHeight(b.height) || !hex(b.hash)) ||
       !Array.isArray(r.found) || r.found.length > MAX_SCAN_MATCHES || r.found.some((f: ScanResult['found'][number]) =>
         !isHeight(f.height) || !hex(f.blockHash) || !hex(f.txid) || !isHeight(f.vout) || typeof f.amountSats !== 'bigint' || f.amountSats < 0n || f.amountSats > 2_100_000_000_000_000n ||
@@ -38,10 +40,14 @@ function validateResult(r: ScanResult): void {
 /** Dedicated worker per request; all exits detach handlers and terminate it. Checkpoint commits stay in the vault owner. */
 export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWorkerFactory = createBtcScanWorker, fetchFn: EsploraFetch): Promise<ScanResult> {
   if (typeof fetchFn !== 'function') throw new SilentPaymentError('INVALID_INPUT');
+  if (p.providerSpentCheck !== undefined && typeof p.providerSpentCheck !== 'boolean') throw new SilentPaymentError('INVALID_INPUT');
+  const providerSpentCheck = p.providerSpentCheck === true;
   if (p.signal?.aborted === true) throw new SilentPaymentError('ABORTED');
   if (p.headers === undefined || p.headers.tipHeight - p.headers.checkpointHeight > MAX_HEADERS) throw new SilentPaymentError('INVALID_INPUT');
   const state = p.resumeState === undefined ? undefined : serializeScanState(p.resumeState);
   const oracle = p.oracle === undefined ? undefined : normalizeOracleConfig(p.oracle, p.client.baseUrl);
+  const allowMatchedProof = oracle?.mode === 'light';
+  if (allowMatchedProof && !providerSpentCheck) throw new SilentPaymentError('INVALID_INPUT');
   if (state !== undefined && state.length > MAX_WORKER_STATE_BYTES) throw new SilentPaymentError('UNSUPPORTED');
   const id = nextId = (nextId + 1) % 0xffff_ffff;
   const request: BtcScanStart = { type: 'start', id, network: p.wallet.net.id, baseUrl: p.client.baseUrl,
@@ -50,12 +56,13 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
     ...(p.toHeight === undefined ? {} : { toHeight: p.toHeight }), ...(state === undefined ? {} : { resumeState: state }),
     ...(p.recoveryOffset === undefined ? {} : { recoveryOffset: p.recoveryOffset }), ...(p.recoveryLimit === undefined ? {} : { recoveryLimit: p.recoveryLimit }),
     ...(oracle === undefined ? {} : { oracle }),
+    ...(p.providerSpentCheck === undefined ? {} : { providerSpentCheck: p.providerSpentCheck }),
   };
   let worker: BtcScanWorker;
   try { worker = factory(); } catch { zeroize(request.scanSecret); throw new SilentPaymentError('UNSUPPORTED'); }
   return new Promise<ScanResult>((resolve, reject) => {
     let closed = false; let sequence = 0; let committing = false;
-    const source = new BtcScanSourceBridge(p.client.baseUrl, fetchFn, (message) => { if (!closed) worker.postMessage(message); }, (error) => { finish(error); });
+    const source = new BtcScanSourceBridge(p.client.baseUrl, fetchFn, (message) => { if (!closed) worker.postMessage(message); }, (error) => { finish(error); }, providerSpentCheck, allowMatchedProof);
     const oracleBridge = oracle === undefined ? undefined : new BtcOracleBridge(oracle, p.client.baseUrl, p.wallet.net.id, fetchFn,
       (message) => { if (!closed) worker.postMessage(message); }, (error) => { finish(error); });
     const finish = (error?: unknown, result?: ScanResult): void => {
@@ -78,7 +85,7 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
         if (m.type === 'block' && isHeight(m.height)) { p.onBlock?.(m.height); return; }
         if (m.type === 'error' && isWorkerErrorCode(m.code)) { finish(new SilentPaymentError(m.code)); return; }
         if (m.type === 'done' && !committing) {
-          validateResult(m.result);
+          validateResult(m.result, providerSpentCheck);
           const found: ScanResult['found'][number][] = [];
           try {
             for (const f of m.result.found) found.push({ ...f, spendTweak: secretScalarFromBytes(f.spendTweak) });

@@ -1,0 +1,309 @@
+GhostPay independent test-only follow-up qualification
+Commit: da351eb840bc758d5bd43f91d8da202fc151b041
+Tree: a512665c8233592680c7d6179a382d538a1103ac
+Tracked worktree at start/end: clean
+Node: v22.23.4
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+All commands ran sequentially. Vitest assertions, timeouts, and arguments were unchanged.
+The lint attempt ended at the configured V8 heap limit and is not a lint pass.
+
+=== Invocation: affected ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/scan.spentness-completion.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:46:33.096128+00:00
+Finished: 2026-11-19T08:46:42.346850+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 9.244 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: 2720847b89a51d180d54a2500a76a43f1cc7ae54e5712f0fcfe991017b81702e
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:46:33
+   Duration  8.30s (tests 72%, import 17%, transform 11%)
+
+--- Raw output ends ---
+
+=== Invocation: lint ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay
+Command: node_modules/.bin/eslint apps/web/src/features/btc/scan.spentness-completion.test.ts
+Node: v22.23.4
+Tool version: v10.15.0
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:46:56.021227+00:00
+Finished: 2026-11-19T08:47:10.644862+00:00
+Subprocess exit: -6
+Shell exit: 134
+Wrapper duration: 14.617 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: 730b3bcf6c245f215398d36cd008a477689e0355475f856a94ec5979d8e2ae30
+--- Raw output begins ---
+(node:24) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+<--- Last few GCs --->
+
+[24:0x29265000]    14228 ms: Mark-Compact (reduce) 511.2 (524.2) -> 510.7 (522.7) MB, pooled: 0 MB, 383.70 / 0.00 ms  (+ 15.1 ms in 0 steps since start of marking, biggest step 0.0 ms, walltime since start of marking 444 ms) (average mu = 0.250, current m
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0xe48bbe node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]
+ 2: 0x1248d00 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 3: 0x1248fd7 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 4: 0x1477ee5  [node]
+ 5: 0x1491779 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [node]
+ 6: 0x1465e78 v8::internal::HeapAllocator::AllocateRawWithLightRetrySlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [node]
+ 7: 0x1466da5 v8::internal::HeapAllocator::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [node]
+ 8: 0x143f9ae v8::internal::Factory::NewFillerObject(int, v8::internal::AllocationAlignment, v8::internal::AllocationType, v8::internal::AllocationOrigin) [node]
+ 9: 0x18a22bc v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [node]
+10: 0x1e01af6  [node]
+--- Raw output ends ---
+
+=== Invocation: library ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/packages/btc-silent-payments
+Command: ../../node_modules/.bin/vitest run src/scan/state.test.ts src/scan/scanner.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:47:25.393842+00:00
+Finished: 2026-11-19T08:47:36.213862+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 10.805 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: bda161a9d1b6e948f02eefd82d4437ca4d51d2d8f5e4accb816ff8ce49d41388
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/packages/btc-silent-payments
+
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:59) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  2 passed (2)
+      Tests  45 passed (45)
+   Start at  00:47:26
+   Duration  9.43s (tests 95%, import 3%, transform 1%)
+
+--- Raw output ends ---
+
+=== Invocation: secrets ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/scan-secrets.hardening.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:48:03.679337+00:00
+Finished: 2026-11-19T08:48:11.418217+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 7.728 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: 0ef2e0986da274661218990eb3e68aafd3fd86b295406319078ef3373b27a967
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:48:04
+   Duration  7.00s (tests 70%, import 20%, transform 10%)
+
+--- Raw output ends ---
+
+=== Invocation: esplora ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/esplora.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:48:14.551436+00:00
+Finished: 2026-11-19T08:48:31.678005+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 17.105 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: 8d204c40d0045586a6801cad79b02c87f6c0de32254f0a3ce5117d6ce588c1ff
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  36 passed (36)
+   Start at  00:48:15
+   Duration  15.46s (tests 89%, import 7%, transform 4%)
+
+--- Raw output ends ---
+
+=== Invocation: headers ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/headers.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:48:40.456722+00:00
+Finished: 2026-11-19T08:49:05.070106+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 24.605 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: db61e83993917f050304cc1c3405a2da43f4882f31a704b7e5183e6de5a88523
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  00:48:40
+   Duration  23.99s (tests 95%, import 4%, transform 1%)
+
+--- Raw output ends ---
+
+=== Invocation: worker ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/scanWorker.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:50:28.914358+00:00
+Finished: 2026-11-19T08:50:41.313230+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 12.385 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: ae09f20750a340c6ff11a72178c7dbb128b3472d000c935bfadfcc7dfb0b8c9d
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  00:50:29
+   Duration  11.40s (tests 80%, import 15%, transform 6%)
+
+--- Raw output ends ---
+
+=== Invocation: worker-source ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/scanWorkerSource.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:50:46.210979+00:00
+Finished: 2026-11-19T08:50:48.264629+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 2.045 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: e395123d7229c71ee1b05a2ef2f5ea3e57a4a569bc8029b5fbfce76bef978a1c
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  00:50:47
+   Duration  1.08s (tests 46%, import 34%, transform 19%, worker 1%)
+
+--- Raw output ends ---
+
+=== Invocation: oracle-worker ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/oracleWorker.test.ts --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:50:54.124898+00:00
+Finished: 2026-11-19T08:51:01.654792+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 7.524 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: 45fe28216464a50e594325623804b8ae11963b20a361410fa334a4a6763527f2
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  00:50:54
+   Duration  6.67s (tests 80%, import 14%, transform 6%)
+
+--- Raw output ends ---
+
+=== Invocation: ui ===
+Working directory: /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+Command: ../../node_modules/.bin/vitest run src/features/btc/BtcView.spentness.test.tsx --maxWorkers=1 --no-file-parallelism
+Node: v22.23.4
+Tool version: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Started: 2026-11-19T08:51:21.397253+00:00
+Finished: 2026-11-19T08:51:52.581166+00:00
+Subprocess exit: 0
+Shell exit: 0
+Wrapper duration: 31.173 seconds
+Source/hash identity unchanged: True
+Raw log SHA256: b2b5f64c085e1c0308bb3c106eaa1c126913c8b7896f768c0d9470572133e31f
+--- Raw output begins ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:51:22
+   Duration  29.88s (tests 71%, import 11%, transform 10%, environment 8%)
+
+--- Raw output ends ---

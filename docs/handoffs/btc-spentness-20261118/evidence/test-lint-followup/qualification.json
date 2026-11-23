@@ -1,0 +1,649 @@
+{
+  "format": "ghostpay-independent-test-only-followup/1",
+  "capturedAt": "2026-11-19T08:53:23.453127+00:00",
+  "sourceAtStart": {
+    "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+    "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+    "gitStatus": ""
+  },
+  "sourceAtEnd": {
+    "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+    "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+    "gitStatus": ""
+  },
+  "semanticReview": {
+    "file": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+    "line": 131,
+    "oldCallback": "async () => { abort.abort(); return true; }",
+    "newCallback": "() => { abort.abort(); return Promise.resolve(true); }",
+    "finding": "Both execute abort synchronously and return a fulfilled Promise<boolean>; the ABORTED expectation and one-call expectation are unchanged. No product, assertion, or timeout change."
+  },
+  "environment": {
+    "node": "v22.23.4",
+    "vitest": "5.0.5",
+    "eslint": "v10.15.0",
+    "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8"
+  },
+  "commands": [
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "affected",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:46:33.096128+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/scan.spentness-completion.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 9.244,
+      "finishedAt": "2026-11-19T08:46:42.346850+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  9 passed (9)",
+        "Duration  8.30s (tests 72%, import 17%, transform 11%)"
+      ],
+      "logSha256": "2720847b89a51d180d54a2500a76a43f1cc7ae54e5712f0fcfe991017b81702e",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 9,
+        "total": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 8.3,
+      "rawLog": "affected.log",
+      "statusRecord": "affected.status.json",
+      "statusSha256": "2547dc9a6968ed2211a3698906765b06cd424355a1a496fa5a2a3aff956795b1",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "lint",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:46:56.021227+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "v10.15.0",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay",
+      "command": [
+        "node_modules/.bin/eslint",
+        "apps/web/src/features/btc/scan.spentness-completion.test.ts"
+      ],
+      "exitCode": -6,
+      "shellExitCode": 134,
+      "elapsedSeconds": 14.617,
+      "finishedAt": "2026-11-19T08:47:10.644862+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [],
+      "logSha256": "730b3bcf6c245f215398d36cd008a477689e0355475f856a94ec5979d8e2ae30",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": null,
+      "vitestSeconds": null,
+      "rawLog": "lint.log",
+      "statusRecord": "lint.status.json",
+      "statusSha256": "f8fb7fd6e6a698b66e6e0cfd1f42e39f1dea248ba10d1f09380e6d465277c242",
+      "outcome": "incomplete-v8-heap-limit"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "library",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:47:25.393842+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/packages/btc-silent-payments",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/scan/state.test.ts",
+        "src/scan/scanner.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 10.805,
+      "finishedAt": "2026-11-19T08:47:36.213862+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  2 passed (2)",
+        "Tests  45 passed (45)",
+        "Duration  9.43s (tests 95%, import 3%, transform 1%)"
+      ],
+      "logSha256": "bda161a9d1b6e948f02eefd82d4437ca4d51d2d8f5e4accb816ff8ce49d41388",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 2,
+        "filesTotal": 2,
+        "passed": 45,
+        "total": 45,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 9.43,
+      "rawLog": "library.log",
+      "statusRecord": "library.status.json",
+      "statusSha256": "4fdd2d6fd0084e28c4bc0d7622f92b5836a3dcdbc3ace6bfad01a00542fa8854",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "secrets",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:48:03.679337+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/scan-secrets.hardening.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 7.728,
+      "finishedAt": "2026-11-19T08:48:11.418217+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  6 passed (6)",
+        "Duration  7.00s (tests 70%, import 20%, transform 10%)"
+      ],
+      "logSha256": "0ef2e0986da274661218990eb3e68aafd3fd86b295406319078ef3373b27a967",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 6,
+        "total": 6,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 7.0,
+      "rawLog": "secrets.log",
+      "statusRecord": "secrets.status.json",
+      "statusSha256": "48c5ee2635c965e006975588b58ed5e4019b1dda5377817708911297454e8988",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "esplora",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:48:14.551436+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/esplora.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 17.105,
+      "finishedAt": "2026-11-19T08:48:31.678005+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  36 passed (36)",
+        "Duration  15.46s (tests 89%, import 7%, transform 4%)"
+      ],
+      "logSha256": "8d204c40d0045586a6801cad79b02c87f6c0de32254f0a3ce5117d6ce588c1ff",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 36,
+        "total": 36,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 15.46,
+      "rawLog": "esplora.log",
+      "statusRecord": "esplora.status.json",
+      "statusSha256": "1a5252c18d7c9ad13c844f97497ee59869c41f9d155fa8254c84f271602b4891",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "headers",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:48:40.456722+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/headers.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 24.605,
+      "finishedAt": "2026-11-19T08:49:05.070106+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  31 passed (31)",
+        "Duration  23.99s (tests 95%, import 4%, transform 1%)"
+      ],
+      "logSha256": "db61e83993917f050304cc1c3405a2da43f4882f31a704b7e5183e6de5a88523",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 31,
+        "total": 31,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 23.99,
+      "rawLog": "headers.log",
+      "statusRecord": "headers.status.json",
+      "statusSha256": "1206f6f744683b606abf6573741105ce742a08e942b7e87f2184fc02f1cd866a",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "worker",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:50:28.914358+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/scanWorker.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 12.385,
+      "finishedAt": "2026-11-19T08:50:41.313230+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  27 passed (27)",
+        "Duration  11.40s (tests 80%, import 15%, transform 6%)"
+      ],
+      "logSha256": "ae09f20750a340c6ff11a72178c7dbb128b3472d000c935bfadfcc7dfb0b8c9d",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 27,
+        "total": 27,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 11.4,
+      "rawLog": "worker.log",
+      "statusRecord": "worker.status.json",
+      "statusSha256": "aa853e7fbfe2ca5892dd90d6a3a8433ac49dccd550af3b78a100e78f020841a7",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "worker-source",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:50:46.210979+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/scanWorkerSource.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 2.045,
+      "finishedAt": "2026-11-19T08:50:48.264629+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  14 passed (14)",
+        "Duration  1.08s (tests 46%, import 34%, transform 19%, worker 1%)"
+      ],
+      "logSha256": "e395123d7229c71ee1b05a2ef2f5ea3e57a4a569bc8029b5fbfce76bef978a1c",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 14,
+        "total": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 1.08,
+      "rawLog": "worker-source.log",
+      "statusRecord": "worker-source.status.json",
+      "statusSha256": "30f075463d6c7d6632569ef12c24d8058989da468cc9c0bbe08925786dc73d4b",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "oracle-worker",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:50:54.124898+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/oracleWorker.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 7.524,
+      "finishedAt": "2026-11-19T08:51:01.654792+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  12 passed (12)",
+        "Duration  6.67s (tests 80%, import 14%, transform 6%)"
+      ],
+      "logSha256": "45fe28216464a50e594325623804b8ae11963b20a361410fa334a4a6763527f2",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 12,
+        "total": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 6.67,
+      "rawLog": "oracle-worker.log",
+      "statusRecord": "oracle-worker.status.json",
+      "statusSha256": "e050098d52f9af0cd4e54de29fb5413edad8e21aebebcc77c6d6a20dc3bfde04",
+      "outcome": "passed"
+    },
+    {
+      "format": "ghostpay-independent-command-result/2",
+      "mode": "ui",
+      "phase": "completed",
+      "startedAt": "2026-11-19T08:51:21.397253+00:00",
+      "node": "v22.23.4",
+      "nodeOptions": "--max-old-space-size=512 --max-semi-space-size=8",
+      "toolVersion": "5.0.5",
+      "workingDirectory": "/workspace/scratch/314c8bd45e5d/GhostPay/apps/web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/BtcView.spentness.test.tsx",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "exitCode": 0,
+      "shellExitCode": 0,
+      "elapsedSeconds": 31.173,
+      "finishedAt": "2026-11-19T08:51:52.581166+00:00",
+      "sourceAndHashesUnchanged": true,
+      "terminalSummaryLines": [
+        "Test Files  1 passed (1)",
+        "Tests  9 passed (9)",
+        "Duration  29.88s (tests 71%, import 11%, transform 10%, environment 8%)"
+      ],
+      "logSha256": "b2b5f64c085e1c0308bb3c106eaa1c126913c8b7896f768c0d9470572133e31f",
+      "sourceAtStart": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAtExit": {
+        "commit": "da351eb840bc758d5bd43f91d8da202fc151b041",
+        "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+        "gitStatus": ""
+      },
+      "sourceAndFingerprintSnapshotSha256": "b157bc37131b4133cbab2b1bbed0a1ecb954893d0eaf8e7b32e6ca3fa28bfa3b",
+      "counts": {
+        "filesPassed": 1,
+        "filesTotal": 1,
+        "passed": 9,
+        "total": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "vitestSeconds": 29.88,
+      "rawLog": "ui.log",
+      "statusRecord": "ui.status.json",
+      "statusSha256": "79c2931f084f9ab43d7bc24eaf72b66fe15091dc6053ae743d258a503835a982",
+      "outcome": "passed"
+    }
+  ],
+  "totals": {
+    "library": {
+      "filesPassed": 2,
+      "filesTotal": 2,
+      "passed": 45,
+      "total": 45,
+      "failed": 0,
+      "skipped": 0
+    },
+    "focusedWeb": {
+      "files": 8,
+      "passed": 144,
+      "total": 144,
+      "failed": 0,
+      "skipped": 0,
+      "sumVitestSeconds": 103.78,
+      "sumWrapperSeconds": 111.809
+    },
+    "scope": "45 selected library tests and eight selected web files; not a full-web or coverage result. Targeted lint did not complete."
+  },
+  "lintLimitation": {
+    "observedExitCode": -6,
+    "observedShellExitCode": 134,
+    "diagnostic": "FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory",
+    "localAttempts": 1,
+    "noRetry": true,
+    "hostedLintGateStillRequired": true
+  },
+  "fingerprints": {
+    "currentReviewedFileSha256": {
+      "packages/btc-silent-payments/src/scan/state.ts": "fb10101b6329390a935109d7fdbb57573eb05599f0580b1b86777ec5f9beac49",
+      "packages/btc-silent-payments/src/scan/scanner.ts": "3754d05c8d27ef00f284fec67e3e4b8bd671dd0ffb9556f87ce6710475b3884e",
+      "apps/web/src/features/btc/scan.ts": "47a04e5191ee0f31c12b47cfecc7f729160ec7853e7fb5d8a0358b3ec2b7cc3d",
+      "apps/web/src/features/btc/esplora.ts": "a9020c2d81366ac59bdb69382798816ea9332f66a61595def88bc782d383b263",
+      "apps/web/src/features/btc/headers.ts": "b53bf48fd1e5f6e06a4de535d96e854dddd9aea816a026cdb236b67ca72cd04a",
+      "apps/web/src/features/btc/BtcView.tsx": "8409fde2a8298a4282e3e57152008ec5f4771e89c3925f1ffafff64aa68213ad",
+      "apps/web/src/features/btc/scanWorkerSource.ts": "1727b7c8478b10734841a53f64fb383d7585085fb3c878e1dbe06c38ac0e2a4a",
+      "apps/web/src/features/btc/scanWorkerClient.ts": "82ef7b0ba3e228deafbc9fbada0dea5817de4f7d4d87d78af72de8fd919a92bf",
+      "apps/web/src/features/btc/scanWorkerProtocol.ts": "82595229a20f065d3bd0f9afad5001e9a6d9ad12ec61444729ae1eeb64392d6f",
+      "apps/web/src/features/btc/scanWorkerMessages.ts": "4c9291f6ab5bc3017e3662b7efb33427d1b7c2b43c3e2c24790ca77d826ade52",
+      "packages/btc-silent-payments/src/scan/state.test.ts": "5cc16dbc708d48b9b3a296d27806e4e553fadd350fddc3da44323bafa16e2266",
+      "packages/btc-silent-payments/src/scan/scanner.test.ts": "7a6a1250507925696cbff6512e469b453dda2d81988746598e51ef485e000b34",
+      "apps/web/src/features/btc/scan.spentness-completion.test.ts": "661ffc0b3e6787b0b9c164bb9f44cfcc7ad2cfdcc6ddcc692c837ce8ff38467c",
+      "apps/web/src/features/btc/scan-secrets.hardening.test.ts": "fdba17faaceb002dc9683845d4c527a2a28fcca62886f3360f6e52dfbab061a5",
+      "apps/web/src/features/btc/esplora.test.ts": "0a82fa3e0f2d70cda63ac0b0f99c8ed620fb0587a567cb1955dd3a5b576caa51",
+      "apps/web/src/features/btc/headers.test.ts": "526e4d31d1dc7a926ab1ec3ad911027e272ba8b0b66068b5030b4861dc73c770",
+      "apps/web/src/features/btc/BtcView.spentness.test.tsx": "9b48843aeb2364bcb02c80a528601be40ab58c409a7f9540e1a51117fabda7ff",
+      "apps/web/src/features/btc/scanWorker.test.ts": "5c9991b5c15f6b0993c21617a07cfe97f30933e1bff27a71984711447c54313a",
+      "apps/web/src/features/btc/scanWorkerSource.test.ts": "4e8ab3f531f45db35194ddf1bdb758e787d4f35b50c9f38e4fbbd057d4898748",
+      "apps/web/src/features/btc/oracleWorker.test.ts": "2c0038ee977cfd3a02d3aa9bb25030b3f2ea227e720ee07ee4febe623b948488",
+      "packages/btc-silent-payments/dist/scan/state.js": "71519b343b2e83ff859cc31753bc7032655fffb2030164c3e1aa7d6f4bbc49a4",
+      "packages/btc-silent-payments/dist/scan/scanner.js": "93645733999992ae83228713f62fe394f0cb7b5bb0718c7c9157b73b4df9c76a"
+    },
+    "expectedPriorChange": {
+      "apps/web/src/features/btc/scan.spentness-completion.test.ts": {
+        "beforeSha256": "e4027b8ba8b8eb31e53af270f3c2935d32e0ae60f821c668eae7a9c9610d3d34",
+        "afterSha256": "661ffc0b3e6787b0b9c164bb9f44cfcc7ad2cfdcc6ddcc692c837ce8ff38467c"
+      }
+    },
+    "runtimeAndTestPathsChangedSinceF567": [
+      "apps/web/src/features/btc/scan.spentness-completion.test.ts"
+    ],
+    "sixSourceAndDistInventoriesUnchanged": true,
+    "manifests": {
+      "packages/invoice-schema/src": {
+        "fileCount": 26,
+        "manifestSha256": "d59813f89ac8ca92ffd4bfc59341fcfba11da0bf8ada3d36c857fa13655a619c"
+      },
+      "packages/invoice-schema/dist": {
+        "fileCount": 33,
+        "manifestSha256": "fcb8a56772b794021d83450166cd31cf2dabe1ea91d9fcabd0335706888870ff"
+      },
+      "packages/ux-core/src": {
+        "fileCount": 11,
+        "manifestSha256": "be6532f7931f1091bdc41d135463ce5dd0fd84c2371a70c8b3249a582ddb8853"
+      },
+      "packages/ux-core/dist": {
+        "fileCount": 18,
+        "manifestSha256": "05d439c6e47f60440c8a9477bb588d5511798792e358fecf72e942c34b4e2152"
+      },
+      "packages/btc-silent-payments/src": {
+        "fileCount": 71,
+        "manifestSha256": "942b11c034ecc2192ac97ae1b5cb81b1481dfdd5a39d8af0e05b1c01732fea7a"
+      },
+      "packages/btc-silent-payments/dist": {
+        "fileCount": 102,
+        "manifestSha256": "449ddeac1cbf2354011ea4a41b04b567a074d581059238b8ebc33a9ba24c62b7"
+      }
+    },
+    "fullUnchangedInventoryReference": {
+      "repositoryPath": "docs/handoffs/btc-spentness-20261118/evidence/btc-current-main-execution.json",
+      "sourceCommit": "4476402cc68700d8881b644a088a64e10b4147e2",
+      "fileSha256": "c3d1c93237bc68adbfa3c87924f5afd2114a31b4829caf701364b4881b8e9717",
+      "jsonPointer": "/fullInventories/afterIsolated/inventories"
+    },
+    "newInventoryBefore": {
+      "file": "inventory-before.json",
+      "sha256": "4a93e0a010598b74a1d576cf3ac3d5d9f3093765e28a1afd3785eec87819dfb0"
+    },
+    "newInventoryAfter": {
+      "file": "inventory-after.json",
+      "sha256": "4a93e0a010598b74a1d576cf3ac3d5d9f3093765e28a1afd3785eec87819dfb0"
+    }
+  },
+  "transcript": {
+    "file": "qualification-transcript.txt",
+    "sha256": "099b5e77679324267edb55f7fc222d891b330ac07de2f8600bafa0cf9d063833",
+    "bytes": 13715
+  },
+  "wrapper": {
+    "path": "/workspace/scratch/314c8bd45e5d/btc-da351eb8-qualify.py",
+    "sha256": "76a15636f5be307a53b158137e493fff533d62738e934f05b425af9bb82c94c8"
+  }
+}

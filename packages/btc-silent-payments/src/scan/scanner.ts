@@ -80,8 +80,9 @@ export interface ScanBlocksParams {
    */
   readonly watchOutpoints?: ReadonlySet<string>;
   /**
-   * Receives each spend of a watched or found outpoint. Only used when the source implements `getSpends`, which is
-   * then called once per block (after its outputs, before `onBlock`); without this callback spends are not requested.
+   * Receives the first spend of each watched or found outpoint in this call. Later duplicates are suppressed, but
+   * every block's entire spend list is still validated. Only used when the source implements `getSpends`, which is
+   * called once per block (after its outputs, before `onBlock`); without this callback spends are not requested.
    */
   readonly onSpend?: (event: SpendEvent) => void | Promise<void>;
 }
@@ -161,6 +162,7 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
   for (const id of watch) if (!OUTPOINT.test(id)) return fail('INVALID_INPUT');
   const seenKeys = p.seenKeys ?? new Set<string>();
   const seenOutpoints = new Set<string>();
+  const reportedSpends = new Set<string>();
   const labels = keys.labels ?? createLabelTable(keys.scanSecret);
   for (let height = fromHeight; height <= toHeight; height++) {
     if (isAborted(signal)) return;
@@ -233,11 +235,18 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
       const sp = await source.getSpends(height, signal);
       if (sp.height !== height || sp.blockHash !== tw.blockHash) return fail('REORG_DETECTED');
       if (!Array.isArray(sp.spends) || sp.spends.length > MAX_SPENDS_PER_BLOCK) return fail('INVALID_RESPONSE');
+      const unique = new Map<string, BlockSpend>();
       for (const sIn of sp.spends) {
         checkSpendBounds(sIn);
         const id = `${sIn.txid}:${sIn.vout}`;
-        if (!watch.has(id) && !seenOutpoints.has(id)) continue;
+        const prior = unique.get(id);
+        if (prior !== undefined && prior.spentBy !== sIn.spentBy) return fail('INVALID_RESPONSE');
+        unique.set(id, sIn);
+      }
+      for (const [id, sIn] of unique) {
+        if ((!watch.has(id) && !seenOutpoints.has(id)) || reportedSpends.has(id)) continue;
         if (isAborted(signal)) return;
+        reportedSpends.add(id);
         await p.onSpend({ txid: sIn.txid, vout: sIn.vout, spentBy: sIn.spentBy, height, blockHash: tw.blockHash });
       }
     }

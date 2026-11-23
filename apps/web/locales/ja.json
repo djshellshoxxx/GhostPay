@@ -473,7 +473,13 @@
     "btc.scan.noneFound": "この範囲では未使用の支払いは見つかりませんでした。",
     "btc.scan.foundCount": "未使用の支払いが{count}件見つかりました。",
     "btc.scan.alreadySpent": "{count}件は使用済みです。",
-    "btc.scan.singleProvider": "出力と使用済み状態を、設定済みEsploraプロバイダーで確認しました。これは単一プロバイダーによる確認であり、独立した検証ではありません。下で個々の正確なトランザクション出力を選択し、確認してください。",
+    "btc.scan.singleProvider": "Outputs were read from the configured Esplora provider (spent status: see the line above). This is a single-provider check, not independent verification. Select and review each exact transaction output below.",
+    "btc.scan.providerCheckLabel": "Also ask the server whether each found output is unspent (this reveals the wallet's outputs to it)",
+    "btc.scan.providerCheckHint": "Off: this device checks inputs from complete downloaded blocks without per-outpoint spent-status requests. On: the selected server sees each queried output and reports its spent status, including spends it knows about in the mempool. Turning this off cancels the active scan; it cannot undo requests already sent.",
+    "btc.scan.providerCheckLight": "Light oracle mode does not download complete block inputs. Starting this mode authorizes per-output spent-status queries to the selected Esplora server, revealing the queried outputs. Use full-block scanning to turn those queries off.",
+    "btc.scan.spentStatus.local": "Spent status: checked locally through height {height}, with continuous block-input coverage for every displayed output. No optional per-output spent-status query was sent. Mempool spends and later blocks are not covered; this does not guarantee that a broadcast will succeed.",
+    "btc.scan.spentStatus.provider": "Spent status: the selected Esplora server was asked about outputs not already known locally to be spent. It sees each queried output and reports current status, including mempool spends it knows about. This is the server's report, not independent proof.",
+    "btc.scan.spentStatus.unknown": "Spent status: unknown. The scan is incomplete, historical input coverage is missing, or supporting chain evidence changed. Displayed outputs cannot be selected for sweeping until their status is refreshed.",
     "btc.headers.heading": "ブロックヘッダー",
     "btc.headers.update": "ヘッダーを更新",
     "btc.headers.checking": "ブロックヘッダーを確認しています…",
@@ -2088,7 +2094,7 @@
     "btc.verification.check.storage": "確認済みのヘッダーはこのブラウザーに保存され、読み込み時にもう一度すべて確認されます。いずれかの確認に失敗した保存済みヘッダーは破棄され、再度ダウンロードされます。作業量の多いチェーンがすでにスキャンしたブロックを置き換えた場合、それらのブロックの結果は削除されます。",
     "btc.verification.limit.validation": "これは、サーバーが最良だと主張するチェーンに対するヘッダーチェーンの検証であり、送られたヘッダーの中から作業量が最も多いものを選びます。SPV でも完全な検証でもありません。上記の確認以外に、トランザクションやスクリプトは検証されません。サーバーはより重いチェーンを隠したり、自分のチェーンだけを見せたり（エクリプス）できます。また、テストネットワークのプルーフ・オブ・ワークは安価なため、サーバーが自らより重いフォークをマイニングすることもできます。",
     "btc.verification.limit.prevouts": "使用される出力のスクリプトと金額はサーバーから取得します（以前のブロックにあるため）。嘘をつくサーバーは支払いを隠すことができ、自らマイニングしたフォーク（テストネットワークでは安価）を使えば支払いをでっち上げることもできます。支払いに頼る前に、信頼できる情報源で確認してください。",
-    "btc.verification.limit.spent": "使用済みかどうかはサーバーから取得します。",
+    "btc.verification.limit.spent": "Full-block scanning checks spentness locally only with continuous input coverage through the scanned chain tip. Missing historical or incomplete coverage stays unknown. Mempool spends are not covered. Optional server checks, required in light oracle mode, reveal queried outputs to the selected Esplora provider.",
     "btc.verification.limit.privacy": "サーバーは、あなたの IP アドレス、スキャンするブロック高、ダウンロードするヘッダーの範囲を知ります。鍵を受け取ることはありません。",
     "btc.verification.mode.own.mode": "A. 自分のサーバー（自分で運用する Esplora インスタンス）",
     "btc.verification.mode.own.keyLeaves": "いいえ",
@@ -2257,6 +2263,8 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "btc.scan.foundUnknown": "{count} payment(s) found with unknown spent status; {spent} spend(s) observed. Sweep selection is unavailable.",
+    "btc.scan.unknownRefresh": "Continue a partial scan to the checked tip. For old scan history, use Forget saved scan progress and rescan from the original first block, or explicitly enable the server check. The server check reveals the queried outputs."
   }
 }
