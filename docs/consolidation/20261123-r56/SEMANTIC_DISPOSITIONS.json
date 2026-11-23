@@ -29,14 +29,15 @@
     "gitCheckoutAvailable": false,
     "priorPrHead": "3f5537ac1d7af8d8fc76400db67c5be5bef9d8fa",
     "preLedgerRefHead": "2ce61ee8962bcc4db17ccd85fa338befb9606b25",
-    "divergenceRefreshScope": "New branches full compare; historical per-branch divergence carried forward from older evidence, not re-executed"
+    "divergenceRefreshScope": "New branches full compare; historical per-branch divergence carried forward from older evidence, not re-executed",
+    "postCensusSemanticSupplement": "docs/consolidation/20261123-r56/CANONICAL_JSON_DONOR_PROOF.md"
   },
   "summary": {
     "total": 561,
-    "finalized": 311,
-    "unresolved": 250,
+    "finalized": 312,
+    "unresolved": 249,
     "priorFinalized": 311,
-    "newlyFinalized": 0,
+    "newlyFinalized": 1,
     "newBranches": [
       {
         "branch": "automation/20261123T0441Z/bug/eip3770-registry-guard",
@@ -61,7 +62,8 @@
     "eligibleChangesIntegratedThisRun": 0,
     "consolidationToolingCommitsThisRun": 1,
     "retiredBranchesThisRun": [],
-    "globalUnresolved": 252
+    "globalUnresolved": 251,
+    "structuralDonorFinalizedThisRun": 1
   },
   "integration": {
     "lockStatus": "held",
@@ -603,6 +605,17 @@
       "subsetAncestor": "claude/gifted-planck-115x2k",
       "ancestorChangedPaths": 12,
       "qualification": "unresolved; older code not blindly cherry-picked; unique app/test semantics require main equivalence review"
+    },
+    {
+      "branch": "recover/ghostpay-canonical-json-descriptors-20261121-r10",
+      "sha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27",
+      "parentPr": 270,
+      "parentHead": "73545f63112910d46002718354ab5e99f8652e1f",
+      "sourceProof": "docs/consolidation/20261123-r56/CANONICAL_JSON_DONOR_PROOF.md",
+      "disposition": "retained-in-unmerged-recovery-PR270-pending-gates",
+      "appAndTestBlobEquality": true,
+      "mainIntegrated": false,
+      "reviewRequired": true
     }
   ],
   "records": [
@@ -8288,13 +8301,28 @@
     {
       "branch": "recover/ghostpay-canonical-json-descriptors-20261121-r10",
       "sha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27",
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "source": "carried-verbatim-from-R44-classification",
+      "finalized": true,
+      "disposition": "retained-in-unmerged-recovery-PR270-pending-gates",
+      "source": "20261123-r56-complete-four-path-source-inspection",
       "priorEvidenceRef": "docs/consolidation/20261122-r44/SEMANTIC_DISPOSITIONS.json#branch=recover%2Fghostpay-canonical-json-descriptors-20261121-r10",
       "prHeads": [],
       "sameShaOtherBranchPrHeads": [],
-      "divergence": null
+      "divergence": null,
+      "evidence": {
+        "checkedDonorSha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27",
+        "comparedWithSha": "73545f63112910d46002718354ab5e99f8652e1f",
+        "parentPR": 270,
+        "parentHead": "73545f63112910d46002718354ab5e99f8652e1f",
+        "sourceProof": "docs/consolidation/20261123-r56/CANONICAL_JSON_DONOR_PROOF.md",
+        "assessment": "Both application/test paths' full Git blob SHAs exactly match draft PR #270; remaining changed paths are historical ownership/handoff documentation, not unique production functions. Parent unmerged and stacked.",
+        "mainIntegrated": false,
+        "behavioralEquivalenceNotClaimed": true,
+        "checkedAtUtc": "2026-11-23T05:04:34.555Z",
+        "donorAppTestBlobs": {
+          "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+          "packages/invoice-schema/src/json.test.ts": "813286cc5317177fffcd5e7eac0a1907a45e5f9e"
+        }
+      }
     },
     {
       "branch": "recover/ghostpay-chain-interop-20261121-5ceb",
@@ -12116,7 +12144,7 @@
       "updatedAt": "2026-11-04T00:23:22Z"
     }
   ],
-  "remainingWork": "R56 fresh 561-branch/253-open-PR census, 311 finalized live and 250 live unresolved plus 2 retired unresolved = 252 global. R55 exact-head CI failed ts-test rest-0 at regression fixture line 351; correction committed 2ce61ee. Validate native Node/exact-hosted CI, recheck current PR head, preserve all R55 evidence; prioritize owners, R372 Mythril safety, stale unmatched donor source. No main merge allowed while generation-11 lock held.",
+  "remainingWork": "R56 561 live branches, 312 finalized and 249 unresolved live, plus 2 retired unresolved = 251 globally unresolved. One exact-code donor finalized structurally into still-unmerged draft stacked PR #270. R55 test CI failed and R56 code repair 2ce61ee pending exact-head verification. Gen-11 lock held; no main merge. Continue remaining donor semantic analysis and CI qualification.",
   "retiredHistories": [
     {
       "branch": "dependabot/github_actions/actions-b9ade1236b",
