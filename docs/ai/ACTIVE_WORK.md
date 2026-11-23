@@ -804,3 +804,13 @@ Worker: existing scheduled branch-consolidation engineer, continuing own PR #471
 - Purpose: recover source evidence from previously capped (300-file) GitHub commit compares using complete recursive Git-tree blobs, preserving gitlink identity and refusing truncated/malformed trees. This tool never claims semantic/patch equivalence or integration.
 - Acceptance: deterministic Node built-in tests covering 701 changed paths, identical/added/removed/gitlinks, malformed/truncated trees, and path duplication. Five local Node 22 tests passed; current exact-head hosted CI must still run and be reviewed.
 - Ownership: no overlaps detected for new script/test files; existing BUG-only, P0-A/B, C1, PR274/515 and all other owner paths remain untouched. Lock generation12 released, no lock acquired; protected main not authorized.
+
+
+---
+
+# R72 — structural source-hunk supersession proof (2026-11-23)
+
+Worker: existing GhostPay branch-consolidation automation; branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, pre-edit HEAD `d5cde7ce2f659f42a126b55142516e4425d17dfb`, protected main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned new paths: `scripts/consolidation/compare-donor-pr-patches.mjs`, `scripts/tests/compare-donor-pr-patches.test.mjs`, `docs/consolidation/20261123-r72/`. Scoped provenance proof of removed dependabot `199ab7ef` vs owner PR #492 `592b9941`; do not edit PR #492 or payment code.
+Acceptance: fail-closed exact hunk containment and GitHub file metadata checks, regression tests, owner-PR remaining unmerged represented explicitly, versioned source-pinned ledger/handoff, exact-head CI; no main merge/deploy/funds/release.
+No ownership of any BUG-only, refund, recovery, key-export, C1 or #492 files; generation-12 integration lock remains released and is not acquired.
