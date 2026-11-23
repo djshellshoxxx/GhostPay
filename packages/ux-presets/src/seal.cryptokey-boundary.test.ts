@@ -30,6 +30,20 @@ describe('resolveKey native CryptoKey boundary', () => {
     });
   });
 
+  it('rejects a forged CryptoKey-prototype object without native key slots', async () => {
+    const fake = Object.create(CryptoKey.prototype) as Record<string, unknown>;
+    Object.defineProperties(fake, {
+      type: { value: 'secret' },
+      algorithm: { value: { name: 'AES-GCM', length: 256 } },
+      usages: { value: ['encrypt', 'decrypt'] },
+    });
+    expect(fake instanceof CryptoKey).toBe(true); // instanceof alone is insufficient.
+    expect(await resolveKey(fake as never, c)).toMatchObject({
+      ok: false,
+      error: { code: 'bad-key' },
+    });
+  });
+
   it('preserves genuine non-extractable AES-GCM-256 keys', async () => {
     const key = await c.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
     expect(await resolveKey(key, c)).toEqual({ ok: true, value: key });
