@@ -32,10 +32,10 @@
   },
   "summary": {
     "total": 558,
-    "finalized": 309,
-    "unresolved": 249,
+    "finalized": 310,
+    "unresolved": 248,
     "priorFinalized": 309,
-    "newlyFinalized": 0,
+    "newlyFinalized": 1,
     "newBranches": [
       {
         "branch": "automation/20261123T0237Z/bug/fiat-rate-quote-snapshot",
@@ -530,6 +530,24 @@
         "sharedDifferent": 31,
         "untruncated": true
       }
+    },
+    {
+      "ref": "chatgpt/btc-spent-qualification-20261119",
+      "sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "ownerPr": 244,
+      "disposition": "retained-in-unmerged-recovery-PR244-pending-gates",
+      "evidence": {
+        "parentHead": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "comparisonTruncated": false,
+        "donorBlobs": 3918,
+        "parentBlobs": 3917,
+        "donorOnlyFiles": 1,
+        "sharedDifferent": 14,
+        "donorOnlyCode": 0,
+        "sharedDifferentCode": 0
+      },
+      "sourceProof": "docs/consolidation/20261123-r54/DONOR_EQUIVALENCE.md#btc-spent-pr244",
+      "mainIntegrated": false
     }
   ],
   "records": [
@@ -3004,13 +3022,24 @@
     {
       "branch": "chatgpt/btc-spent-qualification-20261119",
       "sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
-      "finalized": false,
-      "disposition": "unresolved-review-required",
-      "source": "carried-verbatim-from-R44-classification",
+      "finalized": true,
+      "disposition": "retained-in-unmerged-recovery-PR244-pending-gates",
+      "source": "R54 complete immutable tree content comparison against still-open PR244, main-integrated=false",
       "priorEvidenceRef": "docs/consolidation/20261122-r44/SEMANTIC_DISPOSITIONS.json#branch=chatgpt%2Fbtc-spent-qualification-20261119",
       "prHeads": [],
       "sameShaOtherBranchPrHeads": [],
-      "divergence": null
+      "divergence": null,
+      "previousDisposition": "unresolved-review-required",
+      "evidence": {
+        "checkedDonorSha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+        "comparedWithSha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "sourceProof": "docs/consolidation/20261123-r54/DONOR_EQUIVALENCE.md#btc-spent-pr244",
+        "assessment": "Untruncated recursive Git trees: every non-doc file is blob-identical between this historical donor and the still-unmerged PR244 head; remaining one donor-only and fourteen different common blobs are docs/handoff/evidence, not production code or regression tests. No application or browser qualification inferred.",
+        "parentPR": 244,
+        "parentHead": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "mainIntegrated": false,
+        "behavioralEquivalenceNotClaimed": true
+      }
     },
     {
       "branch": "chatgpt/btc-spentness-private-scan-20261118",
@@ -11912,5 +11941,5 @@
       "updatedAt": "2026-11-04T00:23:22Z"
     }
   ],
-  "remainingWork": "R54: 249 unresolved at live cutoff, 2 newly owner-held BUG PRs #490/#491. Exact-head CI on PR471 validator patch pending. Security/recovery #372 and gen-11 lock remain blocked. Inspect BTC spent-consent unique regression tests and F03 request-file donor ownership, continue 59 historically capped donor semantic reviews. No main merge or deployment."
+  "remainingWork": "R54 BTC historical donor classified as code/test represented by unmerged PR244; 310 finalized/248 unresolved. 2 new owner-held BUG PRs #490/#491. F03 and other historical donors still require semantic code review. Gen-11 lock held; no merge."
 }
