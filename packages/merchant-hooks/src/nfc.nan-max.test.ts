@@ -17,8 +17,8 @@ describe('NDEF maxBytes correctness at the hard cap', () => {
 
   it('preserves valid finite custom caps and the default cap', () => {
     const small = paymentLink(100);
-    expect(encodeNdefUri(small, { maxBytes: 133 })).toHaveLength(132);
-    expect(() => encodeNdefUri(small, { maxBytes: 131 })).toThrow(/too-large/);
-    expect(encodeNdefUri(small)).toHaveLength(132);
+    expect(encodeNdefUri(small, { maxBytes: 129 })).toHaveLength(129);
+    expect(() => encodeNdefUri(small, { maxBytes: 128 })).toThrow(/too-large/);
+    expect(encodeNdefUri(small)).toHaveLength(129);
   });
 });
