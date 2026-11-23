@@ -135,3 +135,48 @@ test('finalized recovery donors must follow the actual current open PR parent he
   delete unpinned.records[1].evidence.parentPR;
   assert.throws(() => validateLedger(unpinned), /missing recovery parent PR number/);
 });
+
+test('new-branch provenance must point to exactly the inventoried branch and immutable head', () => {
+  const bad = fixture();
+  bad.summary.newBranches = [{ branch: 'work', sha: c }];
+  assert.throws(() => validateLedger(bad), /new branch provenance/);
+  const absent = fixture();
+  absent.summary.newBranches = [{ branch: 'not-in-census', sha: b }];
+  assert.throws(() => validateLedger(absent), /new branch provenance/);
+  const duplicate = fixture();
+  duplicate.summary.newBranches = [{ branch: 'work', sha: b }, { branch: 'work', sha: b }];
+  assert.throws(() => validateLedger(duplicate), /duplicate new branch provenance/);
+  const valid = fixture();
+  valid.summary.newBranches = [{ branch: 'work', sha: b }];
+  assert.equal(validateLedger(valid).unresolved, 1);
+});
+
+test('advanced-head provenance cannot refer to stale, absent, or unchanged branch heads', () => {
+  const stale = fixture();
+  stale.summary.advancedHeads = [{ branch: 'work', old: a, new: c }];
+  assert.throws(() => validateLedger(stale), /advanced head provenance/);
+  const missing = fixture();
+  missing.summary.advancedHeads = [{ branch: 'not-in-census', old: a, new: b }];
+  assert.throws(() => validateLedger(missing), /advanced head provenance/);
+  const unchanged = fixture();
+  unchanged.summary.advancedHeads = [{ branch: 'work', old: b, new: b }];
+  assert.throws(() => validateLedger(unchanged), /advanced head provenance/);
+  const valid = fixture();
+  valid.summary.advancedHeads = [{ branch: 'work', old: a, new: b }];
+  assert.equal(validateLedger(valid).unresolved, 1);
+});
+
+test('newly finalized accounting cannot exceed or contradict finalized totals', () => {
+  const s = fixture();
+  s.summary.priorFinalized = 0;
+  s.summary.newlyFinalized = 1;
+  assert.throws(() => validateLedger(s), /finalization accounting/);
+  const t = fixture();
+  t.summary.priorFinalized = 1;
+  t.summary.newlyFinalized = 2;
+  assert.throws(() => validateLedger(t), /finalization accounting/);
+  const valid = fixture();
+  valid.summary.priorFinalized = 1;
+  valid.summary.newlyFinalized = 0;
+  assert.equal(validateLedger(valid).finalized, 1);
+});
