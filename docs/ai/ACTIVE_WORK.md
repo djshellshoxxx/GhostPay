@@ -1037,3 +1037,16 @@ Ownership: checked changed-file inventory for all 166 currently open GitHub PRs 
 - Acceptance: regression first reproduces unsupported runtime string/null/undefined/numeric periods being accepted; minimal `ExportError('INVALID_OPTION')` guard in both entry points; preserve five valid period groupings, status/amount/date semantics, CSV and aggregation. No new API, dependency, interface, contract, wallet, RPC, deployment or release change.
 - Ownership: read **all 173** live open PR changed-file inventories (2026-11-21) and found **no** changes under `packages/ux-export/src/`. Refresh exact heads/conflicts before any eventual integration. PR #390 remains externally owned and unchanged; generation-11 metadata-only integration lease belongs to another coordinator and **must not be acquired or used to merge**.
 - Verification: repository checkout is unavailable from this executor because `git ls-remote` cannot resolve `github.com`; record isolated source-equivalent Node verification distinctly from actual hosted GitHub CI. Native browser checks and separate review remain required as applicable.
+
+
+---
+
+# GP-BUG-R6 — pay-again EVM address case-only false block (2026-11-21)
+
+Worker: single ChatGPT bug-repair coordinator; no independent verifier available in this run.
+Branch: `automation/20261121/bug/payagain-evm-address-case-r6`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-presets/src/payAgain.ts`, new `packages/ux-presets/src/payAgain.address-case.test.ts`, additive `docs/ai/ACTIVE_WORK.md` and new `docs/handoffs/PAYAGAIN_EVM_CASE_20261121.md`. No other files claimed.
+Failure: `derivePayAgain` uses string inequality for address-change blocking, so the same 20-byte EVM account differing only in hex letter case is classified as changed and blocks a repeat draft. The host has already validated the resolved address. Preserve exact/case-sensitive comparison on non-EVM addresses and noncanonical hex text.
+Acceptance: commit a failing deterministic regression before the minimal production repair; compare 0x + 40-hex-digit addresses case-insensitively *only* for `eip155:` chains; distinct EVM addresses must remain blocking and non-EVM addresses case-sensitive. Preserve never-auto-send, required review, fee/risk flags. Node source-equivalent checks and exact-head hosted CI, independent review and native browser verification (if applicable) documented separately.
+Ownership: inspected all 175 then-open PR file inventories; no PR changed `packages/ux-presets/src/payAgain.ts` or `payAgain.address-case.test.ts`. Existing broad PRs #238/#262/#264/#278/#372 own only `validate.test.ts` and/or package metadata; leave their files untouched. Recheck before integration.
+Integration lock: `automation/ghostpay-integration-lock` at generation 11, status `held` by `994a0d214fb9-root-r3` (observed blob `97523a9ce00231ac883b32178ab48a547eb0dd8f`), not this worker. No main merge or lease mutation.
