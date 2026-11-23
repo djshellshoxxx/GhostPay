@@ -1446,3 +1446,15 @@ Owned paths on this child branch only: `packages/ux-privacy/src/policy.ts`, new 
 Finding: `validateFriendlyPolicy` uses `forEach` for three runtime arrays; JavaScript silently skips sparse holes, potentially accepting policies with missing spend-limit, allowlist or guardian entries. Later `describePolicy` and scheme conversion can throw or display inconsistent row counts.
 Acceptance: demonstrate red regression before the fix, reject holes using the existing typed `INVALID_LIMITS`, `INVALID_ADDRESS`, `INVALID_GUARDIANS` policy issues; preserve dense and empty list behavior, threshold and `NOT_ENFORCED` warnings; no contract edits, dependencies, services, deployments or real funds.
 Coordination: stacked on parent #437, never rewrite it. Large active PRs #278/#372 and prior #437 source claims remain separately owned. Current integration metadata ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` says held generation 11 by another coordinator; expiry does not release ownership. No shared target updates or merges. Exact-head hosted validation and genuine independent review remain mandatory.
+
+---
+
+# GP-BUG-R11 — vault backup base64url noncanonical pad-bit aliases (2026-11-22)
+
+- Worker: scheduled sequential BUG-ONLY coordinator; no independent verifier available in this execution.
+- Task branch: `automation/20261122-r11/bug/ux-vault-base64url-padbits`, forked from live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-vault/src/bytes.ts`, new `packages/ux-vault/src/bytes.canonical.test.ts`, this additive ownership claim, and dedicated `docs/handoffs/UX_VAULT_BASE64URL_PADBITS_20261122.md`. Do not modify existing envelope/backup test files or other workers' changes.
+- Reproduction before repair: Git-blob matched `bytes.ts` SHA `9226a2d55abaf930c9d5a358e348f4d69944f479`; Node 22.16.0 with TypeScript 5.8.3 accepts `Zh` and `Zi` as the same byte as canonical `Zg`, `AB` as `AA`, `AR` as `AQ`, and `-_9` as `-_8`. The strict decoder and printable vault-backup inverse do not reject unused nonzero trailing sextet bits. No network or funds used.
+- Scope: minimal correction to reject noncanonical trailing base64url bits with existing typed `VaultError('INVALID_INPUT')`; preserve all canonical no-padding encodings, empty bytes, and round-trips. Add dedicated failing regression before source fix and run source-hash-matched standalone checks plus hosted CI. No dependencies, schema changes or new features.
+- Ownership: all 242 open PRs at the 2026-11-22 snapshot (three 100/100/42-page REST lists) were individually inspected for the two claimed paths; no direct overlap found. Recheck before integration.
+- Shared integration lease: `automation/ghostpay-integration-lock` commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, metadata blob `97523a9ce00231ac883b32178ab48a547eb0dd8f`: generation 11 held by `994a0d214fb9-root-r3`, not this worker, despite expired timestamp. No lease acquisition, merge, deployment or release authorized.

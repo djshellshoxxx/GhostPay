@@ -67,6 +67,12 @@ export function toBase64Url(b: Uint8Array): string {
 /** Strict base64url decode (rejects padding, whitespace, other alphabets). */
 export function fromBase64Url(s: string): Uint8Array<ArrayBuffer> {
   if (!/^[A-Za-z0-9_-]*$/.test(s) || s.length % 4 === 1) return fail('INVALID_INPUT', 'bad base64url');
+  // RFC 4648 canonical encoding requires unused low bits in the final sextet to be zero.
+  const remainder = s.length % 4;
+  if (remainder === 2 || remainder === 3) {
+    const digit = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'.indexOf(s[s.length - 1]!);
+    if ((digit & (remainder === 2 ? 15 : 3)) !== 0) return fail('INVALID_INPUT', 'bad base64url');
+  }
   const std = s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4);
   const bin = atob(std);
   const out = new Uint8Array(bin.length);
