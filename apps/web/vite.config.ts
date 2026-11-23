@@ -102,6 +102,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}'],
+    // jsdom has no navigator.locks; see src/test/setup.ts (test-only in-process lock, never bundled).
+    setupFiles: ['src/test/setup.ts'],
     // `*.nocov.test.*` run in a separate pass without coverage (vitest.nocov.config.ts); see DEVIATIONS.md.
     exclude: [...configDefaults.exclude, 'src/**/*.nocov.test.{ts,tsx}'],
     testTimeout: 60_000,
