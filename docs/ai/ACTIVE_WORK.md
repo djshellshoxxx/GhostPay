@@ -1479,3 +1479,15 @@ Claimed paths: `packages/ux-receipts/src/canonical.ts`, new `packages/ux-receipt
 Discovery candidate: `canonicalJson` uses Array.map(), which skips sparse holes. A one-hole array is serialized identically to [] and multiple holes can produce invalid JSON; violates the existing valid canonical-JSON and reproducibility contract. Confirm runtime behavior and source SHA before implementing.
 Acceptance: commit a failing Vitest regression before the smallest implementation change; reject missing array slots using existing `ReceiptError('NOT_CANONICALIZABLE')`, preserve dense arrays/null-prototype objects/nested valid data, and verify deterministic JSON output. Run exact source-matched standalone tests and hosted CI; do not claim workspace/browser tests without evidence.
 Coordination: inspected live main, AGENTS/WORKFLOW/HANDOFF/ACTIVE_WORK, #390 exact-head CI/reviews, held generation-11 integration lease; initial broad PR checks #238/#246/#262/#264/#278/#372 and most recent PRs found no collision on proposed paths. Complete all-current-PR changed-path reconciliation before publication or integration. Independent approval and integration-lock ownership remain outstanding; do not merge, deploy, release, transact or alter others' branches.
+
+
+---
+
+# GP-BUG-20261123-HWSIGNER — reject non-bigint transaction amounts at signing boundary
+
+- Worker: scheduled BUG-ONLY coordinator; branch `automation/20261123T0021Z/bug/hwsigner-bigint-boundary`, base live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-connect/src/hwsigner.ts`, new `packages/ux-connect/src/hwsigner.runtime-amounts.test.ts`, this additive claim, and new `docs/handoffs/UX_CONNECT_HWSIGNER_BIGINT_20261123.md`. Existing `hwsigner.test.ts`, `hex.ts` and other PR paths are read-only.
+- Observed defect on source-equivalent Node 22 replay: `validateTxRequest()` permits numeric or null transaction amount/gas/fee values, including `value: 1.5`, because JavaScript relational comparisons coerce non-bigint operands; an invalid request can reach signing display instead of returning the typed error. Original source blob `4e2ee2e68452808b969195dc3d7fdbca359b82f6`.
+- Acceptance: commit a failing regression before production changes; reject non-bigint value/gasLimit/maxFeePerGas/maxPriorityFeePerGas via existing Result errors; preserve all valid bigint requests and transaction review text; replay isolated regression and nearby edge cases, then depend on exact-head hosted checks, native browser qualification if applicable, and genuinely independent review. No signing or real funds.
+- Ownership: all 245 open PR identifiers inventoried as of this run and changed-file inventories checked for `hwsigner.ts` plus new test; no direct collision found. Existing broad PRs #278/#262/#264/#372 did not own either file. Recheck live PR heads before merge.
+- Integration: generation-11 metadata lease at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` remains `held` by another coordinator. No lock takeover, shared work integration, deployment, release or merge permitted.
