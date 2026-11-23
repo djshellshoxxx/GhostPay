@@ -283,6 +283,8 @@ export interface WalletAttemptOptions {
   readonly storage?: AttemptStorage;
   /** Journal lock; defaults to `navigator.locks` (missing locks refuse before any wallet request). */
   readonly lockManager?: AttemptLockManager;
+  /** Synchronous policy guard run inside the journal lock immediately before the durable attempt is written. */
+  readonly beforeAttemptStart?: (key: string, storage: AttemptStorage) => void;
   /**
    * The caller already holds `ATTEMPT_JOURNAL_LOCK` around this call (Web Locks are not reentrant, so requesting it
    * again would deadlock): journal writes then run in place. Only for a caller that really holds it.
@@ -380,6 +382,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     // No await between this final authority check, the journal write, and provider invocation.
     const start = (store: AttemptStorage | undefined): StartedRequest => {
       authority.assert();
+      if (input !== undefined && store !== undefined) options?.beforeAttemptStart?.(input.key, store);
       const attempt = input === undefined || store === undefined ? undefined : beginAttempt(input, store);
       authority.assert();
       const pending = call(s.wallet.provider, 'eth_sendTransaction', params);

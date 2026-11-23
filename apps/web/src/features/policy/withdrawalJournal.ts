@@ -47,14 +47,18 @@ export async function sendPolicyAction(p: {
 }): Promise<`0x${string}`> {
   const storage = p.storage ?? policyAttemptStorage();
   const manager = p.lockManager ?? locks();
-  return manager.request(ATTEMPT_JOURNAL_LOCK, async () => {
-    p.assertCurrent();
-    const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
-    if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
-    const tx = await p.prepare();
-    p.assertCurrent();
-    // This callback already holds the non-reentrant journal lock: sendViaWallet must write in place, not request it again.
-    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage, journalLockHeld: true });
+  p.assertCurrent();
+  const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
+  if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+  const tx = await p.prepare();
+  p.assertCurrent();
+  // `sendViaWallet` performs wallet rechecks before taking the journal lock. This final synchronous guard closes
+  // the race with another tab, while the lock is released as soon as the provider request starts.
+  return sendViaWallet(p.wallet, tx, p.assertCurrent, {
+    kind: 'transaction', logicalAction: true, scope: p.scope, storage, lockManager: manager,
+    beforeAttemptStart: (attemptKey, journal) => {
+      if (attemptKey !== key || policyActionAttempts(key, journal).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+    },
   });
 }
 

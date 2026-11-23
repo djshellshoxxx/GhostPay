@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ATTEMPT_JOURNAL_KEY, readAttempts, type AttemptStorage } from '../../lib/duplicateAttemptJournal';
-import { connectWallet, walletAttemptKey, type WalletSession } from '../../lib/wallet';
+import { connectWallet, sendViaWallet, walletAttemptKey, type WalletSession } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { clearPolicyAction, policyActionAttempts, policyActionKey, policyAttemptStorage, sendPolicyAction, type PolicyLockManager } from './withdrawalJournal';
 import { SEPOLIA } from './fixtures.testutil';
@@ -55,6 +55,27 @@ describe('durable policy attempt journal', () => {
     expect(requestSpy).toHaveBeenCalledWith(expect.objectContaining({ method: 'eth_sendTransaction' }));
     expect(requestSpy.mock.calls.filter(([args]) => args.method === 'eth_sendTransaction')).toHaveLength(1);
     expect(readAttempts(window.localStorage)).toMatchObject([{ status: 'unknown' }]);
+  });
+
+  it('releases the shared journal lock so another wallet send proceeds during a policy prompt', async () => {
+    const { session, provider } = await wallet();
+    const original = provider.request.bind(provider);
+    let resolveWallet!: (value: unknown) => void;
+    let signalStarted!: () => void;
+    let sendCount = 0;
+    const walletStarted = new Promise<void>((resolve) => { signalStarted = resolve; });
+    const walletPending = new Promise<unknown>((resolve) => { resolveWallet = resolve; });
+    const requestSpy = vi.spyOn(provider, 'request').mockImplementation((args) => {
+      if (args.method === 'eth_sendTransaction' && sendCount++ === 0) { signalStarted(); return walletPending; }
+      return original(args);
+    });
+    const manager = serializedLocks();
+    const sending = sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp, storage: window.localStorage, lockManager: manager });
+    await walletStarted;
+    await expect(sendViaWallet(session, { ...tx, data: '0xabcd' }, noOp, { kind: 'transaction', storage: window.localStorage, lockManager: manager })).resolves.toBe(`0x${'9'.repeat(64)}`);
+    expect(requestSpy.mock.calls.filter(([args]) => args.method === 'eth_sendTransaction')).toHaveLength(2);
+    resolveWallet(`0x${'9'.repeat(64)}`);
+    await expect(sending).resolves.toBe(`0x${'9'.repeat(64)}`);
   });
 
   it('requires explicit outcome review to clear and serializes clearing against submissions', async () => {
