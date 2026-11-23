@@ -15,8 +15,10 @@ const RAW_OK = /^[\x21-\x7e]*$/;
 const dec = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
 const enc = new TextEncoder();
 
-/** Percent-encodes every byte except RFC 3986 unreserved characters (so `+ ! ' ( ) *` are always encoded). */
+/** Percent-encodes RFC 3986 bytes; refuses malformed UTF-16 rather than silently inserting U+FFFD. */
 export function pctEncode(s: string): string {
+  // With the Unicode flag, a valid high/low pair is one scalar, but an unpaired surrogate still matches.
+  if (/[\uD800-\uDFFF]/u.test(s)) return fail('INVALID_ENCODING');
   let out = '';
   for (const b of enc.encode(s)) {
     const c = String.fromCharCode(b);
