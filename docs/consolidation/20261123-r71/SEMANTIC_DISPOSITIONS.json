@@ -3342,13 +3342,25 @@
       "branch": "automation/20261123T1719Z/bug/nfc-nan-limit-r11",
       "sha": "26d10a1f1e74d28408ea4c81d627afd227b7a48b",
       "finalized": false,
-      "disposition": "newly-discovered-unresolved-owned-PR",
+      "disposition": "unique-but-owner-held-not-integrated",
       "source": "R71 complete live refs and PR census",
       "prHeads": [
         518
       ],
       "sameShaOtherBranchPrHeads": [],
-      "divergence": null
+      "divergence": {
+        "status": "ahead",
+        "ahead": 5,
+        "behind": 0,
+        "mergeBase": "8ddb344973e80b8e1eda6821e970ee6a2b808b29",
+        "comparison": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/8ddb344973e80b8e1eda6821e970ee6a2b808b29...26d10a1f1e74d28408ea4c81d627afd227b7a48b",
+        "commitComparisonFileCount": 4,
+        "comparisonCapped": false,
+        "checkedAtUtc": "2026-11-23T18:09:55.784Z"
+      },
+      "ownerPr": 518,
+      "ownership": "BUG-ONLY worker (active)",
+      "linkedIssue": null
     },
     {
       "branch": "automation/api-funded-ghostpay-cloud-20261103",
