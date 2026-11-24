@@ -2,7 +2,7 @@ import { findChain, manifestDigest, tokensForChain, type RpcClient } from '@ghos
 import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
@@ -830,8 +830,16 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
   const [label, setLabel] = useState<Readonly<Record<string, string>>>({});
   const [err, setErr] = useState<ScanText | undefined>(undefined);
+  const access = useSyncExternalStore(services.vault.subscribeAccess, services.vault.getAccessRevision);
+  const [displayAccess, setDisplayAccess] = useState(access);
   const unlocked = services.vault.unlocked;
   const matches = props.matches;
+  if (displayAccess !== access) {
+    setDisplayAccess(access);
+    setTags({});
+    setLabel({});
+    setErr(undefined);
+  }
 
   useEffect(() => {
     let live = true;
@@ -844,17 +852,18 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
       for (const m of matches) {
         try {
           const tag = await services.vault.find(props.chainId, m.stealthAddress);
+          if (!live || services.vault.getAccessRevision() !== access) return;
           if (tag !== undefined) next[m.announcement.id] = tag.clientLabel;
         } catch {
           /* undecryptable tags are reported in the tag list */
         }
       }
-      if (live) setTags(next);
+      if (live && services.vault.getAccessRevision() === access) setTags(next);
     })();
     return () => {
       live = false;
     };
-  }, [matches, unlocked, services, props.chainId]);
+  }, [matches, unlocked, services, props.chainId, access]);
 
   if (matches.length === 0) return <p className="hint">{t('scan.matches.none')}</p>;
   const shared = sharedRouterAddresses(matches);
@@ -878,7 +887,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                 {m.receipt === 'pending' && ` - ${t('scan.match.pending')}`}
               </p>
               <p>{t('scan.match.address')} <Mono>{m.stealthAddress}</Mono></p>
-              {tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
+              {unlocked && tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
               {unlocked && (
                 <div className="row">
                   <div className="field">
@@ -907,11 +916,13 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                             setErr({ error: captureUserMessage(e) });
                             return;
                           }
+                          if (services.vault.getAccessRevision() !== access) return;
                           setErr(undefined);
-                          setTags({ ...tags, [id]: payload.clientLabel.trim() });
+                          setTags((current) => ({ ...current, [id]: payload.clientLabel.trim() }));
                           app.announce(latestT.current('scan.tag.saved'));
                         },
                         (e: unknown) => {
+                          if (services.vault.getAccessRevision() !== access) return;
                           setErr({ error: captureUserMessage(e) });
                         },
                       );
@@ -945,6 +956,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
   const [err, setErr] = useState<ScanText | undefined>(undefined);
   const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
+  const access = useSyncExternalStore(services.vault.subscribeAccess, services.vault.getAccessRevision);
   const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
 
   // Session revisions invalidate tag access even when the replacement has the same public keys.
@@ -971,18 +983,18 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
     }
     void services.vault.list(props.chainId).then(
       (next) => {
-        if (!live) return;
+        if (!live || services.vault.getAccessRevision() !== access) return;
         try { sessionGuard(); } catch { return; }
         setList(next);
       },
       (e: unknown) => {
-        if (!live) return;
+        if (!live || services.vault.getAccessRevision() !== access) return;
         try { sessionGuard(); } catch { return; }
         setErr({ error: captureUserMessage(e) });
       },
     );
     return () => { live = false; };
-  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked]);
+  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked, access]);
 
   return (
     <div>

@@ -1,6 +1,6 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
 import { PrivateHistory } from './PrivateHistory';
@@ -243,7 +243,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setQuery('');
     setError(undefined);
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     mounted.current = true;
     const stopLock = subscribeAppLock(reset);
     const unsubscribe = subscribeSession(() => {
@@ -258,7 +258,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       stopLock();
     };
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     reset();
   }, [props.chainId, props.sellerKeyId]);
   useEffect(() => {

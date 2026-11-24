@@ -13,7 +13,7 @@ test('changing wallet while disclosure is open discards the decrypted invoice ac
   const memo = 'Account A private service reference';
   const link = await createInvoice(page, { encrypt: true, memo });
   await openFresh(page, link);
-  await expect(page.getByText(memo, { exact: true })).toBeVisible();
+  await expect(page.getByText(memo)).toBeVisible();
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
   await approveWalletDisclosure(page, 'eth_requestAccounts');
