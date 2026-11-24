@@ -1903,6 +1903,9 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.verify.passphrase',
     'stealthExport.verify.submit',
     'stealthExport.verify.differentFile',
+    'error.paymentKeyExport.noPayments',
+    'error.paymentKeyExport.publicRecordIsNotBackup',
+    'error.paymentKeyExport.recoveredKeysClosed',
   ],
   stealthKeyExportErrors: [
     'error.stealthExport.conflict',
