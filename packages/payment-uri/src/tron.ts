@@ -72,7 +72,8 @@ export interface BuildTronParams {
 
 /** Builds the nonstandard GhostPay `tron:` form. `network` is always written explicitly. */
 export function buildTronUri(p: BuildTronParams): string {
-  const network = p.network ?? 'mainnet';
+  const suppliedNetwork = p.network;
+  const network = suppliedNetwork === undefined ? 'mainnet' : suppliedNetwork;
   if (!NETWORKS.includes(network)) return fail('INVALID_QUERY');
   const pairs: [string, string][] = [['network', network]];
   const amount = p.amount;
