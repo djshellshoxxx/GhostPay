@@ -81,12 +81,13 @@ export interface VaultRecord extends ReconciliationRecord {
 /** A seller-issued receipt kept for the seller's records. It is never payment evidence and never feeds matching. */
 export interface ArchivedReceipt {
   readonly receipt: SignedReceipt;
-  readonly archivedAt: number;
+  /** Local filing time only. Null means explicitly removed from a v5 document. */
+  readonly archivedAt: number | null;
 }
 
 export interface Document {
   readonly saturated: boolean;
-  readonly version: 3 | 4;
+  readonly version: 3 | 4 | 5;
   readonly records: readonly VaultRecord[];
   /**
    * Lowest block of any reorg this vault handled. Records the vault held then were checked against the chain; the
@@ -132,10 +133,13 @@ export interface ReconciliationImportPreview {
 }
 
 /** Opaque, single-use approval for one exact encrypted snapshot. No invoice identities or times are exposed. */
-export interface InvoiceTimestampCleanupPreview {
-  readonly category: 'invoice-registration-timestamps';
+export type TimestampCategory = 'invoice-registration-timestamps' | 'receipt-archive-timestamps';
+export type RetentionDays = 0 | 30 | 90;
+export interface TimestampCleanupPreview<C extends TimestampCategory = TimestampCategory> {
+  readonly category: C;
   readonly count: number;
 }
+export type InvoiceTimestampCleanupPreview = TimestampCleanupPreview<'invoice-registration-timestamps'>;
 
 export interface Cutoff {
   readonly from: bigint;
@@ -154,6 +158,9 @@ confirmProposal(value: ReconciliationRecord | VaultRecord, invoiceDigest: string
 }): Promise<void>;
 proposals(current?: readonly ReconciliationRecord[]): Promise<ReadonlyMap<string, MatchProposal>>;
 registerInvoice(value: RegisteredInvoice): Promise<void>;
+previewTimestampCleanup<C extends TimestampCategory>(category: C, days: RetentionDays): Promise<TimestampCleanupPreview<C>>;
+confirmTimestampCleanup(preview: TimestampCleanupPreview, actionGuard?: () => void): Promise<void>;
+cancelTimestampCleanup(preview: TimestampCleanupPreview): void;
 previewInvoiceTimestampCleanup(): Promise<InvoiceTimestampCleanupPreview>;
 confirmInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview, actionGuard?: () => void): Promise<void>;
 cancelInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview): void;
@@ -463,11 +470,11 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
   // cleanup or import of that representation opts a document into the new format.
   const legacy =
     object(value) && value.version === 1 && exact(value, 'version|records|invalidatedFrom|tombstones|saturated');
-  const timed = object(value) && (value.version === 3 || value.version === 4);
+  const timed = object(value) && (value.version === 3 || value.version === 4 || value.version === 5);
   if (
     !object(value) ||
     (!legacy &&
-      ((value.version !== 2 && value.version !== 3 && value.version !== 4) ||
+      ((value.version !== 2 && value.version !== 3 && value.version !== 4 && value.version !== 5) ||
         !exact(
           value,
           `version|records|invalidatedFrom|tombstones|saturated|invoices|receipts${timed ? '|invalidatedAt' : ''}`,
@@ -517,17 +524,17 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
     ? []
     : (value.invoices as unknown[]).map((item) => {
         const invoice = validateRegisteredInvoice(item);
-        if (invoice.version === 2 && value.version !== 4)
+        if (invoice.version === 2 && value.version !== 4 && value.version !== 5)
           fail({ key: 'error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit' });
         if (invoice.chainId !== scope.chainId) fail({ key: 'error.reconciliationVault.registeredInvoiceHasAnotherScope' });
         return invoice;
       });
   if (new Set(invoices.map((i) => i.invoiceDigest)).size !== invoices.length) fail({ key: 'error.reconciliationVault.duplicateRegisteredInvoice' });
   if (new Set(invoices.map((i) => i.nonce)).size !== invoices.length) fail({ key: 'error.reconciliationVault.duplicateRegisteredInvoiceNonce' });
-  const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope));
+  const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope, value.version === 5));
   if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail({ key: 'error.reconciliationVault.duplicateArchivedReceipt' });
   return {
-    version: value.version === 4 ? 4 : 3,
+    version: value.version === 4 || value.version === 5 ? value.version : 3,
     records,
     invalidatedFrom: value.invalidatedFrom,
     invalidatedAt: invalidatedAt as number | null,
@@ -539,7 +546,7 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
 }
 
 /** Authenticated ciphertext already protects stored receipts; signatures are verified when archived. */
-function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): ArchivedReceipt {
+function validateArchivedReceipt(value: unknown, scope: ReconciliationScope, allowRemovedTime = false): ArchivedReceipt {
   if (!object(value) || !exact(value, 'receipt|archivedAt') || !object(value.receipt))
     return fail({ key: 'error.reconciliationVault.invalidArchivedReceipt' });
   const { signature, ...payload } = value.receipt;
@@ -552,6 +559,7 @@ function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): Ar
   if (typeof signature !== 'string' || !/^[0-9a-f]{128}$/.test(signature)) return fail({ key: 'error.reconciliationVault.invalidArchivedReceipt' });
   if (clean.chainId !== scope.chainId) fail({ key: 'error.reconciliationVault.archivedReceiptHasAnotherScope' });
   const at = value.archivedAt;
+  if (allowRemovedTime && at === null) return { receipt: { ...clean, signature }, archivedAt: null };
   if (!Number.isSafeInteger(at) || (at as number) <= 0 || (at as number) > 8_640_000_000_000_000)
     fail({ key: 'error.reconciliationVault.invalidArchivedReceiptTimestamp' });
   return { receipt: { ...clean, signature }, archivedAt: at as number };
@@ -656,7 +664,7 @@ function mergeImport(document: Document, imported: Document): Document {
     if (!receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) receipts.push(entry);
   const cutoff = mergeCutoffs(local, remote);
   return {
-    version: document.version === 4 || imported.version === 4 ? 4 : 3,
+    version: document.version >= imported.version ? document.version : imported.version,
     records,
     tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
     invalidatedFrom: cutoff?.from.toString() ?? null,
@@ -680,8 +688,8 @@ class ReconciliationVault {
     { readonly text: string; readonly revision: number }
   >();
   private readonly timestampPreviews = new WeakMap<
-    InvoiceTimestampCleanupPreview,
-    { readonly text: string | null; readonly revision: number }
+    TimestampCleanupPreview,
+    { readonly text: string | null; readonly revision: number; readonly reviewedAt: number; readonly cutoff: number }
   >();
   public constructor(
     private readonly store: ReconciliationVaultStore,
@@ -928,33 +936,54 @@ class ReconciliationVault {
         throw new UserFacingError(
           { key: 'error.reconciliationVault.invoiceCapacity', values: { count: String(MAX_REGISTERED_INVOICES) } },
         );
-      return { ...document, version: invoice.version === 2 ? 4 : document.version, invoices: [...document.invoices, invoice] };
+      return { ...document, version: invoice.version === 2 && document.version === 3 ? 4 : document.version, invoices: [...document.invoices, invoice] };
     });
   }
-  /** Preview is read-only and retains ciphertext only. It never authorizes cleanup of a later snapshot. */
-  public async previewInvoiceTimestampCleanup(): Promise<InvoiceTimestampCleanupPreview> {
+  public previewInvoiceTimestampCleanup(): Promise<InvoiceTimestampCleanupPreview> {
+    return this.previewTimestampCleanup('invoice-registration-timestamps', 0);
+  }
+  public cancelInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview): void {
+    if (preview.category === 'invoice-registration-timestamps') this.cancelTimestampCleanup(preview);
+  }
+  public async confirmInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview, actionGuard?: () => void): Promise<void> {
+    if (preview.category !== 'invoice-registration-timestamps') fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
+    await this.confirmTimestampCleanup(preview, actionGuard);
+  }
+  /** Keep the reviewed cutoff fixed, even if another entry ages into eligibility before confirmation. */
+  public async previewTimestampCleanup<C extends TimestampCategory>(category: C, days: RetentionDays): Promise<TimestampCleanupPreview<C>> {
     const revision = this.revision;
     const { text, document } = await this.snapshot();
     this.guard(revision);
     if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
-    const preview = Object.freeze({
-      category: 'invoice-registration-timestamps' as const,
-      count: document.invoices.filter((invoice) => invoice.version === 1).length,
-    });
-    this.timestampPreviews.set(preview, { text, revision });
+    const reviewedAt = this.now();
+    if ((category !== 'invoice-registration-timestamps' && category !== 'receipt-archive-timestamps') ||
+        (days !== 0 && days !== 30 && days !== 90) || !Number.isSafeInteger(reviewedAt) || reviewedAt < 0 || reviewedAt > MAX_TIME_MS)
+      fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
+    const cutoff = reviewedAt - days * 86_400_000;
+    const count = category === 'invoice-registration-timestamps'
+      ? document.invoices.filter(({ registeredAt }) => registeredAt !== null && registeredAt <= cutoff).length
+      : document.receipts.filter(({ archivedAt }) => archivedAt !== null && archivedAt <= cutoff).length;
+    const preview = Object.freeze({ category, count });
+    this.timestampPreviews.set(preview, { text, revision, reviewedAt, cutoff });
     return preview;
   }
-  public cancelInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview): void {
+  public cancelTimestampCleanup(preview: TimestampCleanupPreview): void {
     this.timestampPreviews.delete(preview);
   }
-  /** One approval, one exact compare-and-swap. Never retry or apply reviewed authority to concurrent changes. */
-  public async confirmInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview, actionGuard: () => void = () => undefined): Promise<void> {
+  /** One approval, one exact compare-and-swap. Never extend it to concurrent changes. */
+  public async confirmTimestampCleanup(preview: TimestampCleanupPreview, actionGuard: () => void = () => undefined): Promise<void> {
     const staged = this.timestampPreviews.get(preview);
     this.timestampPreviews.delete(preview);
     this.guard();
     if (staged === undefined || staged.revision !== this.revision)
       fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
-    const guard = (): void => { this.guard(staged.revision); actionGuard(); };
+    const guard = (): void => {
+      this.guard(staged.revision);
+      const now = this.now();
+      if (!Number.isSafeInteger(now) || now < staged.reviewedAt || now > MAX_TIME_MS)
+        fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
+      actionGuard();
+    };
     guard();
     const { text, document } = await this.snapshot();
     guard();
@@ -962,16 +991,22 @@ class ReconciliationVault {
       fail({ key: 'error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain' });
     if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
     if (preview.count === 0) return;
-    const next = await this.encrypt({
+    const next = await this.encrypt(preview.category === 'invoice-registration-timestamps' ? {
       ...document,
-      version: 4,
-      invoices: document.invoices.map((invoice) => invoice.version === 1
+      version: document.version === 3 ? 4 : document.version,
+      invoices: document.invoices.map((invoice) => invoice.registeredAt !== null && invoice.registeredAt <= staged.cutoff
         ? { ...invoice, version: 2 as const, registeredAt: null }
         : invoice),
+    } : {
+      ...document,
+      version: 5,
+      receipts: document.receipts.map((entry) => entry.archivedAt !== null && entry.archivedAt <= staged.cutoff
+        ? { ...entry, archivedAt: null }
+        : entry),
     });
     guard();
+    // A successful CAS has committed. A later revocation must not suppress invalidation.
     const swapped = await this.store.compareAndSwap(scopeKey(this.scope), text, next, guard);
-    guard();
     if (!swapped) fail({ key: 'error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain' });
     announce();
   }

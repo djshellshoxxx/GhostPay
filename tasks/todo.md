@@ -10,7 +10,8 @@
 - [x] Reconcile final v1 source and explicit v1.1 consent in generation 4; retain 301-case focused acceptance and fresh source review.
 - [x] Reproduce inherited clipboard caller fixture failures on published/current sources; complete fresh G3/G4 repairs and137-case acceptance without production changes.
 - [ ] Run original type/lint/unit/browser gates on each exact combined candidate.
-- [ ] Finish the remaining retention scope without deleting protected data.
+- [x] Implement reviewed, age-based removal of local invoice registration times and receipt archive times on the #383 successor.
+- [ ] Qualify and integrate the retention candidate through the v1.1 release gates.
 - [ ] Publish only the concretely reviewed branches after the required publication approval.
 
 ## Feature stages
@@ -25,7 +26,7 @@
 | v1.1 address reuse | 50 focused cases pass | M2 released; lifecycle/copy repairs | Open |
 | v1.1 invoice minimization | CreateInvoice verified | M2 released; merchant issuance47cases pass | Open |
 | v1.1 wallet disclosure | 80focused+2selectedcaller cases pass | G2 released;249cases pass; final composition in G4 | Open |
-| v1.1 retention | Disposable generated preview verified | G2/G3 released; merchant adapter,29cases pass; broader retention still partial | Open |
+| v1.1 retention | Disposable generated preview verified | Persistent, per-category timestamp controls and atomic confirmation in PR #587 | Open |
 
 Counts above overlap across generations and files; do not add them as unique total coverage. Detailed exact-source evidence remains under docs/privacy-release/evidence/.
 

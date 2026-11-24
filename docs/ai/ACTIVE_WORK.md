@@ -1,3 +1,9 @@
+# Issue 287 persistent metadata retention
+
+Worker: Codex, isolated branch `feature/287-receipt-timestamp-retention`. Base: invoice retention PR #383 at `cfa8131bab9a012cd1ce970f4afa8de23adfdf80`. Main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the timestamp planner, its two ledger controls, preferences, catalogs, related tests and retention handoff on this child only. Preserve the parent and all other release workers.
+
+Acceptance: independently select an age for invoice registration times and receipt archive times. Preview counts and explicitly confirm a single ciphertext revision. Verify boundaries, interruption, concurrent writes, reload, matching, signed receipt export, and wallet access. Keep protected stores and backups outside the operation.
+
 # Preserved composition ownership records
 
 ## #367 integration and this worker

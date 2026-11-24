@@ -1,5 +1,12 @@
 # Required privacy implementation checkpoint
 
+## Issue 287 item 4 candidate
+
+PR #587 extends #383 with reviewed cleanup of two fields in the unlocked seller and chain's encrypted reconciliation history. The invoice registration time and the signed payment receipt's local archive time have independent device age preferences. The options include any nonfuture time, at least 30 days and at least 90 days. Merely saving or reloading a choice performs no write to the vault. Each run needs a fresh category/count preview and confirmation.
+
+Reconciliation format v5 explicitly represents a removed receipt archive time. Signed issuance time, receipt contents, matching fields, verified observations, reorg evidence and duplicate-attempt journals retain their meaning. Older clients cannot read the upgraded reconciliation document. Existing backup files keep their original content. The release checks and prior-generation results below are historical for this candidate.
+
+
 **Eight required features are implemented with focused acceptance evidence. Local metadata retention is partially implemented. Neither v1.0 nor v1.1 is release-qualified.**
 
 Scope is exactly [issue #286](https://github.com/djshellshoxxx/GhostPay/issues/286) and [issue #287](https://github.com/djshellshoxxx/GhostPay/issues/287). Future privacy issues #283, #284 and #288 were not implemented in this work.
@@ -62,7 +69,7 @@ Earlier bounded diagnostics found unsupported Testing Library role-query options
 
 Existing unrelated security, release, deployment and owner-controlled conditions in [RELEASE_BLOCKERS](../release/RELEASE_BLOCKERS.md) remain in force. This checkpoint does not waive them or establish a release-ready artifact.
 
-## Retention: remaining required work
+## Retention gaps recorded before the persistent adapters
 
 Issue #287 item 4 is still incomplete. The [eligibility census](evidence/retention-gen2-census.md) shows that current persistent collections combine user records with recovery authority, duplicate prevention, trust decisions, reorg/tombstone evidence or a potentially sole stored copy. The implemented registry intentionally receives disposal callbacks rather than vault/database/journal deletion handles.
 
@@ -94,6 +101,6 @@ The remaining sequence is complete original qualification, positively justified 
 Automatic approval review rejected the earlier attempted GitHub specification-branch push because authorization to export the internal specifications/task/ownership details and repository trust were not established. No alternative publishing route was used. Publishing the concrete v1.0/v1.1 review branches and opening draft PRs requires the user's final approval; it does not authorize merging main, deployment or release.
 
 
-### Registration timestamp follow-through — 2026-11-21
+### Historical registration timestamp follow-through — 2026-11-21
 
 The field-level follow-up implements manual cleanup of `RegisteredInvoice.registeredAt` only, with explicit versioned null representation, separate default-off consent and one exact-ciphertext CAS. It preserves the invoice registration and every financial, recovery and security field. The historical whole-record census remains valid for protected records but does not imply that all local save-time metadata is essential. This slice does not complete automatic persistent retention or M3 qualification. The [source-pinned handoff](evidence/retention-invoice-time-20261121.md) records 369 passing vault tests, 4,413 passing web tests with 13 existing skips, four passing prescribed non-coverage tests, independent review and local build gates. Both native browser journeys collect; neither was executed locally. Broader retention and release qualification remain partial.

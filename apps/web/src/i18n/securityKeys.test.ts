@@ -31,6 +31,20 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'retention.age.label',
+      'retention.age.choose',
+      'retention.age.all',
+      'retention.age.days',
+      'retention.receiptTimes.title',
+      'retention.receiptTimes.scope',
+      'retention.receiptTimes.compatibility',
+      'retention.receiptTimes.consent',
+      'retention.receiptTimes.preview',
+      'retention.receiptTimes.confirmTitle',
+      'retention.receiptTimes.count',
+      'retention.receiptTimes.preserved',
+      'retention.receiptTimes.confirm',
+      'retention.receiptTimes.completed',
       'retention.invoiceTimes.title',
       'retention.invoiceTimes.scope',
       'retention.invoiceTimes.compatibility',

@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createReconciliationApi } from '@ghostpay/ux-vault/portable';
+import { signReceipt, verifyReceipt } from '@ghostpay/invoice-schema';
 import { ORIGIN } from './helpers';
 
 async function importKnownSeller(page: Page): Promise<void> {
@@ -117,4 +118,87 @@ test('another tab registering an invoice invalidates a cleanup preview without b
   expect(await backup(page, ledger)).toBe(concurrentText);
   expect(await inspect(await backup(other, otherLedger))).toEqual(concurrent);
   expect(foreign).toEqual([]);
+});
+
+test('receipt cleanup survives an interrupted commit and preserves wallet unlock, backups and a signed receipt after reload', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/');
+  await importKnownSeller(page);
+  const seller = page.locator('section[aria-labelledby="keys-h"]');
+  const meta = await seller.locator('code', { hasText: /^st:eth:0x/ }).innerText();
+  const passphrase = 'synthetic vault retention test';
+  await seller.getByLabel('New vault passphrase (14+ characters)').fill(passphrase);
+  await seller.getByLabel('Repeat vault passphrase').fill(passphrase);
+  await seller.getByRole('button', { name: 'Save encrypted vault in this browser' }).click();
+  await expect(page.locator('main').getByText('Encrypted seller vault saved in this browser. The passphrase was cleared.', { exact: true })).toBeVisible();
+  await createRegisteredInvoice(page);
+  let ledger = await openLedger(page);
+
+  // Construct a valid encrypted import through the portable writer, using only this test's wallet.
+  const api = createReconciliationApi();
+  let encrypted = await backup(page, ledger);
+  const { sellerKeyId, chainId } = api.inspectReconciliationEnvelope(encrypted);
+  const fixture = new api.ReconciliationVault({
+    read: () => Promise.resolve(encrypted),
+    compareAndSwap: (_key, expected, next, guard) => {
+      guard();
+      if (expected !== encrypted) return Promise.resolve(false);
+      encrypted = next;
+      return Promise.resolve(true);
+    },
+  }, { sellerKeyId, chainId }, () => undefined);
+  await fixture.unlock(new Uint8Array(32).fill(0x22));
+  const [invoice] = (await fixture.readState()).invoices;
+  const receipt = signReceipt({ invoiceDigest: invoice!.invoiceDigest, chainId, txHash: '0x' + 'ab'.repeat(32),
+    stealthAddress: '0x' + '12'.repeat(20), asset: 'native', amountMinorUnits: '100', issuedAt: 1_700_000_000 },
+    new Uint8Array(32).fill(0x33));
+  await fixture.archiveReceipt(receipt, 1_700_000_100_000);
+  fixture.lock();
+  await ledger.getByLabel('Encrypted reconciliation backup', { exact: true }).fill(encrypted);
+  await ledger.getByRole('button', { name: 'Preview encrypted backup', exact: true }).click();
+  await ledger.getByRole('button', { name: 'Activate previewed historical records', exact: true }).click();
+  const before = await backup(page, ledger);
+  expect((await inspect(before)).receipts).toHaveLength(1);
+
+  const group = () => ledger.getByRole('group', { name: 'Local payment receipt archive times', exact: true });
+  await group().getByLabel('Include timestamps aged').selectOption('30');
+  await group().getByRole('checkbox').check();
+  const preview = group().getByRole('button', { name: 'Preview receipt archive-time cleanup' });
+  const confirm = group().getByRole('button', { name: 'Remove receipt archive timestamps' });
+  await preview.click();
+  await expect(group().getByText('Receipt archive timestamps to remove: 1.')).toBeVisible();
+  // Abort the real IndexedDB transaction after its successful put, before commit.
+  await page.evaluate(() => {
+    const put = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function (...args: Parameters<typeof put>) {
+      const request = put.apply(this, args);
+      if (this.transaction.db.name === 'ghostpay-reconciliation-encrypted') {
+        IDBObjectStore.prototype.put = put;
+        request.addEventListener('success', () => this.transaction.abort(), { once: true });
+      }
+      return request;
+    };
+  });
+  await confirm.click();
+  await expect(ledger.getByText('Encrypted reconciliation write did not commit.')).toBeVisible();
+  expect(await backup(page, ledger)).toBe(before);
+  await expect(confirm).toHaveCount(0);
+  await preview.click();
+  await confirm.click();
+  await expect(group().getByRole('status')).toContainText('Receipt archive timestamps removed');
+  const after = await backup(page, ledger);
+  const cleaned = await inspect(after);
+  expect(cleaned).toEqual({ ...await inspect(before), receipts: [{ receipt, archivedAt: null }] });
+  expect(verifyReceipt(cleaned.receipts[0]!.receipt)).toBe(true);
+  expect((await inspect(encrypted)).receipts[0]?.archivedAt).toBe(1_700_000_100_000);
+
+  await page.reload();
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys', exact: true }).click();
+  await seller.getByLabel('Vault passphrase', { exact: true }).fill(passphrase);
+  await seller.getByRole('button', { name: 'Unlock saved vault' }).click();
+  await expect(seller.getByText(meta, { exact: true })).toBeVisible();
+  ledger = await openLedger(page);
+  await expect(group().getByRole('checkbox')).not.toBeChecked();
+  await expect(group().getByLabel('Include timestamps aged')).toHaveValue('30');
+  expect(await backup(page, ledger)).toBe(after);
 });
