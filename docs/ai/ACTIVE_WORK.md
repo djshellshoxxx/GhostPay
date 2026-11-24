@@ -1,3 +1,11 @@
+# Issue 287 wallet disclosure preview
+
+Worker: Codex, branch `codex/287-wallet-request-preview`. Base: privacy integration #373 at `b660b2d8f3f84ddf72f684d13913f643f33f2eee`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the wallet disclosure descriptor, presenter, selected Policy ABI wiring, wallet disclosure strings and focused mocked-provider regressions. Keep #569’s masking work and its browser spec on its own branch.
+Acceptance: show the action and known targets and amounts from the exact request before approval, keep RPC counts stable, invalidate stale reviews, and verify cancellations and wallet rejections in integration and browser tests. Preserve the v1.1 release gates.
+
+---
+
 # Native Firefox/WebKit qualification — 2026-11-21 UTC
 
 Follow-up ownership: `5ceb6203640a-root` also owns the exact saved-message assertion in `scripts/tor/browser-acceptance.mjs` on this isolated branch. Hosted jobs `136771948240` and `136774369027` failed on obsolete Settings copy. See [bounded fixture repair](claims/TOR_SAVE_MESSAGE_FIXTURE_20261121_5CEB.md); all other browser assertions and application behavior remain unchanged.
