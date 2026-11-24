@@ -1,5 +1,6 @@
+import { parseFragment } from '@ghostpay/invoice-schema';
 import { expect, test, type Page } from '@playwright/test';
-import { generateKeys } from './helpers';
+import { createInvoice, generateKeys } from './helpers';
 
 // Browser acceptance uses the real built full/lean application and UI key import. Playwright controls the clock;
 // synthetic lifecycle events and setSystemTime model restoration/suspended timers, not physical OS sleep or BFCache.
@@ -177,3 +178,55 @@ test('a sole copy remains available only for encrypted backup until normal vault
   await expect(seller(page).getByText(metaAddress, { exact: true })).toBeVisible({ timeout: 60_000 });
   await expect(navigation(page).getByRole('button', { name: 'Create invoice', exact: true })).toBeEnabled();
 });
+
+for (const elapsedMs of [59_999, 60_000, 60_001]) {
+  test(`first invoice signature after sleep at ${elapsedMs} ms`, async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/');
+    await navigation(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
+    const keys = seller(page);
+    await keys.getByRole('button', { name: 'Generate new keys' }).click();
+    await keys.getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(PASS);
+    await keys.getByLabel('Repeat passphrase', { exact: true }).fill(PASS);
+    const download = page.waitForEvent('download');
+    await keys.getByRole('button', { name: 'Download encrypted keystore' }).click();
+    const file = await (await download).path();
+    await keys.getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(file);
+    await keys.getByLabel('Keystore passphrase', { exact: true }).fill(PASS);
+    await keys.getByRole('button', { name: 'Verify backup', exact: true }).click();
+    await expect(keys.getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 60_000 });
+
+    const identity = await keys.locator('code', { hasText: /^st:eth:0x/ }).innerText();
+    await navigation(page).getByRole('button', { name: 'Create invoice', exact: true }).click();
+    await page.getByLabel('Token amount').fill('0.5');
+    await page.getByLabel('Item 1 description').fill('Test item');
+    await page.getByLabel('Item 1 unit price').fill('1.00');
+
+    // Establish the last activity at an exact instant and leave browser timers paused through the activation.
+    await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 5_000)));
+    await page.keyboard.press('Shift');
+    await shiftWallClock(page, elapsedMs);
+    await page.getByRole('button', { name: 'Create invoice link' }).dispatchEvent('click');
+    const link = page.getByRole('textbox', { name: 'Link', exact: true });
+    if (elapsedMs < 60_000) {
+      await expect(link).toHaveValue(/#gpi=v1\./);
+    } else {
+      await expect(page.getByText(/Seller keys were wiped from memory.*Load them again/)).toBeVisible();
+      await expect(link).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Create invoice link' })).toHaveCount(0);
+    }
+
+    if (elapsedMs === 60_000) {
+      await page.clock.resume();
+      await navigation(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
+      await keys.getByText('Import an encrypted keystore', { exact: true }).click();
+      await keys.getByLabel('Keystore file', { exact: true }).setInputFiles(file);
+      await keys.getByLabel('Passphrase', { exact: true }).fill(PASS);
+      await keys.getByRole('button', { name: 'Decrypt and load' }).click();
+      await expect(keys.getByText(identity, { exact: true })).toBeVisible({ timeout: 60_000 });
+      const issued = await parseFragment(new URL(await createInvoice(page)).hash);
+      expect(issued.verification.signatureValid).toBe(true);
+      expect(issued.invoice.metaAddress).toBe(identity);
+    }
+  });
+}
