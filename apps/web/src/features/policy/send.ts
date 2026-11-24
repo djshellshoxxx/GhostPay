@@ -138,8 +138,6 @@ export async function sendPolicyPayment(
   return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope });
 }
 
-/** Same text as `beginAttempt`'s duplicate refusal (duplicateAttemptJournal.ts). */
-const DUPLICATE_ATTEMPT = 'A previous wallet attempt for this action already exists in this tab. Check its outcome before explicitly clearing it; do not send again blindly.';
 const ALREADY_SENT = 'This review was already used for a wallet request, so it is never sent again (the payment may already have gone to your wallet). Check your wallet and a block explorer, then review a new payment only if nothing was sent.';
 /** Reviews and prepared calls that have reached the wallet (identity, per tab). */
 const sentReviews = new WeakSet<object>();
@@ -175,7 +173,7 @@ function refuseIfAlreadyPaid(key: string): void {
   }
   if (earlier === undefined) return;
   if (earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
-  throw new UserFacingError(DUPLICATE_ATTEMPT);
+  throw new UserFacingError({ key: 'error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn' });
 }
 
 /**
