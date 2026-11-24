@@ -846,3 +846,4 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Worker: Codex. Branch `test/receipt-print-action-532` stacks on #532 at `51c04326ff9258861621b94ce2ab06f44bba8301`. Observed main at `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
 - Owned paths: `apps/web/e2e/print-targets.spec.ts`, the verified-payment fixture in `apps/web/e2e/flowMocks.ts`, and this entry.
 - Acceptance: with two signed receipts and an unselected bill mounted, click the second receipt's Print receipt button. Its transaction must be visible in print media while the first receipt and bill are hidden in both full and lean Pages profiles.
+- Follow-up QA by Codex on #548, from `92b36b3fb7f9d26650b026fc77329112f0251f77`. Extend this qualification with repeatable print selection, cancellation and target replacement sequences, and inspect actual Chromium PDFs. Scope includes the print-target hook tests, print CSS and browser regression when an output defect is reproduced.
