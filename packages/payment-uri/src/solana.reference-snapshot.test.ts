@@ -44,4 +44,45 @@ describe('Solana Pay reference validation snapshot', () => {
     references[0] = SYSTEM;
     expect(() => buildSolanaPay({ recipient: SYSTEM, references })).toThrowError(PaymentUriError);
   });
+
+  // Each fixture is a canonical base58 encoding of a distinct 32-byte public key.
+  const countKeys = Array.from('23456789A', (digit) => `${'1'.repeat(31)}${digit}`);
+
+  it('does not serialize a ninth reference supplied by a second iteration', () => {
+    const references = countKeys.slice(0, 8);
+    let iterations = 0;
+    Object.defineProperty(references, Symbol.iterator, {
+      value: function* (): Generator<string, void, unknown> {
+        iterations++;
+        yield* (iterations === 1 ? countKeys.slice(0, 8) : countKeys);
+      },
+    });
+
+    const uri = buildSolanaPay({ recipient: SYSTEM, references });
+    expect(iterations).toBe(1);
+    expect(parseSolanaPay(uri).references).toEqual(countKeys.slice(0, 8));
+  });
+
+  it('rejects an iterator yielding nine distinct references despite an array length of eight', () => {
+    const references = countKeys.slice(0, 8);
+    Object.defineProperty(references, Symbol.iterator, {
+      value: function* (): Generator<string, void, unknown> {
+        yield* countKeys;
+      },
+    });
+
+    expect.assertions(2);
+    try {
+      buildSolanaPay({ recipient: SYSTEM, references });
+    } catch (error) {
+      expect(error).toBeInstanceOf(PaymentUriError);
+      expect(error).toMatchObject({ code: 'INVALID_QUERY' });
+    }
+  });
+
+  it('accepts exactly eight distinct references in ordinary array order', () => {
+    const references = countKeys.slice(0, 8);
+    expect(parseSolanaPay(buildSolanaPay({ recipient: SYSTEM, references })).references)
+      .toEqual(references);
+  });
 });
