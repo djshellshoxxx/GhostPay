@@ -352,18 +352,48 @@ async function reviewConnection(provider: Eip1193Provider, disclose: WalletDiscl
   }
 }
 
+// Also revoke a connected view when an explicit read detects a mismatch on a provider that omits events.
+const recheckListeners = new WeakMap<WalletSession, Set<() => void>>();
+export function observeConnectedWallet(session: WalletSession, changed: () => void): () => void {
+  const listeners = recheckListeners.get(session) ?? new Set<() => void>();
+  listeners.add(changed);
+  recheckListeners.set(session, listeners);
+  try {
+    const stop = observeWalletLifecycle(session.wallet.provider, changed);
+    return () => { listeners.delete(changed); stop(); };
+  } catch (error) {
+    listeners.delete(changed);
+    throw error;
+  }
+}
+
+function invalidateWalletIdentity(session: WalletSession): void {
+  for (const listener of [...(recheckListeners.get(session) ?? [])]) listener();
+}
+
 /** Re-reads account and chain immediately before a signature or send. */
 export async function recheckWallet(s: WalletSession, assertCurrent?: () => void): Promise<void> {
   assertCurrent?.();
-  const acct = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
-  assertCurrent?.();
-  if (acct !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  const checkAccount = async (): Promise<void> => {
+    const accounts = await call(s.wallet.provider, 'eth_accounts');
+    assertCurrent?.();
+    try {
+      if (firstAccount(accounts) === s.account) return;
+    } catch (error) {
+      invalidateWalletIdentity(s);
+      throw error;
+    }
+    invalidateWalletIdentity(s);
+    throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  };
+  await checkAccount();
   const chainId = await readChainId(s.wallet.provider, assertCurrent);
   assertCurrent?.();
-  if (chainId !== s.chainId) throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
-  const finalAccount = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
-  assertCurrent?.();
-  if (finalAccount !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  if (chainId !== s.chainId) {
+    invalidateWalletIdentity(s);
+    throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
+  }
+  await checkAccount();
 }
 
 export interface TxRequest {

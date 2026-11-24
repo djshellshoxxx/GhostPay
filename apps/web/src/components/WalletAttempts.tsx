@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ATTEMPT_JOURNAL_EVENT, clearAttempt, readAttempts, type WalletAttempt } from '../lib/duplicateAttemptJournal';
+import { ATTEMPT_JOURNAL_EVENT, clearAttempt, readAttempts, unwrittenAttemptsFor, type WalletAttempt } from '../lib/duplicateAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { Mono, Notice } from './Common';
@@ -27,7 +27,7 @@ function AttemptList({ wallet }: { readonly wallet: Pick<WalletSession, 'account
           attempt.chainId === wallet.chainId && attempt.account === wallet.account.toLowerCase()));
         setError(undefined);
       } catch (e) {
-        setVisible([]);
+        setVisible(wallet === undefined ? [] : unwrittenAttemptsFor(wallet.account, wallet.chainId));
         setError(captureUserMessage(e));
       }
     };

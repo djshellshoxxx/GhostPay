@@ -6,7 +6,7 @@ import { notifyAppLock } from './appLock';
 import { clearSession, suspendSession } from './session';
 import { useWalletPrivacy } from './useWalletPrivacy';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
-import type { WalletSession } from './wallet';
+import { recheckWallet, type WalletSession } from './wallet';
 
 class EventWallet extends MockWallet {
   public readonly listeners = new Map<string, Set<() => void>>();
@@ -15,7 +15,7 @@ class EventWallet extends MockWallet {
   public emit(event: string): void { for (const listener of [...(this.listeners.get(event) ?? [])]) listener(); }
   public count(): number { return [...this.listeners.values()].reduce((sum, set) => sum + set.size, 0); }
 }
-const session = (provider: EventWallet): WalletSession => ({ wallet: { id: 'fixture', name: 'Fixture', kind: 'injected', provider }, account: MOCK_ACCOUNT, chainId: 84532 });
+const session = (provider: MockWallet): WalletSession => ({ wallet: { id: 'fixture', name: 'Fixture', kind: 'injected', provider }, account: MOCK_ACCOUNT, chainId: 84532 });
 beforeEach(clearSession);
 afterEach(() => { cleanup(); clearSession(); vi.restoreAllMocks(); });
 
@@ -37,6 +37,16 @@ describe('view wallet privacy authority', () => {
     const invalidated = vi.fn(); const hook = renderHook(() => useWalletPrivacy(undefined, invalidated));
     const scope = hook.result.current.begin(); act(invalidate);
     expect(scope.signal.aborted).toBe(true); expect(() => scope.assertCurrent()).toThrow(); expect(invalidated).toHaveBeenCalledTimes(1);
+  });
+  it('revokes a request-only wallet as soon as a recheck reports another account', async () => {
+    const wallet = session(new MockWallet({ lieAboutAccounts: true }));
+    const invalidated = vi.fn();
+    const hook = renderHook(() => useWalletPrivacy(wallet, invalidated));
+    const scope = hook.result.current.capture();
+    await act(async () => { await expect(recheckWallet(wallet)).rejects.toThrow(); });
+    expect(invalidated).toHaveBeenCalledOnce();
+    expect(scope.signal.aborted).toBe(true);
+    expect(() => scope.assertCurrent()).toThrow();
   });
   it('rejects a captured begin after unmount and does not revive a scope', () => {
     const invalidated = vi.fn(); const hook = renderHook(() => useWalletPrivacy(undefined, invalidated));

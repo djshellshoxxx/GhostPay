@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
-import { readAttempts } from '../lib/duplicateAttemptJournal';
+import { ATTEMPT_JOURNAL_KEY, clearAttempt, readAttempts } from '../lib/duplicateAttemptJournal';
 import { clearSession, getSessionPublic } from '../lib/session';
 import { createNetworkAuthority, type NetworkAuthorization, type NetworkAuthority } from '../lib/networkAuthorization';
 import type { Services } from '../lib/services';
@@ -211,25 +211,41 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     const original = wallet.request.bind(wallet);
     let release!: (hash: string) => void;
     const held = new Promise<string>((resolve) => { release = resolve; });
-    wallet.request = (args) => args.method === 'eth_sendTransaction' ? held : original(args);
+    let account = MOCK_ACCOUNT;
+    wallet.request = (args) => {
+      if (args.method === 'eth_sendTransaction') return held;
+      if (args.method === 'eth_accounts' || args.method === 'eth_requestAccounts') return Promise.resolve([account]);
+      return original(args);
+    };
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => expect(readAttempts()).toMatchObject([{ status: 'unknown', account: MOCK_ACCOUNT }]));
     act(() => { wallet.emit('accountsChanged'); });
     const setItem = Storage.prototype.setItem;
     const failed = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
-      if (this === sessionStorage && key === 'ghostpay.wallet-attempts.v1') throw new Error('fixture quota');
+      if (this === sessionStorage && key === ATTEMPT_JOURNAL_KEY) throw new Error('fixture quota');
       setItem.call(this, key, value);
     });
     const hash = `0x${'7'.repeat(64)}`;
     await act(async () => { release(hash); await held; });
     expect(failed).toHaveBeenCalled();
-    expect(sessionStorage.getItem('ghostpay.wallet-attempts.v1')).not.toContain(hash);
+    expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).not.toContain(hash);
     expect(document.body.textContent).not.toContain(hash);
     failed.mockRestore();
+    account = '0x6666666666666666666666666666666666666666';
+    await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    await screen.findByText(account, { exact: true });
+    expect(document.body.textContent).not.toContain(hash);
+    account = MOCK_ACCOUNT;
+    act(() => { wallet.emit('accountsChanged'); });
     await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
     await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByText(hash, { exact: true })).toBeTruthy();
+    const [attempt] = readAttempts();
+    if (attempt === undefined) throw new Error('Expected recovery record');
+    act(() => { clearAttempt(attempt.id, true); });
+    expect(readAttempts()).toHaveLength(0);
   });
 
   it.each(['known hash', 'lost response'] as const)('Pay preserves %s evidence after a wallet request outlives app lock', async (outcome) => {

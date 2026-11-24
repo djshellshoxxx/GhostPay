@@ -21,6 +21,16 @@ export interface WalletAttempt extends AttemptInput {
   readonly status: 'unknown' | 'submitted';
   readonly hash?: string;
 }
+// A wallet may return the only known hash after storage fills. Keep that outcome in this tab until a
+// successful journal write or explicit clearing. Normal reads still validate the durable journal first.
+const unwritten = new WeakMap<AttemptStorage, Map<string, WalletAttempt>>();
+export function unwrittenAttemptsFor(account: string, chainId: number): readonly WalletAttempt[] {
+  let store: AttemptStorage | undefined;
+  try { store = browserAttemptStorage(); } catch { return []; }
+  const pending = store === undefined ? undefined : unwritten.get(store);
+  return pending === undefined ? [] : [...pending.values()].filter((row) => row.account === account.toLowerCase() && row.chainId === chainId);
+}
+
 function fail(): never { throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' }); }
 export function browserAttemptStorage(): AttemptStorage | undefined {
   if (typeof window === 'undefined') return undefined;
@@ -45,12 +55,16 @@ export function readAttempts(storage?: AttemptStorage): readonly WalletAttempt[]
   const store = requiredStorage(storage);
   let raw: string | null;
   try { raw = store.getItem(ATTEMPT_JOURNAL_KEY); } catch { return fail(); }
-  if (raw === null) return [];
+  const pending = unwritten.get(store);
+  if (raw === null) return pending === undefined ? [] : [...pending.values()];
   if (raw.length > MAX_BYTES || new TextEncoder().encode(raw).byteLength > MAX_BYTES) return fail();
   let data: unknown;
   try { data = parseStrictJson(raw); } catch { return fail(); }
   if (!Array.isArray(data) || data.length > MAX_ATTEMPTS || !data.every(validAttempt) || new Set(data.map((a) => a.id)).size !== data.length) return fail();
-  return data;
+  if (pending === undefined) return data;
+  const rows = new Map(data.map((row: WalletAttempt) => [row.id, row]));
+  for (const row of pending.values()) rows.set(row.id, row);
+  return [...rows.values()];
 }
 function write(records: readonly WalletAttempt[], storage: AttemptStorage): void {
   const text = JSON.stringify(records);
@@ -59,6 +73,7 @@ function write(records: readonly WalletAttempt[], storage: AttemptStorage): void
     storage.setItem(ATTEMPT_JOURNAL_KEY, text);
     if (storage.getItem(ATTEMPT_JOURNAL_KEY) !== text) return fail();
   } catch { return fail(); }
+  unwritten.delete(storage);
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
 }
 /** No expiry or automatic eviction: a wallet may have broadcast even when its response was lost. */
@@ -77,8 +92,16 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
   const store = requiredStorage(storage);
   const next = { ...attempt, status: 'submitted' as const, hash: hash.toLowerCase() };
   if (!validAttempt(next)) return fail();
-  const records = readAttempts(store).filter((a) => a.id !== attempt.id);
-  write([...records, next], store);
+  try {
+    const records = readAttempts(store).filter((a) => a.id !== attempt.id);
+    write([...records, next], store);
+  } catch (error) {
+    const pending = unwritten.get(store) ?? new Map<string, WalletAttempt>();
+    pending.set(attempt.id, next);
+    unwritten.set(store, pending);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
+    throw error;
+  }
 }
 /** Clearing is only bookkeeping; it cannot cancel or roll back a wallet request or transaction. */
 export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptStorage): void {

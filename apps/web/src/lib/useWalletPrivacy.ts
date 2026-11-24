@@ -3,7 +3,7 @@ import { subscribeAppLock } from './appLock';
 import { UserFacingError } from './errors';
 import { revokePrivacyReveal } from './privacyMode';
 import { captureSessionVersionGuard, subscribeSession } from './session';
-import { observeWalletLifecycle, type WalletSession } from './wallet';
+import { observeConnectedWallet, type WalletSession } from './wallet';
 
 export interface WalletPrivacyScope {
   readonly signal: AbortSignal;
@@ -78,7 +78,7 @@ export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate
       invalidate();
     };
     try {
-      stop = observeWalletLifecycle(wallet.wallet.provider, changed);
+      stop = observeConnectedWallet(wallet, changed);
       if (!active) stop(); // A provider may synchronously emit while registering a listener.
     } catch { changed(); }
     return () => {

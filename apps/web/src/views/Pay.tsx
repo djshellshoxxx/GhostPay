@@ -435,6 +435,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
   const latest = useRef({ signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: executionSettings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision });
   latest.current = { signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: executionSettings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision };
+  // Once a private invoice was opened with a connected wallet, leaving checkout also drops the
+  // capability to reopen it. The disconnected route can no longer observe that wallet's events.
+  useEffect(() => () => {
+    const checkout = latest.current;
+    if (checkout.wallet === undefined || checkout.fragment === undefined ||
+        !(checkout.parsed?.encrypted === true || checkout.parsed?.passphraseProtected === true)) return;
+    if (window.location.hash === checkout.fragment) clearFragment(window.location, window.history);
+    app.setFragment(undefined);
+  }, [app.setFragment]);
   const walletPrivacy = useWalletPrivacy(wallet, () => {
     flowRevision.current++;
     scheduler.current?.cancel();
@@ -442,6 +451,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setWallets(undefined);
     setStatus('');
     setError(undefined);
+    app.announce('');
+    setSchedule(undefined);
+    setCtxError(undefined);
     // Recovery evidence stays in the account-scoped attempt journal, including a hash returned after revocation.
     setResult(undefined);
     setResultForContext(undefined);
