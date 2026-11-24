@@ -7,12 +7,12 @@ async function copyEncryptedLedger(page: Page, ciphertexts: Map<string, string>)
   // Opening the dashboard has already created this browser's encrypted reconciliation store.
   await page.evaluate((entries) => new Promise<void>((resolve, reject) => {
     const open = indexedDB.open('ghostpay-reconciliation-encrypted', 1);
-    open.onerror = () => reject(open.error);
+    open.onerror = () => reject(new Error('Failed to open encrypted reconciliation database', { cause: open.error }));
     open.onsuccess = () => {
       const db = open.result;
       const tx = db.transaction('vaults', 'readwrite');
       tx.oncomplete = () => { db.close(); resolve(); };
-      tx.onabort = () => { db.close(); reject(tx.error); };
+      tx.onabort = () => { db.close(); reject(new Error('Encrypted reconciliation fixture transaction aborted', { cause: tx.error })); };
       for (const [key, ciphertext] of entries) tx.objectStore('vaults').put(ciphertext, key);
     };
   }), [...ciphertexts]);
