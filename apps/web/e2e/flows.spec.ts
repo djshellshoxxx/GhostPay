@@ -172,7 +172,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       return (await preview.getByText('Payment destination', { exact: true }).locator('xpath=following-sibling::dd[1]').innerText()).trim();
     };
     const reuse = page.getByRole('note').filter({ hasText: 'same destination for another invoice' });
-    const retry = page.getByRole('note').filter({ hasText: 'wallet request for this invoice' });
+    const retry = page.getByRole('note').filter({ hasText: 'payment attempt for this invoice' });
     const send = page.getByRole('button', { name: 'Send payment in my wallet' });
     const original = await prepare(first, 11);
     await expect(reuse).toHaveCount(0);

@@ -3,7 +3,7 @@ import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { invoiceDigest } from '@ghostpay/invoice-schema';
-import { beginAttempt, clearAttempt, rememberPaymentDestination } from '../lib/duplicateAttemptJournal';
+import { beginAttempt, clearAttempt, readAttempts, rememberPaymentDestination } from '../lib/duplicateAttemptJournal';
 import { buildFinal, createPayContext, reviewInvoice } from '../lib/pay';
 import { walletAttemptKey, type WalletSession } from '../lib/wallet';
 import { fakeManifest } from '../test/fakeManifest';
@@ -39,10 +39,12 @@ it('updates a prepared review when another request is handed off, cleared, or th
   act(() => { clearAttempt(otherInvoice, true); });
   expect(screen.queryByRole('note')).toBeNull();
   const key = walletAttemptKey(wallet, built.tx, { kind: 'payment', scope: bytesToHex(invoiceDigest(parsed.invoice)) });
-  act(() => {
-    const attempt = beginAttempt({ chainId: wallet.chainId, account: wallet.account, key, kind: 'payment' });
-    rememberPaymentDestination(attempt, built.preview.stealth, sessionStorage);
-  });
+  act(() => { beginAttempt({ chainId: wallet.chainId, account: wallet.account, key, kind: 'payment' }); });
+  expect(screen.getByRole('note').textContent).toContain('payment attempt for this invoice from the account shown');
+  expect(screen.getByRole('note').textContent).not.toContain('wallet request');
+  const attempt = readAttempts().find((record) => record.key === key);
+  if (attempt === undefined) throw new Error('missing invoice attempt');
+  act(() => { rememberPaymentDestination(attempt, built.preview.stealth, sessionStorage); });
   expect(screen.getByRole('note').textContent).toContain('this invoice and destination');
   act(() => { events.dispatchEvent(new Event('accountsChanged')); });
   expect(screen.queryByRole('note')).toBeNull();
