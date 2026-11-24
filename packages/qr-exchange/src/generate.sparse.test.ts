@@ -5,8 +5,16 @@ const matrix = (dark: boolean[]) => ({ size: 21, version: 1, dark });
 
 describe('qrSvgPath rejects missing modules', () => {
   it.each([0, 220, 440])('rejects a missing cell at index %i', (index) => {
-    const dark = Array<boolean>(441).fill(false);
-    delete dark[index];
+    const dark = Array<boolean>(441);
+    dark.fill(false, 0, index);
+    dark.fill(false, index + 1);
+    expect(() => qrSvgPath(matrix(dark))).toThrowError(expect.objectContaining({ code: 'BAD_INPUT' }));
+  });
+
+  it('rejects a missing cell even when the array inherits a boolean at that index', () => {
+    const dark = Array<boolean>(441).fill(false, 1);
+    Object.setPrototypeOf(dark, [true]);
+    expect(Object.hasOwn(dark, 0)).toBe(false);
     expect(() => qrSvgPath(matrix(dark))).toThrowError(expect.objectContaining({ code: 'BAD_INPUT' }));
   });
 

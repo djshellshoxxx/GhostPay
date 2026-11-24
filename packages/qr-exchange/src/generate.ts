@@ -44,18 +44,21 @@ export function qrMatrix(text: string, ecc: 'L' | 'M' = 'L'): QrMatrix {
 
 /** SVG path data (one square per dark module) offset by a 4-module quiet zone; viewBox side = size + 8. */
 export function qrSvgPath(m: QrMatrix): string {
+  if (typeof m !== 'object' || m === null) throw new QrExchangeError('BAD_INPUT');
+  const { size, version, dark } = m;
   if (
-    typeof m !== 'object' || m === null ||
-    !Number.isSafeInteger(m.size) || m.size < 21 || m.size > 177 ||
-    (m.size - 17) % 4 !== 0 || m.version !== (m.size - 17) / 4 ||
-    !Array.isArray(m.dark) || m.dark.length !== m.size * m.size
+    !Number.isSafeInteger(size) || size < 21 || size > 177 ||
+    (size - 17) % 4 !== 0 || version !== (size - 17) / 4 ||
+    !Array.isArray(dark) || dark.length !== size * size
   ) {
     throw new QrExchangeError('BAD_INPUT');
   }
   const parts: string[] = [];
-  for (let r = 0; r < m.size; r++) {
-    for (let c = 0; c < m.size; c++) {
-      const cell = m.dark[r * m.size + c];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const index = r * size + c;
+      if (!Object.hasOwn(dark, index)) throw new QrExchangeError('BAD_INPUT');
+      const cell: unknown = dark[index];
       if (typeof cell !== 'boolean') throw new QrExchangeError('BAD_INPUT');
       if (cell) parts.push(`M${String(c + 4)} ${String(r + 4)}h1v1h-1z`);
     }
