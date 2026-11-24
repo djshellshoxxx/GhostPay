@@ -3,6 +3,8 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEven
 import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
+import { StealthExportMaster } from '../components/StealthExportMaster';
+import { StealthExportRecovery } from '../components/StealthExportRecovery';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblemMessage, validateKeystoreEnvelope } from '../lib/keystore';
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
@@ -633,6 +635,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             </form>
           </section>
 
+          <StealthExportMaster announce={app.announce} />
+
           <section className="panel" aria-labelledby="vault-save-h">
             <h3 id="vault-save-h">{t('sellerKeys.vaultOptionalHeading')}</h3>
             <p>
@@ -673,6 +677,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <p className="hint">{t('sellerKeys.wipeHint')}</p>
         </>
       )}
+
+      <StealthExportRecovery announce={app.announce} />
 
       {props.archive}
 
