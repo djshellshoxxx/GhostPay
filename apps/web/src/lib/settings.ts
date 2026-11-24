@@ -2,6 +2,13 @@ import { validateRpcUrl } from '@ghostpay/chain-adapters';
 import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
+export const INVOICE_LINK_CLIPBOARD_DELAYS_SEC = [30, 60] as const;
+type InvoiceLinkClipboardDelay = 0 | (typeof INVOICE_LINK_CLIPBOARD_DELAYS_SEC)[number];
+
+export function invoiceLinkClipboardDelay(value: unknown): InvoiceLinkClipboardDelay {
+  return INVOICE_LINK_CLIPBOARD_DELAYS_SEC.find((seconds) => seconds === value) ?? 0;
+}
+
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser (unless marked session-only); the Settings page says so. */
 export interface Settings {
   readonly rpcUrls: Readonly<Record<string, string>>;
@@ -13,6 +20,7 @@ export interface Settings {
   readonly lockTimeoutMin: number;
   readonly theme: 'system' | 'light' | 'dark';
   readonly autoClearFragment: boolean;
+  readonly invoiceLinkClipboardDelaySec: InvoiceLinkClipboardDelay;
   readonly pinnedSigners: readonly string[];
 }
 
@@ -25,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
   lockTimeoutMin: 15,
   theme: 'system',
   autoClearFragment: true,
+  invoiceLinkClipboardDelaySec: 0,
   pinnedSigners: Object.freeze([]),
 });
 
@@ -177,6 +186,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     lockTimeoutMin,
     theme,
     autoClearFragment: typeof o['autoClearFragment'] === 'boolean' ? o['autoClearFragment'] : true,
+    invoiceLinkClipboardDelaySec: invoiceLinkClipboardDelay(o['invoiceLinkClipboardDelaySec']),
     pinnedSigners: pins,
   };
 }

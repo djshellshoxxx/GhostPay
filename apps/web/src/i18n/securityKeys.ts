@@ -1083,6 +1083,10 @@ export const SECURITY_KEY_GROUPS = {
     'common.notice.ok',
   ],
   settingsTrustAndPrivacy: [
+    'settings.invoiceClipboard.label',
+    'settings.invoiceClipboard.hint',
+    'settings.invoiceClipboard.off',
+    'settings.invoiceClipboard.seconds',
     'settings.notice.plaintext',
     'settings.rpc.hint',
     'settings.rpc.secretWarning',

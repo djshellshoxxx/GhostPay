@@ -117,7 +117,8 @@ const sameMap = (a: Readonly<Record<string, string>>, b: Readonly<Record<string,
   Object.keys(a).length === Object.keys(b).length && Object.entries(a).every(([k, v]) => b[k] === v);
 
 function sameSettings(a: Settings, b: Settings): boolean {
-  return samePreferences(preferencesOf(a), preferencesOf(b)) && sameMap(a.rpcUrls, b.rpcUrls) && sameMap(a.rpcUrlsSecondary, b.rpcUrlsSecondary) &&
+  return a.invoiceLinkClipboardDelaySec === b.invoiceLinkClipboardDelaySec && samePreferences(preferencesOf(a), preferencesOf(b)) &&
+    sameMap(a.rpcUrls, b.rpcUrls) && sameMap(a.rpcUrlsSecondary, b.rpcUrlsSecondary) &&
     a.relayerUrl === b.relayerUrl && a.pinnedSigners.length === b.pinnedSigners.length && a.pinnedSigners.every((p, i) => b.pinnedSigners[i] === p);
 }
 

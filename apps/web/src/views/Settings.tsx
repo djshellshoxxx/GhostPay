@@ -15,7 +15,10 @@ import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
-import { checkDelayRange, checkRelayerUrl, checkRpcUrl, isRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, type RpcSlot, type Settings as SettingsData } from '../lib/settings';
+import {
+  checkDelayRange, checkRelayerUrl, checkRpcUrl, INVOICE_LINK_CLIPBOARD_DELAYS_SEC, invoiceLinkClipboardDelay,
+  isRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, type RpcSlot, type Settings as SettingsData,
+} from '../lib/settings';
 import { SCAN_PRIVACY_KEY, MAX_BULK_EVIDENCE, MAX_PAD_BLOCKS, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { SCAN_LANES_KEY, MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
@@ -48,6 +51,7 @@ export function Settings(): ReactNode {
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
   const [lock, setLock] = useState(s.lockTimeoutMin);
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
+  const [clipboardDelaySec, setClipboardDelaySec] = useState(s.invoiceLinkClipboardDelaySec);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
@@ -73,6 +77,7 @@ export function Settings(): ReactNode {
     setChecks({});
     setRpc({ ...s.rpcUrls }); setRpc2({ ...s.rpcUrlsSecondary }); setRelayer(s.relayerUrl);
     setMinSec(s.delayMinSec); setMaxSec(s.delayMaxSec); setLock(s.lockTimeoutMin);
+    setClipboardDelaySec(s.invoiceLinkClipboardDelaySec);
     setTheme(s.theme); setAutoClear(s.autoClearFragment); setPins(s.pinnedSigners.join('\n'));
     const ephemeral: Record<string, boolean> = {};
     for (const [slot, map] of [['primary', s.rpcUrls], ['secondary', s.rpcUrlsSecondary]] as const) {
@@ -98,7 +103,10 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
-      const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = {
+        rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec,
+        lockTimeoutMin: lock, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
+      };
       // Commit retention choices only after the entire form validates. A rejected form must not clear an earlier
       // session-only decision that a later, unrelated preference save still needs to honor.
       for (const [slot, map] of [['primary', rpcUrls], ['secondary', rpcUrlsSecondary]] as const) {
@@ -217,6 +225,17 @@ export function Settings(): ReactNode {
             <input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} />
             <label htmlFor="autoclear">{t('settings.autoclear.label')}</label>
           </div>
+          <Field label={t('settings.invoiceClipboard.label')} hint={t('settings.invoiceClipboard.hint')}>
+            {(id, describedBy) => (
+              <select id={id} aria-describedby={describedBy} value={clipboardDelaySec}
+                onChange={(e) => { setClipboardDelaySec(invoiceLinkClipboardDelay(Number(e.target.value))); }}>
+                <option value={0}>{t('settings.invoiceClipboard.off')}</option>
+                {INVOICE_LINK_CLIPBOARD_DELAYS_SEC.map((seconds) => (
+                  <option key={seconds} value={seconds}>{t('settings.invoiceClipboard.seconds', { seconds })}</option>
+                ))}
+              </select>
+            )}
+          </Field>
           <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
             {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>

@@ -1966,7 +1966,7 @@ Worker: Codex, branch `feat/create-invoice-link-clipboard-286`, based on PR #297
 shared button and corrected unit tests. No open PR changes the invoice link's copy handler.
 
 Owned scope: the CopyButton invocation in apps/web/src/views/CreateInvoice.tsx, the
-corresponding safety preference in views/Settings.tsx and lib/settings{,.test}.ts,
-the preference's web locale strings and apps/web/e2e/invoice-link-clipboard.spec.ts.
+corresponding safety preference in views/Settings.tsx, lib/settings{,.test}.ts and the
+settingsExchange stale-preference check, the preference's classified web locale strings and apps/web/e2e/invoice-link-clipboard.spec.ts.
 Acceptance: fresh and legacy settings default off. Through the real button and a fake
 clock, an unchanged link clears at the selected delay, and a later clipboard value survives.
