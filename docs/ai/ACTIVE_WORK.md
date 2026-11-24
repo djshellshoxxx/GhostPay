@@ -1,3 +1,9 @@
+# GP-PAGES-02 sole-copy invoice signer at idle
+
+Worker: Codex. Branch `codex/gp-pages-02-retain-suspended-signer` off #544 at `4b077d2b13f956cfcf9bce1726f929cca40c7394`. #544 and #365 own the expiry and suspension implementation. This child changes only the disposal decision after suspension, its recovery text, tests and documentation. #573 owns ordinary seller-file verification, unload and vault-deletion safeguards and the fresh-profile payment proof on #540. Acceptance: preserve the original signer after two-key hex import, deny ordinary signing in the suspended session and allow encrypted backup and fresh restore of the same signer. Fully recoverable wallets still lock and dispose normally. Changes stay on this child branch.
+
+---
+
 # Source-labelled ownership registries for the private integration candidate
 
 The following complete registries preserve their original claims and provenance.
