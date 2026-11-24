@@ -1,3 +1,58 @@
+# REV-L2 — checkout with a stale payment-attempt mirror
+
+Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
+`ad67862f63590fe38410d21b88ebf0e05329da47`. Main checked at
+`8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Scope on this child is
+`apps/web/src/views/Pay.tsx` and the existing checkout browser test and fixtures
+(`apps/web/e2e/{flows.spec,flowMocks,helpers}.ts`). A pending payment in
+IndexedDB must prevent permit, approval and payment wallet requests from a
+second tab with a stale mirror. A distinct invoice must reach its wallet.
+#500 owns journal integration and #528 owns policy-action lock lifetime.
+
+# GhostPay cross-tab recovery qualification
+
+- Coordinator branch: codex/ghostpay-cross-tab-qualification. main: 8ddb344973e80b8e1eda6821e970ee6a2b808b29; #500: d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea; #528: cfe735754fa486768e02802ffe9734c94bb47f75, direct child of #500. Their main merge base is eb59d93cffed7848c4aac37d0e9650b87239c6da.
+- #500 owner claim covers journal, wallet, Pay, outcome resolver and UI; #528 covers policy contention. This qualification uses isolated continuations pending coordination, with no edits to existing remote branches. Preserve other ownership entries and avoid refund, key export and release work.
+- Live lock 082e754 shows generation 12 released. Public main rule endpoints showed no enabled branch protection or applicable rules. Refresh both before integration. The current main conflict is in the additive ownership log.
+- Known gaps to investigate: #528 has full/lean/Anvil browser failures and #500 has no hosted PR workflow runs returned. Inspect send and reconciliation boundaries, migration, and #500 Pay integration. Add real two-page browser coverage, run focused and workspace gates plus bundle/privacy/security checks, and obtain an independent review before integration.
+# M1 P0 — durable cross-tab wallet-attempt journal and transaction-outcome recovery (2026-11-23 UTC)
+
+- Worker: Claude Code lead coordinator (session `keen-volta-8ctx9x`) with delegated specialist workers A (implementation), B (security), C (adversarial QA), D (browser/anvil QA), F (independent review). Branch `claude/keen-volta-8ctx9x`, base `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da` fast-forwarded to the PR #427→#440→#441→#443 stack head `4e1fa095` (provenance commits kept, not rewritten).
+- Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, `apps/web/src/lib/attemptStatus.ts` (new), `sendViaWallet` in `apps/web/src/lib/wallet.ts`, nonce observation in `apps/web/src/lib/payExec.ts`, additive changes in `apps/web/src/components/WalletAttempts.tsx` and the pre-send block in `apps/web/src/views/Pay.tsx`, shared lock constant in `apps/web/src/features/policy/withdrawalJournal.ts`, matching tests/i18n/e2e journal readers, and `docs/engineering/*`.
+- Problem (audit REC-P1-03, PR #455): the payment journal is tab-scoped `sessionStorage`; a second tab or a tab reopened after a crash can pay the same invoice again, and a recorded hash cannot be resolved after reload.
+- Acceptance: one durable journal (`localStorage`, key shared with policy withdrawals) serialized by the existing Web Lock; at most one wallet request per invoice across tabs; no await between final authority check, journal write and provider call; hash never lost; RPC-verified status resolution (pending/confirmed with canonical block hash/reverted/mismatch/replaced/nonce-consumed/rpc-error); Pay refuses a second send for a recorded invoice; unit, fault-injection and anvil browser evidence; full web gates.
+- Coordination: #372 also edits `WalletAttempts.tsx` (privacy reveal gating); this change stays additive there. The integration lock (`automation/ghostpay-integration-lock`, generation 11, owner `994a0d214fb9-root-r3`, expired 2026-11-21T00:16Z) is not taken over by this branch; merge needs owner authorization.
+
+# R31 scoped regression repair: wallet journal read-back test type-check (2026-11-22 UTC)
+
+- Worker: consolidation coordinator; task branch `repair/ghostpay-r31-journal-readback-test-typecheck-20261122` stacked on PR #441 at exact `3c21b02194c97c41e6efaffead5520b10697f229`, which itself stacks on #440 and #427.
+- Owned paths: isolated correction to `apps/web/src/lib/walletJournal.readbackRegression.test.ts`; append-only claim here; new docs handoff. Do not change parent's branches, app runtime, signing, contract, custody, release or configuration.
+- Defect evidence: exact-head #441 Actions ts-typecheck job 137099544458 and hosting build job 137099544595 report TS2345 at test lines 45 and 55 because `WalletAttemptOptions.kind` is required but omitted by both test calls.
+- Acceptance: add the mandatory `kind: 'transaction'` only at both options call sites, keep existing wallet mock, post-broadcast read-back failure cases and strong error assertions intact; qualify exact child head with hosted TypeScript/build/test checks. Do not claim independent approval; leave stack unmerged until prior PRs and gate checks qualify.
+
+# GP-BUG-20261122-JH — reject malformed wallet completion hashes with a typed journal error
+
+Cycle and worker: `20261122T0438Z` / one sequential ChatGPT coordinator (bug implementation, bounded source audit, and integration triage); no separate native agent, independent verifier, or Caveman runtime available.
+Task branch: `automation/20261122T0438Z/bug/wallet-hash-type-guard` stacked on the exact existing PR #427 head `e9404bad766b3ee7d93f54f2172059b9566fcb57` (main baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`).
+Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, new isolated regression `apps/web/src/lib/duplicateAttemptJournal.hashType.test.ts`, additive ownership claim in this file, and `docs/handoffs/ATTEMPT_JOURNAL_HASH_TYPE_20261122.md`.
+Finding and reproduction: `finishAttempt(attempt, hash)` calls `hash.toLowerCase()` before validating its runtime type. Non-string wallet/provider results (for example a number or null) raise an untyped JS TypeError rather than the journal's existing fail-closed `UserFacingError`. Strings with malformed bytes already reject correctly. The original code path is unambiguous from source; verify the regression separately before repair. No demonstrated browser exploit or funds-loss path is claimed.
+Acceptance: a test-first failure for malformed runtime hashes, smallest compatible typed-input guard using the existing journal error, unchanged valid hash normalization and first-submitted-hash integrity, no writes on invalid completions, no dependencies or runtime policy expansion. Check focused and hosted CI, independent review, and lock/CI/Pages gates before any merge.
+Ownership: explicitly continuing parent PR #427 on an isolated child; #278/#307/#372 and recent #435/#438/#437/#436/#429/#434 changed-file inventories did not own this path in bounded checks. No full historical semantic census is claimed. Integration ref `automation/ghostpay-integration-lock` is **held** at generation 11 by another coordinator (`994a0d214fb9-root-r3`); expiry does not authorize takeover. No shared updates or main merge.
+Verification: connected GitHub sources/CI are accessible, but local git clone DNS resolution is unavailable; no repository tests claimed until executed on an exact head.
+
+---
+
+# GP-BUG-20261121-JH — wallet attempt hash integrity
+
+Cycle/worker: `20261121T2235Z`; one coordinator executing sequential audit, regression, repair and consolidation; no independent native worker available.
+Branch: `automation/20261121T2235Z/bug/journal-hash-integrity` based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/duplicateAttemptJournal.ts`, new `apps/web/src/lib/duplicateAttemptJournal.hashIntegrity.test.ts`, an additive entry in this file, and `docs/handoffs/ATTEMPT_JOURNAL_HASH_INTEGRITY_20261121.md`.
+Evidence: source blob `b8c2ec1915b833a5b78286b9b9caca1c247e827c`: `finishAttempt` discards an existing id and writes the caller-supplied hash, even if the same id was previously marked submitted with a different hash; repeated callbacks can erase the first recorded tx hash. Exported-helper defensive correctness defect; application-level duplicate callback reachability is not established.
+Acceptance: preserve the first persisted hash on conflicting repeat completion (fail closed), allow idempotent same-hash completion, fail closed on an existing id with changed action identity, and retain late hashes after explicit clear/replacement as existing tests require. New failing regression before product repair, exact-head hosted CI and truly independent review before any merge. No keys, contracts, dependencies, hosted components or production settings.
+Ownership reconciliation: inspected #278/#293/#307/#372/#390/#416/#419/#422 changed filenames; none claims this source path; main ACTIVE_WORK has no matching path claim. Full open-PR path census was not possible. Recheck before integration.
+Integration: metadata branch `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`, generation 11, status held by `994a0d214fb9-root-r3`. This cycle does not own the lock and must not merge/shared-update.
+---
+
 # Individual stealth-payment export recovery — 2026-11-24 UTC
 
 Worker: `/root/ui_data_review`; coordinator `/root`. Isolated branch

@@ -293,7 +293,7 @@ const keysView = (page: Page) => page.locator('section[aria-labelledby="keys-h"]
 const sweepView = (page: Page) => page.locator('section[aria-labelledby="sw-h"]');
 const scanMatches = (page: Page) => page.locator('section[aria-labelledby="scan-h"] .matches > li');
 const receiptPanel = (page: Page) => page.getByRole('region', { name: 'Seller-signed receipt' });
-const walletJournal = (page: Page): Promise<unknown[]> => page.evaluate(() => JSON.parse(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);
+const walletJournal = (page: Page): Promise<unknown[]> => page.evaluate(() => JSON.parse(window.localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);
 
 async function identityOf(page: Page): Promise<{ meta: string; signer: string }> {
   const meta = keysView(page).locator('code', { hasText: /^st:eth:0x/ });

@@ -145,7 +145,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ANVIL_ACCOUNTS.payer)).toBe(payerNonce + 1);
 
@@ -265,7 +265,7 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect((await anvil.tx(hash))?.blockNumber).toBeNull();
 

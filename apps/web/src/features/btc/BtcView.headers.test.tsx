@@ -691,7 +691,9 @@ describe('BtcView header chain', () => {
       return chain.fetchFn(url, init);
     };
     cleanup();
-    // Without a store at all (jsdom has no IndexedDB) headers live in memory, and the view says they are not kept.
+    // Without a store at all (no IndexedDB) headers live in memory, and the view says they are not kept. The shared
+    // test setup installs an in-memory IndexedDB for the wallet journal, so remove it explicitly for this case.
+    vi.stubGlobal('indexedDB', undefined);
     const u3 = userEvent.setup();
     renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: slow }));
     await importWallet(u3);
