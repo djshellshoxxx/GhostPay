@@ -14,6 +14,8 @@ const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) =
   try { return use(key); } finally { key.fill(0); }
 });
 import { ReconciliationVault } from './reconciliationVault';
+import { recordFromObservedMatch } from './reconciliationLedger';
+import { summarizeInvoicePayments } from '@ghostpay/ux-vault/portable';
 import { clearSession, generateSession, importSession, subscribeSession } from './session';
 import { checkpointSlot } from './scanCursorSlot';
 import type { ToWorker } from './scannerCore';
@@ -1529,13 +1531,17 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
     return { map, saves, store: recording };
   };
-  async function vaultWithVerifiedRecord(s: ReturnType<typeof setup>, sellerKeyId: string) {
+  async function unlockedScanVault(s: ReturnType<typeof setup>, sellerKeyId: string) {
     const data = new Map<string, string>();
     const vault = new ReconciliationVault({
       read: (key) => Promise.resolve(data.get(key) ?? null),
       compareAndSwap: (key, expected, next, guard) => { guard(); if ((data.get(key) ?? null) !== expected) return Promise.resolve(false); data.set(key, next); return Promise.resolve(true); },
     }, { chainId: chain.chainId, sellerKeyId }, () => undefined);
     await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    return vault;
+  }
+  async function vaultWithVerifiedRecord(s: ReturnType<typeof setup>, sellerKeyId: string) {
+    const vault = await unlockedScanVault(s, sellerKeyId);
     const record = {
       version: 1 as const, sellerKeyId, chainId: chain.chainId, transactionHash: blockHash(999),
       blockHash: blockHash(120), blockNumber: '120', stealthAddress: `0x${'a'.repeat(40)}`, logIndex: 1,
@@ -1552,6 +1558,56 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId,
     viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
     ...extra,
+  });
+
+  it.each([
+    { initialHead: 219, lowerHead: 119, expectFinal: false }, // checkpoint parent becomes the tip
+    { initialHead: 239, lowerHead: 218, expectFinal: false }, // 99 confirmations behind the cursor
+    { initialHead: 239, lowerHead: 219, expectFinal: true },  // exactly 100 confirmations
+  ])('rechecks retained invoice credit at a lower tip of $lowerHead with a canonical anchor', async ({ initialHead, lowerHead, expectFinal }) => {
+    const s = setup();
+    const scope = { chainId: chain.chainId, sellerKeyId: KEY };
+    const vault = await unlockedScanVault(s, KEY);
+    const invoice = { version: 1 as const, chainId: chain.chainId, invoiceDigest: blockHash(42), nonce: 'a'.repeat(32),
+      asset: TOKEN_84532.toLowerCase(), expectedNetMinorUnits: '1000000', createdAt: 1000, expiresAt: 2000, registeredAt: 1 };
+    await vault.registerInvoice(invoice);
+    const checkpoints = memStore().store;
+    const rescan = async (head: number) => {
+      const clientAtHead = () => {
+        const rpc = chainWith(head, [s.mine.log]);
+        return { ...rpc, getBlock: async (height: bigint) => {
+          if (height > BigInt(head)) return null;
+          const block = await rpc.getBlock(height);
+          return block === null ? null : { ...block, timestamp: 2000n };
+        } };
+      };
+      return scan(s, KEY, { client: clientAtHead(), secondaryClient: clientAtHead(), cursor: checkpoints.load(chain.chainId, KEY) ?? { nextBlock: 0n },
+        checkpoints, onPageMatches: async (matches, page) => {
+          await vault.observeInvoicePayments(matches.map((match) => recordFromObservedMatch(match, KEY)), undefined, page);
+          return true;
+        } });
+    };
+    const first = await rescan(initialHead);
+    expect(first.matches.map((match) => match.receipt)).toEqual(['verified']);
+    const payment = recordFromObservedMatch(first.matches[0]!, KEY);
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+    const [original] = await vault.read();
+    expect(typeof original?.lateAcceptedAt).toBe('number');
+    expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(BigInt(initialHead - 99));
+    expect((await rescan(lowerHead)).discrepancies).toEqual([]);
+    vault.lock();
+    await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    expect(summarizeInvoicePayments(invoice, await vault.read(), scope).kind).toBe(expectFinal ? 'equal' : 'unlinked');
+    expect(await vault.read()).toMatchObject([{ id: payment.id, lateAcceptedAt: original!.lateAcceptedAt,
+      invoiceDigest: invoice.invoiceDigest, evidenceStatus: expectFinal ? 'verified-at-scan' : 'unverified-at-scan' }]);
+    if (!expectFinal) expect(checkpoints.load(chain.chainId, KEY)).toEqual({
+      nextBlock: 120n, last: { number: 119n, hash: blockHash(119) },
+    });
+    expect((await rescan(269)).discrepancies).toEqual([]);
+    expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(170n);
+    expect(summarizeInvoicePayments(invoice, await vault.read(), scope)).toMatchObject({ kind: 'equal', observationCount: 1 });
+    expect(await vault.read()).toEqual([original]);
+    vault.lock();
   });
 
   it('withholds a primary-only fabricated tail anchor so a truthful resume never invalidates canonical history', async () => {

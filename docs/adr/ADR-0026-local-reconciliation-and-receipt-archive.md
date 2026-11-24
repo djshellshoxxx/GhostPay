@@ -236,6 +236,8 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 - A completed scan retains the earliest unresolved seller-linked block in its checkpoint, including on-time and
   partial transfers. A missing log with an unchanged or unavailable header removes that inclusion from the
   invoice total until a clean rescan. A verified replacement block permanently invalidates the old inclusion.
+  A lower agreed chain tip also withholds credit for a payment that lost confirmation depth, even behind a
+  still-canonical checkpoint. Its original decision survives and a resumed scan can restore credit once final again.
   Other verified partials continue to count. An interrupted reconciliation write leaves the prior snapshot and
   checkpoint intact. Contradictory deliveries of one inclusion withhold its credit and require a clean page.
 - A direct router call by another wallet can be eligible. Unsupported bare transfers and forged or unsupported

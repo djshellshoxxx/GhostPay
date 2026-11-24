@@ -106,6 +106,7 @@ export interface ScanParams {
   readonly onMatch?: (m: ScanMatch) => void;
   /** Preserve relevant evidence before a checkpoint can advance past it. */
   readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
+    readonly finalizedThrough: bigint;
     readonly from: bigint;
     readonly through: bigint;
     readonly canonicalHash: (height: bigint) => Promise<Hex>;
@@ -497,14 +498,18 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
       }
-      const through = res.cursor.last?.number;
-      if (canSaveCheckpoint && through !== undefined && through >= pageFrom &&
-          await p.onPageMatches?.(pageMatches, {
-            from: pageFrom, through, canonicalHash: (height) => canonicalHashAt(p, height),
-            retryFrom: (height) => {
-              if (retryHeight === undefined || height < retryHeight) retryHeight = height;
-            },
-          }) === false) canSaveCheckpoint = false;
+      // Include the agreed finality boundary even when no new blocks were scanned.
+      const finalizedThrough = pageHead + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
+      if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough,
+        canonicalHash: (height) => canonicalHashAt(p, height),
+        retryFrom: (height) => {
+          const retry = height > pageHead ? pageHead + 1n : height;
+          // Only a loss of depth for retained evidence can rewind a still-canonical start.
+          if (retry >= 0n && retry > finalizedThrough && retry < persistenceFloor) persistenceFloor = retry;
+          if (retryHeight === undefined || retry < retryHeight) retryHeight = retry;
+        },
+      }) === false) canSaveCheckpoint = false;
       if (p.signal.aborted) break;
       if (deferred > 0) {
         backlog = deferred;

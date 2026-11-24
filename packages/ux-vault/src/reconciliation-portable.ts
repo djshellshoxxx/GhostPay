@@ -136,6 +136,7 @@ export interface Cutoff {
   readonly at: number | null;
 }
 interface ScannedPaymentPage {
+  readonly finalizedThrough?: bigint;
   readonly from: bigint;
   readonly through: bigint;
   readonly canonicalHash: (height: bigint) => Promise<string>;
@@ -1028,11 +1029,18 @@ class ReconciliationVault {
       // Check the final CAS snapshot. A missing log and a present but unverifiable transfer both need a replay.
       if (page !== undefined) {
         for (const record of records.values()) {
-          if (record.provenance !== 'live-scan' || record.invoiceDigest === undefined ||
-              record.evidenceStatus !== 'unverified-at-scan') continue;
+          if (record.provenance !== 'live-scan' || record.evidenceStatus === 'invalidated-after-reorg') continue;
           const height = BigInt(record.blockNumber);
-          if (height >= page.from && height <= page.through && (retryHeight === undefined || height < retryHeight))
-            retryHeight = height;
+          const lacksDepth = page.finalizedThrough !== undefined && height > page.finalizedThrough;
+          if (lacksDepth && (record.invoiceDigest !== undefined || document.invoices.some((invoice) => candidate(invoice, record)))) {
+            // A lower tip can remove confirmations even behind a still-canonical checkpoint.
+            if (record.evidenceStatus === 'verified-at-scan') {
+              records.set(record.id, { ...record, evidenceStatus: 'unverified-at-scan' });
+              changed = true;
+            }
+          } else if (record.invoiceDigest === undefined || record.evidenceStatus !== 'unverified-at-scan' ||
+              height < page.from || height > page.through) continue;
+          if (retryHeight === undefined || height < retryHeight) retryHeight = height;
         }
       }
       return changed ? {
