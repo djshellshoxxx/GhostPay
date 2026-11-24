@@ -11,6 +11,47 @@ describe('parseAnnouncement', () => {
     expect(a?.blockNumber).toBe(10n);
     expect(a?.id).toBe(`${String(rawAnn(10, 3)['blockHash'])}:3`);
   });
+  it('drops unreadable field getters, including the optional receipt hash', () => {
+    const fields = [
+      'schemeId', 'blockNumber', 'logIndex', 'stealthAddress', 'caller',
+      'ephemeralPublicKey', 'metadata', 'blockHash', 'transactionHash',
+    ] as const;
+    for (const field of fields) {
+      const record: Record<string, unknown> = { ...rawAnn(10, 3) };
+      Object.defineProperty(record, field, {
+        get: () => { throw new Error(`unreadable ${field}`); },
+      });
+      expect(parseAnnouncement(record), field).toBeUndefined();
+    }
+  });
+  it('drops throwing and revoked proxy records without escaping the validator', () => {
+    const record = new Proxy(rawAnn(10, 3), {
+      get(target, prop, receiver): unknown {
+        if (prop === 'metadata') throw new Error('source access failed');
+        const value: unknown = Reflect.get(target, prop, receiver);
+        return value;
+      },
+    });
+    expect(parseAnnouncement(record)).toBeUndefined();
+
+    const revoked = Proxy.revocable(rawAnn(10, 3), {});
+    revoked.revoke();
+    expect(parseAnnouncement(revoked.proxy)).toBeUndefined();
+  });
+  it('reads a field once and hashes the same validated snapshot', () => {
+    const record: Record<string, unknown> = { ...rawAnn(10, 3) };
+    const blockHash = record['blockHash'];
+    let reads = 0;
+    Object.defineProperty(record, 'blockHash', {
+      get() {
+        reads++;
+        if (reads !== 1) throw new Error('read again');
+        return blockHash;
+      },
+    });
+    expect(parseAnnouncement(record)?.blockHash).toBe(blockHash);
+    expect(reads).toBe(1);
+  });
   it('rejects every malformed field', () => {
     const bads: Record<string, unknown>[] = [
       { schemeId: '2' }, { schemeId: 'x' }, { schemeId: -1 }, { schemeId: 1.5 }, { schemeId: 2n ** 64n }, { schemeId: '18446744073709551616' }, { schemeId: undefined },
