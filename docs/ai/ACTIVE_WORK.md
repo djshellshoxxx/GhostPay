@@ -1,3 +1,11 @@
+# Seller Keys file-switch browser regression
+
+Worker: Codex, branch `codex/seller-keys-file-switch-browser`, based on PR #530 at `88f7d1b496a1452f062d472d78e99b5401c61e35`. Main at discovery: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `apps/web/e2e/recovery.spec.ts` and this entry. Exercise the owner's existing verification UI with two genuine synthetic seller exports. After unlocking A and verifying A's file, selecting B must remove the success before another submission. B's own passphrase must produce the seller mismatch while A's public identity and serialized IndexedDB vault remain intact. Target #530's branch for owner integration.
+
+---
+
 # GP-PAGES-02 — selected seller keystore recovery verification (2026-11-23)
 
 Worker and integrator: Codex. Branch: `codex/ghostpay-keystore-verification-20261123`. Refreshed main base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
