@@ -38,9 +38,14 @@ export { SOURCE_TRANSLATOR } from './source';
 
 function browserLanguages(): readonly string[] {
   try {
-    const n = globalThis.navigator as Navigator | undefined;
-    if (n === undefined) return [];
-    return n.languages.length > 0 ? n.languages : [n.language];
+    const languages = globalThis.navigator?.languages;
+    if (languages?.length) return languages;
+  } catch {
+    // The primary language can still be available when the preference list is unreadable.
+  }
+  try {
+    const primary = globalThis.navigator?.language;
+    return primary ? [primary] : [];
   } catch {
     return [];
   }
