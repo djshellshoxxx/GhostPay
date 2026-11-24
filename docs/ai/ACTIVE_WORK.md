@@ -1,3 +1,9 @@
+# Deployment diagnostic fixture continuation — 2026-11-24 UTC
+
+Worker: sequential engineering coordinator, cycle 20261124T1237Z; isolated branch `automation/20261124T1237Z/bug/deployment-diagnostic-fixture`, base #570 `557815335b8ef94b6c311c0ca4369daf0756ae1d`, main observed `706188000c38b3dde5a3a362370a530870aa7587`. Owned paths: only apps/web/src/lib/hardening.test.ts, this additive claim and docs/handoffs/DEPLOYMENT_DIAGNOSTIC_FIXTURE_20261124.md. Continue #570's existing private-export work without changing its branch, production code or other workers' paths. Hosted web test job 138306213797 fails S3-01 at line 193 because a name-spoofed Error is not a ChainAdapterError and the old detailed reason is intentionally obsolete. Acceptance: test genuine adapter mismatch, forged name and arbitrary provider error with exact neutral reasons, no raw text and payments disabled; preserve no-RPC and pending checks. No duplicate successor or exact test-path overlap found in inspected #504/#611/#612/#613/#614/#615/#616/#617. Exact-head CI and independent review required. Lock released generation 17 observed, not acquired. No shared integration, deployment or real funds.
+
+---
+
 ## Issue #286 · private export and notification surfaces
 
 Worker: Codex on `codex/286-private-export-surfaces`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Pages download boundary, policy/adapter/schema error presentation, React and i18n diagnostics, the ux-notify lock-screen formatter, and associated regressions and qualification notes. Keep clipboard, masking, idle-lock, serialization, import and recovery workers' changes separate. Acceptance requires fixed filenames and lock-screen copy, public diagnostics and titles, and exact preservation of explicitly exported bytes. Hosted checks and independent review gate integration.
