@@ -1,3 +1,11 @@
+# GP-PAGES-02 seller recovery and sole-copy safeguards
+
+Worker: Codex on `codex/gp-pages-02-recovery-proof`, based on #540 at `8daebb0fa4a1cc1f771dbe724dede67f00028298` (child of #530). Main was `f76904301cff0b24d65ea4e31cbf37d470db4d95` at discovery. #539/#560 own individual payment exports. #365 owns sleep-time enforcement. This branch changes the seller-custody decision after the existing lock signal, carries the beforeunload check from #260, and extends the existing Pages/Anvil restoration journey. No writes to the owner branches.
+
+Owned paths on this branch: AppShell custody handling and its tests, the matching seller-key UI strings and security catalog entries, session documentation, the Pages devnet recovery test, and the seller recovery section of the product guide. Acceptance: failed authentication installs nothing, a newly restored profile can sign from the actual payment address, and an unbacked generated invoice signer survives idle. Warn before leaving without externally recoverable keys. Preserve the verified-session lock behavior.
+
+---
+
 # Seller Keys file-switch browser regression
 
 Worker: Codex, branch `codex/seller-keys-file-switch-browser`, based on PR #530 at `88f7d1b496a1452f062d472d78e99b5401c61e35`. Main at discovery: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
