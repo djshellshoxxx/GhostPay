@@ -14,8 +14,10 @@ function collectFields(input: AbiParameter, value: unknown, name: string, fields
     for (const part of input.components) {
       if (part.name) collectFields(part, (value as Record<string, unknown>)[part.name], name + '.' + part.name, fields);
     }
-  } else if (input.type === 'address' || input.type === 'bytes32' || input.type.startsWith('uint') && !input.type.includes('[')) {
-    fields.push(Object.freeze([name, String(value)] as const));
+  } else if ((input.type === 'address' || input.type === 'bytes32') && typeof value === 'string') {
+    fields.push(Object.freeze([name, value] as const));
+  } else if (input.type.startsWith('uint') && (typeof value === 'bigint' || typeof value === 'number')) {
+    fields.push(Object.freeze([name, value.toString()] as const));
   }
 }
 

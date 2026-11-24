@@ -10,6 +10,10 @@ Published source `137628961463fc5abd8b7927b2efe6b18a0a206a`. Live main observed 
 
 Before connect/sign/send show method, known account/chain/destination/amount and other disclosed categories; mark unknown fields clearly. No extra RPC to populate preview. Continue or cancel is explicit; approval binds immutable request bytes and expires on lock/account/disconnect/unmount. Recheck session after awaits. No raw payload persistence or claims of control over wallet-extension behavior.
 
+For a known contract function, show its name and the address and numeric arguments decoded from the same calldata sent to the provider. Show native value separately in wei. ERC-20 approvals expose the spender and allowance in token base units, including a zero allowance. Policy calls use the ABI supplied by the full-profile feature. If the function is unknown or re-encoding differs, the exact outgoing JSON remains available and the dialog omits the inferred contract fields.
+
+Cancelling the local review prevents dispatch of the displayed request. A pending account or chain change invalidates the review through the handoff to the provider. Pay records a wallet request only once it has invoked the provider. A wallet rejection is surfaced through the existing rejection handling.
+
 ## Module ownership
 
 Under `apps/web/src/`: new lib/walletDisclosure.ts, accessible controller/UI; narrow wallet boundary/callers.

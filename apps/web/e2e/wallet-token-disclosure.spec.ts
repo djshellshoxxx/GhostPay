@@ -21,8 +21,9 @@ async function mockToken(context: BrowserContext, supportsPermit: boolean): Prom
   await context.route(`${RPC}/**`, async (route) => {
     if (route.request().method() !== 'POST') return route.fallback();
     const body = route.request().postDataJSON() as { id: number; method: string; params: [{ to?: string; data?: string }?] };
+    if (body.method !== 'eth_call') return route.fallback();
     const call = body.params[0];
-    if (body.method !== 'eth_call' || call?.to?.toLowerCase() !== token.toLowerCase()) return route.fallback();
+    if (call?.to?.toLowerCase() !== token.toLowerCase()) return route.fallback();
     const result = responses.get(call.data?.slice(0, 10) ?? '');
     if (result === undefined) return route.fallback();
     return route.fulfill({ json: { jsonrpc: '2.0', id: body.id, result }, headers: CORS });

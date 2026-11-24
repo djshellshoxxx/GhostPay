@@ -117,6 +117,28 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     expect(provider.calls).toEqual([]);
   });
 
+  it('submits the reviewed permit verbatim, and a revoked first review cannot sign its replacement', async () => {
+    const provider = new EventWallet();
+    const controller = presenter();
+    const session = { ...await connectWallet(info(provider), 84532), disclosure: controller.request };
+    provider.calls.length = 0;
+    const json = JSON.stringify({ primaryType: 'Permit', domain: { chainId: 84532, verifyingContract: tx.to },
+      message: { spender: tx.to, value: '9007199254740993' } });
+    const stale = signTypedDataViaWallet(session, json);
+    const oldPreview = controller.getSnapshot()!;
+    provider.emit('chainChanged');
+    await expect(stale).rejects.toThrow(/cancelled/);
+    const current = signTypedDataViaWallet(session, json);
+    controller.approve(oldPreview);
+    expect(provider.calls).toEqual([]);
+    const preview = controller.getSnapshot()!.request;
+    expect(preview).toMatchObject({ account: provider.account, chainId: 84532, destination: tx.to, typedAmount: '9007199254740993' });
+    approve(controller);
+    await expect(current).resolves.toMatch(/^0x/);
+    expect(provider.calls.at(-1)).toEqual(JSON.parse(preview.requestJson));
+    expect(provider.calls.map(({ method }) => method)).toEqual(['eth_accounts', 'eth_chainId', 'net_version', 'eth_accounts', 'eth_signTypedData_v4']);
+  });
+
   it('requires a separate immutable chain-switch decision and adds no preview RPC', async () => {
     const provider = new EventWallet({ chainId: 1 }); const controller = presenter();
     const operation = connectWallet(info(provider), 84532, undefined, undefined, { disclosure: controller.request });
