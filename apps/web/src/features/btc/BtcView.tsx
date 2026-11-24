@@ -1,3 +1,4 @@
+import { revokePrivacyReveal } from '../../lib/privacyMode';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DEFAULT_FORK_HEADERS, SilentPaymentError, zeroize, createScanState, type ScanState, type HeaderChain } from '@ghostpay/btc-silent-payments';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
@@ -208,6 +209,7 @@ export function BtcView(
       walletRef.current = w;
       if (offerBackup) seedRef.current = hexToBytes(hex);
       setHasBackup(offerBackup);
+      revokePrivacyReveal();
       setWallet(w);
       setAppLocked(false);
       setSeedInput('');
@@ -563,6 +565,7 @@ export function BtcView(
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
     forgetSeed();
+    revokePrivacyReveal();
     setWallet(undefined);
     setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
     resetFlow();

@@ -81,6 +81,15 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   await expect(reveal(page)).toBeVisible();
   await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data, '0.5 ETH']);
   await reveal(page).click();
-  await expect(page.getByText(reviewed.params[0].from, { exact: true })).toHaveCount(0);
+  await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data]);
+  await expect(page.getByRole('button', { name: 'Download local receipt' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Proof of payment' })).toHaveCount(0);
+  const connectReplacement = page.getByRole('button', { name: /Connect E2E Wallet/ });
+  await connectReplacement.click();
+  await disclosure(page).getByRole('button', { name: 'Continue to wallet' }).click();
+  await expect(page.getByText(`0x${'6'.repeat(40)}`, { exact: true })).toBeVisible();
+  await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data]);
+  await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toContain(hash);
   expect(state.sendCalls).toBe(1);
 });

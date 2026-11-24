@@ -150,6 +150,10 @@ function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boole
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
 }
 
+function paymentOwner(wallet: WalletSession | undefined): string | undefined {
+  return wallet === undefined ? undefined : `${wallet.chainId}:${wallet.account.toLowerCase()}`;
+}
+
 export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -220,7 +224,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
   const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
-  const [previousBroadcast, setPreviousBroadcast] = useState<{ readonly hash: string; readonly kind: 'approval' | 'payment' } | undefined>(undefined);
+  const [outcomeOwner, setOutcomeOwner] = useState<string>();
+  const [previousBroadcast, setPreviousBroadcast] = useState<{ readonly hash: string; readonly kind: 'approval' | 'payment'; readonly owner: string | undefined } | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
@@ -441,11 +446,18 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     scheduler.current?.cancel();
     setWallet(undefined);
     setWallets(undefined);
+    receiptImportRevision.current++;
+    setBoundReceipt(undefined);
+    setReceiptError(undefined);
+    setReceiptConsent(false);
+    setReceiptTrustedKey('');
+    setReceiptBusy(false);
+    receiptBusyRef.current = false;
     setStatus('');
     setError(undefined);
     // Keep completed/uncertain submission evidence and its receipt context. Only unsubmitted preparation is reset.
     if (result === undefined && broadcast === undefined) {
-      if (approvalHash !== undefined) setPreviousBroadcast({ hash: approvalHash, kind: 'approval' });
+      if (approvalHash !== undefined) setPreviousBroadcast({ owner: paymentOwner(wallet), hash: approvalHash, kind: 'approval' });
       setBuilt(undefined);
       setBuiltFor(undefined);
       setBuiltForContext(undefined);
@@ -837,9 +849,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       if (flowRevision.current === revision) setWallets([]);
     });
   };
+  const terminal = phase === 'done' || phase === 'submitted';
+  const owner = paymentOwner(wallet);
+  const showOutcome = !app.settings.privacyMode || (owner !== undefined && owner === outcomeOwner);
+  const showPrevious = !app.settings.privacyMode || (owner !== undefined && owner === previousBroadcast?.owner);
+  const reconnectForOutcome = terminal && !showOutcome;
   useEffect(() => {
-    if (phase === 'ready' && wallets === undefined) onFindWallets();
-  }, [phase, wallets]);
+    if ((phase === 'ready' || reconnectForOutcome) && wallets === undefined) onFindWallets();
+  }, [phase, wallets, reconnectForOutcome]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
     // Capture before acquisition so a late send cannot renew a revoked wallet operation's read authority.
@@ -979,7 +996,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-            else setPreviousBroadcast({ hash, kind: 'approval' });
+            else setPreviousBroadcast({ owner: paymentOwner(wallet), hash, kind: 'approval' });
           });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
@@ -993,10 +1010,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         });
         addressReuse.observeSubmission(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(invoice)) });
         if (!isCurrent()) {
-          setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
+          setPreviousBroadcast({ owner: paymentOwner(wallet), hash: res.hash, kind: 'payment' });
           announce({ key: 'pay.announce.previous' });
           return;
         }
+        setOutcomeOwner(paymentOwner(wallet));
         setResult(res);
         setResultForContext(ctx);
         setPhase('done');
@@ -1011,16 +1029,17 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         }
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) {
-            setPreviousBroadcast({ hash: e.hash, kind: stage });
+            setPreviousBroadcast({ owner: paymentOwner(wallet), hash: e.hash, kind: stage });
             announce({ key: 'pay.announce.previous' });
           } else if (approvalBroadcastHash !== undefined) {
-            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
+            setPreviousBroadcast({ owner: paymentOwner(wallet), hash: approvalBroadcastHash, kind: 'approval' });
           }
           return;
         }
         setStatus('');
         if (e instanceof PostBroadcastError) {
           // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
+          setOutcomeOwner(paymentOwner(wallet));
           setBroadcast(e.hash);
           setBroadcastKind(stage);
           setError(captureUserMessage(e));
@@ -1060,7 +1079,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
           sessionGuard();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
-        }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
+        }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ owner: paymentOwner(wallet), hash, kind: 'approval' }); });
         if (!isCurrent()) return;
         setGranted(undefined);
         setApprovalHash(undefined);
@@ -1068,7 +1087,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         announce({ key: 'pay.announce.revoked' });
       } catch (e) {
         if (!isCurrent()) {
-          if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
+          if (e instanceof PostBroadcastError) setPreviousBroadcast({ owner: paymentOwner(wallet), hash: e.hash, kind: 'approval' });
           return;
         }
         setError(captureUserMessage(e));
@@ -1118,7 +1137,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts wallet={wallet} />
         {signerPanel}
-        {previousBroadcast !== undefined && (
+        {previousBroadcast !== undefined && showPrevious && (
           <Notice kind="warn" title={t('pay.previous.title')}>
             {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
           </Notice>
@@ -1188,7 +1207,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <WalletAttempts wallet={wallet} />
       {signerPanel}
       {signerBlocked && <Notice kind="error">{t('pay.signer.policyBlocked')}</Notice>}
-      {previousBroadcast !== undefined && (
+      {previousBroadcast !== undefined && showPrevious && (
         <Notice kind="warn" title={t('pay.previous.title')}>
           {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
         </Notice>
@@ -1298,7 +1317,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <dd>{t('pay.destinationNote')}</dd>
         </dl>
       )}
-      {ctx !== undefined && (
+      {ctx !== undefined && !reconnectForOutcome && (
         <section className="panel" aria-labelledby="seller-receipt-h">
           <h3 id="seller-receipt-h">{t('pay.receipt.heading')}</h3>
           <p className="hint">
@@ -1401,7 +1420,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
-      {ready && phase !== 'done' && phase !== 'submitted' && (
+      {ready && (!terminal || reconnectForOutcome) && (
         <div className="panel">
           <h3>{t('pay.wallet')}</h3>
           {wallet === undefined ? (
@@ -1427,7 +1446,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {rich('pay.connected', { wallet: wallet.wallet.name, account: wallet.account, chain: String(wallet.chainId) }, monoTag('account'))}
             </p>
           )}
-          {wallet !== undefined && built === undefined && (
+          {!terminal && wallet !== undefined && built === undefined && (
             <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
               {t('pay.prepare')}
             </button>
@@ -1445,7 +1464,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
-      {phase === 'submitted' && broadcast !== undefined && (
+      {showOutcome && phase === 'submitted' && broadcast !== undefined && (
         <div className="panel" aria-live="polite">
           <h3>{broadcastKind === 'approval' ? t('pay.sent.approvalTitle') : t('pay.sent.paymentTitle')}</h3>
           <p>{rich('pay.sent.body', { kind: broadcastKind, hash: broadcast }, monoTag('hash'))}</p>
@@ -1455,7 +1474,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
-      {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
+      {showOutcome && phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
         <div className="panel" aria-live="polite">
           <h3>{t('pay.done.heading')}</h3>
           <p>{rich('pay.done.hash', { hash: result.hash }, monoTag('hash'))}</p>

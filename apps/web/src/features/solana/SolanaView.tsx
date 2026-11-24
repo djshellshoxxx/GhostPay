@@ -1,3 +1,4 @@
+import { revokePrivacyReveal } from '../../lib/privacyMode';
 import { displayMessage, type DisplayMessage } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -142,6 +143,7 @@ export function SolanaView(): ReactNode {
       walletRef.current = w;
       if (offerBackup) seedRef.current = hexToBytes(hex);
       setHasBackup(offerBackup);
+      revokePrivacyReveal();
       setWallet(w);
       setAppLocked(false);
       setSeedInput('');
@@ -261,6 +263,7 @@ export function SolanaView(): ReactNode {
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
     forgetSeed();
+    revokePrivacyReveal();
     setWallet(undefined);
     resetFlow();
   };

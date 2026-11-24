@@ -1,3 +1,4 @@
+import { revokePrivacyReveal } from '../../lib/privacyMode';
 import { displayMessage, type DisplayMessage } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -123,6 +124,7 @@ export function TronView(): ReactNode {
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     resetFlow();
     walletRef.current = w;
+    revokePrivacyReveal();
     setWallet(w);
     setAppLocked(false);
     setBackupInput('');
@@ -242,6 +244,7 @@ export function TronView(): ReactNode {
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
+    revokePrivacyReveal();
     setWallet(undefined);
     setHasBackup(false);
     resetFlow();

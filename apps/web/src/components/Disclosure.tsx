@@ -1,3 +1,4 @@
+import { usePrivacy } from '../lib/privacyMode';
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { MessageKey } from '../i18n/catalog';
@@ -51,6 +52,7 @@ export function bpsToPercent(bps: bigint): string {
 export function FeeDisclosure(props: { readonly manifest: ManifestState | undefined; readonly chainName?: string | undefined }): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const { masked } = usePrivacy();
   const pct = bpsToPercent(FEE_SCHEDULE.ROUTER_FEE_BPS);
   const m = props.manifest;
   // Each state has its own whole-sentence key, so a translation can order the clauses naturally. All are security keys.
@@ -58,7 +60,7 @@ export function FeeDisclosure(props: { readonly manifest: ManifestState | undefi
   let values: Record<string, string>;
   if (m?.status === 'loaded') {
     id = m.trust === 'signed' ? 'disclosure.fee.signed' : m.trust === 'unsigned-dev' ? 'disclosure.fee.unsigned' : 'disclosure.fee.unavailable';
-    values = { pct, recipient: m.manifest.feeRecipient };
+    values = { pct, recipient: masked ? '••••' : m.manifest.feeRecipient };
   } else if (m === undefined) {
     id = 'disclosure.fee.loading';
     values = { pct };
@@ -139,11 +141,12 @@ export function useLimits(): readonly string[] {
 
 function ChainFee(props: { readonly chainId: number; readonly name: string }): ReactNode {
   const manifest = useManifest(props.chainId);
+  const { masked } = usePrivacy();
   return (
     <li>
       <strong>{props.name}</strong>
       <FeeDisclosure manifest={manifest} chainName={props.name} />
-      {manifest?.status === 'loaded' && (
+      {!masked && manifest?.status === 'loaded' && (
         <p className="hint">
           <RichText id="disclosure.chainFee.contracts" values={{ router: manifest.manifest.router, relayer: manifest.manifest.sweepRelayer }} tags={monoTags} />
         </p>
