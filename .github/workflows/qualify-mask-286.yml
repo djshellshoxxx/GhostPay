@@ -5,19 +5,19 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: qualify-mask-286
+  group: qualify-mask-286-final
   cancel-in-progress: true
 jobs:
   masking:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     env:
-      CANDIDATE: 6df0c30afdc36585feb7c0ca4853c0ffbc849b14
+      CANDIDATE: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
       BASELINE: 75b876bd1da2c010faf43e3eb3b4f51fa15081fc
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 6df0c30afdc36585feb7c0ca4853c0ffbc849b14
+          ref: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
           persist-credentials: false
       - name: Compose the PR candidate with pinned main
         env:
@@ -42,6 +42,22 @@ jobs:
           npm run ci:scan-secrets
           npm run ci:check-actions
           npm run ci:check-tx-origin
+      - name: Check the new vault regression against the pre-fix source
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          integrated=$(git rev-parse HEAD)
+          git switch --detach ae5f5f56cba47a67d07896853c15029a8e55fad2
+          cd apps/web
+          if ../../node_modules/.bin/vitest run src/AppShell.privacy.test.tsx -t 'vault-side lock' > "$RUNNER_TEMP/tag-red.log" 2>&1; then
+            echo "Expected the direct lock to leave the grant active before the fix"
+            exit 1
+          fi
+          grep -q 'Reveal details for 30 seconds' "$RUNNER_TEMP/tag-red.log"
+          grep -q '1 failed' "$RUNNER_TEMP/tag-red.log"
+          echo "Confirmed the original vault-side lock regression at ae5f5f56."
+          cd ../..
+          git switch --detach "$integrated"
       - name: Install test browsers
         if: ${{ !cancelled() }}
         run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
