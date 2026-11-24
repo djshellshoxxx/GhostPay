@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { AttemptResolution } from '../lib/attemptStatus';
+import * as journal from '../lib/duplicateAttemptJournal';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt } from '../lib/duplicateAttemptJournal';
+import * as errors from '../lib/errors';
 import { mockRpc } from '../test/mockRpc';
 
 const outcome = vi.hoisted(() => ({ next: undefined as AttemptResolution | undefined }));
@@ -26,10 +28,24 @@ beforeEach(() => {
   finishAttempt(attempt, hash, store);
   window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, records.at(-1) ?? '[]');
 });
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 async function statusFor(next: AttemptResolution): Promise<string> {
   outcome.next = next;
+  // The status assertion can finish before the real IndexedDB migration. Own that
+  // promise so neither its notifications nor its rejection outlive this fixture.
+  const migrate = journal.migrateBrowserAttempts;
+  let migration: Promise<void> | undefined;
+  vi.spyOn(journal, 'migrateBrowserAttempts').mockImplementation(() => {
+    migration = migrate();
+    return migration;
+  });
   render(<WalletAttempts getRpc={() => Promise.resolve(mockRpc(1, () => { throw new Error('not used'); }))} />);
+  expect(migration).toBeDefined();
+  await act(async () => { await migration; });
   fireEvent.click(await screen.findByRole('button', { name: 'Check status on my RPC' }));
   return (await screen.findByRole('status')).textContent ?? '';
 }
@@ -58,4 +74,28 @@ it('keeps the plain replacement wording for a same-call speed-up', async () => {
   });
   expect(text).toMatch(/^Linked replacement/);
   expect(text).not.toMatch(/different call/);
+});
+
+it.each(['resolve', 'reject'] as const)('settles a delayed migration %s after the status view unmounts', async (result) => {
+  const failure = new Error('synthetic delayed migration refusal');
+  let finish = (): void => { throw new Error('migration not initialized'); };
+  const migration = new Promise<void>((resolve, reject) => {
+    finish = () => { if (result === 'resolve') resolve(); else reject(failure); };
+  });
+  const migrate = vi.spyOn(journal, 'migrateBrowserAttempts').mockReturnValueOnce(migration);
+  const captureError = vi.spyOn(errors, 'captureUserMessage');
+  const getRpc = vi.fn(() => Promise.resolve(mockRpc(1, () => { throw new Error('not used'); })));
+  const view = render(<WalletAttempts getRpc={getRpc} />);
+  expect(migrate).toHaveBeenCalledOnce();
+  view.unmount();
+
+  await act(async () => {
+    finish();
+    if (result === 'resolve') await expect(migration).resolves.toBeUndefined();
+    else await expect(migration).rejects.toBe(failure);
+  });
+  expect(screen.queryByRole('region')).toBeNull();
+  expect(screen.queryByRole('alert')).toBeNull();
+  expect(captureError).not.toHaveBeenCalled();
+  expect(getRpc).not.toHaveBeenCalled();
 });

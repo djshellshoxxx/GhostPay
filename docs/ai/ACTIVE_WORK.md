@@ -1,3 +1,14 @@
+# Recover PR #545 wallet status fixture qualification — 2026-11-24 UTC
+
+Worker: `/root/resume_payment_safety`, delegated by the missed-worker recovery coordinator.
+Branch: `codex/recover-wallet-attempt-status-fixture-20261124`.
+Exact parent: PR #545 `d1e167f1b5372f74506fc104220b9a03cb6a3e92`; #500 remains the journal owner.
+Owned paths: `apps/web/src/components/WalletAttempts.status.test.tsx`, this additive claim, and `docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md`.
+Scope: repair the test lifecycle that allowed an asynchronous journal migration rejection to update React after the jsdom environment was destroyed. Hosted CI run `45311266153`, job `138198190848` passed all 3,057 tests but failed on that unhandled rejection.
+Acceptance: deterministic migration completion and rejection coverage, explicit component cleanup, unchanged status assertions and production code, focused native Vitest and typed ESLint, source-pinned handoff. Preserve #545/#500/#528/#541 branches and integration ownership. No deployment, shared-branch write, new dependencies, real wallets or real funds.
+
+---
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
