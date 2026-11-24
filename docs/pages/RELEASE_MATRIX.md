@@ -65,3 +65,16 @@ Found by the real-chain acceptance run:
 | `build-pages.sh` version probe failed under `FORCE_COLOR=1` | `NO_COLOR=1 FORCE_COLOR=0 node -p` | Pages acceptance run |
 
 Accepted limitations, documented and not changed here: no response headers on Pages (no `frame-ancestors`, `nosniff`, COOP or Permissions-Policy); a broad `connect-src` for user-chosen RPCs; plain-text RPC URLs and settings in `localStorage`; tab-scoped duplicate-payment and sweep journals; the in-page release hash is self-attested.
+
+## Account switching and vault lock (#286)
+
+[Draft PR #571](https://github.com/djshellshoxxx/GhostPay/pull/571) is stacked on [#372](https://github.com/djshellshoxxx/GhostPay/pull/372). Qualification is pending for code and fixtures at `3af87ae5a3da7b04500e0fc12d7a5f145ae77d12`. The GP-PAGES-04 worker owns the expiry decision and protected-action tests in [#544](https://github.com/djshellshoxxx/GhostPay/pull/544).
+
+| Acceptance case | Evidence on the candidate |
+|---|---|
+| A → B → A, manual lock and idle expiry revoke prior presentation, including off-route callbacks | `SessionPresentationBoundary.test.tsx`, `useWalletPrivacy.test.tsx`, `CreateInvoice.test.tsx`, `Sweep.test.tsx` |
+| A delayed wallet, tag lookup or vault read cannot reopen old results or dialogs | `WalletPrivacy.lifecycle.test.tsx`, `Scan.test.tsx`, `ReconciliationLedger.test.tsx` |
+| A connected private checkout stays cleared after route changes or a direct reload, including when automatic fragment removal is off | `account-vault-privacy.spec.ts` (full and lean desktop Chromium) |
+| Encrypted reconciliation data survives locking, and a returned hash remains available to its original wallet following a failed completion write | `ReconciliationLedger.test.tsx`, `WalletPrivacy.lifecycle.test.tsx`, `Sweep.test.tsx` |
+
+The hosted typecheck, Vitest suite and Chromium jobs must qualify the PR before this row is accepted.

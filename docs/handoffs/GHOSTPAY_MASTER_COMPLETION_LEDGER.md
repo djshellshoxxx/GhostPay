@@ -1,5 +1,13 @@
 # GhostPay authoritative completion ledger
 
+## Account and vault presentation privacy (#286, November 23 Pacific)
+
+[Draft #571](https://github.com/djshellshoxxx/GhostPay/pull/571) targets the recovery/privacy composition [#372](https://github.com/djshellshoxxx/GhostPay/pull/372) at `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`. The source and fixture checkpoint is `3af87ae5a3da7b04500e0fc12d7a5f145ae77d12`. #544 owns GP-PAGES-04 expiry calculation, key custody and protected-action verification. This child consumes its session and lock notifications.
+
+The candidate clears seller and wallet presentation, in-flight disclosure dialogs, checkout link capabilities and late view results. Wallet attempts are account- and chain-scoped. If a final hash write fails, reconnecting the original wallet retries persistence and checks the result. While storage refuses writes the returned hash can be recovered from the open tab. Scan tags and reconciliation records remain encrypted in storage. Locking has no automatic delete operation.
+
+Supplemental deterministic checks executed on the candidate used the production modules with synthetic providers and stores. A React 18.2/LinkeDOM harness exercised 24 presentation transitions, eight wallet journal reconnect sequences, and nine ledger locks or switches with a delayed read. Isolated module checks exercised 80 journal recovery sequences and 22 provider cases. All passed. All 24 changed TypeScript/TSX sources transformed and parsed. The local Node/Chromium executor was unavailable. Repository Vitest, typecheck and full/lean Chromium acceptance remain pending on GitHub. [Release matrix](../pages/RELEASE_MATRIX.md#account-switching-and-vault-lock-286).
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for
