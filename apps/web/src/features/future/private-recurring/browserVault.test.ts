@@ -41,15 +41,15 @@ vi.mock('../../../lib/session', () => ({
 vi.mock('../../../lib/reconciliationVault', () => ({
   IdbReconciliationVaultStore: class {
     public async read(key: string): Promise<string | null> {
-      return state.records.get(key) ?? null;
+      return Promise.resolve(state.records.get(key) ?? null);
     }
     public async compareAndSwap(
       key: string, expected: string | null, next: string, guard: () => void,
     ): Promise<boolean> {
       guard();
-      if ((state.records.get(key) ?? null) !== expected) return false;
+      if ((state.records.get(key) ?? null) !== expected) return Promise.resolve(false);
       state.records.set(key, next);
-      return true;
+      return Promise.resolve(true);
     }
   },
 }));

@@ -1,3 +1,13 @@
+# F10 M4 native qualification repair — 2026-11-24 UTC
+
+Worker: `/root/remote_inventory` under coordinator `9723b6705f45`. Isolated branch `finish/recurring-m4-qualification-20261124`; exact parent PR #456 `9e8a619cc2ce2688c16c89d16df4aeb7959bc627`; observed main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only `apps/web/src/features/future/private-recurring/vault.test.ts`, `apps/web/src/features/future/private-recurring/browserVault.test.ts`, this additive claim and `docs/handoffs/F10_M4_NATIVE_QUALIFICATION_20261124.md`. Preserve the owner branch and the dormant #396 → #391 → #371 dependency chain.
+
+Acceptance: correct the exact-head CI TS2769 WebCrypto fixture type, four require-await fixture errors and the mismatched rollback error expectation; retain all existing rejection assertions, separately exercise schema-valid history rollback, prove refused writes preserve ciphertext and recovered state, and run native F10 tests plus applicable TypeScript, lint and static build checks. No production logic, key derivation, contract, dependency, workflow, release gate, route activation or automatic billing change. Independent review and hosted gates remain required before integration.
+
+Status: repaired existing M4 test-fixture blockers in `37dc518dad5d7b62c4f5c8ade5136b521834a406`; all 129 F10 tests, typed lint for both changed tests, full web TypeScript, full/lean static builds and their bundle scans passed natively. Production files are unchanged. Details and remaining broader F10 work are recorded in `docs/handoffs/F10_M4_NATIVE_QUALIFICATION_20261124.md`.
+
+---
+
 # F10 M4 browser-session key binding (extension) — 2026-11-22
 
 - Worker/branch: same isolated F10 M4 coordinator on `feature/f10-durable-cas-m4-20261122`; no change to upstream F10 ownership or integration lease.
