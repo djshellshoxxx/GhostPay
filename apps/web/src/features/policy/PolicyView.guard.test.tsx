@@ -178,7 +178,7 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
     expect(asked).toBe(1);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
-    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this browser profile/)).toBeTruthy();
     expect(asked).toBe(1);
   });
 });
@@ -308,7 +308,7 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
     await clearRecord(user, 'approval');
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
-    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this browser profile/)).toBeTruthy();
     expect(asked).toHaveLength(2);
   });
 
