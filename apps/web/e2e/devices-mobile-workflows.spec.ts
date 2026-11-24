@@ -33,7 +33,9 @@ test('after a camera denial a touch user can import an invoice QR image and revi
   await expect(page.getByRole('heading', { name: 'Review payment' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Open scanned invoice' }).tap();
   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
-  await expect(page.getByText(memo, { exact: true })).toBeVisible();
+  const memoParagraph = page.locator('p').filter({ has: page.getByText('Memo:', { exact: true }) });
+  await expect(memoParagraph).toBeVisible();
+  await expect(memoParagraph).toHaveText(`Memo: ${memo}`);
 });
 
 test('an encrypted backup downloaded by touch can be selected again and verified', async ({ page }, testInfo) => {
