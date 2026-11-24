@@ -79,6 +79,9 @@ export function formatUnits(value: bigint, decimals: number): string {
   const abs = neg ? -value : value;
   const s = abs.toString().padStart(decimals + 1, '0');
   const whole = s.slice(0, s.length - decimals);
-  const frac = decimals === 0 ? '' : s.slice(s.length - decimals).replace(/0+$/, '');
+  const fractionStart = s.length - decimals;
+  let fractionEnd = s.length;
+  while (fractionEnd > fractionStart && s[fractionEnd - 1] === '0') fractionEnd -= 1;
+  const frac = s.slice(fractionStart, fractionEnd);
   return (neg ? '-' : '') + whole + (frac ? '.' + frac : '');
 }

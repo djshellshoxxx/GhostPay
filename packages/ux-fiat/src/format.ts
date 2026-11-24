@@ -120,14 +120,42 @@ export function parseFiatInput(
   if (typeof text !== 'string' || text.length === 0 || text.length > 100) {
     return err('bad-input', 'empty or oversized input');
   }
+  if (fmt === null || typeof fmt !== 'object') return err('bad-format', 'bad separators');
   const { groupSeparator: g, decimalSeparator: d } = fmt;
-  if (d.length === 0 || d === g || BAD_SEP_RE.test(d) || BAD_SEP_RE.test(g)) {
+  if (
+    typeof g !== 'string' ||
+    typeof d !== 'string' ||
+    g.length > 2 ||
+    d.length === 0 ||
+    d.length > 2 ||
+    d === g ||
+    BAD_SEP_RE.test(d) ||
+    BAD_SEP_RE.test(g)
+  ) {
     return err('bad-format', 'bad separators');
   }
-  const idx = text.indexOf(d);
-  if (idx !== text.lastIndexOf(d)) return err('bad-input', 'multiple decimal separators');
-  const intRaw = idx === -1 ? text : text.slice(0, idx);
-  const fracRaw = idx === -1 ? '' : text.slice(idx + d.length);
+  // Match complete separator tokens, longest first. A permitted multi-character
+  // group token can contain the decimal token (e.g. '..' with '.').
+  let intRaw = '';
+  let fracRaw = '';
+  let hasDecimal = false;
+  for (let pos = 0; pos < text.length; ) {
+    const groupHere = g !== '' && text.startsWith(g, pos);
+    const decimalHere = text.startsWith(d, pos);
+    if (groupHere && (!decimalHere || g.length > d.length)) {
+      if (hasDecimal) return err('bad-input', 'misplaced group separator');
+      intRaw += g;
+      pos += g.length;
+    } else if (decimalHere) {
+      if (hasDecimal) return err('bad-input', 'multiple decimal separators');
+      hasDecimal = true;
+      pos += d.length;
+    } else {
+      if (hasDecimal) fracRaw += text.charAt(pos);
+      else intRaw += text.charAt(pos);
+      pos += 1;
+    }
+  }
   const intDigits = g === '' ? intRaw : intRaw.split(g).join('');
   if (g !== '' && (intRaw.startsWith(g) || intRaw.endsWith(g) || intRaw.includes(g + g))) {
     return err('bad-input', 'misplaced group separator');
@@ -135,7 +163,7 @@ export function parseFiatInput(
   if (!/^[0-9]+$/.test(intDigits) || (fracRaw !== '' && !/^[0-9]+$/.test(fracRaw))) {
     return err('bad-input', 'not a number');
   }
-  if (idx !== -1 && fracRaw === '') return err('bad-input', 'dangling decimal separator');
+  if (hasDecimal && fracRaw === '') return err('bad-input', 'dangling decimal separator');
   if (fracRaw.length > decimals) return err('excess-precision', 'too many fractional digits');
   const v = BigInt(intDigits + fracRaw.padEnd(decimals, '0'));
   return checkAmount(v);

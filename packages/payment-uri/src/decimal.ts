@@ -18,6 +18,8 @@ const DEC = /^(0|[1-9][0-9]*)(?:\.([0-9]+))?$/;
  * @param max Inclusive upper bound of the value in units of 10^-maxScale.
  */
 export function parseDecimal(s: string, maxScale: number, max: bigint): Decimal {
+  // Match the 0–77 atomic precision domain enforced by toAtomic and formatAtomic.
+  if (!Number.isInteger(maxScale) || maxScale < 0 || maxScale > 77) return fail('INVALID_AMOUNT');
   if (typeof s !== 'string' || s.length > 100) return fail('INVALID_AMOUNT');
   const m = DEC.exec(s);
   if (!m) return fail('INVALID_AMOUNT');
@@ -50,6 +52,9 @@ export function formatAtomic(units: bigint, decimals: number): string {
   }
   const s = units.toString().padStart(decimals + 1, '0');
   const int = s.slice(0, s.length - decimals);
-  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  const fractionStart = s.length - decimals;
+  let fractionEnd = s.length;
+  while (fractionEnd > fractionStart && s[fractionEnd - 1] === '0') fractionEnd -= 1;
+  const frac = s.slice(fractionStart, fractionEnd);
   return frac === '' ? int : `${int}.${frac}`;
 }

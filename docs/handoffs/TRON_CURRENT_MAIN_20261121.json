@@ -1,0 +1,149 @@
+{
+  "format": "ghostpay-source-qualification/1",
+  "scope": "PR #340 current-main TRON selected-genesis integration",
+  "worker": "/root/tron_refresh",
+  "coordinator": "5ceb6203640a-root",
+  "observed_at": "2026-11-21T06:17:04Z",
+  "branch": "repair/ghostpay-tron-main-20261121-5ceb",
+  "starting_pr340_head": "b86a3e6affe8b71c6f13d16783accad446271ba4",
+  "claim_commit": "bd0aeeddfbdcb68491e4d8eed1d9b32d37ef993d",
+  "source_commit": "ae7498b43065e0030e47ba23d473073f5d862b3d",
+  "source_tree": "f1bb9aefdbe6cf6e59ea81e31040ed1f2337b81d",
+  "main_snapshot": "aec179910c39081d820396409ff3139ff2264132",
+  "merge_parents": [
+    "bd0aeeddfbdcb68491e4d8eed1d9b32d37ef993d",
+    "aec179910c39081d820396409ff3139ff2264132"
+  ],
+  "resolution": "Preserve current main INVALID_RESPONSE expectation and all three incomplete-page regressions; add selected local network argument. Preserve both ACTIVE_WORK entries.",
+  "changed_paths_against_main": [
+    "apps/web/src/features/tron/TronView.network.test.tsx",
+    "apps/web/src/features/tron/TronView.tsx",
+    "apps/web/src/features/tron/chain.hardening.test.ts",
+    "apps/web/src/features/tron/rpc.network.test.ts",
+    "apps/web/src/features/tron/rpc.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/TRON_GENESIS_LEGACY_TESTS_AND_CENSUS_20261120.md",
+    "docs/handoffs/TRON_SELECTED_GENESIS_20261120.md"
+  ],
+  "source_file_sha256": {
+    "apps/web/src/features/tron/TronView.network.test.tsx": "b39c3163f18e757e73551ffe4c26c3e7762cf07fcc96a768f3ad8339a3b2a2e0",
+    "apps/web/src/features/tron/TronView.tsx": "a21beb6d1118b99fb0bbde1a5114c0771a78195fa11f4ebbb1079d9c42b36011",
+    "apps/web/src/features/tron/chain.hardening.test.ts": "d32c81b76335397e8ce633e7aeede25de7d85eed90d7b33571622bd0450bbc5c",
+    "apps/web/src/features/tron/rpc.network.test.ts": "df5365e4f9ea3f5eae8cdf24c4ee49500c87997fee83b90758183d0a3b96fc6e",
+    "apps/web/src/features/tron/rpc.ts": "88ccfbdbe0f696da3eb7a6fd3290b4a6d0cceb8038da4056a4c13ad6f385b285"
+  },
+  "runtime_from_pr340_unchanged": true,
+  "dependencies": {
+    "node": "v24.22.3",
+    "installation": "Reused coordinator npm ci --ignore-scripts dependency tree using local symlinks; this worker did not install packages.",
+    "libraries": "Reused coordinator-built current-main libraries after proving package.json, package-lock.json, packages/, tsconfig.base.json and scripts/build-workspaces.mjs identical.",
+    "packages_tree": "75c9c5997fe21b775ec1262928d37724c182e6e3",
+    "package_lock_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+    "dependency_and_build_input_diff": ""
+  },
+  "checks": [
+    {
+      "command": "npm exec -w @ghostpay/web -- vitest run src/features/tron --maxWorkers=1 --no-file-parallelism",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": 66,
+      "skipped": 0,
+      "test_files": 5,
+      "log_name": "web-tron-tests.log",
+      "log_sha256": "6b3429183b743b67f5722da1b0ec06e4e6280767c3671929f9c785ec3d9aa927"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 npm run typecheck -w @ghostpay/web",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": null,
+      "skipped": null,
+      "test_files": null,
+      "log_name": "typecheck.log",
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 npm run lint -w @ghostpay/web",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": null,
+      "skipped": null,
+      "test_files": null,
+      "log_name": "lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 GHOSTPAY_LOCAL_BUILD_PROFILE=full npm run build -w @ghostpay/web",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": null,
+      "skipped": null,
+      "test_files": null,
+      "log_name": "build-full.log",
+      "log_sha256": "f5948dd678f4159886995ea079104a26459889e353be47b9e958d8299fed46b1"
+    },
+    {
+      "command": "npm test -w @ghostpay/tron-adapter -- --maxWorkers=1 --no-file-parallelism",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": 107,
+      "skipped": 0,
+      "test_files": 10,
+      "log_name": "tron-adapter-coverage.log",
+      "log_sha256": "5e1558ce018f5e782c237161df1061ed0bbb1b5c43512eb5ec384aa4f79fb96e"
+    },
+    {
+      "command": "npm run ci:scan-secrets",
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-tron-refresh",
+      "exit_code": 0,
+      "passed": null,
+      "skipped": null,
+      "test_files": null,
+      "log_name": "secret-scan.log",
+      "log_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9"
+    }
+  ],
+  "coverage": {
+    "statements_percent": 97.04,
+    "branches_percent": 93.36,
+    "functions_percent": 98.93,
+    "lines_percent": 99.11,
+    "original_thresholds_preserved": true
+  },
+  "full_build": {
+    "postbuild": "Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.",
+    "artifact_files": {
+      "_headers": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+      "assets/ar-B1jVBsOV.js": "59aa2e9ed63388c835302bf59f7c572f2a55a73795380e73e9b4c7033ec05fda",
+      "assets/es-CaSO-ImJ.js": "5d94ef83279b7855ef6b114aca85209b2e97fc91c789e6b32f322c82d6fe066f",
+      "assets/index-B4x0m7Qz.js": "3c765b3a8fa5d896421fab27a6eb8187fd1f28d7be1892204d221c526fbb4ca2",
+      "assets/ja-DVVbxpzN.js": "05efde4952c98131992fd82b82230ea724f7f219ff6791e3969ce99790b832b8",
+      "assets/jsQR-Ct1FLwmy.js": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f",
+      "assets/rolldown-runtime-XKyaHtl9.js": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+      "assets/scan.worker-C1_YVxLJ.js": "b47609236445ce9651164a2ae2ebf8b095ef1a6ab2ca136860435bc0b83f6d26",
+      "assets/scanner.worker-aBRK3D4k.js": "03b6482738650680fb02b7272232a207fb2d49a195ad960628683fd7e881f7b5",
+      "assets/style-sbKVpGL7.css": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+      "build-info.json": "53d7a38ff35cb0a9be6cd57680ae7a02c23f25d5f6b44d9dc6f368e287f44b36",
+      "deployments/README.md": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d",
+      "favicon.svg": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+      "ghostpay-embed-v1.js": "ad77f44216d452869e856a029d7b17cb31045ba0f28ec4859f5dc400ae3b84cd",
+      "ghostpay-embed-v2.js": "ec302ad63d57348c3b7d6ea6be0975e8eea188364c80dc1cee4be8a8624ed7ab",
+      "help.css": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+      "help.html": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1",
+      "index.html": "9d18953de013bc75fee25d44f83999c6fd57dc76d91237aab78ddb3fb5df50f9",
+      "privacy.html": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7"
+    }
+  },
+  "not_run": [
+    "New exact-head GitHub Actions",
+    "Local Chromium/Firefox/WebKit E2E",
+    "Real RPC or funds tests",
+    "New independent source review of merge resolution",
+    "Release or deployment"
+  ],
+  "next_actions": [
+    "Independently review source ae7498b43065e0030e47ba23d473073f5d862b3d and both conflict resolutions.",
+    "Root recheck existing PR #340 head and ownership, publish without force into that existing branch.",
+    "Qualify exact published combined source against newest main with applicable hosted gates before main integration."
+  ]
+}

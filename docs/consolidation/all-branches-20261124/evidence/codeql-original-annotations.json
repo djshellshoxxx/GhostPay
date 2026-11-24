@@ -1,0 +1,86 @@
+[
+  {
+    "path": "packages/payment-uri/src/decimal.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/payment-uri/src/decimal.ts",
+    "start_line": 55,
+    "start_column": 16,
+    "end_line": 55,
+    "end_column": 63,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-connect/src/hex.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-connect/src/hex.ts",
+    "start_line": 82,
+    "start_column": 38,
+    "end_line": 82,
+    "end_column": 85,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](4) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](5) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-connect/src/hwsigner.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-connect/src/hwsigner.ts",
+    "start_line": 356,
+    "start_column": 70,
+    "end_line": 356,
+    "end_column": 108,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings starting with 'app' and with many repetitions of 'app'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings starting with 'app' and with many repetitions of 'app'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-export/src/amount.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-export/src/amount.ts",
+    "start_line": 28,
+    "start_column": 20,
+    "end_line": 28,
+    "end_column": 43,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-fees/src/amount.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-fees/src/amount.ts",
+    "start_line": 79,
+    "start_column": 16,
+    "end_line": 79,
+    "end_column": 63,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-fiat/src/decimal.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-fiat/src/decimal.ts",
+    "start_line": 109,
+    "start_column": 16,
+    "end_line": 109,
+    "end_column": 73,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  },
+  {
+    "path": "packages/ux-privacy/src/policy.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/1a7447d58c08363209b6b9b67e9a6afad07d87f3/packages/ux-privacy/src/policy.ts",
+    "start_line": 201,
+    "start_column": 16,
+    "end_line": 201,
+    "end_column": 63,
+    "annotation_level": "failure",
+    "title": "Polynomial regular expression used on uncontrolled data",
+    "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '0'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '0'.",
+    "raw_details": null
+  }
+]

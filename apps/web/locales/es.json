@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "Autocomprobaciones del navegador",
+    "app.checks.running": "Comprobando las capacidades locales del navegador…",
+    "app.checks.ready": "Todas las comprobaciones de capacidades del navegador se superaron",
+    "app.checks.attention": "Revise las capacidades del navegador",
+    "app.checks.secure": "Contexto seguro del navegador",
+    "app.checks.digest": "Prueba SHA-256 con resultado conocido de WebCrypto",
+    "app.checks.storage": "Prueba temporal de escritura y lectura del almacenamiento",
+    "app.checks.pass": "Superada",
+    "app.checks.warn": "No disponible",
+    "app.checks.fail": "Fallida",
+    "app.checks.limits": "Estas comprobaciones no son una verificación independiente de la integridad del código, la autenticidad del monedero o RPC, la seguridad de los pagos, la liquidación en cadena ni la recuperación de claves. No se envía ninguna solicitud de red.",
     "settings.title": "Ajustes",
     "settings.notice.plaintext": "Los ajustes se guardan en este navegador en texto sin cifrar, incluidas las URL de RPC. No introduzcas una URL que contenga un secreto que no guardarías en texto sin cifrar. Nunca se guarda ninguna clave.",
     "settings.rpc.legend": "Puntos de conexión RPC",
@@ -567,6 +578,7 @@
     "policy.create.heading": "Crear una meta-dirección con política",
     "policy.create.needSession": "Carga o genera primero claves del vendedor (Claves del vendedor).",
     "policy.create.imported": "Registro de política verificado y cargado.",
+    "policy.create.alreadySaved": "El registro de política ya está cargado.",
     "policy.create.otherKeys": "Registro verificado, pero pertenece a otras claves del vendedor distintas de las cargadas ahora. El análisis no encontrará sus pagos.",
     "policy.create.rejected": "Se rechazó el registro: {reason}.",
     "policy.create.badMeta": "Introduce la meta-dirección con política (st:eth:gp2:0x...).",
@@ -2257,6 +2269,13 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "policy.create.withdrawableAny": "This policy has no limits: it can withdraw any token and the native coin.",
+    "policy.create.withdrawableOnly": "This policy can withdraw only: {tokens}. A payment in any other token or coin stays locked in the account forever, and payers cannot see your limits in the meta-address: tell them which assets to use.",
+    "policy.pay.coverageUnknownTitle": "This app cannot check that the payee can withdraw this asset",
+    "policy.pay.coverageUnknown": "A policy meta-address carries only a hash of the payee's policy, not its per-token limits. If the policy has limits and none for this asset, the payment stays locked in the policy account forever and nobody can recover it. Pay only in an asset the payee has confirmed over a channel you trust.",
+    "policy.pay.coverageChecked": "Checked against the payee's policy record loaded in this tab: the policy can withdraw this asset.",
+    "policy.pay.tokenNotWithdrawable": "Blocked: the payee's policy record loaded in this tab has per-token limits and none for this asset, so the policy account could never withdraw it. Nothing was sent.",
+    "policy.pay.committedAssetNotWithdrawable": "Blocked: a loaded record matches the payee's policy commitment and its immutable limits do not cover this asset. The policy account cannot withdraw it. Nothing was sent."
   }
 }

@@ -76,7 +76,8 @@ describe('guard helpers', () => {
     expect(randomBelow(1n)).toBe(0n);
     expect(randomBelow(1n << 64n, rng)).toBeLessThan(1n << 64n);
     expect(() => randomBelow(0n)).toThrow(MetadataHardeningError);
-    expect(() => randomBelow((1n << 64n) + 1n)).toThrow(MetadataHardeningError);
+    expect(randomBelow((1n << 64n) + 1n, rng)).toBeLessThan((1n << 64n) + 1n);
+    expect(() => randomBelow((1n << 256n) + 1n)).toThrow(MetadataHardeningError);
     expect(() => randomInt(0)).toThrow(MetadataHardeningError);
     expect(shuffle([1, 2, 3, 4], rng).sort()).toEqual([1, 2, 3, 4]);
     expect(shuffle([])).toEqual([]);

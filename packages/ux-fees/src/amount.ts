@@ -76,7 +76,10 @@ export function formatUnits(v: bigint, decimals: number): string {
   intIn(decimals, 'decimals', 0, 36);
   const s = v.toString().padStart(decimals + 1, '0');
   const whole = s.slice(0, s.length - decimals);
-  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  const fractionStart = s.length - decimals;
+  let fractionEnd = s.length;
+  while (fractionEnd > fractionStart && s[fractionEnd - 1] === '0') fractionEnd -= 1;
+  const frac = s.slice(fractionStart, fractionEnd);
   return frac === '' ? whole : `${whole}.${frac}`;
 }
 

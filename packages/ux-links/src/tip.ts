@@ -120,6 +120,9 @@ export function buildTipPageModel(config: TipConfig, state: TipState, nowSeconds
 
   const sug = c['suggested'];
   if (!Array.isArray(sug) || sug.length < 1 || sug.length > MAX_PRESETS) return fail('TIP', 'suggested');
+  for (let i = 0; i < sug.length; i++) {
+    if (!Object.prototype.hasOwnProperty.call(sug, i)) return fail('TIP', 'suggested');
+  }
   let prev = 0n;
   const presets = (sug as unknown[]).map((a) => {
     const v = parseAmount(a, decimals);

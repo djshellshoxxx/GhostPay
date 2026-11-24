@@ -107,6 +107,7 @@ export { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
 export { windowHeadroom, consumeWindow, type WindowState, type WindowLeaf } from './window.js';
 export {
   buildPolicyRecord,
+  policyCoversToken,
   parsePolicyRecord,
   serializePolicyRecord,
   findPolicyFromCandidates,

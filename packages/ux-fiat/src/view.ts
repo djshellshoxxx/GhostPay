@@ -54,7 +54,13 @@ export function computeFiatView(i: FiatViewInput): FiatView {
   const policy = i.policy ?? DEFAULT_RATE_POLICY;
   const pol = checkPolicy(policy);
   if (!pol.ok) return { state: 'invalid', error: pol.error };
-  const r = parseRate(i.quote, policy);
+  let r: ReturnType<typeof parseRate>;
+  try {
+    r = parseRate(i.quote, policy);
+  } catch {
+    // An injected rate quote may expose throwing accessors or proxy traps.
+    return { state: 'invalid', error: { code: 'bad-rate-format', message: 'quote could not be read' } };
+  }
   if (!r.ok) return { state: 'invalid', error: r.error };
   if (r.value.asset !== i.asset.id || r.value.fiat !== i.fiat.code) {
     return { state: 'invalid', error: { code: 'rate-mismatch', message: 'quote is for another pair' } };

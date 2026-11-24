@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "command": [
+      "npm",
+      "test",
+      "-w",
+      "@ghostpay/hygiene",
+      "--",
+      "--maxWorkers=1"
+    ],
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-lint",
+    "source_head": "5c0b698a16a9b3303357a90b4e80d674b8da3c0b",
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_at": "2026-11-21T00:02:31.542536+00:00",
+    "completed_at": "2026-11-21T00:02:42.781059+00:00",
+    "duration_seconds": 11.239,
+    "exit_code": 0,
+    "environment_overrides": {
+      "NODE_OPTIONS": "--max-old-space-size=256"
+    },
+    "log_sha256": "c373ea7361a4c77007d34751963f6a2f5f841a898904fdd4cfc5c1a76371c725"
+  },
+  "stdout_stderr_bytes": 1566,
+  "stdout_stderr_encoding": "base64",
+  "stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdGVzdAo+IHZpdGVzdCBydW4gLS1jb3ZlcmFnZSAtLW1heFdvcmtlcnM9MQoKCiBSVU4gIHY1LjAuNSAvd29ya3NwYWNlL3NjcmF0Y2gvOWE0YWI2YzNkMTE3L0dob3N0UGF5LWh5Z2llbmUtbGludC9wYWNrYWdlcy9oeWdpZW5lCiAgICAgIENvdmVyYWdlIGVuYWJsZWQgd2l0aCB2OAoKCiBUZXN0IEZpbGVzICA2IHBhc3NlZCAoNikKICAgICAgVGVzdHMgIDE0OSBwYXNzZWQgKDE0OSkKICAgU3RhcnQgYXQgIDE2OjAyOjMyCiAgIER1cmF0aW9uICAxMC40MXMgKHRlc3RzIDcwJSwgaW1wb3J0IDI0JSwgdHJhbnNmb3JtIDYlLCB3b3JrZXIgMSUpCgogICAgSXNvbGF0ZSAgNiB3b3JrZXJzIHNwYXduZWQgwrcgfjExNm1zIHN0YXJ0dXAgZWFjaCAoc3Bhd24gKyBlbnZpcm9ubWVudCwgcGVyIGZpbGUpCiAgICAgICAgICAgICBhdCBsZWFzdCB+NTc5bXMgZmFzdGVyIHdpdGggaXNvbGF0ZTogZmFsc2Ug4oCUIHJldXNlcyB3b3JrZXJzIGFjcm9zcyBmaWxlcyBpbnN0ZWFkIG9mIG9uZSBwZXIgZmlsZQoKICUgQ292ZXJhZ2UgcmVwb3J0IGZyb20gdjgKLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLS0tLS0tLS0tLQpGaWxlICAgICAgICAgICAgICB8ICUgU3RtdHMgfCAlIEJyYW5jaCB8ICUgRnVuY3MgfCAlIExpbmVzIHwgVW5jb3ZlcmVkIExpbmUgI3MgCi0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0KQWxsIGZpbGVzICAgICAgICAgfCAgIDk5LjUyIHwgICAgIDk5LjEgfCAgICAgMTAwIHwgICAgIDEwMCB8ICAgICAgICAgICAgICAgICAgIAogbGVkZ2VyLnRzICAgICAgICB8ICAgICAxMDAgfCAgICAgOTguOSB8ICAgICAxMDAgfCAgICAgMTAwIHwgNTIgICAgICAgICAgICAgICAgCiB2ZXJpZnkudHMgICAgICAgIHwgICA5OC44NSB8ICAgIDk4LjYzIHwgICAgIDEwMCB8ICAgICAxMDAgfCA5NywxMDYgICAgICAgICAgICAKLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLS0tLS0tLS0tLQoKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PSBDb3ZlcmFnZSBzdW1tYXJ5ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KU3RhdGVtZW50cyAgIDogOTkuNTIlICggNDE5LzQyMSApCkJyYW5jaGVzICAgICA6IDk5LjElICggMzMzLzMzNiApCkZ1bmN0aW9ucyAgICA6IDEwMCUgKCA3NC83NCApCkxpbmVzICAgICAgICA6IDEwMCUgKCAzMzQvMzM0ICkKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K",
+  "stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 test\n> vitest run --coverage --maxWorkers=1\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-lint/packages/hygiene\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  149 passed (149)\n   Start at  16:02:32\n   Duration  10.41s (tests 70%, import 24%, transform 6%, worker 1%)\n\n    Isolate  6 workers spawned \u00b7 ~116ms startup each (spawn + environment, per file)\n             at least ~579ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n------------------|---------|----------|---------|---------|-------------------\nFile              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n------------------|---------|----------|---------|---------|-------------------\nAll files         |   99.52 |     99.1 |     100 |     100 |                   \n ledger.ts        |     100 |     98.9 |     100 |     100 | 52                \n verify.ts        |   98.85 |    98.63 |     100 |     100 | 97,106            \n------------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.52% ( 419/421 )\nBranches     : 99.1% ( 333/336 )\nFunctions    : 100% ( 74/74 )\nLines        : 100% ( 334/334 )\n================================================================================\n"
+}
