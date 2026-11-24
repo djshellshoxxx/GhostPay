@@ -792,3 +792,8 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## POS terminal reliability and parity
+
+Worker: Codex, branch `fix/pos-terminal-reliability-20261124`, based on #411 at `482d36ad436f4b27b2d86ff9a2c22daf150000ad` (includes #406). Main at preflight: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the child branch's POS reducer and static example, POS-specific tests and documentation, and this additive claim. Preserve both parent branches. Acceptance: exercise creation, payment observation, expiry, cancellation, completion and new-sale reset in both implementations. Verify rejected inputs cannot corrupt the session and amounts remain exact, using bounded generated cases and the actual terminal controls.
