@@ -91,7 +91,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const enabled = useRef(false);
   const revision = useRef(0);
   const exportRevision = useRef(0);
-  const focusAfterRead = useRef(false);
+  const focusOrigin = useRef<Element | null>(null);
   const results = useRef<HTMLDivElement>(null);
   const readStatus = useRef<HTMLParagraphElement>(null);
   const overview = useRef<HTMLHeadingElement>(null);
@@ -100,24 +100,24 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const previewControls = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    if (!focusAfterRead.current) return;
+    const origin = focusOrigin.current;
+    focusOrigin.current = null;
+    if (origin === null) return;
+    // A surviving control may have received focus since the refresh was scheduled.
+    if (document.activeElement !== document.body && document.activeElement !== origin) return;
     if (viewState === 'loading' || viewState === 'refreshing') {
+      focusOrigin.current = readStatus.current;
       readStatus.current?.focus();
-      return;
-    }
-    focusAfterRead.current = false;
-    if (document.activeElement === document.body) {
-      if (viewState === 'ready') overview.current?.focus();
-      if (viewState === 'error') retry.current?.focus();
-    }
+    } else if (viewState === 'ready') overview.current?.focus();
+    else if (viewState === 'error') retry.current?.focus();
   }, [viewState]);
   const seller = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
 
-  const load = useCallback((refresh = false): void => {
+  const load = useCallback((reason: 'open' | 'refresh' | 'background'): void => {
     if (getSessionPublic() !== session) return;
-    if (refresh && results.current?.contains(document.activeElement)) {
-      focusAfterRead.current = true;
-    }
+    const focused = document.activeElement;
+    const ownsFocus = results.current?.contains(focused) || focused === readStatus.current || focused === retry.current;
+    focusOrigin.current = reason !== 'background' || ownsFocus ? focused : null;
     active.current?.abort();
     const operation = new AbortController();
     active.current = operation;
@@ -127,7 +127,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     setPreview(undefined);
     setExportError(false);
     setData(undefined);
-    setViewState(refresh ? 'refreshing' : 'loading');
+    setViewState(reason === 'open' ? 'loading' : 'refreshing');
     const id = 'read:' + ++revision.current;
     const scope = { operationId: id, sessionEpoch: revision.current, profileRef: seller, revision: id };
     const current = (): boolean => !operation.signal.aborted && getSessionPublic() === session;
@@ -164,7 +164,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   useEffect(() => {
     const lock = (): void => {
       enabled.current = false;
-      focusAfterRead.current = false;
+      focusOrigin.current = null;
       active.current?.abort();
       exportRevision.current++;
       exporter.cancel();
@@ -181,7 +181,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     const unsubscribeChanges = subscribeReconciliationChanges(() => {
       if (!enabled.current) return;
       // An in-flight refresh also needs revocation because a mutation may have won after the read.
-      load(true);
+      load('background');
     });
     return () => {
       unsubscribeLock();
@@ -224,7 +224,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     }
     return <>
       <p role={viewState === 'error' ? 'alert' : undefined}>{t(viewState === 'error' ? 'dashboard.error' : 'dashboard.locked')}</p>
-      <button ref={retry} className="btn" type="button" onClick={() => { focusAfterRead.current = true; load(); }}>{t(viewState === 'error' ? 'dashboard.retry' : 'dashboard.open')}</button>
+      <button ref={retry} className="btn" type="button" onClick={() => { load('open'); }}>{t(viewState === 'error' ? 'dashboard.retry' : 'dashboard.open')}</button>
     </>;
   }
 
@@ -283,7 +283,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     <p>{t('dashboard.readAt', { time: date.format(data.loadedAt) })}</p>
     {data.readOnly && <p>{t('dashboard.readOnly')}</p>}
     <div className="dashboard-actions">
-      <button className="btn" type="button" onClick={() => { focusAfterRead.current = true; load(true); }}>{t('dashboard.refresh')}</button>
+      <button className="btn" type="button" onClick={() => { load('refresh'); }}>{t('dashboard.refresh')}</button>
       <button className="btn" type="button" onClick={() => { app.setView('scan'); }}>{t('dashboard.backup')}</button>
     </div>
     <h3 ref={overview} tabIndex={-1}>{t('dashboard.overview')}</h3>
@@ -374,7 +374,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
                   downloadText('ghostpay-invoices.' + preview.preview.format, file.content, file.mimeType);
                   released = true;
                 });
-                if (!released && current()) load(true);
+                if (!released && current()) load('background');
               } catch {
                 if (current()) setExportError(true);
               }
