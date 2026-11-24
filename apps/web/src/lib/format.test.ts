@@ -14,6 +14,20 @@ describe('formatUnits / parseUnits', () => {
     expect(() => formatUnits(1n, 37)).toThrow(RangeError);
     expect(() => formatUnits(1n, 1.5)).toThrow(RangeError);
   });
+  it('fails closed on invalid runtime decimal precision', () => {
+    for (const precision of [-1, 1.5, 37, NaN, Infinity, -Infinity, undefined, '2']) {
+      expect(parseUnits('1', precision as number)).toBeUndefined();
+    }
+    expect(parseUnits('1', 0)).toBe(1n);
+    expect(parseUnits('1', 36)).toBe(10n ** 36n);
+    expect(parseUnits('0.000000000000000000000000000000000001', 36)).toBe(1n);
+  });
+  it('returns undefined instead of throwing for non-string runtime amounts', () => {
+    for (const input of [null, undefined, 123, true, false, {}, [], ['1']]) {
+      expect(parseUnits(input as string, 2)).toBeUndefined();
+    }
+    expect(parseUnits(' 7 ', 2)).toBe(700n);
+  });
   it('parses strictly without rounding', () => {
     expect(parseUnits('25.50', 6)).toBe(25_500_000n);
     expect(parseUnits(' 7 ', 2)).toBe(700n);
@@ -82,5 +96,33 @@ describe('display helpers', () => {
     for (const s of [Number.MAX_SAFE_INTEGER, 8.64e12 + 1, -8.64e12 - 1, NaN, Infinity, -Infinity]) {
       expect(formatUnix(s)).toBe('invalid time');
     }
+  });
+});
+
+describe('formatUnix untrusted runtime timestamp boundaries', () => {
+  it('returns invalid time for nonnumber values instead of coercing or throwing', () => {
+    for (const input of [undefined, null, '0', '1700000000', false, 0n, Symbol('timestamp'), {}, [], new Date(0)]) {
+      const runtimeInput: unknown = input;
+      expect(formatUnix(runtimeInput as number)).toBe('invalid time');
+    }
+  });
+
+  it('does not evaluate attacker-controlled conversion hooks', () => {
+    let conversions = 0;
+    const hostile = {
+      [Symbol.toPrimitive](): never {
+        conversions += 1;
+        throw new Error('must not convert the supplied timestamp');
+      },
+    };
+    expect(formatUnix(hostile as unknown as number)).toBe('invalid time');
+    expect(conversions).toBe(0);
+  });
+
+  it('preserves valid numeric UTC seconds and Date-bound behavior', () => {
+    expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
+    expect(formatUnix(1.5)).toBe('1970-01-01 00:00:01 UTC');
+    expect(formatUnix(-1)).toBe('1969-12-31 23:59:59 UTC');
+    expect(formatUnix(8.64e12 + 1)).toBe('invalid time');
   });
 });

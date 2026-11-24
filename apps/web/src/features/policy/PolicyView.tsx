@@ -19,7 +19,7 @@ export interface PolicyCtx {
   readonly deployment: PolicyChainDeployment | undefined;
   readonly wallet: WalletSession | undefined;
   readonly records: readonly PolicyRecord[];
-  readonly addRecord: (r: PolicyRecord) => void;
+  readonly addRecord: (r: PolicyRecord) => boolean;
   /** Captured deployment scope; invalidated immediately by edits, re-verification or leaving this view. */
   readonly assertDeploymentCurrent: () => void;
 }
@@ -68,6 +68,7 @@ export function PolicyView(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [records, setRecords] = useState<readonly PolicyRecord[]>([]);
+  const recordsRef = useRef<readonly PolicyRecord[]>([]);
   const revision = useRef(0);
   const [scope, setScope] = useState(0);
   useEffect(() => () => { revision.current++; }, []);
@@ -103,7 +104,15 @@ export function PolicyView(): ReactNode {
     deployment,
     wallet: wallet?.chainId === chain.chainId ? wallet : undefined,
     records,
-    addRecord: (r) => { setRecords((prev) => (prev.some((x) => x.policyHash === r.policyHash) ? prev : [...prev, r])); },
+    addRecord: (r) => {
+      // The complete canonical meta-address binds seller keys and policy terms.
+      // Keep a synchronous source of truth so two imports in one event cannot race React state.
+      if (recordsRef.current.some((x) => x.metaAddress === r.metaAddress)) return false;
+      const next = [...recordsRef.current, r];
+      recordsRef.current = next;
+      setRecords(next);
+      return true;
+    },
     assertDeploymentCurrent: () => {
       if (revision.current !== scope || deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
     },

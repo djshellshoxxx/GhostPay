@@ -1,0 +1,727 @@
+{
+  "format": "ghostpay-combined-qualification/1",
+  "recorded_at": "2026-11-24T10:37:59.245188+00:00",
+  "reviewed_production_source": "a107d993c1aed73827d853924ea36036f083400f",
+  "final_local_source": "fb12a3302d9a85aa8777805bbdaab1bf2770ea16",
+  "remote_equivalent_source": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+  "source_tree": "8086add0f3c77a80ae953e45d50b179244261248",
+  "runtime_production_identical_since_review": true,
+  "package_initial_runs": [
+    {
+      "workspace": "packages/address-safety",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/address-safety",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.68,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-address-safety.log",
+      "sha256": "fe69e772c5268ab73a4cb016a549d8e82b007075efb967ef64c96bc456f59b2a",
+      "summaries": [
+        "Test Files  4 passed (4)",
+        "Tests  77 passed (77)"
+      ]
+    },
+    {
+      "workspace": "packages/btc-silent-payments",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/btc-silent-payments",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 86.16,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-btc-silent-payments.log",
+      "sha256": "9b2028a0942ca0ca287d3f75739b5504a850928b1c0c545e88cb6a2d4a68039d",
+      "summaries": [
+        "Test Files  33 passed (33)",
+        "Tests  563 passed (563)"
+      ]
+    },
+    {
+      "workspace": "packages/hygiene",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/hygiene",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 14.03,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-hygiene.log",
+      "sha256": "9e278dc170cf3392d62905b02c560ac16b378d2fc736e41f3d2535efb58ecde6",
+      "summaries": [
+        "Test Files  7 passed (7)",
+        "Tests  163 passed (163)"
+      ]
+    },
+    {
+      "workspace": "packages/invoice-schema",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/invoice-schema",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 284.15,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-invoice-schema.log",
+      "sha256": "1d7f4caef06aebd5aa51094b426acd8195edff01b24a53f46d8cfc27c35342cd",
+      "summaries": [
+        "Test Files  13 passed (13)",
+        "Tests  744 passed (744)"
+      ]
+    },
+    {
+      "workspace": "packages/merchant-hooks",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/merchant-hooks",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 2.46,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-merchant-hooks.log",
+      "sha256": "edb6487a409f47ca79120e78c041c3c9d3304b4de8ce3eeee499e72cdd9615d7",
+      "summaries": [
+        "Test Files  5 passed (5)",
+        "Tests  53 passed (53)"
+      ]
+    },
+    {
+      "workspace": "packages/metadata-hardening",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/metadata-hardening",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.44,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-metadata-hardening.log",
+      "sha256": "3ce1fad6b28b8aee02778ef45ff850db413f00dab61b16f9068ccea001f25214",
+      "summaries": [
+        "Test Files  13 passed (13)",
+        "Tests  125 passed (125)"
+      ]
+    },
+    {
+      "workspace": "packages/policy-scheme",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/policy-scheme",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 8.16,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-policy-scheme.log",
+      "sha256": "c3e609c99708701745c551d23c19868cc124148b8b38ab338c338d536c3b200c",
+      "summaries": [
+        "Test Files  7 passed | 1 skipped (8)",
+        "Tests  103 passed | 7 skipped (110)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-connect",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-connect",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.23,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-connect.log",
+      "sha256": "dc7b06a8cf84af83399ddc0f64dec10d8789374045916b7f463eb75b1810f736",
+      "summaries": [
+        "Test Files  8 passed (8)",
+        "Tests  173 passed (173)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-export",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-export",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 4.81,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-export.log",
+      "sha256": "b55985272bb632297e41caff155a1146e1b6761c2b5278c95432f0abc5695213",
+      "summaries": [
+        "Test Files  12 passed (12)",
+        "Tests  166 passed (166)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-fiat",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-fiat",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 1,
+      "seconds": 2.38,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-fiat.log",
+      "sha256": "5945a5af83ec76a34a9e76465633ae36cb72a57a0493b37d6db775d493d872e7",
+      "summaries": [
+        "Test Files  1 failed | 6 passed (7)",
+        "Tests  6 failed | 82 passed (88)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-guide",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-guide",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 2.17,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-guide.log",
+      "sha256": "f2161e4d48ca0db6a16e90b75310c702f40f9dcbf1acbb9e3947e956808fefb3",
+      "summaries": [
+        "Test Files  6 passed (6)",
+        "Tests  76 passed (76)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-links",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-links",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.75,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-links.log",
+      "sha256": "f3ad9cc222d2bc46d34387e06e89ad752527aa57546391992886e949cfd95b52",
+      "summaries": [
+        "Test Files  8 passed (8)",
+        "Tests  70 passed (70)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-presets",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-presets",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.65,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-presets.log",
+      "sha256": "d96b26bfbedc943c9185e19de4d5a43774b216724cb9322c9aa54ed91dc6738d",
+      "summaries": [
+        "Test Files  7 passed (7)",
+        "Tests  67 passed (67)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-receipts",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-receipts",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 2.61,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-receipts.log",
+      "sha256": "97ec717e8d7e32265b0e2c454e7a0d0f90003f7f2025137e92d9f05f86979309",
+      "summaries": [
+        "Test Files  7 passed (7)",
+        "Tests  162 passed (162)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-vault",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-vault",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 118.0,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-vault.log",
+      "sha256": "50b3fbc60a250e98510faab2da86d9af21ee03b09404780a9e27405914225d1d",
+      "summaries": [
+        "Test Files  11 passed (11)",
+        "Tests  306 passed (306)"
+      ]
+    },
+    {
+      "workspace": "packages/amount-blur",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/amount-blur",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 7.68,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-amount-blur.log",
+      "sha256": "5795fb43427c550dc26319fbdf2be7866fc78d936e4b5433ed9bb5c6b67f1476",
+      "summaries": [
+        "Test Files  9 passed (9)",
+        "Tests  100 passed (100)"
+      ]
+    },
+    {
+      "workspace": "packages/chain-adapters",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/chain-adapters",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 23.93,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-chain-adapters.log",
+      "sha256": "e45986eb270d36775abcbedb2e5d151c39a43d4d618264bfc7a9390ab721ff8c",
+      "summaries": [
+        "Test Files  26 passed (26)",
+        "Tests  552 passed | 22 skipped (574)"
+      ]
+    },
+    {
+      "workspace": "packages/i18n",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/i18n",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 4.87,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-i18n.log",
+      "sha256": "f0e22c01a1d58e2c4c28dd514efc6fdc9f6656cb2137d305373f8765c3de9df3",
+      "summaries": [
+        "Test Files  14 passed (14)",
+        "Tests  226 passed (226)"
+      ]
+    },
+    {
+      "workspace": "packages/merchant-billing",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/merchant-billing",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.54,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-merchant-billing.log",
+      "sha256": "797d88764138a6f75da91a712405065e99c0ee9026525779a2ddd68df85f02f9",
+      "summaries": [
+        "Test Files  13 passed (13)",
+        "Tests  292 passed (292)"
+      ]
+    },
+    {
+      "workspace": "packages/merchant-ledger",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/merchant-ledger",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 1.56,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-merchant-ledger.log",
+      "sha256": "01cba9d7eaa456b7d7bc4b398a49e275fc78281aa77b934bc24be0d035e04dde",
+      "summaries": [
+        "Test Files  3 passed (3)",
+        "Tests  35 passed (35)"
+      ]
+    },
+    {
+      "workspace": "packages/payment-uri",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/payment-uri",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.42,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-payment-uri.log",
+      "sha256": "b0444110ee663b5582a20bca123cf36ab7fe23aea34e93dfad3213e4e1a14bcb",
+      "summaries": [
+        "Test Files  14 passed (14)",
+        "Tests  274 passed (274)"
+      ]
+    },
+    {
+      "workspace": "packages/qr-exchange",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/qr-exchange",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 7.75,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-qr-exchange.log",
+      "sha256": "6f73d53f83083216acdbc48709a67a4f337f51c3470b2935eb2c66100a3b521f",
+      "summaries": [
+        "Test Files  9 passed (9)",
+        "Tests  242 passed (242)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-core",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-core",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.82,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-core.log",
+      "sha256": "c4bdd25e8ecd4e0980415e3695421ce72abe21e524b91326c224d59fbe37bdb5",
+      "summaries": [
+        "Test Files  9 passed (9)",
+        "Tests  134 passed (134)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-fees",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-fees",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.18,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-fees.log",
+      "sha256": "3763021324a1bfe4d68187b0c65bd1f1f68f13b416759295205d2174b7f658e7",
+      "summaries": [
+        "Test Files  8 passed (8)",
+        "Tests  95 passed (95)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-flow",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-flow",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 4.0,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-flow.log",
+      "sha256": "590afff02f34125c0e3d49af054f06dd1fc446e18e213b877545f93eb013efa9",
+      "summaries": [
+        "Test Files  9 passed (9)",
+        "Tests  101 passed (101)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-intake",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-intake",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.21,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-intake.log",
+      "sha256": "cd82f6088b1b66f2effde84a3d7d93d3068e4356a66c722e63e7dfbf34dc326f",
+      "summaries": [
+        "Test Files  11 passed (11)",
+        "Tests  106 passed (106)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-notify",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-notify",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 5.96,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-notify.log",
+      "sha256": "cb1c9a48124b074f052dfb2387a6c22199c8235f8c7e09ac8bb26141124bb88c",
+      "summaries": [
+        "Test Files  11 passed (11)",
+        "Tests  119 passed (119)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-privacy",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-privacy",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 2.6,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-privacy.log",
+      "sha256": "67907829a3b681eb8448f664067d090f259d12f547ca22f341917f1db934f848",
+      "summaries": [
+        "Test Files  4 passed (4)",
+        "Tests  44 passed (44)"
+      ]
+    },
+    {
+      "workspace": "packages/ux-schedule",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "packages/ux-schedule",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.16,
+      "log": "/workspace/scratch/f80482f352bc/expanded-qualification/packages-ux-schedule.log",
+      "sha256": "e3d0bb75460e0ecb4c783dcc464b071ba4ba36879d33c067620aca0b76d490c7",
+      "summaries": [
+        "Test Files  9 passed (9)",
+        "Tests  153 passed (153)"
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "change": "Two equivalent Reflect.deleteProperty fixture operations; all assertions retained",
+      "final_source_cases_passed": 24,
+      "full_initial_suite_passed": 744,
+      "lint": "passed",
+      "typecheck": "passed"
+    },
+    {
+      "path": "packages/ux-fiat/src/view.quote-accessor.test.ts",
+      "change": "Two exact expected-message literals aligned with the existing structured parser diagnostic; production and all cases retained",
+      "final_source_cases_passed": 88,
+      "coverage_thresholds": "original and unchanged",
+      "lint": "passed",
+      "typecheck": "passed"
+    }
+  ],
+  "package_combined_totals": {
+    "passed": 5409,
+    "skipped": 29,
+    "failed_after_corrections": 0,
+    "passing_files": 297,
+    "skipped_files": 1,
+    "workspaces": 29,
+    "counts_note": "Corrective rechecks replace earlier outcomes; they are not added again."
+  },
+  "affected_typechecks": {
+    "workspaces": 38,
+    "status": "passed"
+  },
+  "affected_lint": {
+    "workspaces": 38,
+    "status": "passed after invoice fixture correction",
+    "existing_nonfailing_warning": "Generated btc-silent-payments protobuf file unused eslint-disable directive"
+  },
+  "library_build": {
+    "status": "passed",
+    "initial_source": "b3d6338ab0f7c4119678462a0c0c8584e87526e7",
+    "repair_rebuild_source": "a107d993c1aed73827d853924ea36036f083400f",
+    "repair_workspaces": 6
+  },
+  "node_checks": {
+    "tests": 22,
+    "passed": 22,
+    "failed": 0,
+    "command": "node --test scripts/pages/verify-pages-artifact.test.mjs examples/pos-terminal/parity.test.mjs examples/merchant-checkout/money.test.mjs"
+  },
+  "web_builds": {
+    "source": "1ff4dce808b374ba8fbcefb269d7f97221bd8a8d",
+    "full": "passed with original bundle scan",
+    "lean": "passed with original bundle scan",
+    "full_scanned_files": 19,
+    "lean_scanned_files": 17,
+    "product_identity": "All production bytes match final source; subsequent change is fiat test expectations and documentation only."
+  },
+  "source_scans": {
+    "secret_scan": "passed",
+    "pinned_actions": 111,
+    "pinned_actions_status": "passed",
+    "tx_origin_solidity_files": 39,
+    "tx_origin_status": "passed",
+    "production_diff_whitespace": "passed",
+    "new_delta_whitespace": "passed",
+    "inherited_raw_evidence_whitespace": "preserved, not rewritten"
+  },
+  "web_full_suite": {
+    "status": "passed",
+    "source": "a107d993c1aed73827d853924ea36036f083400f",
+    "command": "vitest run --coverage --maxWorkers=1 && vitest run --config vitest.nocov.config.ts --maxWorkers=1",
+    "thresholds": "original and unchanged",
+    "coverage_files_passed": 227,
+    "coverage_files_skipped": 2,
+    "coverage_tests_passed": 2977,
+    "coverage_tests_skipped": 13,
+    "nocov_files_passed": 3,
+    "nocov_tests_passed": 3,
+    "coverage_percent": {
+      "statements": 93.37,
+      "branches": 89.72,
+      "functions": 94.84,
+      "lines": 97.09
+    },
+    "coverage_seconds": 1431.8,
+    "nocov_seconds": 28.62,
+    "source_identity_note": "Full run started on a107d993; later edits changed only invoice/fiat test fixtures and documentation. All web source/tests and all production bytes remained identical to final fb12a330."
+  },
+  "native_execution": {
+    "package_skips": "29 existing Anvil/compiler/artifact-dependent cases; original guards retained",
+    "browser_attempt": "Earlier lean attempt blocked before application test execution by Chromium Unix-socket restriction",
+    "final_hosted_status": "not yet observed"
+  },
+  "codeql": {
+    "original_check": "138228881370",
+    "original_conclusion": "failure: seven alerts",
+    "remediation": "seven equivalent linear-processing replacements independently approved",
+    "final_head_conclusion": "not yet observed"
+  },
+  "main_merge": "not performed at report creation",
+  "deployment": "not performed",
+  "evidence_archive": "evidence/local-qualification-logs.tar.gz",
+  "combined_observed_totals": {
+    "passing_tests": 8411,
+    "skipped_tests": 42,
+    "failed_after_corrections": 0,
+    "note": "5,409 package + 2,980 web + 22 Node; corrective reruns are not counted twice."
+  }
+}

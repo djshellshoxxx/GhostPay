@@ -1,0 +1,138 @@
+{
+  "reviewed_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "reviewed_tree": "8add357748674afb128926a797982badb54bac6b",
+  "scope": "Read-only bounded source review of the eight infrastructure_dependency_awaiting_review, three preserved_infrastructure_dependency_lane and five diagnostic_tooling_or_qualification rows. No tests, dependency installation, repository edits, remote changes or fresh hosted status lookup.",
+  "rows": [
+    {
+      "branch": "audit/ct-c-2-fee-event-forensics-20261121",
+      "head": "4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b",
+      "pr": 442,
+      "current_disposition": "diagnostic_qualification_pending",
+      "note": "The sole missing code path is a synthetic fee-log diagnostic test. It changes no contract or existing CT-C-2 assertion. Its handoff expressly lacks executed native Hardhat and independent cause verification; no deterministic disclosure or accepted cause is established. Retain as diagnostic evidence pending the original test, existing CT-C-2 and package typecheck on the selected contract source.",
+      "evidence": ["packages/confidential-contracts/test/fee-log.forensics.test.ts", "docs/handoffs/CT_C_2_FEE_LOG_FORENSICS_20261121.md"]
+    },
+    {
+      "branch": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "head": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "pr": 358,
+      "current_disposition": "tooling_candidate_qualification_pending",
+      "note": "A self-contained, read-only local-Git provenance tool and its canonical 13-case suite remain absent. The scripts/tests entry only imports that suite. No intrinsic source blocker was found in this bounded review. It requires its exact snapshot schema (main_sha, integration_sha, integration_pr, typed branch/PR lists and counts), so the current refresh JSON cannot be fed to it unchanged. Current-composition Node qualification and a deliberate snapshot adapter remain; this is not missing application behavior.",
+      "evidence": ["scripts/coordination/reconcile-claims.mjs", "scripts/coordination/reconcile-claims.test.mjs", "scripts/tests/reconcile-claims.test.mjs"]
+    },
+    {
+      "branch": "audit/ghostpay-r39-uncapped-branch-triage-20261122",
+      "head": "87eb78767567c9aa58bce10c0c020f282d1491c7",
+      "pr": 466,
+      "current_disposition": "tooling_schema_reconciliation_needed",
+      "note": "The absent GitHub scanner compares complete main/head trees and labels any docs/ path as documentation. The current audit instead distinguishes merge-base deltas, changed JSON/code under documentation paths and semantic coverage. Preserve its uncapped-tree/mode/gitlink and pagination tests, but reconcile those classification/schema differences before making it the final index generator. No application runtime delta.",
+      "evidence": ["scripts/consolidation/branch-disposition.mjs", "scripts/tests/branch-disposition.test.mjs"]
+    },
+    {
+      "branch": "audit/pages-tor-rpc-compat-20261124",
+      "head": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+      "pr": 578,
+      "current_disposition": "native_test_qualification_pending",
+      "note": "One standalone native Playwright compatibility test remains absent. It serves real loopback TLS, uses synthetic RPC responses, and exercises invoice review, saved Tor-browser preference and selected RPC health checks. It explicitly does not certify Tor routing. No intrinsic runtime-source blocker was found; current fixture/type/lint and full/lean native execution with OpenSSL/Vite remain unqualified on bda2af.",
+      "evidence": ["apps/web/e2e/https-rpc-compatibility.spec.ts"]
+    },
+    {
+      "branch": "automation/20261122-r11/audit/mythril-evidence-summary",
+      "head": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "pr": 468,
+      "current_disposition": "tooling_candidate_qualification_pending",
+      "note": "The bounded read-only five-report summarizer and its tests remain absent. Its expected target order still exactly matches the current run-mythril.sh order. No intrinsic source mismatch was found. Current Node qualification and source-pinned report provenance remain; positional report association cannot itself establish contract identity, fresh analyzer execution or cleared findings. It does not replace the existing Mythril gate.",
+      "evidence": ["scripts/audit/mythril-evidence.mjs", "scripts/tests/mythril-evidence.test.mjs", "docs/handoffs/MYTHRIL_EVIDENCE_R11_20261122.md", "packages/contracts/scripts/run-mythril.sh"]
+    },
+    {
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "pr": 52,
+      "current_disposition": "automation_contract_reconciliation_needed",
+      "note": "The additional scheduled four-lane paid QA/publish/integrate workflow remains absent, while current ghostpay-parallel-review.yml already supplies four review lanes. The donor integration loop expects the obsolete bare e2e check and omits current full/lean and F08 checks. Its separate schedule, write/publish behavior and exact-head approval/check contract require reconciliation with the existing automation; wholesale import is not a compatible current gate update.",
+      "evidence": [".github/workflows/ghostpay-parallel-agents.yml", "scripts/tests/ghostpay-parallel-workflow.test.mjs", ".github/workflows/ghostpay-parallel-review.yml", ".github/workflows/ghostpay-codex-cloud.yml"]
+    },
+    {
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "pr": 51,
+      "current_disposition": "automation_contract_reconciliation_needed",
+      "note": "Current merge admission already has pagination, repository checks, exact-head merging and stronger required checks. Donor preflight queue pagination, drop-sudo setting and backlog wording are still distinct; its twice-daily schedule also changes paid execution cadence. The donor's ts-check/contracts-test/bare-e2e names are obsolete and whole-file restoration would remove current approval/cache/scope/F08 guards. Only separately reviewed hunks could be eligible.",
+      "evidence": [".github/workflows/ghostpay-codex-cloud.yml"]
+    },
+    {
+      "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+      "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "pr": null,
+      "current_disposition": "dependency_train_qualification_pending",
+      "note": "The 69-path dependency train selects Viem 2.57.19 plus newer browser/test tooling. Current direct Viem and SDK override are already aligned at 2.57.13, so an alignment defect is not established. Choosing this train instead of the 2.58.2 minor train requires one coherent regenerated lock and matching package/browser qualification; historical manifests are not an isolated application fix.",
+      "evidence": ["package.json", "package-lock.json", "apps/web/package.json"]
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "pr": null,
+      "current_disposition": "production_intent_covered_selected_source",
+      "note": "Correct the old implication that descriptor-bound secret reading is still missing. The complete donor loadSecret function is exact in current relayer-guard/secrets; the relayer facade preserves its source descriptors and the moved tests retain both checked-path and growing-file cases. Queue deadline rechecks, adaptive-window evidence reset and positively identified plain-revert OP Stack handling are also current or stronger. Preserve historical regression provenance; do not restore old whole files or claim whole-branch/test equivalence.",
+      "evidence": ["packages/relayer-guard/src/secrets.ts", "packages/relayer-guard/src/secrets.test.ts", "apps/relayer/src/secrets.ts", "apps/relayer/src/service.ts", "apps/web/src/lib/opStackFee.ts", "packages/chain-adapters/src/logs.ts", "packages/chain-adapters/src/rpc.ts"]
+    },
+    {
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "pr": 82,
+      "current_disposition": "automation_source_incompatible_as_is",
+      "note": "The absent workflow uses mutable actions/checkout@v4, globally installs an unpinned Codex CLI, persists checkout credentials and stages all agent changes with git add -A. It lacks the selected cloud workflow's scoped artifact/approval/required-check protections. The mutable action also conflicts with the existing pinned-Actions gate. Reconcile those concrete workflow contracts before any activation.",
+      "evidence": [".github/workflows/openai-agents.yml", ".github/workflows/ghostpay-codex-cloud.yml", "scripts/check-actions-pinned.sh"]
+    },
+    {
+      "branch": "dependabot/github_actions/actions-8158e918cd",
+      "head": "592b99417039b7bba588235c40418f368f09ebb4",
+      "pr": 492,
+      "current_disposition": "action_upgrade_qualification_pending",
+      "note": "Seven pin replacements across five workflows remain distinct: setup-python 7.1.0, a newer Codex action revision and create-pull-request 8.1.3. No intrinsic incompatibility is established by source alone. Apply only pin hunks to preserve newly added native/F08/recovery steps, then qualify the revised actions and permissions on the combined workflows; an old whole-workflow replacement is not eligible.",
+      "evidence": [".github/workflows/ci.yml", ".github/workflows/contract-analysis.yml", ".github/workflows/ghostpay-codex-cloud.yml", ".github/workflows/ghostpay-parallel-review.yml", ".github/workflows/nightly.yml"]
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "head": "81fe4607fd79d192064111016ea4d75ad5fc0ace",
+      "pr": 87,
+      "current_disposition": "dependency_api_incompatible_as_is",
+      "note": "The 69-path major train still pins workspace TypeScript 7.0.2, Hardhat 3.22.0 and associated major plugins. Its existing handoff records missing createSourceFile/ScriptKind exports used by current web AST tests/scanners and an unsuccessful compiler-lock reconciliation; the fhEVM plugin remains on the existing Hardhat-2 generation. The separate SOCKS repair is already exact in current source/tests. A valid compatible lock and affected full qualification remain required.",
+      "evidence": ["apps/web/package.json", "packages/confidential-contracts/package.json", "package-lock.json", "docs/handoffs/PR87_SOCKS_COMPATIBILITY_20261119.md", "packages/net-harness/src/socks5Server.ts", "packages/net-harness/src/harness.test.ts"]
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e",
+      "head": "14635ec8015b76e74994fc6623cc65399b80b21b",
+      "pr": 493,
+      "current_disposition": "dependency_train_qualification_pending",
+      "note": "The 68-path minor train changes Viem to 2.58.2, Vitest/coverage to 5.1.1 and Playwright to 1.65.1, among other pins; current accepted artifacts use the existing lock. No particular source defect is established here. A clean matching install, compiler/package/full-lean/native qualification and deliberate reconciliation with the older Viem train remain; old donor CI is not combined dependency qualification.",
+      "evidence": ["apps/web/package.json", "package-lock.json", "package.json"]
+    },
+    {
+      "branch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "head": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "pr": null,
+      "current_disposition": "behavior_covered_selected_source",
+      "note": "All three intended alias changes already exist in current ghostpay-codex-cloud.yml: preflight accepts the same three secret names, the missing-key message names them, and the Codex action uses the same fallback expression. Different historical workflow blobs do not establish missing alias functionality.",
+      "evidence": [".github/workflows/ghostpay-codex-cloud.yml"]
+    },
+    {
+      "branch": "repair/ghostpay-cookie-dependency-20261121-5ceb",
+      "head": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+      "pr": 377,
+      "current_disposition": "bounded_dependency_candidate_qualification_pending",
+      "note": "No intrinsic source/composition blocker found: all three donor preimages (root manifest, lock and dependency-tooling tests) exactly match bda2af. The absent unit adds only a version-scoped Sentry 5.30.0 cookie 0.7.2 override, one changed lock record and the actual Sentry-parser compatibility test. Current still resolves cookie 0.4.2. This is a bounded eligible recovery candidate, not a generic dependency-owner hold; a matching clean install plus the authored tooling/contract compile tests and fresh composed gates remain before selection.",
+      "evidence": ["package.json", "package-lock.json", "scripts/tests/dependency-tooling.test.mjs", "docs/handoffs/COOKIE_DEPENDENCY_20261121.md"],
+      "preimage_reference": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "all_three_preimages_exact_in_selected_source": true
+    },
+    {
+      "branch": "repair/ghostpay-pr-87-20261119",
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "pr": 253,
+      "current_disposition": "dependency_api_incompatible_as_is",
+      "note": "The standalone SOCKS decoded-string refusal and complete harness test file are already byte-identical in bda2af. The remaining 69-path major dependency payload retains #87's workspace TypeScript 7.0.2 compiler-API mismatch and broader Hardhat/plugin migration. Its net-harness success did not qualify that train; retain current source and reconcile compiler lock/API users before dependency integration.",
+      "evidence": ["packages/net-harness/src/socks5Server.ts", "packages/net-harness/src/harness.test.ts", "apps/web/package.json", "package-lock.json", "docs/handoffs/PR87_SOCKS_COMPATIBILITY_20261119.md"],
+      "socks_production_and_test_blobs_exact_in_selected_source": true
+    }
+  ]
+}

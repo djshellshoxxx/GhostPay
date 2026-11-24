@@ -1,6 +1,7 @@
 jsQR 1.4.0 — Cosmo Wolfe and contributors — Apache-2.0.
 Upstream: https://github.com/cozmo/jsQR
-GhostPay changes: static ESM wrapper and version-23 alignment center 74 to 78.
+GhostPay changes: static ESM wrapper, version-23 alignment center 74 to 78,
+and bounded neighboring valid-dimension retries for an invalid locator estimate.
 The factory body is otherwise unchanged. The complete upstream license follows.
 
                                  Apache License
@@ -207,4 +208,4 @@ The factory body is otherwise unchanged. The complete upstream license follows.
 
 Source and maintenance: packages/qr-exchange/src/vendor/README.md
 Original distribution SHA-256: bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859
-Local source SHA-256: 0b7c699a00742b28091ab75aa56f86ff05a7b036af73fe8359b33aa920f3e992
+Local source SHA-256: 59aacb21b5dbb23ef246e504992dcf1b3ca4567d2b1523c9e51835bd32aeb368

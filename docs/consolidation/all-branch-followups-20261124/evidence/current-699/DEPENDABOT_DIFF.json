@@ -1,0 +1,2146 @@
+{
+  "head": "51160bcb70cd02fe66eeaca2f8ad6518d032a21b",
+  "previous_head": "14635ec8015b76e74994fc6623cc65399b80b21b",
+  "main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+  "candidate": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "paths": [
+    "apps/relayer/package.json",
+    "apps/web/package.json",
+    "package-lock.json",
+    "packages/address-safety/package.json",
+    "packages/amount-blur/package.json",
+    "packages/btc-family/package.json",
+    "packages/btc-payjoin/package.json",
+    "packages/btc-silent-payments/package.json",
+    "packages/chain-adapters/package.json",
+    "packages/chain-evm-extra/package.json",
+    "packages/chain-solana/package.json",
+    "packages/chain-tron/package.json",
+    "packages/cli/package.json",
+    "packages/confidential-amounts/package.json",
+    "packages/core-crypto/package.json",
+    "packages/donation/package.json",
+    "packages/external-pools-privacypools/package.json",
+    "packages/external-pools-railgun/package.json",
+    "packages/external-pools/package.json",
+    "packages/hops/package.json",
+    "packages/hygiene/package.json",
+    "packages/i18n/package.json",
+    "packages/invoice-schema/package.json",
+    "packages/merchant-billing/package.json",
+    "packages/merchant-hooks/package.json",
+    "packages/merchant-ledger/package.json",
+    "packages/merchant-multisig/package.json",
+    "packages/metadata-hardening/package.json",
+    "packages/net-harness/package.json",
+    "packages/net-transport/package.json",
+    "packages/ops-monitor/package.json",
+    "packages/payer-sponsor/package.json",
+    "packages/payment-uri/package.json",
+    "packages/pir-two-server/package.json",
+    "packages/plugin-api/package.json",
+    "packages/policy-scheme/package.json",
+    "packages/pool-circuits/package.json",
+    "packages/pool-prover/package.json",
+    "packages/pool-relayer/package.json",
+    "packages/pool-sdk/package.json",
+    "packages/privacy-pipeline/package.json",
+    "packages/privacy-profiles/package.json",
+    "packages/qr-exchange/package.json",
+    "packages/relayer-guard/package.json",
+    "packages/sandbox/package.json",
+    "packages/scan-source/package.json",
+    "packages/sdk/package.json",
+    "packages/secret-box/package.json",
+    "packages/solana-stealth/package.json",
+    "packages/tron-adapter/package.json",
+    "packages/tx-review/package.json",
+    "packages/ux-connect/package.json",
+    "packages/ux-core/package.json",
+    "packages/ux-export/package.json",
+    "packages/ux-fees/package.json",
+    "packages/ux-fiat/package.json",
+    "packages/ux-flow/package.json",
+    "packages/ux-guide/package.json",
+    "packages/ux-i18n/package.json",
+    "packages/ux-intake/package.json",
+    "packages/ux-links/package.json",
+    "packages/ux-notify/package.json",
+    "packages/ux-presets/package.json",
+    "packages/ux-privacy/package.json",
+    "packages/ux-receipts/package.json",
+    "packages/ux-sandbox/package.json",
+    "packages/ux-schedule/package.json",
+    "packages/ux-vault/package.json"
+  ],
+  "manifest_dependency_deltas": [
+    {
+      "path": "apps/relayer/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "apps/relayer/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "apps/relayer/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "apps/relayer/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "@playwright/test",
+      "from": "1.64.1",
+      "to": "1.65.1"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "@testing-library/user-event",
+      "from": "14.6.8",
+      "to": "14.6.13"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "@vitejs/plugin-react",
+      "from": "6.1.2",
+      "to": "6.3.0"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "axe-core",
+      "from": "4.14.0",
+      "to": "4.14.1"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "vite",
+      "from": "8.3.5",
+      "to": "8.3.8"
+    },
+    {
+      "path": "apps/web/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/address-safety/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/address-safety/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/address-safety/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/address-safety/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/address-safety/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/amount-blur/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/amount-blur/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/amount-blur/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/amount-blur/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/amount-blur/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-family/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-family/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/btc-family/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/btc-family/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-payjoin/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-payjoin/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/btc-payjoin/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/btc-payjoin/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-silent-payments/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/btc-silent-payments/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/btc-silent-payments/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/btc-silent-payments/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-adapters/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/chain-adapters/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-adapters/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/chain-adapters/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/chain-adapters/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-evm-extra/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/chain-evm-extra/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-evm-extra/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/chain-evm-extra/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/chain-evm-extra/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-solana/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-solana/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/chain-solana/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/chain-solana/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-tron/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/chain-tron/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/chain-tron/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/chain-tron/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/confidential-amounts/package.json",
+      "section": "optionalDependencies",
+      "package": "@zama-fhe/sdk",
+      "from": "3.7.1",
+      "to": "3.8.0"
+    },
+    {
+      "path": "packages/core-crypto/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/core-crypto/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/core-crypto/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/core-crypto/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/core-crypto/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/donation/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/donation/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/donation/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/donation/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/donation/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools-privacypools/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/external-pools-privacypools/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools-privacypools/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/external-pools-privacypools/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/external-pools-privacypools/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools-railgun/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/external-pools-railgun/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools-railgun/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/external-pools-railgun/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/external-pools-railgun/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/external-pools/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/external-pools/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/external-pools/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/external-pools/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/hops/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/hops/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/hops/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/hops/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/hops/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/i18n/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/i18n/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/i18n/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-billing/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-billing/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/merchant-billing/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/merchant-billing/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-hooks/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-hooks/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/merchant-hooks/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/merchant-hooks/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-ledger/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-ledger/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/merchant-ledger/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/merchant-ledger/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-multisig/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/merchant-multisig/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/merchant-multisig/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/merchant-multisig/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/metadata-hardening/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/metadata-hardening/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/metadata-hardening/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/metadata-hardening/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/metadata-hardening/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/net-harness/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/net-harness/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/net-harness/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/net-harness/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/net-transport/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/net-transport/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/net-transport/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/net-transport/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/net-transport/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ops-monitor/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/ops-monitor/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ops-monitor/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ops-monitor/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ops-monitor/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/payer-sponsor/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/payer-sponsor/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/payer-sponsor/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/payer-sponsor/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/payer-sponsor/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/payment-uri/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/payment-uri/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/payment-uri/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/payment-uri/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pir-two-server/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pir-two-server/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/pir-two-server/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/pir-two-server/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/plugin-api/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/plugin-api/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/plugin-api/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/plugin-api/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/policy-scheme/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/policy-scheme/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/policy-scheme/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/policy-scheme/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/policy-scheme/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-circuits/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-circuits/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/pool-circuits/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/pool-circuits/package.json",
+      "section": "devDependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/pool-circuits/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-prover/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-prover/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/pool-prover/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/pool-prover/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-relayer/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/pool-relayer/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-relayer/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/pool-relayer/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/pool-relayer/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-sdk/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/pool-sdk/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/pool-sdk/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/pool-sdk/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/pool-sdk/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/privacy-pipeline/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/privacy-pipeline/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/privacy-pipeline/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/privacy-pipeline/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/privacy-profiles/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/privacy-profiles/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/privacy-profiles/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/privacy-profiles/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/qr-exchange/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/qr-exchange/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/qr-exchange/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/qr-exchange/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/sandbox/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/sandbox/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/sandbox/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/sandbox/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/scan-source/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/scan-source/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/scan-source/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/scan-source/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/sdk/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/sdk/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/sdk/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/sdk/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/secret-box/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/secret-box/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/secret-box/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/secret-box/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/solana-stealth/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/solana-stealth/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/solana-stealth/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/tron-adapter/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/tron-adapter/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/tron-adapter/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/tx-review/package.json",
+      "section": "dependencies",
+      "package": "viem",
+      "from": "2.57.13",
+      "to": "2.58.4"
+    },
+    {
+      "path": "packages/tx-review/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/tx-review/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/tx-review/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/tx-review/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-connect/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-connect/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-connect/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-connect/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-core/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-core/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-core/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-core/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-export/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-export/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-export/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-export/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-fees/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-fees/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-fees/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-fees/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-fiat/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-fiat/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-fiat/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-fiat/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-flow/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-flow/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-flow/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-flow/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-guide/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-guide/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-guide/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-guide/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-i18n/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-i18n/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-i18n/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-i18n/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-intake/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-intake/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-intake/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-intake/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-links/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-links/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-links/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-links/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-notify/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-notify/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-notify/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-notify/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-presets/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-presets/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-presets/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-presets/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-privacy/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-privacy/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-privacy/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-privacy/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-receipts/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-receipts/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-receipts/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-receipts/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-sandbox/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-sandbox/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-sandbox/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-sandbox/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-schedule/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-schedule/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-schedule/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-schedule/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-vault/package.json",
+      "section": "devDependencies",
+      "package": "@vitest/coverage-v8",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    },
+    {
+      "path": "packages/ux-vault/package.json",
+      "section": "devDependencies",
+      "package": "fast-check",
+      "from": "4.10.2",
+      "to": "4.10.3"
+    },
+    {
+      "path": "packages/ux-vault/package.json",
+      "section": "devDependencies",
+      "package": "prettier",
+      "from": "3.9.10",
+      "to": "3.10.1"
+    },
+    {
+      "path": "packages/ux-vault/package.json",
+      "section": "devDependencies",
+      "package": "vitest",
+      "from": "5.0.5",
+      "to": "5.1.1"
+    }
+  ],
+  "lock_record_changes": {
+    "base": {
+      "added": 339,
+      "removed": 3,
+      "changed": 100
+    },
+    "old": {
+      "added": 0,
+      "removed": 0,
+      "changed": 48
+    },
+    "candidate": {
+      "added": 339,
+      "removed": 3,
+      "changed": 101
+    }
+  }
+}

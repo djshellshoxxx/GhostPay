@@ -1,6 +1,7 @@
 /*!
  * jsQR 1.4.0 — Cosmo Wolfe and contributors — Apache-2.0.
- * GhostPay changes: static ESM wrapper and version-23 alignment center 74 to 78.
+ * GhostPay changes: static ESM wrapper, version-23 alignment center 74 to 78,
+ * and bounded neighboring valid-dimension retries for an invalid locator estimate.
  * The factory body is otherwise unchanged.
  * Source provenance: packages/qr-exchange/src/vendor/README.md.
 
@@ -534,6 +535,23 @@ function scan(matrix) {
     var locations = locator_1.locate(matrix);
     if (!locations) {
         return null;
+    }
+    // GhostPay: a real QR side is 17 + 4 * version. Fractional raster edges can
+    // produce an impossible side congruent to 3; try only its two valid neighbors.
+    // Preserve original candidates first and all original extraction/RS validation.
+    var originalLocationCount = locations.length;
+    for (var locationIndex = 0; locationIndex < originalLocationCount; locationIndex++) {
+        var originalLocation = locations[locationIndex];
+        if (!Number.isSafeInteger(originalLocation.dimension) || originalLocation.dimension % 4 !== 3) {
+            continue;
+        }
+        var adjacentDimensions = [originalLocation.dimension - 2, originalLocation.dimension + 2];
+        for (var dimensionIndex = 0; dimensionIndex < adjacentDimensions.length; dimensionIndex++) {
+            var adjacentDimension = adjacentDimensions[dimensionIndex];
+            if (adjacentDimension >= 21 && adjacentDimension <= 177) {
+                locations.push(Object.assign({}, originalLocation, { dimension: adjacentDimension }));
+            }
+        }
     }
     for (var _i = 0, locations_1 = locations; _i < locations_1.length; _i++) {
         var location_1 = locations_1[_i];

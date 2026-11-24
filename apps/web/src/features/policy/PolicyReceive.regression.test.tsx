@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { clearSession, getSessionPublic, importSession } from '../../lib/session';
-import { beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
+import { beginAttempt, finishAttempt, ATTEMPT_JOURNAL_KEY } from '../../lib/duplicateAttemptJournal';
+import { updateJournalSnapshot } from '../../lib/attemptJournalStorage';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
@@ -89,8 +90,16 @@ describe('policy receive audit regressions', () => {
       // Another tab's request and submitted cancellation are discovered by the final chain refresh.
       const scope = `${withdrawalState.withdrawalActionScope(getSessionPublic()!, next.deployment, vector.accountAddress, ZERO_ADDRESS)}:cancel:withdraw:${requestId}`;
       const key = policyActionKey({ chainId: SEPOLIA, account: ZERO_ADDRESS }, { to: vector.accountAddress, data: '0x', value: 0n }, scope);
-      const attempt = beginAttempt({ key, chainId: SEPOLIA, account: ZERO_ADDRESS, kind: 'transaction' }, window.localStorage);
-      finishAttempt(attempt, priorHash, window.localStorage);
+      // The other tab committed through the authoritative IndexedDB journal; localStorage is only this tab's mirror.
+      const scratch = new Map<string, string>();
+      const scratchStore = { getItem: (k: string) => scratch.get(k) ?? null, setItem: (k: string, v: string) => { scratch.set(k, v); } };
+      const attempt = beginAttempt({ key, chainId: SEPOLIA, account: ZERO_ADDRESS, kind: 'transaction' }, scratchStore);
+      finishAttempt(attempt, priorHash, scratchStore);
+      const otherTab = JSON.parse(scratch.get(ATTEMPT_JOURNAL_KEY) ?? '[]') as unknown[];
+      await updateJournalSnapshot((saved) => ({
+        result: undefined,
+        snapshot: JSON.stringify([...(typeof saved === 'string' ? JSON.parse(saved) as unknown[] : []), ...otherTab]),
+      }));
       return { ...next, requests: [...next.requests, { id: requestId, token: ZERO_ADDRESS, amount: 1n, executeAfter: 1n, destination: vector.policy.destination, status: 1 }] };
     });
     const { user } = await openReceive(rejectSend);

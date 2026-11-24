@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { ANNOUNCEMENT_TOPIC, ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi, type RpcLog } from '@ghostpay/chain-adapters';
+import { ANNOUNCEMENT_TOPIC, ChainAdapterError, eip712DomainSeparator, erc20Abi, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi, type RpcLog } from '@ghostpay/chain-adapters';
 import { buildNativeMetadata, deriveStealthPayment } from '@ghostpay/core-crypto';
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -111,6 +111,9 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
           return encodeAbiParameters([{ type: 'uint256' }], [d.functionName === 'getL1Fee' ? (rawSink.l1Fee ?? 0n) : 0n]);
         }
         if (rawSink.dryRunBlind === true && (data === '0x' || data.startsWith('0xa9059cbb'))) throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601');
+        // The fixture must model a successful ERC-20 transfer dry run with ABI bool true.
+        // A domain-separator hash is non-boolean and makes simulateCall report "unavailable".
+        if (data.startsWith('0xa9059cbb')) return encodeFunctionResult({ abi: erc20Abi, functionName: 'transfer', result: true });
         if (data.startsWith(NONCE_USED_SELECTOR)) {
           if ((params[0] as { to: string }).to !== FAKE_SWEEP_RELAYER) throw new Error('nonceUsed must target the signed sweep relayer');
           return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });
@@ -163,6 +166,15 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
 }
 
 describe('Sweep', () => {
+  it('models successful and unavailable ERC-20 transfer dry runs distinctly', () => {
+    const transfer = { to: TOKEN, data: '0xa9059cbb' };
+    // A successful ERC-20 transfer returns ABI bool true, not an unrelated 32-byte hash.
+    expect(extra(5_000_000n, 10n ** 17n, {})('eth_call', [transfer, 'latest']))
+      .toBe(`0x${'0'.repeat(63)}1`);
+    expect(() => extra(5_000_000n, 10n ** 17n, { dryRunBlind: true })('eth_call', [transfer, 'latest']))
+      .toThrow(/-32601/);
+  });
+
   it('asks to choose a payment first', async () => {
     const user = userEvent.setup();
     renderApp(makeServices());
@@ -781,6 +793,7 @@ describe('Sweep', () => {
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+    expect(sink.calls).toContain('eth_sendRawTransaction');
     expect(screen.queryByText(/could not dry-run this sweep/)).toBeNull();
   });
 

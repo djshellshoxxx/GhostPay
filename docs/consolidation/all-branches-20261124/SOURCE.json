@@ -1,0 +1,26 @@
+{
+  "format": "ghostpay-composed-source/1",
+  "base_main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "local_source": "fb12a3302d9a85aa8777805bbdaab1bf2770ea16",
+  "remote_equivalent_source": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+  "source_tree": "8086add0f3c77a80ae953e45d50b179244261248",
+  "independently_reviewed_production": "a107d993c1aed73827d853924ea36036f083400f",
+  "post_review_non_documentation_changes": [
+    "packages/invoice-schema/src/json.test.ts",
+    "packages/ux-fiat/src/view.quote-accessor.test.ts"
+  ],
+  "preserved_original_published_parents": [
+    "d731c357e74604b667712f604c4502a27b9bb888",
+    "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+    "5741f0bea3e3b4a510220f193aae8276dda94a00",
+    "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0",
+    "f0171888c95b48005a6809aedf1e625bf86dfe83"
+  ],
+  "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "status_at_creation": "source reviewed and applicable local combined qualification passed; native/exact-head hosted qualification pending",
+  "qualification_limits": [
+    "The remote source commit is not yet a branch-head publication or a main merge.",
+    "Production bytes exactly match the reviewed a107d993 source; only the two intentional existing-test reconciliations followed.",
+    "Local and published Git histories differ; exact tree equality establishes file-content identity."
+  ]
+}

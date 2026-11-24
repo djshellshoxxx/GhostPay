@@ -1,0 +1,1098 @@
+{
+  "format": "ghostpay-compatibility-qualification-supplement/1",
+  "created_utc": "2026-11-24T13:19:26.890189+00:00",
+  "prepared_by": "/root/historical_review",
+  "composition_source": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "composition_tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+  "application_base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "purpose": "Compatibility qualification supplement for embedding beside the separate bda application evidence, without recounting application tests or replacing the separately delegated final composition review.",
+  "units": {
+    "cookie": {
+      "prs": [
+        377
+      ],
+      "qualified_source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "qualified_tree": "445c977595f679857506f3eacee8825b2a563613",
+      "candidate": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+      "candidate_tree": "0d8dcafce3010af1d358bc3599606c60da51709e",
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/tests/dependency-tooling.test.mjs"
+      ],
+      "handoff": "docs/handoffs/COOKIE_DEPENDENCY_20261121.md",
+      "post_qualification_delta": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/COOKIE_DEPENDENCY_20261121.md"
+      ],
+      "documentation_only_after_qualification": true,
+      "selected_entries": [
+        {
+          "path": "package.json",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob d4f914357d93f4b23f6a9ace8c456ac9fded77fb\tpackage.json"
+        },
+        {
+          "path": "package-lock.json",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob 601ae674b61c086e19ba34ed2a231a22dfdebced\tpackage-lock.json"
+        },
+        {
+          "path": "scripts/tests/dependency-tooling.test.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob da4c6c71117b5546e7acc664d1b62106bfa6e9fa\tscripts/tests/dependency-tooling.test.mjs"
+        }
+      ],
+      "handoff_exact_in_composition": true,
+      "qualification": {
+        "test_cases": {
+          "tooling": 6,
+          "router": 30,
+          "distinct": 36,
+          "failed": 0,
+          "skipped": 0
+        },
+        "contract_typecheck": "passed",
+        "native_compile": {
+          "files": 36,
+          "target": "cancun",
+          "version": "0.8.28+commit.7893614a.Linux.g++",
+          "path": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28",
+          "sha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25"
+        },
+        "installation": {
+          "kind": "normal private workspace-only npm ci",
+          "installed_nonlink_packages": 334,
+          "installed_records_including_workspace_link": 335,
+          "exact_manifests": 74,
+          "lock_snapshots": 1,
+          "full_repository_install": false,
+          "lifecycle_scripts_executed": false,
+          "historical_donor_full_install_packages": 722,
+          "archive_integrities_verified": 334,
+          "actual_consumer_cookie_version": "0.7.2",
+          "shared_installation_used_for_cookie_tests": false,
+          "node_module_resolution_flags": [],
+          "node_heap_limit_mb": 512,
+          "canonical_npm_tree_problems": [],
+          "retained_diagnostics": [
+            "Source-checkout npm ls reported extraneous-link diagnostics.",
+            "Stage npm ls with externally retargeted workspace exited 1.",
+            "Canonical private-install npm ls passed; tested source workspace link was restored.",
+            "Post-test per-entry link cleanup kept all 12 recorded resolved filenames identical."
+          ]
+        },
+        "audit": {
+          "production": {
+            "exit_code": 0,
+            "findings": 0
+          },
+          "full": {
+            "exit_code": 1,
+            "low": 15,
+            "moderate": 0,
+            "high": 0,
+            "critical": 0,
+            "remaining_family": "Elliptic-derived development nodes",
+            "clean": false
+          }
+        },
+        "lock_preservation": {
+          "total_records": 815,
+          "changed_records": [
+            "node_modules/cookie"
+          ],
+          "other_records_unchanged": 814,
+          "nondev_nonlink_packages_unchanged": 222,
+          "including_root_metadata": 223
+        },
+        "independent_review": {
+          "reviewer": "/root/ui_data_review",
+          "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+          "tree": "445c977595f679857506f3eacee8825b2a563613",
+          "decision": "approve-source-for-composition",
+          "blockers": []
+        }
+      }
+    },
+    "tools": {
+      "prs": [
+        358,
+        468
+      ],
+      "qualified_source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "qualified_tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "candidate": "7851c5063282255117709296ddde7dcef148444c",
+      "candidate_tree": "c59b6770f2ba4a448cd6485c59335c2602040fa7",
+      "paths": [
+        "scripts/coordination/reconcile-claims.mjs",
+        "scripts/coordination/reconcile-claims.test.mjs",
+        "scripts/tests/reconcile-claims.test.mjs",
+        "scripts/audit/mythril-evidence.mjs",
+        "scripts/tests/mythril-evidence.test.mjs",
+        "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+        "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md"
+      ],
+      "handoff": "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+      "post_qualification_delta": [
+        "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+        "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+        "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz"
+      ],
+      "documentation_only_after_qualification": true,
+      "selected_entries": [
+        {
+          "path": "scripts/coordination/reconcile-claims.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob 2f644028be422170922728d93b0640bcc512f0bd\tscripts/coordination/reconcile-claims.mjs"
+        },
+        {
+          "path": "scripts/coordination/reconcile-claims.test.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob a52b00eb5a997870bbf25700005cd120f6b111bc\tscripts/coordination/reconcile-claims.test.mjs"
+        },
+        {
+          "path": "scripts/tests/reconcile-claims.test.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob 478e1aef52c3ebd788a3c08d8766a3c5aa1f818f\tscripts/tests/reconcile-claims.test.mjs"
+        },
+        {
+          "path": "scripts/audit/mythril-evidence.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob 32834b760e90d53b43515bf8935b81a9e2cb9762\tscripts/audit/mythril-evidence.mjs"
+        },
+        {
+          "path": "scripts/tests/mythril-evidence.test.mjs",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob ce1ae5f4da22f84080b369bc57c8cf7dea384193\tscripts/tests/mythril-evidence.test.mjs"
+        },
+        {
+          "path": "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob b2f14f5c595ec1f5d27534c844008ac1323728ec\tscripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md"
+        },
+        {
+          "path": "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob ae26340fbfcb3d45495db9743dafbbc41247040b\tscripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md"
+        }
+      ],
+      "handoff_exact_in_composition": true,
+      "qualification": {
+        "test_cases": {
+          "claims_canonical_passed": 13,
+          "discovered_combined_passed": 37,
+          "discovered_breakdown": {
+            "same_claims_cases": 13,
+            "mythril_evidence_cases": 5,
+            "preexisting_offline_runner_cases": 19
+          },
+          "distinct_cases_passed": 37,
+          "failed": 0,
+          "skipped": 0,
+          "do_not_add_canonical_rerun_again": true
+        },
+        "syntax_and_input_contract_checks": "passed",
+        "dependency_installation": false,
+        "actual_analyzer_execution": false,
+        "actual_native_or_contract_execution": false,
+        "canonical_13_rerun_not_added_to_37": true,
+        "node_local": "24.22.3",
+        "node22_hosted_acceptance": "pending fresh combined checks",
+        "input_contract": {
+          "reconcile_claims": "Standalone canonical complete ref/PR observation with captured integration head; no current refresh/2 or final-ref adapter supplied.",
+          "current_inputs": "Both actual noncanonical refresh/final-ref files rejected before Git comparison. No full-census replay claimed.",
+          "reconcile_authority": "Read-only Git/object comparison; no eligibility, authority-release or merge decision.",
+          "resource_boundary": "64 MiB per Git subprocess output, not a global report/input cap.",
+          "mythril_summary": "Exactly five accepted report shapes with an 8 MiB input cap; target labels are positional. Legacy clean/exit0 means zero reported issues only.",
+          "mythril_limits": "No analyzer exit/source identity/authenticity/exploration/clearance inference; no new gate invocation. Existing runner tests use a synthetic offline executable."
+        }
+      }
+    },
+    "https": {
+      "prs": [
+        578
+      ],
+      "qualified_source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "qualified_tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "candidate": "d995764543041b0d971db2759be9b2f3f9afc9a7",
+      "candidate_tree": "a46bfd5b46e50c4b666dd652d5f8947fd89f2dbc",
+      "paths": [
+        "apps/web/e2e/https-rpc-compatibility.spec.ts",
+        "docs/pages/tor-rpc-compatibility.md"
+      ],
+      "handoff": "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+      "post_qualification_delta": [
+        "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+        "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json",
+        "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz"
+      ],
+      "documentation_only_after_qualification": true,
+      "selected_entries": [
+        {
+          "path": "apps/web/e2e/https-rpc-compatibility.spec.ts",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob e21f24efec4eaf8bea121adceb3f188d8c6f2521\tapps/web/e2e/https-rpc-compatibility.spec.ts"
+        },
+        {
+          "path": "docs/pages/tor-rpc-compatibility.md",
+          "exact_qualified_entry_in_composition": true,
+          "entry": "100644 blob f1692ab905b527f7665c34b11a184da234b56664\tdocs/pages/tor-rpc-compatibility.md"
+        }
+      ],
+      "handoff_exact_in_composition": true,
+      "qualification": {
+        "consumer_units": {
+          "passed": 70,
+          "files": 7,
+          "skipped": 0,
+          "coverage_run": false
+        },
+        "web_typecheck": "passed",
+        "web_typed_lint": "passed",
+        "native_collection": {
+          "full": {
+            "listed": 1,
+            "executed": 0
+          },
+          "lean": {
+            "listed": 1,
+            "executed": 0
+          }
+        },
+        "local_native_execution": {
+          "attempted": false,
+          "reason": "Known environment Chromium Unix-socket restriction; no repeated launch, installation or workaround."
+        },
+        "local_bundle_build": {
+          "repeated": false,
+          "reason": "Only E2E and documentation additions; all application bundle inputs preserved. Fresh full/lean hosted build and native acceptance remain required."
+        },
+        "fresh_native_full_lean_execution": "pending",
+        "historical_donor_native_evidence": "Source-pinned historical full/lean passes exist; not current composition acceptance.",
+        "fixture_limits": "Owned temporary loopback TLS and intercepted synthetic selected RPC; no live provider, wallet, payment or actual Tor route certification."
+      }
+    }
+  },
+  "evidence_integrity": {
+    "declared_hash_comparisons": 51,
+    "mismatches": [],
+    "checks": [
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/dependency-tooling.log",
+        "context": "cookie compatibility gate",
+        "expected_sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4",
+        "actual_sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-typecheck.log",
+        "context": "cookie compatibility gate",
+        "expected_sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833",
+        "actual_sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-compile.log",
+        "context": "cookie compatibility gate",
+        "expected_sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a",
+        "actual_sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-router.log",
+        "context": "cookie compatibility gate",
+        "expected_sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248",
+        "actual_sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stdout",
+        "context": "cookie resolved-cookie-tree",
+        "expected_sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+        "actual_sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stderr",
+        "context": "cookie resolved-cookie-tree",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stdout",
+        "context": "cookie production-audit",
+        "expected_sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+        "actual_sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stderr",
+        "context": "cookie production-audit",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stdout",
+        "context": "cookie full-audit",
+        "expected_sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+        "actual_sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stderr",
+        "context": "cookie full-audit",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/secret-scan.stdout",
+        "context": "cookie secret-scan",
+        "expected_sha256": "88b5a5d40e3ed95ed85087e4657b21299290a1ee3f08a8bcc6778ec976d97332",
+        "actual_sha256": "88b5a5d40e3ed95ed85087e4657b21299290a1ee3f08a8bcc6778ec976d97332",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/secret-scan.stderr",
+        "context": "cookie secret-scan",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/REVIEW.md",
+        "context": "cookie final summary independent review",
+        "expected_sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b",
+        "actual_sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/SOURCE_EVIDENCE.json",
+        "context": "cookie final summary independent review",
+        "expected_sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d",
+        "actual_sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/source-preservation.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "0a999863dee448a51e668c0df9db2cf104359c45ce9aa5a1f1f55063c419484a",
+        "actual_sha256": "0a999863dee448a51e668c0df9db2cf104359c45ce9aa5a1f1f55063c419484a",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-install-setup.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "e7d5594e29f822ae095c36109896425dfaaa2dff2b49c293f9d7221e6d8868f8",
+        "actual_sha256": "e7d5594e29f822ae095c36109896425dfaaa2dff2b49c293f9d7221e6d8868f8",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-install-resolution-layout.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "38919e1ebb53aacc011c491e37fe9c453a68fb1f3da0d4ae4a92125f77298d26",
+        "actual_sha256": "38919e1ebb53aacc011c491e37fe9c453a68fb1f3da0d4ae4a92125f77298d26",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/workspace-clean-install.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "79c2a10f66651efc5abdb24e0960645ea96fe5f26649a1974477bead11d8900a",
+        "actual_sha256": "79c2a10f66651efc5abdb24e0960645ea96fe5f26649a1974477bead11d8900a",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/workspace-clean-install.log",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "8cbffc968c3229cd7d60c1b0cfdb7ac6afaeed2b78851e3069cdbde890a880b6",
+        "actual_sha256": "8cbffc968c3229cd7d60c1b0cfdb7ac6afaeed2b78851e3069cdbde890a880b6",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/actual-cookie-resolution.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "64ff503784129b2a8fb887a2055d72e824aff7c04fabdb74ef0579e75a6d824d",
+        "actual_sha256": "64ff503784129b2a8fb887a2055d72e824aff7c04fabdb74ef0579e75a6d824d",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "afe1f283d4788a9bcfbe5ce45f351231954abf4ab77d97dc5af32bf40de92698",
+        "actual_sha256": "afe1f283d4788a9bcfbe5ce45f351231954abf4ab77d97dc5af32bf40de92698",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stdout",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "d416eab5140a7d86f26d7afd8178e5f209087a2f758bab7642571268b41de7e2",
+        "actual_sha256": "d416eab5140a7d86f26d7afd8178e5f209087a2f758bab7642571268b41de7e2",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stderr",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "e5fa1646e356576600f3862639fbab4a0cb23e2b27f5f8d4b54d70a89ba4b07a",
+        "actual_sha256": "e5fa1646e356576600f3862639fbab4a0cb23e2b27f5f8d4b54d70a89ba4b07a",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.stdout",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "ef1e30bfa4e7f2e6b558fad742202e7e705d32dac2d54633c9c5005b39fd10f4",
+        "actual_sha256": "ef1e30bfa4e7f2e6b558fad742202e7e705d32dac2d54633c9c5005b39fd10f4",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.stderr",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stdout",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+        "actual_sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stderr",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "actual_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/compatibility-gates.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "e33f05d519292239d7d4bb4aba78607d50412da4ae39c60cc7f52679615cd298",
+        "actual_sha256": "e33f05d519292239d7d4bb4aba78607d50412da4ae39c60cc7f52679615cd298",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolution-and-security-gates.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "376e8cafd780acc1a008d608646e370b0bd959bf6f2de0d11e011e112c49dd93",
+        "actual_sha256": "376e8cafd780acc1a008d608646e370b0bd959bf6f2de0d11e011e112c49dd93",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/dependency-tooling.log",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4",
+        "actual_sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-typecheck.log",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833",
+        "actual_sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-compile.log",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a",
+        "actual_sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-router.log",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248",
+        "actual_sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stdout",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+        "actual_sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stdout",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+        "actual_sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/post-qualification-module-layout.json",
+        "context": "cookie independently reviewed receipt",
+        "expected_sha256": "a7ff4f77e1de74b40886a6f081d5547799cfc9412c1626ba9fe2ff5b2ecac3d0",
+        "actual_sha256": "a7ff4f77e1de74b40886a6f081d5547799cfc9412c1626ba9fe2ff5b2ecac3d0",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/canonical-claims.log",
+        "context": "tools qualification",
+        "expected_sha256": "9d3da48c5ee21ebe3d3f5cbe90343de75fd97c69f194ac68ac4e2797b4af7f55",
+        "actual_sha256": "9d3da48c5ee21ebe3d3f5cbe90343de75fd97c69f194ac68ac4e2797b4af7f55",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/ci-discovered-tools-and-existing-runner.log",
+        "context": "tools qualification",
+        "expected_sha256": "ac8a6d48a19a31abe70770c87593904390a9d91dc443da66542183ca7c018550",
+        "actual_sha256": "ac8a6d48a19a31abe70770c87593904390a9d91dc443da66542183ca7c018550",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/current-input-and-runner-contract.log",
+        "context": "tools qualification",
+        "expected_sha256": "4611bb3e7d9fad1b118ae73d798fa9565661e345e1830bdba0509e1b67a4dcc5",
+        "actual_sha256": "4611bb3e7d9fad1b118ae73d798fa9565661e345e1830bdba0509e1b67a4dcc5",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/diff-whitespace.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-coordination-reconcile-claims.mjs.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-coordination-reconcile-claims.test.mjs.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-tests-reconcile-claims.test.mjs.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-audit-mythril-evidence.mjs.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-tests-mythril-evidence.test.mjs.log",
+        "context": "tools qualification",
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/https-rpc-qualification/web-typecheck.log",
+        "context": "HTTPS qualification",
+        "expected_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+        "actual_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/https-rpc-qualification/web-lint.log",
+        "context": "HTTPS qualification",
+        "expected_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+        "actual_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/https-rpc-qualification/consumer-units.log",
+        "context": "HTTPS qualification",
+        "expected_sha256": "fad31ae81100d3c09bf0320d09ec692e3e62e1aa786346d50660aea39a97be22",
+        "actual_sha256": "fad31ae81100d3c09bf0320d09ec692e3e62e1aa786346d50660aea39a97be22",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/https-rpc-qualification/full-native-collection.log",
+        "context": "HTTPS qualification",
+        "expected_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+        "actual_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+        "equal": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/https-rpc-qualification/lean-native-collection.log",
+        "context": "HTTPS qualification",
+        "expected_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+        "actual_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+        "equal": true
+      }
+    ],
+    "archives": [
+      {
+        "unit": "cookie",
+        "location": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/cookie-recovery-evidence.tar.gz",
+        "bytes": 88959,
+        "sha256": "3a9ee6c67a2e78c842ba7d38ca2f926d55e7221c908c483023cb1806d36048d8",
+        "members": [
+          {
+            "name": "actual-cookie-resolution.json",
+            "bytes": 1305,
+            "sha256": "64ff503784129b2a8fb887a2055d72e824aff7c04fabdb74ef0579e75a6d824d",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "archive-retrieval.json",
+            "bytes": 234,
+            "sha256": "5fa7116a17b22389aebdb013de58e70d9a88038d9d5fc96ca8e9fa18535ff6a3",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "canonical-install-cookie-tree.json",
+            "bytes": 1468,
+            "sha256": "afe1f283d4788a9bcfbe5ce45f351231954abf4ab77d97dc5af32bf40de92698",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "canonical-install-cookie-tree.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "canonical-install-cookie-tree.stdout",
+            "bytes": 938,
+            "sha256": "d416eab5140a7d86f26d7afd8178e5f209087a2f758bab7642571268b41de7e2",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "compatibility-gates.json",
+            "bytes": 3481,
+            "sha256": "e33f05d519292239d7d4bb4aba78607d50412da4ae39c60cc7f52679615cd298",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "contract-compile.log",
+            "bytes": 281,
+            "sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "contract-router.log",
+            "bytes": 2756,
+            "sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "contract-typecheck.log",
+            "bytes": 235,
+            "sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "cookie-0.7.2.tgz",
+            "bytes": 8220,
+            "sha256": "76b160f8251c630a116a2e0acf03557b0758975b2c0df800607248fc9aae9e20",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "dependency-tooling.log",
+            "bytes": 927,
+            "sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "full-audit.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "full-audit.stdout",
+            "bytes": 8243,
+            "sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "post-qualification-module-layout.json",
+            "bytes": 4128,
+            "sha256": "a7ff4f77e1de74b40886a6f081d5547799cfc9412c1626ba9fe2ff5b2ecac3d0",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "private-install-resolution-layout.json",
+            "bytes": 1197,
+            "sha256": "38919e1ebb53aacc011c491e37fe9c453a68fb1f3da0d4ae4a92125f77298d26",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "private-install-setup.json",
+            "bytes": 99619,
+            "sha256": "e7d5594e29f822ae095c36109896425dfaaa2dff2b49c293f9d7221e6d8868f8",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "private-stage-cookie-tree.json",
+            "bytes": 718,
+            "sha256": "e5fa1646e356576600f3862639fbab4a0cb23e2b27f5f8d4b54d70a89ba4b07a",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "private-stage-cookie-tree.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "private-stage-cookie-tree.stdout",
+            "bytes": 47,
+            "sha256": "ef1e30bfa4e7f2e6b558fad742202e7e705d32dac2d54633c9c5005b39fd10f4",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "production-audit.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "production-audit.stdout",
+            "bytes": 366,
+            "sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "qualification-source.json",
+            "bytes": 23304,
+            "sha256": "d958d4b9065c77e482f07bbb85353238498b65cdd96c8b2f968be14a47e9b01a",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "resolution-and-security-gates.json",
+            "bytes": 4641,
+            "sha256": "376e8cafd780acc1a008d608646e370b0bd959bf6f2de0d11e011e112c49dd93",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "resolved-cookie-tree.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "resolved-cookie-tree.stdout",
+            "bytes": 997,
+            "sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "secret-scan.stderr",
+            "bytes": 150,
+            "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "secret-scan.stdout",
+            "bytes": 116,
+            "sha256": "88b5a5d40e3ed95ed85087e4657b21299290a1ee3f08a8bcc6778ec976d97332",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "source-preservation.json",
+            "bytes": 1850,
+            "sha256": "0a999863dee448a51e668c0df9db2cf104359c45ce9aa5a1f1f55063c419484a",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-clean-install.json",
+            "bytes": 865,
+            "sha256": "79c2a10f66651efc5abdb24e0960645ea96fe5f26649a1974477bead11d8900a",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-clean-install.log",
+            "bytes": 610,
+            "sha256": "8cbffc968c3229cd7d60c1b0cfdb7ac6afaeed2b78851e3069cdbde890a880b6",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-install-dry-run.json",
+            "bytes": 114228,
+            "sha256": "f0db9f26b95e7df1ab78e274b929506f8ac5f64db51953b4398b0a3845e1e78f",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-install-dry-run.log",
+            "bytes": 126365,
+            "sha256": "920fcf70d4b45dc50b96b9a0c21e21a45ea478ef5d74cf92618b37c3b2002c24",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-install-platform-assessment.json",
+            "bytes": 78574,
+            "sha256": "7e1c15f026a1153d0914735f602ef2701ff9db44a3d18243d67df63160e8df02",
+            "equals_retained_receipt": true
+          },
+          {
+            "name": "workspace-install-size-assessment.json",
+            "bytes": 78589,
+            "sha256": "8b53c9f0ab9f85a69ffe7e15a56dbf32a533c43fb335625307f1455acb5952a7",
+            "equals_retained_receipt": true
+          }
+        ],
+        "declared_archive_hash_verified": true,
+        "members_verified": true,
+        "note": "Archive is pinned to qualified source 5a2038d6. Final qualification.json separately records docs-only bb81db3."
+      },
+      {
+        "unit": "tools",
+        "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+        "git_path": "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz",
+        "bytes": 2630,
+        "sha256": "c9610137fc3dbc48273066c4c8185c5000a6f5092be4bdadc8c21962620d9225",
+        "members": [
+          {
+            "name": "canonical-claims.log",
+            "bytes": 1317,
+            "sha256": "9d3da48c5ee21ebe3d3f5cbe90343de75fd97c69f194ac68ac4e2797b4af7f55",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "ci-discovered-tools-and-existing-runner.log",
+            "bytes": 3550,
+            "sha256": "ac8a6d48a19a31abe70770c87593904390a9d91dc443da66542183ca7c018550",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "current-input-and-runner-contract.log",
+            "bytes": 600,
+            "sha256": "4611bb3e7d9fad1b118ae73d798fa9565661e345e1830bdba0509e1b67a4dcc5",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "diff-whitespace.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "syntax-scripts-coordination-reconcile-claims.mjs.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "syntax-scripts-coordination-reconcile-claims.test.mjs.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "syntax-scripts-tests-reconcile-claims.test.mjs.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "syntax-scripts-audit-mythril-evidence.mjs.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "syntax-scripts-tests-mythril-evidence.test.mjs.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "contract-check.mjs",
+            "bytes": 1232,
+            "sha256": "c761a40b68f15d0f40e0bf3044921f0d6e9ec073651b9a982e906eed6597f4ed",
+            "declared_member_hash_verified": true
+          }
+        ],
+        "declared_archive_hash_verified": true,
+        "members_verified": true
+      },
+      {
+        "unit": "https",
+        "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+        "git_path": "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz",
+        "bytes": 1110,
+        "sha256": "005c978f3d77994c7e07a11e597b3a513bbf1ea7641d4fd4c6c15ee0d2d84642",
+        "members": [
+          {
+            "name": "web-typecheck.log",
+            "bytes": 216,
+            "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "web-lint.log",
+            "bytes": 228,
+            "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "consumer-units.log",
+            "bytes": 528,
+            "sha256": "fad31ae81100d3c09bf0320d09ec692e3e62e1aa786346d50660aea39a97be22",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "full-native-collection.log",
+            "bytes": 446,
+            "sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+            "declared_member_hash_verified": true
+          },
+          {
+            "name": "lean-native-collection.log",
+            "bytes": 446,
+            "sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e",
+            "declared_member_hash_verified": true
+          }
+        ],
+        "declared_archive_hash_verified": true,
+        "members_verified": true
+      }
+    ],
+    "archive_members_verified": 49
+  },
+  "embedding_inventory": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/qualification.json",
+      "role": "cookie final source-pinned qualification",
+      "bytes": 25630,
+      "sha256": "435983de247925725e597217de8f211db83394fe99e4f52fcc752c303c2d12f1",
+      "embedding_name": "cookie/qualification.json"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/cookie-recovery-evidence.tar.gz",
+      "role": "cookie raw qualification archive",
+      "bytes": 88959,
+      "sha256": "3a9ee6c67a2e78c842ba7d38ca2f926d55e7221c908c483023cb1806d36048d8",
+      "embedding_name": "cookie/cookie-recovery-evidence.tar.gz"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/REVIEW.md",
+      "role": "cookie independent source review",
+      "bytes": 6323,
+      "sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b",
+      "embedding_name": "cookie/independent-review.md"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/SOURCE_EVIDENCE.json",
+      "role": "cookie independent review evidence inventory",
+      "bytes": 9344,
+      "sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d",
+      "embedding_name": "cookie/independent-source-evidence.json"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/evidence-archive.json",
+      "role": "cookie archive member inventory",
+      "bytes": 1478,
+      "sha256": "b61463a071ce9ae129545340e6587e172134ecf8a74875f98ccf99afa6daded2",
+      "embedding_name": "cookie/evidence-archive.json"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/additional-compatibility-independent-review.md",
+      "role": "independent tools and HTTPS source review",
+      "bytes": 1505,
+      "sha256": "3ea2beb22f536b362436a0b9e2e29f51ec3ded293138cca3cc795d43adb441dc",
+      "embedding_name": "compatibility/independent-review.md"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/additional-compatibility-independent-review.json",
+      "role": "independent tools and HTTPS source pins/proofs",
+      "bytes": 5114,
+      "sha256": "d8dec001d60a3418502c33462d037f211a1158200e53d40a5ecfffea5412d8b1",
+      "embedding_name": "compatibility/independent-review.json"
+    }
+  ],
+  "already_committed_evidence": [
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/COOKIE_DEPENDENCY_20261121.md",
+      "role": "source handoff",
+      "bytes": 13106,
+      "sha256": "7addc832d4469d188b80e9a497280bbf86de214b36e36b626e25c329a22c0c69",
+      "git_entry": "100644 blob f24f03dc15f0f0ce791bcbc2b28a24700d34766e\tdocs/handoffs/COOKIE_DEPENDENCY_20261121.md"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+      "role": "source handoff",
+      "bytes": 6901,
+      "sha256": "469c20737006be9b3a98aa6c5564b531c21c6cf3c57e5364f72d43276e6b488d",
+      "git_entry": "100644 blob 182946aee0f50032e953e1c14a0a15688c58f31a\tdocs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+      "role": "source handoff",
+      "bytes": 6406,
+      "sha256": "a74f688c3109ac6b5b6626f96c6c83e8a37a8591857d491a0b10e303a6617c18",
+      "git_entry": "100644 blob 43cd9367ebd68681a2f14233e6ad6649f0d1be7e\tdocs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+      "role": "committed qualification evidence",
+      "bytes": 13620,
+      "sha256": "555f59a9e593372bf487603c6ff35f4c57291f8263dcbee7e423091d6a793b41",
+      "git_entry": "100644 blob 63971489f71f0554ec03bf8e70b73f37be5d3b8d\tdocs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz",
+      "role": "committed qualification evidence",
+      "bytes": 2630,
+      "sha256": "c9610137fc3dbc48273066c4c8185c5000a6f5092be4bdadc8c21962620d9225",
+      "git_entry": "100644 blob 1b340fbbd7dbfcf4c607a61b25c37edd3b1f732e\tdocs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json",
+      "role": "committed qualification evidence",
+      "bytes": 11356,
+      "sha256": "921c87127bea719ce76a287aadb6d5785cec7b5dd7c78fc4edc5ca3453140509",
+      "git_entry": "100644 blob f69ffe6724aa4afb3eda26d5c82610b277c52b6e\tdocs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json"
+    },
+    {
+      "git_commit": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "git_path": "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz",
+      "role": "committed qualification evidence",
+      "bytes": 1110,
+      "sha256": "005c978f3d77994c7e07a11e597b3a513bbf1ea7641d4fd4c6c15ee0d2d84642",
+      "git_entry": "100644 blob 7955ed203c2b829db612df2587befda1e685776e\tdocs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz"
+    }
+  ],
+  "counting_policy": [
+    "Use per-unit case counts only; do not add this supplement to the whole-application result.",
+    "The 13 canonical reconciliation cases were rerun within the 37-case CI-discovery set; they are not another 13 distinct cases.",
+    "HTTPS full and lean --list each register one scenario and execute zero. Historical donor native passes are not fresh passes.",
+    "36 compiled Solidity input files are not additional test cases."
+  ],
+  "remaining_acceptance": [
+    "Fresh final-composition full repository dependency installation and existing required hosted CI/security gates.",
+    "Fresh HTTPS full/lean native execution and other application browser acceptance recorded separately.",
+    "Existing Node 22 hosted tooling compatibility; no current inventory adapter or analyzer-execution success is claimed."
+  ],
+  "activity": {
+    "runtime_tests_executed": false,
+    "native_execution": false,
+    "analyzer_execution": false,
+    "source_or_ref_mutations": false,
+    "only_scratch_supplement_files_written": true
+  },
+  "conclusion": "Existing local receipts are internally consistent and bind to unchanged selected units at the target composition. Hosted acceptance remains separate and pending."
+}

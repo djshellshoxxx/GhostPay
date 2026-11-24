@@ -40,7 +40,7 @@ Defaults stay at version <= 14 (L) so a phone can read it off a laptop screen. T
 
 ## jsQR evaluation
 
-Pinned `jsqr@1.4.0`: Apache-2.0 (package.json and LICENSE), no dependencies, no install scripts, published 2021-04-24, tarball integrity matches the lockfile. Read `dist/jsQR.js` (10k lines, webpack UMD): pure computation on `Uint8ClampedArray`, no `eval`/`Function`/network/DOM. The software reader loads a [local static ESM copy](src/vendor/README.md) with the incorrect version-23 alignment center corrected from 74 to 78; a deterministic provenance test verifies the complete factory body and license against the original pinned package. The dependency manifest and lockfile are unchanged. Unmaintained since 2021: weaker than native detectors on blurry or small codes; it is only the fallback. Update path: swap `loadJsQrDecoder` implementation behind `QrFrameDecoder`.
+Pinned `jsqr@1.4.0`: Apache-2.0 (package.json and LICENSE), no dependencies, no install scripts, published 2021-04-24, tarball integrity matches the lockfile. Read `dist/jsQR.js` (10k lines, webpack UMD): pure computation on `Uint8ClampedArray`, no `eval`/`Function`/network/DOM. The software reader loads a [local static ESM copy](src/vendor/README.md) with the incorrect version-23 alignment center corrected from 74 to 78 and bounded neighboring valid-dimension retries after an invalid locator estimate. Deterministic provenance tests verify the complete factory body and license against the original pinned package. The dependency manifest and lockfile are unchanged. Unmaintained since 2021: weaker than native detectors on blurry or small codes; it is only the fallback. Update path: swap `loadJsQrDecoder` implementation behind `QrFrameDecoder`.
 
 ## Using it from the web app
 

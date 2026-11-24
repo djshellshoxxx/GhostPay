@@ -31,3 +31,20 @@ describe('placeScanMatch (F1)', () => {
     expect(sharedRouterAddresses([match('d', true), match('r', false)]).size).toBe(0);
   });
 });
+
+describe('sharedRouterAddresses: duplicate notification is not a second router record', () => {
+  it('ignores a second delivery of the same announcement, including a status refresh', () => {
+    const received = match('announcement-1', true);
+    const updated = { ...received, receipt: 'pending' as const };
+    // Both events identify the same on-chain router announcement; this is not two payments.
+    expect([...sharedRouterAddresses([received, updated])]).toEqual([]);
+  });
+
+  it('still reports an address when a distinct router announcement uses it', () => {
+    const received = match('announcement-1', true);
+    const updated = { ...received, receipt: 'pending' as const };
+    const different = match('announcement-2', true);
+    expect([...sharedRouterAddresses([received, updated, different])]).toEqual([S.toLowerCase()]);
+    expect([...sharedRouterAddresses([different, received, updated])]).toEqual([S.toLowerCase()]);
+  });
+});

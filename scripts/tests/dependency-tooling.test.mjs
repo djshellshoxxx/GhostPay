@@ -108,3 +108,24 @@ test('solc tmp API writes and removes SMT files and rejects traversal prefixes',
   const { smtSolver } = solcRequire('./smtsolver.js');
   assert.equal(smtSolver('(check-sat)', { command: process.execPath, params: JSON.stringify(solver) }), 'unsat');
 });
+
+test('Sentry request extraction preserves ordinary cookie parsing and middleware values', () => {
+  const sentryRequire = createRequire(require.resolve('@sentry/node'));
+  const { extractNodeRequestData } = sentryRequire('@sentry/utils');
+  const request = {
+    method: 'GET',
+    url: '/local-tooling-check',
+    headers: {
+      host: 'localhost',
+      cookie: 'mode=local; label=ordinary%20value; empty=; quoted="kept"; mode=later',
+    },
+  };
+  assert.deepEqual(extractNodeRequestData(request, ['cookies']), {
+    cookies: { mode: 'local', label: 'ordinary value', empty: '', quoted: 'kept' },
+  });
+  assert.deepEqual(extractNodeRequestData({ ...request, headers: {} }, ['cookies']), { cookies: {} });
+  const middlewareCookies = { mode: 'middleware', label: 'already decoded' };
+  const extracted = extractNodeRequestData({ ...request, cookies: middlewareCookies }, ['cookies']);
+  assert.equal(extracted.cookies, middlewareCookies);
+  assert.deepEqual(middlewareCookies, { mode: 'middleware', label: 'already decoded' });
+});

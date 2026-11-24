@@ -1,0 +1,342 @@
+{
+  "format": "ghostpay-qualified-package-equivalence/1",
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "method": "Read-only immutable Git tree/blob comparison of each complete package directory, recursive declared workspace dependencies, all root config/code files, build-workspaces script, and lockfile; inspect original full-suite log totals. No rerun is claimed.",
+  "selected_distinct_package_passes": 917,
+  "results": [
+    {
+      "package": "@ghostpay/qr-exchange",
+      "qualified_source": "74e51b7197258cba1e2db98bfb698307ef741d7c",
+      "current_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "passed": 270,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/f80482f352bc/followup-final-qualification/qr-exchange-test.log",
+      "log_sha256": "8b5a12be7f3f16841bcfe60a3ec2c48612fdc3dc0f31b2bc2b1564bca3d0eb6f",
+      "workspace_dependency_tree_comparisons": [
+        {
+          "workspace": "@ghostpay/core-crypto",
+          "path": "packages/core-crypto",
+          "qualified_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "current_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/invoice-schema",
+          "path": "packages/invoice-schema",
+          "qualified_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "current_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/qr-exchange",
+          "path": "packages/qr-exchange",
+          "qualified_tree": "cdeb2d09ba5cc8cc4813c07a52060721b7ca2645",
+          "current_tree": "cdeb2d09ba5cc8cc4813c07a52060721b7ca2645",
+          "equal": true
+        }
+      ],
+      "root_build_test_lint_inputs": [
+        {
+          "path": "eslint.config.js",
+          "qualified_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "current_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "equal": true
+        },
+        {
+          "path": "package-lock.json",
+          "qualified_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "current_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "equal": true
+        },
+        {
+          "path": "package.json",
+          "qualified_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "current_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "equal": true
+        },
+        {
+          "path": "tsconfig.base.json",
+          "qualified_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "current_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "equal": true
+        },
+        {
+          "path": "scripts/build-workspaces.mjs",
+          "qualified_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "current_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "equal": true
+        }
+      ],
+      "source_and_declared_workspace_dependencies_identical": true
+    },
+    {
+      "package": "@ghostpay/hygiene",
+      "qualified_source": "74e51b7197258cba1e2db98bfb698307ef741d7c",
+      "current_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "passed": 175,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/f80482f352bc/followup-final-qualification/hygiene-test.log",
+      "log_sha256": "e1b8a55fe334d60a6c3e2e227eb4ba85a501ec6f5dc98bc5446b8fdeb411f17c",
+      "workspace_dependency_tree_comparisons": [
+        {
+          "workspace": "@ghostpay/chain-adapters",
+          "path": "packages/chain-adapters",
+          "qualified_tree": "29688b2d3587c413f8e1dcda5c5ad8345401a8b9",
+          "current_tree": "29688b2d3587c413f8e1dcda5c5ad8345401a8b9",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/core-crypto",
+          "path": "packages/core-crypto",
+          "qualified_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "current_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/hygiene",
+          "path": "packages/hygiene",
+          "qualified_tree": "8c5c56509502f48e35fe21164beecb52053bb8a4",
+          "current_tree": "8c5c56509502f48e35fe21164beecb52053bb8a4",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/invoice-schema",
+          "path": "packages/invoice-schema",
+          "qualified_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "current_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "equal": true
+        }
+      ],
+      "root_build_test_lint_inputs": [
+        {
+          "path": "eslint.config.js",
+          "qualified_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "current_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "equal": true
+        },
+        {
+          "path": "package-lock.json",
+          "qualified_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "current_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "equal": true
+        },
+        {
+          "path": "package.json",
+          "qualified_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "current_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "equal": true
+        },
+        {
+          "path": "tsconfig.base.json",
+          "qualified_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "current_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "equal": true
+        },
+        {
+          "path": "scripts/build-workspaces.mjs",
+          "qualified_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "current_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "equal": true
+        }
+      ],
+      "source_and_declared_workspace_dependencies_identical": true
+    },
+    {
+      "package": "@ghostpay/merchant-ledger",
+      "qualified_source": "74e51b7197258cba1e2db98bfb698307ef741d7c",
+      "current_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/f80482f352bc/followup-final-qualification/merchant-ledger-test.log",
+      "log_sha256": "ecde4ee62aa50e696787a7fe1355ff1f99223182c6a3a49420bbb49103449c40",
+      "workspace_dependency_tree_comparisons": [
+        {
+          "workspace": "@ghostpay/invoice-schema",
+          "path": "packages/invoice-schema",
+          "qualified_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "current_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/merchant-ledger",
+          "path": "packages/merchant-ledger",
+          "qualified_tree": "11eacbe2ac4405f7c26fd9f34526f360dfae0e2e",
+          "current_tree": "11eacbe2ac4405f7c26fd9f34526f360dfae0e2e",
+          "equal": true
+        }
+      ],
+      "root_build_test_lint_inputs": [
+        {
+          "path": "eslint.config.js",
+          "qualified_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "current_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "equal": true
+        },
+        {
+          "path": "package-lock.json",
+          "qualified_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "current_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "equal": true
+        },
+        {
+          "path": "package.json",
+          "qualified_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "current_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "equal": true
+        },
+        {
+          "path": "tsconfig.base.json",
+          "qualified_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "current_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "equal": true
+        },
+        {
+          "path": "scripts/build-workspaces.mjs",
+          "qualified_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "current_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "equal": true
+        }
+      ],
+      "source_and_declared_workspace_dependencies_identical": true
+    },
+    {
+      "package": "@ghostpay/ux-vault",
+      "qualified_source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "current_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "passed": 375,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/vault-coverage.log",
+      "log_sha256": "b92c4f4a079801c493c9b24246034d370992a7cb89e135ec122b82a74f35532a",
+      "workspace_dependency_tree_comparisons": [
+        {
+          "workspace": "@ghostpay/chain-adapters",
+          "path": "packages/chain-adapters",
+          "qualified_tree": "29688b2d3587c413f8e1dcda5c5ad8345401a8b9",
+          "current_tree": "29688b2d3587c413f8e1dcda5c5ad8345401a8b9",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/core-crypto",
+          "path": "packages/core-crypto",
+          "qualified_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "current_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/invoice-schema",
+          "path": "packages/invoice-schema",
+          "qualified_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "current_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+          "equal": true
+        },
+        {
+          "workspace": "@ghostpay/ux-vault",
+          "path": "packages/ux-vault",
+          "qualified_tree": "9c14099e3e81458ab25ca68b620beb3c59ec681c",
+          "current_tree": "9c14099e3e81458ab25ca68b620beb3c59ec681c",
+          "equal": true
+        }
+      ],
+      "root_build_test_lint_inputs": [
+        {
+          "path": "eslint.config.js",
+          "qualified_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "current_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "equal": true
+        },
+        {
+          "path": "package-lock.json",
+          "qualified_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "current_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "equal": true
+        },
+        {
+          "path": "package.json",
+          "qualified_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "current_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "equal": true
+        },
+        {
+          "path": "tsconfig.base.json",
+          "qualified_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "current_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "equal": true
+        },
+        {
+          "path": "scripts/build-workspaces.mjs",
+          "qualified_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "current_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "equal": true
+        }
+      ],
+      "source_and_declared_workspace_dependencies_identical": true
+    },
+    {
+      "package": "@ghostpay/pir-two-server",
+      "qualified_source": "74e51b7197258cba1e2db98bfb698307ef741d7c",
+      "current_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/f80482f352bc/followup-final-qualification/pir-two-server-test.log",
+      "log_sha256": "00895f67db6804279e8f2c3cfb07ee7cd6598e47de95223872534b49e08a445e",
+      "workspace_dependency_tree_comparisons": [
+        {
+          "workspace": "@ghostpay/pir-two-server",
+          "path": "packages/pir-two-server",
+          "qualified_tree": "e32c55bb32416470f440f1facec18f46bea4b492",
+          "current_tree": "e32c55bb32416470f440f1facec18f46bea4b492",
+          "equal": true
+        }
+      ],
+      "root_build_test_lint_inputs": [
+        {
+          "path": "eslint.config.js",
+          "qualified_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "current_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+          "equal": true
+        },
+        {
+          "path": "package-lock.json",
+          "qualified_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "current_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "equal": true
+        },
+        {
+          "path": "package.json",
+          "qualified_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "current_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+          "equal": true
+        },
+        {
+          "path": "tsconfig.base.json",
+          "qualified_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "current_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+          "equal": true
+        },
+        {
+          "path": "scripts/build-workspaces.mjs",
+          "qualified_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "current_blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "equal": true
+        }
+      ],
+      "source_and_declared_workspace_dependencies_identical": true
+    }
+  ],
+  "excluded_from_total": [
+    "Earlier 310-test ux-vault suite, superseded by 375-test full suite at 079a153a",
+    "All focused web tests and prior/full web overlap",
+    "F08 invoice-schema 744-test earlier suite; source-pinned evidence retained separately",
+    "Historical/native successes; no fresh native success inferred"
+  ],
+  "limitations": [
+    "Source-equivalent inherited package qualification is not a fresh execution at the final combined Git commit.",
+    "Exact final hosted/native gates remain separately required."
+  ]
+}
