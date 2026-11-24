@@ -1610,6 +1610,8 @@ export const SECURITY_KEY_GROUPS = {
     'create.metadata.itemized',
     'create.metadata.omitted',
     'create.metadata.required',
+    'create.metadata.bearer',
+    'create.metadata.bearerHint',
     'create.metadata.download',
     'create.metadata.downloadFailed',
     'create.encrypt',

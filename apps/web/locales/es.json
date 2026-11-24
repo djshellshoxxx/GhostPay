@@ -747,6 +747,8 @@
     "create.metadata.itemized": "Incluye las descripciones de los artículos, las cantidades, los precios unitarios y cualquier nota. Las plantillas de comerciante incluyen el nombre del perfil en la descripción del artículo.",
     "create.metadata.omitted": "Omite las descripciones de los artículos, las cantidades, los precios unitarios y la nota, incluidos los nombres comerciales o las referencias de pedidos que se hayan escrito allí.",
     "create.metadata.required": "Ambos formatos incluyen la red, el token, los importes, el impuesto, las condiciones de comisión y cotización, el vencimiento, la política de reserva de gas si existe, la referencia de la factura, la metadirección del vendedor, la clave pública de firma y la firma. Las claves públicas permiten relacionar facturas del mismo vendedor.",
+    "create.metadata.bearer": "Incluir una clave de descifrado en el enlace",
+    "create.metadata.bearerHint": "Esta clave solo cifra la lista vacía de artículos. Las condiciones de pago siguen siendo legibles. Elige una frase de contraseña a continuación para cifrar toda la factura.",
     "create.metadata.download": "Descargar enlace de la factura (.txt)",
     "create.metadata.downloadFailed": "La descarga falló. Aún puedes copiar el enlace.",
     "create.memo": "Nota (opcional, visible para el pagador)",

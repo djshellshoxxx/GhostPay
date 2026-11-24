@@ -340,9 +340,9 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>}
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
-            <label htmlFor="enc">{t('create.encrypt')}</label>
+            <label htmlFor="enc">{minimalMetadata ? t('create.metadata.bearer') : t('create.encrypt')}</label>
           </div>
-          <p className="hint">{t('create.encrypt.hint')}</p>
+          <p className="hint">{minimalMetadata ? t('create.metadata.bearerHint') : t('create.encrypt.hint')}</p>
           <div className="check">
             <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
             <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
