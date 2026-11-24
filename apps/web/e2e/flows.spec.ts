@@ -220,15 +220,23 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       // Model another browser process: B sees its own journal writes immediately, but not A's later mirror update.
       await tab.evaluate(() => {
         const key = 'ghostpay.wallet-attempts.v1';
-        const { getItem, setItem } = Storage.prototype;
-        let cached = localStorage.getItem(key);
-        Storage.prototype.getItem = function (name) {
-          return this === localStorage && name === key ? cached : getItem.call(this, name);
+        const live = localStorage;
+        let cached = live.getItem(key);
+        const mirror: Storage = {
+          get length() { return live.length; },
+          key: live.key.bind(live),
+          getItem: (name) => name === key ? cached : live.getItem(name),
+          setItem(name, value) {
+            live.setItem(name, value);
+            if (name === key) cached = value;
+          },
+          removeItem(name) {
+            live.removeItem(name);
+            if (name === key) cached = null;
+          },
+          clear() { live.clear(); cached = null; },
         };
-        Storage.prototype.setItem = function (name, value) {
-          setItem.call(this, name, value);
-          if (this === localStorage && name === key) cached = value;
-        };
+        Object.defineProperty(window, 'localStorage', { configurable: true, value: mirror });
       });
 
       // Tab A's held wallet request commits a real, unresolved payment to IndexedDB.
