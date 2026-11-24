@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "codex-7d989a9d821e-pr514",
   "token": "0ffd46f4-b191-41c7-8bd2-f24b795353c8",
   "generation": 13,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-24T02:35:37.830Z",
   "heartbeat_at": "2026-11-24T02:35:37.830Z",
   "expires_at": "2026-11-24T02:55:37.830Z",
-  "transport": "github-connector-expected-head-nonforce"
+  "transport": "github-connector-expected-head-nonforce",
+  "released_at": "2026-11-24T02:37:01.000Z"
 }
