@@ -1,6 +1,9 @@
+import { policyAccountAbi, policyAccountFactoryAbi } from '@ghostpay/policy-scheme';
 import { readAttempts, clearAttempt, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { UserFacingError } from '../../lib/errors';
 import { sendViaWallet, walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
+
+const disclosureAbi = [...policyAccountAbi, ...policyAccountFactoryAbi];
 
 export interface PolicyLockManager {
   request<T>(name: string, callback: () => Promise<T>): Promise<T>;
@@ -55,7 +58,7 @@ export async function sendPolicyAction(p: {
     if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
     const tx = await p.prepare();
     p.assertCurrent();
-    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage });
+    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage, disclosureAbi });
   });
 }
 

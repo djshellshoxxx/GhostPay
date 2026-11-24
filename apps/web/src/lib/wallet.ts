@@ -1,3 +1,4 @@
+import type { Abi } from 'viem';
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
@@ -236,7 +237,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
   let approval: WalletDisclosureApproval | undefined;
   const provider = wallet.provider;
   let changed = false;
-  let accountResolved = false;
+  let requestingAccounts = false;
   let switching = false;
   let stop = (): void => undefined;
   const check = (): void => {
@@ -254,13 +255,15 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
     stop = observeWalletLifecycle(provider, (event) => {
       // Permission grants may announce the initial account/network; both are verified below. Only the requested
       // network switch is allowed after that point, and its final chain and account are re-read before returning.
-      if (event === 'disconnect' || (accountResolved && !(event === 'chainChanged' && switching))) changed = true;
+      if (event === 'disconnect' || (!requestingAccounts && !(event === 'chainChanged' && switching))) changed = true;
     });
     check();
-    if (disclosure !== undefined) approval = await reviewConnection(provider, disclosure, prepareWalletConnection(expectedChainId).disclosure, check, signal);
+    const connection = prepareWalletConnection(expectedChainId);
+    if (disclosure !== undefined) approval = await reviewConnection(provider, disclosure, connection.disclosure, check, signal);
     check();
-    const requested = firstAccount(await call(provider, 'eth_requestAccounts'));
-    accountResolved = true;
+    requestingAccounts = true;
+    const requested = firstAccount(await call(provider, connection.method, connection.params));
+    requestingAccounts = false;
     check();
     const listed = firstAccount(await call(provider, 'eth_accounts'));
     check();
@@ -376,6 +379,10 @@ const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
 export interface WalletAttemptOptions {
   readonly kind: AttemptInput['kind'];
+  /** Optional contract interface supplied by the calling feature, e.g. the full-profile Policy contracts. */
+  readonly disclosureAbi?: Abi;
+  /** Notify the payment view only once the provider has actually received the approved request. */
+  readonly onWalletRequest?: () => void;
   /**
    * Logical action identity. For payments, the signed invoice digest: it replaces the calldata, which carries fresh
    * stealth randomness. For other kinds it narrows the calldata key, so the same approval or revoke for a later invoice
@@ -449,7 +456,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   // Capture once, before any await: caller edits cannot change what an approved disclosure will submit.
   const captured = Object.freeze({ to: tx.to, data: tx.data, value: tx.value });
   const attemptOptions = options === undefined ? undefined : Object.freeze({ ...options });
-  const request = prepareWalletTransaction(s.chainId, s.account, captured);
+  const request = prepareWalletTransaction(s.chainId, s.account, captured, attemptOptions?.disclosureAbi);
   const disclose = s.disclosure;
   const authority = walletAuthority(s, assertCurrent);
   try {
@@ -467,7 +474,9 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     check();
     let hash: unknown;
     try {
-      hash = await call(s.wallet.provider, request.method, request.params);
+      const sent = call(s.wallet.provider, request.method, request.params);
+      try { attemptOptions?.onWalletRequest?.(); } catch { /* A view callback must not discard the wallet result. */ }
+      hash = await sent;
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
       throw new WalletSubmissionUnknownError(e instanceof WalletCallError ? e.rpcCode : undefined);

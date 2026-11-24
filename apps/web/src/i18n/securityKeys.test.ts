@@ -74,6 +74,8 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'wallet.disclosure.domainChain',
       'wallet.disclosure.account',
       'wallet.disclosure.destination',
+      'wallet.disclosure.contractCall',
+      'wallet.disclosure.arguments',
       'wallet.disclosure.nativeValue',
       'wallet.disclosure.typedAmount',
       'wallet.disclosure.typedRecipient',

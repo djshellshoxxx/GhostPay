@@ -138,7 +138,7 @@ export async function sendPolicyPayment(
   };
   paymentCheck();
   markSent(guard, prepared);
-  return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope });
+  return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope, disclosureAbi: ghostPayPolicyRouterAbi });
 }
 
 /** Same text as `beginAttempt`'s duplicate refusal (duplicateAttemptJournal.ts). */

@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { erc20Abi } from '@ghostpay/chain-adapters';
+import { encodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../test/mockWallet';
 import { connectWallet, sendViaWallet, signTypedDataViaWallet, walletAttemptKey, type Eip1193Provider, type TxRequest, type WalletAttemptOptions, type WalletInfo, type WalletSession } from './wallet';
 import { readAttempts, type AttemptStorage } from './duplicateAttemptJournal';
@@ -46,6 +48,56 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     const provider = new MockWallet();
     await expect(connectWithDisclosure(info(provider), 84532, undefined, undefined, { disclosure: decline })).rejects.toThrow('Disclosure cancelled');
     expect(provider.calls).toEqual([]);
+  });
+
+  it.each(['accountsChanged', 'chainChanged'])('refuses a %s event between closing the connection preview and invoking the wallet', async (event) => {
+    const provider = new EventWallet();
+    const remove = provider.removeListener.bind(provider);
+    let closingReview = true;
+    provider.removeListener = (name, listener) => {
+      remove(name, listener);
+      if (closingReview) {
+        closingReview = false;
+        provider.emit(event);
+      }
+    };
+    const controller = presenter();
+    const operation = connectWallet(info(provider), 84532, undefined, undefined, { disclosure: controller.request });
+    approve(controller);
+    await expect(operation).rejects.toThrow(/changed/i);
+    expect(provider.calls).toEqual([]);
+    expect(provider.countListeners()).toBe(0);
+  });
+
+  it('reports the actual token approval and only signals handoff when the wallet receives it', async () => {
+    const provider = new MockWallet({ rejectSend: true });
+    const controller = presenter();
+    const session = { ...await connectWallet(info(provider), 84532), disclosure: controller.request };
+    provider.calls.length = 0;
+    const amount = (1n << 200n) + 1n;
+    const spender = '0x2222222222222222222222222222222222222222';
+    const data = encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [spender, amount] });
+    const transaction = { ...tx, data, value: 0n };
+    const onWalletRequest = vi.fn(() => provider.calls.at(-1)?.method);
+    const options = { kind: 'approval' as const, storage: store(), onWalletRequest };
+    const cancelled = sendViaWallet(session, transaction, undefined, options);
+    expect(onWalletRequest).not.toHaveBeenCalled();
+    controller.revoke();
+    await expect(cancelled).rejects.toThrow(/cancelled/);
+    expect(onWalletRequest).not.toHaveBeenCalled();
+    const operation = sendViaWallet(session, transaction, undefined, options);
+    const preview = controller.getSnapshot()!.request;
+    expect(preview).toMatchObject({ nativeValueWei: '0', destination: tx.to, contractCall: {
+      name: 'approve', fields: [['spender', spender], ['value', amount.toString()]],
+    } });
+    expect(provider.calls).toEqual([]);
+    transaction.value = 99n;
+    approve(controller);
+    await expect(operation).rejects.toMatchObject({ rpcCode: 4001 });
+    expect(onWalletRequest).toHaveReturnedWith('eth_sendTransaction');
+    expect(onWalletRequest).toHaveBeenCalledTimes(1);
+    expect(provider.calls.at(-1)).toEqual(JSON.parse(preview.requestJson));
+    expect(provider.sent).toBeUndefined();
   });
 
   it('refuses the transaction before provider reads or sends when disclosure is declined', async () => {

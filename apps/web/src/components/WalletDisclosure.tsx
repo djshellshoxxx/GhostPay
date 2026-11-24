@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { Fragment, createContext, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { subscribeAppLock } from '../lib/appLock';
 import { UserFacingError } from '../lib/errors';
@@ -70,6 +70,15 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
         {request.method !== 'eth_requestAccounts' && request.method !== 'wallet_switchEthereumChain' && <>
           <dt>{t('wallet.disclosure.destination')}</dt><dd><bdi dir="ltr">{request.destination ?? unknown}</bdi></dd>
           {request.method === 'eth_sendTransaction' ? <>
+            {request.contractCall !== undefined && <>
+              <dt>{t('wallet.disclosure.contractCall')}</dt><dd><code>{request.contractCall.name}</code></dd>
+              {request.contractCall.fields.length > 0 && <>
+                <dt>{t('wallet.disclosure.arguments')}</dt>
+                <dd><dl>{request.contractCall.fields.map(([name, value]) => <Fragment key={name}>
+                  <dt><code>{name}</code></dt><dd><bdi dir="ltr">{value}</bdi></dd>
+                </Fragment>)}</dl></dd>
+              </>}
+            </>}
             <dt>{t('wallet.disclosure.nativeValue')}</dt><dd><bdi dir="ltr">{request.nativeValueWei ?? unknown}</bdi></dd>
           </> : <>
             <dt>{t('wallet.disclosure.domainChain')}</dt><dd><bdi dir="ltr">{request.domainChainId ?? unknown}</bdi></dd>

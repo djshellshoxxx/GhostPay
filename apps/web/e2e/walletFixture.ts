@@ -3,6 +3,8 @@ import type { SentTx } from './flowMocks';
 
 export interface WalletControls {
   readonly calls: string[];
+  rejectMethod?: string;
+  rejectedRequest?: { method: string; params?: unknown[] };
   holdSend: boolean;
   pending: boolean;
   changeAccountOnRecheck: boolean;
@@ -48,6 +50,10 @@ export async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls
       removeListener: (event: string, listener: () => void): void => { listeners.get(event)?.delete(listener); },
       request: async ({ method, params }: { method: string; params?: unknown[] }): Promise<unknown> => {
         calls.push(method);
+        if (method === controls.rejectMethod) {
+          controls.rejectedRequest = { method, ...(params === undefined ? {} : { params }) };
+          throw Object.assign(new Error('Fixture rejection'), { code: 4001 });
+        }
         switch (method) {
           case 'eth_requestAccounts':
           case 'eth_accounts':

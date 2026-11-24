@@ -1,3 +1,5 @@
+import type { Abi, Hex } from 'viem';
+import { summarizeWalletCall, type WalletCallSummary } from './walletCallSummary';
 import { isAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
 
@@ -14,6 +16,7 @@ export interface WalletDisclosureRequest {
   /** The actual transaction target or typed-data verifying contract, not a decoded token recipient. */
   readonly destination?: string;
   readonly nativeValueWei?: string;
+  readonly contractCall?: WalletCallSummary;
   readonly typedAmount?: string;
   readonly typedRecipient?: string;
   readonly primaryType?: string;
@@ -55,13 +58,15 @@ export function prepareWalletConnection(chainId: number): PreparedWalletRequest 
 export function prepareWalletChainSwitch(chainId: number, from: string): PreparedWalletRequest {
   return prepared('wallet_switchEthereumChain', { chainId: chain(chainId), account: account(from) }, Object.freeze([Object.freeze({ chainId: `0x${chainId.toString(16)}` })]));
 }
-export function prepareWalletTransaction(chainId: number, from: string, tx: { readonly to: string; readonly data: string; readonly value: bigint }): PreparedWalletRequest {
+export function prepareWalletTransaction(chainId: number, from: string, tx: { readonly to: string; readonly data: string; readonly value: bigint }, abi?: Abi): PreparedWalletRequest {
   const to = account(tx.to);
   const data = tx.data;
   const value = tx.value;
   if (typeof data !== 'string' || data.length > WALLET_DISCLOSURE_MAX_BYTES || !/^0x(?:[0-9a-fA-F]{2})*$/.test(data)
     || typeof value !== 'bigint' || value < 0n || value >= (1n << 256n)) throw refused();
-  const fields = { chainId: chain(chainId), account: account(from), destination: to, nativeValueWei: value.toString() };
+  const contractCall = summarizeWalletCall(data as Hex, abi);
+  const fields = { chainId: chain(chainId), account: account(from), destination: to, nativeValueWei: value.toString(),
+    ...(contractCall === undefined ? {} : { contractCall }) };
   return prepared('eth_sendTransaction', fields, Object.freeze([Object.freeze({ from: fields.account, to, data, value: `0x${value.toString(16)}`, chainId: `0x${chainId.toString(16)}` })]));
 }
 function record(value: unknown): Record<string, unknown> | undefined {
