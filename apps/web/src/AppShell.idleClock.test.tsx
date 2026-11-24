@@ -460,7 +460,10 @@ describe('GP-PAGES-04: first invoice signature after sleep', () => {
     signerCalled.mockClear();
     // Only wall time advances. A click-only activation can reach the form before a queued wake event or timer.
     wall += elapsedMs;
-    await act(async () => { fireEvent.click(submit); });
+    await act(async () => {
+      fireEvent.click(submit);
+      await Promise.resolve();
+    });
   }
 
   it('requires the seller to unlock and never calls the signer past the deadline', async () => {
