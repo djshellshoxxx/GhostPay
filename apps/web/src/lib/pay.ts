@@ -11,11 +11,11 @@ import {
   erc20MetadataAbi,
   fiatToTokenAmount,
   findChain,
-  findFeed,
+  findQualifiedFeed,
   findToken,
   parseQuantity,
   permitDigest,
-  readPrice,
+  readQualifiedPrice,
   type Address,
   type BuiltPayment,
   type ChainAdapter,
@@ -155,6 +155,19 @@ export function offlineClient(chainId: number): RpcClient {
   return { chainId, request: no, blockNumber: no, getBlock: no, getLogs: no };
 }
 
+export interface FiatEstimate {
+  readonly quotedAt: number;
+  readonly feed: Address;
+  readonly roundId: bigint;
+  readonly updatedAt: number;
+  readonly expiresAt: number;
+  readonly tokenAmount: bigint;
+}
+
+export class QuoteDisabledError extends UserFacingError {
+  readonly code = 'QUOTE_DISABLED';
+}
+
 export interface PayContext {
   readonly review: Review;
   readonly adapter: ChainAdapter;
@@ -162,11 +175,12 @@ export interface PayContext {
   readonly manifest: DeploymentManifest;
   readonly chain: ChainConfig;
   readonly client: RpcClient;
+  readonly estimate?: FiatEstimate;
   readonly quotedTokenAmount: bigint | undefined;
 }
 
 export interface FeedDeps {
-  readonly findFeedFn?: typeof findFeed;
+  readonly findFeedFn?: typeof findQualifiedFeed;
   readonly nowSeconds: number;
 }
 
@@ -181,20 +195,19 @@ export async function createPayContext(review: Review, client: RpcClient | undef
   }
   const rpc = client ?? offlineClient(chain.chainId);
   const adapter = createEvmAdapter({ chain, deployment: manifest, client: rpc });
-  let quoted: bigint | undefined;
+  let estimate: FiatEstimate | undefined;
   const inv = review.invoice;
   if (inv.amountPolicy.mode === 'fiat_quote') {
-    if (client === undefined) throw new UserFacingError({ key: 'error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor' });
-    const feed = (deps.findFeedFn ?? findFeed)(chain.chainId, token.symbol, inv.fiat.currency);
-    if (feed === undefined) {
-      throw new UserFacingError({ key: 'error.pay.missingPriceFeed', values: { symbol: token.symbol, currency: inv.fiat.currency, chain: chain.name } });
+    const feed = (deps.findFeedFn ?? findQualifiedFeed)(chain.chainId, token.symbol, inv.fiat.currency);
+    if (feed === undefined || feed.chainId !== chain.chainId || feed.base !== token.symbol || feed.quote !== inv.fiat.currency ||
+        inv.quote.source !== `chainlink:${token.symbol.toLowerCase()}-${inv.fiat.currency.toLowerCase()}`) {
+      throw new QuoteDisabledError({ key: 'error.pay.missingPriceFeed', values: { symbol: token.symbol, currency: inv.fiat.currency, chain: chain.name } });
     }
-    const price = await readPrice(createAggregatorReader(client), feed.address, {
-      now: BigInt(deps.nowSeconds),
-      ...(feed.decimals === undefined ? {} : { expectedDecimals: feed.decimals }),
-      maxAgeSeconds: BigInt(Math.min(Math.max(inv.quote.expiresAt - inv.quote.timestamp, 60), 86_400)),
-    });
-    quoted = fiatToTokenAmount({
+    if (client === undefined) throw new UserFacingError({ key: 'error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor' });
+    assertInvoiceStillPayable(inv, deps.nowSeconds);
+    if (!Number.isSafeInteger(deps.nowSeconds) || deps.nowSeconds < inv.quote.timestamp) throw new UserFacingError({ key: 'pay.feedUnavailable' });
+    const price = await readQualifiedPrice(createAggregatorReader(client), feed, BigInt(deps.nowSeconds));
+    const tokenAmount = fiatToTokenAmount({
       fiatMinorUnits: BigInt(inv.fiat.minorUnits),
       fiatDecimals: fiatDecimals(inv.fiat.currency),
       fiatCurrency: inv.fiat.currency,
@@ -203,9 +216,14 @@ export async function createPayContext(review: Review, client: RpcClient | undef
       tokenDecimals: token.decimals,
       side: 'payer',
     });
+    estimate = {
+      quotedAt: deps.nowSeconds, feed: feed.address, roundId: price.roundId, updatedAt: Number(price.updatedAt), tokenAmount,
+      expiresAt: Math.min(invoicePayableUntil(inv), deps.nowSeconds + 300, Number(price.expiresAt)),
+    };
   }
+  const quoted = estimate?.tokenAmount;
   const request = adapter.buildPaymentRequest(inv, quoted === undefined ? {} : { quotedTokenAmount: quoted });
-  return { review, adapter, request, manifest, chain, client: rpc, quotedTokenAmount: quoted };
+  return { review, adapter, request, manifest, chain, client: rpc, ...(estimate === undefined ? {} : { estimate }), quotedTokenAmount: quoted };
 }
 
 /** Default sweep-gas estimate (per-token table fallback floor). Conservative for plain ERC-20 transfers. */
@@ -388,6 +406,15 @@ export function assertInvoiceStillPayable(invoice: Invoice, nowSeconds: number):
   if (invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError({ key: 'error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent' });
 }
 
+/** Recheck the observed feed window at each authorization, including after wallet/provider awaits. */
+export function assertPayContextFresh(ctx: PayContext, now: number): void {
+  assertInvoiceStillPayable(ctx.review.invoice, now);
+  if (ctx.review.invoice.amountPolicy.mode === 'fiat_quote' &&
+      (!ctx.estimate || !Number.isSafeInteger(now) || now < ctx.estimate.quotedAt || now >= ctx.estimate.expiresAt)) {
+    throw new UserFacingError({ key: 'pay.feedExpired' });
+  }
+}
+
 /**
  * Last second a deadline may name: the router and ERC-2612 accept a tx mined AT the deadline second, while
  * `checkExpiry` treats `expiresAt` itself as expired.
@@ -397,12 +424,18 @@ function lastPayableSecond(invoice: Invoice): number {
 }
 
 /** One router (and permit) deadline: the 20-minute window, never past the invoice's last payable second. */
-export function boundedDeadline(invoice: Invoice, nowSeconds: number): number {
+export function boundedDeadline(invoice: Invoice, nowSeconds: number, estimate?: FiatEstimate): number {
   assertInvoiceStillPayable(invoice, nowSeconds);
-  return Math.min(nowSeconds + DEADLINE_SECONDS, lastPayableSecond(invoice));
+  return Math.min(nowSeconds + DEADLINE_SECONDS, lastPayableSecond(invoice), estimate === undefined ? Infinity : estimate.expiresAt - 1);
 }
 const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
 const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
+
+function quoteMinimumNet(ctx: PayContext): bigint {
+  const net = ctx.request.netAmount;
+  const minimum = net - net * BigInt(ctx.review.invoice.quote.maxSlippageBps) / FEE_SCHEDULE.BPS;
+  return minimum > 0n ? minimum : 1n;
+}
 
 /** Builds the transaction and the preview from the SAME call; the UI renders `preview` and sends `tx`. */
 export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayment {
@@ -412,13 +445,14 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
     assertBufferWithinPolicy(opts.buffer.bufferWei, ctx.review.invoice);
   }
   const inv = ctx.review.invoice;
-  assertInvoiceStillPayable(inv, opts.nowSeconds);
-  if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > lastPayableSecond(inv)) {
+  assertPayContextFresh(ctx, opts.nowSeconds);
+  if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > Math.min(lastPayableSecond(inv), (ctx.estimate?.expiresAt ?? Infinity) - 1)) {
     throw new UserFacingError({ key: 'error.pay.blockedThePaymentDeadlineWouldOutliveTheInvoicePrepareIt' });
   }
-  const deadline = BigInt(opts.deadlineSeconds ?? boundedDeadline(inv, opts.nowSeconds));
+  const deadline = BigInt(opts.deadlineSeconds ?? boundedDeadline(inv, opts.nowSeconds, ctx.estimate));
   const built = ctx.request.build({
     deadline,
+    ...(ctx.estimate ? { minNet: quoteMinimumNet(ctx) } : {}),
     now: BigInt(opts.nowSeconds),
     ...(opts.permitSignature === undefined ? {} : { permitSignature: opts.permitSignature }),
     ...(opts.buffer === undefined ? {} : { buffer: { bufferWei: opts.buffer.bufferWei, maxBufferWei: opts.buffer.bufferWei } }),
@@ -441,7 +475,7 @@ export function assertReadyToSend(built: BuiltPayment, ctx: PayContext): void {
   if (!same(built.tx.to, ctx.manifest.router) || !same(p.router, ctx.manifest.router)) throw new UserFacingError({ key: 'error.pay.blockedTheTransactionDoesNotTargetTheManifestRouter' });
   if (p.chainId !== inv.chainId) throw new UserFacingError({ key: 'error.pay.blockedChainDiffersFromTheInvoice' });
   if (p.token === 'native' ? inv.token !== 'native' : !same(p.token, inv.token)) throw new UserFacingError({ key: 'error.pay.blockedTokenDiffersFromTheInvoice' });
-  if (p.gross !== ctx.request.grossAmount || p.fee !== ctx.request.feeAmount || p.net !== ctx.request.netAmount) {
+  if (p.gross !== ctx.request.grossAmount || p.fee !== ctx.request.feeAmount || p.net !== ctx.request.netAmount || (ctx.estimate !== undefined && p.minNet !== quoteMinimumNet(ctx))) {
     throw new UserFacingError({ key: 'error.pay.blockedAmountsDifferFromTheReviewedAmounts' });
   }
 }

@@ -13,9 +13,7 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 ## Not implemented (and why)
 3. **ERC-6538 registry publish**: the deployment manifest has no registry address, and publishing associates the meta-address with a
    wallet publicly. The Seller keys page says so and shares the meta-address directly instead.
-4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships `FEEDS` entries only for testnets (ETH/USD and
-   USDC/USD on Sepolia and Base Sepolia, `packages/chain-adapters/src/quote.ts`; see its `TODO-VERIFY.md`) and none for other chains. The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
-   payer) and is unit-tested with an injected feed; with no feed for the chain and pair it fails closed with a plain message. The Create page warns about this.
+4. **Fiat-priced invoices require fork qualification.** The catalogue lists ETH/USD and USDC/USD on Sepolia and Base Sepolia. All four lack fork acceptance. The full form disables these pairs and checkout refuses them. The Pages beta supports fixed-token invoices. See [spec 03](../../docs/specs/03-fiat-price-feeds.md) for the evidence required to enable a pair.
 5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
    "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
 6. **Embed SDK.** `public/ghostpay-embed-v1.js` is frozen and popup-only (takes a full `data-invoice` link, no `postMessage`, so pinned

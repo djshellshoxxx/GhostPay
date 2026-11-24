@@ -131,10 +131,9 @@ Optional source checks:
   coverage rereads the feed during sweep execution. Its final validity deadline is checked again after nonce
   acquisition and signing, before broadcast; expiry releases the reservation without an owner strike or breaker failure.
 
-Feed mode currently has registry data only for supported testnets. Live feed/fork acceptance, mainnet feed pins,
-sequencer/reference source configuration and the proposed signed `priceRoundId` extension remain separate gates.
-The existing quote wire format and stablecoin-at-USD-parity assumption are unchanged. Legacy fixed pricing remains
-explicitly configurable; neither it nor this new option establishes mainnet release qualification.
+Feed mode requires a fork-qualified primary and reference pair. It authenticates the native/USD round ID in a v3
+quote token. Fixed-price v2 tokens are for development and testnet fixed pricing only. An operator must qualify
+the stablecoin parity assumption independently before mainnet use. See [spec 03](../../docs/specs/03-fiat-price-feeds.md).
 The browser conservatively treats these HTTP 503 responses as uncertain; the server's refusal checks do not establish
 the origin or outcome of an arbitrary intermediary response and do not grant automatic retry authority.
 

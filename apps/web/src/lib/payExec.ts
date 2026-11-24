@@ -7,7 +7,7 @@ import { formatUnits } from './format';
 import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
 import {
   assertApproveTx,
-  assertInvoiceStillPayable,
+  assertPayContextFresh,
   assertPermitSigner,
   assertPreparedBufferFresh,
   assertBufferStillSufficient,
@@ -200,7 +200,11 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.approve', values: { amount: formatUnits(plan.need, ctx.review.token?.decimals ?? 18), symbol: ctx.review.token?.symbol ?? '' } } });
   assertCurrent?.();
   // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  const checkApproval = (): void => {
+    assertCurrent?.();
+    assertPayContextFresh(ctx, rt.nowSeconds());
+  };
+  const res = await submitTx(session, tx, rt, status, checkApproval, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theApprovalWasNotConfirmedNothingWasPaid' });
     // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).
@@ -221,7 +225,11 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.revoke', values: { spender: plan.spender } } });
   assertCurrent?.();
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  const checkApproval = (): void => {
+    assertCurrent?.();
+    assertPayContextFresh(ctx, rt.nowSeconds());
+  };
+  const res = await submitTx(session, tx, rt, status, checkApproval, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theRevokeWasNotConfirmedCheckYourAllowancesInYour' });
     if (res.verification !== 'verified') throw new UserFacingError({ key: 'error.payExec.yourRPCReportsAReceiptForTheRevokeButDid' });
@@ -243,6 +251,7 @@ export interface PrepareOptions {
  */
 export async function preparePayment(session: WalletSession, ctx: PayContext, opts: PrepareOptions, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<BuiltPayment> {
   const now = rt.nowSeconds();
+  assertPayContextFresh(ctx, now);
   const token = ctx.review.token;
   if (opts.usePermit && opts.buffer !== undefined) throw new UserFacingError({ key: 'error.payExec.aGasBufferCannotBeCombinedWithAPermitPayment' });
   if (!opts.usePermit || token === undefined || token.address === 'native') {
@@ -250,7 +259,7 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   }
   if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.aPermitPaymentNeedsAnRPCToReadTheToken' });
   // One deadline for the signed permit and the router calldata, bounded by invoice/fiat validity (never clamped later).
-  const deadline = boundedDeadline(ctx.review.invoice, now);
+  const deadline = boundedDeadline(ctx.review.invoice, now, ctx.estimate);
   const td = await buildPermit(rt.rpc, {
     chainId: ctx.chain.chainId,
     token: token.address,
@@ -261,10 +270,15 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   });
   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.permit', values: { amount: formatUnits(ctx.request.grossAmount, token.decimals), symbol: token.symbol } } });
   assertCurrent?.();
-  const sig = await signTypedDataViaWallet(session, typedDataJson(td), assertCurrent);
+  const checkPermit = (): void => {
+    assertCurrent?.();
+    assertPayContextFresh(ctx, rt.nowSeconds());
+  };
+  checkPermit();
+  const sig = await signTypedDataViaWallet(session, typedDataJson(td), checkPermit);
   assertCurrent?.();
   // The wallet may have held the request open: re-read the clock before using the signature.
-  assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+  assertPayContextFresh(ctx, rt.nowSeconds());
   await assertPermitSigner(td, sig, session.account);
   assertCurrent?.();
   // Spec 04 post-sign pre-flight: nonce, recovery and a static permit call. A front-run permit (allowance now set)
@@ -285,10 +299,10 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   if (state === 'already_allowed') {
     reportTransactionStatus(status, { phase: 'signed', message: permitStateDescriptor('already_allowed') });
-    return buildFinal(ctx, { nowSeconds: now });
+    return buildFinal(ctx, { nowSeconds: rt.nowSeconds() });
   }
   if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
-  return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
+  return buildFinal(ctx, { nowSeconds: rt.nowSeconds(), deadlineSeconds: deadline, permitSignature: sig });
 }
 
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
@@ -296,7 +310,7 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   const guard = (): void => {
     assertCurrent?.();
     assertReadyToSend(built, ctx);
-    assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+    assertPayContextFresh(ctx, rt.nowSeconds());
     assertPreparedBufferFresh(built, rt.nowSeconds());
     if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError({ key: 'error.payExec.thePreparedPaymentHasExpiredReviewAgain' });
   };

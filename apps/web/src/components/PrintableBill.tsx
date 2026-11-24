@@ -79,7 +79,7 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
         <dd>{formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency)}</dd>
         {props.fixedAmount === undefined ? (
           <>
-            <dt>{t('bill.total')}</dt>
+            <dt>{t('pay.fiatStated')}</dt>
             <dd><strong>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</strong></dd>
           </>
         ) : (

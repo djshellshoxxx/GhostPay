@@ -45,7 +45,7 @@ export interface SweepRequest {
 }
 
 /** Quote tokens: `v2.<8 hex key id>.<expiresAt>.<fee>.<64 hex mac>`. */
-export const QUOTE_TOKEN_PATTERN = /^v2\.[0-9a-f]{8}\.(?:0|[1-9][0-9]{0,11})\.(?:0|[1-9][0-9]{0,77})\.[0-9a-f]{64}$/;
+export const QUOTE_TOKEN_PATTERN = /^(?:v3\.[0-9a-f]{8}\.(?:0|[1-9][0-9]{0,11})\.(?:0|[1-9][0-9]{0,77})\.[1-9][0-9]{0,24}|v2\.[0-9a-f]{8}\.(?:0|[1-9][0-9]{0,11})\.(?:0|[1-9][0-9]{0,77}))\.[0-9a-f]{64}$/;
 
 /**
  * Strictly validates a quote request.

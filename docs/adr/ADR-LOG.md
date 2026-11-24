@@ -47,15 +47,15 @@ Decision:
 Consequences: onboarding a chain is slow on purpose. The tables are tiny today and the app can only pay on testnets, and only once a manifest exists.
 
 ## ADR-0012 Quote rules (fiat-priced invoices disabled until feeds are verified)
-Status: Accepted. Implementation state: code path exists, feature effectively off.
-Context: invoices may price in fiat with a quote (DEVELOPER_SPECIFICATION Module C, Playbook Proposal 1). `quote.ts` reads Chainlink `latestRoundData` with positivity, staleness, round-integrity and decimals checks and fails closed, but `FEEDS` is an empty table because no feed address has been verified against docs.chain.link. The Create page still offers "Fiat price" with a warning (audit 01 G-03, W-06).
-Decision:
-1. **Fiat-priced (`fiat_quote`) invoices are disabled** on every chain until a feed is added to `FEEDS` after verification (address from the oracle provider's documentation, decimals, heartbeat; `maxAgeSeconds` derived from the heartbeat; tests against the real feed on a fork/testnet). Until then the Pay page refuses them with a plain message, and the Create page should hide or disable the option rather than only warn (audit G-03; the change was being made by the web agent when this was written and has not been verified).
-2. A quote is a quote plus an explicit token amount, never "exact fiat settlement". The payer sees source, timestamp, token amount, fee and minimum net. Rounding favours the seller on the seller's side and the payer pays the rounded-up amount (`fiatToTokenAmount`), tested by property.
-3. Quote adapters are allowlisted (`chainlink` only today; `uniswap-twap` is specified but not built). The app never silently switches source; a failed or stale read blocks payment.
-4. Stale, zero, negative or oversized answers, decimals mismatches and L2 sequencer downtime (design not yet built) all block payment.
-5. The relayer does not use an oracle: token price is fixed at 1.0 (USD stablecoins only) and the native price is an operator constant. This is acceptable on testnets and must be replaced before mainnet (audit R-03, G-26).
-Consequences: the visible product today is token-priced invoices only.
+Status: Accepted. The Pages beta supports fixed-token invoices. The full checkout requires a fork-qualified oracle pair. Four testnet pairs have source metadata and none currently qualifies for payment.
+
+1. Registry acceptance needs dated provider source data, decimals, heartbeat, an independently sourced reference, the applicable L2 sequencer and a pinned testnet/fork run. CI checks evidence offline. Creation and payment stay disabled for unqualified pairs.
+2. The signed fiat total is the seller’s price. Payers see the observed round, timestamp, estimate expiry and rounded-up token amount. The final review shows the actual calldata amount, fee and minimum net. Fiat conversion does not establish settlement.
+3. The Chainlink source must match the selected pair. Stale, unavailable, invalid or divergent prices block payment; there is no alternate source selected silently. A prepared estimate lasts at most five minutes and cannot outlive either feed, invoice or seller offer.
+4. L2 sequencer downtime or recovery grace blocks quotes. The dollar peg guard applies to qualified USDC/USD checkout.
+5. Relayer native/USD feed quotes authenticate the round ID and bind expiry. Development/testnet fixed mode retains its original v2 token. Mainnet configuration refuses fixed pricing. The operator must qualify all sources and the accepted stablecoin before mainnet use.
+
+Implementation and qualification procedure are recorded in [spec 03](../specs/03-fiat-price-feeds.md).
 
 ## ADR-0013 Fee behaviour: bypass by direct payment, immutability trade-off, blacklist risk
 Status: Accepted (restates FEE_SCHEDULE principles with the consequences found in audits 02 and 04).

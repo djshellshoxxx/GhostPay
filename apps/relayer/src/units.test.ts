@@ -73,6 +73,17 @@ describe('quote token', () => {
     }
     expect(verifyQuote(new Uint8Array(32).fill(2), t, binding)).toBeNull();
   });
+  it('authenticates the exact uint80 feed round in v3 and refuses altered or downgraded tokens', () => {
+    const id = (1n << 80n) - 1n;
+    const token = signQuote(secret, { ...claims, priceRoundId: id });
+    expect(verifyQuote(secret, token, binding)).toEqual({ fee: 2n, expiresAt: 1234, priceRoundId: id });
+    expect(verifyQuote(secret, token.replace(id.toString(), '7'), binding)).toBeNull();
+    expect(verifyQuote(secret, token.replace(id.toString(), (1n << 80n).toString()), binding)).toBeNull();
+    expect(verifyQuote(secret, token.replace('v3.', 'v2.').replace(`.${id.toString()}.`, '.'), binding)).toBeNull();
+    for (const priceRoundId of [0n, -1n, 1n << 80n]) {
+      expect(() => signQuote(secret, { ...claims, priceRoundId })).toThrow(/round id/);
+    }
+  });
   it('rejects malformed, tampered and unsafe-expiry tokens', () => {
     const t = signQuote(secret, claims);
     expect(verifyQuote(secret, 'nope', binding)).toBeNull();

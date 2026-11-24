@@ -1,6 +1,7 @@
+import { qualifiedFeed } from './feedFixture.testutil.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { encodeAbiParameters } from 'viem';
-import { findFeed, type RpcClient } from '@ghostpay/chain-adapters';
+import { type RpcClient } from '@ghostpay/chain-adapters';
 import { CHAIN_ID, NOW_SEC, OWNER, DEST, USDC, call, prepare, startHarness, testConfig, type Harness } from './harness.testutil.js';
 import type { AlertEvent } from './alerts.js';
 import { buildRelayer } from './runtime.js';
@@ -22,7 +23,7 @@ function sources() {
           [1n, state.badRound ? 0n : 300_000_000_000n, state.updatedAt, state.updatedAt, 1n]));
     }) } satisfies RpcClient;
   const secondary = { ...primary, getBlock: vi.fn((number: bigint) => Promise.resolve({ number, hash: state.hash, parentHash: hash, timestamp: BigInt(NOW_SEC) })) };
-  const feed = findFeed(CHAIN_ID, 'ETH', 'USD')!;
+  const feed = qualifiedFeed;
   const config = testConfig(); const chain = config.chains[0]!;
   return { state, primary, secondary, clients: new Map([[CHAIN_ID, { primary, secondary }]]),
     config: { ...config, chains: [{ ...chain, secondaryRpcUrl: 'https://secondary.example', nativeUsdFeed: { feed: { ...feed, decimals: 8 }, maxAgeSeconds: 30 } }] } };

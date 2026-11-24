@@ -1,4 +1,5 @@
-import { ChainAdapterError, PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
+import { fixtureFeed, priceRpc } from '../test/fiatFeed';
+import { ChainAdapterError, PERMIT_STATES, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -765,15 +766,9 @@ describe('an approval or revoke whose transaction the RPC never returns is not r
 });
 
 describe('final payment guard rechecks invoice and fiat quote validity (P1)', () => {
-  const FEED: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'test fixture' };
-  const feedRpc = (): MockRpc => mockRpc(84532, (_m, params) => {
-    const data = (params[0] as { data: string }).data;
-    if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });
-    return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 100_000_000n, BigInt(NOW), BigInt(NOW), 1n] });
-  });
   async function fiatSetup(): Promise<{ ctx: PayContext; session: WalletSession; wallet: MockWallet }> {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), feedRpc(), { nowSeconds: NOW, findFeedFn: () => FEED });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), priceRpc(), { nowSeconds: NOW, findFeedFn: () => fixtureFeed });
     const wallet = new MockWallet();
     const session = await connectWallet(winfo(wallet), 84532);
     return { ctx, session, wallet };
@@ -807,6 +802,19 @@ describe('final payment guard rechecks invoice and fiat quote validity (P1)', ()
     expect(journal.get(ATTEMPT_JOURNAL_KEY)).toBeUndefined();
   });
 
+  it('blocks wallet dispatch when the feed expires during approval or payment while the signed invoice is valid', async () => {
+    const { ctx, session, wallet } = await fiatSetup();
+    const end = ctx.estimate!.expiresAt;
+    let now = NOW;
+    const rt: Runtime = { rpc: priceRpc(), nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const slow = delayedSession(session, wallet, (method) => { if (method === 'net_version') now = end; });
+    await expect(sendPayment(slow, ctx, built, { ...rt, rpc: undefined }, noStatus)).rejects.toThrow(/feed estimate has expired/);
+    now = NOW;
+    await expect(grantApproval(slow, ctx, { token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: 0n, required: true }, rt, noStatus)).rejects.toThrow(/feed estimate has expired/);
+    expect(sends(wallet)).toBe(0);
+  });
+
   it('fiat mode: rejects once the seller quote expired, also when it expires during net_version', async () => {
     const { ctx, session, wallet } = await fiatSetup();
     const quoteExpiry = ctx.review.invoice.quote.expiresAt;
@@ -816,7 +824,7 @@ describe('final payment guard rechecks invoice and fiat quote validity (P1)', ()
     now = quoteExpiry;
     await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
     // quoteExpiry - 1 is the deadline second itself (rejected one second early by the app), so probe one second before.
-    now = quoteExpiry - 2;
+    now = Number(built.preview.deadline) - 1;
     const s = delayedSession(session, wallet, (m) => { if (m === 'net_version') now = quoteExpiry; });
     await expect(sendPayment(s, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
     expect(sends(wallet)).toBe(0);

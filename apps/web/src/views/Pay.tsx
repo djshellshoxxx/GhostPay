@@ -18,7 +18,7 @@ import {
   bufferOffered,
   decodeForDisplay,
   quoteBuffer,
-  assertInvoiceStillPayable,
+  assertPayContextFresh,
   assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
@@ -380,13 +380,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
+  const refreshRevision = useRef(0);
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
+    const revision = ++refreshRevision.current;
     const { parsed: p, manifest: m } = latest.current;
     if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
-    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const current = (): boolean => refreshRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -408,6 +410,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
       if (!current()) return undefined;
+      assertPayContextFresh(c, Math.floor(services.nowMs() / 1000));
       setCtx(c);
       setCtxError(undefined);
       return c;
@@ -807,7 +810,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         // Not part of `guard`: after a broadcast approval the allowance is kept and only the payment is refused.
         const preSignGuard = (): void => {
           guard();
-          assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPayContextFresh(ctx, rt.nowSeconds());
           assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
@@ -1003,6 +1006,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const symbol = token?.symbol ?? '';
   // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
   // B2-R3: a token off the allowlist has no known decimals or symbol, so its amount stays in base units, with its address.
+  const estimateExpired = ctx?.estimate !== undefined && nowSeconds >= ctx.estimate.expiresAt;
+  const retryFeed = typeof ctxError === 'object' && 'key' in ctxError &&
+    (ctxError.key === 'pay.feedUnavailable' || ctxError.key === 'pay.feedExpired');
   const fixedAmount = inv.amountPolicy.mode !== 'fixed_token'
     ? undefined
     : token === undefined
@@ -1031,6 +1037,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </ul>
         </Notice>
       )}
+      {estimateExpired && !handedOff && <Notice kind="warn">{t('pay.feedExpired')}</Notice>}
+      {(estimateExpired || retryFeed) && !blocked && !keepContext && (
+        <button type="button" className="btn" onClick={() => {
+          setBuilt(undefined);
+          setPhase('review');
+          void refreshContext();
+        }}>{t('pay.refreshEstimate')}</button>
+      )}
       {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
@@ -1045,7 +1059,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <dd>
           {symbol} {inv.token === 'native' ? t('pay.token.nativeNote') : <Mono>{inv.token}</Mono>}
         </dd>
-        <dt>{t('pay.invoiceTotal')}</dt>
+        <dt>{fixedAmount === undefined ? t('pay.fiatStated') : t('pay.invoiceTotal')}</dt>
         <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong>{` ${t('pay.fixedTokenAmount')}`}</>}</dd>
         {fixedAmount !== undefined && (
           <>
@@ -1108,6 +1122,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       {ctx !== undefined && (
         <dl className="details amounts">
+          {ctx.estimate && <>
+            <dt>{t('pay.feedEstimate')}</dt>
+            <dd>{t('pay.feedObservation', { feed: ctx.estimate.feed, round: String(ctx.estimate.roundId), taken: formatUnix(ctx.estimate.updatedAt), until: formatUnix(ctx.estimate.expiresAt),
+              amount: formatUnits(ctx.estimate.tokenAmount, decimals), symbol })}</dd>
+          </>}
           <dt>{t('pay.gross')}</dt>
           <dd>{formatUnits(ctx.request.grossAmount, decimals)} {symbol}</dd>
           <dt>{t('pay.checkoutFee')}</dt>
@@ -1252,7 +1271,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </p>
           )}
           {wallet !== undefined && built === undefined && (
-            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
+            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={estimateExpired || phase === 'busy' || ctx === undefined}>
               {t('pay.prepare')}
             </button>
           )}
@@ -1260,7 +1279,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} estimateExpired={estimateExpired} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
@@ -1315,7 +1334,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       <div className="actions">
         {phase === 'review' && (
-          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
+          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={estimateExpired || review.blockers.length > 0 || ctx === undefined}>
             {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}
@@ -1337,6 +1356,7 @@ function FinalPreview(props: {
   readonly ctx: PayContext;
   readonly onSend: () => void;
   readonly busy: boolean;
+  readonly estimateExpired?: boolean;
   readonly approval: ApprovalPlan | undefined;
   readonly approvalHash: string | undefined;
   readonly granted: bigint | undefined;
@@ -1399,7 +1419,7 @@ function FinalPreview(props: {
           )}
         </div>
       )}
-      <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
+      <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy || props.estimateExpired}>
         {props.approval?.required === true && props.granted === undefined ? t('pay.final.sendApprove') : t('pay.final.send')}
       </button>
     </div>

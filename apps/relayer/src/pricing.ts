@@ -25,7 +25,7 @@ export interface GasPriceSource {
 /** Source of native-to-token conversion. */
 export interface TokenPriceSource {
   /** Optional source-bound quote expiry. The existing signed quote carries this stricter expiry unchanged. */
-  quoteNativeToTokenUnits?(chainId: number, token: AllowedToken, nativeWei: bigint): Promise<{ readonly amount: bigint; readonly validUntil?: number }>;
+  quoteNativeToTokenUnits?(chainId: number, token: AllowedToken, nativeWei: bigint): Promise<{ readonly amount: bigint; readonly validUntil?: number; readonly priceRoundId?: bigint }>;
   /**
    * Converts a native-currency cost to token base units, rounding UP.
    *

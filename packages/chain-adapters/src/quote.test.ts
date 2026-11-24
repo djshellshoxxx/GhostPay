@@ -109,12 +109,12 @@ describe('readPrice', () => {
     // The hidden Sepolia `eth-usd-nops` proxy must never be registered.
     expect(FEEDS.some((f) => f.address === '0xD9d6f482B88C43B256fD481826890dffC8544B13')).toBe(false);
   });
-  it('isQuoteAvailable is true only where a feed exists', () => {
-    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(true);
-    expect(isQuoteAvailable(11155111, 'USDC', 'USD')).toBe(true);
+  it('a sourced listing alone cannot enable fiat quotes', () => {
+    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(false);
+    expect(isQuoteAvailable(11155111, 'USDC', 'USD')).toBe(false);
     expect(isQuoteAvailable(11155111, 'EURC', 'USD')).toBe(false);
-    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(true);
-    expect(isQuoteAvailable(84532, 'USDC', 'USD')).toBe(true);
+    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(false);
+    expect(isQuoteAvailable(84532, 'USDC', 'USD')).toBe(false);
     expect(isQuoteAvailable(1, 'ETH', 'USD')).toBe(false);
   });
 });
@@ -198,10 +198,10 @@ describe('createAggregatorReader (ABI round trip through a fake node)', () => {
 
 import { hasFeedsForChain as _hasFeeds, FEEDS as _FEEDS } from './quote.js';
 describe('hasFeedsForChain (G-03)', () => {
-  it('tracks FEEDS exactly and is false for unknown chains', () => {
-    for (const c of [1, 11155111, 84532, 999]) expect(_hasFeeds(c)).toBe(_FEEDS.some((f) => f.chainId === c));
+  it('tracks qualified FEEDS exactly and is false for unknown chains', () => {
+    for (const c of [1, 11155111, 84532, 999]) expect(_hasFeeds(c)).toBe(_FEEDS.some((f) => f.chainId === c && f.qualification !== undefined));
     expect(_hasFeeds(999)).toBe(false);
-    expect(_hasFeeds(84532)).toBe(true);
+    expect(_hasFeeds(84532)).toBe(false);
     expect(_hasFeeds(8453)).toBe(false);
   });
 });
