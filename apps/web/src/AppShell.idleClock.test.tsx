@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { parseFragment } from '@ghostpay/invoice-schema';
+import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { AppLean } from './AppLean';
@@ -7,10 +8,23 @@ import { AppShell, CORE_ORDER } from './AppShell';
 import { subscribeAppLock } from './lib/appLock';
 import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from './lib/keyVault';
 import * as keyVault from './lib/keyVault';
-import { captureSessionBackupGuard, captureSessionGuard, clearSession, generateSession, getSessionPublic, hasSession, importSession, withSessionSecrets, withSessionSecretsAsync } from './lib/session';
+import { captureSessionBackupGuard, captureSessionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, hasSession, importSession, verifyDownloadedBackup, withSessionSecrets, withSessionSecretsAsync } from './lib/session';
 import { SETTINGS_KEY } from './lib/settings';
 import { useApp, type AppState } from './state';
 import { makeServices, renderWith, setHash } from './test/render';
+
+// Count invocations without retaining the signing key or changing the signature.
+const signerCalled = vi.hoisted(() => vi.fn<() => void>());
+vi.mock('@ghostpay/invoice-schema', async (original) => {
+  const schema = await original<typeof import('@ghostpay/invoice-schema')>();
+  return {
+    ...schema,
+    signInvoice: (...args: Parameters<typeof schema.signInvoice>) => {
+      signerCalled();
+      return schema.signInvoice(...args);
+    },
+  };
+});
 
 let wall: number;
 let monotonic: number;
@@ -425,5 +439,43 @@ describe.each(['full', 'lean'] as const)('GP-PAGES-04: %s session generation and
     await resume(event);
     expect(reasons).toEqual(['idle']);
     expect(hasSession()).toBe(false);
+  });
+});
+
+describe('GP-PAGES-04: first invoice signature after sleep', () => {
+  async function activateAfterSleep(elapsedMs: number): Promise<void> {
+    armed(false);
+    const passphrase = 'violet cedar orbit meadow lantern';
+    await act(async () => {
+      const backup = await exportKeystore(passphrase, { N: 1 << 14 });
+      await verifyDownloadedBackup(backup, passphrase);
+    });
+    expect(getSessionBackup()?.verified).toBe(true);
+
+    fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
+    fireEvent.change(screen.getByLabelText('Token amount'), { target: { value: '0.5' } });
+    fireEvent.change(screen.getByLabelText('Item 1 description'), { target: { value: 'Test item' } });
+    fireEvent.change(screen.getByLabelText('Item 1 unit price'), { target: { value: '1.00' } });
+    const submit = screen.getByRole('button', { name: 'Create invoice link' });
+    signerCalled.mockClear();
+    // Only wall time advances. A click-only activation can reach the form before a queued wake event or timer.
+    wall += elapsedMs;
+    await act(async () => { fireEvent.click(submit); });
+  }
+
+  it('requires the seller to unlock and never calls the signer past the deadline', async () => {
+    await activateAfterSleep(60_001);
+    expect(signerCalled).not.toHaveBeenCalled();
+    expect(hasSession()).toBe(false);
+    expect(screen.getByText(/Seller keys were wiped from memory.*Load them again/)).toBeTruthy();
+    expect(screen.queryByLabelText('Link')).toBeNull();
+  });
+
+  it('signs once one millisecond below the deadline', async () => {
+    await activateAfterSleep(59_999);
+    expect(signerCalled).toHaveBeenCalledOnce();
+    expect(hasSession()).toBe(true);
+    const link = screen.getByLabelText<HTMLTextAreaElement>('Link').value;
+    expect((await parseFragment(new URL(link).hash)).verification.signatureValid).toBe(true);
   });
 });
