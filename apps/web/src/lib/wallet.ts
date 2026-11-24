@@ -426,7 +426,10 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       }
     }
     const started = box.started;
-    if (started === undefined) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+    if (started === undefined) {
+      box.abandoned = true;
+      throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+    }
     let hash: unknown;
     try {
       hash = await started.pending;
