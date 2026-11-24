@@ -112,3 +112,9 @@ A second RPC adds comparison and availability while sharing queries with another
 reveal the requested address or transaction. A valid receipt signature is a field attestation, and restored history
 is not fresh payment verification. See the [shipped privacy page](../../apps/web/privacy.html) and
 [reconciliation guide](reconciliation-and-receipts.md).
+
+### Repeated EVM destinations
+
+A seller can issue many invoices with the same meta-address. The checkout compares the actual derived destination when you choose **Prepare payment**. It distinguishes reviewing the same signed invoice again from seeing that address on a different invoice. On the seller side, the sweep form checks the destination you enter against earlier sweep submissions for that seller profile. A repeat can be intentional. The notice leaves the existing signing and duplicate-payment checks in force.
+
+These checks use the current tab's recent history, scoped to the wallet or seller and EVM chain. The tab keeps up to 128 salted fingerprint records across those scopes in session storage. Reloading the same tab preserves that history. Clearing the tab's session storage removes it. A tab opened with an opener can inherit an initial copy. A miss cannot establish that an address is fresh on-chain. No RPC request, explorer query or telemetry is used for the comparison.

@@ -370,6 +370,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       {visibleCreated !== undefined && (
         <div className="result" aria-live="polite">
           <h3>{t('create.result.title')}</h3>
+          <p>{t('reuse.invoiceMeta')}</p>
           <Notice kind="warn" title={t('create.bearer.title')}>
             {t('create.bearer.lead')} {visibleCreated.passphraseProtected ? t('create.bearer.passphrase') : visibleCreated.encrypted ? t('create.bearer.encrypted') : t('create.bearer.plain')} {t('create.bearer.copies')}
           </Notice>

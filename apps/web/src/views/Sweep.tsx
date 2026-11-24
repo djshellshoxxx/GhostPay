@@ -1,7 +1,9 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
+import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
+import { checkDestinationReuse } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -38,6 +40,10 @@ export function Sweep(): ReactNode {
   const chainId = sel?.chainId;
   const manifest = useManifest(chainId);
   const [destination, setDestination] = useState('');
+  const seller = app.session?.metaAddress;
+  const reuseNotice = useMemo(() => seller === undefined || chainId === undefined ? undefined :
+    checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false),
+    [seller, chainId, destination, sel]);
   const [mode, setMode] = useState<'relayer' | 'direct'>('relayer');
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
   // R12-2: behind a required local proxy the balance read (a direct Settings RPC request naming this one-time address)
@@ -121,7 +127,7 @@ export function Sweep(): ReactNode {
       </section>
     );
   }
-  if (app.session === undefined) {
+  if (seller === undefined) {
     return (
       <section aria-labelledby="sw-h">
         <h2 id="sw-h">{t('sweep.title')}</h2>
@@ -131,6 +137,9 @@ export function Sweep(): ReactNode {
   }
 
   const target: SweepTarget = { chainId, token: tokenAddr, owner: sel.match.stealthAddress, announcement: sel.match.announcement };
+  const rememberDestination = (address: string): void => {
+    checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, address, true);
+  };
   const loaded = manifest?.status === 'loaded' ? manifest.manifest : undefined;
   const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
   const nowSec = (): number => Math.floor(services.nowMs() / 1000);
@@ -218,6 +227,7 @@ export function Sweep(): ReactNode {
         if (permitKey !== undefined) throw new UserFacingError(sweepPermitSuggestsDirect(permitKey) ? { key: 'sweep.permit.withFallback', values: { reason: { key: permitKey }, fallback: { key: 'sweep.permit.directFallback' } } } : { key: permitKey });
         throw e;
       }
+      rememberDestination(dest);
       setHash(submitted);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
@@ -268,6 +278,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+      rememberDestination(dest);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
@@ -353,6 +364,7 @@ export function Sweep(): ReactNode {
 
       <div className="stack">
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
+        <DestinationReuseNotice notice={reuseNotice} />
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}

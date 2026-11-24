@@ -151,3 +151,7 @@ acceptance, failed attempts and unavailable external checks.
 
 No protected-main merge, production deployment, release signing, release publication or real-funds operation was
 performed. No continuous background execution or scheduled continuation is claimed.
+
+### v1.1 beta — local address reuse (issue #287, item 1)
+
+Checkout compares the derived EVM destination on explicit payment preparation. Seller sweep compares the chosen destination with earlier submitted sweeps. Acceptance requires account and chain isolation, same-invoice and different-invoice cases, session reload, storage failure, nonblocking controls, and no new remote requests. See [user-facing scope and retention](../user/privacy-limits.md#repeated-evm-destinations). The v1.1 release gate remains open through independent review and integration.
