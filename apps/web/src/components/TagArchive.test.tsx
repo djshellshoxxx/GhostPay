@@ -44,6 +44,7 @@ async function exported(): Promise<{ user: User; services: ReturnType<typeof mak
   await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
   await waitFor(() => { expect(blobs).toHaveLength(1); }, { timeout: 60_000 });
   expect((await screen.findAllByText(/SHA-256 [0-9a-f]{64}/)).length).toBeGreaterThan(0);
+  for (const live of screen.getAllByRole('status')) expect(live.textContent).not.toMatch(/SHA-256 [0-9a-f]{64}/);
   return { user, services, file: new File([blobs[0] as Blob], 'ghostpay-tags-20260101.gpa') };
 }
 

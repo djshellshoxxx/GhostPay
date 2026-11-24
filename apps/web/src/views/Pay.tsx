@@ -1395,7 +1395,10 @@ function FinalPreview(props: {
             <p>{t('pay.approval.enough')}</p>
           )}
           {props.granted !== undefined && props.granted > props.approval.need && (
-            <p role="alert">{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
+            <div>
+              <p role="alert">{t('pay.approval.excessAlert')}</p>
+              <p>{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
+            </div>
           )}
           {props.granted !== undefined && (
             <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></p>
