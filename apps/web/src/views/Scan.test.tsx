@@ -137,10 +137,13 @@ describe('Scan and receive', () => {
     await user.type(input, 'Acme Corp');
     await user.click(screen.getByRole('button', { name: 'Save tag' }));
     expect(await screen.findByText('Acme Corp', { selector: 'strong' })).toBeTruthy();
+    await user.clear(input);
+    await user.type(input, 'Unsaved private client label');
     await user.click(screen.getByRole('button', { name: 'Lock tags' }));
     await waitFor(() => { expect(screen.queryByText('Acme Corp', { selector: 'strong' })).toBeNull(); });
     await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
     expect(await screen.findByText('Acme Corp', { selector: 'strong' })).toBeTruthy();
+    expect(screen.getByLabelText<HTMLInputElement>(/Client tag/).value).toBe('');
     vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
     await user.click(screen.getByRole('button', { name: 'Delete all tags' }));
     expect(screen.getByText('Acme Corp', { selector: 'strong' })).toBeTruthy();
