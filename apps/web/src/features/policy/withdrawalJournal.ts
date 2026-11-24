@@ -1,4 +1,4 @@
-import { readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
+import { browserAttemptLocks, readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { UserFacingError } from '../../lib/errors';
 import { sendViaWallet, walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 
@@ -13,10 +13,8 @@ export function policyAttemptStorage(): AttemptStorage {
 }
 
 function locks(): PolicyLockManager {
-  if (typeof navigator === 'undefined' || navigator.locks === undefined) throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' });
-  return { async request<T>(name: string, callback: () => Promise<T>): Promise<T> {
-    return await navigator.locks.request(name, { mode: 'exclusive' }, callback);
-  } };
+  try { return browserAttemptLocks(); }
+  catch { throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' }); }
 }
 
 export function policyActionKey(wallet: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, scope: string): string {

@@ -124,6 +124,28 @@ describe('durable policy attempt journal', () => {
     expect(readAttempts(window.localStorage)[0]!.status).toBe('unknown');
   });
 
+  it('passes an abort signal when waiting for the browser journal lock', async () => {
+    const { session, provider } = await wallet();
+    const original = Object.getOwnPropertyDescriptor(navigator, 'locks');
+    const expired = AbortSignal.abort(new DOMException('lock wait elapsed', 'TimeoutError'));
+    vi.spyOn(AbortSignal, 'timeout').mockReturnValue(expired);
+    const request = vi.fn((_name: string, options: LockOptions) => {
+      if (options.signal !== expired) throw new Error('Missing bounded lock request');
+      return Promise.reject(new DOMException('lock wait elapsed', 'TimeoutError'));
+    });
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
+    try {
+      await expect(sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp }))
+        .rejects.toThrow(/journal is unavailable or invalid/);
+      expect(request).toHaveBeenCalledTimes(1);
+      expect(provider.sent).toBeUndefined();
+      expect(readAttempts()).toEqual([]);
+    } finally {
+      if (original === undefined) Reflect.deleteProperty(navigator, 'locks');
+      else Object.defineProperty(navigator, 'locks', original);
+    }
+  });
+
   it('fails closed on corrupt/full/unavailable storage and missing browser locks', async () => {
     const { session, provider } = await wallet();
     window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, 'malformed');
