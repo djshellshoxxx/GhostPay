@@ -1,0 +1,228 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@1.0.0-beta.1 test:e2e
+> playwright test --config=playwright.native.config.ts --project=firefox accessibility.spec.ts --grep supported routes have axe|creation, scan|supported routes reflow --trace=retain-on-failure
+
+[WebServer] (node:32) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:53) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer]
+[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[WebServer] [plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/efb8df2579c9/privacy-569-resume/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] [plugin builtin:vite-reporter]
+[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+[WebServer]
+[WebServer] (node:92) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:121) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:157) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  pw:browser <launching> /home/agent/.cache/ms-playwright/firefox-1572/firefox/firefox -no-remote -headless -profile /tmp/playwright_firefoxdev_profile-R5BAVu -juggler-pipe -silent +0ms
+  pw:browser <launched> pid=169 +5ms
+  pw:browser [pid=169][err] *** You are running in headless mode. +28ms
+  pw:browser [pid=169][err] JavaScript warning: resource://services-settings/Utils.sys.mjs, line 125: unreachable code after return statement +56ms
+  pw:browser [pid=169][out]  +227ms
+  pw:browser [pid=169][out] Juggler listening to the pipe +0ms
+  pw:browser [pid=169][out] console.error: (new NotFoundError("Could not find fa0fc42c-d91d-fca7-34eb-806ff46062dc in cache or dump", "resource://services-settings/Attachments.sys.mjs", 48)) +2s
+  pw:browser [pid=169][out] console.warn: "Unable to find the attachment for" "fa0fc42c-d91d-fca7-34eb-806ff46062dc" +0ms
+  pw:browser [pid=169][err] [Parent 169, IPC I/O Parent] WARNING: process 305 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161 +3s
+  pw:browser [pid=169][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +9ms
+  pw:browser [pid=169][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +9ms
+  pw:browser [pid=169][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +10ms
+  pw:browser [pid=169][out]  +228ms
+  pw:browser [pid=169][out]         ERROR: Failed "callFunction": connector for namespace "page" in channel "undefined" is disposed. _rejectCallbacksFromConnector@chrome://juggler/content/SimpleChannel.js:108:25 +0ms
+  pw:browser [pid=169][out] dispose@chrome://juggler/content/SimpleChannel.js:119:27 +0ms
+  pw:browser [pid=169][out] dispose@chrome://juggler/content/protocol/PageHandler.js:151:23 +0ms
+  pw:browser [pid=169][out] _dispose@chrome://juggler/content/protocol/Dispatcher.js:117:21 +0ms
+  pw:browser [pid=169][out] destroySession@chrome://juggler/content/protocol/Dispatcher.js:35:13 +0ms
+  pw:browser [pid=169][out] _onTargetDestroyed@chrome://juggler/content/protocol/BrowserHandler.js:115:22 +0ms
+  pw:browser [pid=169][out] handlerWrapper@chrome://juggler/content/Helper.js:75:51 +0ms
+  pw:browser [pid=169][out] emit@resource://gre/modules/EventEmitter.sys.mjs:156:19 +0ms
+  pw:browser [pid=169][out] dispose@chrome://juggler/content/TargetRegistry.js:1165:20 +0ms
+  pw:browser [pid=169][out] onTabCloseListener@chrome://juggler/content/TargetRegistry.js:438:18 +0ms
+  pw:browser [pid=169][out] onCloseWindow@chrome://juggler/content/TargetRegistry.js:489:27 +0ms
+  pw:browser [pid=169][out]  +0ms
+  pw:browser [pid=169] <gracefully close start> +8ms
+  pw:browser [pid=169][out]        +377ms
+  pw:browser [pid=169] <process did exit: exitCode=0, signal=null> +0ms
+  pw:browser [pid=169] starting temporary directories cleanup +0ms
+  pw:browser [pid=169] finished temporary directories cleanup +5ms
+  pw:browser [pid=169] <gracefully close end> +0ms
+  ✘  1 [firefox] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus (4.3s)
+(node:375) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  pw:browser <launching> /home/agent/.cache/ms-playwright/firefox-1572/firefox/firefox -no-remote -headless -profile /tmp/playwright_firefoxdev_profile-s9UpLU -juggler-pipe -silent +0ms
+  pw:browser <launched> pid=387 +5ms
+  pw:browser [pid=387][err] *** You are running in headless mode. +23ms
+  pw:browser [pid=387][err] JavaScript warning: resource://services-settings/Utils.sys.mjs, line 125: unreachable code after return statement +51ms
+  pw:browser [pid=387][out]  +201ms
+  pw:browser [pid=387][out] Juggler listening to the pipe +0ms
+  pw:browser [pid=387][out] console.error: (new NotFoundError("Could not find fa0fc42c-d91d-fca7-34eb-806ff46062dc in cache or dump", "resource://services-settings/Attachments.sys.mjs", 48)) +1s
+  pw:browser [pid=387][out] console.warn: "Unable to find the attachment for" "fa0fc42c-d91d-fca7-34eb-806ff46062dc" +1ms
+  pw:browser [pid=387][out] console.warn: LoginRecipes: "Falling back to a synchronous message for: http://localhost:4173." +2s
+  pw:browser [pid=387][err] [Parent 387, IPC I/O Parent] WARNING: process 521 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161 +384ms
+  pw:browser [pid=387][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +85ms
+  pw:browser [pid=387][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +32ms
+  pw:browser [pid=387][err] JavaScript error: chrome://juggler/content/SimpleChannel.js, line 1: SyntaxError: redeclaration of let SimpleChannel +9ms
+  pw:browser [pid=387][out]  +170ms
+  pw:browser [pid=387][out]         ERROR: Failed "callFunction": connector for namespace "page" in channel "undefined" is disposed. _rejectCallbacksFromConnector@chrome://juggler/content/SimpleChannel.js:108:25 +0ms
+  pw:browser [pid=387][out] dispose@chrome://juggler/content/SimpleChannel.js:119:27 +0ms
+  pw:browser [pid=387][out] dispose@chrome://juggler/content/protocol/PageHandler.js:151:23 +0ms
+  pw:browser [pid=387][out] _dispose@chrome://juggler/content/protocol/Dispatcher.js:117:21 +0ms
+  pw:browser [pid=387][out] destroySession@chrome://juggler/content/protocol/Dispatcher.js:35:13 +0ms
+  pw:browser [pid=387][out] _onTargetDestroyed@chrome://juggler/content/protocol/BrowserHandler.js:115:22 +0ms
+  pw:browser [pid=387][out] handlerWrapper@chrome://juggler/content/Helper.js:75:51 +0ms
+  pw:browser [pid=387][out] emit@resource://gre/modules/EventEmitter.sys.mjs:156:19 +0ms
+  pw:browser [pid=387][out] dispose@chrome://juggler/content/TargetRegistry.js:1165:20 +0ms
+  pw:browser [pid=387][out] onTabCloseListener@chrome://juggler/content/TargetRegistry.js:438:18 +0ms
+  pw:browser [pid=387][out] onCloseWindow@chrome://juggler/content/TargetRegistry.js:489:27 +0ms
+  pw:browser [pid=387][out]  +0ms
+  pw:browser [pid=387] <gracefully close start> +9ms
+  pw:browser [pid=387][out]        +364ms
+  pw:browser [pid=387] <process did exit: exitCode=0, signal=null> +1ms
+  pw:browser [pid=387] starting temporary directories cleanup +0ms
+  pw:browser [pid=387] finished temporary directories cleanup +5ms
+  pw:browser [pid=387] <gracefully close end> +0ms
+  ✘  2 [firefox] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable (3.8s)
+(node:590) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  pw:browser <launching> /home/agent/.cache/ms-playwright/firefox-1572/firefox/firefox -no-remote -headless -profile /tmp/playwright_firefoxdev_profile-VH3swt -juggler-pipe -silent +0ms
+  pw:browser <launched> pid=602 +5ms
+  pw:browser [pid=602][err] *** You are running in headless mode. +27ms
+  pw:browser [pid=602][err] JavaScript warning: resource://services-settings/Utils.sys.mjs, line 125: unreachable code after return statement +57ms
+  pw:browser [pid=602][out]  +548ms
+  pw:browser [pid=602][out] Juggler listening to the pipe +1ms
+  pw:browser [pid=602][out] console.error: (new NotFoundError("Could not find fa0fc42c-d91d-fca7-34eb-806ff46062dc in cache or dump", "resource://services-settings/Attachments.sys.mjs", 48)) +1s
+  pw:browser [pid=602][out] console.warn: "Unable to find the attachment for" "fa0fc42c-d91d-fca7-34eb-806ff46062dc" +0ms
+  pw:browser [pid=602] <gracefully close start> +3s
+  pw:browser [pid=602][err] JavaScript error: chrome://juggler/content/Helper.js, line 82: NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIWebProgress.removeProgressListener] +2ms
+  pw:browser [pid=602] <process did exit: exitCode=0, signal=null> +378ms
+  pw:browser [pid=602] starting temporary directories cleanup +0ms
+  pw:browser [pid=602] finished temporary directories cleanup +6ms
+  pw:browser [pid=602] <gracefully close end> +0ms
+  ✘  3 [firefox] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (3.9s)
+
+
+  1) [firefox] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus
+
+    Error: locator.fill: Page crashed
+    Call log:
+      - waiting for getByLabel(/To continue without a backup, type/)
+
+
+       at helpers.ts:21
+
+      19 |   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
+      20 |   await page.getByRole('button', { name: 'Generate new keys' }).click();
+    > 21 |   await page.getByLabel(/To continue without a backup, type/).fill('continue without backup');
+         |                                                               ^
+      22 |   await page.getByRole('button', { name: 'Continue without a backup' }).click();
+      23 |   const meta = page.locator('code', { hasText: /^st:eth:0x/ });
+      24 |   await expect(meta).toBeVisible();
+        at generateKeys (/workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/helpers.ts:21:63)
+        at /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/accessibility.spec.ts:61:7
+
+    attachment #1: accessibility-audit (application/json) ──────────────────────────────────────────
+    test-results/native/accessibility-supported-ro-3e0b0-ge-and-keyboard-route-focus-firefox/attachments/accessibility-audit-7b339b894a302dc86d7c4e51f3e252510612e0b0.json
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/accessibility-supported-ro-3e0b0-ge-and-keyboard-route-focus-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/accessibility-supported-ro-3e0b0-ge-and-keyboard-route-focus-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/accessibility-supported-ro-3e0b0-ge-and-keyboard-route-focus-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [firefox] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable
+
+    Error: page.evaluate: Page crashed
+
+       at accessibility-audit.ts:25
+
+      23 |   // Playwright instrumentation evaluates local audit source without changing production CSP.
+      24 |   await page.evaluate(AXE_SOURCE);
+    > 25 |   const result = await page.evaluate(async () => {
+         |                             ^
+      26 |     // axe-core is injected above as a page global that the DOM lib types do not declare.
+      27 |     // Fail loudly if injection did not define it rather than reporting an empty audit.
+      28 |     const axe = (window as unknown as { axe?: { run: (context: Document) => Promise<AxeResults> } }).axe;
+        at auditAccessibility (/workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/accessibility-audit.ts:25:29)
+        at /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/accessibility.spec.ts:76:3
+
+    Error Context: test-results/native/accessibility-creation-sca-a979c-d-signing-stays-unavailable-firefox/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/accessibility-creation-sca-a979c-d-signing-stays-unavailable-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/accessibility-creation-sca-a979c-d-signing-stays-unavailable-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [firefox] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text
+
+    Error: Home-100percent-320px: controls remain within the viewport
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 7
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "left": 33,
+    +     "right": 959,
+    +     "tag": "INPUT",
+    +   },
+    + ]
+
+      30 |   expect(layout.width, `${label}: actual CSS viewport width`).toBe(320);
+      31 |   expect(layout.pageWidth, `${label}: horizontal page scrolling`).toBeLessThanOrEqual(layout.width + 1);
+    > 32 |   expect(layout.controls, `${label}: controls remain within the viewport`).toEqual([]);
+         |                                                                            ^
+      33 | }
+      34 |
+      35 | test.beforeEach(async ({ context, page }) => {
+        at assertReflow (/workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/accessibility.spec.ts:32:76)
+        at /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web/e2e/accessibility.spec.ts:115:7
+
+    Error Context: test-results/native/accessibility-supported-ro-6bd7b-normal-and-200-percent-text-firefox/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/accessibility-supported-ro-6bd7b-normal-and-200-percent-text-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/accessibility-supported-ro-6bd7b-normal-and-200-percent-text-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [firefox] › e2e/accessibility.spec.ts:49:1 › supported routes have axe coverage and keyboard route focus
+    [firefox] › e2e/accessibility.spec.ts:67:1 › creation, scan and invoice errors remain accessible and signing stays unavailable
+    [firefox] › e2e/accessibility.spec.ts:103:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+npm error workspace @ghostpay/web@1.0.0-beta.1
+npm error location /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+npm error command failed
+npm error command sh -c playwright test --config=playwright.native.config.ts --project=firefox accessibility.spec.ts --grep 'supported routes have axe|creation, scan|supported routes reflow' --trace=retain-on-failure

@@ -1,0 +1,118 @@
+{
+  "source": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401",
+  "engine": "159.0",
+  "port": 4199,
+  "tracing": true,
+  "scope": "Geometry observations only; no accessibility rule or engine modification is part of the repair.",
+  "states": [
+    {
+      "state": "original-closed-home-320",
+      "width": 320,
+      "scrollWidth": 320,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": false,
+          "left": 33,
+          "right": 959,
+          "width": 926,
+          "closed": true
+        }
+      ],
+      "originalOutside": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": false,
+          "left": 33,
+          "right": 959,
+          "width": 926,
+          "closed": true
+        }
+      ],
+      "visibleOutside": []
+    },
+    {
+      "state": "opened-home-320",
+      "width": 320,
+      "scrollWidth": 320,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": true,
+          "left": 33,
+          "right": 287,
+          "width": 254,
+          "closed": false
+        }
+      ],
+      "originalOutside": [],
+      "visibleOutside": []
+    },
+    {
+      "state": "visible-overflow-negative-control",
+      "width": 320,
+      "scrollWidth": 533,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": true,
+          "left": 33,
+          "right": 533,
+          "width": 500,
+          "closed": false
+        }
+      ],
+      "originalOutside": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": true,
+          "left": 33,
+          "right": 533,
+          "width": 500,
+          "closed": false
+        }
+      ],
+      "visibleOutside": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": true,
+          "left": 33,
+          "right": 533,
+          "width": 500,
+          "closed": false
+        }
+      ]
+    },
+    {
+      "state": "opened-home-320-200percent",
+      "width": 320,
+      "scrollWidth": 320,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "id": "_r_1_",
+          "rects": 1,
+          "visible": true,
+          "left": 33,
+          "right": 287,
+          "width": 254,
+          "closed": false
+        }
+      ],
+      "originalOutside": [],
+      "visibleOutside": []
+    }
+  ]
+}

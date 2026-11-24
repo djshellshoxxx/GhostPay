@@ -1,0 +1,50 @@
+{
+  "baseline-full.txt": {
+    "original_bytes": 19038,
+    "original_sha256": "1aeadfd149c804226f3d6be3233bd510d50366e14ee7f258a1410b830a30f5d4",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "build-libraries.txt": {
+    "original_bytes": 17503,
+    "original_sha256": "931bfa4e33bc93c2ebcd7815f542dac347e0f05db480a14b21e04f4df87fc749",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "changed-file-lint.txt": {
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "incomplete-lean-enospc.txt": {
+    "original_bytes": 4096,
+    "original_sha256": "31b8eb772636c7b231881dd1e2b8e7a97d728941f06b305ddf51d83345514772",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "incomplete-startup-heap1024.txt": {
+    "original_bytes": 2849,
+    "original_sha256": "9717d7057e9c0ead0018dccd32d3edd02a06cf5799b1466b75f81651803b81a2",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "reflow-full.txt": {
+    "original_bytes": 8990,
+    "original_sha256": "a73ea4006b6787cbd8ce53c476c03e3102ca99cf55775980dab07cea49869242",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "reflow-lean.txt": {
+    "original_bytes": 12253,
+    "original_sha256": "0bf5b23e4ddde8f18f18f0074a2880c54299c5b8b867ece32f28babbbeedfc91",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  },
+  "secret-scan.txt": {
+    "original_bytes": 273,
+    "original_sha256": "11a86c723ca4a46189e1baf2757f5453faeb881e59e75a40e2e566e59a5357ea",
+    "archive": "original-logs.zip",
+    "normalization": "Trim trailing horizontal whitespace and extra terminal blank lines only; original bytes preserved in archive."
+  }
+}

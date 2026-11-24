@@ -1,0 +1,388 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> ghostpay@1.0.0-beta.1 build:libs
+> node scripts/build-workspaces.mjs --libraries
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/address-safety@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-adapters@0.1.0 build
+> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/amount-blur@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/btc-family@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/btc-payjoin@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/btc-silent-payments@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-evm-extra@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-solana@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-tron@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/i18n@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/merchant-hooks@0.1.0 build
+> npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/merchant-billing@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/merchant-ledger@0.1.0 build
+> npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/merchant-multisig@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/qr-exchange@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/sandbox@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-vault@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/cli@0.1.0 build
+> tsc -p tsconfig.build.json && node stamp-build.mjs
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/confidential-amounts@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/donation@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/external-pools-privacypools@0.1.0 build
+> npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/external-pools-railgun@0.1.0 build
+> npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/hops@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/hygiene@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/metadata-hardening@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/net-harness@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/net-transport@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ops-monitor@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/relayer-guard@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/payer-sponsor@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/payment-uri@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/plugin-api@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/policy-scheme@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pool-circuits@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pool-prover@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pool-sdk@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pool-relayer@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/privacy-pipeline@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/privacy-profiles@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/scan-source@0.1.0 build
+> npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/sdk@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/solana-stealth@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/tron-adapter@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/tx-review@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-connect@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-core@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-export@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-fees@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-fiat@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-flow@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-guide@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-i18n@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-intake@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-links@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-notify@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-presets@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-privacy@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-receipts@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-sandbox@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/ux-schedule@0.1.0 build
+> tsc -p tsconfig.build.json
