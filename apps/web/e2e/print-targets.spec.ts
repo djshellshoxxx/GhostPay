@@ -1,12 +1,89 @@
 import { readFileSync } from 'node:fs';
+import { parseVerifiedReceipt } from '@ghostpay/invoice-schema';
 import { expect, test, type Page } from '@playwright/test';
+import { TOKEN_84532 } from '../src/test/announcements';
+import { configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState } from './flowMocks';
+import { generateKeys } from './helpers';
 
 // Exercise the production cascade, including the secret-QR print exclusions.
-// Component/hook tests separately verify that the buttons select one document.
 const appCss = readFileSync(new URL('../src/styles/app.css', import.meta.url), 'utf8');
 const printCss = readFileSync(new URL('../src/styles/print.css', import.meta.url), 'utf8');
 const qrCss = readFileSync(new URL('../src/styles/qr.css', import.meta.url), 'utf8');
 type Target = 'receipt-one' | 'receipt-two' | 'bill';
+
+test('printing the second signed receipt shows only its transaction beside another receipt and a bill', async ({ page, context }) => {
+  const state: MockNetworkState = {};
+  await mockNetwork(context, state);
+  await configureRpc(page);
+  await page.goto('/');
+  const seller = await generateKeys(page);
+  const first = stageVerifiedErc20Payment(state, seller, 120);
+  const second = stageVerifiedErc20Payment(state, seller, 121);
+
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await nav.getByRole('button', { name: 'Create invoice' }).click();
+  await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+  await page.getByLabel('Token', { exact: true }).selectOption(TOKEN_84532.toLowerCase());
+  await page.getByLabel('Token amount', { exact: true }).fill('1');
+  await page.getByLabel('Who pays the 0.25 % checkout fee').selectOption('payer_pays');
+  const lineItem = 'Bill for the print selection test';
+  await page.getByLabel('Item 1 description').fill(lineItem);
+  await page.getByLabel('Item 1 unit price').fill('1.00');
+  await page.getByRole('button', { name: 'Create invoice link' }).click();
+  const link = await page.getByRole('textbox', { name: 'Link', exact: true }).inputValue();
+
+  // Pay and Scan are separate views. Keep the rendered bill as an unselected sibling of the live Scan panels.
+  const buyer = await context.newPage();
+  await buyer.goto(link);
+  await buyer.evaluate(() => { window.print = () => {}; });
+  await buyer.getByRole('button', { name: 'Print bill', exact: true }).click();
+  const billMarkup = await buyer.getByTestId('printable-bill').evaluate((bill) => {
+    window.dispatchEvent(new Event('afterprint'));
+    return bill.outerHTML;
+  });
+  await buyer.close();
+  await page.evaluate((markup) => { document.body.insertAdjacentHTML('beforeend', markup); }, billMarkup);
+
+  await nav.getByRole('button', { name: 'Scan and receive' }).click();
+  await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
+  await page.getByLabel('Start block').fill('0');
+  await page.getByRole('button', { name: 'Start scan' }).click();
+  const panels = page.getByRole('region', { name: 'Seller-signed receipt' });
+  await expect(panels).toHaveCount(2);
+  for (const [index, payment] of [first, second].entries()) {
+    const panel = panels.nth(index);
+    await panel.getByLabel('Signed invoice link or fragment').fill(link);
+    await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
+    await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
+    await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
+    await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+    const signed = parseVerifiedReceipt(await panel.getByLabel('Signed receipt JSON').inputValue());
+    expect(signed.txHash).toBe(payment.txHash);
+  }
+
+  // CSS locators keep referring to the same mounted articles when print media hides their parent regions.
+  const receipts = page.locator('article.receipt-print');
+  const firstId = receipts.nth(0).getByText(first.txHash, { exact: true });
+  const secondId = receipts.nth(1).getByText(second.txHash, { exact: true });
+  const bill = page.getByTestId('printable-bill');
+  const billId = bill.getByText(lineItem, { exact: true });
+  await expect(firstId).toBeVisible();
+  await expect(secondId).toBeVisible();
+  await expect(billId).toBeAttached();
+  await expect(page.locator('[data-print-target]')).toHaveCount(0);
+
+  await page.evaluate(() => { window.print = () => { performance.mark('receipt-print-request'); }; });
+  await receipts.nth(1).getByRole('button', { name: 'Print receipt', exact: true }).click();
+  expect(await page.evaluate(() => performance.getEntriesByName('receipt-print-request').length)).toBe(1);
+  await page.emulateMedia({ media: 'print' });
+  await expect(secondId).toBeVisible();
+  await expect(receipts).toHaveCount(2);
+  await expect(receipts.nth(0)).toBeHidden();
+  await expect(firstId).toBeHidden();
+  await expect(billId).toBeAttached();
+  await expect(bill).toBeHidden();
+  await expect(billId).toBeHidden();
+});
 
 async function printFixture(page: Page, order: 'app-first' | 'print-first', options: {
   target?: Target;
