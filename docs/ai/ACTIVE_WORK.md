@@ -1,3 +1,13 @@
+# GP-BUG — Preserve independent duplicate-group warnings (2026-11-24 UTC)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential author and runtime verifier; independent review pending.
+Branch: `automation/20261124/bug/vault-duplicate-group-kind-r11`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-vault/src/confusables.ts`, new `packages/ux-vault/src/confusables.group-kind.test.ts`, this additive claim, new `docs/handoffs/UX_VAULT_DUPLICATE_GROUP_KIND_20261124.md`. No edits to existing tests or other workers' refs.
+Observed failure: findDuplicateGroups pools exact-address and duplicate-label group signatures into one suppression set. Same-label contacts with distinct edge-matching addresses lose their lookalike-address warning; exact-address duplicates with distinct confusable labels lose their confusable-label warning. Isolated Node reproduction 7/9 passed, two incorrect suppressions. Acceptance: suppress each redundant group only when its corresponding exact category has identical contact membership; preserve ordering, same-category suppression, unrelated groups and individual candidate checks. Commit focused regression before production repair.
+Ownership: inspected all 292 open PR changed-file inventories in snapshot through #537; no confusables source or focused test claim. Rechecked main and new PR delta. PR #390 exact head b655bc273a6704c9c140287b8adcdf4085b91882 five workflow groups green, Snyk green, no review; owner ref untouched. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f; not acquired. No merge before independent review and all exact-head gates. No network, funds, release, deployment or new features/dependencies.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
