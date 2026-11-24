@@ -11,6 +11,8 @@ import {
   ATTEMPT_JOURNAL_KEY,
   ATTEMPT_JOURNAL_LOCK,
   clearAttemptLocked,
+  LOCK_WAIT_MS,
+
   readAttempts,
   withAttemptJournal,
   type AttemptLockManager,
@@ -395,7 +397,7 @@ describe('storage fault injection', () => {
   // QA-3 (low): parseRaw reads `raw.length` of a non-null, non-string getItem answer, so an `undefined` answer (a
   // non-conforming Storage polyfill) surfaces as an untyped TypeError instead of the journal error. Still fail-closed:
   // no wallet request starts. Flip to `it` once parseRaw refuses a non-string as the typed journal error.
-  it.fails('fails closed with the typed journal error when getItem returns undefined', async () => {
+  it('fails closed with the typed journal error when getItem returns undefined', async () => {
     const log: SendEntry[] = [];
     const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
     const store = { getItem: () => undefined, setItem: () => undefined } as unknown as AttemptStorage;
@@ -432,7 +434,7 @@ describe('lock manager faults', () => {
   // QA-1 (hardening): a non-conforming lock manager that rejects first and runs the callback later still starts a
   // wallet request after sendViaWallet already reported failure, and leaves an `unknown` record. navigator.locks never
   // runs a callback after rejecting, so this needs an injected manager. Flip to `it` once start() refuses after settle.
-  it.fails('never starts a wallet request when the callback runs after the lock request already rejected', async () => {
+  it('never starts a wallet request when the callback runs after the lock request already rejected', async () => {
     const { s, log, shared } = await setup();
     const lockManager: AttemptLockManager = {
       request: <T>(_name: string, callback: () => Promise<T>): Promise<T> => {
@@ -998,9 +1000,12 @@ describe('default browser journal: authoritative IndexedDB snapshot, localStorag
     expect(error).toMatchObject({ message: expect.stringMatching(/account, network or provider changed/) as unknown });
     expect(sends(log)).toBe(0);
     vi.stubGlobal('indexedDB', inner);
-    // Observed (QA-5): the committed `unknown` record stays in IndexedDB and the mirror although the wallet was never asked,
-    // so the invoice stays blocked until an explicit clear. Only "no hash was invented" is asserted here.
-    expect((await committedRecords()).every((r) => r.status === 'unknown' && r.hash === undefined)).toBe(true);
+    // QA-5: the wallet was never asked, so the committed `unknown` record is rolled back and a retry may proceed.
+    expect(await committedRecords()).toEqual([]);
+    expect(readAttempts()).toEqual([]);
+    const retry = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    await expect(sendViaWallet(retry, txOf(1), undefined, pay(1))).resolves.toMatch(/^0x[0-9a-f]{64}$/);
+    expect(sends(log)).toBe(1);
   });
 
   it('a mirror write that fails after the IndexedDB commit starts no wallet request', async () => {
@@ -1021,7 +1026,7 @@ describe('default browser journal: authoritative IndexedDB snapshot, localStorag
   // localStorage mirror (written by a pre-IndexedDB build still open in another tab, or any writer that bypasses
   // IndexedDB) is ignored: its invoice is sent again, and mirror() then overwrites the mirror, dropping that record and its
   // hash from both stores. Flip to `it` once mirror-only records are merged (or refused) instead of discarded.
-  it.fails('a record only the mirror holds (written without IndexedDB, e.g. by an older build) still blocks its invoice', async () => {
+  it('a record only the mirror holds (written without IndexedDB, e.g. by an older build) still blocks its invoice', async () => {
     const log: SendEntry[] = [];
     const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
     await sendViaWallet(s, txOf(1), undefined, pay(1));
@@ -1032,5 +1037,63 @@ describe('default browser journal: authoritative IndexedDB snapshot, localStorag
     expect(second).toMatchObject({ message: expect.stringMatching(DUPLICATE_ERROR) as unknown });
     expect(sends(log)).toBe(1);
     expect(readAttempts(window.localStorage).map((r) => r.hash)).toContain(hashOf(0xbeef));
+  });
+});
+
+describe('bounded waits (JRNL-L1, QA-6)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('a journal lock held elsewhere past the wait refuses typed and asks no wallet', async () => {
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    // A lock manager that never grants, but honours the abort signal like navigator.locks does.
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: {
+      request: (_name: string, options: { signal?: AbortSignal }) => new Promise((_resolve, reject) => {
+        options.signal?.addEventListener('abort', () => { reject(new DOMException('aborted', 'AbortError')); });
+      }),
+    } });
+    const controller = new AbortController();
+    vi.spyOn(AbortSignal, 'timeout').mockImplementation((ms: number) => {
+      expect(ms).toBe(LOCK_WAIT_MS);
+      queueMicrotask(() => { controller.abort(); });
+      return controller.signal;
+    });
+    await expect(sendViaWallet(s, txOf(1), undefined, pay(1))).rejects.toThrow(JOURNAL_ERROR);
+    expect(sends(log)).toBe(0);
+  });
+
+  it('a returned hash is surfaced while another holder keeps the lock, and recorded once it frees', async () => {
+    const log: SendEntry[] = [];
+    const held = heldSends();
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log, send: held.send }));
+    const sending = sendViaWallet(s, txOf(1), undefined, pay(1));
+    sending.catch(() => undefined);
+    await vi.waitFor(() => { expect(sends(log)).toBe(1); });
+    // Another tab takes the journal lock across its own wallet prompt.
+    let releaseLock = (): void => undefined;
+    const other = navigator.locks.request(ATTEMPT_JOURNAL_LOCK, () => new Promise<void>((resolve) => { releaseLock = resolve; }));
+    await macrotask();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    held.release(1);
+    await vi.advanceTimersByTimeAsync(10_000);
+    const error = await sending.catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(WalletBroadcastError);
+    expect((error as WalletBroadcastError).hash).toBe(hashOf(0x101));
+    vi.useRealTimers();
+    releaseLock();
+    await other;
+    await vi.waitFor(async () => { expect((await committedRecords()).map((r) => r.hash)).toEqual([hashOf(0x101)]); });
+  });
+
+  it('an IndexedDB open that never answers is abandoned after a bounded wait', async () => {
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    vi.stubGlobal('indexedDB', { open: () => ({}) as IDBOpenDBRequest });
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const sending = sendViaWallet(s, txOf(1), undefined, pay(1));
+    sending.catch(() => undefined);
+    await vi.advanceTimersByTimeAsync(10_000);
+    await expect(sending).rejects.toThrow(JOURNAL_ERROR);
+    expect(sends(log)).toBe(0);
   });
 });
