@@ -1,83 +1,53 @@
-name: Issue 286 integrated masking qualification
+name: Issue 286 complete web regression suites
 on:
   push:
     branches: [qa/286-integrated-mask-verification]
 permissions:
   contents: read
 concurrency:
-  group: qualify-mask-286-final
+  group: qualify-mask-286-web-regressions
   cancel-in-progress: true
 jobs:
-  masking:
+  browsers:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [full, lean]
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
-    env:
-      CANDIDATE: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
-      BASELINE: 75b876bd1da2c010faf43e3eb3b4f51fa15081fc
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
           persist-credentials: false
-      - name: Compose the PR candidate with pinned main
-        env:
-          MAIN: f76904301cff0b24d65ea4e31cbf37d470db4d95
-        run: |
-          set -euo pipefail
-          git fetch --depth=256 origin "$CANDIDATE" "$MAIN"
-          git config user.name "GhostPay qualification"
-          git config user.email "qualification@users.noreply.github.com"
-          # Both branches prepend entries to the shared ownership registry.
-          echo 'docs/ai/ACTIVE_WORK.md merge=union' >> .git/info/attributes
-          git merge --no-ff --no-edit "$MAIN"
-          git log -1 --format='Test merge %H tree %T parents %P'
-          git diff --check "$CANDIDATE" HEAD -- apps/web
       - uses: ./.github/actions/setup-node-libs
         with:
           save-cache: 'false'
-      - name: Web typecheck, lint and repository security checks
-        run: |
-          npm run typecheck --workspace @ghostpay/web
-          npm run lint --workspace @ghostpay/web
-          npm run ci:scan-secrets
-          npm run ci:check-actions
-          npm run ci:check-tx-origin
-      - name: Check the new vault regression against the pre-fix source
-        if: ${{ !cancelled() }}
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - run: npm run test:e2e --workspace @ghostpay/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
+  web-tests:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+        with:
+          save-cache: 'false'
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
+        with:
+          version: v1.8.5
+      - working-directory: packages/contracts
+        run: forge build
+      - name: Web coverage and integration tests
         run: |
           set -euo pipefail
-          integrated=$(git rev-parse HEAD)
-          git switch --detach ae5f5f56cba47a67d07896853c15029a8e55fad2
-          cd apps/web
-          if ../../node_modules/.bin/vitest run src/AppShell.privacy.test.tsx -t 'vault-side lock' > "$RUNNER_TEMP/tag-red.log" 2>&1; then
-            echo "Expected the direct lock to leave the grant active before the fix"
-            exit 1
-          fi
-          grep -q 'Reveal details for 30 seconds' "$RUNNER_TEMP/tag-red.log"
-          grep -q '1 failed' "$RUNNER_TEMP/tag-red.log"
-          echo "Confirmed the original vault-side lock regression at ae5f5f56."
-          cd ../..
-          git switch --detach "$integrated"
-      - name: Install test browsers
-        if: ${{ !cancelled() }}
-        run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
-      - name: Unit and integration acceptance on the composed tree
-        if: ${{ !cancelled() }}
-        working-directory: apps/web
-        run: ../../node_modules/.bin/vitest run --maxWorkers=2 src/lib/privacyMode.test.tsx src/AppShell.privacy.test.tsx src/AppShell.quickHide.test.tsx src/views/Pay.masking.test.tsx src/views/WalletPrivacy.lifecycle.test.tsx src/components/WalletDisclosure.quickHide.test.tsx src/components/ReconciliationLedger.privacy.test.tsx src/components/WalletAttempts.test.tsx src/components/PrivacyQuickHide.test.tsx src/views/Settings.clipboardPrivacy.test.tsx
-      - name: Full Pages browser acceptance on the composed tree
-        if: ${{ !cancelled() }}
-        working-directory: apps/web
-        env:
-          GHOSTPAY_LOCAL_BUILD_PROFILE: full
-        run: |
-          ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
-          ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox --project=webkit privacy-mask-history.spec.ts wallet-disclosure.spec.ts
-      - name: Lean Pages browser acceptance on the composed tree
-        if: ${{ !cancelled() }}
-        working-directory: apps/web
-        env:
-          GHOSTPAY_LOCAL_BUILD_PROFILE: lean
-        run: |
-          ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
-          ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox --project=webkit privacy-mask-history.spec.ts wallet-disclosure.spec.ts
+          export ANVIL_BIN="$(command -v anvil)"
+          export SOLC_BIN="$HOME/.svm/0.8.28/solc-0.8.28"
+          test -x "$ANVIL_BIN"
+          test -x "$SOLC_BIN"
+          REQUIRE_ANVIL=1 npm test -w apps/web
