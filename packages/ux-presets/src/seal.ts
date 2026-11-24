@@ -87,10 +87,10 @@ export async function resolveKey(material: KeyMaterial, c: CryptoLike): Promise<
       );
     }
     // Use the native WebCrypto brand check: instanceof alone accepts forged prototypes.
-    const nativeType = typeof CryptoKey === 'undefined'
+    const nativeTypeDescriptor = typeof CryptoKey === 'undefined'
       ? undefined
-      : Object.getOwnPropertyDescriptor(CryptoKey.prototype, 'type')?.get;
-    if (nativeType === undefined || nativeType.call(material) !== 'secret') return keyBad();
+      : Object.getOwnPropertyDescriptor(CryptoKey.prototype, 'type');
+    if (nativeTypeDescriptor?.get === undefined || nativeTypeDescriptor.get.call(material) !== 'secret') return keyBad();
     const k = material as Partial<CryptoKey> | null;
     const alg = k?.algorithm as Partial<AesKeyAlgorithm> | undefined;
     if (

@@ -1075,3 +1075,42 @@ still applies to the final combined tree.
 The original #289 regression has one unused callback argument. Apply the exact
 one-line correction already present in recovered commit
 `31c34319aeaa9dbc211b8ccc6bdf65fc3e755ea2`; no assertion changes are needed.
+# Existing QR and TRON input follow-ups — 2026-11-24
+
+- Worker: `/root/ui_data_review`; integration coordinator: `/root`.
+- Isolated branch: `integration/input-followups-20261124`; exact base: `79c7ff73efbaf9efde5ec8cfc0e8fff08d4fad0b`.
+- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/design/qr-colors.md`, `packages/payment-uri/src/tron.ts`, `packages/payment-uri/src/tron.network-option.test.ts`, this additive claim, the original QR follow-up handoff and a new recovery handoff.
+- Recover only the existing missing QR primitive-validation follow-up from `17333ceda784ecdf5734a666ef57ee1d1e599296` and TRON network-option follow-up from `9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce`. Preserve current optional-field snapshots from #593 and every previously reviewed source change.
+- Acceptance: preserve all recognized QR mappings, secret/bearer flag precedence, frame classes and existing tests; preserve omitted/undefined TRON network defaults, supported explicit networks and single-read option selection. Import existing tests and relevant documentation without changing donor branches. Run the applicable existing unit suites and static checks on this composition; record actual outcomes and limits.
+- Boundaries: no new attack harness or vulnerability reproduction, no remote ref mutation, deployment, funds, endpoints, dependency changes or activation of additional payment networks. Root owns independent review, combined qualification, integration lease and promotion.
+
+
+## Submitted refund reservation recovery — 2026-11-24
+
+Worker: `historical_review`, delegated by the all-branch integration coordinator.
+Branch: `integration/refund-reservation-20261124`.
+Exact base: `79c7ff73efbaf9efde5ec8cfc0e8fff08d4fad0b`.
+
+Owned paths: `packages/merchant-billing/src/refunds.ts`,
+`packages/merchant-billing/src/refunds.uncertain.test.ts`,
+`docs/remote/usability/specs/refunds.md`, this additive claim, and
+`docs/handoffs/REFUND_RESERVATION_RECOVERY_20261124.md`.
+
+Recover the existing ordinary unit regressions from
+`aa0bee225464ebf42b88351ea71c54b21e497a59` and the submitted-refund reservation
+correction from `46d8e17fc70cb5bda89afbb4a942c2158871e992`, both on
+`nodata/practical-johnson-e0fbpm` at
+`85cc394451313e24104ef7089379e720b4e70526`. Keep donor attribution and the
+original branch untouched. Its larger unfinished lifecycle, policy, authority,
+storage, and execution work is outside this recovery.
+
+Acceptance: submitted plans cannot transition to failed or release their
+reserved amount; never-submitted plans can still fail; existing confirmation,
+idempotency, and cumulative-cap behavior remains intact. Preserve the donor
+assertions without adding attack or vulnerability reproduction tests. Correct
+comments and the existing refund specification to state that this plan-only API
+does not verify chain evidence or resolve submitted failures. Run the existing
+merchant-billing suite with coverage, build, typecheck, and lint using checkout-local
+workspace dependencies. Record actual results and environment limits. The root
+coordinator owns independent review, combined qualification, and promotion; this
+worker performs no remote mutation or merge.

@@ -46,7 +46,7 @@ describe('computeFiatView untrusted quote property boundaries', () => {
 
   it('returns invalid for a failing quote proxy access', () => {
     const malformed = new Proxy({ ...quote }, {
-      get(target, property, receiver) {
+      get(target, property, receiver): unknown {
         if (property === 'asset') throw new Error('fixture quote proxy failed');
         return Reflect.get(target, property, receiver);
       },
