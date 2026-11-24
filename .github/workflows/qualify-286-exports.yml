@@ -1,0 +1,64 @@
+name: Issue 286 export and notification qualification
+on:
+  push:
+    branches: [qa/286-export-notification-verification]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 2596686489c5984603c9562d565285f7a91ecfe3
+          persist-credentials: false
+      - name: Verify candidate
+        run: test "$(git rev-parse HEAD)" = "2596686489c5984603c9562d565285f7a91ecfe3"
+      - uses: ./.github/actions/setup-node-libs
+        id: setup
+      - name: Typecheck
+        run: npm run typecheck -w @ghostpay/web -w @ghostpay/ux-notify
+      - name: Lint and secret scan
+        if: "!cancelled() && steps.setup.outcome == 'success'"
+        run: |
+          npm run ci:scan-secrets
+          node scripts/i18n/check.mjs
+          npm run lint -w @ghostpay/web -w @ghostpay/ux-notify
+      - name: Notification package
+        if: "!cancelled() && steps.setup.outcome == 'success'"
+        run: npm test -w @ghostpay/ux-notify
+      - name: Pages privacy, recovery and transaction regressions
+        if: "!cancelled() && steps.setup.outcome == 'success'"
+        working-directory: apps/web
+        run: >-
+          ../../node_modules/.bin/vitest run --maxWorkers=2
+          src/components/Common.test.tsx src/components/ErrorBoundary.test.tsx
+          src/components/TagArchive.test.tsx src/components/BackupPanel.test.tsx
+          src/i18n/context.test.tsx src/i18n/securityKeys.test.ts
+          src/lib/errors.test.ts src/lib/deployment.test.ts src/lib/relayerClient.test.ts
+          src/lib/tagArchive.test.ts src/lib/transactionOutcome.test.ts src/lib/payExec.test.ts
+          src/views/Pay.test.tsx src/features/chainViews.i18n.test.tsx
+          src/features/policy/send.test.ts src/features/policy/PolicyView.guard.test.tsx
+      - name: Install Chromium
+        id: chromium
+        if: "!cancelled() && steps.setup.outcome == 'success'"
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Full Pages browser and backup recovery
+        if: "!cancelled() && steps.chromium.outcome == 'success'"
+        working-directory: apps/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: full
+        run: >-
+          ../../node_modules/.bin/playwright test --project=desktop
+          app.spec.ts backup-panel.spec.ts
+          -g 'rejected QR text|open link -> review screen|honest per-item status|keeps the key backup'
+      - name: Lean Pages browser and key backup
+        if: "!cancelled() && steps.chromium.outcome == 'success'"
+        working-directory: apps/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: lean
+        run: >-
+          ../../node_modules/.bin/playwright test --project=desktop
+          app.spec.ts backup-panel.spec.ts
+          -g 'rejected QR text|open link -> review screen|honest per-item status|keeps the key backup'
