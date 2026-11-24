@@ -67,3 +67,33 @@ describe('merchant POS runtime input boundaries', () => {
     }
   });
 });
+
+describe('POS state integrity', () => {
+  it('never emits an accepted transition with invalid stored amounts', () => {
+    const valid = awaiting();
+    for (const overrides of [
+      { dueMinor: 1000 }, { dueMinor: undefined }, { dueMinor: 0n },
+      { paidMinor: '0' }, { paidMinor: -1n }, { paidMinor: 1000n },
+    ]) {
+      const corrupt = Object.freeze({ ...valid, ...overrides }) as unknown as PosState;
+      for (const event of [pay, { type: 'tick' }, { type: 'cancel' }] as const) {
+        expect(() => posReduce(corrupt, event, 130)).toThrow(/bad-amount/);
+      }
+    }
+  });
+
+  it('can cancel without preserving a malformed deadline or losing a partial payment', () => {
+    const state = Object.freeze({ ...awaiting(), paidMinor: 503n, expiresAt: NaN });
+    const result = posReduce(state, { type: 'cancel' }, NaN);
+    expect(result.state).not.toHaveProperty('expiresAt');
+    expect(result.state).toMatchObject({ status: 'cancelled', paidMinor: 503n, dueMinor: 1000n });
+  });
+
+  it('rejects missing or ill-typed sale identities before returning an active session', () => {
+    for (const field of ['sessionId', 'invoiceId', 'currency']) {
+      for (const bad of ['', 7, null, undefined]) {
+        expect(() => posReduce(INITIAL_POS_STATE, { ...start, [field]: bad }, 100)).toThrow(/bad-session/);
+      }
+    }
+  });
+});

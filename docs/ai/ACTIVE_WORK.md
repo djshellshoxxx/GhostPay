@@ -797,3 +797,4 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 
 Worker: Codex, branch `fix/pos-terminal-reliability-20261124`, based on #411 at `482d36ad436f4b27b2d86ff9a2c22daf150000ad` (includes #406). Main at preflight: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
 Own the child branch's POS reducer and static example, POS-specific tests and documentation, and this additive claim. Preserve both parent branches. Acceptance: exercise creation, payment observation, expiry, cancellation, completion and new-sale reset in both implementations. Verify rejected inputs cannot corrupt the session and amounts remain exact, using bounded generated cases and the actual terminal controls.
+Browser regression ownership includes the new `apps/web/e2e/pos-terminal.spec.ts`, which serves the actual example files to Chromium.
