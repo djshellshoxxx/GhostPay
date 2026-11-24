@@ -19,9 +19,13 @@ function statusText(outcome: AttemptResolution, attempt: WalletAttempt, t: Trans
       const result = observed.state === 'pending' ? t('walletAttempts.pending')
         : depth === undefined || observed.confirmations < BigInt(depth) ? t('walletAttempts.included')
         : observed.state === 'reverted' ? t('walletAttempts.reverted') : t('walletAttempts.confirmed');
-      return outcome.state === 'replaced' ? t('walletAttempts.replaced', { hash: outcome.hash, result }) : result;
+      if (outcome.state !== 'replaced') return result;
+      // A cancel (different call) confirming is not the original action confirming: never word it as such.
+      return t(outcome.kind === 'different-call' ? 'walletAttempts.replacedDifferent' : 'walletAttempts.replaced', { hash: outcome.hash, result });
     }
     case 'pending': return outcome.reorged ? t('walletAttempts.unresolved') : t('walletAttempts.pending');
+    case 'mismatch': return t('walletAttempts.mismatch');
+    case 'nonce-consumed': return t('walletAttempts.nonceConsumed');
     default: return t('walletAttempts.unresolved');
   }
 }
