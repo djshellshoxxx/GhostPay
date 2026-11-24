@@ -216,7 +216,10 @@ describe('SecretBackup', () => {
     click('Copy anyway');
     click('Hide seed');
     await settle();
-    await copyBackup();
+    click('Show backup seed');
+    click('Copy seed');
+    await clickAndSettle('Copy anyway');
+    expect(writeText).toHaveBeenCalledOnce();
     finishFirst();
     await settle();
     expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, SECRET]);

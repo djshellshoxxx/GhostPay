@@ -174,3 +174,27 @@ it('a write settling after preference revocation cannot rearm its timer', async 
   expect(c.read).not.toHaveBeenCalled();
   expect(c.write).toHaveBeenCalledExactlyOnceWith('pending');
 });
+
+it('an older native write that applies at settlement cannot replace a later user copy', async () => {
+  vi.useFakeTimers();
+  let value = '';
+  let finishBackup!: () => void;
+  const port = {
+    readText: () => Promise.resolve(value),
+    writeText: vi.fn((next: string) => {
+      if (next === 'older backup') return new Promise<void>((resolve) => {
+        finishBackup = () => { value = next; resolve(); };
+      });
+      value = next;
+      return Promise.resolve();
+    }),
+  };
+  const first = copyClipboardText('older backup', port, 30_000);
+  const second = copyClipboardText('newer address', port, 60_000);
+  finishBackup();
+  await Promise.all([first, second]);
+  await vi.advanceTimersByTimeAsync(59_999);
+  expect(value).toBe('newer address');
+  await vi.advanceTimersByTimeAsync(1);
+  expect(value).toBe('');
+});

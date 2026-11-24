@@ -31,7 +31,7 @@ The first 23 sites use `CopyButton`. The three backup sites use `SecretBackup` a
 - **Off** makes no cleanup reads or writes. Hiding a backup, locking a wallet or leaving its view removes the visible backup. Those actions no longer issue an unconditional empty write. To request automatic clearing, choose the delay before copying.
 - A successful copy starts its own delay. An acknowledged copy keeps its timer across navigation in the same page. If a newer copy is pending when the old deadline arrives, the helper waits for the outcome. A successful recopy gets a fresh deadline. If the newer write fails, the old cleanup rechecks ownership and clipboard contents.
 - The timer holds a digest and text length. Cleanup compares the text twice. When the browser exposes item formats, cleanup also requires exactly one plain-text item. A denied read, a changed value, or extra formats leave the clipboard untouched. A denied initial copy shows the existing localized failure message.
-- A subsequent app copy waits for any already-dispatched clear. A queued copy whose control has since unmounted or changed is discarded. A write already submitted to the browser may still complete after unmount.
+- A subsequent app copy waits for any already-dispatched copy or clear. A queued copy whose control has since unmounted or changed is discarded. A write already submitted to the browser may still complete after unmount.
 - The browser exposes separate read and write operations. An external copy of identical text cannot always be distinguished, and another application can change the clipboard after the final read. Closing or reloading the document ends its timers. Clipboard history and synced copies are outside the page's control.
 
 ## Acceptance evidence

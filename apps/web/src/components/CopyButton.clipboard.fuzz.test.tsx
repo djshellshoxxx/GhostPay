@@ -49,13 +49,16 @@ it('honors the latest copy when two writes settle across a cleanup deadline', as
         view.rerender(<CopyButton text={secondLink} label="Copy link" autoClearAfterMs={secondDelay} />);
         fireEvent.click(button);
         await vi.advanceTimersByTimeAsync(lead);
-        // A pending write may already be visible on the clipboard. Wait for its outcome.
+        // If the first write has yet to settle, the second cannot have reached the native clipboard.
+        expect(value).toBe(firstPending || denied ? firstLink : secondLink);
+        expect(copyCount).toBe(firstPending ? 1 : 2);
+        if (firstPending) await act(async () => { first.resolve(); await first.promise; });
+        expect(copyCount).toBe(2);
         expect(value).toBe(denied ? firstLink : secondLink);
         await act(async () => {
           if (denied) second.reject(); else second.resolve();
           await second.promise.catch(() => undefined);
         });
-        if (firstPending) await act(async () => { first.resolve(); await first.promise; });
         if (denied) {
           await vi.advanceTimersByTimeAsync(firstPending ? firstDelay : 0);
           expect(value).toBe('');
@@ -77,7 +80,7 @@ it('honors the latest copy when two writes settle across a cleanup deadline', as
     seed: 286549, numRuns: 120,
     examples: [
       [30_000, 30_000, 1, true, false, false], // same link visible before the new write is acknowledged
-      [30_000, 60_000, 1, false, true, false], // first write acknowledges after the second
+      [30_000, 60_000, 1, false, true, false], // second copy is requested before the first settles
       [30_000, 0, 1, true, false, true], // rejected recopy leaves the old cleanup effective
     ],
   });

@@ -15,7 +15,15 @@ const pendingWrites = new Set<number>();
 let deferredCleanup: (() => Promise<void>) | undefined;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let revision = 0;
-let pendingClear: Promise<void> | undefined;
+let nativeWrite: Promise<void> | undefined;
+
+/** Keep the actual clipboard effects in order, including browsers that apply a write just before it settles. */
+async function writeText(clipboard: ClipboardPort, text: string): Promise<void> {
+  const write = clipboard.writeText(text);
+  nativeWrite = write;
+  try { await write; }
+  finally { if (nativeWrite === write) nativeWrite = undefined; }
+}
 
 /** A saved preference change also revokes pending reads and timers from copies that have yet to settle. */
 export function cancelClipboardCleanup(): void {
@@ -43,12 +51,12 @@ export async function copyClipboardText(
   const copyRevision = revision;
   pendingWrites.add(generation);
   try {
-    // A native clear cannot be withdrawn. Let it finish before dispatching the newer copy.
-    if (pendingClear) {
-      await pendingClear.catch(() => undefined);
+    // A native copy or clear cannot be withdrawn. Only dispatch the latest still-mounted queued request.
+    if (nativeWrite) {
+      await nativeWrite.catch(() => undefined);
       if (generation !== nextCopy || !current()) throw new Error('Copy is no longer current.');
     }
-    await clipboard.writeText(value);
+    await writeText(clipboard, value);
     if (generation < latestSuccessfulCopy) return;
     latestSuccessfulCopy = generation;
     clearTimeout(timer);
@@ -88,10 +96,7 @@ function scheduleCleanup(generation: number, copyRevision: number, clipboard: Cl
         if (items.length !== 1 || types?.length !== 1 || types[0] !== 'text/plain' || !canClear()) return;
       }
       if (!matches(await clipboard.readText()) || !canClear()) return;
-      const clear = clipboard.writeText('');
-      pendingClear = clear;
-      try { await clear; }
-      finally { if (pendingClear === clear) pendingClear = undefined; }
+      await writeText(clipboard, '');
     } catch {
       // Denied or unavailable clipboard access leaves the user's copy alone.
     }
