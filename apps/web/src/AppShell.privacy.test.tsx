@@ -120,6 +120,44 @@ describe('required global privacy masking', () => {
     expect(await vault.find(84532, `0x${'a'.repeat(40)}`)).toMatchObject({ clientLabel: 'Private client' });
   });
 
+  it('revokes an active reveal on a vault-side lock and while a tag wipe is unresolved', async () => {
+    const user = userEvent.setup();
+    const seller = generateSession();
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ privacyMode: true }));
+    const store = new MemoryTagStore();
+    const vault = new TagVault(store);
+    await vault.unlock(revealViewingKey());
+    const services = makeServices({ vault });
+    await vault.save(services.chains[0]?.chainId ?? 84532, { stealthAddress: `0x${'a'.repeat(40)}`, announcementId: `0x${'b'.repeat(64)}:0`,
+      logIndex: 0, clientLabel: 'Private tag 286', invoiceLabel: '', notes: '' });
+    let fail!: () => void;
+    const wipe = vi.spyOn(store, 'clear').mockImplementation(() => new Promise<void>((_resolve, reject) => {
+      fail = () => { reject(new Error('test storage unavailable')); };
+    }));
+    renderWith(<AppShell order={CORE_ORDER} profile="lean" />, services);
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
+    const reveal = () => within(screen.getByRole('banner')).getByRole('button', { name: 'Reveal details for 30 seconds' });
+    await user.click(reveal());
+    await screen.findByText('Private tag 286');
+    act(() => { vault.lock(); });
+    expect(reveal()).toBeTruthy();
+    expect(screen.queryByText('Private tag 286')).toBeNull();
+    await user.click(reveal());
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await screen.findByText('Private tag 286');
+    await user.click(screen.getByRole('button', { name: 'Delete all tags' }));
+    const review = screen.getByRole('group', { name: /Delete every local tag/ });
+    await user.click(within(review).getByRole('button', { name: 'Delete all tags' }));
+    expect(wipe).toHaveBeenCalledTimes(1);
+    expect(vault.unlocked).toBe(false);
+    await user.click(reveal());
+    expect(screen.queryByText('Private tag 286')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Unlock tags' })).toBeTruthy();
+    await act(async () => { fail(); await Promise.resolve(); });
+    expect(screen.queryByText('Private tag 286')).toBeNull();
+    expect(getSessionPublic()).toBe(seller);
+  });
+
   it('preserves active preflight authority and exact execution-settings bytes when only masking changes', async () => {
     const { fragment } = await makeParsed({ encrypt: true, token: 'native', tokenAmount: '0.5' });
     const rawSettings = '{ "rpcUrls": { "84532": "https://rpc.test/" } }';
