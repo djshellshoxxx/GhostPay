@@ -5,13 +5,14 @@ import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
 import { ATTEMPT_JOURNAL_KEY, clearAttempt, readAttempts } from '../lib/duplicateAttemptJournal';
+import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, getSessionPublic } from '../lib/session';
 import { createNetworkAuthority, type NetworkAuthorization, type NetworkAuthority } from '../lib/networkAuthorization';
 import type { Services } from '../lib/services';
 import { SETTINGS_KEY } from '../lib/settings';
 import { type WalletInfo } from '../lib/wallet';
 import { generateWaivedSession } from '../test/keys';
-import { makeParsed } from '../test/invoiceFixtures';
+import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
@@ -31,6 +32,10 @@ const info = (wallet: EventWallet): WalletInfo => ({ id: 'fixture', name: 'Lifec
 type Route = 'Pay' | 'Public registry' | 'Policy accounts (experimental)';
 const routes: readonly Route[] = ['Pay', 'Public registry', 'Policy accounts (experimental)'];
 const authorities: NetworkAuthority[] = [];
+const PRIVATE_MEMO = 'private checkout context must disappear';
+const INVOICE_PASSPHRASE = 'cedar orbit velvet lantern meadow';
+const WALLET_CHANGE_REASON = 'The wallet account, network or provider changed. Reconnect and review again.';
+type PrivateInvoice = 'encrypted' | 'passphrase';
 
 beforeEach(() => {
   clearSession(); window.localStorage.clear(); window.sessionStorage.clear(); setHash('');
@@ -38,10 +43,16 @@ beforeEach(() => {
 });
 afterEach(() => { for (const authority of authorities.splice(0)) authority.dispose(); vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
-async function open(route: Route, wallet: EventWallet, overrides: Partial<Services> = {}) {
+async function open(route: Route, wallet: EventWallet, overrides: Partial<Services> = {}, protection?: PrivateInvoice) {
   const user = userEvent.setup();
   if (route === 'Pay') {
-    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.1' });
+    const invoice = { ...BASE_FORM, token: 'native', tokenAmount: '0.1' };
+    if (protection !== undefined) generateWaivedSession();
+    const { fragment } = protection === undefined
+      ? await makeParsed(invoice)
+      : await buildInvoiceLink({ ...invoice, memo: PRIVATE_MEMO, encrypt: true,
+        ...(protection === 'passphrase' ? { passphrase: INVOICE_PASSPHRASE } : {}),
+      }, 'https://app.test/', NOW);
     setHash(fragment);
   } else if (route === 'Public registry') generateWaivedSession();
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test', '11155111': 'https://rpc.test' } }));
@@ -51,7 +62,13 @@ async function open(route: Route, wallet: EventWallet, overrides: Partial<Servic
     discoverWallets: () => Promise.resolve([info(wallet)]),
     ...overrides,
   }));
-  if (route === 'Pay') await user.click(await screen.findByRole('button', { name: 'Continue' }));
+  if (route === 'Pay') {
+    if (protection === 'passphrase') {
+      await user.type(await screen.findByLabelText('Invoice passphrase'), INVOICE_PASSPHRASE);
+      await user.click(screen.getByRole('button', { name: 'Open invoice' }));
+    }
+    await user.click(await screen.findByRole('button', { name: 'Continue' }, { timeout: 120_000 }));
+  }
   else {
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: route }));
     if (route === 'Public registry') await user.click(screen.getByRole('checkbox'));
@@ -63,6 +80,74 @@ async function open(route: Route, wallet: EventWallet, overrides: Partial<Servic
 }
 
 describe('required wallet lifecycle privacy in real EVM views', () => {
+  it.each([
+    { protection: 'encrypted', mismatch: 'network' },
+    { protection: 'encrypted', mismatch: 'account' },
+    { protection: 'passphrase', mismatch: 'network' },
+    { protection: 'passphrase', mismatch: 'account' },
+  ] as const)('Pay retains public notice after a silent $mismatch change for a $protection invoice', async ({ protection, mismatch }) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet, {}, protection);
+    expect(screen.getByText(PRIVATE_MEMO, { exact: true })).toBeTruthy();
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    const original = wallet.request.bind(wallet);
+    if (mismatch === 'network') wallet.chainId = 31337;
+    else wallet.request = (args) => args.method === 'eth_accounts'
+      ? Promise.resolve(['0x6666666666666666666666666666666666666666'])
+      : original(args);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByRole('heading', { name: 'Pay an invoice' });
+    expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Payment sent, verifying' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(document.body.textContent).not.toContain(PRIVATE_MEMO);
+    expect(screen.queryByLabelText('Invoice passphrase')).toBeNull();
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Paste an invoice link').value).toBe('');
+    expect(window.location.hash).toBe('');
+    expect(wallet.calls.filter(({ method }) => /^(?:eth_send|eth_sign|personal_sign)/.test(method))).toEqual([]);
+    expect(readAttempts()).toEqual([]);
+    await screen.findByText(WALLET_CHANGE_REASON, { exact: true });
+    expect(screen.getAllByRole('alert')).toHaveLength(1);
+    expect(within(screen.getByRole('alert')).getByText(WALLET_CHANGE_REASON, { exact: true })).toBeTruthy();
+    expect(document.body.textContent).not.toContain('Nothing was sent');
+
+    // Returning to Pay cannot reopen the erased private capability from the app context.
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Home' }));
+    await user.click(nav.getByRole('button', { name: 'Pay' }));
+    await screen.findByRole('heading', { name: 'Pay an invoice' });
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+    expect(document.body.textContent).not.toContain(PRIVATE_MEMO);
+    expect(readAttempts()).toEqual([]);
+  }, 120_000);
+
+  it.each(['lock', 'session', 'new invoice'] as const)('clears the public wallet-change notice on %s after private checkout revocation', async (change) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet, {}, 'encrypted');
+    act(() => { wallet.emit('accountsChanged'); });
+    await screen.findByText(WALLET_CHANGE_REASON, { exact: true });
+    if (change === 'lock') act(() => { notifyAppLock('manual'); });
+    else if (change === 'session') act(() => { clearSession(); });
+    else {
+      // Build with the existing seller session so only the new invoice clears the notice.
+      const next = await buildInvoiceLink({ ...BASE_FORM, token: 'native', tokenAmount: '0.2', memo: 'new invoice context' }, 'https://app.test/', NOW);
+      expect(screen.getByText(WALLET_CHANGE_REASON, { exact: true })).toBeTruthy();
+      await user.type(screen.getByLabelText('Paste an invoice link'), next.link);
+      await user.click(screen.getByRole('button', { name: 'Read invoice' }));
+      await screen.findByRole('heading', { name: 'Review payment' });
+      expect(screen.getByText('new invoice context', { exact: true })).toBeTruthy();
+    }
+    expect(screen.queryByText(WALLET_CHANGE_REASON, { exact: true })).toBeNull();
+    expect(document.body.textContent).not.toContain(PRIVATE_MEMO);
+    expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
+    expect(wallet.calls.filter(({ method }) => /^(?:eth_send|eth_sign|personal_sign)/.test(method))).toEqual([]);
+    expect(readAttempts()).toEqual([]);
+  });
+
   it.each(['network', 'account'] as const)('Pay explains a silent %s mismatch without submitting or retaining the old wallet', async (kind) => {
     const wallet = new EventWallet();
     const user = await open('Pay', wallet);

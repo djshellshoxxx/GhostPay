@@ -1,0 +1,135 @@
+{
+  "observed_at_utc": "2026-11-24T09:34:07.062530+00:00",
+  "parent": "86450d8d459ccf4a6925742d082e1c7ad0905e75",
+  "tested_head": "b2d222772fec857b69eb626afe3b8f58c0b8dfbd",
+  "source_fix": "1efeb250c83a2bdf8cd66d85683e6b05fc19461e",
+  "unit_passed": 40,
+  "devnet_passed": 3,
+  "browser": {
+    "format": "ghostpay-static-hosting-browser/1",
+    "archiveSha256": "85f4ada5e626483247602e1b6c079ae0fc5ab92cb1dd15a75a03cc3353081b7e",
+    "browser": {
+      "name": "chromium",
+      "version": "156.0.8078.4"
+    },
+    "cases": [
+      {
+        "basePath": "/",
+        "origin": "http://127.0.0.1:34781",
+        "checks": [
+          "render",
+          "CSP/headers",
+          "WebCrypto",
+          "storage separation",
+          "Tor preference persistence",
+          "no hash fallback",
+          "local key generation"
+        ],
+        "requestCount": 15,
+        "requests": [
+          {
+            "path": "/",
+            "method": "GET",
+            "type": "document"
+          },
+          {
+            "path": "/assets/index-COHU6lX5.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/assets/rolldown-runtime-XKyaHtl9.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/assets/style-1qcfXE3B.css",
+            "method": "GET",
+            "type": "stylesheet"
+          },
+          {
+            "path": "/assets/index-COHU6lX5.js",
+            "method": "GET",
+            "type": "fetch"
+          }
+        ],
+        "externalRequestAttempts": 0
+      },
+      {
+        "basePath": "/mirror/ghostpay/",
+        "origin": "http://127.0.0.1:33057",
+        "checks": [
+          "render",
+          "CSP/headers",
+          "WebCrypto",
+          "storage separation",
+          "Tor preference persistence",
+          "no hash fallback",
+          "local key generation"
+        ],
+        "requestCount": 15,
+        "requests": [
+          {
+            "path": "/mirror/ghostpay/",
+            "method": "GET",
+            "type": "document"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/index-COHU6lX5.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/rolldown-runtime-XKyaHtl9.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/style-1qcfXE3B.css",
+            "method": "GET",
+            "type": "stylesheet"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/index-COHU6lX5.js",
+            "method": "GET",
+            "type": "fetch"
+          }
+        ],
+        "externalRequestAttempts": 0
+      }
+    ],
+    "limits": [
+      "Ordinary Chromium on loopback, not Tor Browser or live onion acceptance.",
+      "No external wallet, public RPC, chain payment or real funds.",
+      "Observed HTTP(S) requests and WebSocket attempts are checked; browser/extension traffic is outside this fixture."
+    ],
+    "status": "passed"
+  },
+  "logs": {
+    "privacy-598-devnet.log": {
+      "sha256": "97cdb3b2aa27a68322824d7e6a383b869971ef75dd79545a8af8cdda2e1ad3a9",
+      "output": "== anvil on http://127.0.0.1:8548\n== deploy (script/devnet/DeployDevnet.s.sol, isolated forge out/cache/broadcast)\n== switch the local chain to Base Sepolia id (84532) and stub the OP fee oracle\n== sign the devnet manifest with the public Playwright test key\ndevnet manifest signed for chain 84532: /tmp/ghostpay-browser-devnet.hiQRau/deployments (router 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)\n== playwright (built app on http://localhost:4177 against http://127.0.0.1:8548)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:185) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] \n[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime\n[WebServer] [plugin rolldown:vite-resolve] Module \"node:http\" has been externalized for browser compatibility, imported by \"/workspace/scratch/efb8df2579c9/gp-privacy-571/packages/pir-two-server/dist/http.js\". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\n[WebServer] [plugin builtin:vite-reporter] \n[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:\n[WebServer] - Using dynamic import() to code-split the application\n[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.\n[WebServer] \n[WebServer] (node:223) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 3 tests using 1 worker\n\n(node:280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  \u2713  1 e2e/devnet-journey.spec.ts:71:1 \u203a real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (8.9s)\n  \u2713  2 e2e/devnet-journey.spec.ts:255:1 \u203a real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (3.6s)\ndevnet journey: 3 real anvil transactions asserted on chain: 0x68ffd46f9b31055c259681e7c9e0a7d6f194f9699bbd9a0d45a6c32fe13f3f0a, 0x56235d07e449b8932aa1204a8a479c589c8bd8bbeb6bce7afb635fe8b635efb0, 0x2bb3afb478c40190bed0052f51d3fb267f71f4a2e60aacd09374125151d6329f\n  \u2718  3 e2e/devnet-journey.spec.ts:303:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (18.1s)\n\n\n  1) e2e/devnet-journey.spec.ts:303:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment \n\n    Error: expect(locator).toBeVisible() failed\n\n    Locator: getByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true })\n    Expected: visible\n    Timeout: 15000ms\n    Error: element(s) not found\n\n    Call log:\n      - Expect \"toBeVisible\" getByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true }) with timeout 15000ms\n      - waiting for getByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true })\n\n\n      328 |     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();\n      329 |     await approveWalletDisclosure(p, 'eth_sendTransaction');\n    > 330 |     await expect(p.getByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true })).toBeVisible();\n          |                                                                                                                                ^\n      331 |     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);\n      332 |     await expect(p.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);\n      333 |     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toHaveCount(0);\n        at /workspace/scratch/efb8df2579c9/gp-privacy-571/apps/web/e2e/devnet-journey.spec.ts:330:128\n        at withProfiles (/workspace/scratch/efb8df2579c9/gp-privacy-571/apps/web/e2e/devnet-journey.spec.ts:39:5)\n        at /workspace/scratch/efb8df2579c9/gp-privacy-571/apps/web/e2e/devnet-journey.spec.ts:305:3\n\n    Error Context: ../../../../../../tmp/ghostpay-browser-devnet.hiQRau/dist-results/devnet-journey-real-chain--3172c-ore-send-blocks-the-payment/error-context.md\n\n    Error Context: ../../../../../../tmp/ghostpay-browser-devnet.hiQRau/dist-results/devnet-journey-real-chain--3172c-ore-send-blocks-the-payment/error-context.md\n\n  1 failed\n    e2e/devnet-journey.spec.ts:303:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment \n  2 passed (1.1m)\nbrowser-devnet: FAILED (exit 1); last anvil log lines:\neth_chainId\neth_call\neth_call\neth_call\neth_getCode\neth_getCode\neth_getCode\neth_chainId\neth_call\neth_call\neth_call\neth_getCode\neth_getCode\neth_getCode\neth_chainId\neth_chainId\neth_chainId\neth_chainId\neth_call\nevm_setAutomine\nbrowser-devnet: kept /tmp/ghostpay-browser-devnet.hiQRau\n"
+    },
+    "privacy-598-fixed-unit.log": {
+      "sha256": "ec383f171db9d95ca265e73ea965d27bcf7569ff5aef7746cb9c165a3e987af6",
+      "output": "\n RUN  v5.1.0 /workspace/scratch/efb8df2579c9/gp-privacy-571/apps/web\n\n\n Test Files  2 passed (2)\n      Tests  40 passed (40)\n   Start at  01:28:37\n   Duration  19.39s (tests 72%, import 12%, environment 10%, transform 6%)\n\n    Isolate  2 workers spawned \u00b7 ~1.15s startup each (spawn + environment, per file)\n             at least ~1.15s faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n"
+    },
+    "privacy-598-fixed-devnet.log": {
+      "sha256": "c90d2c9b9cf884bb0bed624cb075ea7352e661ad54412a41cc192b39e3dca1a8",
+      "output": "== anvil on http://127.0.0.1:8548\n== deploy (script/devnet/DeployDevnet.s.sol, isolated forge out/cache/broadcast)\n== switch the local chain to Base Sepolia id (84532) and stub the OP fee oracle\n== sign the devnet manifest with the public Playwright test key\ndevnet manifest signed for chain 84532: /tmp/ghostpay-browser-devnet.QImoEd/deployments (router 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)\n== playwright (built app on http://localhost:4177 against http://127.0.0.1:8548)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:185) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] \n[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime\n[WebServer] [plugin rolldown:vite-resolve] Module \"node:http\" has been externalized for browser compatibility, imported by \"/workspace/scratch/efb8df2579c9/gp-privacy-571/packages/pir-two-server/dist/http.js\". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\n[WebServer] [plugin builtin:vite-reporter] \n[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:\n[WebServer] - Using dynamic import() to code-split the application\n[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.\n[WebServer] \n[WebServer] (node:223) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] (node:244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 3 tests using 1 worker\n\n(node:280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  \u2713  1 e2e/devnet-journey.spec.ts:71:1 \u203a real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (9.4s)\n  \u2713  2 e2e/devnet-journey.spec.ts:255:1 \u203a real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (3.6s)\ndevnet journey: 3 real anvil transactions asserted on chain: 0x8dc34d72ec88ed60b297f421610f4886dd61a93aa9a2872feac002197a9e2ba9, 0x64d9fe9477b9f16f50beb0fa487e78a314fe6d07150da2a5501ed30318dbec22, 0x352b7c20bf2d5cc431dad3aec2cea2bcff6bc8036d0564f0d29a599454316b9d\n  \u2713  3 e2e/devnet-journey.spec.ts:303:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (3.7s)\n\n  3 passed (51.9s)\nbrowser-devnet: PASS\nbrowser-devnet: kept /tmp/ghostpay-browser-devnet.QImoEd\n"
+    },
+    "privacy-598-fixed-lean-build.log": {
+      "sha256": "333b26181403fad595afb7e9d8d9591c2d45a0c3368137e8dce00910936a0d49",
+      "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/web@1.0.0-beta.1 build\n> tsc -p tsconfig.json --noEmit && vite build\n\nvite v8.3.8 building client environment for production...\ntransforming...\n\n./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime\n[plugin rolldown:vite-resolve] Module \"node:http\" has been externalized for browser compatibility, imported by \"/workspace/scratch/efb8df2579c9/gp-privacy-571/packages/pir-two-server/dist/http.js\". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\n\u2713 903 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/build-info.json                          0.15 kB \u2502 gzip:   0.14 kB\ndist/index.html                               3.36 kB \u2502 gzip:   1.44 kB\ndist/privacy.html                             8.02 kB \u2502 gzip:   3.28 kB\ndist/help.html                               16.85 kB \u2502 gzip:   5.82 kB\ndist/assets/scanner.worker-CAQQ64R_.js       62.18 kB\ndist/assets/style-1qcfXE3B.css               12.51 kB \u2502 gzip:   3.57 kB\ndist/assets/rolldown-runtime-XKyaHtl9.js      0.72 kB \u2502 gzip:   0.42 kB\ndist/assets/jsQR-DMfxOdIb.js                129.98 kB \u2502 gzip:  47.51 kB\ndist/assets/es-DNl7RZ3k.js                  295.36 kB \u2502 gzip:  82.25 kB\ndist/assets/ja-EXUGIeiG.js                  344.74 kB \u2502 gzip:  87.10 kB\ndist/assets/ar-cHHXM8uF.js                  352.27 kB \u2502 gzip:  87.84 kB\ndist/assets/index-COHU6lX5.js             1,524.19 kB \u2502 gzip: 463.66 kB\n\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 1200 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0m../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.\n\n\u2713 built in 1.23s\n\n> @ghostpay/web@1.0.0-beta.1 postbuild\n> node scripts/apply-csp.mjs && node scripts/scan-bundle.mjs\n\napply-csp: broad connect-src (GHOSTPAY_CONNECT_ORIGINS not set)\nBundle scan passed: 17 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.\n"
+    },
+    "privacy-598-fixed-static-browser.log": {
+      "sha256": "357cff36348be2c24802e30ab08f312bdd1c3325c193ca4fa67f9ee02f33809a",
+      "output": "Static browser acceptance passed: 2 origins; archive SHA-256 85f4ada5e626483247602e1b6c079ae0fc5ab92cb1dd15a75a03cc3353081b7e\n"
+    }
+  },
+  "remaining": [
+    "Hosted exact-head gates",
+    "Coordinated integration",
+    "Docker runtime qualification"
+  ]
+}

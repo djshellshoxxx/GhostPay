@@ -1,3 +1,21 @@
+# Encrypted checkout wallet-change notice — 2026-11-24 UTC
+
+Worker: `resume_package_qualification`, exclusively assigned by coordinator `/root` after the original real-Anvil #598 run passed two cases and failed the wrong-chain case. Child: `fix/20261124/encrypted-wallet-revocation-notice`; base `6419f237660978aa4f97c4eae2e39b96854b9d3e`, containing published #598 at `86450d8d459ccf4a6925742d082e1c7ad0905e75` plus its qualification claim. Other source remains owned by its original workers.
+Owned source paths: `apps/web/src/views/Pay.tsx` and `apps/web/src/views/WalletPrivacy.lifecycle.test.tsx`; documentation: this additive claim and `docs/handoffs/ENCRYPTED_WALLET_NOTICE_20261124.md`. No hook, shell, journal, wallet-provider, network, translation, encryption, or other source changes.
+Acceptance: reproduce encrypted and practical passphrase-protected silent account/network mismatch before modifying production source. Conceal prior wallet, invoice and send controls; erase private reopen capability; render only the generic public reconnect reason; issue zero send/sign requests and retain an empty attempt journal. The reason must clear on lock, session change and a new invoice. Preserve prior-request and late-hash evidence and never use the input-rejection path that appends a false nothing-sent claim. Run focused native regressions, web typecheck and pinned scoped lint. Coordinator owns independent review and real-Anvil/browser replay. No shared merge, deployment or real funds.
+
+Completed local fix at `1efeb250c83a2bdf8cd66d85683e6b05fc19461e`: seven new regressions first failed on the missing public notice while two plain-invoice controls passed; the final 40-test lifecycle/hook suites, web typecheck and pinned scoped lint pass. A separate boolean public notice survives private-fragment erasure, renders in input/review, and clears on context changes, new invoice, reconnect or forget. Private cleanup, provider calls and attempt journaling are unchanged. Evidence and remaining coordinator browser gate are recorded in `docs/handoffs/ENCRYPTED_WALLET_NOTICE_20261124.md`.
+
+---
+
+# Complete native browser qualification for existing PR #598 — 2026-11-24 UTC
+
+Coordinator `/root` is resuming missed interrupted workers for the user. This isolated evidence continuation starts at `86450d8d459ccf4a6925742d082e1c7ad0905e75` on `resume/account-privacy-20261124` (#598), which already continues #571. A refreshed ownership census found that the concurrent worker had supplied the missing public refusal feedback and the existing #373 Tor fixture correction. Reuse that source unchanged; do not publish a competing account/privacy implementation. The earlier local #436 fixture merge is superseded for this qualification; its original public branch remains intact.
+
+Scope: independent source review, exact-lock native unit and real Anvil browser qualification, static-hosting browser acceptance, this additive claim and a dedicated evidence handoff. Original source, parent branch and other claims remain untouched. The final privacy check must keep the previous account and prepared send concealed, show a public reconnect reason, issue zero send/sign requests, leave the attempt journal empty and preserve the real-chain nonce. No shared merge, release, deployment or real funds.
+
+---
+
 # Coordinator follow-up: static-hosting acceptance text — 2026-11-24
 
 Root owns only the existing confirmation-text assertion in `scripts/tor/browser-acceptance.mjs` on `resume/account-privacy-20261124`. Carry the already recorded #373 correction from `b660b2d8f3f84ddf72f684d13913f643f33f2eee`, matching this branch's actual English Settings message. Preserve all origin, request, storage, header and failed-integrity checks. This is a browser-fixture correction; it does not establish live Tor routing or Tor Browser support.

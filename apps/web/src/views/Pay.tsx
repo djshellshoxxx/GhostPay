@@ -205,6 +205,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
   const [status, setStatus] = useState<DisplayMessage>('');
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
+  // A public reason can survive erasing a private invoice without retaining its details or claiming an outcome.
+  const [showWalletChangeNotice, setShowWalletChangeNotice] = useState(false);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
   const [boundReceipt, setBoundReceipt] = useState<BoundReceipt | undefined>(undefined);
   const [receiptTrustedKey, setReceiptTrustedKey] = useState('');
@@ -371,6 +373,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setWallet(undefined);
     setStatus('');
     setError(undefined);
+    if (fragment !== undefined) setShowWalletChangeNotice(false);
     setPhase('input');
     setParsed(undefined);
     setUnlocking(false);
@@ -450,8 +453,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setWallet(undefined);
     setWallets(undefined);
     setStatus('');
-    // The old operation cannot publish its error after revocation; retain only a public reason in the new view.
-    setError(cause === 'wallet' ? { key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' } : undefined);
+    // The old operation cannot publish its error after revocation. Context locks do not imply a wallet change.
+    setError(undefined);
+    setShowWalletChangeNotice(cause === 'wallet');
     app.announce('');
     setSchedule(undefined);
     setCtxError(undefined);
@@ -896,6 +900,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'pay.error.sellerKeysChanged' });
     };
     setError(undefined);
+    setShowWalletChangeNotice(false);
     setStatus({ key: 'pay.status.walletWaiting' });
     connectWallet(w, chainId, guard, AbortSignal.any([privacyScope.signal, currentNetworkSignal()]), { disclosure }).then(
       (s) => {
@@ -1103,6 +1108,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   const forget = (): void => {
     resetInvoiceQr();
+    setShowWalletChangeNotice(false);
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
     scheduler.current?.cancel();
@@ -1130,6 +1136,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   /* ------------------------------- rendering ------------------------------- */
 
   const signerPanel = <InvoiceSignerVerification snapshot={signerPins} selected={selectedSigner} onSelect={setSelectedSigner} parsed={parsed} status={signerStatus} scope={verificationScope} identityScope={identityScope} isCurrent={verificationIsCurrent} />;
+  const walletChangeNotice = showWalletChangeNotice && <Notice kind="error">{t('error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview')}</Notice>;
   const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
   const inputRejection = buildRejection ?? rejected;
   if (parsed === undefined || review === undefined || buildRejection !== undefined) {
@@ -1137,6 +1144,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts wallet={wallet} />
+        {walletChangeNotice}
         {signerPanel}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
@@ -1201,6 +1209,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts wallet={wallet} />
+      {walletChangeNotice}
       {signerPanel}
       {signerBlocked && <Notice kind="error">{t('pay.signer.policyBlocked')}</Notice>}
 
