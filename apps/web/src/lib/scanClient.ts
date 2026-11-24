@@ -109,6 +109,7 @@ export interface ScanParams {
     readonly from: bigint;
     readonly through: bigint;
     readonly canonicalHash: (height: bigint) => Promise<Hex>;
+    readonly retryFrom: (height: bigint) => void;
   }) => Promise<boolean>;
   readonly onUnresolvedEvidence?: (from: bigint) => Promise<void>;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
@@ -228,6 +229,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
   let canSaveCheckpoint = true;
+  let retryHeight: bigint | undefined;
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -499,6 +501,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (canSaveCheckpoint && through !== undefined && through >= pageFrom &&
           await p.onPageMatches?.(pageMatches, {
             from: pageFrom, through, canonicalHash: (height) => canonicalHashAt(p, height),
+            retryFrom: (height) => {
+              if (retryHeight === undefined || height < retryHeight) retryHeight = height;
+            },
           }) === false) canSaveCheckpoint = false;
       if (p.signal.aborted) break;
       if (deferred > 0) {
@@ -513,7 +518,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
       if (canSaveCheckpoint && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches, retryHeight);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
           await p.onUnresolvedEvidence?.(pageFrom);
@@ -619,7 +624,7 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
  * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[], retryHeight?: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   let settled = head + 1n > depth ? head + 1n - depth : 0n;
@@ -635,6 +640,8 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
   for (const m of pageMatches) {
     if (m.viaRouter && m.receipt === 'claimed' && m.announcement.blockNumber > floor && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   }
+  // A previously accepted payment disappeared from this run but its block could not be confirmed as replaced.
+  if (retryHeight !== undefined && retryHeight < next) next = retryHeight;
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) {
     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;

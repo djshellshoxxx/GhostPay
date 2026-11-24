@@ -60,6 +60,7 @@ class ChainSim {
   mineAt = 120;
   readonly blockTimes = new Map<number, number>();
   fork: number | undefined;
+  unavailableHeader: number | undefined;
   /**
    * Progress-keyed reorg trigger, independent of which heights the scanner happens to read: once the payment's log has
    * been served and its receipt looked up (verification runs after the page commit), the chain forks from `from` right
@@ -176,7 +177,7 @@ class ChainSim {
           this.forkPlan.forkedAtRead = n;
           this.forkPlan.stage = 'forked';
         }
-        if (n > this.head) return reply(null);
+        if (n > this.head || n === this.unavailableHeader) return reply(null);
         const block = { number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(this.blockTimes.get(n) ?? Math.floor(Date.now() / 1000) - (this.head - n) * 2) };
         return reply(block);
       }
@@ -757,7 +758,13 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
 });
 
 
-test('a mined deadline revert stays unpaid, and an accepted late payment shows its invalidation and original decision after a reorg and reload', async ({ browser }) => {
+test('a mined deadline revert stays unpaid, and an accepted late payment shows its invalidation and original decision after a reorg and reload',
+  async ({ browser }) => acceptedLateReorg(browser, false));
+
+test('resuming after an unavailable payment header resolves the accepted late payment on the next scan',
+  async ({ browser }) => acceptedLateReorg(browser, true));
+
+async function acceptedLateReorg(browser: Browser, temporarilyMissingHeader: boolean): Promise<void> {
   test.setTimeout(120_000);
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
@@ -795,7 +802,8 @@ test('a mined deadline revert stays unpaid, and an accepted late payment shows i
     await expect(registration).toContainText('Pending transfer evidence.');
     await expect(ledger.getByRole('button', { name: 'Accept late payment for this invoice' })).toHaveCount(0);
 
-    sim.head = 219; // 100 confirmations. The checkpoint anchor is still the payment block's parent.
+    const finality = 100; // Base Sepolia. At this depth the checkpoint anchor is the payment block's parent.
+    sim.head = late.block + finality - 1;
     await scan(s, { fromStart: true });
     await expect(registration).toContainText('Verified late transfer — invoice decision pending');
     await expect(registration).not.toContainText('No linked observation.');
@@ -813,7 +821,18 @@ test('a mined deadline revert stays unpaid, and an accepted late payment shows i
     sim.fork = late.block;
     expect(sim.blockHash(late.block)).not.toBe(late.blockHash);
     await s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true }).check();
+    if (temporarilyMissingHeader) {
+      sim.head += 200; // An advancing checkpoint would put the missing payment outside the replay tail.
+      sim.unavailableHeader = late.block;
+      await scan(s);
+      await expect(registration).toContainText('Unverified observation. Scan again before relying on it.');
+      await expect(amountPaid).toHaveCount(0);
+      await expect(decision).toHaveText(originalDecision);
+      await expect(s.getByText(`A checkpoint exists at block ${late.block}.`, { exact: true })).toBeVisible();
+      sim.unavailableHeader = undefined;
+    }
     await scan(s);
+    await expect(s.getByText(`A checkpoint exists at block ${sim.head + 1 - finality}.`, { exact: true })).toBeVisible();
     const expectInvalidated = async (): Promise<void> => {
       await expect(registration).toContainText('Reorg invalidated earlier payment evidence.');
       await expect(registration).not.toContainText('Verified late payment accepted by seller.');
@@ -835,4 +854,4 @@ test('a mined deadline revert stays unpaid, and an accepted late payment shows i
     await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
     await expectInvalidated();
   });
-});
+}

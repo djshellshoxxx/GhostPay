@@ -814,3 +814,5 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 
 Worker: Codex on `test/seller-accepted-late-reorg`, stacked on PR #533 at `90e3fff019d14d8df4c610daf2080a32140686de`.
 Own the late-payment case in `apps/web/e2e/core-journey.spec.ts` and this claim. Exercise the existing seller scanner and encrypted ledger through a confirming-block replacement, rescan, and page reload. Check the same invoice loses its paid status and the same payment retains its original seller decision.
+
+Follow-up QA on `qa/accepted-late-reorg-546`, based on the #546 head `7391b31e37d319e79a21b0aa9af89f6900e41241`, for integration into the same PR. Exercise generated reorg, rescan and reload sequences, transient canonical-header loss, and unchanged-block controls. Paths in scope are the existing core browser journey, invoice vault regressions, and the seller reconciliation/scanner code for failures reproduced by those tests.

@@ -139,6 +139,7 @@ interface ScannedPaymentPage {
   readonly from: bigint;
   readonly through: bigint;
   readonly canonicalHash: (height: bigint) => Promise<string>;
+  readonly retryFrom?: (height: bigint) => void;
 }
 
 export interface ReconciliationVaultHandle {
@@ -924,7 +925,9 @@ class ReconciliationVault {
       };
       await Promise.all(Array.from({ length: Math.min(CANONICAL_READS_IN_FLIGHT, queue.length) }, check));
     }
+    let retryHeight: bigint | undefined;
     await this.change((document) => {
+      retryHeight = undefined; // A concurrent write may have resolved the observation before this attempt.
       if (document.saturated || (document.invoices.length === 0 && document.records.length === 0)) return document;
       const records = new Map(document.records.map((record) => [record.id, record]));
       const tombstones = new Set(document.tombstones);
@@ -937,6 +940,10 @@ class ReconciliationVault {
         const hash = checkedHashes.get(record.blockNumber);
         const replaced = hash !== undefined && hash !== record.blockHash;
         const evidenceStatus = replaced ? 'invalidated-after-reorg' : 'unverified-at-scan';
+        if (!replaced && record.lateAcceptedAt !== undefined) {
+          const height = BigInt(record.blockNumber);
+          if (retryHeight === undefined || height < retryHeight) retryHeight = height;
+        }
         if (replaced) tombstones.add(record.id);
         if (record.evidenceStatus !== evidenceStatus) {
           records.set(record.id, { ...record, evidenceStatus });
@@ -1004,6 +1011,7 @@ class ReconciliationVault {
         saturated: tombstones.size > MAX_RECONCILIATION_RECORDS,
       } : document;
     }, actionGuard, true);
+    if (retryHeight !== undefined) page?.retryFrom?.(retryHeight);
   }
   /** An unconfirmed rollback withholds current verification without creating permanent tombstones. */
   public async quarantineInvoicePayments(from: bigint, actionGuard?: () => void): Promise<void> {
