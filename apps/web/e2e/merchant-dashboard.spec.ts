@@ -158,20 +158,20 @@ test('respects focus moved to Network during the first read, and restores focus 
   await expect(overview).toBeVisible();
   await expect(network).toBeFocused();
 
-  // Abort exactly one ledger read; the next foreground refresh uses IndexedDB normally.
-  await page.evaluate(() => {
-    const transaction = IDBDatabase.prototype.transaction;
-    IDBDatabase.prototype.transaction = function (...args) {
-      const tx = transaction.apply(this, args);
-      if (this.name === 'ghostpay-reconciliation-encrypted' && tx.mode === 'readonly') {
-        IDBDatabase.prototype.transaction = transaction;
-        queueMicrotask(() => { tx.abort(); });
-      }
-      return tx;
-    };
-  });
+  // Upgrade the empty test ledger. The app closes its old connection, and its next v1 open fails.
+  await page.evaluate(() => new Promise<void>((resolve, reject) => {
+    const upgrade = indexedDB.open('ghostpay-reconciliation-encrypted', 2);
+    upgrade.onsuccess = () => { upgrade.result.close(); resolve(); };
+    upgrade.onerror = () => { reject(new Error('Fixture database upgrade failed')); };
+  }));
   await page.getByRole('button', { name: 'Refresh local records' }).click();
   await expect(page.getByRole('button', { name: 'Try again' })).toBeFocused();
-  await page.evaluate(() => { window.dispatchEvent(new Event('focus')); });
+
+  // Let the foreground refresh recreate the supported schema through its normal open path.
+  await page.evaluate(() => new Promise<void>((resolve, reject) => {
+    const remove = indexedDB.deleteDatabase('ghostpay-reconciliation-encrypted');
+    remove.onsuccess = () => { window.dispatchEvent(new Event('focus')); resolve(); };
+    remove.onerror = () => { reject(new Error('Fixture database reset failed')); };
+  }));
   await expect(overview).toBeFocused();
 });
