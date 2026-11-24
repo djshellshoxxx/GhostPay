@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { usePrivacy } from '../lib/privacyMode';
 
 /** A visible neutral control remains outside every privacy boundary, including Settings. */
@@ -7,22 +8,30 @@ export function focusPrivacyControl(): void {
 }
 
 /**
- * Preserve mounted workflows and their sole-copy recovery state. Native hidden removes the subtree from display
- * and accessibility; inert also disarms interaction. This is visual privacy, not erasure of DOM or JS memory.
+ * Keep one React portal mounted so a visual mask preserves drafts, pending work and
+ * sole-copy keys. Its host belongs to the live document only while display is allowed.
  */
-export function PrivacyBoundary(props: { readonly hidden: boolean; readonly children: ReactNode }): ReactNode {
-  const element = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    if (!props.hidden || element.current === null) return;
-    const hadFocus = element.current.contains(document.activeElement);
-    for (const field of element.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')) {
+export function PrivacyBoundary({ hidden, children }: { readonly hidden: boolean; readonly children: ReactNode }): ReactNode {
+  const [host] = useState(() => document.createElement('div'));
+  const placeHost = useCallback((slot: HTMLDivElement | null): void => {
+    if (slot === null) return;
+    if (!hidden) {
+      host.hidden = false;
+      host.inert = false;
+      if (host.parentNode !== slot) slot.append(host);
+      return;
+    }
+    const hadFocus = host.contains(document.activeElement);
+    for (const field of host.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')) {
       try { field.setSelectionRange(0, 0); } catch { /* Non-text input types do not support selection. */ }
     }
     if (hadFocus) focusPrivacyControl();
-    // Moving focus or collapsing a form selection may itself replace the document selection.
     document.getSelection()?.removeAllRanges();
-  }, [props.hidden]);
-  return <div ref={element} hidden={props.hidden} inert={props.hidden} aria-hidden={props.hidden ? true : undefined}>{props.children}</div>;
+    host.hidden = true;
+    host.inert = true;
+    host.remove();
+  }, [hidden, host]);
+  return <><div ref={placeHost} />{createPortal(children, host)}</>;
 }
 
 export function SensitiveContent(props: { readonly active?: boolean; readonly children: ReactNode }): ReactNode {

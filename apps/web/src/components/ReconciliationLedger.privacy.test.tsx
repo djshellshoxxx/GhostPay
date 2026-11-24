@@ -66,12 +66,13 @@ describe('required private transaction history', () => {
     const globalReveal = screen.queryByRole('button', { name: 'Reveal details for 30 seconds' });
     if (globalReveal !== null) await user.click(globalReveal);
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
-    const transaction = await screen.findByText(TX);
-    expect(isInaccessible(transaction)).toBe(true);
+    expect(screen.queryByText(TX)).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Reveal history for 30 seconds' }));
+    const transaction = await screen.findByText(TX);
     expect(isInaccessible(transaction)).toBe(false);
     await user.click(screen.getByRole('button', { name: 'Hide transaction history' }));
-    expect(isInaccessible(transaction)).toBe(true);
+    expect(transaction.isConnected).toBe(false);
+    expect(screen.queryByText(TX)).toBeNull();
     expect([...data.entries()]).toEqual(ciphertext);
     expect(fetchFn).not.toHaveBeenCalled();
     expect(localStorage.getItem(SETTINGS_KEY)).not.toContain(TX);

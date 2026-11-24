@@ -60,12 +60,13 @@ describe('required global privacy masking', () => {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({ privacyMode: true, pinnedSigners: [pin], rpcUrls: { '84532': endpoint } }));
     renderWith(<AppShell order={CORE_ORDER} profile="lean" />);
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
-    const keyField = screen.getByDisplayValue(pin);
-    const providerField = screen.getByDisplayValue(endpoint);
     expect(getSessionPublic()).toBe(seller);
     expect(within(screen.getByRole('banner')).getByRole('button', { name: 'Reveal details for 30 seconds' })).toBeTruthy();
-    expect(isInaccessible(keyField)).toBe(true);
-    expect(isInaccessible(providerField)).toBe(true);
+    expect(screen.queryByDisplayValue(pin)).toBeNull();
+    expect(screen.queryByDisplayValue(endpoint)).toBeNull();
+    await user.click(within(screen.getByRole('banner')).getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    expect(screen.getByDisplayValue(pin)).toBeTruthy();
+    expect(screen.getByDisplayValue(endpoint)).toBeTruthy();
   });
 
   it('requires fresh reveal for a replacement encrypted invoice on the same Pay route', async () => {
@@ -77,20 +78,22 @@ describe('required global privacy masking', () => {
     setHash(first.fragment);
     renderApp(makeServices({ createRpc }));
     const user = userEvent.setup();
-    const firstMemo = await screen.findByText('FIRST-PRIVATE-INVOICE-286', { exact: false });
-    expect(isInaccessible(firstMemo)).toBe(true);
+    expect(screen.queryByText('FIRST-PRIVATE-INVOICE-286', { exact: false })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    const firstMemo = await screen.findByText('FIRST-PRIVATE-INVOICE-286', { exact: false });
     expect(isInaccessible(firstMemo)).toBe(false);
     await act(async () => {
       setHash(next.fragment);
       window.dispatchEvent(new HashChangeEvent('hashchange'));
       await Promise.resolve();
     });
-    const nextMemo = await screen.findByText('NEXT-PRIVATE-INVOICE-286', { exact: false });
+    expect(screen.queryByText('NEXT-PRIVATE-INVOICE-286', { exact: false })).toBeNull();
     expect(screen.queryByText('FIRST-PRIVATE-INVOICE-286', { exact: false })).toBeNull();
     expect(createRpc).not.toHaveBeenCalled();
     expect(getSessionPublic()).toBe(seller);
-    expect(isInaccessible(nextMemo)).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    const nextMemo = await screen.findByText('NEXT-PRIVATE-INVOICE-286', { exact: false });
+    expect(isInaccessible(nextMemo)).toBe(false);
   });
 
   it('revokes visual reveal on explicit tag lock without deleting keys or encrypted tag history', async () => {
@@ -288,7 +291,7 @@ describe('required global privacy masking', () => {
       expect(control.checked).toBe(true);
       expect(observed!.settings.clipboardClearAfterMs).toBe(30_000);
       expect(isInaccessible(sensitive)).toBe(true);
-      expect(sensitive.isConnected).toBe(true);
+      expect(sensitive.isConnected).toBe(false);
       if (edit === 'form') expect(sensitive.value).toBe('#retained-stale-form-draft');
       expect(getSessionPublic()).toBe(seller);
       expect(createRpc).not.toHaveBeenCalled();

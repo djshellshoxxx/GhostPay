@@ -100,10 +100,10 @@ describe('Pay presentation privacy and prepared authority', () => {
       });
       await act(async () => { release(); await gate; });
       if (change === 'privacy preference') {
-        await waitFor(() => { expect(screen.getByText('Final check before your wallet')).toBeTruthy(); });
+        expect(screen.queryByText('Final check before your wallet')).toBeNull();
         expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
         await user.click(revealControl());
-        expect(finalHeading()).toBeTruthy();
+        await waitFor(() => { expect(finalHeading()).toBeTruthy(); });
         expect(requests).toHaveBeenCalledTimes(rpcCalls);
         expect(wallet.calls).toEqual(walletCalls);
       } else expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();

@@ -21,7 +21,7 @@ function fixture(scope: string = 'pay', enabled = true): ReactNode {
   return <PrivacyProvider enabled={enabled} scope={scope}><Controls /></PrivacyProvider>;
 }
 function reveal(): void { fireEvent.click(screen.getByRole('button', { name: 'Reveal fixture' })); }
-function hidden(): boolean { return isInaccessible(screen.getByText('Private address fixture')); }
+function hidden(): boolean { return screen.queryByText('Private address fixture') === null; }
 
 beforeEach(() => {
   clearSession();
@@ -68,13 +68,13 @@ describe('temporary privacy reveals', () => {
     expect(isInaccessible(screen.getByText('Private history fixture'))).toBe(false);
     act(() => { visibility = 'hidden'; document.dispatchEvent(new Event('visibilitychange')); });
     expect(hidden()).toBe(true);
-    expect(isInaccessible(screen.getByText('Private history fixture'))).toBe(true);
+    expect(screen.queryByText('Private history fixture')).toBeNull();
     reveal();
     expect(hidden()).toBe(true);
     act(() => { visibility = 'visible'; document.dispatchEvent(new Event('visibilitychange')); });
     expect(hidden()).toBe(true);
     reveal();
-    expect(isInaccessible(screen.getByText('Private history fixture'))).toBe(true);
+    expect(screen.queryByText('Private history fixture')).toBeNull();
   });
 
   it.each([
@@ -143,8 +143,8 @@ describe('temporary privacy reveals', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Reveal history for 30 seconds' }).at(-1)!);
     expect(isInaccessible(screen.getByText('Authority-bound history'))).toBe(false);
     panel.rerender(<HistoryFixture unlocked={false} />);
-    expect(isInaccessible(screen.getByText('Authority-bound history'))).toBe(true);
+    expect(screen.queryByText('Authority-bound history')).toBeNull();
     panel.rerender(<HistoryFixture unlocked />);
-    expect(isInaccessible(screen.getByText('Authority-bound history'))).toBe(true);
+    expect(screen.queryByText('Authority-bound history')).toBeNull();
   });
 });

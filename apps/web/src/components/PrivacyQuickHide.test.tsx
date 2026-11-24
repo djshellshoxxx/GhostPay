@@ -54,7 +54,8 @@ describe('one-way privacy quick-hide', () => {
     reveal();
     expect(isInaccessible(retained)).toBe(true);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Reveal history for 30 seconds' }).disabled).toBe(true);
-    expect(historyNode()).toBe(retained);
+    expect(retained.isConnected).toBe(false);
+    expect(screen.queryByText('retained private transaction')).toBeNull();
   });
 
   it('offers the same one-way action to assistive technology and ordinary button activation', () => {

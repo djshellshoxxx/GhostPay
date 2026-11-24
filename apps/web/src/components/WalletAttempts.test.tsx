@@ -58,12 +58,12 @@ it('requires a separate temporary history reveal and never revives it for a reco
   const fixture = (connected: typeof wallet | undefined) => <PrivacyProvider enabled scope="pay"><Reveal /><WalletAttempts wallet={connected} /></PrivacyProvider>;
   const panel = render(fixture(wallet));
   fireEvent.click(screen.getByRole('button', { name: 'Global reveal fixture' }));
-  expect(isInaccessible(screen.getByText(wallet.account))).toBe(true);
+  expect(screen.queryByText(wallet.account)).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Reveal history for 30 seconds' }));
   expect(isInaccessible(screen.getByText(wallet.account))).toBe(false);
   panel.rerender(fixture(undefined));
   expect(screen.queryByText(wallet.account)).toBeNull();
   panel.rerender(fixture({ ...wallet }));
-  expect(isInaccessible(screen.getByText(wallet.account))).toBe(true);
+  expect(screen.queryByText(wallet.account)).toBeNull();
   expect(readAttempts()).toHaveLength(1);
 });
