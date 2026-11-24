@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReconciliationVaultStore } from '@ghostpay/ux-vault/portable';
 import { RecurringPreparationController, transitionRecurringPlan } from './index';
 import { JAN31, snapshotFixture } from './fixtures.testutil';
+import { validateRecurringSnapshot } from './model';
 import { RecurringEncryptedVault, RecurringVaultError } from './vault';
 
 class TransactionalMemoryStore implements ReconciliationVaultStore {
@@ -11,7 +12,7 @@ class TransactionalMemoryStore implements ReconciliationVaultStore {
   failAfterCommit = false;
 
   async read(key: string): Promise<string | null> {
-    return this.data.get(key) ?? null;
+    return Promise.resolve(this.data.get(key) ?? null);
   }
 
   async compareAndSwap(
@@ -20,10 +21,10 @@ class TransactionalMemoryStore implements ReconciliationVaultStore {
     guard();
     this.beforeCommit?.();
     guard();
-    if ((this.data.get(key) ?? null) !== expected) return false;
+    if ((this.data.get(key) ?? null) !== expected) return Promise.resolve(false);
     this.data.set(key, next);
     if (this.failAfterCommit) throw new Error('simulated lost commit acknowledgement');
-    return true;
+    return Promise.resolve(true);
   }
 }
 
@@ -31,7 +32,8 @@ const profile = 'profile-1';
 const keyMaterial = new Uint8Array(32).fill(37);
 
 async function testKey(bytes: Uint8Array = keyMaterial): Promise<CryptoKey> {
-  return globalThis.crypto.subtle.importKey('raw', bytes, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  const keyBytes = new Uint8Array(bytes);
+  return globalThis.crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
 }
 
 async function vault(store: TransactionalMemoryStore, key = keyMaterial): Promise<RecurringEncryptedVault> {
@@ -165,12 +167,33 @@ describe('F10 M4 — encrypted, revision-safe recurring snapshots', () => {
     const reviewer = new RecurringPreparationController();
     const view = reviewer.preview(saved.snapshot, 'plan-1', ctx);
     const prepared = await instance.reserveReviewed(reviewer, view, saved, ctx, 'local-ref-0', 'snapshot-3');
+    const preparedCiphertext = [...store.data.entries()];
     await expect(instance.commit(prepared, { ...prepared.snapshot, revision: 'snapshot-4', outbox: [] }))
       .rejects.toMatchObject({ code: 'HISTORY' });
+    expect([...store.data.entries()]).toEqual(preparedCiphertext);
+    // A cursor at zero contradicts the retained period-zero reference, so the
+    // snapshot validator rejects it before the cross-revision history check.
     await expect(instance.commit(prepared, { ...prepared.snapshot, revision: 'snapshot-4', plans: [
       { ...prepared.snapshot.plans[0]!, nextPeriodIndex: 0 },
-    ] })).rejects.toMatchObject({ code: 'HISTORY' });
-    expect((await instance.load())?.snapshot.outbox).toHaveLength(1);
+    ] })).rejects.toMatchObject({ code: 'SNAPSHOT' });
+    expect([...store.data.entries()]).toEqual(preparedCiphertext);
+    expect((await instance.load())?.snapshot).toEqual(prepared.snapshot);
+
+    // A cursor can be ahead of the last retained reference. Rolling two back
+    // to one keeps period zero valid and must still fail the history check.
+    const advanced = await instance.commit(prepared, {
+      ...prepared.snapshot, revision: 'snapshot-4', plans: [
+        { ...prepared.snapshot.plans[0]!, nextPeriodIndex: 2 },
+      ],
+    });
+    const advancedCiphertext = [...store.data.entries()];
+    const reversal = { ...advanced.snapshot, revision: 'snapshot-5', plans: [
+      { ...advanced.snapshot.plans[0]!, nextPeriodIndex: 1 },
+    ] };
+    expect(validateRecurringSnapshot(reversal)).toEqual(reversal);
+    await expect(instance.commit(advanced, reversal)).rejects.toMatchObject({ code: 'HISTORY' });
+    expect([...store.data.entries()]).toEqual(advancedCiphertext);
+    expect((await instance.load())?.snapshot).toEqual(advanced.snapshot);
   });
 
   it('reports ambiguous storage acknowledgement as an error and requires reload', async () => {
