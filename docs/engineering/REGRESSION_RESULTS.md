@@ -12,8 +12,9 @@ Hosted CI results are linked by run ID. "Local" means this container, not GitHub
 | Unit + coverage | `npm test` (`vitest run --coverage`, then the nocov pass) | 208 files passed, 2 skipped; **3040 passed, 13 skipped, 0 failed**; nocov 3/3; coverage 93.28 stmts / 89.43 branches / 94.73 funcs / 97.01 lines (thresholds 90/85/90/90) |
 | Adversarial journal suite | `npx vitest run src/lib/walletJournal.adversarial.test.ts --coverage=false` | 141/141. Against the pre-fix sources of `f4f339cd`, 9 of them fail (QA-1, QA-3, QA-4, QA-5 ×3, lock wait, finish wait, IndexedDB open) |
 | Journal-adjacent suites | `npx vitest run src/lib/walletJournal src/lib/duplicateAttemptJournal src/lib/attemptStatus src/features/policy src/components/WalletAttempts src/lib/payExec src/views/Pay --coverage=false` | 685 passed, 4 skipped |
-| Anvil browser journey | `npm run e2e:devnet` | see below |
-| Mocked browser suite | `npm run test:e2e -- --trace off` | see below |
+| Anvil browser journey | `npm run e2e:devnet` (Foundry 1.8.5, solc 0.8.28 commit 7893614a) on `985977f5` | **3 passed**: pay, then reload keeps the hash and blocks a duplicate, then scan, then a bound receipt, then a sweep with no second sweep; reload while pending blocks a duplicate and the payment is mined once; wrong chain or a network change blocks the send |
+| Mocked browser suite | `npm run test:e2e -- --trace off` on `f4f339cd` | **83 passed, 1 skipped**, including the two-tab case in `flows.spec.ts` (two pages paying one invoice, at most one wallet send) |
+| Anvil-required unit run | `ANVIL_BIN=… SOLC_BIN=… REQUIRE_ANVIL=1 npx vitest run --coverage=false` on `985977f5` | 3049 passed, 5 skipped, 1 failed. The failure was the guard asserting that `packages/contracts/out` exists. After `forge build --offline`, `src/features/policy/paymentEvidence.anvil.test.ts` passed 4/4 |
 
 Earlier failures on this branch, all fixed since (fixes listed per row):
 
