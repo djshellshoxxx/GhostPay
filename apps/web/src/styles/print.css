@@ -3,12 +3,20 @@
 
 @media print {
   @page { margin: 16mm; }
+  body {
+    color-scheme: light;
+    --bg: #fff;
+    --surface: #fff;
+    --text: #000;
+    --muted: #4a5260;
+  }
   body * { visibility: hidden !important; }
+  /* Remove the rest of the interface from pagination, including the layout boxes around the selected document. */
+  body :has([data-print-target]) { display: contents !important; }
+  body :not(:has([data-print-target]), [data-print-target], [data-print-target] *) { display: none !important; }
   [data-print-target], [data-print-target] * { visibility: visible !important; }
   .bill-sheet[data-print-target] {
     display: block;
-    position: absolute;
-    inset: 0 auto auto 0;
     width: 100%;
     background: #fff;
     color: #000;
@@ -19,7 +27,7 @@
   .bill-sheet th, .bill-sheet td { border-bottom: 1px solid #000; padding: 3pt 4pt; text-align: left; }
   .bill-sheet .qr-frame { break-inside: avoid; max-width: 70mm; }
   .bill-sheet .bill-warning { border: 2px solid #000; padding: 6pt; font-weight: bold; break-inside: avoid; }
-  .receipt-print[data-print-target] { position: absolute; inset: 0 auto auto 0; width: 100%; border: 0; background: #fff; color: #000; }
+  .receipt-print[data-print-target] { width: 100%; border: 0; background: #fff; color: #000; }
   .receipt-actions, .receipt-json, .receipt-json + p, .receipt-print .field,
-  [data-print-target] .qr-actions, [data-print-target] .qr-large { display: none !important; }
+  [data-print-target] .context-help, [data-print-target] .qr-actions, [data-print-target] .qr-large { display: none !important; }
 }

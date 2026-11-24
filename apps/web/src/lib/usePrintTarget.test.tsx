@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react';
+import fc from 'fast-check';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { usePrintTarget } from './usePrintTarget';
 
@@ -25,6 +26,53 @@ afterEach(() => {
 });
 
 describe('usePrintTarget', () => {
+  it('keeps one active print target throughout generated print, cancel and remount sequences', () => {
+    const names = ['receipt A', 'receipt B', 'bill'] as const;
+    const step = fc.record({
+      name: fc.constantFrom(...names),
+      action: fc.constantFrom('print', 'cancel', 'replace', 'toggle'),
+    });
+    const print = vi.spyOn(window, 'print').mockImplementation(() => undefined);
+    fc.assert(fc.property(fc.array(step, { minLength: 12, maxLength: 45 }), (steps) => {
+      const mounted = new Set<string>(names);
+      const versions = new Map<string, number>();
+      const targets = () => <>{names.filter(name => mounted.has(name)).map(name => (
+        <Target key={name} name={name} targetKey={String(versions.get(name) ?? 0)} />
+      ))}</>;
+      const view = render(targets());
+      let active: string | undefined;
+      let calls = 0;
+      print.mockClear();
+      try {
+        for (const { name, action } of steps) {
+          const before = view.queryByTestId(name);
+          if (action === 'cancel') {
+            afterPrint();
+            active = undefined;
+          } else if (action === 'print') {
+            if (before !== null) {
+              if (active !== name) calls++;
+              active = name;
+              fireEvent.click(view.getByText(`Print ${name}`));
+            }
+          } else {
+            if (action === 'replace') versions.set(name, (versions.get(name) ?? 0) + 1);
+            else if (mounted.has(name)) mounted.delete(name);
+            else mounted.add(name);
+            view.rerender(targets());
+            if (active === name) active = undefined;
+            expect(before?.hasAttribute('data-print-target')).not.toBe(true);
+          }
+          expect(print).toHaveBeenCalledTimes(calls);
+          const selected = [...document.querySelectorAll('[data-print-target]')];
+          expect(selected.map(el => el.getAttribute('data-testid'))).toEqual(active === undefined ? [] : [active]);
+        }
+      } finally {
+        view.unmount();
+      }
+    }), { seed: 532548, numRuns: 128 });
+  });
+
   it('selects only the requested document before invoking the browser print dialog', () => {
     render(<><Target name="receipt" /><Target name="other-receipt" /><p>Wallet details</p></>);
     const target = screen.getByTestId('receipt');

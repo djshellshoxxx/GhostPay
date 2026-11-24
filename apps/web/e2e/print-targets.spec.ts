@@ -67,8 +67,10 @@ test('printing the second signed receipt shows only its transaction beside anoth
   const secondId = receipts.nth(1).getByText(second.txHash, { exact: true });
   const bill = page.getByTestId('printable-bill');
   const billId = bill.getByText(lineItem, { exact: true });
+  const receiptHelp = receipts.nth(1).locator('.context-help-button');
   await expect(firstId).toBeVisible();
   await expect(secondId).toBeVisible();
+  await expect(receiptHelp).toBeVisible();
   await expect(billId).toBeAttached();
   await expect(page.locator('[data-print-target]')).toHaveCount(0);
 
@@ -83,6 +85,9 @@ test('printing the second signed receipt shows only its transaction beside anoth
   await expect(billId).toBeAttached();
   await expect(bill).toBeHidden();
   await expect(billId).toBeHidden();
+  await expect(receiptHelp).toBeHidden();
+  // This short receipt fits on Letter paper. A second printable page means the Scan view still occupies paper.
+  await expect(page.pdf({ format: 'Letter', pageRanges: '2' })).rejects.toThrow(/page range exceeds page count/i);
 });
 
 async function printFixture(page: Page, order: 'app-first' | 'print-first', options: {
@@ -96,7 +101,7 @@ async function printFixture(page: Page, order: 'app-first' | 'print-first', opti
   const receipt = (target: 'receipt-one' | 'receipt-two'): string => `
     <article class="receipt-print" data-testid="${target}" ${selected(target)}>
       <h5 data-testid="${target}-content">Signed payment receipt ${target}</h5>
-      <p>Transaction and amount for ${target}</p>
+      <p class="hint">Transaction and amount for ${target}</p>
       <div class="receipt-actions" data-testid="${target}-actions">Print and archive actions</div>
       <div class="field" data-testid="${target}-field"><textarea class="receipt-json" data-testid="${target}-json">private receipt JSON</textarea></div>
       <div class="qr-frame qr-kind-proof">
@@ -130,6 +135,34 @@ async function expectPrivateUiHidden(page: Page): Promise<void> {
   await expect(page.getByTestId('private-controls')).toBeHidden();
   await expect(page.getByTestId('private-navigation')).toBeHidden();
 }
+
+test('a long selected bill can continue onto a second printed page', async ({ page }) => {
+  await printFixture(page, 'app-first', { target: 'bill' });
+  await page.getByTestId('bill').evaluate(bill => {
+    for (let i = 1; i <= 90; i++) {
+      const item = document.createElement('p');
+      item.textContent = `Invoice item ${i}`;
+      bill.append(item);
+    }
+  });
+  const secondPage = await page.pdf({ format: 'Letter', pageRanges: '2' });
+  expect(secondPage.byteLength).toBeGreaterThan(0);
+});
+
+test('dark screen colors switch to white paper and legible receipt notes when printing', async ({ page }) => {
+  await printFixture(page, 'print-first', { target: 'receipt-two', media: 'screen' });
+  await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  const paper = page.locator('body');
+  const note = page.getByTestId('receipt-two').locator('.hint');
+  await expect(paper).toHaveCSS('background-color', 'rgb(15, 18, 24)');
+  await expect(note).toHaveCSS('color', 'rgb(180, 188, 203)');
+  await page.emulateMedia({ media: 'print' });
+  await expect(paper).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(note).toHaveCSS('color', 'rgb(74, 82, 96)');
+  await page.emulateMedia({ media: 'screen' });
+  await expect(paper).toHaveCSS('background-color', 'rgb(15, 18, 24)');
+  await expect(note).toHaveCSS('color', 'rgb(180, 188, 203)');
+});
 
 async function expectReceiptVisible(page: Page, target: 'receipt-one' | 'receipt-two'): Promise<void> {
   await expect(page.getByTestId(target)).toBeVisible();
