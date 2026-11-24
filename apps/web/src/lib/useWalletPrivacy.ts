@@ -10,8 +10,10 @@ export interface WalletPrivacyScope {
   readonly assertCurrent: () => void;
 }
 
+export type WalletPrivacyInvalidation = 'wallet' | 'context';
+
 /** View authority only: no keys, history storage, provider requests or broadcast outcomes are erased here. */
-export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate: () => void): {
+export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate: (cause: WalletPrivacyInvalidation) => void): {
   readonly capture: () => WalletPrivacyScope;
   readonly begin: () => WalletPrivacyScope;
   readonly invalidate: () => void;
@@ -28,11 +30,11 @@ export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate
     operation.current = new AbortController();
     previous.abort();
   }, []);
-  const invalidate = useCallback((): void => {
+  const invalidate = useCallback((cause: WalletPrivacyInvalidation = 'context'): void => {
     if (!mounted.current) return;
     rotate();
     revokePrivacyReveal();
-    latest.current();
+    latest.current(cause);
   }, [rotate]);
   const capture = useCallback((): WalletPrivacyScope => {
     const assertSession = captureSessionVersionGuard();
@@ -57,8 +59,8 @@ export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate
   useLayoutEffect(() => {
     mounted.current = true;
     if (operation.current.signal.aborted) operation.current = new AbortController();
-    const unLock = subscribeAppLock(invalidate);
-    const unSession = subscribeSession(invalidate);
+    const unLock = subscribeAppLock(() => { invalidate(); });
+    const unSession = subscribeSession(() => { invalidate(); });
     return () => {
       mounted.current = false;
       revision.current++;
@@ -75,7 +77,7 @@ export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate
       if (!active || !mounted.current) return;
       active = false;
       stop();
-      invalidate();
+      invalidate('wallet');
     };
     try {
       stop = observeConnectedWallet(wallet, changed);

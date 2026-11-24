@@ -28,6 +28,7 @@ describe('view wallet privacy authority', () => {
     act(() => { provider.emit(event); });
     expect(scope.signal.aborted).toBe(true); expect(() => scope.assertCurrent()).toThrow();
     expect(provider.count()).toBe(0); expect(invalidated).toHaveBeenCalledTimes(1);
+    expect(invalidated).toHaveBeenCalledWith('wallet');
   });
   it.each([
     ['app lock', () => { notifyAppLock('manual'); }],
@@ -37,6 +38,7 @@ describe('view wallet privacy authority', () => {
     const invalidated = vi.fn(); const hook = renderHook(() => useWalletPrivacy(undefined, invalidated));
     const scope = hook.result.current.begin(); act(invalidate);
     expect(scope.signal.aborted).toBe(true); expect(() => scope.assertCurrent()).toThrow(); expect(invalidated).toHaveBeenCalledTimes(1);
+    expect(invalidated).toHaveBeenCalledWith('context');
   });
   it('revokes a request-only wallet as soon as a recheck reports another account', async () => {
     const wallet = session(new MockWallet({ lieAboutAccounts: true }));
@@ -45,6 +47,7 @@ describe('view wallet privacy authority', () => {
     const scope = hook.result.current.capture();
     await act(async () => { await expect(recheckWallet(wallet)).rejects.toThrow(); });
     expect(invalidated).toHaveBeenCalledOnce();
+    expect(invalidated).toHaveBeenCalledWith('wallet');
     expect(scope.signal.aborted).toBe(true);
     expect(() => scope.assertCurrent()).toThrow();
   });

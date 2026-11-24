@@ -63,6 +63,28 @@ async function open(route: Route, wallet: EventWallet, overrides: Partial<Servic
 }
 
 describe('required wallet lifecycle privacy in real EVM views', () => {
+  it.each(['network', 'account'] as const)('Pay explains a silent %s mismatch without submitting or retaining the old wallet', async (kind) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    const original = wallet.request.bind(wallet);
+    if (kind === 'network') wallet.chainId = 31337;
+    else wallet.request = (args) => args.method === 'eth_accounts'
+      ? Promise.resolve(['0x6666666666666666666666666666666666666666'])
+      : original(args);
+    // No provider event fires: the final explicit reread must revoke the view and explain why.
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true });
+    expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Payment sent, verifying' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(wallet.calls.filter(({ method }) => method === 'eth_sendTransaction' || method.startsWith('eth_sign'))).toEqual([]);
+    expect(readAttempts()).toEqual([]);
+  });
+
   it.each(routes)('%s conceals the old connected account immediately on provider account change', async (route) => {
     const wallet = new EventWallet({ chainId: route === 'Pay' ? 84532 : 11155111 });
     const user = await open(route, wallet);

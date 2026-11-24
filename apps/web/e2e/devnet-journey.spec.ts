@@ -327,7 +327,9 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     payer.wallet.chainOverride = '0x7a69';
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
-    await expect(p.getByText('The wallet network changed. Reconnect and review again.', { exact: false })).toBeVisible();
+    await expect(p.getByText('The wallet account, network or provider changed. Reconnect and review again.', { exact: true })).toBeVisible();
+    await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);
+    await expect(p.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toHaveCount(0);
     expect(payer.wallet.sends).toHaveLength(0);
     expect(await walletJournal(p)).toEqual([]);

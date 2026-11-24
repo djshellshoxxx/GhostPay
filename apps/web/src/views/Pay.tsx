@@ -444,13 +444,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (window.location.hash === checkout.fragment) clearFragment(window.location, window.history);
     app.setFragment(undefined);
   }, [app.setFragment]);
-  const walletPrivacy = useWalletPrivacy(wallet, () => {
+  const walletPrivacy = useWalletPrivacy(wallet, (cause) => {
     flowRevision.current++;
     scheduler.current?.cancel();
     setWallet(undefined);
     setWallets(undefined);
     setStatus('');
-    setError(undefined);
+    // The old operation cannot publish its error after revocation; retain only a public reason in the new view.
+    setError(cause === 'wallet' ? { key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' } : undefined);
     app.announce('');
     setSchedule(undefined);
     setCtxError(undefined);

@@ -1,3 +1,19 @@
+# Coordinator follow-up: static-hosting acceptance text — 2026-11-24
+
+Root owns only the existing confirmation-text assertion in `scripts/tor/browser-acceptance.mjs` on `resume/account-privacy-20261124`. Carry the already recorded #373 correction from `b660b2d8f3f84ddf72f684d13913f643f33f2eee`, matching this branch's actual English Settings message. Preserve all origin, request, storage, header and failed-integrity checks. This is a browser-fixture correction; it does not establish live Tor routing or Tor Browser support.
+
+---
+
+# Wallet privacy refusal feedback — resumed 2026-11-24
+
+Worker: `/root/reconcile_github_queue`; coordinator: `/root`. Isolated successor `resume/account-privacy-20261124` starts at #571 `63f40efac175e5ee49563326dbef930aafb14235`; main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. The user authorized resuming interrupted GhostPay workers. Root assigned only the missing wallet-change refusal feedback and focused qualification; the original #571 and parent branches remain untouched.
+
+Owned paths: `apps/web/src/lib/useWalletPrivacy.ts` and its focused test; `apps/web/src/views/Pay.tsx` and `WalletPrivacy.lifecycle.test.tsx`; the wallet-change assertion in `apps/web/e2e/devnet-journey.spec.ts`; this additive claim and a dedicated handoff. Preserve session, clock, key vault, shell, Tor fixture, private exports, retention and other workers' paths.
+
+Acceptance: an account/network/provider invalidation must immediately conceal the prior wallet and prepared payment while showing a non-sensitive reconnect/review reason. A silent provider network or account mismatch before submission must invoke zero send/sign methods and add no attempt-journal record. Locks and session changes must not falsely report a wallet event; stale callbacks must not restore presentation, alter encrypted records or discard recovery evidence. Reproduce the missing-feedback regression, then run focused native tests and preserve existing lifecycle regressions. Root owns independent review/publication; no merge, deployment or real funds.
+
+---
+
 # Account switch and vault-lock privacy for #286, requirement 3
 
 Worker `1078cbc0eb89` on `fix/286-account-vault-privacy`, based on #372 at `055d33e042c63edf1d5bbbdd7833d3c1ef93733d`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Coordination recorded on #544. The GP-PAGES-04 owner retains the clock, session, key vault, shell, and idle tests.
