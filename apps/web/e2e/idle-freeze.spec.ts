@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseFragment } from '@ghostpay/invoice-schema';
 import { expect, test as base, type Page } from '@playwright/test';
-import { createInvoice, generateKeys } from './helpers';
+import { generateKeys } from './helpers';
 
 // Playwright's ordinary page fixture emulates focus even in the background. Connect to the
 // disposable browser's default context without those overrides so Chromium can really freeze it.
@@ -47,6 +47,13 @@ for (const { frozenMs, delayedCheck } of [
     await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
     await page.goto(baseURL);
     const seller = await generateKeys(page);
+    const create = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice', exact: true });
+    if (!delayedCheck && frozenMs < minute) {
+      await create.click();
+      await page.getByLabel('Token amount').fill('0.5');
+      await page.getByLabel('Item 1 description').fill('Freeze control');
+      await page.getByLabel('Item 1 unit price').fill('1.00');
+    }
     await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 5000)));
     await page.keyboard.press('Shift');
     const activity = await page.evaluate(() => Date.now());
@@ -72,7 +79,6 @@ for (const { frozenMs, delayedCheck } of [
     expect(await tracker.evaluate((state) => state.timerRan())).toBe(false);
     expect(await tracker.evaluate((state) => performance.now() - state.monotonic)).toBe(0);
 
-    const create = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice', exact: true });
     const locked = page.getByRole('note').filter({ hasText: 'Session locked after inactivity' });
     if (delayedCheck) {
       // Chromium resumed the hidden tab before expiry. Withhold callbacks and input past the
@@ -86,8 +92,11 @@ for (const { frozenMs, delayedCheck } of [
       expect(await tracker.evaluate((state) => state.timerRan())).toBe(true);
     } else if (frozenMs < minute) {
       await expect(create).toBeEnabled();
-      await page.bringToFront();
-      const invoice = await parseFragment(new URL(await createInvoice(page)).hash);
+      // Activate the prepared form without pointer/keyboard input granting a new timeout.
+      await page.getByRole('button', { name: 'Create invoice link' }).dispatchEvent('click');
+      const link = page.getByRole('textbox', { name: 'Link', exact: true });
+      await expect(link).toHaveValue(/#gpi=v1\./);
+      const invoice = await parseFragment(new URL(await link.inputValue()).hash);
       expect(invoice.verification.signatureValid).toBe(true);
       expect(invoice.invoice.metaAddress).toBe(seller);
       return;
