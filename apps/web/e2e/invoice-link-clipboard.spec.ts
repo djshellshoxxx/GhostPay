@@ -8,7 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 async function copyInvoiceLink(page: Page) {
   await generateKeys(page);
-  const link = await createInvoice(page, { encrypt: true });
+  // A signed synthetic invoice exercises the button without putting a bearer key in test artifacts.
+  const link = await createInvoice(page, { encrypt: false });
   const clipboard = await page.evaluateHandle(() => {
     const state = { text: '', reads: 0, writes: 0 };
     Object.defineProperty(navigator, 'clipboard', {
@@ -22,8 +23,13 @@ async function copyInvoiceLink(page: Page) {
   });
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1_000));
   await page.getByRole('button', { name: 'Copy link', exact: true }).click();
-  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 1 });
-  return { clipboard, link };
+  // Pass only booleans and counts to the test reporter when a clipboard check fails.
+  const snapshot = async (expected = link) => {
+    const { text, reads, writes } = await clipboard.jsonValue();
+    return { matches: text === expected, reads, writes };
+  };
+  expect(await snapshot()).toEqual({ matches: true, reads: 0, writes: 1 });
+  return snapshot;
 }
 
 async function chooseDelay(page: Page, seconds: number) {
@@ -37,35 +43,35 @@ async function chooseDelay(page: Page, seconds: number) {
 }
 
 test('Copy link leaves the clipboard alone by default', async ({ page }) => {
-  const { clipboard, link } = await copyInvoiceLink(page);
+  const snapshot = await copyInvoiceLink(page);
   await page.clock.fastForward(300_001);
-  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 1 });
+  expect(await snapshot()).toEqual({ matches: true, reads: 0, writes: 1 });
 });
 
 test('Copy link clears an unchanged invoice link at the saved delay', async ({ page }) => {
   await chooseDelay(page, 60);
-  const { clipboard, link } = await copyInvoiceLink(page);
+  const snapshot = await copyInvoiceLink(page);
   await page.clock.fastForward(59_999);
-  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 1 });
+  expect(await snapshot()).toEqual({ matches: true, reads: 0, writes: 1 });
   await page.clock.fastForward(1);
-  expect(await clipboard.evaluate(({ text, writes }) => ({ text, writes }))).toEqual({ text: '', writes: 2 });
+  expect(await snapshot('')).toMatchObject({ matches: true, writes: 2 });
 });
 
 test('Copy link preserves text copied before the saved delay expires', async ({ page }) => {
   await chooseDelay(page, 30);
-  const { clipboard } = await copyInvoiceLink(page);
+  const snapshot = await copyInvoiceLink(page);
   await page.clock.fastForward(29_999);
   await page.evaluate(() => navigator.clipboard.writeText('newer text'));
   await page.clock.fastForward(1);
-  const state = await clipboard.jsonValue();
-  expect(state.text).toBe('newer text');
+  const state = await snapshot('newer text');
+  expect(state.matches).toBe(true);
   expect(state.reads).toBeGreaterThan(0);
   expect(state.writes).toBe(2);
 });
 
 test('copying the same invoice link again gets a full delay after the write completes', async ({ page }) => {
   await chooseDelay(page, 30);
-  const { clipboard, link } = await copyInvoiceLink(page);
+  const snapshot = await copyInvoiceLink(page);
   await page.clock.fastForward(29_999);
   await page.evaluate(() => {
     const write = navigator.clipboard.writeText.bind(navigator.clipboard);
@@ -76,10 +82,10 @@ test('copying the same invoice link again gets a full delay after the write comp
   });
   await page.getByRole('button', { name: 'Copied', exact: true }).click();
   await page.clock.fastForward(1);
-  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 2 });
+  expect(await snapshot()).toEqual({ matches: true, reads: 0, writes: 2 });
   await page.clock.fastForward(1_999); // The second write is acknowledged here.
   await page.clock.fastForward(29_999);
-  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 2 });
+  expect(await snapshot()).toEqual({ matches: true, reads: 0, writes: 2 });
   await page.clock.fastForward(1);
-  expect(await clipboard.evaluate((state) => state.text)).toBe('');
+  expect((await snapshot('')).matches).toBe(true);
 });

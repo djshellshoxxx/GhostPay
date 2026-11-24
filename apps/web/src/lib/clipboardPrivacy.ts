@@ -20,7 +20,7 @@ export async function copyClipboardText(value: string, clipboard: ClipboardPort,
   pendingWrites.add(generation);
   try {
     await clipboard.writeText(value);
-    scheduleCleanup(generation, value, clipboard, clearAfterMs);
+    recordClipboardCopy(generation, value, clipboard, clearAfterMs);
   } finally {
     pendingWrites.delete(generation);
     const retry = deferredCleanup;
@@ -34,11 +34,7 @@ export async function copyClipboardText(value: string, clipboard: ClipboardPort,
  * Delays under one second, nonintegers and values over five minutes disable automatic cleanup.
  * This does not promise sensitive strings have been zeroized from JavaScript memory or OS clipboard history.
  */
-export function recordClipboardCopy(value: string, clipboard: ClipboardPort, clearAfterMs = 0): void {
-  scheduleCleanup(++nextCopy, value, clipboard, clearAfterMs);
-}
-
-function scheduleCleanup(generation: number, value: string, clipboard: ClipboardPort, clearAfterMs: number): void {
+function recordClipboardCopy(generation: number, value: string, clipboard: ClipboardPort, clearAfterMs: number): void {
   if (generation < latestSuccessfulCopy) return;
   latestSuccessfulCopy = generation;
   deferredCleanup = undefined;
