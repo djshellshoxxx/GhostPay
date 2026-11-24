@@ -1,3 +1,22 @@
+# GP-BUG — Reject nonadjacent duplicate invoice IDs in ledger exports (2026-11-23)
+
+Worker: single ChatGPT BUG-ONLY coordinator; sequential author and test executor, not independent review.
+Branch: `automation/20261123T2018Z/bug/merchant-ledger-duplicate-invoice-export`; exact main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-ledger/src/export.ts`, new `packages/merchant-ledger/src/export.duplicate-invoice.test.ts`, this additive claim and new `docs/handoffs/MERCHANT_LEDGER_DUPLICATE_EXPORT_20261123.md`.
+Evidence: resolveAll promises duplicate IDs are rejected, but compares adjacent entries after sorting primarily by creation timestamp. Three valid synthetic invoices (duplicate ID, other ID, duplicate ID) at successive timestamps escape detection; CSV/JSON/Xero/IIF/tax summary accept the duplicate. Exact source and its three runtime dependency blobs hash-matched locally; Node 22/TS 5.8.3 isolated checks 6/13 pass before repair. No wallet, contract, network or funds.
+Acceptance: commit failing regression first; use a Set of IDs to reject duplicates anywhere without changing deterministic date/id sort or existing valid export results. Run isolated red/green plus hosted exact-head qualification; do not claim full repo tests. All 276 open PR file inventories through #521 inspected for export source and new test path; no collision. Existing ledger test/decimal/CSV paths are excluded (including #504). PR #390 exact head CI succeeded, no review and nonmergeable; owner untouched. Lock generation 12 released, not acquired. No merge without independent review, required checks and legitimate integration authorization; no deploy/release.
+
+---
+
+# Merchant-ledger duplicate-ID completion — 2026-11-24 UTC
+
+Worker: `/root/unique_history`, delegated by the current completion coordinator. Branch: `finish/merchant-ledger-completion-20261124`; base main `706188000c38b3dde5a3a362370a530870aa7587`. Preserve qualified child #555 `3ae56a5e0b3df9ce57e9bbf2a44c82b56e432033` and original #522 `907838ef75bbd0b08b4e23f3bbea9ac9b08403d4` as ancestors.
+Owned changes: this additive registry entry, local ancestry-preserving integration, and `docs/handoffs/MERCHANT_LEDGER_COMPLETION_20261124.md`. Preserve the donor's exact `packages/merchant-ledger/src/export.ts` and `export.duplicate-invoice.test.ts` blobs; no new product implementation or tests are planned.
+Live discovery: #522 and #555 heads remain unchanged; #555 has five successful hosted workflow groups. Current main still has the adjacent-only duplicate check. Bounded live successor search and changed-file inventories for #504, #579, #535, #393, #388 and #550 found no competing owner of these two files; #504's separate CSV/decimal changes remain outside this lane.
+Acceptance: resolve only additive ownership metadata conflicts, preserve both histories and current-main changes, review all six existing export/aggregation entry points, execute the existing merchant-ledger package tests/coverage/typecheck/lint/build using available dependencies, and distinguish donor hosted evidence from new composition verification. No installation, remote mutation, shared integration lease change, deployment, contracts, wallets, or funds. Parent coordinator owns publication, independent composition review and required exact-head integration gates.
+
+---
+
 # GP-BUG — Template clock rollback breaks persistence (2026-11-24 UTC)
 
 Worker: sequential BUG-ONLY coordinator, round 11; no independent verifier available. Isolated branch `automation/20261124/bug/template-clock-rollback-r11`; base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
