@@ -32,6 +32,10 @@ stated scope passed on one source and the owner approved release. Nothing is rel
 | Future privacy 5a–5j, 5l | No (proposed) | Specifications integrated | No | No | Owner scheduling |
 | Private security inventories (CodeQL, Dependabot, secret scanning, Sonar) | — | — | Scanner jobs pass; alert inventories not accessible (HTTP 403 / proxy) | No | Owner access or export |
 
+### v1.1 Beta checkout privacy · issue #287
+
+The address-reuse change is on `codex/287-evm-payment-destination-reuse` from `f76904301cff0b24d65ea4e31cbf37d470db4d95`. The v1.1 section of the Pages release matrix records its scope and acceptance tests. Exact-head verification and merge status belong to the checkout PR. The other three #287 requirements retain their own gates.
+
 ## 2026-11-16 ledger (history)
 
 Updated 2026-11-16. Coordinator: Caveman root. Integration branch: `codex/ghostpay-unified-completion`.

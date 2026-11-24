@@ -1,6 +1,6 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
+import { beginAttempt, browserAttemptStorage, finishAttempt, rememberPaymentDestination, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import type { MessageKey } from '../i18n/catalog';
@@ -277,6 +277,8 @@ export interface WalletAttemptOptions {
    * is a new action while repeating it for one invoice stays a duplicate (L2-I3).
    */
   readonly scope?: string;
+  /** Reviewed stealth recipient in router calldata, distinct from the transaction target. */
+  readonly paymentDestination?: Address;
   /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
   readonly logicalAction?: boolean;
   /** Explicit journal store; policy operations use durable browser storage under an exclusive lock. */
@@ -357,9 +359,13 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     authority.assert();
     let hash: unknown;
     try {
-      hash = await call(s.wallet.provider, 'eth_sendTransaction', [
+      const submitted = call(s.wallet.provider, 'eth_sendTransaction', [
         { from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` },
       ]);
+      if (attempt !== undefined && storage !== undefined && options?.paymentDestination !== undefined) {
+        rememberPaymentDestination(attempt, options.paymentDestination, storage);
+      }
+      hash = await submitted;
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
       throw new WalletSubmissionUnknownError(e instanceof WalletCallError ? e.rpcCode : undefined);

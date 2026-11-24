@@ -26,6 +26,16 @@ Status values: **done** (code and tests exist and pass), **done (this branch)** 
 | QR: invoice, payment request import, receipt, encrypted backup | `QrFrame.tsx`, `CameraImporter.tsx`, `qr*.ts`, `packages/qr-exchange` | none | `qr*.test.ts`, `CameraImporter*.test.tsx`, `qr-camera*.spec.ts` | done |
 | User-configurable RPC, strict URL validation, no embedded keys, no silent substitution or fallback, fail-closed privacy modes, disclosures | `settings.ts`, `packages/chain-adapters/src/rpc.ts`, `scanPrivacy.ts` | Tor/proxy disclosure overstated (GP-PAGES-06) | `settings.test.ts`, chain-adapters `rpc.test.ts`, `scanPrivacy*.test.ts` | see [Security](#security-findings) |
 
+## v1.1 Beta privacy acceptance
+
+| Requirement | Checkout behavior | Qualification |
+|---|---|---|
+| #287 · EVM destination reuse | The final review compares the derived recipient with earlier wallet requests in this tab for the same payer and chain. A repeated invoice, including a retry to its original destination, has its own message. A different invoice with the same destination warns about on-chain linkage and still allows explicit Send. | See the checkout tests in `paymentDestinationHistory.test.ts`, `payExec.acceptance.test.ts` and the invoice-retry journey in `flows.spec.ts`. Independent review and integration are v1.1 release gates. |
+
+A seller can intentionally put the same meta-address in multiple signed invoices. Issuing, opening or preparing one does not record a payment. Checkout compares the recipient encoded inside the router call. It records a salted destination fingerprint only after asking the wallet to send. A request can still be pending, rejected or reverted.
+
+The existing tab-local wallet-attempt journal controls the comparison lifetime. A reload retains the fingerprints, and confirming the removal of an attempt removes its fingerprint. Earlier app versions have invoice history only. Missing or cleared history gives no assurance of address freshness. The check makes no network request and creates no localStorage or telemetry record. Seller Scan continues to identify repeated router announcements independently.
+
 ## Static hosting and delivery
 
 | Item | Code | Test | Status |

@@ -137,6 +137,75 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(BigInt(state.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
   });
 
+  test('distinguishes invoice retries from reused stealth destinations across tab reloads and account changes', async ({ page, context }) => {
+    test.setTimeout(120_000);
+    const state: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const first = await createInvoice(page);
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
+    const second = await createInvoice(page, { description: 'Second invoice' });
+    expect(second).not.toEqual(first);
+
+    const prepare = async (link: string, scalarByte: number): Promise<string> => {
+      await openFresh(page, link);
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+      // Override only the 32-byte scalar draw in this synthetic payment preparation.
+      await page.evaluate((byte) => {
+        const original = crypto.getRandomValues.bind(crypto);
+        crypto.getRandomValues = (buffer) => {
+          if (buffer instanceof Uint8Array && buffer.length === 32) {
+            buffer.fill(byte);
+            crypto.getRandomValues = original;
+            return buffer;
+          }
+          return original(buffer);
+        };
+      }, scalarByte);
+      await page.getByRole('button', { name: 'Prepare payment' }).click();
+      const preview = page.getByRole('heading', { name: 'Final check before your wallet' }).locator('..');
+      await expect(preview).toBeVisible();
+      return (await preview.getByText('Payment destination', { exact: true }).locator('xpath=following-sibling::dd[1]').innerText()).trim();
+    };
+    const reuse = page.getByRole('note').filter({ hasText: 'same destination for another invoice' });
+    const retry = page.getByRole('note').filter({ hasText: 'wallet request for this invoice' });
+    const send = page.getByRole('button', { name: 'Send payment in my wallet' });
+    const original = await prepare(first, 11);
+    await expect(reuse).toHaveCount(0);
+    await expect(retry).toHaveCount(0);
+    await send.click();
+    await expect(page.getByRole('heading', { name: 'Submitted' })).toBeVisible();
+
+    expect(await prepare(first, 12)).not.toBe(original);
+    await expect(retry).toBeVisible();
+    await expect(reuse).toHaveCount(0);
+
+    expect(await prepare(second, 13)).not.toBe(original);
+    await expect(retry).toHaveCount(0);
+    await expect(reuse).toHaveCount(0);
+    expect(await prepare(second, 11)).toBe(original);
+    await expect(reuse).toBeVisible();
+    await expect(retry).toHaveCount(0);
+    await expect(send).toBeEnabled();
+    const warning = await reuse.innerText();
+    expect(warning).not.toMatch(/0x[0-9a-f]{40}/i);
+    expect(await page.evaluate(() => JSON.stringify(sessionStorage).toLowerCase())).not.toContain(original.toLowerCase());
+    expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain('ghostpay.payment-destination');
+    await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount(); });
+    await expect(reuse).toHaveCount(0);
+    expect(state.sendCalls).toBe(1);
+
+    expect(await prepare(second, 11)).toBe(original);
+    await expect(reuse).toBeVisible();
+    await send.click();
+    await expect(page.getByRole('heading', { name: 'Submitted' })).toBeVisible();
+    expect(state.sendCalls).toBe(2);
+  });
+
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);

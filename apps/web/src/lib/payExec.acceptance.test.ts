@@ -6,7 +6,7 @@ import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, decodeForDisplay, reviewInvoice, type PayContext } from './pay';
 import { PostBroadcastError, preparePayment, sendPayment, type Runtime } from './payExec';
 import { clearSession } from './session';
-import { readAttempts } from './duplicateAttemptJournal';
+import { paymentHistoryNotice, readAttempts } from './duplicateAttemptJournal';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
 
 beforeEach(() => {
@@ -91,6 +91,10 @@ describe('ERC-20 payment is bound to exact token, destination and amounts at the
       { ...built, tx: { to: FAKE_ROUTER, data: String(sent?.['data']) as `0x${string}`, value: 0n } },
       84532,
     );
+    const nextInvoice = { chainId: session.chainId, account: session.account, key: '0x' + '0'.repeat(64) };
+    expect(paymentHistoryNotice(nextInvoice, decoded.stealth)).toBe('destination');
+    expect(paymentHistoryNotice(nextInvoice, FAKE_ROUTER)).toBeUndefined();
+    expect(paymentHistoryNotice(nextInvoice, decoded.token)).toBeUndefined();
     expect(decoded.method).toBe('payERC20');
     expect(decoded.token).not.toBe('native');
     expect(String(decoded.token).toLowerCase()).toBe(USDC_84532.toLowerCase());

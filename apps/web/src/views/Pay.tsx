@@ -4,6 +4,7 @@ import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
+import { PaymentDestinationNotice } from '../components/PaymentDestinationNotice';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -1259,6 +1260,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
+      {wallet !== undefined && (
+        <PaymentDestinationNotice wallet={wallet} invoice={parsed.invoice}
+          built={phase === 'prepared' && builtFor === parsed.invoice && builtForContext === ctx ? built : undefined} />
+      )}
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}

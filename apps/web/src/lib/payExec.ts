@@ -316,7 +316,9 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   } : status;
   // After this boundary a wallet error can mean an unknown broadcast outcome, even without a returned hash.
   onWalletRequest?.();
-  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, {
+    kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)), paymentDestination: built.preview.stealth,
+  });
 }
 
 export interface LocalReceipt {
