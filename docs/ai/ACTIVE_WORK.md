@@ -1,3 +1,11 @@
+# Resume PR #587 static-hosting fixture qualification — 2026-11-24 UTC
+
+Coordinator `/root` owns this isolated child `resume/receipt-retention-tor-fixture-20261124` at parent #587 `19a11f90db0bcf84c94a0b883a310e103ce8878a`. The user requested completion of missed interrupted workers. The original timestamp-retention implementation and source branch remain intact. Latest open-PR ownership refresh found no newer continuation of this exact Tor fixture failure.
+
+Scope: reuse the already-qualified #436 script blob `9f6732a60662664617c623a3dca9c5644ed20c90` from `cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362` unchanged, validate against this parent's current English confirmation, and run the original static-hosting browser acceptance. Owned paths are `scripts/tor/browser-acceptance.mjs`, this additive claim, and a dedicated handoff/evidence file. Preserve all origin, storage, request, header, integrity-refusal and local-key checks. No production retention change, workflow weakening, deploy, Tor bootstrap or real funds. The donor's own exact-head CI/Tor success is separate from this child's qualification.
+
+---
+
 # Issue 287 persistent metadata retention
 
 Worker: Codex, isolated branch `feature/287-receipt-timestamp-retention`. Base: invoice retention PR #383 at `cfa8131bab9a012cd1ce970f4afa8de23adfdf80`. Main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the timestamp planner, its two ledger controls, preferences, catalogs, related tests and retention handoff on this child only. Preserve the parent and all other release workers.
