@@ -95,7 +95,9 @@ export function rememberPaymentDestination(attempt: WalletAttempt, destination: 
   if (attempt.kind !== 'payment') return;
   try {
     const tag = destinationTag(attempt.id, destination);
-    if (tag !== undefined) store.setItem(destinationKey(attempt.id), tag);
+    if (tag === undefined) return;
+    store.setItem(destinationKey(attempt.id), tag);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
   } catch { /* An advisory write must never obscure the wallet outcome. */ }
 }
 

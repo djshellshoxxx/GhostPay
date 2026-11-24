@@ -9,7 +9,12 @@ import { Notice } from './Common';
 
 function subscribeAttempts(refresh: () => void): () => void {
   window.addEventListener(ATTEMPT_JOURNAL_EVENT, refresh);
-  return () => { window.removeEventListener(ATTEMPT_JOURNAL_EVENT, refresh); };
+  // A same-origin frame in the same tab shares sessionStorage and receives a native storage event.
+  window.addEventListener('storage', refresh);
+  return () => {
+    window.removeEventListener(ATTEMPT_JOURNAL_EVENT, refresh);
+    window.removeEventListener('storage', refresh);
+  };
 }
 
 /** Mounted from connection onward so an account change during preparation also invalidates the advisory. */
@@ -38,14 +43,15 @@ export function PaymentDestinationNotice({ wallet, built, invoice }: {
   const notice = useSyncExternalStore(subscribeAttempts, () =>
     built === undefined || key === undefined || invalidated === wallet ? undefined :
       paymentHistoryNotice({ chainId: wallet.chainId, account: wallet.account, key }, built.preview.stealth));
-  if (notice === undefined) return null;
   const messages = {
     destination: 'pay.history.destination',
     invoice: 'pay.history.invoice',
     'invoice-destination': 'pay.history.invoiceDestination',
     unavailable: 'pay.history.unavailable',
   } as const;
-  return <Notice kind={notice === 'destination' ? 'warn' : 'info'}>{t(messages[notice])}</Notice>;
+  return <div aria-live="polite">{notice !== undefined &&
+    <Notice kind={notice === 'destination' ? 'warn' : 'info'}>{t(messages[notice])}</Notice>
+  }</div>;
 }
 
 // i18n-use: pay.history.destination pay.history.invoice pay.history.invoiceDestination pay.history.unavailable
