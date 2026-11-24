@@ -58,8 +58,8 @@ function decrypt(text: string): Document {
   cipher.setAuthTag(bytes.subarray(-16));
   return JSON.parse(Buffer.concat([cipher.update(bytes.subarray(0, -16)), cipher.final()]).toString()) as Document;
 }
-async function open(store = new Store(), guard = (): void => undefined) {
-  const vault = new ReconciliationVault(store, scope, guard);
+async function open(store = new Store(), guard = (): void => undefined, now = Date.now) {
+  const vault = new ReconciliationVault(store, scope, guard, now);
   await vault.unlock(Uint8Array.from(viewingKey));
   return vault;
 }
@@ -219,7 +219,8 @@ describe('explicit local invoice timestamp cleanup', () => {
 
   it('keeps future/unknown formats and read-only safety state unchanged', async () => {
     for (const body of [
-      { ...document(), version: 5 },
+      { ...document(), version: 6 },
+      { ...document(), version: 4, receipts: [{ ...document().receipts[0], archivedAt: null }] },
       { ...document(), saturated: true },
       { ...document(), invoices: [{ ...invoice(), version: 2, registeredAt: null }] },
     ]) {
@@ -234,4 +235,98 @@ describe('explicit local invoice timestamp cleanup', () => {
     for (const changed of [{ version: 1, registeredAt: null }, { version: 2, registeredAt: 1 }, { version: 2, registeredAt: undefined }])
       expect(() => validateRegisteredInvoice({ ...invoice(), ...changed })).toThrow();
   });
+});
+
+describe('reviewed age policy for persistent invoice and payment metadata', () => {
+  const receiptTimes = 'receipt-archive-timestamps';
+  const invoiceTimes = 'invoice-registration-timestamps';
+  const day = 86_400_000;
+
+  it.each([0, 30, 90] as const)('binds each category to the inclusive %i-day cutoff at preview', async (days) => {
+    let now = 100 * day;
+    const cutoff = now - days * day;
+    const original = document();
+    const invoices = [1, 2, 3].map((n) => ({ ...invoice(n), version: 1 as const, registeredAt: cutoff + n - 2 }));
+    const receipts = invoices.map(({ registeredAt }, n) => {
+      const { signature, ...signed } = original.receipts[0]!.receipt;
+      void signature;
+      const receipt = signReceipt({ invoiceDigest: signed.invoiceDigest, chainId: signed.chainId, txHash: signed.txHash,
+        asset: signed.asset, amountMinorUnits: signed.amountMinorUnits, issuedAt: 1700 + n },
+      new Uint8Array(32).fill(9));
+      return { receipt, archivedAt: registeredAt };
+    });
+    const store = new Store();
+    store.data.set(slot, encrypt({ ...original, invoices, receipts }));
+    const vault = await open(store, () => undefined, () => now);
+    const before = await vault.exportReceipts();
+    const plan = await vault.previewTimestampCleanup(receiptTimes, days);
+    expect(plan).toEqual({ category: receiptTimes, count: 2 });
+    now += day;
+    await vault.confirmTimestampCleanup(plan);
+    const redactedReceipts = receipts.map((r, i) => ({ ...r, archivedAt: i < 2 ? null : r.archivedAt }));
+    expect(decrypt(store.data.get(slot)!)).toEqual({ ...original, invoices, version: 5, receipts: redactedReceipts });
+    expect(await vault.exportReceipts()).toEqual(before);
+    now -= day;
+    const invoicePlan = await vault.previewTimestampCleanup(invoiceTimes, days);
+    expect(invoicePlan.count).toBe(2);
+    await vault.confirmTimestampCleanup(invoicePlan);
+    const redactedInvoices = invoices.map((i, n) => n < 2 ? { ...i, version: 2, registeredAt: null } : i);
+    expect(decrypt(store.data.get(slot)!)).toEqual({ ...original, version: 5, invoices: redactedInvoices, receipts: redactedReceipts });
+  });
+
+  it('preserves ciphertext on clock rollback, interrupted commit and a racing writer; each requires fresh approval', async () => {
+    const store = new Store();
+    store.data.set(slot, encrypt(document()));
+    let now = 100 * day;
+    const vault = await open(store, () => undefined, () => now);
+    const bytes = await vault.exportEncrypted();
+    let plan = await vault.previewTimestampCleanup(receiptTimes, 30);
+    now--;
+    await expect(vault.confirmTimestampCleanup(plan)).rejects.toThrow();
+    expect(await vault.exportEncrypted()).toBe(bytes);
+    plan = await vault.previewTimestampCleanup(receiptTimes, 30);
+    store.beforeWrite = () => { throw new Error('aborted transaction'); };
+    await expect(vault.confirmTimestampCleanup(plan)).rejects.toThrow('aborted transaction');
+    store.beforeWrite = undefined;
+    await expect(vault.confirmTimestampCleanup(plan)).rejects.toThrow();
+    expect(await vault.exportEncrypted()).toBe(bytes);
+    const other = await open(store);
+    plan = await vault.previewTimestampCleanup(receiptTimes, 30);
+    await other.registerInvoice(invoice(3));
+    const newer = await other.exportEncrypted();
+    await expect(vault.confirmTimestampCleanup(plan)).rejects.toThrow();
+    expect(await vault.exportEncrypted()).toBe(newer);
+    await vault.confirmTimestampCleanup(await vault.previewTimestampCleanup(receiptTimes, 30));
+    vault.lock();
+    const reopened = await open(store);
+    expect((await reopened.readState()).receipts[0]?.archivedAt).toBeNull();
+    expect((await reopened.readState()).invoices).toHaveLength(3);
+    await reopened.activateImport(await reopened.previewImport(bytes));
+    expect((await reopened.readState()).receipts[0]?.archivedAt).toBeNull();
+    const restored = await open();
+    await restored.activateImport(await restored.previewImport(await reopened.exportEncrypted()));
+    expect(await restored.exportReceipts()).toBe(await reopened.exportReceipts());
+    expect((await restored.readState()).receipts).toEqual((await reopened.readState()).receipts);
+  });
+});
+
+it('announces a committed cleanup even when the caller loses consent before the storage promise resolves', async () => {
+  const store = new Store();
+  store.data.set(slot, encrypt(document()));
+  let allowed = true;
+  let notifications = 0;
+  const api = createReconciliationApi({ notify: () => { notifications++; } });
+  const vault = new api.ReconciliationVault({
+    read: (key) => store.read(key),
+    compareAndSwap: async (key, expected, next, guard) => {
+      const committed = await store.compareAndSwap(key, expected, next, guard);
+      allowed = false;
+      return committed;
+    },
+  }, scope, () => undefined);
+  await vault.unlock(Uint8Array.from(viewingKey));
+  const plan = await vault.previewTimestampCleanup('receipt-archive-timestamps', 30);
+  await vault.confirmTimestampCleanup(plan, () => { if (!allowed) throw new Error('revoked'); });
+  expect(notifications).toBe(1);
+  expect((await vault.readState()).receipts[0]?.archivedAt).toBeNull();
 });

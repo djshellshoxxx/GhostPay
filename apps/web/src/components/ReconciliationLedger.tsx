@@ -3,7 +3,7 @@ import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
-import { InvoiceTimestampRetentionControls } from './InvoiceTimestampRetentionControls';
+import { TimestampRetentionControls } from './TimestampRetentionControls';
 import { PrivateHistory } from './PrivateHistory';
 import { revokePrivacyReveal } from '../lib/privacyMode';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -492,7 +492,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             onClear={() => run(async (current) => current.clearInvoices())}
           />
           {vault.current !== undefined && (
-            <InvoiceTimestampRetentionControls vault={vault.current} busy={busy} disabled={readOnly} run={run} />
+            <>
+              <TimestampRetentionControls category="invoice-registration-timestamps" vault={vault.current} busy={busy} disabled={readOnly} run={run} />
+              <TimestampRetentionControls category="receipt-archive-timestamps" vault={vault.current} busy={busy} disabled={readOnly} run={run} />
+            </>
           )}
           <ReceiptArchive
             receipts={receipts}
@@ -763,7 +766,7 @@ function ReceiptArchive(props: {
                 </p>
                 <p className="hint">
                   <bdi dir="ltr">{receipt.amountMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{receipt.asset}</bdi>{t('ledger.ui.issued')}{' '}
-                  {new Date(receipt.issuedAt * 1000).toISOString()}{t('ledger.ui.archived')}{new Date(archivedAt).toISOString()}.
+                  {new Date(receipt.issuedAt * 1000).toISOString()}{archivedAt !== null && <>{t('ledger.ui.archived')}{new Date(archivedAt).toISOString()}</>}.
                 </p>
                 <button
                   type="button"

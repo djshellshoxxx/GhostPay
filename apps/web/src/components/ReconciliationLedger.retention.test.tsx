@@ -142,3 +142,61 @@ describe('persistent invoice timestamp cleanup in the actual ledger', () => {
     expect([...data]).toEqual(before); expect(writes).toBe(priorWrites);
   });
 });
+
+it('keeps age preferences by category across remounts and guards against missed storage events', async () => {
+  const user = await open();
+  const categories = screen.getAllByRole<HTMLSelectElement>('combobox', { name: 'Include timestamps aged' });
+  const [invoiceDays, receiptDays] = categories;
+  await user.selectOptions(invoiceDays!, '30');
+  await user.selectOptions(receiptDays!, '90');
+  await preview(user);
+  const prior = [...data];
+  localStorage.setItem('ghostpay.retention.invoice-registration-timestamps.days.v1', '90');
+  await user.click(screen.getByRole('button', { name: CONFIRM }));
+  await screen.findByText(/became stale/i);
+  expect([...data]).toEqual(prior);
+  await user.click(screen.getByRole('button', { name: 'Lock reconciliation vault' }));
+  await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+  const fields = await screen.findAllByRole<HTMLSelectElement>('combobox', { name: 'Include timestamps aged' });
+  expect(fields.map((field) => field.value)).toEqual(['90', '90']);
+  expect(screen.getByRole<HTMLInputElement>('checkbox', { name: CONSENT }).checked).toBe(false);
+});
+
+it('blocks review under a corrupted age preference until a valid choice is saved', async () => {
+  localStorage.setItem('ghostpay.retention.invoice-registration-timestamps.days.v1', '-1');
+  const user = await open();
+  await user.click(screen.getByRole('checkbox', { name: CONSENT }));
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: PREVIEW }).disabled).toBe(true);
+  await user.selectOptions(screen.getAllByRole('combobox', { name: 'Include timestamps aged' })[0]!, '30');
+  await user.click(screen.getByRole('button', { name: PREVIEW }));
+  await screen.findByText('Registration timestamps to remove: 1.');
+});
+
+it('requires a successful age selection after storage refuses a narrower policy', async () => {
+  const user = await open();
+  await user.click(screen.getByRole('checkbox', { name: CONSENT }));
+  const field = screen.getAllByRole('combobox', { name: 'Include timestamps aged' })[0]!;
+  const denied = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
+  await user.selectOptions(field, '90');
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: PREVIEW }).disabled).toBe(true);
+  expect((field as HTMLSelectElement).value).toBe('');
+  denied.mockRestore();
+  await user.selectOptions(field, '30');
+  await user.click(screen.getByRole('button', { name: PREVIEW }));
+  await screen.findByText('Registration timestamps to remove: 1.');
+});
+
+it('offers cancellation only in the panel that owns the pending action', async () => {
+  const user = await open();
+  await user.click(screen.getByRole('checkbox', { name: 'Allow receipt archive-time cleanup for this unlocked vault' }));
+  await preview(user);
+  let release: (() => void) | undefined;
+  const held = new Promise<void>((resolve) => { release = resolve; });
+  beforeWrite = () => held;
+  const before = [...data];
+  await user.click(screen.getByRole('button', { name: CONFIRM }));
+  await user.click(await screen.findByRole('button', { name: 'Cancel cleanup' }));
+  release?.();
+  await screen.findByText(/became stale/i);
+  expect([...data]).toEqual(before);
+});
