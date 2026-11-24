@@ -124,8 +124,8 @@ it('clears record filters, returns to page one and revokes the filtered export p
   }
   expect(screen.getByText('Showing 1–25 of 27')).toBeTruthy();
   expect((network as HTMLSelectElement).value).toBe('84532');
-  expect((filters.getByLabelText('Sort by date') as HTMLSelectElement).value).toBe('oldest');
-  expect((screen.getByLabelText('File format') as HTMLSelectElement).value).toBe('json');
+  expect(filters.getByLabelText<HTMLSelectElement>('Sort by date').value).toBe('oldest');
+  expect(screen.getByLabelText<HTMLSelectElement>('File format').value).toBe('json');
   expect(screen.queryByRole('button', { name: 'Agree and download' })).toBeNull();
   expect(releaseState).not.toHaveBeenCalled();
 
@@ -133,7 +133,7 @@ it('clears record filters, returns to page one and revokes the filtered export p
   expect(screen.getByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
   await user.type(search, 'unmatched');
   await user.click(filters.getByRole('button', { name: 'Clear filters' }));
-  expect((filters.getByLabelText('Record type') as HTMLSelectElement).value).toBe('payments');
+  expect(filters.getByLabelText<HTMLSelectElement>('Record type').value).toBe('payments');
   expect(screen.getByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
 });
 
