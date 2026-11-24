@@ -41,7 +41,7 @@ test('encrypted opt-in keeps unfinished edits across failed offline reload and s
     expect(records[0]).not.toContain(field);
   }
   // Routing disables the HTTP cache. The beta has no installable offline shell.
-  await context.route('**/*', route => route.abort('internetdisconnected'));
+  await context.route('**/*', route => route.continue());
   await expect(page.reload()).rejects.toThrow();
   await context.unroute('**/*');
   await context.setOffline(false);

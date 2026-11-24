@@ -230,6 +230,20 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/rejected the request/);
   });
 
+  it.each(['0x0', '0x1'])('keeps a receipt with status %s unconfirmed when the transaction cannot be read back', async (status) => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, method => {
+      if (method === 'eth_getTransactionByHash') return null;
+      if (method === 'eth_getTransactionReceipt') return { status, blockNumber: '0x12', to: FAKE_ROUTER };
+      return undefined;
+    });
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const result = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(result.verification).toBe('unverified');
+    expect(buildReceipt(ctx, built, result, new Date()).status).toBe('unconfirmed');
+  });
+
   it('records a reverted receipt', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
     const rpc = chainSeeing(wallet, (m) => (m === 'eth_getTransactionReceipt' ? { status: '0x0', blockNumber: '0x1', to: FAKE_ROUTER } : undefined));

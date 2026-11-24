@@ -1315,11 +1315,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <p>
             {result.receipt === undefined
               ? t('pay.status.pending')
-              : result.receipt.status !== 'success'
-                ? t('pay.status.reverted')
-                : result.verification === 'verified'
+              : result.verification !== 'verified'
+                ? t('pay.status.unverified', { block: result.receipt.blockNumber.toString() })
+                : result.receipt.status === 'success'
                   ? t('pay.status.included', { block: result.receipt.blockNumber.toString() })
-                  : t('pay.status.unverified', { block: result.receipt.blockNumber.toString() })}
+                  : t('pay.status.reverted')}
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label={t('pay.copyHash')} />
