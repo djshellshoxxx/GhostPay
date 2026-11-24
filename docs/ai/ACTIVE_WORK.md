@@ -830,3 +830,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-QA-20261124-XSS-HARNESS — isolate payer document from sole-copy seller
+
+- Cycle: 20261124T1637Z; one sequential coordinator; no independent agent available. Isolated branch `automation/20261124T1637Z/bug/hostile-text-fresh-payer` from PR #573 exact head `56fb25aa2ff098737dbc181fa88c0aac06425c8e`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+- Owned paths: only the hostile-text test in `apps/web/e2e/app.spec.ts`, this append-only claim, and new `docs/handoffs/HOSTILE_TEXT_PAYER_FIXTURE_20261124.md`. Preserve #573 and its recovery dependencies. No runtime or custody changes.
+- Reproduction: hosted lean job 138303654258 and full job 138303654348 fail at openFresh/about:blank; existing hostile-text listener dismisses all dialogs, including legitimate beforeunload after synthetic unsaved seller keys are generated. This is consistent with historical #239/#240 evidence; no new XSS finding asserted.
+- Acceptance: retain all hostile-text and dialog assertions, observe dialogs on both seller and independent payer documents, do not navigate the seller away or change beforeunload behavior, use the exact generated invoice link. Full and lean browser suites, native CI, Pages qualification, and independent review required. No change to timeout, gate or app runtime. The 27 bounded PR file inventories checked show no direct app.spec.ts/helpers.ts overlap; full ownership census not claimed.
+- Lock generation 20 observed released at `4fe0656517a03cb7a39d4e248187c76ffaa3238a`; no lock acquired and no shared update or merge.
