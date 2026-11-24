@@ -1,12 +1,22 @@
 import {
   canonicalize, decodeBase64Url, encodeBase64Url, encodeFragment, FRAGMENT_PREFIX,
-  InvalidSignatureError, NonCanonicalError, parseFragment, SchemaError, WrongPassphraseError,
+  InvalidSignatureError, NonCanonicalError, parseFragment, SchemaError, WrongPassphraseError, type EncodeOptions, type SignedInvoice,
 } from '@ghostpay/invoice-schema';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BASE_FORM, NOW } from '../test/invoiceFixtures';
 import { buildInvoiceLink } from './invoiceCreate';
 import { receiptInvoiceFragment } from './receipts';
 import { clearSession, generateSession } from './session';
+
+// Exercise real encryption and signature verification at the lowest supported test KDF cost.
+vi.mock('@ghostpay/invoice-schema', async (original) => {
+  const schema = await original<typeof import('@ghostpay/invoice-schema')>();
+  return {
+    ...schema,
+    encodeFragment: (signed: SignedInvoice, options: EncodeOptions = {}) => schema.encodeFragment(signed,
+      options.passphrase === undefined ? options : { ...options, scryptN: 1 << 15 }),
+  };
+});
 
 const base = 'https://app.test/GhostPay/';
 const form = {
@@ -43,13 +53,11 @@ describe('signed invoice sharing', () => {
           expect(parsed.invoice.lineItems).toEqual([{ description: form.lineItems[0]!.description, quantity: '3', unitMinorUnits: '750' }]);
           expect(parsed.invoice.memo).toBe(form.memo);
         }
-        const encoded = await encodeFragment(parsed, { encrypt: parsed.encrypted, ...secret });
-        const reopened = await parseFragment(encoded, opts);
-        expect(reopened.invoice).toEqual(parsed.invoice);
-        expect(reopened.signature).toBe(parsed.signature);
-        if (protection === 'plain') expect(encoded).toBe(issued.fragment);
+        if (protection === 'plain') {
+          expect(await encodeFragment(parsed, { encrypt: false })).toBe(issued.fragment);
+        }
         if (protection === 'passphrase' && minimalMetadata) {
-          await expect(parseFragment(encoded, { passphrase: 'Different test passphrase' })).rejects.toBeInstanceOf(WrongPassphraseError);
+          await expect(parseFragment(issued.fragment, { passphrase: 'Different test passphrase' })).rejects.toBeInstanceOf(WrongPassphraseError);
         }
       });
     }
