@@ -1,0 +1,8 @@
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  02:19:09
+   Duration  250ms (transform 58%, import 25%, tests 11%, worker 5%)

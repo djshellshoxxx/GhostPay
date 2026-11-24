@@ -1,0 +1,143 @@
+{
+  "schema": "ghostpay-additional-native-skip-resolution/1",
+  "product_commit": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "initial_skipped": 22,
+  "initial_condition": "Existing native tests found neither binaries on initial PATH nor artifacts in isolated packages/contracts/out. No skip condition changed.",
+  "prerequisites": {
+    "payments.anvil.test.ts": "Existing Anvil binary plus GhostPayRouter,ERC5564Announcer,MockERC20 artifacts from identical contract source.",
+    "router.anvil.test.ts": "Same existing Anvil binary and three artifacts.",
+    "quote.anvil.test.ts": "Existing Anvil and solc0.8.28; unchanged test compiles its own synthetic aggregator."
+  },
+  "source_proof": "native-prerequisites.json",
+  "final_required_environment": {
+    "REQUIRE_ANVIL": "1",
+    "ANVIL_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/anvil",
+    "SOLC_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+  },
+  "resolved_cases": [
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code accepts a real native payment only with exact transaction/receipt evidence, including finality and fee split",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code accepts a real ERC20 payment only with exact transaction/receipt evidence, including finality and fee split",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transaction-hash corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transaction-target corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transaction-chain corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects calldata corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects receipt-status corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects receipt-block corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects receipt-payer corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects missing-announcement corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transfer-payer corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transfer-order corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects transfer-amount corruption of real ERC20 evidence without consuming it",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects a native transaction whose actual value was replaced with zero",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code compares exact payer bindings across providers even when the transfer consumption identity matches",
+      "status": "passed"
+    },
+    {
+      "file": "payments.anvil.test.ts",
+      "name": "direct payment evidence against compiled local router (anvil) real loopback RPC with explicitly injected mock token code rejects a real orphaned payment when Anvil reverts between its first canonical read and its final reread",
+      "status": "passed"
+    },
+    {
+      "file": "quote.anvil.test.ts",
+      "name": "price guards against a compiled local aggregator (anvil) real ABI reads from the isolated EVM accepts matching fresh prices and an up sequencer after grace",
+      "status": "passed"
+    },
+    {
+      "file": "quote.anvil.test.ts",
+      "name": "price guards against a compiled local aggregator (anvil) real ABI reads from the isolated EVM refuses stale, negative, zero, round regression and unexpected precision from the EVM",
+      "status": "passed"
+    },
+    {
+      "file": "quote.anvil.test.ts",
+      "name": "price guards against a compiled local aggregator (anvil) real ABI reads from the isolated EVM refuses sequencer outage and the exact 3600-second recovery boundary",
+      "status": "passed"
+    },
+    {
+      "file": "quote.anvil.test.ts",
+      "name": "price guards against a compiled local aggregator (anvil) real ABI reads from the isolated EVM refuses reference divergence and a depegged USD price",
+      "status": "passed"
+    },
+    {
+      "file": "router.anvil.test.ts",
+      "name": "router fee differential vs compiled router (anvil) on anvil ERC-20: on-chain fee and net equal routerFee()/routerSplit() for boundary and large grosses",
+      "status": "passed"
+    },
+    {
+      "file": "router.anvil.test.ts",
+      "name": "router fee differential vs compiled router (anvil) on anvil native: on-chain fee and net equal routerFee()/routerSplit()",
+      "status": "passed"
+    }
+  ],
+  "final_complete_package": {
+    "passed": 574,
+    "failed": 0,
+    "skipped": 0,
+    "files": 26
+  },
+  "full_json_report": {
+    "archive": "chain-adapters-native-results.json.gz",
+    "raw_file": "chain-adapters-native-results.json",
+    "raw_sha256": "005ed9a087e08f0a18a102091369e558f0fc9290e4b1e6556da6bb5a7902dc70",
+    "archive_sha256": "031feea59e114496aebf4fd07bc946f31b83cf09eea1cebd596dd54dccc680cd",
+    "raw_bytes": 703479,
+    "archive_bytes": 96377
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "package-tests",
+  "command": [
+    "npm",
+    "test",
+    "-w",
+    "@ghostpay/chain-adapters",
+    "-w",
+    "@ghostpay/merchant-billing",
+    "-w",
+    "@ghostpay/metadata-hardening",
+    "-w",
+    "@ghostpay/ux-fiat",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:20:28.129158+00:00",
+  "duration_seconds": 48.034,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "package-tests.log",
+  "log_sha256": "344bc356e2cb2b7e5358056cdb4c489c33df96707a392298ee6a14e9c3745171",
+  "node_options": "--max-old-space-size=1024",
+  "original_log_sha256": "cfe1ce50230be71de40af0386a0e7a79483262355562fec9e36c09eed1e15fce",
+  "original_log_archive": "package-tests.log.gz",
+  "original_log_archive_sha256": "be87d532afc7977d9e10ff4b2afbce1b1b34382b18468e8b9bb0520e7b1f00a4",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

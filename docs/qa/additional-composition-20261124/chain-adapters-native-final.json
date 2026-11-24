@@ -1,0 +1,32 @@
+{
+  "name": "chain-adapters-native-final",
+  "command": [
+    "npm",
+    "test",
+    "-w",
+    "@ghostpay/chain-adapters",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=../../docs/qa/additional-composition-20261124/chain-adapters-native-results.json"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:26:22.384694+00:00",
+  "duration_seconds": 27.39,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "chain-adapters-native-final.log",
+  "log_sha256": "503eea76fb9f0fbc34fb8327ad92801e47e37fe9a34edc773ad11ad5dc727dbc",
+  "node_options": "--max-old-space-size=1024",
+  "selected_environment": {
+    "REQUIRE_ANVIL": "1",
+    "ANVIL_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/anvil",
+    "SOLC_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+  },
+  "original_log_sha256": "6a43d877226fe36492b65ec3cd49ae4aa858ca83dcd67bff052010dc1a48d1b0",
+  "original_log_archive": "chain-adapters-native-final.log.gz",
+  "original_log_archive_sha256": "b68412e6a9b459b3a77d70f0733d631303a803c8f471312c53187b35cfcdc268",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

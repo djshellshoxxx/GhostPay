@@ -1,0 +1,29 @@
+{
+  "name": "package-typechecks",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "-w",
+    "@ghostpay/chain-adapters",
+    "-w",
+    "@ghostpay/merchant-billing",
+    "-w",
+    "@ghostpay/metadata-hardening",
+    "-w",
+    "@ghostpay/ux-fiat"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:20:47.411044+00:00",
+  "duration_seconds": 22.188,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "package-typechecks.log",
+  "log_sha256": "29e59cfade5ef1ed6dfb5d0f0ca75234e47c83a3244a3626a1ab981145795deb",
+  "node_options": "--max-old-space-size=1024",
+  "original_log_sha256": "d96b249c843bfef6e2d5cdd4507cbffb6e509c6f06a3321e272ad2ef0891f14a",
+  "original_log_archive": "package-typechecks.log.gz",
+  "original_log_archive_sha256": "8cf1dd028a6f5c30b61ca0c1f0e6fcfa947cf438afa9ac57676aafbfd2ef123c",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

@@ -1,0 +1,16 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-adapters@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+
+> @ghostpay/merchant-billing@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+
+> @ghostpay/metadata-hardening@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+
+> @ghostpay/ux-fiat@0.1.0 lint
+> eslint --config ../../eslint.config.js src

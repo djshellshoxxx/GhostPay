@@ -1,0 +1,13 @@
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/apps/web
+
+Not implemented: navigation to another Document
+
+ Test Files  11 passed (11)
+      Tests  137 passed (137)
+   Start at  02:20:28
+   Duration  20.73s (import 31%, tests 25%, environment 24%, transform 19%)
+
+     Import  153 modules were evaluated 331 times · 5.65s total, 31% of tracked time
+             ~3.04s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation

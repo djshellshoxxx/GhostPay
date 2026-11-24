@@ -1,0 +1,132 @@
+{
+  "schema": "ghostpay-additional-red-composition/1",
+  "created_at": "2026-11-24T10:15:40.886756+00:00",
+  "base": "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+  "donor": "100de4006569ee1f65736adce8d111446dfafa59",
+  "claim": "43fb7e54",
+  "red_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+  "source_change_count": 13,
+  "source_changes": [
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "base_entry": "100644 blob e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "donor_entry": "100644 blob 3eaea811d82c9a1913313fc1c0d587147b68fd16",
+      "composed_entry": "100644 blob 3eaea811d82c9a1913313fc1c0d587147b68fd16",
+      "exact_donor": true
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "base_entry": "100644 blob 68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "donor_entry": "100644 blob 1a4beffc898c7854f6183aac5a7e6f74f8228d63",
+      "composed_entry": "100644 blob 1a4beffc898c7854f6183aac5a7e6f74f8228d63",
+      "exact_donor": true
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.marker-script.test.ts",
+      "base_entry": null,
+      "donor_entry": "100644 blob 9ea6b56db11a56bc819bcf0dfd1cd30b3d320c3e",
+      "composed_entry": "100644 blob 9ea6b56db11a56bc819bcf0dfd1cd30b3d320c3e",
+      "exact_donor": true
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "base_entry": "100644 blob e5c281aa7f8105b71ef93ea407e8dfa454892317",
+      "donor_entry": "100644 blob ad29c5812951ff8a7500fcdad47f00c771fa4cca",
+      "composed_entry": "100644 blob ad29c5812951ff8a7500fcdad47f00c771fa4cca",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "base_entry": "100644 blob 8ad8ca9c354435a2acf491bb4372a98e21e08738",
+      "donor_entry": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "composed_entry": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "base_entry": "100644 blob a6d2aa4c10ec317cd3c91b0ac09447d755180425",
+      "donor_entry": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "composed_entry": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.test.ts",
+      "base_entry": "100644 blob cbc9b3498b3411b2a8187ece3fc97f928bef6e13",
+      "donor_entry": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8",
+      "composed_entry": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "base_entry": "100644 blob 60b3505d3bc62089afd1ed4741bea29273ebea8a",
+      "donor_entry": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "composed_entry": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/merchant-billing/src/refunds.ts",
+      "base_entry": "100644 blob 817f0dcea0566f81335d3d76a5a10b160fe6ba77",
+      "donor_entry": "100644 blob 6e09d09ad80eb3fc67cfbf235833e63952bd54e2",
+      "composed_entry": "100644 blob 6e09d09ad80eb3fc67cfbf235833e63952bd54e2",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/merchant-billing/src/refunds.uncertain.test.ts",
+      "base_entry": null,
+      "donor_entry": "100644 blob 2f9823cc208a6d4b97854a0f8c65b41888259819",
+      "composed_entry": "100644 blob 2f9823cc208a6d4b97854a0f8c65b41888259819",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/metadata-hardening/src/web.anchor-attributes.test.ts",
+      "base_entry": null,
+      "donor_entry": "100644 blob fe81e7c20d2b77a0e56743a0b88d9208a885eac5",
+      "composed_entry": "100644 blob fe81e7c20d2b77a0e56743a0b88d9208a885eac5",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/metadata-hardening/src/web.ts",
+      "base_entry": "100644 blob 5f5f856cf51541fb2935a883c77ed2197e390604",
+      "donor_entry": "100644 blob 9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587",
+      "composed_entry": "100644 blob 9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587",
+      "exact_donor": true
+    },
+    {
+      "path": "packages/ux-fiat/src/view.quote-accessor.test.ts",
+      "base_entry": null,
+      "donor_entry": "100644 blob 876eb9ce21a97acbeff66f3a8161d3c7971d88b7",
+      "composed_entry": "100644 blob 876eb9ce21a97acbeff66f3a8161d3c7971d88b7",
+      "exact_donor": true
+    }
+  ],
+  "preserved_base_paths": [
+    {
+      "path": "packages/ux-presets/src/seal.ts",
+      "base_entry": "100644 blob b986c4b0013ace77c82e061cd20224f574bfb392",
+      "composed_entry": "100644 blob b986c4b0013ace77c82e061cd20224f574bfb392"
+    },
+    {
+      "path": "packages/ux-fiat/src/view.ts",
+      "base_entry": "100644 blob 74f791587a6eba3cce0e7a4be98d7085196ffc4b",
+      "composed_entry": "100644 blob 74f791587a6eba3cce0e7a4be98d7085196ffc4b"
+    },
+    {
+      "path": "packages/ux-fiat/src/rate.ts",
+      "base_entry": "100644 blob 766e5d078cd88ffcaa7bc42efbf2e956b3f05e12",
+      "composed_entry": "100644 blob 766e5d078cd88ffcaa7bc42efbf2e956b3f05e12"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "base_entry": "100644 blob 8ed01592d487c356a72d51e240e5cc63fb470a3a",
+      "composed_entry": "100644 blob 8ed01592d487c356a72d51e240e5cc63fb470a3a"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "base_entry": "100644 blob 2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+      "composed_entry": "100644 blob 2ffdfe70a8814762b14721ac640fc82cab0b9e54"
+    }
+  ],
+  "all_other_base_source_entries_preserved": true,
+  "all_other_changes_are_documentation": true,
+  "qualification": "Not yet executed; inherited fiat test still expects old outer error message."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "fiat-original-expectations",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/view.quote-accessor.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat",
+  "started_at": "2026-11-24T10:18:50.984207+00:00",
+  "duration_seconds": 0.998,
+  "exit_code": 1,
+  "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+  "index_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+  "log": "fiat-original-expectations.log",
+  "log_sha256": "25b5212232e1a5a50cb790f81d328e6c2f1e1e60add7b922dfe79e8f1d9aee7e",
+  "node_options": null,
+  "original_log_sha256": "c5b5647f3b165199d975f6835281213e738ea4e76b23f430fee6be02a35c769b",
+  "original_log_archive": "fiat-original-expectations.log.gz",
+  "original_log_archive_sha256": "8bc6437b24458aed1f02123950712f8da34ae8ae1ce5d95d38bd95d10bd04be3",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

@@ -1,0 +1,73 @@
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat
+
+ ❯ src/view.quote-accessor.test.ts (7 tests | 6 failed) 21ms
+   ❯ computeFiatView untrusted quote property boundaries (7)
+     × returns invalid rather than throwing when quote.asset getter throws 12ms
+     × returns invalid rather than throwing when quote.fiat getter throws 2ms
+     × returns invalid rather than throwing when quote.rate getter throws 1ms
+     × returns invalid rather than throwing when quote.timestampMs getter throws 1ms
+     × returns invalid rather than throwing when quote.source getter throws 1ms
+     × returns invalid for a failing quote proxy access 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid rather than throwing when quote.asset getter throws
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid rather than throwing when quote.fiat getter throws
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid rather than throwing when quote.rate getter throws
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid rather than throwing when quote.timestampMs getter throws
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid rather than throwing when quote.source getter throws
+AssertionError: expected { state: 'invalid', error: { …(2) } } to deeply equal { state: 'invalid', error: { …(2) } }
+
+- Expected
++ Received
+
+  {
+    "error": {
+      "code": "bad-rate-format",
+-     "message": "quote could not be read",
++     "message": "quote fields could not be read",
+    },
+    "state": "invalid",
+  }
+
+ ❯ src/view.quote-accessor.test.ts:40:63
+     38|         get() { throw new Error('fixture quote accessor failed'); },
+     39|       });
+     40|       expect(computeFiatView({ ...input, quote: malformed })).toEqual({
+       |                                                               ^
+     41|         state: 'invalid',
+     42|         error: { code: 'bad-rate-format', message: 'quote could not be…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/view.quote-accessor.test.ts > computeFiatView untrusted quote property boundaries > returns invalid for a failing quote proxy access
+AssertionError: expected { state: 'invalid', error: { …(2) } } to deeply equal { state: 'invalid', error: { …(2) } }
+
+- Expected
++ Received
+
+  {
+    "error": {
+      "code": "bad-rate-format",
+-     "message": "quote could not be read",
++     "message": "quote fields could not be read",
+    },
+    "state": "invalid",
+  }
+
+ ❯ src/view.quote-accessor.test.ts:54:61
+     52|       },
+     53|     });
+     54|     expect(computeFiatView({ ...input, quote: malformed })).toEqual({
+       |                                                             ^
+     55|       state: 'invalid',
+     56|       error: { code: 'bad-rate-format', message: 'quote could not be r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)
+   Start at  02:18:51
+   Duration  606ms (transform 66%, import 14%, worker 14%, tests 6%)

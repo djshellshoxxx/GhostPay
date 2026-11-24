@@ -1,0 +1,122 @@
+{
+  "schema": "ghostpay-additional-log-provenance/1",
+  "logs": [
+    {
+      "path": "chain-adapters-native-final.log",
+      "text_sha256": "503eea76fb9f0fbc34fb8327ad92801e47e37fe9a34edc773ad11ad5dc727dbc",
+      "original_sha256": "6a43d877226fe36492b65ec3cd49ae4aa858ca83dcd67bff052010dc1a48d1b0",
+      "original_bytes": 5037,
+      "archive": "chain-adapters-native-final.log.gz",
+      "archive_sha256": "b68412e6a9b459b3a77d70f0733d631303a803c8f471312c53187b35cfcdc268",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "fiat-current-contract.log",
+      "text_sha256": "0b370c0ef67a1485ff95a9c14f8d5d4d5a74ecec47d01df7a7e379c009de5c48",
+      "original_sha256": "b6c93b7fd5df0c86658b2840bbd2adfcc0376ca78ca7e13dfe8c89ffedd9a503",
+      "original_bytes": 229,
+      "archive": "fiat-current-contract.log.gz",
+      "archive_sha256": "ad9f86fb8c7d96088d43552d608fbcb80746ca4b1425f93b46f6ac43b348fb9e",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "fiat-original-expectations.log",
+      "text_sha256": "25b5212232e1a5a50cb790f81d328e6c2f1e1e60add7b922dfe79e8f1d9aee7e",
+      "original_sha256": "c5b5647f3b165199d975f6835281213e738ea4e76b23f430fee6be02a35c769b",
+      "original_bytes": 3436,
+      "archive": "fiat-original-expectations.log.gz",
+      "archive_sha256": "8bc6437b24458aed1f02123950712f8da34ae8ae1ce5d95d38bd95d10bd04be3",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "install.log",
+      "text_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+      "original_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+      "original_bytes": 402,
+      "archive": "install.log.gz",
+      "archive_sha256": "fa7afa55fa5c2f57e37e8eea57062d9b8a48e7ce0754bb1126556ad26b267be2",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "package-builds.log",
+      "text_sha256": "875791895eaa3345a2bf87b0e48f422d6c9182c0c34ac224e4b23bb71cbfab46",
+      "original_sha256": "910646b359aa34b850f4e5abdc149ba9331336c17a1f8b3fb154db52da3deade",
+      "original_bytes": 799,
+      "archive": "package-builds.log.gz",
+      "archive_sha256": "f0e73e385b90238a67ebcb170a8c55481475a22eb9f79b44258dbfbdc5cdd89b",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "package-lint.log",
+      "text_sha256": "d031e048e45a9cc6dd796ac51618cbbb2492971173eccf840a0d8c472fd09d55",
+      "original_sha256": "4c014e954713efe471962a300f613634b4b02eaee51e1fb3ded9b066d3d94e81",
+      "original_bytes": 489,
+      "archive": "package-lint.log.gz",
+      "archive_sha256": "f00772e0c3b2ef37e705803a3f61fdfdc707c26106f0028d5e2fcff00961607e",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "package-tests.log",
+      "text_sha256": "344bc356e2cb2b7e5358056cdb4c489c33df96707a392298ee6a14e9c3745171",
+      "original_sha256": "cfe1ce50230be71de40af0386a0e7a79483262355562fec9e36c09eed1e15fce",
+      "original_bytes": 6735,
+      "archive": "package-tests.log.gz",
+      "archive_sha256": "be87d532afc7977d9e10ff4b2afbce1b1b34382b18468e8b9bb0520e7b1f00a4",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "package-typechecks.log",
+      "text_sha256": "29e59cfade5ef1ed6dfb5d0f0ca75234e47c83a3244a3626a1ab981145795deb",
+      "original_sha256": "d96b249c843bfef6e2d5cdd4507cbffb6e509c6f06a3321e272ad2ef0891f14a",
+      "original_bytes": 457,
+      "archive": "package-typechecks.log.gz",
+      "archive_sha256": "8cf1dd028a6f5c30b61ca0c1f0e6fcfa947cf438afa9ac57676aafbfd2ef123c",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "secret-scan.log",
+      "text_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "original_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "original_bytes": 266,
+      "archive": "secret-scan.log.gz",
+      "archive_sha256": "a9737e368baad3ecbda85e91cf16dcd949f121c8b291deb8365e1817a5446296",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "web-build-full.log",
+      "text_sha256": "3fda93075525f485310da2da0d947a53154fcb7215005d58d40dcfb5c4529012",
+      "original_sha256": "12af88db8d40a54c832a3c31a19f15d6a4c3ecaabebcc30b17c2d6dec729f821",
+      "original_bytes": 2569,
+      "archive": "web-build-full.log.gz",
+      "archive_sha256": "3c279fbf56f9870ca891aee19e807d39b85b167752e8612534161e0cdea1019f",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "web-changed-lint.log",
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "archive": "web-changed-lint.log.gz",
+      "archive_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "web-focused-tests.log",
+      "text_sha256": "040fb3b70ec0e04cc1c6ce7f38bc1dc9c69b587e239d380d2bfeadedcab7e855",
+      "original_sha256": "3f45c8354e27da8c4a3d38f51728c3c3bc39b6beb27f5aeae9c65e12ce8713c9",
+      "original_bytes": 577,
+      "archive": "web-focused-tests.log.gz",
+      "archive_sha256": "ca8276a4e5ff5cc3e7db5b3fbee7fc1a053dfb4faa5112515df642181491c2f6",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "path": "whitespace.log",
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "archive": "whitespace.log.gz",
+      "archive_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    }
+  ]
+}

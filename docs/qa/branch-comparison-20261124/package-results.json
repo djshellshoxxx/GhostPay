@@ -1,0 +1,164 @@
+{
+  "@ghostpay/i18n": {
+    "passed": 226,
+    "skipped": 0,
+    "summary": "226 passed (226)",
+    "log": "combined-pure-tests.log.gz"
+  },
+  "@ghostpay/ux-fiat": {
+    "passed": 81,
+    "skipped": 0,
+    "summary": "81 passed (81)",
+    "log": "combined-pure-tests.log.gz"
+  },
+  "@ghostpay/ux-fees": {
+    "passed": 95,
+    "skipped": 0,
+    "summary": "95 passed (95)",
+    "log": "combined-pure-tests.log.gz"
+  },
+  "@ghostpay/address-safety": {
+    "passed": 77,
+    "skipped": 0,
+    "summary": "77 passed (77)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/amount-blur": {
+    "passed": 100,
+    "skipped": 0,
+    "summary": "100 passed (100)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/btc-silent-payments": {
+    "passed": 563,
+    "skipped": 0,
+    "summary": "563 passed (563)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/hygiene": {
+    "passed": 163,
+    "skipped": 0,
+    "summary": "163 passed (163)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/invoice-schema": {
+    "passed": 731,
+    "skipped": 0,
+    "summary": "731 passed (731)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/merchant-hooks": {
+    "passed": 53,
+    "skipped": 0,
+    "summary": "53 passed (53)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/merchant-ledger": {
+    "passed": 35,
+    "skipped": 0,
+    "summary": "35 passed (35)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/metadata-hardening": {
+    "passed": 120,
+    "skipped": 0,
+    "summary": "120 passed (120)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/payment-uri": {
+    "passed": 254,
+    "skipped": 0,
+    "summary": "254 passed (254)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/policy-scheme": {
+    "passed": 110,
+    "skipped": 0,
+    "summary": "110 passed (110)",
+    "log": "combined-policy-native-final.log.gz"
+  },
+  "@ghostpay/qr-exchange": {
+    "passed": 235,
+    "skipped": 0,
+    "summary": "235 passed (235)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-connect": {
+    "passed": 149,
+    "skipped": 0,
+    "summary": "149 passed (149)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-core": {
+    "passed": 134,
+    "skipped": 0,
+    "summary": "134 passed (134)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-export": {
+    "passed": 166,
+    "skipped": 0,
+    "summary": "166 passed (166)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-flow": {
+    "passed": 101,
+    "skipped": 0,
+    "summary": "101 passed (101)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-guide": {
+    "passed": 76,
+    "skipped": 0,
+    "summary": "76 passed (76)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-intake": {
+    "passed": 97,
+    "skipped": 0,
+    "summary": "97 passed (97)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-links": {
+    "passed": 70,
+    "skipped": 0,
+    "summary": "70 passed (70)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-notify": {
+    "passed": 110,
+    "skipped": 0,
+    "summary": "110 passed (110)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-presets": {
+    "passed": 63,
+    "skipped": 0,
+    "summary": "63 passed (63)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-privacy": {
+    "passed": 44,
+    "skipped": 0,
+    "summary": "44 passed (44)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-receipts": {
+    "passed": 162,
+    "skipped": 0,
+    "summary": "162 passed (162)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-schedule": {
+    "passed": 153,
+    "skipped": 0,
+    "summary": "153 passed (153)",
+    "log": "combined-other-package-tests.log.gz"
+  },
+  "@ghostpay/ux-vault": {
+    "passed": 301,
+    "skipped": 0,
+    "summary": "301 passed (301)",
+    "log": "combined-other-package-tests.log.gz"
+  }
+}

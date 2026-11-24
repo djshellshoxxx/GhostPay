@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-11-24T10:20:47.104822+00:00",
+  "attempt": "package-typechecks",
+  "status": "command-not-started",
+  "reason": "The outside-repository log wrapper ran concurrent git write-tree metadata captures; one encountered the transient index lock before starting TypeScript. No source or test command failed.",
+  "correction": "Metadata capture now uses read-only git rev-parse HEAD^{tree} on frozen product. No repository/test/config change or lock deletion.",
+  "rerun_receipt": "package-typechecks.json"
+}

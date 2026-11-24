@@ -1,0 +1,10 @@
+{
+  "raw_file": "cumulative-preserved-heads-20261124.json",
+  "raw_sha256": "3203bbb97738444ae8aed87881538089adc3d4e3e49a1472f14afd0fbe962ab2",
+  "raw_bytes": 184895,
+  "archive": "cumulative-preserved-heads-20261124.json.gz",
+  "archive_sha256": "7b4703d15b016f91abd043895c74fc621f56dfc9b066fc0f145ab23cd29500f3",
+  "archive_bytes": 29627,
+  "source": "Root coordinator reconstruction of696-ref snapshot and publication ancestry union.",
+  "interpretation": "Reachability counts preserve histories, not feature counts or behavioral completion."
+}

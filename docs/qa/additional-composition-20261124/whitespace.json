@@ -1,0 +1,23 @@
+{
+  "name": "whitespace",
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+    "HEAD"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:23:03.501645+00:00",
+  "duration_seconds": 0.037,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "whitespace.log",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "node_options": null,
+  "original_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_log_archive": "whitespace.log.gz",
+  "original_log_archive_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

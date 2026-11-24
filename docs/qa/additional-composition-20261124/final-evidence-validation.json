@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-11-24T10:32:11.954903+00:00",
+  "product_commit": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "documentation_paths_staged_before_this_receipt": 73,
+  "all_changes_since_product_documentation_only": true,
+  "unstaged_tracked_changes": false,
+  "staged_whitespace": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "staged_secret_scan": {
+    "command": [
+      "npm",
+      "run",
+      "ci:scan-secrets"
+    ],
+    "exit_code": 0,
+    "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> ghostpay@0.1.0 ci:scan-secrets\n> bash scripts/scan-secrets.sh\n\nOK: no committed env files or key material found.\n"
+  },
+  "lossless_log_checks": true,
+  "ref_refresh_hash_verified": true,
+  "cumulative_archive_hash_verified": true
+}

@@ -1,0 +1,32 @@
+{
+  "name": "web-focused-tests",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/lib/qrKinds.test.ts",
+    "src/lib/qrContrast.test.ts",
+    "src/lib/qrClassify.test.ts",
+    "src/components/QrFrame.test.tsx",
+    "src/components/QrFrame.security.test.tsx",
+    "src/components/QrFrame.i18n.test.tsx",
+    "src/components/QrFrame.largeWarning.test.tsx",
+    "src/components/PaymentRequestQr.test.tsx",
+    "src/lib/sanitize.marker-script.test.ts",
+    "src/lib/hardening.test.ts",
+    "src/components/Common.test.tsx",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/apps/web",
+  "started_at": "2026-11-24T10:20:28.170348+00:00",
+  "duration_seconds": 21.512,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "web-focused-tests.log",
+  "log_sha256": "040fb3b70ec0e04cc1c6ce7f38bc1dc9c69b587e239d380d2bfeadedcab7e855",
+  "node_options": "--max-old-space-size=1024",
+  "original_log_sha256": "3f45c8354e27da8c4a3d38f51728c3c3bc39b6beb27f5aeae9c65e12ce8713c9",
+  "original_log_archive": "web-focused-tests.log.gz",
+  "original_log_archive_sha256": "ca8276a4e5ff5cc3e7db5b3fbee7fc1a053dfb4faa5112515df642181491c2f6",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

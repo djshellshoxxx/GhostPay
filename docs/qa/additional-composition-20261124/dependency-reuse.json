@@ -1,0 +1,425 @@
+{
+  "schema": "ghostpay-additional-dependency-reuse/1",
+  "created_at": "2026-11-24T10:14:56.204375+00:00",
+  "source_worktree": "/workspace/scratch/68c82b9dbbbb/GhostPay-followup",
+  "source_head": "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+  "destination_worktree": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "composed_red_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+  "copy_method": "shutil.copytree with shutil.copy2; every resulting file byte-compared and inode-different, no symlinks/hardlinks",
+  "root_inputs": [
+    {
+      "path": "package.json",
+      "git_oid": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+      "sha256": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4"
+    },
+    {
+      "path": "package-lock.json",
+      "git_oid": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+      "sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "git_oid": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "sha256": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+    },
+    {
+      "path": "eslint.config.js",
+      "git_oid": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+    }
+  ],
+  "copied_packages": [
+    {
+      "path": "packages/address-safety",
+      "source_tree": "0465b129e8ec88f2671cc1477ae797dfd8be6e0d",
+      "files": 18,
+      "manifest_sha256": "5065d8198e3caff887e47219d57b3f517d0943799c05b0ad7668d3c2172e75c3"
+    },
+    {
+      "path": "packages/amount-blur",
+      "source_tree": "d0dbc797cd987acd434a127a636a28018bfde6d8",
+      "files": 33,
+      "manifest_sha256": "bcb31b663e65b520aed60a59bafdc7b3d128f2cdb3cd3f60255580f39b549930"
+    },
+    {
+      "path": "packages/btc-family",
+      "source_tree": "9ceaa1d7afefa79de16bd23d4457ff586ed8e35c",
+      "files": 54,
+      "manifest_sha256": "3235d62dd40421c0ca56e66392f69075806141250e2ac8de760db8e9e041eca4"
+    },
+    {
+      "path": "packages/btc-payjoin",
+      "source_tree": "ac351fa642b55c3ec481342a7e9c3c9f3f9109d3",
+      "files": 63,
+      "manifest_sha256": "29896f84630b6b1780bf536f399640965e7e798fcea5e1dfd19580a044fa6505"
+    },
+    {
+      "path": "packages/btc-silent-payments",
+      "source_tree": "6142c3df72f1271d7e9ef9e960fa7675f98c0b0f",
+      "files": 102,
+      "manifest_sha256": "328b84cb5f232c9112cdc3b1a89017e77de7ef9de97ab9c2719dedf33e97a1ac"
+    },
+    {
+      "path": "packages/chain-evm-extra",
+      "source_tree": "3fdc6c7919493af458b29f8d5094a4f90a825863",
+      "files": 24,
+      "manifest_sha256": "7e51b05fc30e024b86a06b09f35c178716add454f603853871c57ec627de8c10"
+    },
+    {
+      "path": "packages/chain-solana",
+      "source_tree": "d5879dca9e4a1ff4fd17bb5af008112950a133b8",
+      "files": 39,
+      "manifest_sha256": "9b2628e77c0a8239f07bbe0e6d4de3bf23a31ed36a20c3de0fc8ec1384f6b0ea"
+    },
+    {
+      "path": "packages/chain-tron",
+      "source_tree": "2d95e22f00140d06f1c05b36a65e9e0f8f84702d",
+      "files": 18,
+      "manifest_sha256": "2b95e28acd63978817405751edfdc570c255042f11864232a552dac6861a8bec"
+    },
+    {
+      "path": "packages/cli",
+      "source_tree": "74c5c462d384865fd38d6dc06e0890b50b5cfd56",
+      "files": 117,
+      "manifest_sha256": "969215c88bc4c918287ff926c34cca2afc8243bd908ef61c885df92bf545a1f5"
+    },
+    {
+      "path": "packages/confidential-amounts",
+      "source_tree": "db29d3be765978d057217345fb65e3c41df8d4f4",
+      "files": 45,
+      "manifest_sha256": "116b4eb10eed616f1718778a7348e01c99e05ac27d024d8a0f0193a2e8cec058"
+    },
+    {
+      "path": "packages/core-crypto",
+      "source_tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+      "files": 24,
+      "manifest_sha256": "eb9673d049a7985030f11bf7c9b30e8c6cfdf2de3a1fe7fdd0bc5445303e1f24"
+    },
+    {
+      "path": "packages/donation",
+      "source_tree": "414d7d0837c985e28908c8cd0f153fbad87d3660",
+      "files": 24,
+      "manifest_sha256": "2a1912581c78d61399ec26f7e6a04bdc21ec52a98b599800a509f69c765c85b0"
+    },
+    {
+      "path": "packages/external-pools",
+      "source_tree": "414a410ed3e21c9a31398da7a4e946808d430e24",
+      "files": 63,
+      "manifest_sha256": "602bcf41c8beb1fc3cb120558650f11b94cb077e56b711f83ffd25aa54332803"
+    },
+    {
+      "path": "packages/external-pools-privacypools",
+      "source_tree": "53de86de6aa1fffa627ca3ff3aa1a3035df9fc55",
+      "files": 24,
+      "manifest_sha256": "591fd490d54bf33f72664ff6634b5ce86657cd92d12f750c53e8cd5fbdcebe6c"
+    },
+    {
+      "path": "packages/external-pools-railgun",
+      "source_tree": "fdaa2134a3a301c5cdb063b98d40da1d8a33c65e",
+      "files": 15,
+      "manifest_sha256": "f848aa7db05d4f2aff72aecea5f3a38af106489ff7e0caf80ae57facdbd321ae"
+    },
+    {
+      "path": "packages/hops",
+      "source_tree": "9a682b3fc4ebb9c0e566092c679de1936f743c9c",
+      "files": 33,
+      "manifest_sha256": "0e26011828b757fc44191d8e9667e92cf2afe5acd04b12fcd3feec6190d2835a"
+    },
+    {
+      "path": "packages/hygiene",
+      "source_tree": "c118c99c0196fda61e2deb9132ab205a367dea4c",
+      "files": 36,
+      "manifest_sha256": "4e9a368d1da0c3f265d3091b1709efd48bbb299cb0729b1f1916756585ea96b5"
+    },
+    {
+      "path": "packages/i18n",
+      "source_tree": "f441858ebe3978b6e4f6590089708847f78e7340",
+      "files": 75,
+      "manifest_sha256": "43a23778858c0ae4532354197ab7f34ec8aeb81b5a436b45929872def637c27d"
+    },
+    {
+      "path": "packages/invoice-schema",
+      "source_tree": "aa3821370adb5a52b8be5a52ee1bff984dd80159",
+      "files": 33,
+      "manifest_sha256": "2b67754b7c5d10887033edebbe8420c4fe6837108be93d8b10ddbeaac520a916"
+    },
+    {
+      "path": "packages/merchant-hooks",
+      "source_tree": "0ec02a784172c0eec02eb0087eec49c4315d4800",
+      "files": 21,
+      "manifest_sha256": "c7dc3defa825e1c014216dd3e92ec9bfd7c3d6d120d9c634e2ea21639a426c73"
+    },
+    {
+      "path": "packages/merchant-ledger",
+      "source_tree": "507f90f53ac3f233262a87fad96b280c4134b1b0",
+      "files": 18,
+      "manifest_sha256": "96d8a597b3e32387e7fd8012cd1a34e47978f07c3740eaf6f1d9a9a89f8ad86d"
+    },
+    {
+      "path": "packages/merchant-multisig",
+      "source_tree": "a83d69f364ac5a9166e0a2fbc1080a62710b671d",
+      "files": 27,
+      "manifest_sha256": "e029f85ef0808ac6d836a43e168299f8a66bac56064cead4183cf163e780de9d"
+    },
+    {
+      "path": "packages/net-harness",
+      "source_tree": "b973c4c6bf57048a4268ae5607cf0a8d5fad85eb",
+      "files": 24,
+      "manifest_sha256": "28f5769bc7c01bb1c3460605c00d10bf3c2c00f976408d861c9cc91b0a39a82f"
+    },
+    {
+      "path": "packages/net-transport",
+      "source_tree": "a953b2d8ec6eacca2ae5752de690373e5d8e8c1a",
+      "files": 60,
+      "manifest_sha256": "85fd9924e3bf894c35f73aa7941e9f70187cc62bdefef13d5a865a27b73f3825"
+    },
+    {
+      "path": "packages/ops-monitor",
+      "source_tree": "fe5eb5127fe47b9d6178f2bd0c7312fb47605d5c",
+      "files": 48,
+      "manifest_sha256": "bb3864314c3cfaf630c0d3d1d3dcc7c450f775c44b4e60dff6c63e33f2857096"
+    },
+    {
+      "path": "packages/payer-sponsor",
+      "source_tree": "d4ffe0c748cc604a94fded8b4c84edaa306337c2",
+      "files": 72,
+      "manifest_sha256": "692e5512f06a4efb964f51ff35b488c3bb739a4e94e835349991769a81a8c125"
+    },
+    {
+      "path": "packages/payment-uri",
+      "source_tree": "3e04382d6a0888e5710d82fb8439755bc1dcd3ac",
+      "files": 42,
+      "manifest_sha256": "998f45655fb8b99eeccb3508ac1a7979779bb5d5a07d2120bda3154601993b09"
+    },
+    {
+      "path": "packages/pir-two-server",
+      "source_tree": "a33d6ee54183755a72d3a551a123325b7511cc51",
+      "files": 36,
+      "manifest_sha256": "a33facebeb235000bcbc2690127fadc487c6f84c27f0ebbe8b3d813a9da1e407"
+    },
+    {
+      "path": "packages/plugin-api",
+      "source_tree": "f2a34f7a4de6eb4d35281da4d308adba3b3f0406",
+      "files": 21,
+      "manifest_sha256": "3ea6f4a60cb8d52b06785f8a4adda348107698725660070e3e49365d6a46b235"
+    },
+    {
+      "path": "packages/policy-scheme",
+      "source_tree": "ebc93ff05eb1efb51cb2aed8da154743605764fa",
+      "files": 45,
+      "manifest_sha256": "a5a4a2ad6c062e172c6c0364d672ddfbd76a0ee4bcbdb69304e103844d5a410a"
+    },
+    {
+      "path": "packages/pool-circuits",
+      "source_tree": "9bd6c563bd6498501ab87927a215918e18eded05",
+      "files": 21,
+      "manifest_sha256": "6977f45de35a10b6ee8482941361a531889e08e7727dc695d72b0529281fb9bb"
+    },
+    {
+      "path": "packages/pool-prover",
+      "source_tree": "1a634399ccf6c6dd5dbd0546f24c560aa112184a",
+      "files": 9,
+      "manifest_sha256": "94ff1bfbce755a2b799a4cde1b7965d77816f4ec7a7ce2623ce1a4389f4d22af"
+    },
+    {
+      "path": "packages/pool-relayer",
+      "source_tree": "1642c8f79b06693234a34a919823692447c44d7f",
+      "files": 33,
+      "manifest_sha256": "6a55032128a40d671793e6dd694d3e86a52102eb7a10f2d36bcfe3e66788d7c5"
+    },
+    {
+      "path": "packages/pool-sdk",
+      "source_tree": "6d1004d0bef2c2b81ae821132429b76e332e6aa9",
+      "files": 60,
+      "manifest_sha256": "f5fdd99bf44dbaff4167de1f24728dba7f46f624fc74fce9ccf4b645b4fbd550"
+    },
+    {
+      "path": "packages/privacy-pipeline",
+      "source_tree": "55a47afdb8470d8afefcb6ae70b3758af09b3c96",
+      "files": 63,
+      "manifest_sha256": "47d85bf733f223484e8bba4dbe28de694106491ec2b09eff7ff3a53d30418620"
+    },
+    {
+      "path": "packages/privacy-profiles",
+      "source_tree": "03797c13554b16ccc9a9cbe4eb51cde0e57b96dd",
+      "files": 36,
+      "manifest_sha256": "4b56d6fa278b9b1cac91221cf3f7ea9ec3f818bc7b6cce06c4c94207675ee0f2"
+    },
+    {
+      "path": "packages/qr-exchange",
+      "source_tree": "3e800ace3b9961774d7e074f33d1ab612c8d926a",
+      "files": 30,
+      "manifest_sha256": "2bdd088aa2398932ca06363830452e89efdacfeda1c3ca18c96ae4ced9119fcb"
+    },
+    {
+      "path": "packages/relayer-guard",
+      "source_tree": "62a3e5d1b06a9803274e126b8fd7cc4a119981be",
+      "files": 27,
+      "manifest_sha256": "7121d5c8f1050793e5c566289b3fa3ac509f4a6cefb1ae3367ef669e3a58e076"
+    },
+    {
+      "path": "packages/sandbox",
+      "source_tree": "49355079ef1355004735522238cfc224e1e24631",
+      "files": 36,
+      "manifest_sha256": "71257f0f945c65bb957d1e40472e37d8946295733d7fa97bf3d7dbd132a3c959"
+    },
+    {
+      "path": "packages/scan-source",
+      "source_tree": "086d7ec7fc74023226e60545b73d0f3d666a7f75",
+      "files": 42,
+      "manifest_sha256": "644be70fd1d1370d1b8c46c1036f623950323a54c1f7340e292c355ca1deae73"
+    },
+    {
+      "path": "packages/sdk",
+      "source_tree": "3f3531f83c66cae40e4a2cda121682b2d09c096d",
+      "files": 27,
+      "manifest_sha256": "e14f6cda4fddb493642d7e3009d95c7b720958ee8e8d023d2148f2041558f18e"
+    },
+    {
+      "path": "packages/secret-box",
+      "source_tree": "38833207422c0e4e9246add43dfe3967b41dc900",
+      "files": 9,
+      "manifest_sha256": "d0f8923e2a64e38eb9b9f52c5f1bc8e7841a89053e7ebcd376882e816007bf78"
+    },
+    {
+      "path": "packages/solana-stealth",
+      "source_tree": "d5eacfbda5fa16ff2502eeac1915347688f8dd61",
+      "files": 45,
+      "manifest_sha256": "fde5c499b9067285b0c89426f7079b383d4e30c554da52f492fa39e21e10071f"
+    },
+    {
+      "path": "packages/tron-adapter",
+      "source_tree": "7393b5e5ee44511335061b219edd810b4ab93bd7",
+      "files": 30,
+      "manifest_sha256": "ccfa7da44dacd9efd2e95c4f443599586e6c6592a66dff451b1aad4c35bf5420"
+    },
+    {
+      "path": "packages/tx-review",
+      "source_tree": "efac21788828321eb4b545db8874bfe0031c478f",
+      "files": 15,
+      "manifest_sha256": "81ee9d0957fe5844e1eb1e68956ba98f61809e2bc64fe9a9e1717e034da17edd"
+    },
+    {
+      "path": "packages/ux-connect",
+      "source_tree": "d6e7e95939358334b0a696804b06e7c5c41a4740",
+      "files": 15,
+      "manifest_sha256": "1e0143a3359cb52897503ace9c04181f48a44343b181a8fcd8878b1411f1b8c7"
+    },
+    {
+      "path": "packages/ux-core",
+      "source_tree": "78f18bd1dec2f28eff792616b213c21754c638fe",
+      "files": 18,
+      "manifest_sha256": "4ac2233c55b3c9fd79d0b5aa45da1c1546fecba7418511f1636949fafb09494d"
+    },
+    {
+      "path": "packages/ux-export",
+      "source_tree": "059c5b59ac83e0152156d4e04003ecaedf906257",
+      "files": 30,
+      "manifest_sha256": "e1d23c6962662548c75bc6188a82c27388c0e08574372b7026cef3522174a03f"
+    },
+    {
+      "path": "packages/ux-fees",
+      "source_tree": "dfcca317ac5ef22922af86e484a3a73ce84c7f3d",
+      "files": 18,
+      "manifest_sha256": "6b7ec2e7af3849db6bbf00b007bbe44472f67f55dc069bf154d171edf2e99639"
+    },
+    {
+      "path": "packages/ux-flow",
+      "source_tree": "861f52d26cc893444c0a05a090e6e0e0eabbe97f",
+      "files": 24,
+      "manifest_sha256": "4348a91ec8a5e932efd2f897af424d88a0fe80a957b463ed5d41b7dfcf7755ad"
+    },
+    {
+      "path": "packages/ux-guide",
+      "source_tree": "31434f7bd4bb34f8daa174c22799a0c8f7ac253f",
+      "files": 12,
+      "manifest_sha256": "e1f7ce9547253838dfdf08a8b5fa9aa9a05ca9981562241ad513c333cb7722eb"
+    },
+    {
+      "path": "packages/ux-i18n",
+      "source_tree": "2205d449163f01ab2cd4272f5272d8e3af9973ac",
+      "files": 3,
+      "manifest_sha256": "70923df2eb9e2fa8700767c4abb1b4a454d76e079d70f0174fb2a61665e43e27"
+    },
+    {
+      "path": "packages/ux-intake",
+      "source_tree": "8b0a3670c2c583b6cf80bdf303b144ebe4714de0",
+      "files": 24,
+      "manifest_sha256": "a9ca3aa062578d6ceebe050e882fcb583a4e4dc82d2c4b69abf36c6e23095b51"
+    },
+    {
+      "path": "packages/ux-links",
+      "source_tree": "21850eec175038df7e8316d9c242228e27fc7128",
+      "files": 36,
+      "manifest_sha256": "a0e248524663ef2865a4d5b33bb2307538faf4d04854d7d841b01b1ccd07c392"
+    },
+    {
+      "path": "packages/ux-notify",
+      "source_tree": "fc84d88db678dec6cee1c858e5b2f7439a12e423",
+      "files": 24,
+      "manifest_sha256": "b19f7d3940636958ce6a331b4d9948ed2aa4f8f1fa09f29143b888ae30a398a3"
+    },
+    {
+      "path": "packages/ux-presets",
+      "source_tree": "9fdce4c7471f13b33e346cc9498f145893b2baab",
+      "files": 18,
+      "manifest_sha256": "80c10db0058cab978ad031220a51f71650be3ba25ebb5ca96053b53e64433197"
+    },
+    {
+      "path": "packages/ux-privacy",
+      "source_tree": "4cc1d4a5b33e46bb19025a9d277b54a0c49a9971",
+      "files": 12,
+      "manifest_sha256": "818f48331d3bd9ee2900b6127b23e878a536b9ee7ea9fa38e7c3cc2d71fd5331"
+    },
+    {
+      "path": "packages/ux-receipts",
+      "source_tree": "bdf59f99864caf682b56a059c8b70c2e2e59869f",
+      "files": 42,
+      "manifest_sha256": "e391a37bb27887918173172aff85c1b5027a8026fe5cab929daef1bd48692a41"
+    },
+    {
+      "path": "packages/ux-sandbox",
+      "source_tree": "420ddcee4dcf4b6ea28223d53f8c33b073b7caaf",
+      "files": 3,
+      "manifest_sha256": "e1b74a3789e46bc3e955c5fad662afb5ebb1719cd1a32a676ef0735640fa00ca"
+    },
+    {
+      "path": "packages/ux-schedule",
+      "source_tree": "32aeb877533480271ab2b4d9b90c93de3a423f81",
+      "files": 24,
+      "manifest_sha256": "4a270f731ee9e7260835946f9a91be626450c050327559c314513c08eef08f3a"
+    },
+    {
+      "path": "packages/ux-vault",
+      "source_tree": "d4ec1947302754a985f3e36665fa34b77b44beb4",
+      "files": 54,
+      "manifest_sha256": "d770e258f9df3e42173193dfa133f14c2914bc94013c8b030749bc312782bfac"
+    }
+  ],
+  "changed_packages_to_build": [
+    {
+      "path": "packages/chain-adapters",
+      "base_tree": "c2e01a4f42a040c8bdf9e873edcd7f74ebbb7a35",
+      "current_tree": "29688b2d3587c413f8e1dcda5c5ad8345401a8b9"
+    },
+    {
+      "path": "packages/merchant-billing",
+      "base_tree": "14fdfe51015075da8e2c6b735a5141a3f56fc6fc",
+      "current_tree": "a0930cd531f8f3577e0a35563b3fcf26dadb481c"
+    },
+    {
+      "path": "packages/metadata-hardening",
+      "base_tree": "8cd6f5ac640162fdb4ac16c9d30a02c494cf7d82",
+      "current_tree": "360c9dc7b9928f55dba69ef3314a8448383ccadb"
+    },
+    {
+      "path": "packages/ux-fiat",
+      "base_tree": "fac6786edab4100a0cbb4f474f1e76192e211ef3",
+      "current_tree": "29db7bc0c97a15d9e2be62774d7ca0ede50928a0"
+    }
+  ],
+  "missing_source_dist": [
+    "packages/confidential-contracts"
+  ],
+  "source_evidence": "docs/qa/followup-composition-20261124/dependency-reuse.json"
+}

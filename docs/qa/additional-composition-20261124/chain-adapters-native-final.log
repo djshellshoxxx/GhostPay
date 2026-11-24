@@ -1,0 +1,85 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-adapters@0.1.0 test
+> vitest run --coverage --maxWorkers=1 --reporter=default --reporter=json --outputFile=../../docs/qa/additional-composition-20261124/chain-adapters-native-results.json
+
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/chain-adapters
+      Coverage enabled with v8
+
+ ✓ src/scanHardening.test.ts (26 tests) 2723ms
+   ✓ L4-01: announcer spam never stops the scan for good (12)
+     ✓ shrinks a first window that alone needs more block reads than the cap 511ms
+     ✓ keeps full-size windows between spam blocks: a spam block every 100 blocks costs a fraction of one-block windows (A-R2) 1158ms
+   ✓ A-R7: the window also grows back after a halving that a fixed range limit cannot explain (5)
+     ✓ grows back past a -32602 refusal of a range no larger than one already served: dense pairs every 100 blocks 455ms
+ ✓ src/sweep.test.ts (35 tests) 1698ms
+   ✓ digests (2)
+     ✓ viem hashTypedData equals the manual keccak digest (property) 1446ms
+ ✓ src/registryDelegation.test.ts (53 tests) 401ms
+   ✓ ERC-6538 delegation builders (20)
+     ✓ round-trips bounded opaque signature bytes without changing registrant, scheme or meta-address 302ms
+ ✓ src/payments.test.ts (35 tests) 666ms
+ ✓ src/adapter.test.ts (14 tests) 229ms
+ ✓ src/registryEns.test.ts (22 tests) 309ms
+ ✓ src/router.test.ts (33 tests) 340ms
+ ✓ src/permit.test.ts (20 tests) 481ms
+ ✓ src/verify.test.ts (21 tests) 138ms
+ ✓ src/eip712.independent.test.ts (2 tests) 114ms
+ ✓ src/adapter.deep.test.ts (5 tests) 154ms
+ ✓ src/logs.test.ts (44 tests) 107ms
+ ✓ src/deploymentsVerify.test.ts (14 tests) 214ms
+ ✓ src/fees.test.ts (33 tests) 134ms
+ ✓ src/rpc.test.ts (87 tests) 95ms
+ ✓ src/registry.test.ts (10 tests) 90ms
+ ✓ src/registry.compat.test.ts (10 tests) 36ms
+ ✓ src/scanVerify.test.ts (21 tests) 71ms
+ ✓ src/quote.test.ts (22 tests) 50ms
+ ✓ src/quote.guards.test.ts (19 tests) 37ms
+ ✓ src/deployments.test.ts (13 tests) 23ms
+ ✓ src/config.test.ts (7 tests) 21ms
+ ✓ src/abi.test.ts (3 tests) 11ms
+ ✓ src/quote.anvil.test.ts (5 tests) 405ms
+ ✓ src/payments.anvil.test.ts (17 tests) 867ms
+ ✓ src/router.anvil.test.ts (3 tests) 1093ms
+   ✓ router fee differential vs compiled router (anvil) (3)
+     ✓ on anvil (2)
+       ✓ ERC-20: on-chain fee and net equal routerFee()/routerSplit() for boundary and large grosses 526ms
+
+ Test Files  26 passed (26)
+      Tests  574 passed (574)
+   Start at  02:26:23
+   Duration  26.45s (tests 52%, import 43%, worker 3%, transform 2%)
+
+     Import  79 modules were evaluated 113 times · 8.84s total, 43% of tracked time
+             ~2.66s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+JSON report written to /workspace/scratch/68c82b9dbbbb/GhostPay-additional/docs/qa/additional-composition-20261124/chain-adapters-native-results.json
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    97.4 |    96.67 |   99.01 |   99.01 |
+ src               |   97.37 |    96.66 |   98.98 |   98.99 |
+  adapter.ts       |   85.71 |    83.13 |     100 |   96.96 | 226,277
+  ...sSignature.ts |    92.5 |    89.65 |     100 |   96.87 | 55
+  ...entsVerify.ts |    92.5 |       90 |     100 |    93.1 | 61-62
+  fees.ts          |   96.72 |     97.5 |     100 |     100 | 90
+  logs.ts          |   98.47 |    97.03 |     100 |   99.54 | 283
+  payments.ts      |   94.89 |     93.6 |     100 |   97.46 | 279,389-390,399
+  permit.ts        |   96.29 |    97.36 |     100 |   96.61 | 110,165
+  registry.ts      |   98.55 |    97.67 |     100 |   98.41 | 156
+  registryEns.ts   |   96.42 |       96 |     100 |     100 | 49
+  router.ts        |   99.35 |    99.29 |     100 |     100 | 208
+  rpc.ts           |   98.62 |      100 |   93.93 |   99.41 | 250
+  sweep.ts         |    97.5 |    96.49 |     100 |     100 | 200,215
+  verify.ts        |   98.93 |    97.18 |     100 |     100 | 68,101
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.4% ( 1728/1774 )
+Branches     : 96.67% ( 1541/1594 )
+Functions    : 99.01% ( 202/204 )
+Lines        : 99.01% ( 1401/1415 )
+================================================================================

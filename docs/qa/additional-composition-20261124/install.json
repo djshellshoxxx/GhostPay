@@ -1,0 +1,24 @@
+{
+  "name": "install",
+  "command": [
+    "npm",
+    "ci",
+    "--offline",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:18:24.891629+00:00",
+  "duration_seconds": 17.63,
+  "exit_code": 0,
+  "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+  "index_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+  "log": "install.log",
+  "log_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+  "node_options": null,
+  "original_log_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+  "original_log_archive": "install.log.gz",
+  "original_log_archive_sha256": "fa7afa55fa5c2f57e37e8eea57062d9b8a48e7ce0754bb1126556ad26b267be2",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

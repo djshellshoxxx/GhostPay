@@ -1,0 +1,530 @@
+{
+  "schema": "ghostpay-additional-qualification/1",
+  "recorded_at": "2026-11-24T10:29:22.636366+00:00",
+  "product_commit": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "product_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "local_base": "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+  "published_equivalent_base": {
+    "pr": 616,
+    "sha": "7c4987650faf32322d7ded48ad669130aba7e63b",
+    "tree": "2444833284a33b868e0c30047434b8b2d9bbd27d",
+    "source": "Coordinator publication readback; local base unchanged."
+  },
+  "donor": "100de4006569ee1f65736adce8d111446dfafa59",
+  "package_results": [
+    {
+      "package": "@ghostpay/chain-adapters",
+      "passed": 574,
+      "skipped": 0,
+      "total": 574,
+      "files_passed": 26,
+      "coverage": {
+        "Statements": "97.4% ( 1728/1774 )",
+        "Branches": "96.67% ( 1541/1594 )",
+        "Functions": "99.01% ( 202/204 )",
+        "Lines": "99.01% ( 1401/1415 )"
+      },
+      "qualification": "Final complete REQUIRE_ANVIL=1 rerun replaces initial552passed/22skipped result."
+    },
+    {
+      "package": "@ghostpay/merchant-billing",
+      "passed": 292,
+      "skipped": 0,
+      "total": 292,
+      "files_passed": 13,
+      "coverage": {
+        "Statements": "99.69% ( 662/664 )",
+        "Branches": "99.66% ( 589/591 )",
+        "Functions": "100% ( 88/88 )",
+        "Lines": "99.8% ( 511/512 )"
+      }
+    },
+    {
+      "package": "@ghostpay/metadata-hardening",
+      "passed": 125,
+      "skipped": 0,
+      "total": 125,
+      "files_passed": 13,
+      "coverage": {
+        "Statements": "99.48% ( 585/588 )",
+        "Branches": "98.85% ( 431/436 )",
+        "Functions": "100% ( 119/119 )",
+        "Lines": "100% ( 485/485 )"
+      }
+    },
+    {
+      "package": "@ghostpay/ux-fiat",
+      "passed": 88,
+      "skipped": 0,
+      "total": 88,
+      "files_passed": 7,
+      "coverage": {
+        "Statements": "100% ( 305/305 )",
+        "Branches": "99.36% ( 313/315 )",
+        "Functions": "100% ( 27/27 )",
+        "Lines": "100% ( 235/235 )"
+      }
+    }
+  ],
+  "initial_package_results": [
+    {
+      "package": "@ghostpay/chain-adapters",
+      "passed": 552,
+      "skipped": 22,
+      "total": 574,
+      "files_passed": 26,
+      "coverage": {
+        "Statements": "97.35% ( 1727/1774 )",
+        "Branches": "96.48% ( 1538/1594 )",
+        "Functions": "99.01% ( 202/204 )",
+        "Lines": "98.93% ( 1400/1415 )"
+      }
+    },
+    {
+      "package": "@ghostpay/merchant-billing",
+      "passed": 292,
+      "skipped": 0,
+      "total": 292,
+      "files_passed": 13,
+      "coverage": {
+        "Statements": "99.69% ( 662/664 )",
+        "Branches": "99.66% ( 589/591 )",
+        "Functions": "100% ( 88/88 )",
+        "Lines": "99.8% ( 511/512 )"
+      }
+    },
+    {
+      "package": "@ghostpay/metadata-hardening",
+      "passed": 125,
+      "skipped": 0,
+      "total": 125,
+      "files_passed": 13,
+      "coverage": {
+        "Statements": "99.48% ( 585/588 )",
+        "Branches": "98.85% ( 431/436 )",
+        "Functions": "100% ( 119/119 )",
+        "Lines": "100% ( 485/485 )"
+      }
+    },
+    {
+      "package": "@ghostpay/ux-fiat",
+      "passed": 88,
+      "skipped": 0,
+      "total": 88,
+      "files_passed": 7,
+      "coverage": {
+        "Statements": "100% ( 305/305 )",
+        "Branches": "99.36% ( 313/315 )",
+        "Functions": "100% ( 27/27 )",
+        "Lines": "100% ( 235/235 )"
+      }
+    }
+  ],
+  "package_passed_total": 1079,
+  "package_skipped_total": 0,
+  "web_focused": {
+    "passed": 137,
+    "files": 11,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fiat_adaptation": {
+    "before": {
+      "tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+      "failed": 6,
+      "passed": 1,
+      "reason": "Expected obsolete outer-layer wording; existing parseRate consistently returns quote fields could not be read."
+    },
+    "after": {
+      "passed": 7,
+      "failed": 0,
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea"
+    },
+    "changes": "Exactly2 expected-message literals, no assertion removed and production parseRate/view unchanged."
+  },
+  "commands": [
+    {
+      "name": "chain-adapters-native-final",
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@ghostpay/chain-adapters",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=../../docs/qa/additional-composition-20261124/chain-adapters-native-results.json"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:26:22.384694+00:00",
+      "duration_seconds": 27.39,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "chain-adapters-native-final.log",
+      "log_sha256": "503eea76fb9f0fbc34fb8327ad92801e47e37fe9a34edc773ad11ad5dc727dbc",
+      "node_options": "--max-old-space-size=1024",
+      "selected_environment": {
+        "REQUIRE_ANVIL": "1",
+        "ANVIL_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/anvil",
+        "SOLC_BIN": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+      },
+      "original_log_sha256": "6a43d877226fe36492b65ec3cd49ae4aa858ca83dcd67bff052010dc1a48d1b0",
+      "original_log_archive": "chain-adapters-native-final.log.gz",
+      "original_log_archive_sha256": "b68412e6a9b459b3a77d70f0733d631303a803c8f471312c53187b35cfcdc268",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "fiat-current-contract",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/view.quote-accessor.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat",
+      "started_at": "2026-11-24T10:19:08.643427+00:00",
+      "duration_seconds": 0.681,
+      "exit_code": 0,
+      "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+      "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "fiat-current-contract.log",
+      "log_sha256": "0b370c0ef67a1485ff95a9c14f8d5d4d5a74ecec47d01df7a7e379c009de5c48",
+      "node_options": null,
+      "original_log_sha256": "b6c93b7fd5df0c86658b2840bbd2adfcc0376ca78ca7e13dfe8c89ffedd9a503",
+      "original_log_archive": "fiat-current-contract.log.gz",
+      "original_log_archive_sha256": "ad9f86fb8c7d96088d43552d608fbcb80746ca4b1425f93b46f6ac43b348fb9e",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "fiat-original-expectations",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/view.quote-accessor.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat",
+      "started_at": "2026-11-24T10:18:50.984207+00:00",
+      "duration_seconds": 0.998,
+      "exit_code": 1,
+      "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+      "index_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+      "log": "fiat-original-expectations.log",
+      "log_sha256": "25b5212232e1a5a50cb790f81d328e6c2f1e1e60add7b922dfe79e8f1d9aee7e",
+      "node_options": null,
+      "original_log_sha256": "c5b5647f3b165199d975f6835281213e738ea4e76b23f430fee6be02a35c769b",
+      "original_log_archive": "fiat-original-expectations.log.gz",
+      "original_log_archive_sha256": "8bc6437b24458aed1f02123950712f8da34ae8ae1ce5d95d38bd95d10bd04be3",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "ci",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:18:24.891629+00:00",
+      "duration_seconds": 17.63,
+      "exit_code": 0,
+      "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+      "index_tree": "e076d1cbffc7458ad3c17825535f68e0bbe600d2",
+      "log": "install.log",
+      "log_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+      "node_options": null,
+      "original_log_sha256": "b5ee12f0f8aeb2f62880d9ea6cdc1b12414e9090673db0c9f9d57d6f2511f25a",
+      "original_log_archive": "install.log.gz",
+      "original_log_archive_sha256": "fa7afa55fa5c2f57e37e8eea57062d9b8a48e7ce0754bb1126556ad26b267be2",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "package-builds",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/chain-adapters",
+        "-w",
+        "@ghostpay/merchant-billing",
+        "-w",
+        "@ghostpay/metadata-hardening",
+        "-w",
+        "@ghostpay/ux-fiat"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:19:40.988512+00:00",
+      "duration_seconds": 10.303,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "package-builds.log",
+      "log_sha256": "875791895eaa3345a2bf87b0e48f422d6c9182c0c34ac224e4b23bb71cbfab46",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "910646b359aa34b850f4e5abdc149ba9331336c17a1f8b3fb154db52da3deade",
+      "original_log_archive": "package-builds.log.gz",
+      "original_log_archive_sha256": "f0e73e385b90238a67ebcb170a8c55481475a22eb9f79b44258dbfbdc5cdd89b",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "package-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/chain-adapters",
+        "-w",
+        "@ghostpay/merchant-billing",
+        "-w",
+        "@ghostpay/metadata-hardening",
+        "-w",
+        "@ghostpay/ux-fiat"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:21:50.079960+00:00",
+      "duration_seconds": 35.139,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "package-lint.log",
+      "log_sha256": "d031e048e45a9cc6dd796ac51618cbbb2492971173eccf840a0d8c472fd09d55",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "4c014e954713efe471962a300f613634b4b02eaee51e1fb3ded9b066d3d94e81",
+      "original_log_archive": "package-lint.log.gz",
+      "original_log_archive_sha256": "f00772e0c3b2ef37e705803a3f61fdfdc707c26106f0028d5e2fcff00961607e",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "package-tests",
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@ghostpay/chain-adapters",
+        "-w",
+        "@ghostpay/merchant-billing",
+        "-w",
+        "@ghostpay/metadata-hardening",
+        "-w",
+        "@ghostpay/ux-fiat",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:20:28.129158+00:00",
+      "duration_seconds": 48.034,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "package-tests.log",
+      "log_sha256": "344bc356e2cb2b7e5358056cdb4c489c33df96707a392298ee6a14e9c3745171",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "cfe1ce50230be71de40af0386a0e7a79483262355562fec9e36c09eed1e15fce",
+      "original_log_archive": "package-tests.log.gz",
+      "original_log_archive_sha256": "be87d532afc7977d9e10ff4b2afbce1b1b34382b18468e8b9bb0520e7b1f00a4",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "package-typechecks",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/chain-adapters",
+        "-w",
+        "@ghostpay/merchant-billing",
+        "-w",
+        "@ghostpay/metadata-hardening",
+        "-w",
+        "@ghostpay/ux-fiat"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:20:47.411044+00:00",
+      "duration_seconds": 22.188,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "package-typechecks.log",
+      "log_sha256": "29e59cfade5ef1ed6dfb5d0f0ca75234e47c83a3244a3626a1ab981145795deb",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "d96b249c843bfef6e2d5cdd4507cbffb6e509c6f06a3321e272ad2ef0891f14a",
+      "original_log_archive": "package-typechecks.log.gz",
+      "original_log_archive_sha256": "8cf1dd028a6f5c30b61ca0c1f0e6fcfa947cf438afa9ac57676aafbfd2ef123c",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "secret-scan",
+      "command": [
+        "npm",
+        "run",
+        "ci:scan-secrets"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:23:03.509081+00:00",
+      "duration_seconds": 0.479,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "secret-scan.log",
+      "log_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "node_options": null,
+      "original_log_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "original_log_archive": "secret-scan.log.gz",
+      "original_log_archive_sha256": "a9737e368baad3ecbda85e91cf16dcd949f121c8b291deb8365e1817a5446296",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "web-build-full",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:21:50.103320+00:00",
+      "duration_seconds": 37.087,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "web-build-full.log",
+      "log_sha256": "3fda93075525f485310da2da0d947a53154fcb7215005d58d40dcfb5c4529012",
+      "node_options": "--max-old-space-size=1536",
+      "original_log_sha256": "12af88db8d40a54c832a3c31a19f15d6a4c3ecaabebcc30b17c2d6dec729f821",
+      "original_log_archive": "web-build-full.log.gz",
+      "original_log_archive_sha256": "3c279fbf56f9870ca891aee19e807d39b85b167752e8612534161e0cdea1019f",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "web-changed-lint",
+      "command": [
+        "node_modules/.bin/eslint",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/qrKinds.ts",
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/sanitize.ts",
+        "apps/web/src/lib/sanitize.marker-script.test.ts"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:21:50.087419+00:00",
+      "duration_seconds": 10.532,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "web-changed-lint.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_log_archive": "web-changed-lint.log.gz",
+      "original_log_archive_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "web-focused-tests",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/lib/qrKinds.test.ts",
+        "src/lib/qrContrast.test.ts",
+        "src/lib/qrClassify.test.ts",
+        "src/components/QrFrame.test.tsx",
+        "src/components/QrFrame.security.test.tsx",
+        "src/components/QrFrame.i18n.test.tsx",
+        "src/components/QrFrame.largeWarning.test.tsx",
+        "src/components/PaymentRequestQr.test.tsx",
+        "src/lib/sanitize.marker-script.test.ts",
+        "src/lib/hardening.test.ts",
+        "src/components/Common.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/apps/web",
+      "started_at": "2026-11-24T10:20:28.170348+00:00",
+      "duration_seconds": 21.512,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "web-focused-tests.log",
+      "log_sha256": "040fb3b70ec0e04cc1c6ce7f38bc1dc9c69b587e239d380d2bfeadedcab7e855",
+      "node_options": "--max-old-space-size=1024",
+      "original_log_sha256": "3f45c8354e27da8c4a3d38f51728c3c3bc39b6beb27f5aeae9c65e12ce8713c9",
+      "original_log_archive": "web-focused-tests.log.gz",
+      "original_log_archive_sha256": "ca8276a4e5ff5cc3e7db5b3fbee7fc1a053dfb4faa5112515df642181491c2f6",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    },
+    {
+      "name": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+      "started_at": "2026-11-24T10:23:03.501645+00:00",
+      "duration_seconds": 0.037,
+      "exit_code": 0,
+      "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+      "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+      "log": "whitespace.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "node_options": null,
+      "original_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_log_archive": "whitespace.log.gz",
+      "original_log_archive_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+    }
+  ],
+  "environment_attempts": [
+    "package-typechecks-setup-attempt.json"
+  ],
+  "native_qualification": "native-skip-resolution.json",
+  "web_build": {
+    "profile": "full",
+    "includes": "Original web TypeScript, Vite build and postbuild bundle scan;19 files passed scan.",
+    "environment": {
+      "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "warnings": "Original nonfatal help.css, node:http externalization, QR dynamic-import and large-chunk diagnostics retained in log."
+  },
+  "independent_review": "independent-review.json",
+  "limits": [
+    "No browser flow, lean build, full web coverage, all-workspace test suite or hosted CI was executed for this third product.",
+    "No project contract source/build change; existing source-verified artifacts were copied. The unchanged native quote test compiled its own synthetic aggregator. All native RPC/wallet interactions used disposable loopback-only fixtures.",
+    "No production deployment, external service, public-chain request or real funds.",
+    "First-composition evidence under docs/qa/branch-comparison-20261124 retains its own coordinator source attribution and is not execution evidence for this newer composition.",
+    "Independent review is source review, not a submitted GitHub approval or external audit. Fresh hosted gates and root publication/integration remain outstanding."
+  ],
+  "first_composition_archive": "../branch-comparison-20261124/qualification.json",
+  "final_ref_refresh": {
+    "file": "remote-ref-refresh.json",
+    "sha256": "0a3b380dacb92b51c44521424162d720e78ed901f5721d18760d633259be3d4c",
+    "cutoff": "2026-11-24T10:23:49.014463Z",
+    "branch_count": 696,
+    "new": "Published616 only",
+    "advanced": "Documentation-only ledger",
+    "unchanged": 694,
+    "deleted": 0
+  },
+  "cumulative_reachability": "cumulative-preserved-heads.manifest.json",
+  "integration_coordination": {
+    "source": "Root-observed existing consolidation owner comment",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/615#issuecomment-7128311667",
+    "comment_time": "2026-11-24T10:05:00Z",
+    "sequence": "Canonical614 after its required checks/reviews, then requalify615 against resulting main while retaining extra formatter guards and QR implementation; preserve ownership and avoid competing locks/merges.",
+    "main_observed_by_root": "706188000c38b3dde5a3a362370a530870aa7587",
+    "product_change": "None; QR decoder alternatives remain outside this frozen product.",
+    "automation": "Existing consolidation automation retains its full mission and schedule."
+  }
+}

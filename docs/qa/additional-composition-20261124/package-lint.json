@@ -1,0 +1,29 @@
+{
+  "name": "package-lint",
+  "command": [
+    "npm",
+    "run",
+    "lint",
+    "-w",
+    "@ghostpay/chain-adapters",
+    "-w",
+    "@ghostpay/merchant-billing",
+    "-w",
+    "@ghostpay/metadata-hardening",
+    "-w",
+    "@ghostpay/ux-fiat"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional",
+  "started_at": "2026-11-24T10:21:50.079960+00:00",
+  "duration_seconds": 35.139,
+  "exit_code": 0,
+  "head": "48319ceeb6f658d32d94ce1debe4aac09a249f4c",
+  "source_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "package-lint.log",
+  "log_sha256": "d031e048e45a9cc6dd796ac51618cbbb2492971173eccf840a0d8c472fd09d55",
+  "node_options": "--max-old-space-size=1024",
+  "original_log_sha256": "4c014e954713efe471962a300f613634b4b02eaee51e1fb3ded9b066d3d94e81",
+  "original_log_archive": "package-lint.log.gz",
+  "original_log_archive_sha256": "f00772e0c3b2ef37e705803a3f61fdfdc707c26106f0028d5e2fcff00961607e",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}

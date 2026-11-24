@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "qualified_product_commit": "9d8edf06da09dcb287a14b2aad26c439e9d7b7a5",
+  "qualified_product_tree": "608beb60c6aa2e1d764e430befde33630d60c061",
+  "local_final_commit": "d6b56d7f062bb3de1aa7392fb2c7882b47a0ee13",
+  "published_commit": "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+  "published_tree": "2842cdf77fb811720b82dcda81f8830ddb18fa08",
+  "baseline_main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "source_note": "The qualified product is unchanged in the local final and published tree. Those commits add source-pinned branch comparison documentation only. Original donor histories are preserved as parents in the published commit.",
+  "package_coverage": {
+    "full_suites": 27,
+    "distinct_passing_tests": 4469,
+    "remaining_skips": 0,
+    "original_thresholds_preserved": true,
+    "details": "package-results.json",
+    "policy_native": "Initial policy-scheme suite passed 103 and skipped 7. REQUIRE_ANVIL=1 rerun passed 110/110 after an offline build of unchanged contract sources; this replaces the earlier policy result in the distinct total."
+  },
+  "other_passed_checks": {
+    "all_library_build": true,
+    "focused_web_tests": 166,
+    "pages_pos_merchant_money_node_tests": 94,
+    "production_chromium_full": 6,
+    "production_chromium_lean": 6,
+    "workspace_typechecks": 28,
+    "workspace_lint_scopes": 28,
+    "workspace_graph_tests": 12,
+    "package_map_current": true,
+    "secret_scan": true
+  },
+  "observed_retries": [
+    {
+      "log": "combined-pages-pos-node.log.gz",
+      "outcome": "Initial POS check ran before compiled output was rebuilt and failed. After combined library build, the complete 94 check run passed in combined-pages-pos-node-final.log.gz. No source adjustment."
+    },
+    {
+      "log": "combined-browser-lean.log.gz",
+      "outcome": "Initial concurrent lean build terminated with exit 137. A bounded NODE_OPTIONS=--max-old-space-size=1024 retry passed production build, bundle scan and 6 browser checks in combined-browser-lean-final.log.gz."
+    },
+    {
+      "log": "combined-typecheck-lint.log.gz",
+      "outcome": "All 28 typechecks completed, then 27 lint scopes completed; final ux-vault lint was interrupted with exit 137. The same final lint scope passed with NODE_OPTIONS=--max-old-space-size=1024 in combined-ux-vault-lint-final.log.gz. One existing generated protobuf warning was retained."
+    }
+  ],
+  "runtime": {
+    "node": "24.22.3",
+    "npm": "11.19.1",
+    "chromium": "156.0.8078.4",
+    "foundry": "1.8.5",
+    "solc": "0.8.28",
+    "fixtures": "Local synthetic browser and Anvil fixtures only."
+  },
+  "independent_review": "Read-only actual product-tree composition review by branch_metadata approved source pin 9d8edf0. All 233 changed product/test/tool paths were attributed; main recent 14 package/schedule paths and 9 raw C1 evidence logs remained exact.",
+  "hosted_checks": "Separate exact-head GitHub Actions workflows are still required before merge; local evidence does not assert their completion.",
+  "logs": [
+    {
+      "file": "combined-browser-full.log.gz",
+      "raw_file": "combined-browser-full.log",
+      "raw_bytes": 3775,
+      "raw_sha256": "3df62825b79446f41ed78cfb371236ecceca45c63164f4466e66e2b8ff55731c",
+      "gzip_bytes": 1262,
+      "gzip_sha256": "6d871c8696d515d85ffc5aa86a9e95283d9a086369f5f43a8b2cc9528a4a4359"
+    },
+    {
+      "file": "combined-browser-lean-final.log.gz",
+      "raw_file": "combined-browser-lean-final.log",
+      "raw_bytes": 3775,
+      "raw_sha256": "b3b6fde92d299f1692118dc0096886fe7950a50236d1e5b0749d8c817d34aa4a",
+      "gzip_bytes": 1261,
+      "gzip_sha256": "6c7d7d375033805df0023e429c4f6f55ef7e0828a7c28ad5e9547045063c61e6"
+    },
+    {
+      "file": "combined-browser-lean.log.gz",
+      "raw_file": "combined-browser-lean.log",
+      "raw_bytes": 1594,
+      "raw_sha256": "bd344660f6323dcb7463fd0c1b68cf0f64856b5d35914d037ab6a30b41005559",
+      "gzip_bytes": 584,
+      "gzip_sha256": "ca3f025ce5cfaef18185712ec06eb1e947c5d4755bbcc94dc192b1a87cbbe5a6"
+    },
+    {
+      "file": "combined-build-libs.log.gz",
+      "raw_file": "combined-build-libs.log",
+      "raw_bytes": 17496,
+      "raw_sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913",
+      "gzip_bytes": 821,
+      "gzip_sha256": "c3384beb023b4e4b4005560fc0b98f740da58f5c4956c068914c1a6b1a3ec8c6"
+    },
+    {
+      "file": "combined-other-package-tests.log.gz",
+      "raw_file": "combined-other-package-tests.log",
+      "raw_bytes": 33687,
+      "raw_sha256": "0de28c5cc5e86699024e806ddd3543fa71b6e816da5b78ff28ce415126d9cbdd",
+      "gzip_bytes": 4982,
+      "gzip_sha256": "17c9b3f692288b66fcaf7b6394e738b4111e914d9d3c042ebb751e6a62e5c120"
+    },
+    {
+      "file": "combined-package-map.log.gz",
+      "raw_file": "combined-package-map.log",
+      "raw_bytes": 27,
+      "raw_sha256": "3b6e5ba5f62727c827d6e425e93e5be69054a6fe921c756e7c3ad8e19b9d0d0d",
+      "gzip_bytes": 47,
+      "gzip_sha256": "cff3894473cd32dab0b24b40a7332a25b5e5aa1483d9ab83aa322c77b745ac77"
+    },
+    {
+      "file": "combined-pages-pos-node-final.log.gz",
+      "raw_file": "combined-pages-pos-node-final.log",
+      "raw_bytes": 7202,
+      "raw_sha256": "3ffaecf795ef8c0801e921a80e79410d295dc893e1368f204c6973a3fe015123",
+      "gzip_bytes": 2770,
+      "gzip_sha256": "41853b10ad0ee1d02864ec86f71742a8d6ed04d2afa13ace01d891559a88ce2d"
+    },
+    {
+      "file": "combined-pages-pos-node.log.gz",
+      "raw_file": "combined-pages-pos-node.log",
+      "raw_bytes": 7847,
+      "raw_sha256": "fade7590f192a533261da15f7353e3b0d3ba43a676cbfdb57e374b0fadcf17f9",
+      "gzip_bytes": 3098,
+      "gzip_sha256": "c9faa005cdbfd4fb92b0d8db8e6a881c59eb7d2a0b787c212cab453165cfabea"
+    },
+    {
+      "file": "combined-policy-contract-build.log.gz",
+      "raw_file": "combined-policy-contract-build.log",
+      "raw_bytes": 6033,
+      "raw_sha256": "ce18560dc5bd39f10b4e9b8e1ebccb8d1a39e01cafb6fdeb0e2a6a6baab6ad17",
+      "gzip_bytes": 1191,
+      "gzip_sha256": "b57bdfe9a4bff6cfc35a523838d8a9c1037aaec91868c62ce790c40d28ddc7b6"
+    },
+    {
+      "file": "combined-policy-native-final.log.gz",
+      "raw_file": "combined-policy-native-final.log",
+      "raw_bytes": 2021,
+      "raw_sha256": "faabd90ba3f2a7bff08e069a227e7354742b15fbc8ae40072653e937f4637d5c",
+      "gzip_bytes": 867,
+      "gzip_sha256": "71c406cfd2d262229bdb77a63aca0e27823e8f495caacd5b625ac74a90d7eb1f"
+    },
+    {
+      "file": "combined-pure-tests.log.gz",
+      "raw_file": "combined-pure-tests.log",
+      "raw_bytes": 4612,
+      "raw_sha256": "9e50b4c189117260ee7ff86c864e2804ebfee6a72a6f3f537218c620187baa08",
+      "gzip_bytes": 1198,
+      "gzip_sha256": "861dcd17312ec3785b1667d0f2a322bdf22d3a7ffea95bd28b0e664900dc9a97"
+    },
+    {
+      "file": "combined-secrets.log.gz",
+      "raw_file": "combined-secrets.log",
+      "raw_bytes": 266,
+      "raw_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "gzip_bytes": 211,
+      "gzip_sha256": "a9737e368baad3ecbda85e91cf16dcd949f121c8b291deb8365e1817a5446296"
+    },
+    {
+      "file": "combined-typecheck-lint.log.gz",
+      "raw_file": "combined-typecheck-lint.log",
+      "raw_bytes": 5972,
+      "raw_sha256": "aef89832990e8e191b70d9185e25bce062c805190696ab0b4490b799af301a25",
+      "gzip_bytes": 964,
+      "gzip_sha256": "dfde31076e4fa3265cf84d4125363ea282101a5a8379620bd0709e728bc47350"
+    },
+    {
+      "file": "combined-ux-vault-lint-final.log.gz",
+      "raw_file": "combined-ux-vault-lint-final.log",
+      "raw_bytes": 229,
+      "raw_sha256": "f198c9726220c2240cc9e82f6e847a72fd95b1d7d1fe7444b5b4b2e6c972a219",
+      "gzip_bytes": 183,
+      "gzip_sha256": "612f8ca6022d50adbf312f8c3cdd2e07719295fb1d39663a0cc352795b1b98e7"
+    },
+    {
+      "file": "combined-web-focused.log.gz",
+      "raw_file": "combined-web-focused.log",
+      "raw_bytes": 219,
+      "raw_sha256": "8d0d4c755619767148cec6d020597b3e67512113013cc26443584e67dae130e5",
+      "gzip_bytes": 189,
+      "gzip_sha256": "37a6f82688863844b0395a6cc72cff511f81c4da861bea926519309622cd2e97"
+    },
+    {
+      "file": "combined-workspace-graph.log.gz",
+      "raw_file": "combined-workspace-graph.log",
+      "raw_bytes": 968,
+      "raw_sha256": "072c8a5d46a3ccf3593b6500d354105f9a571022ad8ce65a50785e6e631f78fa",
+      "gzip_bytes": 557,
+      "gzip_sha256": "bd1f2b9a24bcc882183ce56931b4ce7141ea859aba7e8daa5308a2c581148012"
+    }
+  ]
+}

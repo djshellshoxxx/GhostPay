@@ -1,0 +1,290 @@
+{
+  "node": "v24.22.3",
+  "npm": "11.19.1",
+  "versions": {
+    "typescript": "5.9.3",
+    "vitest": "5.0.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.15.0",
+    "typescript-eslint": "8.73.0",
+    "vite": "8.3.5",
+    "@playwright/test": "1.64.1"
+  },
+  "workspace_count": 68,
+  "workspace_map": [
+    {
+      "name": "address-safety",
+      "resolved": "packages/address-safety"
+    },
+    {
+      "name": "amount-blur",
+      "resolved": "packages/amount-blur"
+    },
+    {
+      "name": "btc-family",
+      "resolved": "packages/btc-family"
+    },
+    {
+      "name": "btc-payjoin",
+      "resolved": "packages/btc-payjoin"
+    },
+    {
+      "name": "btc-silent-payments",
+      "resolved": "packages/btc-silent-payments"
+    },
+    {
+      "name": "chain-adapters",
+      "resolved": "packages/chain-adapters"
+    },
+    {
+      "name": "chain-evm-extra",
+      "resolved": "packages/chain-evm-extra"
+    },
+    {
+      "name": "chain-solana",
+      "resolved": "packages/chain-solana"
+    },
+    {
+      "name": "chain-tron",
+      "resolved": "packages/chain-tron"
+    },
+    {
+      "name": "cli",
+      "resolved": "packages/cli"
+    },
+    {
+      "name": "confidential-amounts",
+      "resolved": "packages/confidential-amounts"
+    },
+    {
+      "name": "confidential-contracts",
+      "resolved": "packages/confidential-contracts"
+    },
+    {
+      "name": "core-crypto",
+      "resolved": "packages/core-crypto"
+    },
+    {
+      "name": "donation",
+      "resolved": "packages/donation"
+    },
+    {
+      "name": "external-pools",
+      "resolved": "packages/external-pools"
+    },
+    {
+      "name": "external-pools-privacypools",
+      "resolved": "packages/external-pools-privacypools"
+    },
+    {
+      "name": "external-pools-railgun",
+      "resolved": "packages/external-pools-railgun"
+    },
+    {
+      "name": "hops",
+      "resolved": "packages/hops"
+    },
+    {
+      "name": "hygiene",
+      "resolved": "packages/hygiene"
+    },
+    {
+      "name": "i18n",
+      "resolved": "packages/i18n"
+    },
+    {
+      "name": "invoice-schema",
+      "resolved": "packages/invoice-schema"
+    },
+    {
+      "name": "merchant-billing",
+      "resolved": "packages/merchant-billing"
+    },
+    {
+      "name": "merchant-hooks",
+      "resolved": "packages/merchant-hooks"
+    },
+    {
+      "name": "merchant-ledger",
+      "resolved": "packages/merchant-ledger"
+    },
+    {
+      "name": "merchant-multisig",
+      "resolved": "packages/merchant-multisig"
+    },
+    {
+      "name": "metadata-hardening",
+      "resolved": "packages/metadata-hardening"
+    },
+    {
+      "name": "net-harness",
+      "resolved": "packages/net-harness"
+    },
+    {
+      "name": "net-transport",
+      "resolved": "packages/net-transport"
+    },
+    {
+      "name": "ops-monitor",
+      "resolved": "packages/ops-monitor"
+    },
+    {
+      "name": "payer-sponsor",
+      "resolved": "packages/payer-sponsor"
+    },
+    {
+      "name": "payment-uri",
+      "resolved": "packages/payment-uri"
+    },
+    {
+      "name": "pir-two-server",
+      "resolved": "packages/pir-two-server"
+    },
+    {
+      "name": "plugin-api",
+      "resolved": "packages/plugin-api"
+    },
+    {
+      "name": "policy-scheme",
+      "resolved": "packages/policy-scheme"
+    },
+    {
+      "name": "pool-circuits",
+      "resolved": "packages/pool-circuits"
+    },
+    {
+      "name": "pool-prover",
+      "resolved": "packages/pool-prover"
+    },
+    {
+      "name": "pool-relayer",
+      "resolved": "packages/pool-relayer"
+    },
+    {
+      "name": "pool-sdk",
+      "resolved": "packages/pool-sdk"
+    },
+    {
+      "name": "privacy-pipeline",
+      "resolved": "packages/privacy-pipeline"
+    },
+    {
+      "name": "privacy-profiles",
+      "resolved": "packages/privacy-profiles"
+    },
+    {
+      "name": "qr-exchange",
+      "resolved": "packages/qr-exchange"
+    },
+    {
+      "name": "relayer",
+      "resolved": "apps/relayer"
+    },
+    {
+      "name": "relayer-guard",
+      "resolved": "packages/relayer-guard"
+    },
+    {
+      "name": "sandbox",
+      "resolved": "packages/sandbox"
+    },
+    {
+      "name": "scan-source",
+      "resolved": "packages/scan-source"
+    },
+    {
+      "name": "sdk",
+      "resolved": "packages/sdk"
+    },
+    {
+      "name": "secret-box",
+      "resolved": "packages/secret-box"
+    },
+    {
+      "name": "solana-stealth",
+      "resolved": "packages/solana-stealth"
+    },
+    {
+      "name": "tron-adapter",
+      "resolved": "packages/tron-adapter"
+    },
+    {
+      "name": "tx-review",
+      "resolved": "packages/tx-review"
+    },
+    {
+      "name": "ux-connect",
+      "resolved": "packages/ux-connect"
+    },
+    {
+      "name": "ux-core",
+      "resolved": "packages/ux-core"
+    },
+    {
+      "name": "ux-export",
+      "resolved": "packages/ux-export"
+    },
+    {
+      "name": "ux-fees",
+      "resolved": "packages/ux-fees"
+    },
+    {
+      "name": "ux-fiat",
+      "resolved": "packages/ux-fiat"
+    },
+    {
+      "name": "ux-flow",
+      "resolved": "packages/ux-flow"
+    },
+    {
+      "name": "ux-guide",
+      "resolved": "packages/ux-guide"
+    },
+    {
+      "name": "ux-i18n",
+      "resolved": "packages/ux-i18n"
+    },
+    {
+      "name": "ux-intake",
+      "resolved": "packages/ux-intake"
+    },
+    {
+      "name": "ux-links",
+      "resolved": "packages/ux-links"
+    },
+    {
+      "name": "ux-notify",
+      "resolved": "packages/ux-notify"
+    },
+    {
+      "name": "ux-presets",
+      "resolved": "packages/ux-presets"
+    },
+    {
+      "name": "ux-privacy",
+      "resolved": "packages/ux-privacy"
+    },
+    {
+      "name": "ux-receipts",
+      "resolved": "packages/ux-receipts"
+    },
+    {
+      "name": "ux-sandbox",
+      "resolved": "packages/ux-sandbox"
+    },
+    {
+      "name": "ux-schedule",
+      "resolved": "packages/ux-schedule"
+    },
+    {
+      "name": "ux-vault",
+      "resolved": "packages/ux-vault"
+    },
+    {
+      "name": "web",
+      "resolved": "apps/web"
+    }
+  ],
+  "root_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "installation": "Independent npm ci --offline --ignore-scripts --no-audit --no-fund, 722 packages. No shared node_modules or mutable outputs."
+}

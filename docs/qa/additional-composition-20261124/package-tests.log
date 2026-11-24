@@ -1,0 +1,140 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/chain-adapters@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/chain-adapters
+      Coverage enabled with v8
+
+
+ Test Files  26 passed (26)
+      Tests  552 passed | 22 skipped (574)
+   Start at  02:20:29
+   Duration  30.29s (tests 50%, import 42%, transform 6%, worker 2%)
+
+    Isolate  26 workers spawned · ~201ms startup each (spawn + environment, per file)
+             at least ~5.02s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.35 |    96.48 |   99.01 |   98.93 |
+ src               |   97.31 |    96.47 |   98.98 |   98.92 |
+  adapter.ts       |   85.71 |    83.13 |     100 |   96.96 | 226,277
+  ...sSignature.ts |    92.5 |    89.65 |     100 |   96.87 | 55
+  ...entsVerify.ts |    92.5 |       90 |     100 |    93.1 | 61-62
+  fees.ts          |   96.72 |     97.5 |     100 |     100 | 90
+  logs.ts          |   98.47 |    97.03 |     100 |   99.54 | 283
+  payments.ts      |   94.38 |     93.2 |     100 |   96.83 | ...79,389-390,399
+  permit.ts        |   96.29 |    97.36 |     100 |   96.61 | 110,165
+  registry.ts      |   98.55 |    97.67 |     100 |   98.41 | 156
+  registryEns.ts   |   96.42 |       96 |     100 |     100 | 49
+  router.ts        |   99.35 |    99.29 |     100 |     100 | 208
+  rpc.ts           |   98.62 |    98.88 |   93.93 |   99.41 | 250
+  sweep.ts         |    97.5 |    96.49 |     100 |     100 | 200,215
+  verify.ts        |   98.93 |    97.18 |     100 |     100 | 68,101
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.35% ( 1727/1774 )
+Branches     : 96.48% ( 1538/1594 )
+Functions    : 99.01% ( 202/204 )
+Lines        : 98.93% ( 1400/1415 )
+================================================================================
+
+> @ghostpay/merchant-billing@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/merchant-billing
+      Coverage enabled with v8
+
+
+ Test Files  13 passed (13)
+      Tests  292 passed (292)
+   Start at  02:21:00
+   Duration  7.03s (import 49%, tests 26%, transform 17%, worker 8%)
+
+    Isolate  13 workers spawned · ~212ms startup each (spawn + environment, per file)
+             at least ~2.55s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   99.69 |    99.66 |     100 |    99.8 |
+ payouts.ts        |   97.89 |    96.72 |     100 |   98.73 | 99
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 99.69% ( 662/664 )
+Branches     : 99.66% ( 589/591 )
+Functions    : 100% ( 88/88 )
+Lines        : 99.8% ( 511/512 )
+================================================================================
+
+> @ghostpay/metadata-hardening@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/metadata-hardening
+      Coverage enabled with v8
+
+
+ Test Files  13 passed (13)
+      Tests  125 passed (125)
+   Start at  02:21:07
+   Duration  5.62s (import 42%, tests 29%, transform 21%, worker 9%)
+
+    Isolate  13 workers spawned · ~177ms startup each (spawn + environment, per file)
+             at least ~2.12s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+--------------|---------|----------|---------|---------|-------------------
+File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+--------------|---------|----------|---------|---------|-------------------
+All files     |   99.48 |    98.85 |     100 |     100 |
+ btc.ts       |   97.67 |    96.34 |     100 |     100 | 69-70,187
+ derive.ts    |   98.24 |    97.29 |     100 |     100 | 82
+ scan.ts      |     100 |    98.33 |     100 |     100 | 154
+--------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 99.48% ( 585/588 )
+Branches     : 98.85% ( 431/436 )
+Functions    : 100% ( 119/119 )
+Lines        : 100% ( 485/485 )
+================================================================================
+
+> @ghostpay/ux-fiat@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat
+      Coverage enabled with v8
+
+
+ Test Files  7 passed (7)
+      Tests  88 passed (88)
+   Start at  02:21:14
+   Duration  1.94s (transform 34%, import 26%, worker 23%, tests 18%)
+
+    Isolate  7 workers spawned · ~148ms startup each (spawn + environment, per file)
+             at least ~886ms faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+------------|---------|----------|---------|---------|-------------------
+All files   |     100 |    99.36 |     100 |     100 |
+ decimal.ts |     100 |     97.1 |     100 |     100 | 76,95
+------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 305/305 )
+Branches     : 99.36% ( 313/315 )
+Functions    : 100% ( 27/27 )
+Lines        : 100% ( 235/235 )
+================================================================================

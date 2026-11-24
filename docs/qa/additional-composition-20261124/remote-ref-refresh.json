@@ -1,0 +1,151 @@
+{
+  "schema": "ghostpay-remote-ref-refresh/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "capture": {
+    "command": "git ls-remote --heads origin",
+    "startedAt": "2026-11-24T10:23:43.500218+00:00",
+    "completedAt": "2026-11-24T10:23:49.014463+00:00",
+    "exitCode": 0,
+    "rawOutputBytes": 66784,
+    "rawOutputSha256": "8386978b2f241f74600f8e4f47b304405ecfdaa15c8aa4b6261bd745efe34539",
+    "canonicalization": "Sort branch names lexically; serialize each as <sha> TAB refs/heads/<branch> LF.",
+    "canonicalOutputSha256": "8386978b2f241f74600f8e4f47b304405ecfdaa15c8aa4b6261bd745efe34539"
+  },
+  "baseline": {
+    "originalCensusCommit": "d6b56d7f062bb3de1aa7392fb2c7882b47a0ee13",
+    "originalCensusPath": "docs/consolidation/branch-comparison-20261124-68c82b9/BRANCH_COMPARISON.json.gz",
+    "originalCensusUncompressedSha256": "cd4923164f9a6803429eac53b3ebfcc75d9e15ba46b8b1e33102f157912d58f9",
+    "originalRefCount": 686,
+    "deltaFile": "/workspace/scratch/68c82b9dbbbb/live-delta.json",
+    "deltaSha256": "bd7e6efe8c162845b82b7a5da5b5dbc2cee5db62f87d4560ef33ff0de29a7f01",
+    "previousRefCount": 695,
+    "previousCanonicalOutputSha256": "384118b165361221a9e0710dc7c7643ea50a35ed83f1627e99d218b6d17b17fa",
+    "dispositionsFileSha256": "4faaa7209e0af1ecda46185064b29cc4e92db94543e59348a69d60f089aa32cb",
+    "dispositionsCommittedCopy": "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188:docs/qa/followup-composition-20261124/live-delta-dispositions.json.gz"
+  },
+  "summary": {
+    "previousRefs": 695,
+    "currentRefs": 696,
+    "unchangedRefs": 694,
+    "newRefs": 1,
+    "advancedOrReplacedRefs": 1,
+    "deletedRefs": 0,
+    "previousMain": "706188000c38b3dde5a3a362370a530870aa7587",
+    "currentMain": "706188000c38b3dde5a3a362370a530870aa7587",
+    "original686PlusPrior9PlusCurrent1": 696,
+    "originalSnapshotCumulativeHeadReplacements": 3,
+    "firstCompositionRefUnchanged": true,
+    "integrationLeaseRefUnchanged": true
+  },
+  "delta": {
+    "new": {
+      "integration/ghostpay-followup-fixes-20261124-68c82b9": "7c4987650faf32322d7ded48ad669130aba7e63b"
+    },
+    "advancedOrReplaced": {
+      "ledger/consolidation-snapshot-20261124-0418": {
+        "old": "346080a4a6ddd80aeb6d17e707404fc442955533",
+        "new": "3fa89e629cac706e2cca633d8a8e1a0ec34f02a7"
+      }
+    },
+    "deleted": {}
+  },
+  "dispositions": [
+    {
+      "branch": "integration/ghostpay-followup-fixes-20261124-68c82b9",
+      "change": "new",
+      "pullRequest": 616,
+      "pullRequestAssociation": "Coordinator-supplied PR number; remote branch/head independently observed by ls-remote.",
+      "sha": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "tree": "2444833284a33b868e0c30047434b8b2d9bbd27d",
+      "parents": [
+        "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+        "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0",
+        "5f280cab9c252cf57a68e2c2d156c07b36d2b018",
+        "c86d5a32e02efbee14d935548c821b27e287f507",
+        "1f3d230be9f5ab67e5314c5084dc1f4b5e141472",
+        "41ddd0f21986d3ec65d43ead73fafda39a4a2f4d",
+        "7e618aef8e9c84055f445b4959a339e7ad470cbf",
+        "97cb98591a2a2e95c8d9a701d0eb60e4e2bc7a4b",
+        "9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce",
+        "59b5bbfc6f6dc3cc83d24c1fccbe87b15cd72d0c",
+        "f0171888c95b48005a6809aedf1e625bf86dfe83"
+      ],
+      "committedAt": "2026-11-24T03:19:20-07:00",
+      "subject": "Integrate ten qualified package follow-ups with complete source ancestry",
+      "classification": "published-qualified-second-composition-awaiting-its-own-hosted-gates",
+      "proof": {
+        "localReviewedEquivalent": "61ac0c9ac58b0e92fcc1f88fce333edeeb47d188",
+        "exactTreeMatch": true,
+        "qualifiedProductCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+        "qualifiedProductTree": "e1b5f2f04e4fe2d5cbb88f5c1463d48112fcd377",
+        "localEvidenceOnlyCommitsAfterProduct": true,
+        "firstParentIsPublished615": true,
+        "allTenSpecifiedDonorsDirectParents": true,
+        "handoff": "7c4987650faf32322d7ded48ad669130aba7e63b:docs/handoffs/FOLLOWUP_COMPOSITION_20261124.md"
+      },
+      "obligations": [
+        "Keep independent review and local evidence tied to their recorded source.",
+        "Refresh and complete published-head hosted qualification before integration; no hosted result was queried by this census.",
+        "Recheck current main/owners and acquire the integration lease before main merge."
+      ]
+    },
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "change": "advanced",
+      "previousSha": "346080a4a6ddd80aeb6d17e707404fc442955533",
+      "sha": "3fa89e629cac706e2cca633d8a8e1a0ec34f02a7",
+      "tree": "3e4787b968faa062f0fa92b20e49b1cead8c5046",
+      "parents": [
+        "346080a4a6ddd80aeb6d17e707404fc442955533"
+      ],
+      "committedAt": "2026-11-24T03:05:44-07:00",
+      "subject": "checkpoint: source-pin overlapping near-finished and branch comparison integrations",
+      "classification": "documentation-only-provisional-semantic-overlay-retain-as-evidence",
+      "proof": {
+        "previousHeadIsAncestor": true,
+        "changedPaths": [
+          {
+            "status": "added",
+            "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1005Z.json",
+            "blob": "1bc04772bbe681a4be9a69f35f8ddf3af899abbc",
+            "bytes": 608158,
+            "sha256": "227fcf35cea2c1494c7d59803f6f9d356c9e332083ba90cf9e70e9eb61a4ef02"
+          }
+        ],
+        "nonDocumentationChangedPaths": [],
+        "schema": "ghostpay-live-semantic-overlay/1",
+        "checkedAtUtc": "2026-11-24T10:05:40.589Z",
+        "recordedBranchCount": 695,
+        "recordedOpenPrCount": 356,
+        "overlayBranchRowsExactlyMatchPrevious695Snapshot": true,
+        "caveat": "Provisional semantic overlay; divergence reused from exact main/head-matched #615 published index, unmatched rows remain null. Full historical transition validator and retired-obligation global count not completed. Retained candidate is not main integration. Ledger ref advances after census."
+      },
+      "obligations": [
+        "Preserve the provisional overlay and its incomplete historical-transition/retired-obligation caveats.",
+        "Its PR draft/CI observations are a 10:05 snapshot; do not substitute them for later live PR results.",
+        "No product source or completed feature is added by this ledger advance."
+      ]
+    }
+  ],
+  "scope": "Read-only remote head census; no branch/ref mutations, remote writes, tests, integration, or deployment. Only newly changed refs will be classified. Previous semantic obligations remain open.",
+  "status": "all-delta-refs-source-classified-no-merge-approval",
+  "objectAcquisition": {
+    "missingBeforeFetch": [
+      "3fa89e629cac706e2cca633d8a8e1a0ec34f02a7",
+      "7c4987650faf32322d7ded48ad669130aba7e63b"
+    ],
+    "command": "git fetch --no-tags --no-write-fetch-head --no-auto-maintenance --refmap= origin 3fa89e629cac706e2cca633d8a8e1a0ec34f02a7 7c4987650faf32322d7ded48ad669130aba7e63b",
+    "exitCode": 0,
+    "branchRefUpdatesRequested": false
+  },
+  "carriedForwardDispositions": {
+    "fiat511": "Behaviorally superseded in the first/second composition and excluded; the prior preservation-only statement is not merge approval. Six original assertions expect incompatible error text.",
+    "qr605Versus581And614": "Still unresolved; owner/runtime and decoder obligations remain open.",
+    "scope": "No other historical source analysis was repeated. Unchanged refs retain the previous evidence and unresolved obligations; unchanged does not imply complete or merge-ready."
+  },
+  "reconstruction": {
+    "method": "Reconstruct the original686 map from its pinned archive, apply live-delta.json new/advanced/retired, then apply this delta.",
+    "currentReconstructedCanonicalHashVerified": true,
+    "rawOutputIsRecoverableFromPinnedBaselinePlusBothDeltas": true
+  }
+}

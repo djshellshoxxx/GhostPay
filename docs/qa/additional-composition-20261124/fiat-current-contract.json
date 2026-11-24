@@ -1,0 +1,22 @@
+{
+  "name": "fiat-current-contract",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/view.quote-accessor.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/68c82b9dbbbb/GhostPay-additional/packages/ux-fiat",
+  "started_at": "2026-11-24T10:19:08.643427+00:00",
+  "duration_seconds": 0.681,
+  "exit_code": 0,
+  "head": "43fb7e54715dfe05a597ece6196d9474080cf7c4",
+  "index_tree": "384d8d4b02e4bbea3c9aa627523cbb881db90aea",
+  "log": "fiat-current-contract.log",
+  "log_sha256": "0b370c0ef67a1485ff95a9c14f8d5d4d5a74ecec47d01df7a7e379c009de5c48",
+  "node_options": null,
+  "original_log_sha256": "b6c93b7fd5df0c86658b2840bbd2adfcc0376ca78ca7e13dfe8c89ffedd9a503",
+  "original_log_archive": "fiat-current-contract.log.gz",
+  "original_log_archive_sha256": "ad9f86fb8c7d96088d43552d608fbcb80746ca4b1425f93b46f6ac43b348fb9e",
+  "text_log_normalization": "Text companion trims trailing whitespace and terminal blank lines only; gzip preserves every original byte."
+}
