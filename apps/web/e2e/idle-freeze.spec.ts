@@ -1,0 +1,98 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { parseFragment } from '@ghostpay/invoice-schema';
+import { expect, test as base, type Page } from '@playwright/test';
+import { createInvoice, generateKeys } from './helpers';
+
+// Playwright's ordinary page fixture emulates focus even in the background. Connect to the
+// disposable browser's default context without those overrides so Chromium can really freeze it.
+const test = base.extend<{ nativePage: Page }>({
+  nativePage: async ({ playwright, launchOptions }, use) => {
+    const server = await playwright.chromium.launchServer({
+      ...launchOptions,
+      args: [...launchOptions.args ?? [], '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'],
+    });
+    try {
+      const profile = server.process().spawnargs.find((arg) => arg.startsWith('--user-data-dir='));
+      if (!profile) throw new Error('Missing temporary Chromium profile');
+      const endpoint = await readFile(join(profile.slice('--user-data-dir='.length), 'DevToolsActivePort'), 'utf8');
+      const [port] = endpoint.split('\n');
+      const browser = await playwright.chromium.connectOverCDP(`http://127.0.0.1:${port}`, { noDefaults: true });
+      try {
+        const context = browser.contexts()[0]!;
+        await context.addInitScript(() => {
+          localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ lockTimeoutMin: 1 }));
+        });
+        await use(await context.newPage());
+      } finally {
+        await browser.close();
+      }
+    } finally {
+      await server.close();
+    }
+  },
+});
+
+const minute = 60_000;
+for (const { frozenMs, delayedCheck } of [
+  { frozenMs: minute - 1, delayedCheck: false },
+  { frozenMs: minute, delayedCheck: false },
+  { frozenMs: minute + 1, delayedCheck: false },
+  { frozenMs: 15_000, delayedCheck: true },
+]) {
+  test(`idle lock after Chromium freezes for ${frozenMs} ms${delayedCheck ? ' then remains in the background' : ''}`, async ({ nativePage: page, baseURL }) => {
+    if (!baseURL) throw new Error('Missing Pages preview URL');
+    await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+    await page.goto(baseURL);
+    const seller = await generateKeys(page);
+    await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 5000)));
+    await page.keyboard.press('Shift');
+    const activity = await page.evaluate(() => Date.now());
+    const tracker = await page.evaluateHandle(() => {
+      const events: string[] = [];
+      let timerRan = false;
+      for (const kind of ['visibilitychange', 'freeze', 'resume']) {
+        document.addEventListener(kind, (event) => {
+          if (event.isTrusted) events.push(`${event.type}:${document.visibilityState}`);
+        });
+      }
+      setTimeout(() => { timerRan = true; }, 1);
+      return { events, timerRan: () => timerRan, monotonic: performance.now() };
+    });
+    const session = await page.context().newCDPSession(page);
+    await session.send('Page.setWebLifecycleState', { state: 'frozen' });
+    await expect.poll(() => tracker.evaluate((state) => state.events)).toContain('freeze:hidden');
+    await page.clock.setSystemTime(activity + frozenMs);
+    await session.send('Page.setWebLifecycleState', { state: 'active' });
+    await expect.poll(() => tracker.evaluate((state) => state.events)).toEqual([
+      'visibilitychange:hidden', 'freeze:hidden', 'resume:hidden',
+    ]);
+    expect(await tracker.evaluate((state) => state.timerRan())).toBe(false);
+    expect(await tracker.evaluate((state) => performance.now() - state.monotonic)).toBe(0);
+
+    const create = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice', exact: true });
+    const locked = page.getByText('Session locked after inactivity', { exact: true });
+    if (delayedCheck) {
+      // Chromium resumed the hidden tab before expiry. Withhold callbacks and input past the
+      // deadline, then deliver the overdue periodic check while the tab is still in the background.
+      await expect(create).toBeEnabled();
+      await page.clock.setSystemTime(activity + minute + 1);
+      expect(await page.evaluate(() => document.visibilityState)).toBe('hidden');
+      expect(await tracker.evaluate((state) => state.timerRan())).toBe(false);
+      await expect(locked).toHaveCount(0);
+      await page.clock.fastForward(20_000);
+      expect(await tracker.evaluate((state) => state.timerRan())).toBe(true);
+    } else if (frozenMs < minute) {
+      await expect(create).toBeEnabled();
+      await page.bringToFront();
+      const invoice = await parseFragment(new URL(await createInvoice(page)).hash);
+      expect(invoice.verification.signatureValid).toBe(true);
+      expect(invoice.invoice.metaAddress).toBe(seller);
+      return;
+    }
+    await expect(locked).toBeVisible();
+    await expect(create).toBeDisabled();
+    await page.keyboard.press('Shift');
+    await expect(create).toBeDisabled();
+  });
+}
