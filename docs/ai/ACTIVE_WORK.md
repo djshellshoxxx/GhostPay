@@ -636,3 +636,8 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## P06 existing browser operation inventory, slice 1 (2026-11-23)
+
+Worker: Codex /root/teams. Isolated branch `qualification/p06-existing-role-inventory-20261123`, based on P06 spec head `db5b5cdaf08a08fc11ee3e772f96410ff1da6738`; main `e0cb4681e453af77bb10be45ba61b4d19579f41b`. Own the new `apps/web/src/lib/keyRoleInventory.ts`, adjacent test, additive ownership entry and `docs/handoffs/P06_ROLE_INVENTORY_20261123.md`. No existing file at either new implementation path in fetched branch history. The original spec claim covers documentation. Scoped PR/branch search identified no active P06 implementation owner. The P06 spec and the existing package exports and browser call sites are the sources for this slice.
+Acceptance: classify the existing scheme-1/2 announcement checks, scheme-1/2 recipient-secret derivations and existing seller invoice and receipt signatures by key role. Type-check names against current exports. Prove all cross-role combinations and unknown roles return no corresponding inventory item. Reserved roles have empty inventories. The operation names provide information only; add no authority, signing, key material, policy domains, grants, runtime consumer or Pages activation.
