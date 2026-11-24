@@ -1,3 +1,11 @@
+# Canonical invoice array follow-up
+
+Owner: this consolidation pass. Branch: `integration/ghostpay-canonical-array-followup-20261124`. Base: `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Owned paths on this isolated branch: this claim and `packages/invoice-schema/src/json.ts` and `json.test.ts`. Donor: `fbcf69223a524b8e3d74fb093dfc71d8b91bdc27`.
+
+Acceptance: preserve canonical outputs for ordinary dense arrays and run invoice-schema tests, typecheck, lint and build with the donor's descriptor snapshot. PR #504 carries the earlier sparse-array change. Land #504 first and refresh this draft against its merge before integration.
+
+---
+
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
 Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.
