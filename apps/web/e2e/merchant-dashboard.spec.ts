@@ -74,7 +74,32 @@ test('opens encrypted merchant records on mobile and only exports the approved i
   await page.getByLabel('From date (UTC)').fill('2099-01-01');
   const preview = page.getByRole('button', { name: 'Preview export' });
   await expect(preview).toBeDisabled();
-  await page.getByLabel('From date (UTC)').fill('');
+  const through = page.getByLabel('Through date (UTC)');
+  await through.fill('2098-01-01');
+  await expect(through).toHaveAccessibleDescription(/chronological order/);
+  await expect(through).toHaveAttribute('aria-invalid', 'true');
+  await page.getByLabel('File format').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByRole('button', { name: 'Clear filters' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('searchbox')).toBeFocused();
+  await expect(page.getByRole('searchbox')).toHaveValue('');
+  await expect(page.getByLabel('Sort by date')).toHaveValue('oldest');
+  await expect(through).toHaveAttribute('aria-invalid', 'false');
+  await expect(record).toHaveCount(1);
+  const filters = page.getByRole('group', { name: 'Browse records' });
+  for (const width of [320, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 768 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    expect(await filters.evaluate((group) => {
+      const bounds = group.getBoundingClientRect();
+      return [...group.querySelectorAll('input, select, button')].every((control) => {
+        const { left, right } = control.getBoundingClientRect();
+        return left >= bounds.left && right <= bounds.right;
+      });
+    })).toBe(true);
+  }
+  await page.setViewportSize({ width: 375, height: 667 });
   await page.getByLabel('File format').selectOption('json');
   await expect(page.getByRole('button', { name: 'Agree and download' })).toHaveCount(0);
   await preview.click();
@@ -110,7 +135,7 @@ test('keeps focus on Network for a background ledger refresh and announces an ex
   const network = page.getByLabel('Network', { exact: true });
   await network.selectOption('84532');
   await page.getByRole('button', { name: 'Open encrypted dashboard' }).click();
-  await expect(page.getByText('No records match this view.')).toBeVisible();
+  await expect(page.getByText('No invoices are registered in this vault for this network.')).toBeVisible();
   const refresh = page.getByRole('button', { name: 'Refresh local records' });
   await refresh.focus();
   await page.keyboard.press('Shift+Tab');
@@ -174,4 +199,25 @@ test('respects focus moved to Network during the first read, and restores focus 
     remove.onerror = () => { reject(new Error('Fixture database reset failed')); };
   }));
   await expect(overview).toBeFocused();
+});
+
+test('browses an empty payment list in Arabic on a narrow screen', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/');
+  await generateKeys(page);
+  await page.locator('nav button[data-view="settings"]').click();
+  await page.getByLabel('Language', { exact: true }).selectOption('ar');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.locator('nav button[data-view="dashboard"]').click();
+  // Opening the encrypted ledger uses the reviewed source text in a draft locale.
+  await page.getByRole('button', { name: 'Open encrypted dashboard' }).click();
+  const filters = page.getByRole('group', { name: 'تصفّح السجلات' });
+  const kind = filters.getByLabel('نوع السجل');
+  await kind.selectOption('payments');
+  await filters.getByRole('searchbox').fill('abc');
+  await filters.getByRole('button', { name: 'مسح عوامل التصفية' }).click();
+  await expect(kind).toHaveValue('payments');
+  await expect(filters.getByRole('searchbox')).toBeFocused();
+  await expect(page.getByText('لا توجد ملاحظات دفع محفوظة في هذه الخزنة لهذه الشبكة.')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });

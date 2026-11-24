@@ -96,6 +96,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const readStatus = useRef<HTMLParagraphElement>(null);
   const overview = useRef<HTMLHeadingElement>(null);
   const retry = useRef<HTMLButtonElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   const previewButton = useRef<HTMLButtonElement>(null);
   const previewControls = useRef<HTMLDivElement>(null);
 
@@ -232,6 +233,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const statuses: readonly (InvoiceState | ObservationState)[] = kind === 'invoices'
     ? ['open', 'expired', 'late', 'ambiguous', 'reorged'] : ['historical', 'imported', 'ambiguous', 'reorged'];
   const range = utcRange(from, through);
+  const dateDescription = range === undefined ? 'dashboard-date-hint dashboard-date-error' : 'dashboard-date-hint';
   const inRange = (seconds: number | undefined): boolean => range !== undefined &&
     (seconds === undefined ? from === '' && through === '' : seconds >= range[0] && seconds < range[1]);
   const scopedObservations = new Map<string, LedgerObservation[]>();
@@ -264,6 +266,8 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     return newest ? second - first : first - second;
   });
   const date = new Intl.DateTimeFormat(i18n?.requestedLocale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+  const hasFilters = query !== '' || status !== '' || from !== '' || through !== '';
+  const totalRecords = kind === 'invoices' ? data.projection.rows.length : data.payments.length;
   const count = kind === 'invoices' ? invoices.length : payments.length;
   const offset = Math.min(page, Math.max(0, Math.ceil(count / PAGE_SIZE) - 1)) * PAGE_SIZE;
   const pageRows = kind === 'invoices'
@@ -290,28 +294,43 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     <p>{t('dashboard.counts', { invoices: data.projection.rows.length, payments: data.payments.length })}</p>
     {summaries.groups.length > 0 && <ul>{summaries.groups.map((group) =>
       <li key={group.assetId}><bdi>{group.assetId}</bdi>{' '}{t('dashboard.expectedTotal', { amount: group.expectedAtomic })}</li>)}</ul>}
-    <div className="dashboard-fields">
-      <Field label={t('dashboard.list')}>{(id) => <select id={id} value={kind} onChange={(e) => {
-        const value = e.target.value;
-        change(() => { setKind(value === 'payments' ? 'payments' : 'invoices'); setStatus(''); });
-      }}><option value="invoices">{t('dashboard.invoices')}</option><option value="payments">{t('dashboard.payments')}</option></select>}</Field>
-      <Field label={t('dashboard.search')}>{(id) => <input id={id} type="search" autoComplete="off" maxLength={256} value={query} onChange={(e) => { change(() => { setQuery(e.target.value); }); }} />}</Field>
-      <Field label={t('dashboard.status')}>{(id) => <select id={id} value={status} onChange={(e) => { change(() => { setStatus(e.target.value); }); }}>
-        <option value="">{t('dashboard.all')}</option>
-        {statuses.map((item) =>
-          <option key={item} value={item}>{t(STATUS[item])}</option>)}
-      </select>}</Field>
-      <Field label={t('dashboard.sort')}>{(id) => <select id={id} value={newest ? 'newest' : 'oldest'} onChange={(e) => { change(() => { setNewest(e.target.value === 'newest'); }); }}>
-        <option value="newest">{t('dashboard.newest')}</option><option value="oldest">{t('dashboard.oldest')}</option>
-      </select>}</Field>
-      <Field label={t('dashboard.from')}>{(id) => <input id={id} type="date" value={from} onChange={(e) => { change(() => { setFrom(e.target.value); }); }} />}</Field>
-      <Field label={t('dashboard.through')}>{(id) => <input id={id} type="date" value={through} onChange={(e) => { change(() => { setThrough(e.target.value); }); }} />}</Field>
-    </div>
-    <p>{t(kind === 'invoices' ? 'dashboard.byExpiry' : 'dashboard.byInclusion')}</p>
-    {range === undefined ? <p role="alert">{t('dashboard.invalidRange')}</p>
-      : count === 0 ? <p role="status">{t('dashboard.empty')}</p>
+    <fieldset>
+      <legend>{t('dashboard.browse')}</legend>
+      <div className="dashboard-fields">
+        <Field label={t('dashboard.list')}>{(id) => <select id={id} value={kind} onChange={(e) => {
+          const value = e.target.value;
+          change(() => { setKind(value === 'payments' ? 'payments' : 'invoices'); setStatus(''); });
+        }}><option value="invoices">{t('dashboard.invoices')}</option><option value="payments">{t('dashboard.payments')}</option></select>}</Field>
+        <Field label={t('dashboard.search')}>{(id) => <input ref={searchInput} id={id} type="search" autoComplete="off" maxLength={256} value={query} onChange={(e) => { change(() => { setQuery(e.target.value); }); }} />}</Field>
+        <Field label={t('dashboard.status')}>{(id) => <select id={id} value={status} onChange={(e) => { change(() => { setStatus(e.target.value); }); }}>
+          <option value="">{t('dashboard.all')}</option>
+          {statuses.map((item) =>
+            <option key={item} value={item}>{t(STATUS[item])}</option>)}
+        </select>}</Field>
+        <Field label={t('dashboard.sort')}>{(id) => <select id={id} value={newest ? 'newest' : 'oldest'} onChange={(e) => { change(() => { setNewest(e.target.value === 'newest'); }); }}>
+          <option value="newest">{t('dashboard.newest')}</option><option value="oldest">{t('dashboard.oldest')}</option>
+        </select>}</Field>
+        <Field label={t('dashboard.from')}>{(id) => <input id={id} type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={from} onChange={(e) => { change(() => { setFrom(e.target.value); }); }} />}</Field>
+        <Field label={t('dashboard.through')}>{(id) => <input id={id} type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={through} onChange={(e) => { change(() => { setThrough(e.target.value); }); }} />}</Field>
+      </div>
+      <div className="dashboard-filter-footer">
+        <p className="hint" id="dashboard-date-hint">{t(kind === 'invoices' ? 'dashboard.byExpiry' : 'dashboard.byInclusion')}</p>
+        {hasFilters && <button className="btn" type="button" onClick={() => {
+          change(() => {
+            setQuery('');
+            setStatus('');
+            setFrom('');
+            setThrough('');
+          });
+          searchInput.current?.focus();
+        }}>{t('dashboard.clearFilters')}</button>}
+      </div>
+    </fieldset>
+    {range === undefined ? <p id="dashboard-date-error" role="alert">{t('dashboard.invalidRange')}</p>
+      : count === 0 ? <p role="status">{totalRecords > 0 ? t('dashboard.empty')
+        : kind === 'invoices' ? t('dashboard.noInvoices') : t('dashboard.noPayments')}</p>
       : <>
-        <ul className="dashboard-records">
+        <ul className="dashboard-records" role="list">
           {pageRows.map((row) => <li key={row.id}>
             <strong>{t(STATUS[row.state])}</strong> <bdi>{row.id}</bdi>
             {row.amount !== undefined && <p>{t(kind === 'invoices' ? 'dashboard.expectedAmount' : 'dashboard.observedAmount', { amount: row.amount })} <bdi>{row.asset}</bdi></p>}

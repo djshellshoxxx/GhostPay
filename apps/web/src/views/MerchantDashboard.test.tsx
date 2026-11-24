@@ -41,7 +41,7 @@ it('opens the real Pages route and handles loading, empty, stale, error, retry a
   await user.click(await screen.findByRole('button', { name: 'Open encrypted dashboard' }));
   expect(screen.getByText('Loading merchant dashboard…')).toBeTruthy();
   await settle(() => { finishRead?.(); });
-  expect(await screen.findByText('No records match this view.')).toBeTruthy();
+  expect(await screen.findByText('No invoices are registered in this vault for this network.')).toBeTruthy();
   expect(document.activeElement?.textContent).toBe('Network overview');
   openVault.mockRejectedValueOnce(new Error('private-internal-detail'));
   act(() => { window.dispatchEvent(new Event(RECONCILIATION_VAULT_CHANGE_EVENT)); });
@@ -51,7 +51,7 @@ it('opens the real Pages route and handles loading, empty, stale, error, retry a
   await user.click(screen.getByRole('button', { name: 'Try again' }));
   await settle(() => { notifyAppLock('idle'); finishRead?.(); });
   expect(screen.getByText('The encrypted dashboard is locked.')).toBeTruthy();
-  expect(screen.queryByText('No records match this view.')).toBeNull();
+  expect(screen.queryByText('No invoices are registered in this vault for this network.')).toBeNull();
 });
 
 it('revokes an export when encrypted storage changes without delivering an invalidation event', async () => {
@@ -85,8 +85,56 @@ it('revokes an export when encrypted storage changes without delivering an inval
   fireEvent.click(agree);
   await waitFor(() => { expect(readState).toHaveBeenCalledTimes(3); });
   expect(downloaded).not.toHaveBeenCalled();
-  expect(await screen.findByText('No records match this view.')).toBeTruthy();
+  expect(await screen.findByText('No invoices are registered in this vault for this network.')).toBeTruthy();
   expect(screen.queryByRole('button', { name: 'Agree and download' })).toBeNull();
+});
+
+it('clears record filters, returns to page one and revokes the filtered export preview', async () => {
+  generateSession();
+  const invoices = Array.from({ length: 27 }, (_, index) => ({
+    invoiceDigest: '0x' + index.toString(16).padStart(64, '0'),
+    chainId: 84532, asset: 'native', expectedNetMinorUnits: '100', expiresAt: 2_524_608_000 + index,
+  }));
+  openVault.mockResolvedValue({ lock: vi.fn(), readState: () => Promise.resolve({ invoices, records: [], receipts: [], readOnly: false }) });
+  const user = userEvent.setup();
+  renderWith(<AppLean />);
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  const network = await screen.findByLabelText('Network');
+  await user.selectOptions(network, '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  const filters = within(await screen.findByRole('group', { name: 'Browse records' }));
+  const search = filters.getByRole('searchbox');
+  await user.selectOptions(filters.getByLabelText('Sort by date'), 'oldest');
+  await user.selectOptions(screen.getByLabelText('File format'), 'json');
+  // All references share this prefix. The filtered list still spans two pages.
+  await user.type(search, '0x0');
+  await user.selectOptions(filters.getByLabelText('Status'), 'open');
+  fireEvent.change(filters.getByLabelText('From date (UTC)'), { target: { value: '2049-01-01' } });
+  fireEvent.change(filters.getByLabelText('Through date (UTC)'), { target: { value: '2051-01-01' } });
+  await user.click(screen.getByRole('button', { name: 'Next page' }));
+  expect(screen.getByText('Showing 26–27 of 27')).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Preview export' }));
+  expect(screen.getByRole('button', { name: 'Agree and download' })).toBeTruthy();
+
+  filters.getByRole('button', { name: 'Clear filters' }).focus();
+  await user.keyboard('{Enter}');
+  expect(document.activeElement).toBe(search);
+  for (const field of [search, filters.getByLabelText('Status'), filters.getByLabelText('From date (UTC)'), filters.getByLabelText('Through date (UTC)')]) {
+    expect((field as HTMLInputElement | HTMLSelectElement).value).toBe('');
+  }
+  expect(screen.getByText('Showing 1–25 of 27')).toBeTruthy();
+  expect((network as HTMLSelectElement).value).toBe('84532');
+  expect((filters.getByLabelText('Sort by date') as HTMLSelectElement).value).toBe('oldest');
+  expect((screen.getByLabelText('File format') as HTMLSelectElement).value).toBe('json');
+  expect(screen.queryByRole('button', { name: 'Agree and download' })).toBeNull();
+  expect(releaseState).not.toHaveBeenCalled();
+
+  await user.selectOptions(filters.getByLabelText('Record type'), 'payments');
+  expect(screen.getByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
+  await user.type(search, 'unmatched');
+  await user.click(filters.getByRole('button', { name: 'Clear filters' }));
+  expect((filters.getByLabelText('Record type') as HTMLSelectElement).value).toBe('payments');
+  expect(screen.getByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
 });
 
 it('requires a fresh preview if an expiry changes the selected status before approval', async () => {

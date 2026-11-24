@@ -819,3 +819,10 @@ The preview reads the existing seller- and chain-scoped vault, including its sto
 - Acceptance: a cross-tab encrypted invoice registration refreshes the results while the Network picker retains keyboard focus. Explicit refresh continues to focus the progress status and then the overview. Dashboard promotion stays gated by #535.
 
 - Follow-up QA by the same focus worker, starting at #543 `88f2882f5a35ecf93c685cb5ed6ff42c0b717e4c`. Stage on `qa/f04-dashboard-focus-regressions` and fast-forward #543 after rechecking its head. Exercise interrupted reads, alternate keyboard destinations, failure and retry, and out-of-order refreshes. Own the dashboard view and its component/browser tests plus the type-only import in `apps/web/src/lib/reconciliationVault.ts` needed for the normal Pages browser build.
+
+## Merchant dashboard record browsing
+
+- Worker: Codex UI. Branch `ui/merchant-dashboard-records`. Parent: #543 at `3085c87a57147afeb7dac7bc563af62f2c9784e5`, stacked on #535. Main at discovery: `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+- Own the dashboard's record filter group, empty states, clear action, related styles, four dashboard locale catalogs, and focused component/browser assertions. Preserve the parent refresh behavior and preview release gates.
+- Acceptance: distinguish an empty network-scoped invoice or payment list from a filtered-out list. Clear search, status and dates together by keyboard, reset pagination and invalidate any export preview while retaining network, list, sort and format. Fit narrow and wide screens.
+- Arabic browser QA found that the preview's dashboard messages were missing from the existing i18n classification. Include the dashboard entries in `apps/web/src/i18n/securityKeys.ts` and its classification test. Localize browsing controls and scoped empty states, and keep consent, monetary data and evidence qualifications on the reviewed-text path.
