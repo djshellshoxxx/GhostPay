@@ -129,7 +129,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       // Only the synthetic checkout runs with a fixed ephemeral scalar. Keys and signed invoices already exist.
       await page.evaluate((byte) => {
         const original = crypto.getRandomValues.bind(crypto);
-        crypto.getRandomValues = <T extends ArrayBufferView | null>(buf: T): T => {
+        crypto.getRandomValues = <T extends ArrayBufferView>(buf: T): T => {
           if (buf instanceof Uint8Array && buf.length === 32) { buf.fill(byte); return buf; }
           return original(buf);
         };
