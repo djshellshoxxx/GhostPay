@@ -1,20 +1,13 @@
-name: Issue 286 complete web regression suites
+name: Diagnose issue 286 Firefox accessibility audit
 on:
   push:
     branches: [qa/286-integrated-mask-verification]
 permissions:
   contents: read
-concurrency:
-  group: qualify-mask-286-web-regressions
-  cancel-in-progress: true
 jobs:
-  browsers:
-    strategy:
-      fail-fast: false
-      matrix:
-        profile: [full, lean]
+  firefox:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -23,31 +16,44 @@ jobs:
       - uses: ./.github/actions/setup-node-libs
         with:
           save-cache: 'false'
-      - run: ./node_modules/.bin/playwright install --with-deps chromium
-      - run: npm run test:e2e --workspace @ghostpay/web
-        env:
-          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
-  web-tests:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: c30283d28ec15f0c4fddb8a80d1c5f60ee590401
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-libs
-        with:
-          save-cache: 'false'
-      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
-        with:
-          version: v1.8.5
-      - working-directory: packages/contracts
-        run: forge build
-      - name: Web coverage and integration tests
+      - run: ./node_modules/.bin/playwright install --with-deps firefox
+      - name: Distinguish browser rule execution from result transport
+        working-directory: apps/web
         run: |
-          set -euo pipefail
-          export ANVIL_BIN="$(command -v anvil)"
-          export SOLC_BIN="$HOME/.svm/0.8.28/solc-0.8.28"
-          test -x "$ANVIL_BIN"
-          test -x "$SOLC_BIN"
-          REQUIRE_ANVIL=1 npm test -w apps/web
+          python3 - <<'PY'
+          from pathlib import Path
+          f=Path('e2e/accessibility-audit.ts')
+          s=f.read_text().replace('await page.evaluate(AXE_SOURCE);', """page.on('console', (message) => { if (message.text().startsWith('AXE_DIAG')) console.log(message.text()); });
+            await page.evaluate(AXE_SOURCE);""")
+          s=s.replace('return axe.run(document);', """console.log('AXE_DIAG start');
+              const report = await axe.run(document);
+              console.log('AXE_DIAG default rules completed');
+              return {
+                testEngine: report.testEngine, passes: report.passes.map(({id}) => ({id})),
+                violations: report.violations.map(({id, impact, helpUrl}) => ({id, impact, helpUrl})),
+                incomplete: report.incomplete.map(({id}) => ({id})),
+              };""")
+          f.write_text(s)
+          PY
+          DEBUG=pw:browser ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox -g 'saved transaction history needs|wallet disclosure requires each' > "$RUNNER_TEMP/default.log" 2>&1 || failed=1
+          grep -E 'AXE_DIAG|crash|signal|SIG|color-contrast|passed|failed|GLContext|Sandbox|EXCEPTION' "$RUNNER_TEMP/default.log" | cut -c 1-450 | tail -85
+          exit "${failed:-0}"
+      - name: Isolate the browser operation inside the audit
+        if: failure()
+        working-directory: apps/web
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          f=Path('e2e/accessibility-audit.ts')
+          s=f.read_text().replace("console.log('AXE_DIAG start');", """for (const rule of (axe as any)._audit.rules) {
+                if (!rule.enabled) continue;
+                console.log('AXE_DIAG begin rule ' + rule.id);
+                await (axe as any).run(document, { runOnly: {type: 'rule', values: [rule.id]} });
+                console.log('AXE_DIAG end rule ' + rule.id);
+              }
+              console.log('AXE_DIAG start');""")
+          f.write_text(s)
+          PY
+          DEBUG=pw:browser ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox -g 'saved transaction history needs' > "$RUNNER_TEMP/by-rule.log" 2>&1 || failed=1
+          grep -E 'AXE_DIAG|crash|signal|SIG|passed|failed|GLContext' "$RUNNER_TEMP/by-rule.log" | cut -c 1-450 | tail -45
+          exit "${failed:-0}"
