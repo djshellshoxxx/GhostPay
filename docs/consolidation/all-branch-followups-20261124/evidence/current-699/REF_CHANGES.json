@@ -1,0 +1,28 @@
+{
+  "previous_observed_at": "2026-11-24T12:24:48.356061+00:00",
+  "observed_at": "2026-11-24T13:14:56.599080+00:00",
+  "new": [
+    {
+      "branch": "automation/20261124T1237Z/bug/deployment-diagnostic-fixture",
+      "head": "3107b816144b4a6fe43f197fbdc323b5d8d80628"
+    }
+  ],
+  "deleted": [],
+  "advanced": [
+    {
+      "branch": "automation/ghostpay-integration-lock",
+      "head": "c69bca412c25647388d36eb64f18c592f3a9b67e",
+      "old_head": "89107c2612d4f025571d9c4ca11bf77f7d19286b"
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e",
+      "head": "51160bcb70cd02fe66eeaca2f8ad6518d032a21b",
+      "old_head": "14635ec8015b76e74994fc6623cc65399b80b21b"
+    },
+    {
+      "branch": "main",
+      "head": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+      "old_head": "706188000c38b3dde5a3a362370a530870aa7587"
+    }
+  ]
+}

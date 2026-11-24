@@ -1,0 +1,231 @@
+{
+  "format": "ghostpay-independent-source-review/1",
+  "reviewed_utc": "2026-11-24T13:07:01.860073+00:00",
+  "reviewer": "/root/ui_data_review",
+  "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+  "tree": "445c977595f679857506f3eacee8825b2a563613",
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "donor": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+  "decision": "approve-source-for-composition",
+  "blockers": [],
+  "scope": {
+    "product_paths": [
+      "package.json",
+      "package-lock.json",
+      "scripts/tests/dependency-tooling.test.mjs"
+    ],
+    "other_source_delta": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/COOKIE_DEPENDENCY_20261121.md"
+    ],
+    "all_product_paths_exact_donor": true,
+    "base_and_donor_ancestors": true,
+    "existing_top_level_tests": 5,
+    "selected_top_level_tests": 6,
+    "existing_test_bytes_preserved": true
+  },
+  "lock": {
+    "total_records": 815,
+    "changed_records": [
+      "node_modules/cookie"
+    ],
+    "changed_fields": [
+      "version",
+      "resolved",
+      "integrity"
+    ],
+    "old_cookie": "0.4.2",
+    "new_cookie": "0.7.2",
+    "still_dev": true,
+    "unchanged_records": 814,
+    "unchanged_nondevelopment_nonlink_packages_excluding_root": 222,
+    "same_count_including_root_metadata": 223,
+    "root_top_level_metadata_unchanged": true,
+    "manifest_only_addition": {
+      "overrides": {
+        "@sentry/node@5.30.0": {
+          "cookie": "0.7.2"
+        }
+      }
+    }
+  },
+  "independent_install_inspection": {
+    "stage": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v",
+    "exact_manifest_and_lock_snapshots": 75,
+    "manifest_count": 74,
+    "installed_records": 335,
+    "installed_nonlink_packages": 334,
+    "all_installed_versions_resolved_urls_integrities_match_lock": true,
+    "cookie_archive_sha512_matches_lock": true,
+    "all_five_installed_cookie_files_equal_verified_archive": true,
+    "actual_cookie_resolution_consumers": [
+      "root",
+      "@sentry/node",
+      "@sentry/utils"
+    ],
+    "actual_cookie_version": "0.7.2",
+    "actual_cookie_manifest": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json",
+    "hardhat_sentry_version": "5.30.0",
+    "node": "v24.22.3",
+    "node_options": null,
+    "custom_resolution_flags": false,
+    "canonical_private_npm_ls_exit": 0,
+    "earlier_checkout_npm_ls_extraneous_diagnostics_retained": true,
+    "retargeted_stage_npm_ls_exit_one_retained": true,
+    "author_later_disposable_link_bookkeeping": {
+      "receipt": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/post-qualification-module-layout.json",
+      "resolved_module_filenames_preserved": 12,
+      "independent_root_sentry_utils_cookie_resolution_rechecked_after_cleanup": true,
+      "same_private_paths_realpaths_and_version": true,
+      "new_install_or_test_run": false
+    }
+  },
+  "existing_qualification_reviewed": {
+    "workspace_ci": {
+      "exit_code": 0,
+      "installed_packages": 334,
+      "include_workspace_root": true,
+      "ignore_scripts": true,
+      "full_repository_install": false
+    },
+    "dependency_tooling": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "router": {
+      "passed": 30,
+      "failed": 0
+    },
+    "contract_typecheck": {
+      "exit_code": 0
+    },
+    "contract_compile": {
+      "exit_code": 0,
+      "solidity_files": 36,
+      "solc": "0.8.28",
+      "long_version": "0.8.28+commit.7893614a",
+      "target": "cancun",
+      "build_info_checked": true
+    },
+    "production_lock_audit": {
+      "exit_code": 0,
+      "findings": 0
+    },
+    "full_lock_audit": {
+      "exit_code": 1,
+      "findings": 15,
+      "severity": "low",
+      "higher_severity": 0
+    },
+    "existing_receipt_log_hashes_verified": true
+  },
+  "review_activity": {
+    "duplicate_tests_run": false,
+    "dependency_mutations": false,
+    "repository_edits": false,
+    "remote_mutations": false,
+    "new_runtime_vulnerability_cases": false
+  },
+  "limits": [
+    "Approval is source-specific; final combined hosted qualification remains required.",
+    "Current installation covers root and confidential-contracts workspace only, with lifecycle scripts disabled; no full-repository installation is claimed.",
+    "Historical donor handoff refers to its old 722-package install and old product SHA; it is not evidence of a current full install.",
+    "Audits are the saved dated package-lock-only results, not a claim of zero development findings.",
+    "No browser, live RPC, Tor, production transaction, native-Anvil or full-FHE qualification was performed by this review."
+  ],
+  "evidence_files": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/source-preservation.json",
+      "sha256": "0a999863dee448a51e668c0df9db2cf104359c45ce9aa5a1f1f55063c419484a"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-install-setup.json",
+      "sha256": "e7d5594e29f822ae095c36109896425dfaaa2dff2b49c293f9d7221e6d8868f8"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-install-resolution-layout.json",
+      "sha256": "38919e1ebb53aacc011c491e37fe9c453a68fb1f3da0d4ae4a92125f77298d26"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/workspace-clean-install.json",
+      "sha256": "79c2a10f66651efc5abdb24e0960645ea96fe5f26649a1974477bead11d8900a"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/workspace-clean-install.log",
+      "sha256": "8cbffc968c3229cd7d60c1b0cfdb7ac6afaeed2b78851e3069cdbde890a880b6"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/actual-cookie-resolution.json",
+      "sha256": "64ff503784129b2a8fb887a2055d72e824aff7c04fabdb74ef0579e75a6d824d"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.json",
+      "sha256": "afe1f283d4788a9bcfbe5ce45f351231954abf4ab77d97dc5af32bf40de92698"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stdout",
+      "sha256": "d416eab5140a7d86f26d7afd8178e5f209087a2f758bab7642571268b41de7e2"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stderr",
+      "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.json",
+      "sha256": "e5fa1646e356576600f3862639fbab4a0cb23e2b27f5f8d4b54d70a89ba4b07a"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.stdout",
+      "sha256": "ef1e30bfa4e7f2e6b558fad742202e7e705d32dac2d54633c9c5005b39fd10f4"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/private-stage-cookie-tree.stderr",
+      "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stdout",
+      "sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stderr",
+      "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/compatibility-gates.json",
+      "sha256": "e33f05d519292239d7d4bb4aba78607d50412da4ae39c60cc7f52679615cd298"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolution-and-security-gates.json",
+      "sha256": "376e8cafd780acc1a008d608646e370b0bd959bf6f2de0d11e011e112c49dd93"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/dependency-tooling.log",
+      "sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-typecheck.log",
+      "sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-compile.log",
+      "sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-router.log",
+      "sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stdout",
+      "sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stdout",
+      "sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/post-qualification-module-layout.json",
+      "sha256": "a7ff4f77e1de74b40886a6f081d5547799cfc9412c1626ba9fe2ff5b2ecac3d0"
+    }
+  ]
+}

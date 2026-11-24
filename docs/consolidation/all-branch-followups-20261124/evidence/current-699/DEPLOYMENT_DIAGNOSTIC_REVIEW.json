@@ -1,0 +1,47 @@
+{
+  "source": "3107b816144b4a6fe43f197fbdc323b5d8d80628",
+  "parent_570": "557815335b8ef94b6c311c0ca4369daf0756ae1d",
+  "compared_candidate": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "status": "eligible_bounded_three_file_candidate_awaiting_qualification",
+  "selected_at_comparison": false,
+  "whole_parent_selected": false,
+  "entries": [
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "candidate": "100644 blob 6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b\tapps/web/src/lib/deployment.ts",
+      "donor": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79\tapps/web/src/lib/deployment.ts",
+      "parent_570": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79\tapps/web/src/lib/deployment.ts"
+    },
+    {
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "candidate": "100644 blob be90aa64969b62e5616161b848ef35e0b12b9804\tapps/web/src/lib/deployment.test.ts",
+      "donor": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b\tapps/web/src/lib/deployment.test.ts",
+      "parent_570": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b\tapps/web/src/lib/deployment.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/hardening.test.ts",
+      "candidate": "100644 blob 582a53936fc57d9a483f8ee26b0a20eec45f4c4e\tapps/web/src/lib/hardening.test.ts",
+      "donor": "100644 blob 5c62abd6c7899bc2625a6608ac2b7ffd85a64b0c\tapps/web/src/lib/hardening.test.ts",
+      "parent_570": "100644 blob 582a53936fc57d9a483f8ee26b0a20eec45f4c4e\tapps/web/src/lib/hardening.test.ts"
+    }
+  ],
+  "production_commit": "ccf93d2283130a487d7d171c9c983e2a86a6a157",
+  "original_deployment_regression_commit": "7209d3639547152a53c0f880a22736c964e6a3e3",
+  "hardening_fixture_commits": [
+    "138b648a9655f58a876d39b362b041e6830e134e",
+    "fc91f371572e4029a58947d50668cd3e8bf9e2a5"
+  ],
+  "production_contract": "Only diagnostic import/comment/catch reason differs. No-RPC short circuit, verifier invocation, secondary options, verified result and unavailable payment status are unchanged. Existing deploymentProblem blocker formatting is unchanged.",
+  "test_preservation": "deployment.test.ts appends the existing donor case; hardening.test.ts changes its diagnostic case and import only, retaining surrounding controls. No tests run or new cases by reviewer.",
+  "full_570_gap": "The other export/download/notification privacy paths and their cross-module authority/lifecycle composition remain separately held.",
+  "patch_sha256": "d8c3762ce3efe0d81891de8d3695926ca9e67b5d1f6666aedbbd9918a35efe32",
+  "qualification_limit": "Donor CI45395839837 is successful, while its separate CLI-operator workflow fails. This does not qualify a new three-file composition at7852931; coordinator is assigning isolated author qualification.",
+  "current_callers": "No current production callers; only tests call this retained helper. No live UI banner is activated by the bounded recovery.",
+  "selected_in_updated_candidate": true,
+  "updated_candidate": "70df75359a807bf833da82f43229452d6ab59976",
+  "later_qualification": "Selected bounded three-file retained utility and tests from #570/#619; 45 existing cases and full web typecheck/lint passed on e65214c2. Independent final addendum and fresh combined hosted qualification remain distinct; no production caller or live banner activation.",
+  "qualified_source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+  "selected_commit": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+  "qualification_handoff": "70df75359a807bf833da82f43229452d6ab59976:docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md",
+  "dependency_limit": "The45-case web-source qualification reused web dependencies containing cookie0.4.2; it does not requalify the cookie override. Cookie0.7.2 has its separate exact private workspace installation and review; fresh combined hosted installation remains required."
+}

@@ -1,0 +1,228 @@
+{
+  "format": "ghostpay-final-extended-composition-independent-review/1",
+  "reviewer": "/root/ownership_review",
+  "source": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "decision": "approve-source-composition",
+  "blockers": [],
+  "independence_scope": "Independent review of the coordinator merge composition. Reviewer authored the earlier standalone tooling recovery; its separate unit approval by /root is reused. Cookie unit approval by /root/ui_data_review is reused. No duplicate runtime or native test executed.",
+  "merge_proofs": [
+    {
+      "proof": "/workspace/scratch/f80482f352bc/compatibility-merge-proofs/7851c5063282255117709296ddde7dcef148444c.json",
+      "proof_sha256": "2f3792388ae4d9e8a29335fbbdd50ef0457949c1b6ecb7d3881e41d8ffb7de16",
+      "head": "2b2d60df7283e1bc01fdfe22cf355a42aa6ac99a",
+      "tree": "07e5e91cee42c1891cba614f3d02c53ae5b0929b",
+      "parents": [
+        "20dae6f75a5426899e22bb690e06136454092740",
+        "7851c5063282255117709296ddde7dcef148444c"
+      ],
+      "unique_merge_base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "only_shared_changed_path": "docs/ai/ACTIVE_WORK.md",
+      "all_nonshared_entries_exact_to_parent_merge_and_final": true,
+      "nonshared_entry_checks": 10,
+      "entire_merge_tree_matches_parent_union_except_additive_claim": true,
+      "claim_parent_checks": [
+        {
+          "parent": "20dae6f75a5426899e22bb690e06136454092740",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2365
+        },
+        {
+          "parent": "7851c5063282255117709296ddde7dcef148444c",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2365
+        }
+      ],
+      "claim_union_counts_equal_sum_of_parents_minus_base": true,
+      "conflict_markers_absent": true
+    },
+    {
+      "proof": "/workspace/scratch/f80482f352bc/compatibility-merge-proofs/d995764543041b0d971db2759be9b2f3f9afc9a7.json",
+      "proof_sha256": "b65f1ea493e9576fd9c8f3cd2f79e4a0c1ead67a9ec4b47e0c60baf9db24053a",
+      "head": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "tree": "f7532fbef051d382dab769a868f0fe894770e1aa",
+      "parents": [
+        "2b2d60df7283e1bc01fdfe22cf355a42aa6ac99a",
+        "d995764543041b0d971db2759be9b2f3f9afc9a7"
+      ],
+      "unique_merge_base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "only_shared_changed_path": "docs/ai/ACTIVE_WORK.md",
+      "all_nonshared_entries_exact_to_parent_merge_and_final": true,
+      "nonshared_entry_checks": 15,
+      "entire_merge_tree_matches_parent_union_except_additive_claim": true,
+      "claim_parent_checks": [
+        {
+          "parent": "2b2d60df7283e1bc01fdfe22cf355a42aa6ac99a",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2369
+        },
+        {
+          "parent": "d995764543041b0d971db2759be9b2f3f9afc9a7",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2393
+        }
+      ],
+      "claim_union_counts_equal_sum_of_parents_minus_base": true,
+      "conflict_markers_absent": true
+    },
+    {
+      "proof": "/workspace/scratch/f80482f352bc/compatibility-merge-proofs/bb81db3e68bc6725e6d966593a7f20bda88cd31d.json",
+      "proof_sha256": "8c95cc708fc9e9d258c5b50f20557bd1b186ef23695cea45c1340b44d3145461",
+      "head": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+      "tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+      "parents": [
+        "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+        "bb81db3e68bc6725e6d966593a7f20bda88cd31d"
+      ],
+      "unique_merge_base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "only_shared_changed_path": "docs/ai/ACTIVE_WORK.md",
+      "all_nonshared_entries_exact_to_parent_merge_and_final": true,
+      "nonshared_entry_checks": 19,
+      "entire_merge_tree_matches_parent_union_except_additive_claim": true,
+      "claim_parent_checks": [
+        {
+          "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2401
+        },
+        {
+          "parent": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+          "ordered_nonblank_sequence_preserved": true,
+          "per_line_multiplicity_preserved": true,
+          "nonblank_lines": 2379
+        }
+      ],
+      "claim_union_counts_equal_sum_of_parents_minus_base": true,
+      "conflict_markers_absent": true
+    }
+  ],
+  "scope": {
+    "base_entries": 4402,
+    "final_entries": 4418,
+    "changed_paths": 20,
+    "added_paths": [
+      "apps/web/e2e/https-rpc-compatibility.spec.ts",
+      "docs/handoffs/COOKIE_DEPENDENCY_20261121.md",
+      "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+      "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+      "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json",
+      "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz",
+      "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+      "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz",
+      "docs/pages/tor-rpc-compatibility.md",
+      "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md",
+      "scripts/audit/mythril-evidence.mjs",
+      "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+      "scripts/coordination/reconcile-claims.mjs",
+      "scripts/coordination/reconcile-claims.test.mjs",
+      "scripts/tests/mythril-evidence.test.mjs",
+      "scripts/tests/reconcile-claims.test.mjs"
+    ],
+    "changed_existing_paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "package-lock.json",
+      "package.json",
+      "scripts/tests/dependency-tooling.test.mjs"
+    ],
+    "deleted_paths": [],
+    "base_existing_entries_exact": 4398,
+    "base_test_spec_paths": 985,
+    "base_test_spec_paths_byte_exact": 984,
+    "modified_existing_test": "scripts/tests/dependency-tooling.test.mjs",
+    "all_original_test_bytes_preserved_as_exact_prefix": true,
+    "new_test_spec_paths": [
+      "apps/web/e2e/https-rpc-compatibility.spec.ts",
+      "scripts/coordination/reconcile-claims.test.mjs",
+      "scripts/tests/mythril-evidence.test.mjs",
+      "scripts/tests/reconcile-claims.test.mjs"
+    ],
+    "final_test_spec_path_count": 989,
+    "all_packages_tree_exact": true,
+    "all_workflows_and_actions_tree_exact": true,
+    "application_runtime_unchanged": true,
+    "only_app_tree_addition": "apps/web/e2e/https-rpc-compatibility.spec.ts",
+    "nonshared_entry_checks_across_three_merges": 44,
+    "unique_nonshared_paths_preserved": 19,
+    "all_unit_heads_and_base_are_ancestors": true
+  },
+  "cookie_scope": {
+    "manifest_only_added_override": {
+      "@sentry/node@5.30.0": {
+        "cookie": "0.7.2"
+      }
+    },
+    "lock_records": 815,
+    "changed_lock_records": [
+      "node_modules/cookie"
+    ],
+    "changed_fields": [
+      "integrity",
+      "resolved",
+      "version"
+    ],
+    "old_cookie": {
+      "version": "0.4.2",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.4.2.tgz",
+      "integrity": "sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "new_cookie": {
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz",
+      "integrity": "sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "unchanged_lock_records": 814,
+    "unchanged_nondev_nonlink_packages_excluding_root": 222,
+    "same_count_including_root_metadata": 223,
+    "lock_top_level_metadata_unchanged": true,
+    "original_dependency_tooling_test_count": 5,
+    "new_dependency_tooling_test_count": 6,
+    "three_cookie_paths_exact_to_reviewed_source_and_original_donor": true
+  },
+  "reused_independent_reviews": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/additional-compatibility-independent-review.md",
+      "sha256": "3ea2beb22f536b362436a0b9e2e29f51ec3ded293138cca3cc795d43adb441dc"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/additional-compatibility-independent-review.json",
+      "sha256": "d8dec001d60a3418502c33462d037f211a1158200e53d40a5ecfffea5412d8b1"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/REVIEW.md",
+      "sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/SOURCE_EVIDENCE.json",
+      "sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d"
+    }
+  ],
+  "evidence_limits": [
+    "Source preservation approval is not a fresh final-head test result. This review ran no project tests, native browser, analyzer, install or build.",
+    "Earlier full application and package results retain their original source pins. The final root manifest/lock differ by the scoped development cookie correction, so whole-input equality to pre-cookie runs is not claimed.",
+    "Cookie qualification is a 334-package root-plus-one-workspace clean install and separately reviewed consumer/compile/router checks, not a full-repository install. Full audit retained 15 low findings; no clean full audit is claimed.",
+    "HTTPS/RPC fixture requires fresh hosted browser execution and does not qualify Tor routing. Tooling tests use ordinary synthetic fixtures and do not execute Mythril.",
+    "Claim comparator still requires canonical input normalization before using current refresh/2; positional Mythril summaries still do not establish identity or clearance.",
+    "All applicable final-composition hosted install/browser/Node/security gates and main integration are coordinator responsibilities."
+  ],
+  "activity": {
+    "source_edits": false,
+    "ref_or_remote_mutation": false,
+    "optional_runtime_reruns": false
+  }
+}
