@@ -22,13 +22,16 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
     mismatch, replaced, nonce consumed, RPC error). Replacement hashes are verified (same sender and nonce) before they are stored.
   - WalletAttempts lists records from every tab live, checks status on a configured RPC and links replacements. Pay refuses a
     second send for a recorded invoice before the wallet is asked.
-  - Fail-closed paths: missing Web Locks, missing IndexedDB, corrupt/oversize journal, storage quota, lock wait over
-    20 s, IndexedDB open over 10 s. A returned hash is never lost: after 10 s waiting for the lock it is surfaced as
-    `WalletBroadcastError`, and the queued write still records it.
+  - Fail-closed paths: missing Web Locks, missing IndexedDB, corrupt/oversize journal, storage quota, a wait of more
+    than 20 s for the lock before a new request, IndexedDB open over 10 s. A returned hash is surfaced to the caller
+    within 10 s even while another tab holds the lock (`WalletBroadcastError`). The write that records it waits for the
+    lock without a time limit, so it lands once the lock frees, as long as this tab stays open. Closing the tab first leaves
+    an `unknown` record that still blocks a repeat send.
 - **Contributors:** this session (lead, Workers A/B/C/F) and commits `b9141125`, `b29ef7bc`, `3776d9bc`, `25005c51` pushed to
   the same branch from the owner's account by another agent. Those commits are kept, and the session reviewed them.
-- **Not covered:** a different browser, profile or device; site data cleared by the user; a payment made outside
-  GhostPay. These are documented in the privacy docs and the user guide.
+- **Not covered:** a different browser, profile or device; a private window; the opt-in embedded-iframe checkout
+  (`VITE_EMBED_IFRAME`), whose storage and locks are partitioned from a top-level tab; site data cleared by the user; a
+  payment made outside GhostPay. These are documented in the privacy docs and the user guide.
 - **Status:** implementation complete on branch. Full web gates and anvil browser suite: see REGRESSION_RESULTS.
   Merge pending exact-head hosted CI.
 
