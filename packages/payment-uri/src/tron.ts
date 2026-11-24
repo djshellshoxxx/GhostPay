@@ -75,9 +75,13 @@ export function buildTronUri(p: BuildTronParams): string {
   const network = p.network ?? 'mainnet';
   if (!NETWORKS.includes(network)) return fail('INVALID_QUERY');
   const pairs: [string, string][] = [['network', network]];
-  if (p.amount !== undefined) pairs.push(['amount', parseDecimal(p.amount, MAX_SCALE, BOUND).canonical]);
-  if (p.token !== undefined) pairs.push(['token', parseTronAddress(p.token)]);
-  if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);
-  if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
+  const amount = p.amount;
+  if (amount !== undefined) pairs.push(['amount', parseDecimal(amount, MAX_SCALE, BOUND).canonical]);
+  const token = p.token;
+  if (token !== undefined) pairs.push(['token', parseTronAddress(token)]);
+  const label = p.label;
+  if (label !== undefined) pairs.push(['label', checkText(label, MAX_LABEL_BYTES)]);
+  const message = p.message;
+  if (message !== undefined) pairs.push(['message', checkText(message, MAX_MESSAGE_BYTES)]);
   return boundBuiltUri(`tron:${parseTronAddress(p.recipient)}?${buildQuery(pairs)}`);
 }

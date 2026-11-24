@@ -32,7 +32,7 @@ export function parseDecimal(s: unknown, decimals: number): bigint {
   if (!Number.isInteger(decimals) || decimals < 0 || decimals > 36)
     throw new BillingError('AMOUNT', 'invalid decimals');
   if (typeof s !== 'string') throw new BillingError('AMOUNT', 'invalid amount');
-  const m = /^(0|[1-9][0-9]{0,40})(?:\.([0-9]{1,36}))?$/.exec(s);
+  const m = /^(0|[1-9][0-9]{0,77})(?:\.([0-9]{1,36}))?$/.exec(s);
   if (m === null) throw new BillingError('AMOUNT', 'invalid amount');
   const frac = m[2] ?? '';
   if (frac.length > decimals) throw new BillingError('AMOUNT', 'too many decimals');

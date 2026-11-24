@@ -3,6 +3,31 @@
 Worker: sequential BUG-ONLY coordinator, round 11; no independent verifier available. Isolated branch `automation/20261124/bug/template-clock-rollback-r11`; base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
 Owned paths: `packages/ux-schedule/src/template.ts`, new `packages/ux-schedule/src/template.clock-rollback.test.ts`, additive claim here and `docs/handoffs/UX_SCHEDULE_TEMPLATE_CLOCK_20261124.md`. Existing `template.test.ts` is owned by #224/#238/#262/#264/#278/#372 and will not be edited. Current open PR census (314 PRs, all changed-file lists checked for template/schedule paths) found no owner of the production/new test path. Recheck before integration.
 Observed failure: create at 1000 ms, edit at 900 ms returns success with updatedAtMs 900; parseTemplates of that record returns bad_time. Isolated exact-blob Node 22/TS 5.8 baseline 11/14 assertions passed. Acceptance: regression first, preserve monotone edit timestamps across clock corrections, keep normal forward updates, patch validation, strict import validation and broken-clock errors; no scheduler behavior, transactions, dependencies, deployment or release changes. Integration lease generation 15 released, not acquired. Independent review and full exact-head hosted CI required; local full checkout DNS unavailable.
+# GP-BUG — Solana reference snapshot baseline reconciliation (2026-11-24 UTC)
+
+Cycle `20261124T0437Z`, one sequential coordinator continuing its existing isolated PR #507 (no independent workers or approval). Branch `automation/20261123T1041Z/bug/solana-reference-snapshot`; expected prior head `5ad9937cdac8f4d75a2dcb4e9a6e62e8fe079705`; fresh main `f76904301cff0b24d65ea4e31cbf37d470db4d95`; common base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: additive claim and existing Solana handoff; preserve exact donor production and eight-case regression blobs. Main advanced 19 commits including scan-source #537 and fee corrections. Compare and incorporate current main into this isolated candidate, retaining donor ancestry and all main claims without replacing main or any other branch. Acceptance: both parents retained, exact donor product/test bytes unchanged, current main tree preserved except the four owned paths, no duplicate PR, fresh hosted CI and independent review required. The earlier Core run 45314127729 was still queued at inspection; four other workflow groups passed, not qualification of the refreshed candidate. Existing lock generation 15 released at observation, not acquired; no protected/shared integration or main merge. No deployment, real funds, workflow/configuration edits, paid agents or gate changes.
+
+---
+
+# GP-BUG — Solana Pay reference count regression extension (2026-11-24 UTC)
+
+Cycle: 20261124T0237Z; sequential coordinator continuing its existing isolated PR #507, branch `automation/20261123T1041Z/bug/solana-reference-snapshot`. Exact prior qualified head `f8e40f9d773333c123ed93db2a256b4b2ee75dde`, main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. No independent subagent or approval. Preserve prior commits and claims.
+
+Owned paths: additive claim here; existing `packages/payment-uri/src/solana.reference-snapshot.test.ts`; additive handoff `docs/handoffs/SOLANA_REFERENCE_SNAPSHOT_20261123.md`. Production source unchanged. The original five tests only exercised the up-front array length cap, not the in-loop bound with an inconsistent iterator. Node 22 source-body reproduction showed the old two-pass builder serializing nine distinct valid-length keys after checking eight. Add deterministic changing-iterator and overlong-iterator cases plus exact-eight acceptance; verify typed rejection and parse round-trip, no funds/network. Existing parent CI is green; new head needs fresh CI. No shared integration, deployment, or changes to other PRs; generation 13 released observed, not acquired. The same lane is deliberately continued instead of opening a competing PR.
+
+---
+
+# GP-BUG — Solana Pay references must be validated once (2026-11-23)
+
+- Cycle and worker: `20261123T1041Z`; one sequential GitHub-connected engineering coordinator, no independent native subagent/verifier.
+- Branch: `automation/20261123T1041Z/bug/solana-reference-snapshot`, exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Claimed paths: `packages/payment-uri/src/solana.ts`, new `packages/payment-uri/src/solana.reference-snapshot.test.ts`, additive claim in this file, `docs/handoffs/SOLANA_REFERENCE_SNAPSHOT_20261123.md`.
+- Finding: `buildSolanaPay` uses `new Set(refs)` to check uniqueness, then iterates the mutable references a second time to serialize. Getter-backed array entries can yield distinct values during validation and a duplicated reference during serialization. This violates the builder/parser round-trip guarantee and bypasses the max-8-unique-reference invariant on mutable input.
+- Acceptance: demonstrate baseline duplicate-ref URI with changing array element getter; add Vitest regressions for one-read stable references, rejected duplicates/too many references, valid normal roundtrip and no unrelated behavior changes; construct URI only from validated canonical reference snapshots. Run source-equivalent Node 22 repro and applicable exact-head GitHub CI; report native test limitations. No deployed funds/contract/custody/network/policy changes.
+- Coordination: C1 [PR #504](https://github.com/djshellshoxxx/GhostPay/pull/504) currently owns a large combined integration; its changed-file inventory did not include `packages/payment-uri/src/solana.ts`. Historical broad #278/#372 edit shared payment-uri tests but not this source/new test path. Claims may change; recheck before integration. The repository integration lock was *released* at generation 12 at inspection; this worker **does not acquire it**. Do not merge to main or modify C1 integration. Independent review and exact-head required CI are pending.
+# TRON payment URI optional-input snapshot — 2026-11-24 UTC
+
+Cycle `20261124T0637Z`; one sequential ChatGPT coordinator (no delegated verifier). Isolated branch `automation/20261124T0637Z/bug/tron-uri-input-snapshot`, main/base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only `packages/payment-uri/src/tron.ts`, new `packages/payment-uri/src/tron.input-snapshot.test.ts`, this additive claim, and `docs/handoffs/TRON_URI_INPUT_SNAPSHOT_20261124.md`. The local builder reads each present optional amount/token/label/message twice, unlike the existing adjacent builder repairs; changing local accessor values make serialization depend on a second observation. Acceptance: each supplied optional field is read once, initial values round-trip with a synthetic Nile fixture, absent values remain omitted, malformed ordinary inputs remain rejected; preserve current network defaults and existing errors. This is local API determinism, not a claim of an external exploit. C1 #504 (all four file pages), #507, #496/#499/#502 and recent PR titles/bodies inspected; no identified TRON URI ownership conflict. Do not touch those branches. No contract, deployment, dependency, real-funds or policy changes. Generation 15 integration lock observed released, not acquired. Exact-head hosted checks and independent verification required before integration.
 
 ---
 
@@ -62,6 +87,45 @@ Worker: sequential ChatGPT BUG-ONLY coordinator, no independent verifier. Branch
 Owned paths: `packages/ux-export/src/parser.ts`, new `packages/ux-export/src/parser.rectangular.test.ts`, additive claim here, and new `docs/handoffs/UX_EXPORT_RAGGED_PARSER_20261123.md`.
 Finding: exported parseCsv documents rejection of ragged rows but returns them unchecked; only parseLedgerCsv independently calls assertRectangular. Exact baseline parser/text/errors blobs locally matched and Node 22 isolated reproduction failed four ragged-row assertions (8/12 passing). No financial behavior or actual account data involved.
 Acceptance: commit failing tests before fix; call existing assertRectangular on complete parsed records before return, preserving existing syntax/limit error precedence, empty input, valid quoted/empty fields, and typed row-index errors. No new dependencies or refactor. All 278 open PR changed-file inventories in snapshot through #523 inspected, no collision on parser paths; main and newest PR heads rechecked before branch creation. Existing claims retained. PR #390 exact head b655bc273a6704c9c140287b8adcdf4085b91882, 36 successful/3 skipped checks, zero submitted reviews, nonmergeable, owner untouched. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f; no ownership acquired. Draft only pending independent review and exact-head CI. No deploy or release.
+# GP-BUG R11 — anchor attribute-name boundary in static markup audit (2026-11-23)
+
+Worker: GhostPay BUG-ONLY automation coordinator; sequential author and test review, not an independent verifier. Branch: `automation/20261123-r11/bug/metadata-anchor-attribute-boundaries`; exact base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths on this branch: `packages/metadata-hardening/src/web.ts`, new `packages/metadata-hardening/src/web.anchor-attributes.test.ts`, additive claim in this document, and new `docs/handoffs/METADATA_ANCHOR_ATTRIBUTES_R11_20261123.md`. No changes to shared branches or existing `web.test.ts`.
+Observed defect: `findUnsafeAnchors` uses `\\btarget` and `\\brel` attribute regexes. A hyphen preceding `target` or `rel` is a word boundary, so `data-target="_blank"` is treated as a real `target`, and `data-rel="noopener noreferrer"` can mask an absent real `rel`. A source-equivalent Node 22 probe reproduced both incorrect outcomes (2/5 directed cases failed on original source). This is a local markup-audit correctness flaw; no real-world exploit claimed.
+Acceptance: regressions first for data-/aria- prefixed lookalike attributes, preserve genuine target/rel cases and mixed case/whitespace; require real attribute names preceded by whitespace; verify before/after directed probe, exact-head hosted CI and applicable browser checks; leave draft pending independent review and legitimate integration lock ownership. No new dependencies, release, contract/fund interactions, network attacks, deployment or broad refactoring.
+Ownership preflight: snapshot of 259 open PRs (including broad #278/#372/#504) on 2026-11-23; changed-file checks on #404, #365, #249, #367, #243, #278, #372, #504 found no claim on `web.ts` or the new test path. The #504 fast-track integration PR does edit sibling `guard.ts`, so no files owned by it are changed here. This is targeted—not a complete 259-file-list census; recheck conflicts before integration.
+Integration metadata lock ref `automation/ghostpay-integration-lock` observed at `082e754f44944ebb4be283f89176b966bf8f7b4f` (generation 12, released); this is not an acquisition or merge grant. PR #390 head `b655bc273a6704c9c140287b8adcdf4085b91882` has five successful exact-head Actions workflow groups, 39 check runs success/skipped and no submitted independent review; owner branch untouched.
+# BUG-ONLY R11 — Reject fabricated CryptoKey records before preset operations (2026-11-23)
+
+Worker: one ChatGPT sequential implementer/reviewer (no separate independent verifier available). Isolated branch: `automation/20261123/bug/ux-presets-real-cryptokey-r11`; exact baseline main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-presets/src/seal.ts`, NEW `packages/ux-presets/src/seal.cryptokey-boundary.test.ts`, NEW `docs/handoffs/UX_PRESETS_CRYPTOKEY_AUTHENTICITY_R11_20261123.md`, and additive claim only in this file. No other owned paths. All 263 open PR changed-file inventories (100+100+63 snapshot, through #508) checked; none touches either selected production or dedicated test path. Recheck before integration; older claims remain respected.
+Confirmed source-executed failure: `resolveKey()` accepts an ordinary object mimicking `CryptoKey` fields (`type: secret`, AES-GCM/256 `algorithm`, encrypt/decrypt `usages`) and returns `ok`, despite no native key object. The next encryption/decryption cannot use that result. Source Git blob: `4f444ee01734d4135887d0a45c401c67b02295da`; observed via extracted original function body in V8 with TypeScript annotations removed. No RPC, funds, contracts or real wallet involved.
+Acceptance: commit a failing Vitest regression before modifying `seal.ts`; reject plain fabricated records with the existing `bad-key` result; preserve genuine WebCrypto AES-GCM-256 key acceptance, 32-byte import and wrong-key rejection. Check targeted source-exact before/after reproduction and hosted exact-head GitHub CI; do not claim local full repository tests without a checkout. No dependencies/features/UX change. Require independent review, browser checks if applicable and legitimate integration lease ownership before merge. PR #390 remains owner controlled; its exact-head five workflow groups GREEN, no submitted independent review, mergeable=false, no edits in this cycle. Generation-12 lock is released but never acquired by this worker. No merge, release or deployment.
+# GP-BUG R12 — gracefully reject unreadable injected fiat quotes (2026-11-23)
+
+Worker: single BUG-ONLY automation coordinator. Task branch: `automation/20261123/bug/ux-fiat-quote-accessor-r12`; current main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Claimed production path: `packages/ux-fiat/src/view.ts`; dedicated regression path: `packages/ux-fiat/src/view.quote-accessor.test.ts`; additive claim in this registry and new `docs/handoffs/UX_FIAT_QUOTE_ACCESSOR_R12_20261123.md`. Preserve other contributors' files and branches.
+
+Confirmed defect: injected `RateQuote` contains a throwing property getter (asset/fiat/rate/timestampMs/source). `computeFiatView` states that it never throws and must return `invalid` for a malformed quote, yet uncaught `parseRate` property reads throw and escape the display computation. Verbatim `view.ts` source at Git blob `74f791587a6eba3cce0e7a4be98d7085196ffc4b`, compiled with isolated dependency doubles, produced five thrown getter cases and an unaffected valid case under Node 22.16.0/TS 5.8.3. No full checkout or native repository Vitest claim; github.com DNS unavailable locally.
+
+Acceptance: regression-first deterministic getter/Proxy cases, mapped to existing `bad-rate-format` invalid state; preserve good quote, ordinary malformed quote, no-rate, and stale/future semantics. Smallest exception boundary around parser for untrusted quote. No new interfaces, dependencies, networking, payment, custody, contract, release or deployment work. Preflight reviewed all 265 open PR changed-file inventories (snapshot through PR #510); none owns either selected path. PR #390 stays owner-controlled, five exact-head workflows passed with independent review absent and mergeable=false. Integration metadata lock `automation/ghostpay-integration-lock` generation 12 released at SHA `082e754f44944ebb4be283f89176b966bf8f7b4f`, not acquired. Required gates: exact-head hosted CI/browser if applicable, genuine independent review, updated ownership and legitimate integration lease before merge.
+# BUG-ONLY — Japanese shared-script letters (2026-11-24 UTC)
+
+Worker: GhostPay bug-repair coordinator, sequential author/test review (no independent reviewer). Branch `automation/20261124T0018Z/bug/ux-intake-japanese-script-extensions`; base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-intake/src/text.ts`, new `packages/ux-intake/src/text.japanese-script.test.ts`, this additive branch-only ownership claim, and new `docs/handoffs/UX_INTAKE_JAPANESE_SCRIPT_20261124.md`.
+Observed failure: source blob 46dff62739d960f78f0a1519b884faf4b22b1d73, Git-hash-matched Node 22 / TypeScript 5.8.3 reproduction, 7/11 passed. Japanese prolonged-sound and iteration letters are Script=Common with Hiragana/Katakana script extensions; treated as Other and falsely classified mixed. Acceptance: test-first valid Japanese examples and neighboring true mixed-script and control cases; minimal Kana Script_Extensions matching, no API or dependencies change. Snapshot of 290 open PR changed-file inventories found no owned source/test overlap; recheck before integration. PR #390 exact head all five workflow groups succeeded, zero reviews, nonmergeable; no changes. Lock generation 12 released, not acquired. Draft only, no main merge, fund, deployment or release.
+# GP-BUG — Preserve independent duplicate-group warnings (2026-11-24 UTC)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential author and runtime verifier; independent review pending.
+Branch: `automation/20261124/bug/vault-duplicate-group-kind-r11`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-vault/src/confusables.ts`, new `packages/ux-vault/src/confusables.group-kind.test.ts`, this additive claim, new `docs/handoffs/UX_VAULT_DUPLICATE_GROUP_KIND_20261124.md`. No edits to existing tests or other workers' refs.
+Observed failure: findDuplicateGroups pools exact-address and duplicate-label group signatures into one suppression set. Same-label contacts with distinct edge-matching addresses lose their lookalike-address warning; exact-address duplicates with distinct confusable labels lose their confusable-label warning. Isolated Node reproduction 7/9 passed, two incorrect suppressions. Acceptance: suppress each redundant group only when its corresponding exact category has identical contact membership; preserve ordering, same-category suppression, unrelated groups and individual candidate checks. Commit focused regression before production repair.
+Ownership: inspected all 292 open PR changed-file inventories in snapshot through #537; no confusables source or focused test claim. Rechecked main and new PR delta. PR #390 exact head b655bc273a6704c9c140287b8adcdf4085b91882 five workflow groups green, Snyk green, no review; owner ref untouched. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f; not acquired. No merge before independent review and all exact-head gates. No network, funds, release, deployment or new features/dependencies.
+# GP-BUG — Merchant decimal uint256 round-trip (2026-11-24 UTC)
+
+Worker: sequential ChatGPT bug-only coordinator; no independent verifier available. Branch: `automation/20261124/bug/merchant-decimal-uint256-roundtrip`, exact base `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+Owned paths: `packages/merchant-billing/src/money.ts`, new `packages/merchant-billing/src/money.uint256-roundtrip.test.ts`, this additive claim, new `docs/handoffs/MERCHANT_DECIMAL_UINT256_20261124.md`.
+Evidence: hash-matched full money.ts and errors.ts compiled with TypeScript 5.8.3 and run on Node 22.16.0: 21/26 checks passed; five valid round trips fail (42-digit integer and uint256 maximum at decimals 0/6/18/36). Root cause: decimal integer regex capped at 41 digits, while parseAmount enforces the actual uint256 bound. Acceptance: regression first; allow up to 78 integer digits, keep overflow, precision and malformed input rejection; no contract, network, funds, dependencies, release or deployment changes.
+Ownership: open-PR inventory inspected for money paths, including new #555; #414 disappeared from the live list and returned 404. No collision observed. Recheck before merge. PR #390 head b655bc273a6704c9c140287b8adcdf4085b91882: 36 successful, three skipped checks; Snyk success, no reviews, dirty merge state; owner untouched. Integration lease generation 13 released at 48330313f2cea71f28b8198b73929a0061bbe5ff; not acquired. Draft only pending exact-head CI and independent review.
 
 ---
 
@@ -219,6 +283,18 @@ complete kit tree and three product blobs equal the reviewed original. Historica
 evidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker
 source review found no introduced blocker. No new runtime replay is claimed.
 Provenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.
+
+# Automation cycle 20261119T2243Z — strict base64url decoder runtime input
+
+- Worker: one ChatGPT operator (development, separate read-only audit and integration review sequentially; no independent subagent).
+- Isolated branch: `automation/20261119T2243Z/bug/base64url-runtime-input`; baseline `main` `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `packages/invoice-schema/src/base64url.ts`, `packages/invoice-schema/src/base64url.test.ts`, and `docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md`; this claim is appended to `docs/ai/ACTIVE_WORK.md` on this branch only.
+- Reproduction: public strict decoder accepts a numeric value as empty bytes (and array-like objects can supply length/charCodeAt); non-string input is outside its contract. A null value raises a native TypeError rather than fixed Base64UrlError.
+- Acceptance: all non-primitive-string values fail with `Base64UrlError`, including number, undefined/null, arrays, boxed strings and array-like objects; canonical valid inputs and existing test vectors unchanged. No secret-bearing error messages or protocol change.
+- Ownership: sampled open #238/#262/#264/#265/#268/#269/#270/#278/#285; none list direct modification of base64url files. Recheck live heads before integration. Never edit other workers' branches.
+- Dependencies: existing invoice schema test package, no new dependency. Full exact-head hosted CI and independent review required; no shared integration lock acquired, no main merge.
+
+---
 
 # Historical security promotion — 2026-11-19
 
@@ -901,3 +977,101 @@ Defect: exact Git blob `3c9b5c50c69881188d2aadd386a68f77a3cbce37` drops an expli
 Acceptance: commit failing Vitest regression before fix, make a minimal EOF bookkeeping correction, preserve valid empty fields in multicolumn CSV, quoted nonempty fields, terminal CRLF/LF and all existing limits; run isolated source-matched regression and hosted exact-head CI. No new features, dependencies, payment/fund interactions, deployment or release. No native browser qualification is claimed unless applicable evidence exists.
 Ownership preflight: 273 open PRs visible in three REST pages (100/100/73); targeted changed-file inspections including #278/#264/#262/#238/#372/#224/#504/#324/#371/#397 and other relevant PRs show no direct ownership of `csv.ts` or the new test. This is a focused preflight, not a complete changed-file census; recheck before integration.
 Integration metadata ref `082e754f44944ebb4be283f89176b966bf8f7b4f`, generation 12, status `released`, was not acquired. PR #390: exact head `b655bc273a6704c9c140287b8adcdf4085b91882`, 36 successful / 3 skipped checks, five workflows success, zero independent reviews, nonmergeable. Other worker branches untouched. Keep new PR draft until independent review, full CI, ownership clearance and legitimate held lock.
+
+
+# All-branch comparison and focused remaining repairs
+
+Worker: `chatgpt-f80482f352bc` (`/root`), with independent source reviewers.
+Branch: `integration/all-branch-review-20261124`.
+Base main: `706188000c38b3dde5a3a362370a530870aa7587`.
+Date: 2026-11-24.
+
+Compare every live branch (683 at the initial fetch) with current main, preserve
+donor histories, identify existing successors, and qualify useful remaining work.
+The first isolated implementation batch carries original PRs #289, #505, #507,
+#509, #511, #516, #529, #536, #538, #557 and #593. None is an ancestor of current
+C1 #504. All selected source paths except #289 have no changed-path overlap in
+the 345-open-PR census. The identical #289 guard is already copied into later
+recovery/privacy stacks; integrate it once without replacing their broader work.
+
+## Owned paths
+
+- `packages/invoice-schema/src/base64url{,.test}.ts`
+- `packages/metadata-hardening/src/web{,.anchor-attributes.test}.ts`
+- `packages/payment-uri/src/solana.ts`, `solana.reference-snapshot.test.ts`,
+  `tron.ts`, `tron.input-snapshot.test.ts`
+- `packages/ux-presets/src/seal{,.cryptokey-boundary.test}.ts`
+- `packages/ux-fiat/src/view{,.quote-accessor.test}.ts`
+- `packages/ux-notify/src/reminder-bridge{,.accessor.test}.ts`
+- `apps/web/src/lib/sanitize{,.marker-script.test}.ts`
+- `packages/ux-intake/src/text{,.japanese-script.test}.ts`
+- `packages/ux-vault/src/confusables{,.group-kind.test}.ts`
+- `packages/merchant-billing/src/money{,.uint256-roundtrip.test}.ts`
+- Additive `docs/ai/ACTIVE_WORK.md` claim and this evidence directory.
+
+## Acceptance
+
+Preserve valid payment URI serialization, invoice encoding, native WebCrypto
+keys, ordinary fiat/reminder behavior, text warnings and bounded billing amounts.
+Retain each donor's regression coverage. Run affected package test/coverage,
+typecheck, lint and build gates and the web checks applicable to the combined
+tree. Correct demonstrated integration or test defects. Record exact heads,
+paths, reviews, commands and outcomes. Refresh main, original heads and ownership
+before promotion, satisfy required hosted CI, and follow the repository
+integration-lock protocol.
+
+Existing active continuations (#504/#525/#531, #568/#574, #601/#604, privacy,
+recovery, QR/mobile, seller reconciliation and wallet-journal stacks) remain
+under their owners. This batch does not change their branches. Historical
+hosted/native/CLI/contract and future privacy work remains preserved for scope
+and qualification review. Deployment and release are outside this task.
+
+---
+
+# GP-BUG R11 — scheduled reminder validator accessor failure (2026-11-23)
+
+Worker: ChatGPT GhostPay BUG-ONLY repair round R11 (single sequential implementer; no independent verifier). Branch: `automation/20261123-r11/bug/reminder-accessor-result` from verified live main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `packages/ux-notify/src/reminder-bridge.ts`, new `packages/ux-notify/src/reminder-bridge.accessor.test.ts`, this additive claim on task branch, and new `docs/handoffs/UX_NOTIFY_REMINDER_ACCESSOR_R11_20261123.md`. Existing `reminder-bridge.test.ts` and other workers' branches/files remain untouched.
+
+Observed defect: `validateScheduledReminder(unknown)` throws native errors when an imported reminder's own enumerable getters or Proxy ownKeys trap throws, despite the package's documented `Result`-returning, never-throws validator contract. Exact main source Git blob `6ac8ab6abaa38b97869c92ed52da96935418f5a6`, V8/TypeScript source-matched reproduction: 8 unexpected exceptions, 4 valid/error neighboring checks passed. Untrusted input is local/injected; no remote exploitation claimed.
+
+Acceptance: commit failing regression first covering throwing version/id/due/label/amount/priority/grace getters and ownKeys proxy, then smallest exception-isolation repair that yields `{ok:false,error:'reminder_shape'}` and preserves valid/bad-field codes; run source-matched Node 22 reproduction, request hosted exact-head CI and independent review where available. No new features, dependencies, payment/contract behavior, RPC, real-world traffic, deployment or release. Check PR ownership before writes and again before integration; relevant broad PRs #238/#246/#262/#264/#278/#504 and recent bug PRs found no selected-path overlap. Full 270-open-PR file census not yet asserted. Integration metadata lease generation 12 is `released`, **not acquired**. Leave draft/unmerged pending all required CI, browser applicability, independent review and legitimate lock transfer.
+
+---
+
+# GP-BUG — Avoid false mixed-script notices from generated display markers (2026-11-23)
+
+Worker: single ChatGPT BUG-ONLY coordinator; sequential author/test review, not independent approval. Branch: `automation/20261123-r11/bug/sanitize-marker-mixed-script`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `apps/web/src/lib/sanitize.ts`, new `apps/web/src/lib/sanitize.marker-script.test.ts`, this additive claim, and new `docs/handoffs/WEB_SANITIZE_MARKER_SCRIPT_20261123.md`. Leave existing hardening/Common tests and PR #390/#419/#422 displayText.ts owner branches untouched. All 283 open PR changed-file inventories in the snapshot through #528 were checked; no sanitize.* ownership collision. Main ACTIVE_WORK contains no claim on these paths. Recheck before any merge.
+
+Observed failure: generated ASCII Unicode-marker letters make otherwise Greek or Cyrillic words appear mixed-script. Exact base blob e5c281aa7f8105b71ef93ea407e8dfa454892317 was hash-matched, compiled with TypeScript 5.8.3 and executed on Node 22.16.0; 6/10 directed assertions passed, 4 failed. Common.SafeText renders the false warning. Acceptance: commit red regression before production change; detect mixed scripts on original input, retain marker text/count, genuine mixed-script warnings and ordinary input. No dependency, fund, network, deployment or interface changes. Full checkout DNS unavailable; require exact-head hosted CI, applicable browser verification, independent review and legitimate integration lease before merge. PR #390 exact head all five workflow groups and Snyk succeeded, no submitted review, nonmergeable; leave owner branch alone. Integration lock generation 12 released, not acquired.
+
+
+# Narrow historical adapter recovery
+
+Extend worker `chatgpt-f80482f352bc`'s isolated branch claim to
+`packages/chain-adapters/src/deployments{,.test}.ts` and
+`packages/chain-adapters/src/rpc{,.test}.ts` before edits.
+
+Independent historical source review found these existing changes absent from
+main `706188000c38b3dde5a3a362370a530870aa7587` and C1 #504. Preserve the combined
+newer implementations already carried in the larger #372 recovery/privacy stack:
+
+- `2e61af277030d76f765b320b9f3e0e81e1a6cddd`: deployment calendar-date validation
+  and existing regressions, from the #250/#271 lineage.
+- `1bf1ac709a1147395d2f47dcdc5eab6a5ffc517b`: bounded RPC retries and explicit
+  credential/referrer/cache policy, with existing transport regressions. The
+  original privacy contribution is `fbda6b132aa3b1bc6bfc3b22b2835f5f8b297cbc` from
+  #220; the finite retry contribution is from #250/#271.
+
+Use selective cherry-picks with source attribution to avoid importing unrelated
+feature and contract changes. Preserve valid manifests, RPC response parsing,
+cancellation, endpoints and normal retries. Include the chain-adapters workspace
+in combined tests, typecheck, lint and build. Hosted integration qualification
+still applies to the final combined tree.
+
+The original #289 regression has one unused callback argument. Apply the exact
+one-line correction already present in recovered commit
+`31c34319aeaa9dbc211b8ccc6bdf65fc3e755ea2`; no assertion changes are needed.
