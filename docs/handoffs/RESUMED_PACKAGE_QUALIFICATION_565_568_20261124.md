@@ -1,6 +1,6 @@
 # Resumed package qualification: PRs #565 and #568
 
-Observed **2026-11-24 08:36 UTC**. This continues two interrupted qualification handoffs. It does not change their implementations or supersede their original branches.
+Final hosted state rechecked **2026-11-24 09:01 UTC**; native package verification was completed at 08:36 UTC. This continues two interrupted qualification handoffs. It does not change their implementations or supersede their original branches.
 
 ## Source and independent review
 
@@ -33,8 +33,8 @@ Runtime: Node 24.22.3; Vitest and coverage-v8 5.0.5; TypeScript 5.9.3; fast-chec
 ## Hosted qualification and remaining work
 
 - **#565:** [CI run 45326703602](https://github.com/djshellshoxxx/GhostPay/actions/runs/45326703602) completed successfully at the reviewed head; all 24 jobs succeeded. The final workflow status was reread after an earlier summary still reported queued. Pages, Beta acceptance, Hosting kit and CLI operator qualification also succeeded. Hosted CI includes both full and lean browser jobs. Engineering qualification of this bounded fix is complete; shared integration still requires the coordinator's current ownership and merge checks.
-- **#568:** [CI run 45333644284](https://github.com/djshellshoxxx/GhostPay/actions/runs/45333644284) still reports queued. All 22 substantive jobs succeeded, including full and lean browser jobs, but the aggregate `contracts` and `typescript` jobs remain queued. Pages, Beta acceptance, Hosting kit and CLI operator qualification succeeded. Do not call the central workflow passed until its terminal successful state is observed.
+- **#568:** [CI run 45333644284](https://github.com/djshellshoxxx/GhostPay/actions/runs/45333644284) completed successfully at the reviewed head; all 24 jobs succeeded, including the final `contracts` and `typescript` aggregates. The terminal workflow state was reread after the earlier snapshot still reported queued. Pages, Beta acceptance, Hosting kit and CLI operator qualification also succeeded. Engineering qualification of this bounded fix is complete; shared integration still requires the coordinator's current ownership and merge checks.
 
 Neither package is imported directly by `apps/web` at the reviewed source. Package behavior was tested natively; hosted browser evidence is recorded separately. No local browser run is claimed by this qualification.
 
-Before integration, reread each PR head and current main, reconcile active ownership and overlaps, and observe the final #568 aggregate checks. Preserve both source histories. No original branch, production file, shared integration lock, release gate or deployment setting was changed. No merge or deployment occurred in this qualification.
+Before integration, reread each PR head and current main, reconcile active ownership and overlaps, and verify that all required checks still correspond to those heads. Preserve both source histories. No original branch, production file, shared integration lock, release gate or deployment setting was changed. No merge or deployment occurred in this qualification.

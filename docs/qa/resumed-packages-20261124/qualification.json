@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-11-24T08:36:06Z",
+  "observed_at": "2026-11-24T09:01:51Z",
   "reviewer": "resume_package_qualification",
   "runtime": {
     "node": "24.22.3",
@@ -28,7 +28,7 @@
         {
           "command": "npm test --workspace=@ghostpay/ux-schedule -- --maxWorkers=2",
           "exit_code": 0,
-          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 test\n> vitest run --coverage --maxWorkers=2\n\n\n RUN  v5.0.5 /workspace/scratch/efb8df2579c9/gp-qualify-565/packages/ux-schedule\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  137 passed (137)\n   Start at  00:34:18\n   Duration  956ms (transform 44%, import 23%, worker 19%, tests 14%)\n\n    Isolate  6 workers spawned · ~165ms startup each (spawn + environment, per file)\n             at least ~331ms faster with isolate: false — reuses workers across files instead of one per file\n\n % Coverage report from v8\n---------------|---------|----------|---------|---------|-------------------\nFile           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n---------------|---------|----------|---------|---------|-------------------\nAll files      |   99.54 |    97.95 |     100 |     100 |                   \n recurrence.ts |   98.73 |    96.89 |     100 |     100 | 146,151,177,252   \n scheduled.ts  |     100 |    98.38 |     100 |     100 | 190               \n time.ts       |     100 |    95.65 |     100 |     100 | 59                \n validate.ts   |     100 |    98.03 |     100 |     100 | 60                \n---------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.54% ( 434/436 )\nBranches     : 97.95% ( 336/343 )\nFunctions    : 100% ( 61/61 )\nLines        : 100% ( 333/333 )\n================================================================================\n"
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 test\n> vitest run --coverage --maxWorkers=2\n\n\n RUN  v5.0.5 /workspace/scratch/efb8df2579c9/gp-qualify-565/packages/ux-schedule\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  137 passed (137)\n   Start at  00:34:18\n   Duration  956ms (transform 44%, import 23%, worker 19%, tests 14%)\n\n    Isolate  6 workers spawned \u00b7 ~165ms startup each (spawn + environment, per file)\n             at least ~331ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n---------------|---------|----------|---------|---------|-------------------\nFile           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n---------------|---------|----------|---------|---------|-------------------\nAll files      |   99.54 |    97.95 |     100 |     100 |                   \n recurrence.ts |   98.73 |    96.89 |     100 |     100 | 146,151,177,252   \n scheduled.ts  |     100 |    98.38 |     100 |     100 | 190               \n time.ts       |     100 |    95.65 |     100 |     100 | 59                \n validate.ts   |     100 |    98.03 |     100 |     100 | 60                \n---------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.54% ( 434/436 )\nBranches     : 97.95% ( 336/343 )\nFunctions    : 100% ( 61/61 )\nLines        : 100% ( 333/333 )\n================================================================================\n"
         },
         {
           "command": "npm run typecheck --workspace=@ghostpay/ux-schedule",
@@ -286,152 +286,176 @@
       ],
       "hosted": {
         "run_id": 45333644284,
-        "status": "queued",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "jobs": [
           {
             "id": 138240472202,
             "name": "changes",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T06:37:24Z"
           },
           {
             "id": 138240472916,
             "name": "secrets-and-egress",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T06:37:40Z"
           },
           {
             "id": 138267034783,
             "name": "e2e (full)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:54:48Z"
           },
           {
             "id": 138267034802,
             "name": "contracts-coverage",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:56:20Z"
           },
           {
             "id": 138267034807,
             "name": "lean-candidate",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:59:39Z"
           },
           {
             "id": 138267034820,
             "name": "ts-test-relayer",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:55:00Z"
           },
           {
             "id": 138267034855,
             "name": "ts-typecheck",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:59:26Z"
           },
           {
             "id": 138267034859,
             "name": "ts-check",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:04:53Z"
           },
           {
             "id": 138267034881,
             "name": "e2e (lean)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:06:39Z"
           },
           {
             "id": 138267034896,
             "name": "contracts-slither",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:51:11Z"
           },
           {
             "id": 138267034899,
             "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:59:11Z"
           },
           {
             "id": 138267034902,
             "name": "contracts-test",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:51:08Z"
           },
           {
             "id": 138267034911,
             "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:52:05Z"
           },
           {
             "id": 138267034915,
             "name": "contracts-static",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:52:04Z"
           },
           {
             "id": 138267034929,
             "name": "ts-lint",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:09:29Z"
           },
           {
             "id": 138267034973,
             "name": "ts-test (core-crypto)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:01:49Z"
           },
           {
             "id": 138267034996,
             "name": "ts-test (web)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:16:55Z"
           },
           {
             "id": 138267035004,
             "name": "ts-test (rest-1)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:08:40Z"
           },
           {
             "id": 138267035014,
             "name": "ts-test (confidential-contracts)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:09:39Z"
           },
           {
             "id": 138267035041,
             "name": "ts-test (rest-0)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T07:59:49Z"
           },
           {
             "id": 138267035116,
             "name": "ts-test (rest-2)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:11:23Z"
           },
           {
             "id": 138267035202,
             "name": "ts-test (btc-silent-payments)",
             "status": "completed",
-            "conclusion": "success"
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:07:46Z"
           },
           {
             "id": 138301262060,
             "name": "contracts",
-            "status": "queued",
-            "conclusion": null
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:36:25Z"
           },
           {
             "id": 138309650791,
             "name": "typescript",
-            "status": "queued",
-            "conclusion": null
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-24T08:48:22Z"
           }
         ],
         "other_workflows": [
@@ -475,7 +499,9 @@
             "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644197/logs",
             "workflow_id": 392799214
           }
-        ]
+        ],
+        "updated_at": "2026-11-24T08:48:23Z",
+        "observed_at": "2026-11-24T09:01:51Z"
       },
       "independent_review": {
         "result": "no blocking findings",
