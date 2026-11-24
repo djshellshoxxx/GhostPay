@@ -1,9 +1,32 @@
-# F08 — offline customer review of a signed merchant profile
+# Scan-source consolidation candidate — 2026-11-24 UTC
 
-- Worker: Codex. Branch: `feature/f08-offline-merchant-profile-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. F08 specification: `50ea73dcf3d4e9593da780ffb34bdfce60a90a15`.
-- Scope: browser-local import of an existing v1 public profile and comparison with an independently supplied full signer key. The full-build preview is opt-in. The lean client and existing payment and pin paths keep their own behavior.
-- Owned paths: `apps/web/src/features/future/ghostid/`, a conditional mount in `apps/web/src/components/MerchantProfilePanel.tsx`, additive locale and security classification keys, focused browser coverage, and the F08 handoff.
-- Acceptance: authentic profile and matching key, distinct key conflict, no comparison from a prefix, rejection of changed, expired, oversized or malformed files, safe replacement of an in-flight selection, and offline operation without modifying stored pins. Verify the feature gate in the default full and lean builds.
+Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.
+
+---
+
+# 20261123T2235Z — range scan record-isolation integration regression
+
+Worker: one sequential coordinator/test author; no native independent verifier. Branch `automation/20261123T2235Z/test/scan-range-record-isolation` based on #523 exact head `36cf79d0ce4a31f79a5799af2f8f5e30bd244029`; main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: new `packages/scan-source/src/range.announcement-boundary.test.ts`, this additive claim, and new `docs/handoffs/SCAN_RANGE_RECORD_ISOLATION_20261123.md`. No production edits. #520/#523 own validator source/test; #222/#249/#238/#262/#264/#278/#372 own range source and existing range tests. Do not edit those paths or their branches.
+
+Acceptance: demonstrate that a malformed individual record does not interrupt a multi-window range scan, that valid records before and after it remain in deterministic order with precise skipped accounting and unchanged coverage, and that a real backend rejection remains a rejection. Use synthetic testnet fixtures only, no network or real funds. Exact-head hosted CI and independent review required. Lock generation 12 released, not acquired. No shared integration or deployment.
+
+---
+
+# Scan-source proxy fixture lint follow-up — 2026-11-23T20:41Z
+
+Cycle 20261123T2041Z; one sequential coordinator (no independent worker). Isolated child `automation/20261123T2041Z/bug/scan-proxy-test-lint` of PR #520 at `74164baa0c0781955383794d5243f5ed25e46ae4`, main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: `packages/scan-source/src/validate.test.ts`, this additive claim, and new `docs/handoffs/SCAN_PROXY_FIXTURE_LINT_20261123.md`. No production edits; preserve #520's original head and all regression assertions.
+Acceptance: resolve hosted lint job 137928103881 at line 31 (unsafe Reflect.get return) by typing the proxy result as unknown; retain throwing metadata and revoked proxy scenarios; requalify exact-head lint and all applicable CI. No gate changes, deployment, real funds or shared integration. Lock observed released generation 12, not acquired. Independent review outstanding. Recent PRs #522/#521/#519/#518/#516, C1 #504, #517, #380/#471 and dependency updates #493/#492 checked for test-path overlap; none found.
+
+---
+
+# R-Scan-20261123 — fail closed on unreadable untrusted announcement records
+
+Worker: sequential GhostPay engineering coordinator (one execution; no independent native workers or reviewer available).
+Cycle: `20261123T1840Z`. Isolated branch: `automation/20261123T1840Z/bug/scan-announcement-getters`. Exact base main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: this additive claim, `packages/scan-source/src/validate.ts`, additive tests in `packages/scan-source/src/validate.test.ts`, and `docs/handoffs/SCAN_ANNOUNCEMENT_ACCESSOR_BOUNDARY_20261123.md`.
+Dependencies: none; do not edit or merge C1 #504 or its children #510→#512→#517. Repository integration lock `automation/ghostpay-integration-lock` last read released generation 12; no lock acquired and no authority to integrate main.
+Finding: exported `parseAnnouncement(raw: unknown)` promises never to throw on hostile records, but reads nine record properties directly. An input accessor or revoked Proxy throws, aborting the scan instead of dropping that malformed record. Reproduction must be a failing regression before repair.
+Acceptance: getter/trap and revoked-Proxy cases return `undefined` without throwing; all raw fields, including optional transactionHash, are read no more than once; normal records, malformed optional hashes, canonical IDs and count/drop semantics remain unchanged. No crypto, backend, contract, deployment, dependency or real-funds edits. Hosted exact-head typecheck, lint, unit/browser gates and independent verification required before merge; do not interpret standalone checks as full qualification.
 
 ---
 
@@ -822,3 +845,12 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+---
+
+# F08 — offline customer review of a signed merchant profile
+
+- Worker: Codex. Branch: `feature/f08-offline-merchant-profile-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. F08 specification: `50ea73dcf3d4e9593da780ffb34bdfce60a90a15`.
+- Scope: browser-local import of an existing v1 public profile and comparison with an independently supplied full signer key. The full-build preview is opt-in. The lean client and existing payment and pin paths keep their own behavior.
+- Owned paths: `apps/web/src/features/future/ghostid/`, a conditional mount in `apps/web/src/components/MerchantProfilePanel.tsx`, additive locale and security classification keys, focused browser coverage, and the F08 handoff.
+- Acceptance: authentic profile and matching key, distinct key conflict, no comparison from a prefix, rejection of changed, expired, oversized or malformed files, safe replacement of an in-flight selection, and offline operation without modifying stored pins. Verify the feature gate in the default full and lean builds.
