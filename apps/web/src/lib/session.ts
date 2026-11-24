@@ -68,7 +68,7 @@ interface Custody {
 
 /** React-facing summary of the custody state; it holds no ciphertext. */
 export interface SessionBackup {
-  /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock wipes them only if `signerOnly` (L1-01). */
+  /** A copy of the loaded keys exists outside this tab's memory. A download alone is still unverified. */
   readonly backedUp: boolean;
   /**
    * That copy is proven: imported keys, a vault record whose passphrase the user chose or proved, or a downloaded keystore
@@ -78,7 +78,7 @@ export interface SessionBackup {
   readonly verified: boolean;
   /**
    * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy: payments stay sweepable with
-   * the typed hex, so the idle lock may wipe the keys; nothing can be signed with that signing key afterwards (C-R10).
+   * the typed hex. On idle the session remains suspended for encrypted recovery of the generated signer.
    */
   readonly signerOnly: boolean;
   /** The seller typed the waiver: invoicing and sharing are allowed, the keys are still not backed up. */
@@ -312,7 +312,7 @@ export interface ImportedHex {
   /**
    * Optional: when omitted a fresh invoice-signing key is generated (it is a separate key by design, ADR-0002). That key
    * exists only in this tab, so the keys count as unsaved until a keystore download or a vault save (C-R6); since the hex
-   * loads the spending and viewing keys again, only the signing key is reported missing, and the idle lock wipes them (C-R10).
+   * loads the spending and viewing keys again, only the signing key is reported missing until the complete set has a backup.
    */
   readonly signingKeyHex?: string;
 }

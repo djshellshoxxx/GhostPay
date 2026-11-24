@@ -140,10 +140,47 @@ function tamperInvoiceLink(link: string): string {
 }
 
 
-/**
- * Pages transport fidelity: an upstream HTTP error is not a successful JSON-RPC transport.
- * This is a local-only proxy acceptance regression, not a public endpoint check.
- */
+test('an unbacked invoice signer survives idle only for encrypted recovery into a fresh profile', async ({ browser, baseURL }, testInfo) => {
+  const net = new PagesNetwork(dn, siteOrigin(baseURL));
+  const source = await newContext(browser, baseURL, net);
+  const fresh = await newContext(browser, baseURL, net);
+  try {
+    const page = await source.newPage();
+    await page.clock.install();
+    await openSite(page);
+    await nav(page).getByRole('button', { name: 'Seller keys' }).click();
+    const keys = keysView(page);
+    await keys.getByText('Import existing keys (hex)', { exact: true }).click();
+    await keys.getByLabel('Spending private key (64 hex characters)').fill('11'.repeat(32));
+    await keys.getByLabel('Viewing private key (64 hex characters)').fill('22'.repeat(32));
+    await keys.getByRole('button', { name: 'Load keys' }).click();
+    const original = await identityOf(page);
+    await page.clock.setSystemTime(await page.evaluate(() => Date.now() + 86_400_000));
+    await page.evaluate(() => { window.dispatchEvent(new Event('focus')); });
+    await expect(page.getByText('Session locked after inactivity')).toBeVisible();
+    const create = nav(page).getByRole('button', { name: 'Create invoice' });
+    await expect(create).toBeDisabled();
+    await keys.getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(KEYSTORE_PASS);
+    await keys.getByLabel('Repeat passphrase', { exact: true }).fill(KEYSTORE_PASS);
+    const file = await download(page, testInfo,
+      () => keys.getByRole('button', { name: 'Download encrypted keystore' }).click(), 'ghostpay-keystore.json');
+    await expect(create).toBeDisabled();
+    const destination = await fresh.newPage();
+    await openSite(destination);
+    await nav(destination).getByRole('button', { name: 'Seller keys' }).click();
+    await expectNoKeys(destination);
+    expect(await readSellerVault(destination)).toBeNull();
+    await importKeystore(destination, { name: 'seller.json', buffer: Buffer.from(file, 'utf8') }, KEYSTORE_PASS);
+    await expect(keysView(destination).getByText('Keystore decrypted; keys are in memory.', { exact: true })).toBeVisible({ timeout: 60_000 });
+    expect(await identityOf(destination)).toEqual(original);
+    expect(net.sentRaw).toHaveLength(0);
+    net.expectClean();
+  } finally {
+    await fresh.close();
+    await source.close();
+  }
+});
+
 test('Pages RPC proxy preserves upstream HTTP failure status', async ({ browser, baseURL }) => {
   const upstreamBody = JSON.stringify({ jsonrpc: '2.0', id: 1, error: { code: -32000, message: 'RPC unavailable' } });
   const upstream = createServer((_req, res) => {

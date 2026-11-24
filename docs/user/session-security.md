@@ -39,7 +39,7 @@ Recoverability is a separate decision:
 | Key custody at the check | Result |
 | --- | --- |
 | Verified external copy, or the matching encrypted browser vault is still readable | Dispose the in-memory seller keys and display the existing idle-wipe notice. Use normal import or vault unlock to continue. |
-| Imported spending/viewing keys with a newly generated, unbacked-up invoice signer | Preserve the existing payment-key policy: dispose the session and explain that the generated invoice signer was lost. The imported payment keys remain recoverable. |
+| Imported spending/viewing keys with a newly generated, unbacked-up invoice signer | Keep the three keys suspended for encrypted backup. The imported hex recovers the payment keys, but only this session can still export the original invoice signer. Restore from the encrypted backup to use that signer again. |
 | No verified surviving copy, a missing vault, or a vault whose presence cannot be confirmed | Retain the seller keys in memory for encrypted backup and verification only. Display the locked recovery state. Normal protected operations remain disabled. |
 
 An unverified download is not proof that a usable file reached disk. An unreadable

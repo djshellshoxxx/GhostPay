@@ -2,7 +2,7 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { captureSessionGuard, clearSession, generateSession, getSessionPublic, hasSession, importSession, markKeystoreDownloaded, revealViewingKey } from './lib/session';
+import { captureSessionGuard, clearSession, exportKeystore, generateSession, getSessionPublic, hasSession, importKeystore, importSession, isSessionSuspended, markKeystoreDownloaded, revealViewingKey, withSessionSecrets } from './lib/session';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { subscribeAppLock } from './lib/appLock';
@@ -147,23 +147,31 @@ describe('App shell', () => {
     }
   });
 
-  it('C-R10: the idle lock wipes hex keys whose signing key was generated here, and says that this key is gone', async () => {
+  it('retains an unbacked invoice signer for encrypted recovery only after idle', async () => {
+    const services = makeServices();
+    const seller = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     setKeyVaultStoreForTests(new MemoryKeyVaultStore());
-    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    await services.vault.unlock(revealViewingKey());
     vi.useFakeTimers();
     try {
-      renderApp(makeServices());
-      // The typed hex loads the spending and viewing keys again: only the generated signing key has no copy.
-      const banner = screen.getByText('The invoice-signing key has no backup').closest('.notice');
-      expect(banner?.textContent).toMatch(/Payments to your meta-address stay sweepable with the spending and viewing keys you imported\./);
-      expect(banner?.textContent).not.toMatch(/every payment/);
-      expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+      const { unmount } = renderApp(services);
       await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
-      expect(hasSession()).toBe(false);
-      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
-      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent)
-        .toMatch(/The invoice-signing key generated when the hex keys were imported had no backup and is gone: loading them again generates a new one\./);
+      expect(services.vault.unlocked).toBe(false);
+      expect(isSessionSuspended()).toBe(true);
+      expect(getSessionPublic()).toEqual(seller);
+      const signer = vi.fn();
+      expect(() => withSessionSecrets(signer)).toThrow(/session is locked/i);
+      expect(signer).not.toHaveBeenCalled();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Create invoice' }).disabled).toBe(true);
+      unmount();
+      vi.useRealTimers();
+      const pass = 'violet comet maple lantern';
+      const file = await exportKeystore(pass, { N: 1 << 14 });
+      expect(() => withSessionSecrets(signer)).toThrow(/session is locked/i);
+      clearSession();
+      expect(await importKeystore(file, pass)).toEqual(seller);
+      expect(isSessionSuspended()).toBe(false);
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);

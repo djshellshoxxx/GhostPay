@@ -100,9 +100,8 @@ export function AppShell(props: AppShellProps): ReactNode {
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
-  // Minutes of the idle lock that last wiped seller keys, and whether an unsaved signing key went with them (C-R10), for a
-  // visible notice; cleared once keys are loaded again.
-  const [idleWiped, setIdleWiped] = useState<{ readonly minutes: number; readonly signerLost: boolean } | undefined>(undefined);
+  // Show the wipe notice until a new seller is loaded or the user dismisses it.
+  const [idleWipedAfterMinutes, setIdleWipedAfterMinutes] = useState<number>();
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
   const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
   const view = suspended ? 'seller' : profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
@@ -146,7 +145,7 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
   useEffect(() => subscribeSession(() => {
     services.vault.lock();
-    if (hasSession()) setIdleWiped(undefined);
+    if (hasSession()) setIdleWipedAfterMinutes(undefined);
   }), [services]);
 
   // GP-PAGES-04: expire authority synchronously; custody checks decide only whether retained boxes can be disposed.
@@ -182,7 +181,8 @@ export function AppShell(props: AppShellProps): ReactNode {
     };
     const retainedNotice = (): void => {
       const backupState = getSessionBackup();
-      setLive({ key: backupState?.verified === true ? 'app.idle.keptUnconfirmed'
+      setLive({ key: backupState?.signerOnly === true ? 'app.idle.keptSigner'
+        : backupState?.verified === true ? 'app.idle.keptUnconfirmed'
         : backupState?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept' });
     };
     const finishLock = (expected: IdleLease): void => {
@@ -194,10 +194,9 @@ export function AppShell(props: AppShellProps): ReactNode {
       };
       void loadedKeysRecoverable().then((recoverable) => {
         if (!stillCurrent()) return;
-        const signerLost = getSessionBackup()?.signerOnly === true;
-        if (!recoverable && !signerLost) { retainedNotice(); return; }
+        if (!recoverable) { retainedNotice(); return; }
         clearSession();
-        setIdleWiped({ minutes, signerLost });
+        setIdleWipedAfterMinutes(minutes);
         setLive({ key: 'app.idle.wiped' });
       }, () => {
         // An unavailable custody check must preserve the copy and the suspended authority, with no unhandled promise.
@@ -411,10 +410,10 @@ export function AppShell(props: AppShellProps): ReactNode {
             {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
-        {session === undefined && idleWiped !== undefined && (
+        {session === undefined && idleWipedAfterMinutes !== undefined && (
           <Notice kind="info">
-            {t('app.idle.wipedNotice', { minutes: idleWiped.minutes })}{idleWiped.signerLost && <> {t('app.idle.signerLost')}</>}{' '}
-            <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
+            {t('app.idle.wipedNotice', { minutes: idleWipedAfterMinutes })}{' '}
+            <button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
