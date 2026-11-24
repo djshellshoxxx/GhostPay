@@ -34,7 +34,7 @@ export function encodeNdefUri(link: string, options: LinkOptions & { maxBytes?: 
   const max = Math.min(options.maxBytes ?? DEFAULT_NDEF_MAX_BYTES, HARD_NDEF_MAX_BYTES);
   const short = payloadLen < 256;
   const total = (short ? 3 : 6) + 1 + payloadLen;
-  if (total > max) throw new HooksError('too-large');
+  if (Number.isNaN(max) || total > max) throw new HooksError('too-large');
   const out = new Uint8Array(total);
   let o = 0;
   out[o++] = short ? 0xd1 : 0xc1; // MB ME [SR] TNF=1
