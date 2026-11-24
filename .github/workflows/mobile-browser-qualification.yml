@@ -14,6 +14,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: mobile-browser-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   workflows:
     name: Phone and tablet engines (${{ matrix.profile }})

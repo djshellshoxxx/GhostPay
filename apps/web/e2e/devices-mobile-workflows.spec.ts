@@ -2,7 +2,13 @@ import { expect, test } from '@playwright/test';
 import qrcode from 'qrcode-generator';
 import { createInvoice, generateKeys } from './helpers';
 
-test('a touch user can choose an invoice QR image and review it before opening payment', async ({ page }) => {
+test('after a camera denial a touch user can import an invoice QR image and review it before opening payment', async ({ page }) => {
+  // Drive the same OS-denial branch deterministically in both engines.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+      value: () => Promise.reject(new DOMException('Test camera permission denied', 'NotAllowedError')),
+    });
+  });
   await page.goto('/');
   await generateKeys(page);
   const memo = 'Mobile file import';
@@ -18,6 +24,8 @@ test('a touch user can choose an invoice QR image and review it before opening p
   await expect(pay).toHaveAttribute('aria-current', 'page');
   await page.getByText('Scan an invoice QR', { exact: true }).tap();
   const importer = page.getByRole('region', { name: 'Invoice QR import' });
+  await importer.getByRole('button', { name: 'Scan with camera' }).tap();
+  await expect(importer.getByText(/Camera access was denied/)).toBeVisible();
   const chooser = page.waitForEvent('filechooser');
   await importer.locator('input[type=file]').tap();
   await (await chooser).setFiles({ name: 'invoice.gif', mimeType: 'image/gif', buffer: gif });

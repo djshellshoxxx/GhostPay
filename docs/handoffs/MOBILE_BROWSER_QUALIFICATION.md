@@ -11,7 +11,7 @@ GHOSTPAY_LOCAL_BUILD_PROFILE=full npm run test:e2e -w @ghostpay/web -- --config=
 | Workflow | Automated evidence | Hardware acceptance |
 |---|---|---|
 | Wallet and invoice | Create and sign an invoice, open it, connect a synthetic EIP-6963 wallet, verify the transaction it receives and exercise account and transaction changes. | On a supported mobile wallet/browser combination, connect a throwaway account, cancel and reconnect, confirm the return to the invoice and check that cancellation sends nothing. |
-| QR and file import | Import a generated signed-invoice raster through the file chooser, review it and explicitly open Pay. Chromium also exercises a virtual camera, permission denial and track cleanup. | Use the system camera and photo picker, deny/regrant permission, scan the displayed invoice and confirm the camera stops. |
+| QR and file import | After a simulated camera permission denial, import a generated signed-invoice raster through the file chooser, review it and explicitly open Pay. Chromium also exercises a virtual camera, permission denial and track cleanup. | Use the system camera and photo picker, deny/regrant permission, scan the displayed invoice and confirm the camera stops. |
 | Backup | Tap to download an encrypted seller keystore, select that saved file and verify it against the loaded keys. | Locate the download in Files/Downloads, reopen it through the OS picker and verify the same keys. |
 | Touch and navigation | Use touch on Pay, the scanner disclosure, file pickers and backup actions. Check nine routes and the loaded payment review for horizontal overflow and clipped controls. | Repeat in portrait and landscape with the on-screen keyboard, and verify navigation after returning from the wallet. |
 
