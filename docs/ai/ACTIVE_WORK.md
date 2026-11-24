@@ -835,6 +835,28 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
 
+
+---
+
+# BUG-ONLY cycle R9 — sweep-timing invalid urgency policy (2026-11-21)
+
+- Worker: autonomous GhostPay bug-repair coordinator, single sequential implementation/review; no independent verifier available.
+- Branch: `automation/20261121/bug/ux-fees-urgency-validation-r9`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths exclusively: `packages/ux-fees/src/timing.ts`, new `packages/ux-fees/src/timing.urgency-validation.test.ts`, this additive branch-local claim, and `docs/handoffs/UX_FEES_URGENCY_RUNTIME_VALIDATION_20261121.md`.
+- Reproduction: source blob `cafc7f958424f87ad867b852607bd2d6ed87a912` treats invalid runtime urgency `'emergency'` like normal urgency and produces `wait` for 1..100-gwei history/current 90 gwei, instead of rejecting malformed caller input. The documented strict input validation and `'normal' | 'urgent'` contract require invalid enum values to be refused.
+- Acceptance: failing regression committed before fix; reject unsupported urgency with existing `UxFeesError`/INVALID_INPUT, retain normal/default `wait`, valid urgent `ok`, and other advice/fee/privacy behavior. No new features, dependency, contracts, transport, deployment, release, or real traffic.
+- Ownership: 179 live open PR file inventories inspected in batches on 2026-11-21, zero changed paths under `packages/ux-fees/src/`; broad #278/#264/#262/#372 touch its package.json only. Reinspect before integration. The metadata-only generation-11 integration lock remains held by another coordinator; no lock takeover or main merge authorized.
+- Verification: only source-branch-equivalent reproduction executed before publication, not local repository Vitest. Hosted exact-head CI and independent review pending.
+
+
+## Fee quote completion rollup — 2026-11-24
+
+- Worker: `/root/unique_history`, delegated by the unique-branch completion coordinator.
+- Branch: `finish/fee-quote-completion-20261124`; starting leaf PR #425 `ec3c7d9bf304fd9e837eaf7da9bbc0cf3fdb3ce3`; current main `f76904301cff0b24d65ea4e31cbf37d470db4d95`; independent donor PR #462 `a3ac91c8f38b99c25749ba1a87ba308c9f1f5a2e`.
+- Owned work: reconcile original #421/#423/#425 timing validation history and #462 symbol-collision history with current main in this isolated branch; preserve all existing registry records; add `docs/handoffs/FEE_QUOTE_COMPLETION_20261124.md`. No donor branch writes or novel fee behavior.
+- Acceptance: source and test blobs match the donor leaves; main's #514 near-tie savings fix stays exact; all ux-fees package tests with original coverage thresholds, package typecheck, typed lint, and build pass; independent review and exact published-head CI remain coordinator gates.
+- Coordination: #561 owns six unrelated package fixes. #504 and responsive child #583 already carry the fee donors as part of broader work; this branch only qualifies the focused fee package on current main. #548 owns receipt printing. Original parent/donor work remains intact; shared integration lease, GitHub publication, merge, deployment and release are coordinator-owned.
+- Qualification finding: #462 only compares fee-line identities with payer totals. Direct, unenforceable and zero-fee routes omit the payment-asset fee line, so the original payment identity is unchecked. Own new `packages/ux-fees/src/preview.payment-asset-identity.test.ts` and the smallest additional `preview.ts` guard needed to reject these collisions. Preserve the donor tests and timing source exactly; record any additional source change separately.
 ---
 
 # GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
@@ -845,3 +867,12 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+# R37 — Block ambiguous fee-preview asset symbols (2026-11-22)
+
+- Worker: branch consolidation coordinator, isolated from concurrent automation workers.
+- Branch: `automation/20261122-r37/bug/ux-fees-asset-symbol-collision`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-fees/src/preview.ts`, new `packages/ux-fees/src/preview.asset-symbol-collision.test.ts`, this additive claim, and `docs/handoffs/UX_FEES_ASSET_SYMBOL_COLLISION_R37.md`.
+- Source-confirmed problem: preview asset totals are grouped by `asset.id` but the collision check only blocks mismatched decimals; different validated ASCII symbols sharing the same id and precision can be silently summed and the fee preview can say `canProceed: true` with misleading payer totals. Existing tests cover unequal decimals only.
+- Acceptance: test first for symbol-only id collisions in network, router buffer and flat security-fee lines; preserve identical assets, distinct ids and current existing decimal-collision rule. Extend only the existing block warning `fees.preview.warn.assetMismatch`. No signing, network, contract, key, fee-rule, or custody changes.
+- Ownership: relevant recent #421/#423/#425 modify only timing paths. Broad #278/#262/#264/#372 file inventories do not include `packages/ux-fees/src/preview.ts`; check all active PR overlaps again before merge. Integration lock `automation/ghostpay-integration-lock` is held generation 11 by another coordinator; no lock transfer, shared merge, deployment, or release authorized.
+- Verification: exact-head hosted CI required; no native repository Vitest run is claimed because GitHub DNS blocks local clone. Independent review required before integration.
