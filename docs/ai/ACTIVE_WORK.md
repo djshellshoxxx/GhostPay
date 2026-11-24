@@ -1,3 +1,9 @@
+## F11 offline membership commit (November 23, 2026 Pacific)
+
+Codex owns `apps/web/src/features/ghostteams/commitMembership.ts`, its adjacent test and this entry on `feature/f11-ghostteams-membership-commit`. Parent PR #554 is at `9229a14c303944380523d2a65b783a25541f8403`; #552 owns invitation review. Main was `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+
+Exercise one owner-reviewed conditional commit from an authenticated team head. Two writers on the same head may commit one change; the losing draft remains available. A duplicate, denied owner approval, failed write, expired invitation and replay after revocation must preserve the authoritative state. Reopen a fixture provider to check restart behavior. Production encrypted records (P05), owner authorization (P06) and Pages activation require separate qualification.
+
 # F11 — Offline GhostTeams membership transitions (2026-11-23)
 
 Worker: Codex. Branch: `feature/f11-ghostteams-membership`. Base: PR #552 at `10d995fa3290b51e0c35804a681ae0b30c4785b3`.
