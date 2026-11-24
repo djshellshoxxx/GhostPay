@@ -3188,3 +3188,12 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Worker `Codex`, branch `test/ghostpay-first-sign-after-sleep`, based on PR #365 at `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`.
 - Acceptance coverage in `apps/web/src/AppShell.idleClock.test.tsx` and `apps/web/e2e/idle-session.spec.ts`. Use a verified synthetic seller backup and the existing one-minute clock fixtures. The first invoice activation with timers suspended must require unlock past the deadline and sign once immediately below it.
 - Follow-up QA on #544 starts at `d4e950dc92f9a0fdd62e7887eb63bfd6b0c04420`. Codex owns seeded timeout and wake-event tests in the same two files. Check signer count, signature validity, and unlock state across the deadline with queued timers paused.
+
+## GP-PAGES-04 browser freeze and pending Sweep signature
+
+Worker branch `test/gp-pages-04-frozen-page-sweep-resume` builds on the idle-lock worker's PR #544 at
+`4b077d2b13f956cfcf9bce1726f929cca40c7394` (#365 runtime). Owned paths are
+`apps/web/e2e/idle-freeze.spec.ts` and `apps/web/src/lib/sweep.idleDeadline.test.tsx`.
+Exercise Chromium-controlled freeze/restore with a paused clock, and complete the final mocked
+Sweep simulation across a one-minute idle deadline. Verify the usable control and zero signing
+or transport after expiry. Coordinate results on #544.
