@@ -1,3 +1,11 @@
+# F11 — Offline GhostTeams membership transitions (2026-11-23)
+
+Worker: Codex. Branch: `feature/f11-ghostteams-membership`. Base: PR #552 at `10d995fa3290b51e0c35804a681ae0b30c4785b3`.
+
+Owned paths: `apps/web/src/features/ghostteams/membership.ts`, its adjacent tests, and this additive claim. Acceptance: prepare revision-checked invitation acceptance and revocation from trusted local snapshots. Identical acceptances are idempotent. Another invitation cannot replace an existing member's roles. Revocation advances the epoch; old invitations and stale revisions fail closed. Exercise the 20-member limit and synthetic signed input. Keep the code offline and outside Pages entry points. Encrypted commits, freshness of restored snapshots, authorization and key rotation require the later provider integration.
+
+---
+
 # F11 — Offline GhostTeams invitation review (2026-11-23)
 
 Worker: Codex. Branch: `feature/f11-ghostteams-invitation-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. Design reference: `future/f11-ghostteams` at `22891e01c2abffe0ced2384c7ad429f08805534f`.
