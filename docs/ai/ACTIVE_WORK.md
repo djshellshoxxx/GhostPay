@@ -1,3 +1,64 @@
+# Individual stealth-payment export recovery — 2026-11-24 UTC
+
+Worker: `/root/ui_data_review`; coordinator `/root`. Isolated branch
+`integration/individual-export-recovery-20261124`, base
+`0b60dba235710f12847532dd9d0f74f12f7298c6`. Reuse the completed
+`react-pages-diagnostics` worktree; preserve its former branch and commit
+`71884c053814c20286e6c612a674219770efafa5`. Recover original PR #572 head
+`28bba11cdaebc13edc4d100761ee00750c3f396f` with ancestry. Current base includes
+the selected print continuation `fc961443233734ee988da7834d7a3193aed9c0fe`.
+
+Owned paths: the donor's complete 38-path individual export, portable codec,
+recovery CLI, existing vectors/tests/docs and additive recovery Node-test glob;
+conflict reconciliation in Scan, locale/security catalogs and this registry;
+only the reviewed inaccurate synchronous-deadline comment correction;
+`docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md` and the source-pinned
+read-only `docs/handoffs/RESPONSIVE_PALETTE_ELIGIBILITY_20261124.md` assessment.
+If exact hosted evidence shows the native spending cases do not execute, send
+the coordinator the precise plan before adding the unchanged required raw-key
+suite to the existing Forge-equipped rest-1 CI lane. No earlier gate may be
+removed or weakened.
+
+Acceptance: preserve current Scan/session/keyVault guards, portable KDF cleanup,
+all existing tests, selected print/QR source, catalogs and manifests. Run full
+vault coverage/typecheck/lint/build; new and existing web consumer suites;
+recovery Node tests; web typecheck/lint; i18n; full/lean builds; and unchanged
+native checks with normally available tools. Retain denied-capability limits,
+required exact-head hosted full/lean browser gates, independent source review
+and source-pinned receipts. No donor, coordinator checkout, remote ref or palette
+family changes; no new vulnerability reproduction, deployment or live payments.
+
+Completion: source `079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de`, tree
+`b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565`, independently source-approved.
+Original #572 is second parent of merge `05d818e7fc85bfc9a2e5ccaf0cfa874ee0df2110`.
+Vault 375/14 and web consumers 311/27 passed; recovery Node 23 and workflow guards
+5 passed; vault/web static checks, i18n, full/lean builds and bundle scans passed.
+The original required native check failed its missing Anvil/Cast prerequisite;
+no spending cases executed locally. Coordinator approved the same-rest-0
+REQUIRE_ANVIL=1 recovery invocation, preserving the original Node command and all
+other gates. Fresh combined hosted spending/browser acceptance and final full-web
+coverage remain with the coordinator. Exact receipts and retained initial failure
+are in `docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md` and its compact
+`individual-export-recovery-20261124/` evidence. No root checkout or remote changes.
+
+# QR exchange interrupted qualification completion — 2026-11-24
+
+Worker: `9723b6705f45-root`, branch `finish/qr-browser-qualification-20261124`.
+Parent: PR #581 `41a598b8433e10a95598c72c2a23027e63010024`; main `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Owned scope: this additive claim, focused QR browser fixtures and an evidence handoff. Production QR changes are retained from #581; do not overwrite donor branches.
+Acceptance: independently run QR package validation and Create → PNG → Pay browser journeys, camera fallback/cleanup, and reject wrong-family/damaged input with synthetic fixtures. Fix confirmed in-scope qualification failures while preserving production and release gates. Record exact executable evidence and pending checks. No release deployment or real funds. Recheck branch heads before publication/integration.
+# Receipt and bill print completion on current main — 2026-11-24 UTC
+
+Worker: `/root/remote_inventory` under coordinator `9723b6705f45`. Isolated branch `finish/receipt-print-completion-20261124`; original #548 tip `cb977e4b31047e65ccbe8835c8e45e1cff3cfc84`, parent #532 `51c04326ff9258861621b94ce2ab06f44bba8301`; fresh main `2d83de0b7f5bba0fafc0c25d19d1fcb382edf719` (contains #561 after prior main `f76904301cff0b24d65ea4e31cbf37d470db4d95`). Own this isolated integration, its additive ownership and `docs/handoffs/RECEIPT_PRINT_COMPLETION_20261124.md`. Preserve all original donor commits and branches; reconcile main without rewriting reviewed print source.
+
+Acceptance: exact donor ancestry and source preservation; independent review of selected-document print isolation, cleanup/cancellation, secret-QR exclusions, pagination and dark-paper output; native focused unit tests, applicable TypeScript/lint, full/lean static builds and browser print/PDF checks where available. Only synthetic invoice/payment fixtures; no physical printer, network payments or deployment. Current source overlap is the existing donor stack; no new print successor or resumed print owner was found in the live PR inventory. Main's intervening package changes do not touch print source. The offline worker owns browser port 4173 until explicitly released by the coordinator.
+
+Qualification follow-up: the unchanged donor passed 54 focused unit tests and all 17 print browser cases in each full/lean profile. Supplementary raster inspection reproduced near-black printed page margins under explicit dark theme with `printBackground: true`, even though the receipt body was white. Coordinator authorized a minimal print-only repair. Extend this isolated claim to `apps/web/src/styles/print.css` and additive assertions in `apps/web/e2e/print-targets.spec.ts`; preserve original assertions and all payment/receipt behavior. Require a failing root-canvas regression and before/after PDF evidence, then focused independent re-review. Port 4173 was released to the coordinator before this follow-up; fixture-only checks use no preview server.
+
+Completion: qualified code `e722f239be6aab9af3907089547c8dfd301f0029`, independently reviewed by `/root/unique_history`. Two added dark-canvas tests failed before repair and passed after the print-only root override; original assertions retained. Final native browser suite passed 19/19 full and 19/19 lean, units 54/54, full/lean TypeScript/build/bundle scans, typed lint and secret scan passed. Actual PDF readbacks confirm isolated signed facts, four-page bill continuation, secret/control exclusion and white dark-theme margins. Main `706188000c38b3dde5a3a362370a530870aa7587` was reconciled at `75c6d4ad183dd649dbbfd04b1310f81632b48ddc`; the qualified web tree is unchanged. See `docs/handoffs/RECEIPT_PRINT_COMPLETION_20261124.md`. Port 4173 was released. Publication is limited to this worker's new branch and main-targeting draft; fresh hosted exact-head checks remain required. Original branches, shared refs and leases are preserved.
+
+---
+
 # GP-BUG — Template clock rollback breaks persistence (2026-11-24 UTC)
 
 Worker: sequential BUG-ONLY coordinator, round 11; no independent verifier available. Isolated branch `automation/20261124/bug/template-clock-rollback-r11`; base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
@@ -122,6 +183,15 @@ Owner: this consolidation pass. Branch: `integration/ghostpay-canonical-array-fo
 Acceptance: preserve canonical outputs for ordinary dense arrays and run invoice-schema tests, typecheck, lint and build with the donor's descriptor snapshot. PR #504 carries the earlier sparse-array change. Land #504 first and refresh this draft against its merge before integration.
 
 ---
+## Pages HTTPS and Tor/RPC compatibility review
+
+Worker: Codex, branch `audit/pages-tor-rpc-compat-20261124`, main base
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own this additive entry,
+`docs/pages/tor-rpc-compatibility.md` and `apps/web/e2e/https-rpc-compatibility.spec.ts`.
+Trace the lean Pages asset graph and RPC dispatch, exercise synthetic invoice and
+scan settings, and distinguish application results from live Tor qualification.
+Network transport, wallet, scanner, hosted onion acceptance and release controls
+remain with their existing owners (#241, #308, #320, #363, #436).
 
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
@@ -152,6 +222,32 @@ Owned paths: this additive claim, `packages/scan-source/src/validate.ts`, additi
 Dependencies: none; do not edit or merge C1 #504 or its children #510→#512→#517. Repository integration lock `automation/ghostpay-integration-lock` last read released generation 12; no lock acquired and no authority to integrate main.
 Finding: exported `parseAnnouncement(raw: unknown)` promises never to throw on hostile records, but reads nine record properties directly. An input accessor or revoked Proxy throws, aborting the scan instead of dropping that malformed record. Reproduction must be a failing regression before repair.
 Acceptance: getter/trap and revoked-Proxy cases return `undefined` without throwing; all raw fields, including optional transactionHash, are read no more than once; normal records, malformed optional hashes, canonical IDs and count/drop semantics remain unchanged. No crypto, backend, contract, deployment, dependency or real-funds edits. Hosted exact-head typecheck, lint, unit/browser gates and independent verification required before merge; do not interpret standalone checks as full qualification.
+# Qualify native QR image decoding on PR #508
+
+Worker: Codex, branch `codex/qualify-508-invoice-link`, based on #508 at `1cf9ec458bdd193f186499ac30ac3f7b207cfe0c`. Main at preflight: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Scope on this child branch: this entry and `packages/qr-exchange/src/readers.platform-candidates.test.ts`. The R14 owner retains the decoder and parent branch.
+Acceptance: mock one detection list with empty text before a signed invoice link, then a list with two usable links. Assert the exact returned link in each case and run the qr-exchange package suite.
+Follow-up on #547 at `4befc6434635f28ce9fd11822e819d5367f727d7`: Codex owns fuzz coverage in the same test file on this qualification branch. Check ordering, text-length boundaries, all-unusable lists and bitmap cleanup against generated detector results.
+
+# GP-BUG R14 — Select a usable platform QR candidate (2026-11-23)
+
+Worker: GhostPay BUG-ONLY scheduled coordinator, sequential implementer and source reviewer; no independent verifier assigned. Branch: `automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14`, base live main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/qr-exchange/src/readers.ts`, new `packages/qr-exchange/src/readers.platform-candidates.test.ts`, this additive registry claim, and new `docs/handoffs/QR_PLATFORM_CANDIDATES_R14_20261123.md`. Do not alter `readers.test.ts` or another worker's branch.
+Observed source defect: `decodeQrImage` considers only `found[0]?.rawValue` from the platform BarcodeDetector; when the first recognized code has an empty or overlong decoded text but a later detected code is valid, it returns null, leaving a legitimate scannable QR unread. Source `readers.ts` blob `caea9b8a3bbfeb9e626814e5db3882e22e568921`.
+Acceptance: regression FIRST for multi-result native scan (bad first/valid second, valid-first ordering), preserve existing single valid/invalid result and empty-result jsQR behavior, perform the smallest selection fix. Test exact-head hosted CI; separate native-browser/independent review required. Never claim full local Vitest without native checkout.
+Ownership preflight: live open PR listing and changed-file checks including #238/#246/#248–254/#261/#262/#264/#270/#278/#294/#302/#307/#310/#365/#372/#390/#504 and relevant recent bug PRs show no direct `readers.ts` claim in examined sets; complete 262-open-PR file audit remains a merge gate. Existing #294/#302/#307 own `assembler.ts`; do not touch. Main integration lease `automation/ghostpay-integration-lock` generation 12 is released, not held by this worker. No lock acquisition or main merge.
+No new features, UI, dep, contracts, funds, real-world traffic, release or deployment.
+# GP-BUG — QR camera stream cleanup on attachment failure (2026-11-23)
+
+Worker: GhostPay BUG-ONLY automation coordinator (single sequential source/runtime verifier; no independent reviewer available).
+Branch: `automation/20261123-r12/bug/qr-camera-attach-cleanup`; exact live main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned files: `packages/qr-exchange/src/camera.ts`, new `packages/qr-exchange/src/camera.attach-boundary.test.ts`, this additive registry claim, and new `docs/handoffs/QR_CAMERA_ATTACH_BOUNDARY_20261123.md`. Existing `camera.test.ts` and other workers' branches remain untouched.
+Observed defect: after getUserMedia resolves a track-bearing stream, a throwing `video.srcObject` setter is outside the try/catch cleanup boundary; `startCamera` rejects with the platform error and leaves tracks running. Source-body-matched Node/V8 reproduction on main blob `d849dfa89a64837e9ede9eca2c03fa3064cafcf5` observed one attachment failure, zero stops and zero play calls. Ordinary attachment and playback succeeded.
+Acceptance: commit a failing dedicated regression before source repair; stop only the acquired stream on failed attachment and return existing `CAMERA_UNAVAILABLE`, without touching another stream, normal acquisition/play behavior, scanner, protocols or devices. Verify source-body-matched red/green and neighboring failure/abort cases; exact-head hosted CI and independent review still required; keep PR draft, no merge without legitimate integration lock and all checks.
+Ownership: fetched live main, AGENTS/workflow/handoff/registry, PR #390 status/reviews/workflows; inspected changed file lists for all 257 open PRs through #502 across three pages, with no active PR owning the selected camera source or new test path. Integration metadata generation 12 is released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no implied merge authority.
+
+---
+
 # BUG-ONLY R13 — reject duplicate Accept-Language q parameters (2026-11-23)
 
 Worker: one ChatGPT coordinator, sequential source review and regression-first implementation; no independent verifier available. Branch: `automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
@@ -218,6 +314,31 @@ Worker: sequential ChatGPT bug-only coordinator; no independent verifier availab
 Owned paths: `packages/merchant-billing/src/money.ts`, new `packages/merchant-billing/src/money.uint256-roundtrip.test.ts`, this additive claim, new `docs/handoffs/MERCHANT_DECIMAL_UINT256_20261124.md`.
 Evidence: hash-matched full money.ts and errors.ts compiled with TypeScript 5.8.3 and run on Node 22.16.0: 21/26 checks passed; five valid round trips fail (42-digit integer and uint256 maximum at decimals 0/6/18/36). Root cause: decimal integer regex capped at 41 digits, while parseAmount enforces the actual uint256 bound. Acceptance: regression first; allow up to 78 integer digits, keep overflow, precision and malformed input rejection; no contract, network, funds, dependencies, release or deployment changes.
 Ownership: open-PR inventory inspected for money paths, including new #555; #414 disappeared from the live list and returned 404. No collision observed. Recheck before merge. PR #390 head b655bc273a6704c9c140287b8adcdf4085b91882: 36 successful, three skipped checks; Snyk success, no reviews, dirty merge state; owner untouched. Integration lease generation 13 released at 48330313f2cea71f28b8198b73929a0061bbe5ff; not acquired. Draft only pending exact-head CI and independent review.
+
+## Individual payment keypair export
+
+Codex, `codex/individual-stealth-keypair-export`, based on #542 at `7bbd651def1aa064f31ed91e272d07f629d3b871` above #539. Integrate the single-payment controls and their authorization helpers from #372 into this child for the recovery coordinator. Scope covers the Scan payment row, its export components and focused tests. Preserve #542's existing browser test. Acceptance requires a synthetic public record, encrypted file and deliberately confirmed raw key, independently matching the selected address, cancellation and leak checks. The archive, master backup, broader network changes and release decisions stay with their existing owners.
+
+## Stopped-scan single-payment export acceptance
+
+Worker: Codex. Branch `codex/stopped-scan-payment-export-acceptance`, based on #539 at `caef97781b407b105c8dce177c76dd515462e94e`. Owned paths are this additive claim and `apps/web/e2e/stopped-scan-payment-export.spec.ts`. The #539 coordinator owns the runtime extraction from #372. Use the existing synthetic RPC fixtures and normal browser controls to discover a payment, cancel the running scan, reauthenticate, download the encrypted single-payment keypair and independently derive the selected address without logging private key material. Keep the parent and donor branches untouched.
+
+# Verify spending from an encrypted single-payment backup
+
+Worker: Codex, branch `codex/verify-encrypted-payment-spend`, based on recovery PR #539 at `caef97781b407b105c8dce177c76dd515462e94e`. Main at inspection was `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+
+Scope: a proposed addition to `scripts/recovery/raw-key-anvil.test.mjs` on this child branch, plus recovery availability and test instructions in the Spec 18 guide and references. Preserve the raw-key control. Use the existing exporter and standalone decoder to recover a single synthetic payment and spend on a loopback chain with an independent wallet tool. Check the authenticated chain, sender, receipt and resulting balances. Document which recovery controls exist on this extraction. Also cover conflicting header-inspection and private-key display flags in the standalone decoder and its existing CLI tests. Header inspection must never reveal a key. The Scan and Seller Keys integration stays with #539 and its browser acceptance with #542.
+
+---
+
+# M2 P0-KEYS — independent payment-key export/recovery onto main (2026-11-23)
+
+Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr) with a core-implementation subagent; independent security/QA review subagents before PR is marked ready.
+Branch: `claude/nifty-bohr-5ra2ap`; exact base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Source: PR #372 head `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` (Spec 18 K01–K06 commits `5c0a12cc`, `2e4a76c9` and later fixes). Selective, source-pinned extraction; #372 and its parents stay untouched.
+Owned paths: `packages/ux-vault/src/stealth-export-portable*` and its export entries; `apps/web/src/lib/{stealthExport,paymentKeyExport}*`; `apps/web/src/components/StealthExport*`; additive export authorization in `apps/web/src/lib/keyVault.ts` and `apps/web/src/lib/session.ts`; export mounts in `apps/web/src/views/{Scan,SellerKeys}.tsx`; matching locale/security keys; `scripts/recovery/*`; `docs/handoffs/P0_KEYS_SPEC18_EXTRACTION_20261123.md`.
+Not owned: M1 journal paths claimed by `claude/keen-volta-8ctx9x` (PR #500), privacy/network-authorization lineage of #372, Sweep, relayer, contracts, hosting kit.
+Acceptance: encrypted single/archive/master export and raw-key export behind re-authentication; recovery of any export in a fresh session; standalone decoder recovers signing authority with GhostPay session cleared (anvil-backed); tampered/wrong-passphrase/oversize/wrong-chain inputs refused; existing main RPC client only (no new endpoint, no fallback); full web + ux-vault gates; independent review; merge only under the integration lock.
 
 ---
 
@@ -787,6 +908,51 @@ Coordination: the evidence-only worker released its heavy-job slot after origina
 Status: correction `5c0b698a16a9b3303357a90b4e80d674b8da3c0b` passes original typed lint, all 149 unchanged coverage tests and package typecheck. Original build evidence is reused only because every build input is unchanged and the changed test is excluded. Lossless results and exact source/dependency provenance are in `HYGIENE_LINT_*`; independent coordinator source review approved exact correction `5c0b698a`; publication and composed-head hosted CI remain pending. No remote writes.
 
 ---
+## GP-BUG-02 receipt and bill print integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-receipt-print-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Integrate #316 at `e0c583be2514b44af7f3b15619fb8160358f1470` without changing its branch. Preserve both ACTIVE_WORK logs.
+- Scope: original print hook, bill/receipt UI and styles, tests, and the integration note. Acceptance: selected bill or receipt renders alone in both Pages browser profiles, controls and sensitive output remain hidden, screen rendering remains intact. Run the original regression coverage and exact-head web, CI and Pages checks.
+- Coordination: #504 overlaps ReceiptPanel.tsx and app.css. Its archive behavior must survive eventual composition. Recovery #372 already contains #316. No new change to their source, reserved features, releases or deploys.
+
+## GP-BUG-02 second receipt browser qualification
+
+- Worker: Codex. Branch `test/receipt-print-action-532` stacks on #532 at `51c04326ff9258861621b94ce2ab06f44bba8301`. Observed main at `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: `apps/web/e2e/print-targets.spec.ts`, the verified-payment fixture in `apps/web/e2e/flowMocks.ts`, and this entry.
+- Acceptance: with two signed receipts and an unselected bill mounted, click the second receipt's Print receipt button. Its transaction must be visible in print media while the first receipt and bill are hidden in both full and lean Pages profiles.
+- Follow-up QA by Codex on #548, from `92b36b3fb7f9d26650b026fc77329112f0251f77`. Extend this qualification with repeatable print selection, cancellation and target replacement sequences, and inspect actual Chromium PDFs. Scope includes the print-target hook tests, print CSS and browser regression when an output defect is reproduced.
+
+# Receipt print isolation continuation — 2026-11-20
+
+Worker: ChatGPT lead `/root`, with independent `print_isolation_review` worker.
+Branch: `fix/receipt-print-isolation-312-20261120`.
+Base: PR #316 `56b76e8fbae0aa0d3e9c9394616d4aa600d70fb7`, based on main
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; original finding GP-BUG-02 in #312.
+Owned paths: `apps/web/src/styles/{app,print}.css`, printable bill/receipt component
+print wiring and focused tests, a shared print-target lifecycle helper and its tests,
+`apps/web/e2e/print-targets.spec.ts`, this additive registry entry and the existing
+`docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` continuation.
+Acceptance: reproduce the original invisible receipt in Chromium print media;
+select only the clicked receipt or bill; exclude other receipts, wallet UI, receipt
+JSON/actions and secret QR; clean up after print/cancel, exceptions and unmount;
+preserve normal screen output; pass focused regression tests, typecheck, lint,
+static Pages build/bundle checks and independent review. Preserve the prior PR's
+history and inspect its live head before publishing a continuation. No deployment,
+contract, dependency, fee, wallet/signing or unrelated feature changes.
+Status: implementation and independent source review complete; 53 focused tests,
+typed lint, original-head regression comparison, lean Vite/bundle scan and secret
+scan passed. Final hosted browser/typecheck/full CI remain pending; local Chromium
+was socket-blocked and full-web TypeScript exited 137. Existing PR #316 hosted
+CI/Pages/Beta acceptance/Hosting kit are green only at the starting base.
+
+# Receipt/bill print-target isolation — 2026-11-20T12:41Z
+
+Worker: ChatGPT automation cycle 20261120T1241Z, sequential implementer/auditor (no independent worker available).
+Branch: `automation/20261120T1241Z/bug/receipt-print-css`; exact main base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/styles/print.css` and new `apps/web/e2e/print-targets.spec.ts`, plus a source-pinned `docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` and this additive ownership entry. Do not modify adjacent active source branches.
+Evidence: GP-BUG-02 in PR #312, independently source-confirmed; `print.css` applies `body * {visibility:hidden!important}` globally whereas `app.css` receipt override lacks `!important`. A bill sheet is mounted only during bill printing; a receipt print target is otherwise suppressed.
+Acceptance: reproduce both print modes with print-media computed styles in a browser fixture; ensure receipt is visible without a bill, bill is visible without a receipt, and bill remains exclusive when both exist; all other UI stays print-hidden; retain sensitive-data print restrictions; source review against exact main files; run available tests or record unexecuted checks; preserve the branch as draft pending hosted qualification and separate review. No contracts, workflows, dependencies, Pages settings or deployments.
+Status: implementation and six print-media fixture cases committed. Exact-source static/PostCSS syntax checks passed; repository Playwright, typecheck, lint, hosted CI and independent verification remain outstanding. Lock metadata is separate; no shared integration or protected-main merge attempted.
 
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
@@ -2100,6 +2266,42 @@ Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exac
 
 ---
 
+## QR exchange browser completion
+
+- Worker: Codex on `codex/qr-exchange-browser-completion`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+- Integrate the existing QR-only candidate heads #547 (including #508), #503 and #525 on this isolated branch. Original worker branches remain independently owned.
+- Own camera candidate selection and runtime fallback in `packages/qr-exchange/src/readers.ts`, associated QR unit tests, and the browser regression for generated invoice images in `apps/web/e2e`. Qualify the existing image, generation, validation and permissions paths in both Pages profiles.
+- Acceptance: preserve first usable native result order, decode generated invoices with unavailable or failing native QR support, reject unsupported/damaged input, stop tracks, and require the existing explicit invoice review. No changes to payment execution or feature gates.
+## QR SVG sparse-cell qualification, 2026-11-24 UTC
+
+Worker `codex-fe9aff486805` is qualifying the existing #525 change at `06973f60031c49c4e8004cffea77b5627bb81632` on main `f76904301cff0b24d65ea4e31cbf37d470db4d95` in `qualify/qr525-sparse-cells-20261124`. Owned files are `packages/qr-exchange/src/generate.ts` and `generate.sparse.test.ts` beside it. Resolve both hosted lint errors, check that missing SVG cells are rejected and verify valid coordinates with the package suite. Return the tested work to #525.
+
+
+## Resume #581 rendered invoice QR qualification — 2026-11-24 UTC
+
+- Worker: `/root/qr_completion`; coordinator `/root`. Isolated branch `finish/qr-581-20261124`, exact parent `41a598b8433e10a95598c72c2a23027e63010024`; main inspected at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Original candidate and donor branches remain unchanged.
+- Owned paths: the existing `apps/web/e2e/qr-invoice-image.spec.ts` acceptance test, a minimal QR rendering or image-read repair only if demonstrated necessary by the failing rendered image, associated narrow regressions, this additive claim and `docs/handoffs/QR_INVOICE_IMAGE_COMPLETION_20261124.md`. Existing other worker source is preserved.
+- Evidence: exact-head hosted full and lean browser jobs fail image import with “No QR code was found in that image”; the requested signature preview never appears. Full job 138275808118 has 83 passes, one failure and one skip. Preserve the chain, signature, explicit review, damaged-image, wrong-family and zero-external-request assertions.
+- Acceptance: reproduce using the actual SVG rendered by Create invoice and the native browser raster decoder, correct the smallest proven failure, and pass the affected full and lean QR browser journeys with synthetic invoices. Relevant typecheck, lint, QR tests and source review remain required. No payment execution, dependency, release, deployment, network-policy or contract changes. Root owns publication and integration.
+- Narrowed implementation scope after the paired browser reproduction: only `apps/web/src/components/QrView.tsx`. Three fresh synthetic invoices each failed to import when the responsive SVG snapped its fractional module geometry with `crispEdges`, and each completed the unchanged acceptance journey when the same SVG used `geometricPrecision`. The original end-to-end assertions and all decoder, signature, generation and export source remain unchanged.
+
+
+## #581 version-23 software decoder correction — 2026-11-24 UTC
+
+- Worker `/root/qr_completion`; coordinator `/root`; isolated branch `finish/qr-581-20261124` starts this correction at `81b6fd577e8f80cfc2a2f62bbc3a16e2e88741d4`, preserving the qualified responsive SVG fix. Root approved a bounded static vendor correction after independent native reproduction.
+- Owned paths: `packages/qr-exchange/src/readers.ts`, new `src/readers.version23.test.ts` and `src/vendor.provenance.test.ts`, new `src/vendor/jsqr-1.4.0.mjs` with explicit type declaration/license/provenance, package build configuration for static JavaScript emission, scoped README/DEVIATIONS, this registry entry and a new source-pinned handoff. No dependency manifest or lockfile changes.
+- Finding: pinned jsQR 1.4.0 has version-23 alignment centers `[6, 30, 54, 74, 102]` while the independent generator uses `[6, 30, 54, 78, 102]`. Its public software decoder rejects multiple pristine valid version-23-L payloads, including accepted v2 settings exports. Original distribution SHA-256 is `bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859`.
+- Distribution follow-up authorized by root: own `apps/web/public/licenses/jsqr-1.4.0.txt` and its exact provenance assertion. The production minifier omits source comments, so retain the package banner and add a static full-license notice copied by both existing Pages profiles; verify emitted notice bytes without changing build gates or minifier settings.
+- Acceptance: record deterministic failures against the original public reader, keep adjacent versions/ECC/Unicode/blank/error cases, use a static ESM copy with the sole semantic table change and auditable mechanical wrapper conversion, preserve Apache attribution, prove exact vendor provenance and normal package build/types/lint/coverage, and qualify the final current-main composition in full and lean browser profiles. No runtime evaluation, dynamic code construction, node_modules mutation, dependency update, signing, payment, network-policy, contract or deployment change. Root owns remote publication and lease-protected integration; independent reviewer remains read-only.
+## Bounded QR software decoder completion — 2026-11-24
+
+- Worker: `/root/unique_history`, delegated by the branch completion coordinator. Branch `finish/qr-decoder-20261124`, parent #581 `41a598b8433e10a95598c72c2a23027e63010024`.
+- Own `packages/qr-exchange/vendor/` (exact pinned jsqr 1.4.0 bundle, Apache license, narrow type declaration and provenance), lazy-reader import, package file inclusion, new deterministic decoder regression/provenance tests, and `docs/handoffs/QR_DECODER_COMPLETION_20261124.md`. Parent owns browser qualification and rollup.
+- Scope: correct the version-23 alignment center 74 to 78; retry only the two adjacent valid QR dimensions when the locator returns a side congruent to 3 modulo 4, bounded to 21..177. Preserve original extraction, error correction, payload parsing and validation. Keep pinned npm jsqr as the untouched provenance/control dependency.
+- Acceptance: baseline-reproducing tests for version 23 and fractional-raster version 25 plus valid neighbors; no unbounded search; vendor bytes equal pinned upstream plus exactly the two documented corrections; package coverage/typecheck/lint/build pass, independent source and browser review before integration. No installed dependency mutation, remote writes, feature gates, deployment, payment signing or real funds.
+
+---
+
 ## Package fix consolidation, 2026-11-24 UTC
 
 Worker `codex-fe9aff486805` owns integration on `integration/ghostpay-package-fixes-20261124`, based on `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Preserve the six original PR heads and their records. Integration covers language negotiation (#506), payment button labels (#513), the NFC message size limit (#518), billing CSV end-of-file handling (#519), locale separators (#521), and strict CSV row width (#524). Verify each original source and test blob, run the five affected workspace suites and their build, lint and type checks, then submit the combined tree to the existing CI and review gates.
@@ -2478,3 +2680,432 @@ two expected message literals and no production bytes. Full ux-fiat coverage
 passed 88/88 tests with zero skips; package typecheck and typed lint passed.
 The previous alternative branch remains unchanged. Source pins, two-layer flow
 and evidence are in `docs/handoffs/FIAT_VIEW_EXPECTATIONS_20261124.md`.
+
+
+## Narrow residual library and QR-print recovery — 2026-11-24
+
+Worker: `/root/ownership_review`, delegated by the all-branch coordinator.
+Branch: `integration/narrow-residual-recovery-20261124`. Exact base:
+`fb12a3302d9a85aa8777805bbdaab1bf2770ea16`, tree
+`8086add0f3c77a80ae953e45d50b179244261248`.
+
+Owned paths: `apps/web/src/lib/qrKinds.ts`, `qrKinds.test.ts`;
+`packages/hygiene/src/ledger.ts`, `ledger.browser-chains.test.ts`, and the
+chain-policy statement in `packages/hygiene/README.md`;
+`packages/merchant-ledger/src/reconcile.ts`, `ledger.test.ts`; this additive
+claim and `docs/handoffs/NARROW_RESIDUAL_RECOVERY_20261124.md`.
+
+Recover only scoped source and existing ordinary regressions: #410 commits
+`8ca59c6e1e1b7dc6bcfdf8d24c31fe68214103a1` and
+`6c645477f8c91d6f0f54b6bb21c6a2710a947b80`; #341 commits
+`26d2ba95a045bb60d9344cb3e4a84224c2b74b50` and
+`0284eead8822306c625981d5095e983f8364cb93`; only the merchant-ledger hunk
+and paired regression from #220 commit
+`6db114920589a38dbbb5d52f45bb7a52be98d9b6` if current semantics confirm it.
+Do not merge old whole branches or alter donor refs.
+
+Acceptance: preserve current QR primitive guards, mappings and print-size
+limits while treating only literal true as passphrase protection. Keep the
+pure destination ledger compatible with enabled testnet metadata plus Anvil,
+without widening other PoC RPC/derivation guards or activating any browser
+caller. For merchant reconciliation, preserve counted/late/zero-due and
+tolerance semantics while preventing positive unpaid invoices from becoming
+paid from tolerance alone. Inspect public contracts and existing regression
+overlap first; reject incompatible or superseded hunks explicitly.
+
+Run both full affected package suites with coverage, typecheck, lint and build,
+plus relevant existing web tests and static/build checks using workspace links
+into this checkout. No vulnerability reproduction, stress inputs, dependency,
+workflow, contract, hosted-service or RPC changes. The QR composition worker
+owns reader/vendor/QrView/license/provenance paths; it is notified of the
+separate qrKinds scope. Root owns independent review, combined qualification,
+publication and integration.
+
+Current-contract review extension: also own the R4 status wording in
+`docs/remote/usability/specs/reconciliation.md`. The independent read-only
+review confirmed no counted payment must not settle a positive invoice; R4's
+old arithmetic shorthand omitted that condition and the corresponding expired
+case. Clarify the specification with the narrowly recovered ledger guard,
+without altering types, observed-payment acceptance or zero-due behavior.
+## Canonical QR continuation composition — 2026-11-24
+
+Worker `chatgpt-f80482f352bc/ui_data_review` owns isolated branch
+`integration/qr-composition-20261124`, based on
+`fb12a3302d9a85aa8777805bbdaab1bf2770ea16`. Sources are original #581
+`74121278a08eaf4eddd85651a4518ef657aeeb16` and #605
+`73f521bad57c24e44fe5c69fbdeecd1d2da2fec1`, both refreshed at those exact live
+heads before integration. Original owner branches and root checkout stay intact.
+
+Owned paths: the donors' QR reader/module, renderer, emission configuration,
+license, provenance and existing QR test/support paths; additive ownership and
+handoff documentation. Specifically retain #581's static ESM distribution,
+`QrView` rendering, browser notice and interoperability tests, then recover
+#605's existing bounded locator retry and seven dense-image cases. Keep one
+runtime decoder copy. Preserve every existing guard and assertion; reconcile
+full-source provenance expectations explicitly with both existing corrections.
+Do not import unrelated dependency or workflow changes.
+
+Acceptance: original heads retained where feasible, all existing QR coverage
+thresholds and relevant ordinary web tests pass, package typecheck/typed
+lint/build pass, full and lean web builds plus original bundle scans pass.
+Verify emitted vendor and browser-license provenance. No new stress or
+vulnerability reproduction tasks, native-browser sandbox workarounds, remote
+mutation, root merge or publication. Existing local Chromium Unix-socket
+restriction remains a qualification limit; final hosted/browser gates and
+independent combined review remain with root.
+
+Completed at source `50aab6f36031bca1afb366f73901dbbaef548179`, tree
+`fc6739726cd37b22653eba2e0f12814023d3afa6`. Both original donor heads are merge
+ancestors; the canonical ESM factory retains both exact corrections and one
+runtime copy. Full QR coverage passed 270 tests in 14 files, all package checks
+passed, and 348 focused web tests in 24 files passed with zero skips. Changed
+web typed lint and both full/lean typecheck/build/bundle scans passed. Independent
+review approved this exact source. No manifest/lock changes, remote mutation or
+native-browser workaround. Detailed evidence and outstanding hosted/browser
+limits: `docs/handoffs/QR_CONTINUATION_COMPOSITION_20261124.md`.
+
+
+# Reviewed QR and narrow residual composition — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` owns isolated branch `integration/all-branch-followups-20261124`, based on local core `20709d681f3f090f4826ac5f78895c3645a7d674` (tree identical to published PR611 `87bee07895679deaef345c3dd4aaf2e8f8651f1c`). This registry resolution records the integration boundary for two previously claimed and qualified inputs: QR composition `274855b6ebcc3d190ad53d4242a151ebff55a45d` and narrow residual recovery `cdb95ab42340efb8ad37feeb18f7d7f8b3442ef8`.
+
+Retain their exact production/test/license/provenance files and all original claims. Root owns only this additive conflict resolution, combined qualification and follow-up evidence. Both parent registries retain every ordered nonblank line and multiplicity. No authored production change is planned. Qualification covers the three affected package suites, the union of relevant web suites, typecheck/lint/build and original full/lean bundle scans. Independent source review and exact-head hosted/native checks remain required before a coordinated main merge. Preserve one decoder runtime and the existing lockfile, workflows, RPC bounds and experimental helper chain guard. No deployment, source-branch deletion or unrelated old-stack adoption is included.
+
+
+## Portable keystore owned-buffer cleanup recovery — 2026-11-24
+
+Worker: `/root/ownership_review`, delegated by the all-branch coordinator.
+Branch: `integration/portable-keystore-cleanup-20261124`. Exact base
+`3e927a9c41f08c42f753786c541b4f8bcfb30d10`, tree
+`dbbeff91379c9b6d2e6d6460ee802481965cea20`.
+
+Owned paths: `packages/ux-vault/src/keystore-portable.ts`, existing donor
+`packages/ux-vault/src/keystore-portable-memory.test.ts`, this additive claim
+and `docs/handoffs/PORTABLE_KEYSTORE_CLEANUP_20261124.md`.
+
+Recover only the source and four existing ordinary lifecycle regressions from
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`. The current production blob
+`59e998e772e26be386aea4b8369d5240222ea1f9` exactly matches the donor parent.
+The existing custody guard/normalization work remains intact. No whole donor
+branch or historical ownership registry import; donor refs stay unchanged.
+
+Acceptance: zero only locally owned normalized passphrase and derived-key byte
+buffers after asynchronous derivation/import finish or reject. Preserve v1
+format, KDF parameters/ceilings, NFKC normalization, AES-GCM, key permissions,
+all validation/error guards and caller-owned data. Do not claim immutable
+JavaScript strings can be erased. Run complete ux-vault coverage, build,
+typecheck and lint with local workspace links, plus existing web keystore,
+key-vault, session and backup consumer suites. No new stress/security
+reproduction, remote/root-worktree write, hosted/native feature or dependency
+change. Root owns independent review, final composition and hosted gates.
+
+
+## PIR separator and reconciliation harness compatibility — 2026-11-24
+
+Worker `/root/ownership_review`, delegated by the all-branch coordinator.
+Branch `integration/pir-idb-compatibility-20261124`, exact base
+`20d12d860bed893d1c29215ea4f4131bdc75a5d7`, tree
+`d74b4fe326564b347d8b4738ab872e39a6a3906c`.
+
+Owned paths: `packages/pir-two-server/src/client.ts`, the ordinary URL/path
+compatibility case in `client.test.ts`,
+`apps/web/scripts/test-reconciliation-idb.mjs`, this additive claim and
+`docs/handoffs/PIR_IDB_COMPATIBILITY_20261124.md`.
+
+Recover only donor `d37b0ab37d0e9968bda21c57bd18d78c2897487d`'s terminal
+separator scan and existing ordinary endpoint/path compatibility test. Exclude
+its timing/stress case and unrelated Settings fixture. Preserve host/scheme and
+chain validation, all interior path bytes, transport options/errors, endpoints,
+PIR protocol/padding and server interfaces.
+
+Recover only donor `6e48ce51ac6b550c998d0331fc7692621dcf174d`'s current
+`invalidateFrom(block, observations, canonicalHash)` call and stored-height
+assertion. Preserve current executable selection, two-tab refresh, exact-CAS,
+stale-session and local-egress assertions. Inspect CI wiring; report missing or
+blocked native qualification honestly without weakening or changing workflows.
+
+Acceptance: run complete PIR package coverage/build/typecheck/lint, JavaScript
+syntax validation and existing reconciliation unit/IndexedDB-adapter suites.
+A blocked native attempt is not a test pass. No stress/security reproduction,
+dependency, browser-policy, workflow, root-worktree or remote modifications.
+The coordinator owns independent review, composition and hosted gates.
+
+## Bounded React and Pages diagnostics recovery — 2026-11-24
+
+Worker `/root/ui_data_review` owns isolated branch
+`integration/react-pages-diagnostics-20261124`, based on
+`3e927a9c41f08c42f753786c541b4f8bcfb30d10`. Source pins are
+`ec7dd86db9b20ab906582c35fcb370b043e44ec4`,
+`e73fdb16f81f2e4811931585f59c041441ba1c78`,
+`153965f2298150987b2673e49f4e8ff180d279a6`,
+`5a502e55ee18889bdca75ae9cddf9e585ef48782`, and only the fixed-marker observer
+hunk of `c8e0a703df3cacd7c0ee9092c08dd053f40cecce`.
+
+Owned paths: `apps/web/src/main.tsx` and `main.test.tsx`;
+`scripts/pages/smoke.mjs`, `smoke-walk.mjs`, `smoke-walk.test.mjs`,
+`smoke-render-errors.test.mjs`, `fixtures/smoke-invoice.txt`; this additive
+registry entry and a source-pinned handoff. Recover the existing fixed-public-
+label React callbacks together with the Pages observer and bounded navigation/
+fixture harness. Preserve current URL/origin guards, explicit smoke failures,
+all existing tests, current nine-view navigation and existing application
+initialization. Do not copy a historical smoke snapshot wholesale.
+
+Acceptance: existing main and Pages unit checks pass, relevant web static and
+full/lean build checks pass, source preservation is reviewed independently, and
+the actual hosted invocation and missing gates are reported accurately. No new
+attack/stress scenarios, broad privacy stack, dependencies, workflow changes,
+native-browser workarounds, remote writes or edits to the root checkout. Root
+owns final combined qualification, hosted gates and publication.
+
+Qualified source `16088cfb621fd8b2fe9610b50a34a9c686ea3036`, tree
+`6a754776ef65b5cc9c1aadea4db5f54c644993fe`, passed 105 Pages Node checks and
+62 focused web tests with zero skips. Full web lint passed after retrying an
+unchanged command with a 2048 MiB heap; full/lean typecheck/build/scans and the
+16-file clean-tree Pages artifact verification passed. Independent review
+approved the exact source. The Node smoke harness is synthetic; the actual
+nine-view Chromium walk remains unrun and is only invoked post-deployment by
+current workflows, not by a PR browser job. No workflows or origin policies
+were changed. Receipts and remaining limits:
+`docs/handoffs/REACT_PAGES_DIAGNOSTICS_20261124.md`.
+
+
+## Release fixture-key boundary recovery — 2026-11-24
+
+Worker `chatgpt-f80482f352bc`, coordinating the user-authorized branch integration, owns the recovery of the four-file unit from `21fdd4350d1a4a2fa04198d7e11e922cd7f3da31` on isolated integration branch `integration/all-branch-followups-20261124`, base `ac2e7ef6a0c712d82a6a8efa4ad9d1e9cba64d28`. Independent `historical_review` confirmed exact donor-parent fit, compatible current callers, and the coupled release/development environment contract before source selection.
+
+Owned source: `apps/web/scripts/validate-deployments.mjs`, its `.d.mts` declaration, `apps/web/src/releaseKeyDenylist.test.ts`, and the two coordinated hunks in `scripts/pages/build-pages.sh`. Preserve all existing parser, signature, origin, shared-origin, clean-tree and bundle guards. No other runtime, dependencies, workflow or release-channel changes.
+
+Qualification: original and current build-validator unit suites, web typecheck/lint, shell syntax, a clean release-mode refusal of the existing synthetic fixture key, a successful development fixture build through the sanitized environment, and final combined no-manifest Pages qualification. Use synthetic fixtures only. No deployment, real signing material, donor ref changes or main merge. Final hosted gates and integration lease remain required.
+
+
+## Hosted native IndexedDB qualification wiring — 2026-11-24
+
+Worker `/root/ownership_review`, delegated by the all-branch coordinator.
+Branch `integration/native-idb-ci-20261124`; exact base
+`4a4237d052ac1ebb54e434f67ff49a55877ffb84`, tree
+`46dc6a2a7f35dfc950c850cda0a2385aee191c37`.
+
+Own only an additive step in `.github/workflows/ci.yml`'s existing e2e job,
+this additive claim and `docs/handoffs/NATIVE_IDB_CI_20261124.md`. After the
+existing Playwright Chromium installation and browser suite, run the unchanged
+`apps/web/scripts/test-reconciliation-idb.mjs` once on matrix profile `full`,
+setting `GHOSTPAY_CHROMIUM` from Playwright's managed `chromium.executablePath()`.
+Preserve every existing step/action, matrix leg, permission, setting, required
+check, cache and failure/artifact behavior; native failure must fail the job.
+
+Run existing relevant workflow/static guard tests, YAML parsing, shell syntax
+and action-pin checks. Do not add a test that only mirrors the new step and do
+not claim native success from this restricted local environment. No browser
+installation or workaround here, workflow cancellation, deployment, root
+working-tree or remote write.
+
+Separately inspect and document an exact plan for running recovered Pages
+smoke source `16088cfb621fd8b2fe9610b50a34a9c686ea3036` against the built
+Pages site in the site job using the existing static server and managed
+Chromium. That source is not at this base. Do not change Pages workflow or
+smoke source in this task; return the plan for coordinator review first.
+
+### Approved Pages scope extension
+
+After reviewing the exact bounded plan, the coordinator authorized two additive
+steps in `.github/workflows/pages.yml`'s existing site job: install managed
+Chromium and run the unchanged recovered smoke against the already built site
+using the existing loopback static server. This branch now also owns those two
+steps. The coordinator has composed the recovered smoke source in the root
+followup; this branch must leave that source unchanged. Preserve all existing
+Pages steps, deployment conditions, permissions, caches and artifact handling.
+Bound startup and smoke time, clean up only the new server process, propagate
+all native failures, and add no browser-success claim from local static checks.
+Re-run existing Pages tooling and workflow tests, YAML, shell and pin guards.
+## Selected receipt and bill print recovery — 2026-11-24
+
+Worker `/root/ui_data_review` owns isolated branch
+`integration/receipt-print-recovery-20261124`, based on
+`74e51b7197258cba1e2db98bfb698307ef741d7c`. Recover original #608 head
+`0d3d804b3f53ad8b463117824ca1fd1b3332d798` by merge, retaining its #532/#548
+ancestry and existing native print/PDF evidence as historical qualification.
+
+Owned paths: `apps/web/src/lib/usePrintTarget.ts` and its test;
+`src/components/PrintableBill.tsx`, `PrintableBill.test.tsx`, `ReceiptPanel.tsx`
+and `ReceiptPanel.test.tsx`; `src/styles/app.css` and `print.css`;
+`apps/web/e2e/flowMocks.ts` and `print-targets.spec.ts`; the donor's two print
+handoffs, this additive registry and a source-pinned recovery handoff.
+
+Apply only the four reviewed ReceiptPanel print hunks to the current component,
+retaining all archive generation/in-flight guards and regression cases. Remove
+only the legacy seven-line print block from current app.css, keeping newer
+screen styles. Union ownership conflicts. Preserve current QR policies,
+geometry/decoder, existing tests, workspace manifests, dependencies and gates.
+
+Acceptance: complete original donor tests plus current archive-regeneration and
+QR-policy tests pass; full web typecheck, typed lint and full/lean builds/scans
+pass; obtain independent composed-source review. Existing hosted full/lean
+native print coverage remains mandatory. Do not turn historical native evidence
+into a new-head browser pass; the known local Chromium restriction remains.
+No new attack/stress cases, root edits, remote changes or publication. Root
+owns integration with the separately qualifying follow-up and hosted gates.
+
+Completed at source `856503289d7e38e377dafef864f46ac55e1d218a`, tree
+`4cc62ec6e5bb05a8619d054f76cfd48a7c4856db`, retaining #608/#548/#532 ancestry.
+Only the four reviewed receipt print hunks and legacy seven-line CSS removal
+are applied to overlapping current product files; archive/QR guards and all
+tests/configuration remain. Independent source review approved this tree.
+All 81 focused tests in nine files passed with zero skips; full web typecheck,
+typed lint and full/lean builds plus original scans passed. Native print/PDF
+coverage remains mandatory on the exact combined head in existing full/lean CI;
+no new-head native pass is claimed. Source pins and receipts:
+`docs/handoffs/RECEIPT_PRINT_RECOVERY_20261124.md`.
+
+
+## Final selected branch recovery composition — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` coordinates the user-authorized every-branch integration on `integration/all-branch-followups-20261124`, base `0b60dba235710f12847532dd9d0f74f12f7298c6`. Own the additive composition of the independently reviewed #563 offline profile viewer and #572 individual payment-key export units, final source-pinned qualification, and `docs/consolidation/all-branch-followups-20261124/`. Preserve the separately authored source and tests, existing print/QR/session/clock guards, original ownership records, dependency graph and every existing required CI gate.
+
+Only resolve overlapping locales, additive workflows, registries and the specifically reviewed current-source integration points. Preserve all new native acceptance jobs and no-skip enforcement. Record every current branch at a stated observation, retain earlier immutable census evidence, and distinguish selected unique work, equivalent/superseded behavior, dependent continuations and concrete held gaps.
+
+Acceptance: independent exact-source reviews, applicable combined coverage/build/lint/static checks, exact local/remote Git tree identity, and actual hosted native/security/integration gates. Publish the reviewable candidate and merge eligible changes only after fresh main/head checks and the cooperative integration lease. No donor ref deletion, force push, deployment or live-funds operation is part of this work.
+
+## F08 bounded offline profile viewer recovery — 2026-11-24
+
+Worker `/root/ownership_review`, delegated by the all-branch coordinator.
+Branch `integration/f08-offline-review-recovery-20261124`; exact base
+`83c503f970044e1708b3a7493ee7284cd59e0844`, tree
+`db8e94d9b37382dbe83a8a577248b39f6a7b4256`. Reuse this worker's completed
+isolated native-CI worktree to avoid duplicating source on the nearly full disk.
+
+Merge original PR #563 head `923e1edfb9ac34f8b6855d8ac8516cd835070afd`, retaining
+its original component, 15-case unit suite, two-scenario browser spec, opt-in
+merchant-panel mount, four locale additions and security-key classification.
+Union every ownership claim. Preserve every current locale value and metadata,
+the stronger merchant-profile clock guard, all existing tests and default/lean
+feature boundaries. No donor branch, provider, payment or deployment change.
+
+Owned integration paths are the donor's ten web code/test paths, this additive
+claim, and `docs/handoffs/F08_OFFLINE_PROFILE_RECOVERY_20261124.md`. Also own a
+dedicated additive read-only native job in `.github/workflows/ci.yml`, separate
+from ordinary E2E jobs and their artifact identity. The proposed three-mode
+job and additive automated-merge enforcement are submitted to the coordinator
+for structural review before finalization. Any approved enforcement is limited
+to appending the new required check names in
+`.github/workflows/ghostpay-codex-cloud.yml` and its existing gate-list test.
+
+Acceptance: current focused suites, full web typecheck/lint, i18n validation
+and extraction, and original scanned full/lean builds including opt-in full and
+lean-with-flag. Hosted native execution must positively qualify the applicable
+donor scenario in every mode; skipped positive scenarios do not count as a
+pass. Flags stay local to each invocation. Preserve all original workflows and
+tests, no global feature activation, root-worktree/remote write, or fabricated
+GhostID/P05/P06/catalog-provider completion. Root owns independent review,
+publication, final composed-head hosted gates and integration.
+
+Coordinator approved the exact three-scenario native job and additive cloud
+merge enforcement before implementation. The three new required names are
+`ghostid-native (default-full)`, `ghostid-native (opt-in-full)` and
+`ghostid-native (lean-with-flag)`; every previous required name is retained.
+
+Qualification found that the existing automation-hardening suite's all-green
+fixture still lists only the five old checks. Claim its `GATES` fixture in
+`scripts/tests/ghostpay-automation-hardening.test.mjs` for the necessary additive
+three-name alignment; preserve all existing tests and expected outcomes. The
+observed failures were missing native checks, as the strengthened gate requires.
+
+---
+
+# F08 — offline customer review of a signed merchant profile
+
+- Worker: Codex. Branch: `feature/f08-offline-merchant-profile-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. F08 specification: `50ea73dcf3d4e9593da780ffb34bdfce60a90a15`.
+- Scope: browser-local import of an existing v1 public profile and comparison with an independently supplied full signer key. The full-build preview is opt-in. The lean client and existing payment and pin paths keep their own behavior.
+- Owned paths: `apps/web/src/features/future/ghostid/`, a conditional mount in `apps/web/src/components/MerchantProfilePanel.tsx`, additive locale and security classification keys, focused browser coverage, and the F08 handoff.
+- Acceptance: authentic profile and matching key, distinct key conflict, no comparison from a prefix, rejection of changed, expired, oversized or malformed files, safe replacement of an in-flight selection, and offline operation without modifying stored pins. Verify the feature gate in the default full and lean builds.
+
+
+## Bounded final compatibility additions — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` coordinates the user-authorized remaining eligible branch recoveries after core PR611 merged at `cc090bf80bbf35c1db81ecbe6acae694a518bed0`. Base application composition is `bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8`, whose complete web qualification and evidence archive are now finished.
+
+Own the additive integration of independently reviewed #377 scoped development-cookie dependency repair, #358 exact-object comparator, #468 offline report formatter, and #578 HTTPS/RPC browser compatibility spec. Scope includes their original bounded manifests/lock record, tooling/tests, compatibility spec, contract documentation and source-pinned handoffs. Preserve all application/package implementation, existing assertions, every unrelated lock record, current CI gates and both parents' ownership records. No new scheduled automation, analyzer execution, provider activation or default feature activation.
+
+Acceptance: exact donor/current-source comparisons, matching dependency-resolution and ordinary original tests where applicable, separate historical/native evidence, and fresh combined hosted qualification before normal merge under the integration lease. Preserve the frozen698-row index and add a later selection/promotion appendix rather than rewriting its observation.
+## Read-only coordination and analyzer-evidence tooling recovery — 2026-11-24
+
+Worker: `/root/ownership_review`, delegated by the all-branch consolidation coordinator. Isolated branch: `integration/readonly-tooling-recovery-20261124`; exact base: `bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8` (tree `8add357748674afb128926a797982badb54bac6b`). Reuses the clean completed portable-keystore worktree; the original branch remains at `20d12d860bed893d1c29215ea4f4131bdc75a5d7`.
+
+Owned paths: `scripts/coordination/reconcile-claims.mjs`, its canonical `.test.mjs` and input-contract documentation; `scripts/tests/reconcile-claims.test.mjs`; `scripts/audit/mythril-evidence.mjs` and its contract documentation; `scripts/tests/mythril-evidence.test.mjs`; this additive claim and a new `docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md`. Original donor heads #358 `c9e53c2c5908cbb64c104d096ce84773cf804ccc` and #468 `cb63ec21cbac15b0a665b61ada37a9f0662ff79a` are read-only recovery sources; their refs and ownership are unchanged.
+
+Acceptance: independently inspect both helpers against current contracts; preserve the exact canonical donor code/tests where compatible, explicitly distinguish the reconciliation v1 input from the current refresh/2 schema, and retain the Mythril summary's positional-only association and unresolved-finding semantics. Execute original ordinary Node fixtures and existing offline runner compatibility tests; record actual exits, source pins, untouched application/workflow/dependency inputs, and separate author testing from independent review. No analyzer, exploit/stress reproduction, full web tests, dependency installation, live census claim, automatic schema adapter, root/followup/main edit, remote write, CI gate weakening or finding clearance. Existing scratch evidence inventory and packager are outside scope and remain unchanged.
+---
+
+# Bounded HTTPS/RPC compatibility qualification recovery — 2026-11-24
+
+Worker `/root/ui_data_review`, isolated branch
+`integration/https-rpc-compatibility-recovery-20261124`, base
+`bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8` (tree
+`8add357748674afb128926a797982badb54bac6b`). The completed individual-export
+branch and its final `7331ee05ad2d77e9fe86e538a8820f4b819e9dcc` head remain
+unchanged. The coordinator explicitly authorized this separate recovery.
+
+Owned paths are only the original #578 native specification
+`apps/web/e2e/https-rpc-compatibility.spec.ts`, its source-pinned transport note
+`docs/pages/tor-rpc-compatibility.md`, this additive claim, and the new
+`docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md` with receipts.
+Donor `20733b6a8ebc6a2598d5baff2eed62d58a0a7675` is one bounded commit above
+an ancestor of the selected source; preserve that original history if the
+reviewed three-path merge remains clean apart from registry union.
+
+Acceptance: preserve the entire authored loopback TLS / selected synthetic RPC
+test and its assertions, verify its current UI/helpers and full/lean discovery,
+run full web typecheck/lint and relevant existing ordinary unit suites, and
+record actual original-head hosted native evidence separately from fresh
+combined acceptance. Reuse existing exact dependencies. No application source,
+manifest, workflow or gate changes, browser installation, known-blocked local
+Chromium retry, external service interaction, root edits or remote writes.
+Root owns independent final source review, publication and fresh combined
+full/lean hosted native acceptance before integration.
+## 2026-11-24 — scoped cookie development-tooling recovery
+
+- Worker: `/root/historical_review`; coordinator: `/root`.
+- Branch: `integration/scoped-cookie-recovery-20261124`; worktree: `/workspace/scratch/f80482f352bc/native-idb-ci`.
+- Base: `bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8`; exact original #377 donor: `d3c2228c53cbda4ee650ec91776af8bb1c02674d`.
+- Owned paths: root `package.json`, `package-lock.json`, `scripts/tests/dependency-tooling.test.mjs`, original `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`, and this claim/registry union only.
+- Acceptance: recover the version-scoped `@sentry/node@5.30.0` cookie override and its ordinary compatibility case; retain all five prior tooling assertions, all 814 other lock records, and current application/contract/workflow source. Verify actual cookie resolution before counting tests as override qualification; use the existing six tooling cases, thirty router cases, contract typecheck and compilation when exact prerequisites are available. Record unavailable prerequisites and require fresh hosted gates without substituting an old cookie installation.
+- Environment: reuse this completed clean worktree while preserving the F08 branch; do not modify root checkout, shared dependency/cache files, Node resolution flags or remote refs. Avoid a duplicate full install under the current disk constraint. Evidence is recorded separately in `/workspace/scratch/f80482f352bc/cookie-recovery-qualification`.
+- Status: source review confirms exact donor preimages and one development-only lock-record change. Qualification preparation is in progress; no new passing runtime/native result is claimed.
+
+
+# Scoped cookie dependency repair — 2026-11-21 UTC
+
+- Worker: `/root/dependency_cookie_repair`; coordinator: `/root`.
+- Branch: `repair/ghostpay-cookie-dependency-20261121-5ceb`; base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`, verified live before work.
+- Owned paths: root `package.json`, `package-lock.json`, scoped additions to `scripts/tests/dependency-tooling.test.mjs`, this additive claim, and `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`. No application, contract, workflow, protocol or custody changes.
+- Acceptance: isolate the vulnerable development-only cookie dependency below Sentry with a compatible pinned override; preserve all unrelated and production dependency records; verify ordinary parser/API compatibility, existing tooling tests, affected compile/typecheck when available, installation and exact before/after audits. Do not reconstruct vulnerabilities or execute attack scenarios.
+- Coordination: parent explicitly assigned this isolated dependency scope. Historical dependency remediation is already represented in main; current PR #210 retains cookie 0.4.2, while major trains #87/#253 remove it through broader upgrades and remain separate. Preserve all donor branches. The generation-11 integration lease remains held by another owner; expiry never permits takeover. No shared ref, lock, merge, deployment or release action is owned here.
+- Status: claimed before source or dependency edits. Independently reviewed exact-source and hosted qualification remain required.
+
+Cookie milestone: product `8519a14c41e473b712df427f8ea4924247bb0f95` changes one development lock record; six tooling tests and 30 existing router tests pass with no skips, clean npm 11 install, compile/typecheck and production audit pass. Full audit remains failed with 15 low Elliptic-derived nodes. See `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`; independent review, hosted gates and integration ownership remain unresolved.
+
+
+### 2026-11-24 cookie recovery completion
+
+`/root/historical_review` qualified source `5a2038d6f5fd0e01f663a09d9dcaa75742754c07`, tree `445c977595f679857506f3eacee8825b2a563613`, on `integration/scoped-cookie-recovery-20261124`. Original #377 is an actual merge parent; all three product/test blobs remain donor-exact and all 814 other lock records remain unchanged. Private exact-lock workspace-only npm ci installed 334 packages; actual Sentry consumers use cookie 0.7.2. Six tooling and thirty router cases passed with zero skips; contract typecheck and native 36-file compilation passed. Production lock audit is zero; full lock audit retains 15 low findings and exit 1. Independent `/root/ui_data_review` source approval is recorded. Original F08 branch, shared dependencies/caches, root checkout and all remotes remain untouched. Handoff: `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`; source-pinned raw receipts: `/workspace/scratch/f80482f352bc/cookie-recovery-qualification`. Fresh exact-final-head hosted gates and final promotion remain with coordinator.
+
+
+## Final census neutral deployment diagnostic recovery — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` coordinates the bounded recovery discovered in the 699-ref cutoff at 2026-11-24 13:14:56 UTC. Branch `integration/all-branch-followups-20261124`; base `7852931fecc8bdd2ab17e3e70813f36e502c50b0`. Own only additive composition of `apps/web/src/lib/deployment.ts`, `deployment.test.ts`, and `hardening.test.ts` from #570/#619, plus original ownership records, source-pinned handoff and final report. The author works independently from the same base; the source review is separate.
+
+Acceptance: retain exact reviewed donor postimages, ordinary original tests and successful/no-RPC/secondary/checking/disabled-payment behavior; replace variable adapter diagnostic detail only with fixed public reasons. Preserve all other application, dependency and workflow entries. Qualify affected existing suites, typecheck/lint and fresh full combined hosted checks. Do not import the broad #570 privacy/export stack or add its whole head as a merge parent.
+## 2026-11-24 — bounded neutral deployment diagnostic recovery
+
+- Worker: `/root/historical_review`; independent reviewer: `/root/ownership_review`; coordinator: `/root`.
+- Branch: `integration/neutral-deployment-diagnostic-20261124`; worktree: `/workspace/scratch/f80482f352bc/native-idb-ci`.
+- Base: `7852931fecc8bdd2ab17e3e70813f36e502c50b0`; selected donor #619: `3107b816144b4a6fe43f197fbdc323b5d8d80628`.
+- Owned source paths: `apps/web/src/lib/deployment.ts`, `apps/web/src/lib/deployment.test.ts`, `apps/web/src/lib/hardening.test.ts`; also this additive claim, `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md` and its adjacent source-pinned qualification/archive directory.
+- Acceptance: recover only exact compatible donor postimages for the fixed neutral reason and actual ChainAdapterError classification, the ordinary existing diagnostic regression, and corrected existing hardening case. Preserve no-RPC/checking/verified/disabled-payment behavior, every unrelated assertion and all base entries outside owned paths. Run the two directly affected suites plus existing manifest/service compatibility suites, full web typecheck and typed lint. No new test, stress case or vulnerability reproduction.
+- Reachability: current consumers of these exported utility functions are their two test files; the live app's separate manifest readback path stays unchanged. No new caller or broader privacy/export functionality is introduced.
+- Environment: restore this checkout's retained web dependency links and refresh only owned build outputs from source-identical current package outputs. Those existing web dependencies contain old cookie 0.4.2; this task makes no exact whole-lock installation or cookie-override qualification claim. Preserve the completed cookie branch and its private installation/receipts.
+- Scope exclusions: no complete #619/#570 parent merge, unrelated privacy/export code, root worktree/main/remote edit, or broad/native/browser rerun. Fresh combined hosted acceptance remains with coordinator.
+
+
+### 2026-11-24 bounded deployment diagnostic completion
+
+`/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.

@@ -1,0 +1,23 @@
+{
+  "issues": [
+    {
+      "id": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/619",
+      "title": "test(web): qualify neutral deployment diagnostics (#570)",
+      "issue_number": 619,
+      "body": "Continues #570 on its exact head without production changes or an original-branch write. Fix the hosted S3-01 stale diagnostic assertion by testing genuine ChainAdapterError, forged-name Error and ordinary provider failure, exact neutral reasons, suppression of raw text and disabled payments. Preserve no-RPC and checking controls. Original failure reproduced and corrected classification/redaction plus controls passed in a standalone Node 22 source-equivalent harness; no native Vitest or independent approval claimed. Fresh exact-head hosted CI required. Source-pinned handoff: docs/handoffs/DEPLOYMENT_DIAGNOSTIC_FIXTURE_20261124.md. No merge, deployment or gate changes.",
+      "state": null,
+      "user": null,
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "comments": null,
+      "created_at": null,
+      "updated_at": null,
+      "closed_at": null,
+      "display_url": "https://github.com/djshellshoxxx/GhostPay/pull/619",
+      "display_title": "test(web): qualify neutral deployment diagnostics (#570)"
+    }
+  ]
+}

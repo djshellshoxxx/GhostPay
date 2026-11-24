@@ -2,7 +2,7 @@
 
 Own-leak hygiene for the GhostPay client (testnet PoC). Spec: [`docs/remote/privacy-specs/hygiene.md`](../../docs/remote/privacy-specs/hygiene.md). Wiring: [`docs/remote/privacy-specs/wiring/hygiene.md`](../../docs/remote/privacy-specs/wiring/hygiene.md). Self-review: [`docs/remote/privacy-specs/audit-hygiene.md`](../../docs/remote/privacy-specs/audit-hygiene.md).
 
-This is **address hygiene, not anonymity**. Pure logic: no network calls, no storage; the app injects RPC clients, key access and persistence. Testnet-only guard (chain ids 31337, 11155111, 84532) on every chain-bearing entry point.
+This is **address hygiene, not anonymity**. Pure logic: no network calls, no storage; the app injects RPC clients, key access and persistence. The pure destination ledger and checks delegated to it accept local Anvil and the enabled EVM testnets in `@ghostpay/chain-adapters`. Helpers that call `assertTestnetChain` retain its unchanged testnet-only guard (chain ids 31337, 11155111, 84532).
 
 ## What it does
 
