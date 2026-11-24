@@ -1,3 +1,11 @@
+# BUG-ONLY — Japanese shared-script letters (2026-11-24 UTC)
+
+Worker: GhostPay bug-repair coordinator, sequential author/test review (no independent reviewer). Branch `automation/20261124T0018Z/bug/ux-intake-japanese-script-extensions`; base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-intake/src/text.ts`, new `packages/ux-intake/src/text.japanese-script.test.ts`, this additive branch-only ownership claim, and new `docs/handoffs/UX_INTAKE_JAPANESE_SCRIPT_20261124.md`.
+Observed failure: source blob 46dff62739d960f78f0a1519b884faf4b22b1d73, Git-hash-matched Node 22 / TypeScript 5.8.3 reproduction, 7/11 passed. Japanese prolonged-sound and iteration letters are Script=Common with Hiragana/Katakana script extensions; treated as Other and falsely classified mixed. Acceptance: test-first valid Japanese examples and neighboring true mixed-script and control cases; minimal Kana Script_Extensions matching, no API or dependencies change. Snapshot of 290 open PR changed-file inventories found no owned source/test overlap; recheck before integration. PR #390 exact head all five workflow groups succeeded, zero reviews, nonmergeable; no changes. Lock generation 12 released, not acquired. Draft only, no main merge, fund, deployment or release.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
