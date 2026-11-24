@@ -1,3 +1,14 @@
+# Recover PR #589 retry qualification — 2026-11-24 UTC
+
+Worker: `/root/resume_payment_safety`, delegated by the missed-worker recovery coordinator.
+Isolated branch: `codex/recover-wallet-disclosure-qualification-20261124`.
+Exact parent: PR #589 `697cb7314c323b574bfbb1f102244265046dd93a`, based on the existing native-browser privacy integration branch.
+Owned paths: the retry warning assertion in `apps/web/e2e/flows.spec.ts`; two retry warning assertions in `apps/web/e2e/devnet-journey.spec.ts`; three retry warning assertions in `apps/web/e2e/pages-devnet.spec.ts` (parent lines 427, 826 and 1020 only); the same retry assertion in `apps/web/src/views/Pay.test.tsx` (parent line 732, added to scope by the coordinator after source review); this additive claim; and `docs/handoffs/WALLET_DISCLOSURE_QUALIFICATION_20261124.md`.
+Scope: align the existing duplicate-retry scenarios with the preserved unknown-outcome warning after #589 correctly moved its callback to the actual provider handoff. Retain exact wallet send counts, stored hashes, journal records, balances, nonces and explicit clearing checks. Do not claim that a blocked retry proves an earlier transaction was not sent.
+Acceptance: corroborate the hosted failure with the current callback and retry handling, retain meaningful browser assertions for the warning and absence of a false "Nothing was sent" claim, then run applicable mocked/native and local-Anvil scenarios, typecheck and lint. The #575 clean-profile import range and mobile device spec remain with their assigned workers; parent branches and product behavior remain unchanged. No new dependencies, shared merge, deployment or real funds.
+
+---
+
 # Issue 287 wallet disclosure preview
 
 Worker: Codex, branch `codex/287-wallet-request-preview`. Base: privacy integration #373 at `b660b2d8f3f84ddf72f684d13913f643f33f2eee`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.

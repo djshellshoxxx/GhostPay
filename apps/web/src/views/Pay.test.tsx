@@ -729,7 +729,10 @@ describe('Pay: sending', () => {
     expect(screen.getByRole('button', { name: 'Send payment in my wallet' })).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     await approveWalletDisclosure(user, 'eth_sendTransaction');
-    expect((await screen.findByRole('alert')).textContent).toMatch(/previous wallet attempt/);
+    const retryAlert = (await screen.findByRole('alert')).textContent;
+    expect(retryAlert).toContain('may already have been submitted');
+    expect(retryAlert).toContain('Check your wallet and the recorded transaction outcome before taking further action.');
+    expect(retryAlert).not.toContain('Nothing was sent');
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
     try {

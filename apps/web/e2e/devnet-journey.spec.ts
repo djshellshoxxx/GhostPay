@@ -153,7 +153,10 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    const retryAlert = p.getByRole('alert');
+    await expect(retryAlert).toContainText('may already have been submitted');
+    await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+    await expect(retryAlert).not.toContainText('Nothing was sent');
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ANVIL_ACCOUNTS.payer)).toBe(payerNonce + 1);
 
@@ -288,7 +291,10 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    const retryAlert = p.getByRole('alert');
+    await expect(retryAlert).toContainText('may already have been submitted');
+    await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+    await expect(retryAlert).not.toContainText('Nothing was sent');
     expect(payer.wallet.sends).toHaveLength(1);
     expect((await anvil.tx(hash))?.blockNumber).toBeNull();
 

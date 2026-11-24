@@ -424,7 +424,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    const retryAlert = p.getByRole('alert');
+    await expect(retryAlert).toContainText('may already have been submitted');
+    await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+    await expect(retryAlert).not.toContainText('Nothing was sent');
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce + 1);
     expect(await anvil.balance(stealth)).toBe(preview.net);
@@ -823,7 +826,10 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await approveWalletDisclosure(p, 'eth_sendTransaction');
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      const retryAlert = p.getByRole('alert');
+      await expect(retryAlert).toContainText('may already have been submitted');
+      await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+      await expect(retryAlert).not.toContainText('Nothing was sent');
       expect(payer.wallet.sends).toHaveLength(1);
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
       expect(await anvil.balance(payment.stealth)).toBe(0n);
@@ -1017,7 +1023,10 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await approveWalletDisclosure(p, 'eth_sendTransaction');
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      const retryAlert = p.getByRole('alert');
+      await expect(retryAlert).toContainText('may already have been submitted');
+      await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+      await expect(retryAlert).not.toContainText('Nothing was sent');
       expect(payer.wallet.sends).toHaveLength(0);
       expect(payer.wallet.hashes).toHaveLength(0);
       // Unpaid on chain: the payer sent nothing, and the seller's scan of the whole chain finds no payment for its keys.

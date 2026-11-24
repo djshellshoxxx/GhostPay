@@ -135,7 +135,11 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByRole('button', { name: 'Prepare payment' }).click();
     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(page, 'eth_sendTransaction');
-    await expect(page.getByRole('alert')).toContainText('previous wallet attempt');
+    // This retry stops before another provider handoff; the earlier attempt's outcome still needs review.
+    const retryAlert = page.getByRole('alert');
+    await expect(retryAlert).toContainText('may already have been submitted');
+    await expect(retryAlert).toContainText('Check your wallet and the recorded transaction outcome before taking further action.');
+    await expect(retryAlert).not.toContainText('Nothing was sent');
     expect(state.sendCalls).toBe(1);
     await expect.poll(journal).toHaveLength(1);
 
