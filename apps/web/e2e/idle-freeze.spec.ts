@@ -11,6 +11,7 @@ const test = base.extend<{ nativePage: Page }>({
     const server = await playwright.chromium.launchServer({
       ...launchOptions,
       host: '127.0.0.1',
+      ignoreDefaultArgs: ['--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows'],
       args: [...(launchOptions.args ?? []), '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'],
     });
     try {
