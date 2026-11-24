@@ -45,6 +45,7 @@ export async function mockNetwork(
   state: {
     sent?: SentTx;
     logs?: unknown[];
+    tokenBalance?: { token: string; owner: string; value: bigint };
     /** Canonical header time in seconds, fixed for the staged payment rather than scan wall-clock time. */
     blockTimestamp?: number;
     /** Optional canonical tx/receipt fixture, used only by the verified-ERC20 scan scenario. */
@@ -141,6 +142,11 @@ export async function mockNetwork(
       case 'eth_call': {
         const call = body.params[0] as { to: string; data: string };
         const sel = call.data.slice(0, 10);
+        const balance = state.tokenBalance;
+        if (balance !== undefined && call.to.toLowerCase() === balance.token.toLowerCase()
+          && call.data.toLowerCase() === SEL('balanceOf(address)') + word(balance.owner).slice(2)) {
+          return reply(word(balance.value.toString(16)));
+        }
         if (call.to.toLowerCase() === FAKE_ROUTER) {
           if (sel === SEL('FEE_RECIPIENT()')) return reply(word(FAKE_FEE_RECIPIENT));
           if (sel === SEL('ANNOUNCER()')) return reply(word(FAKE_ANNOUNCER));

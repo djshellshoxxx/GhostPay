@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { expectMaskedDocument } from './assertMaskedDocument';
 import { FAKE_ROUTER } from '../src/test/fakeManifest';
 import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 import { configureRpc, mockNetwork, type SentTx } from './flowMocks';
@@ -61,7 +62,7 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   await expect(disclosure(page)).toBeVisible();
   await page.keyboard.press('Alt+Shift+H');
   await expect(disclosure(page)).toHaveCount(0);
-  expect(await page.locator('body').ariaSnapshot()).not.toContain(reviewed.params[0].data);
+  await expectMaskedDocument(page, [reviewed.params[0].data, reviewed.params[0].from, reviewed.params[0].value, '0.5 ETH']);
   expect(state.sent).toBeUndefined();
   expect((await walletCalls(page)).filter((method) => method === 'eth_sendTransaction')).toHaveLength(0);
   await expect(page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true })).toBeFocused();
@@ -74,4 +75,12 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   await expect(page.getByRole('heading', { name: 'Submitted', exact: true })).toBeVisible();
   expect(state.sendCalls).toBe(1);
   expect(state.sent).toEqual(reviewed.params[0]);
+  const hash = `0x${'9'.repeat(64)}`;
+  await expect(page.getByText(hash, { exact: true }).first()).toBeVisible();
+  await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
+  await expect(reveal(page)).toBeVisible();
+  await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data, '0.5 ETH']);
+  await reveal(page).click();
+  await expect(page.getByText(reviewed.params[0].from, { exact: true })).toHaveCount(0);
+  expect(state.sendCalls).toBe(1);
 });
