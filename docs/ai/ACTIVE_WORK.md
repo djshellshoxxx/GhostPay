@@ -1,3 +1,14 @@
+# Recover PR #585 privacy-minimal invoice qualification — 2026-11-24 UTC
+
+Worker: `/root/resume_payment_safety`, delegated by the missed-worker recovery coordinator.
+Isolated branch: `codex/recover-minimal-invoice-qualification-20261124`.
+Exact parent: PR #585 `b82be893d3d360064222fafcce8cef2033cd23a5`.
+Owned paths: `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/MINIMAL_INVOICE_QUALIFICATION_20261124.md`.
+Scope: repair TS2769 in the existing stale-invoice regression (`exact` is not a Testing Library `ByRoleOptions` property), retaining exact accessible-name matching and all pending-link/download assertions. Pages, Hosting kit and Beta acceptance stop on this same compiler error.
+Acceptance: reproduce the exact compiler diagnostic, replace the invalid matcher option without changing product behavior, run existing invoice-minimization and ordering tests, web typecheck, full/lean build scans and applicable browser coverage. Preserve #585 and other owner branches; no payment runtime edits, shared merge, deployment, new dependencies or real funds.
+
+---
+
 # Issue 287 invoice metadata minimization
 
 Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.

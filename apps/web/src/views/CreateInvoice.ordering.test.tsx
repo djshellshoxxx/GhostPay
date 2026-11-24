@@ -75,7 +75,7 @@ describe('CreateInvoice asynchronous result ordering (static Pages client)', () 
     expect(screen.getByText(/This key encrypts only the empty item list/)).toBeTruthy();
     await user.click(choice);
     await act(async () => { pending[1]!.resolve(result('2')); await Promise.resolve(); });
-    expect(screen.queryByRole('textbox', { name: 'Link', exact: true })).toBeNull();
+    expect(screen.queryByRole('textbox', { name: /^Link$/ })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Download invoice link (.txt)' })).toBeNull();
   });
 
