@@ -203,6 +203,35 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     expect(document.body.textContent).not.toContain('private provider diagnostics');
   });
 
+  it('recovers a late hash only for the original wallet after its journal completion write fails', async () => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    const original = wallet.request.bind(wallet);
+    let release!: (hash: string) => void;
+    const held = new Promise<string>((resolve) => { release = resolve; });
+    wallet.request = (args) => args.method === 'eth_sendTransaction' ? held : original(args);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await vi.waitFor(() => expect(readAttempts()).toMatchObject([{ status: 'unknown', account: MOCK_ACCOUNT }]));
+    act(() => { wallet.emit('accountsChanged'); });
+    const setItem = Storage.prototype.setItem;
+    const failed = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
+      if (this === sessionStorage && key === 'ghostpay.wallet-attempts.v1') throw new Error('fixture quota');
+      setItem.call(this, key, value);
+    });
+    const hash = `0x${'7'.repeat(64)}`;
+    await act(async () => { release(hash); await held; });
+    expect(failed).toHaveBeenCalled();
+    expect(sessionStorage.getItem('ghostpay.wallet-attempts.v1')).not.toContain(hash);
+    expect(document.body.textContent).not.toContain(hash);
+    failed.mockRestore();
+    await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    expect(await screen.findByText(hash, { exact: true })).toBeTruthy();
+  });
+
   it.each(['known hash', 'lost response'] as const)('Pay preserves %s evidence after a wallet request outlives app lock', async (outcome) => {
     const wallet = new EventWallet();
     const user = await open('Pay', wallet);
