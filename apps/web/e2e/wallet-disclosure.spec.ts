@@ -25,6 +25,7 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   const link = await createInvoice(page);
   await openFresh(page, link);
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();
+  await expect(page.getByText('0.5 ETH', { exact: true }).first()).toBeVisible();
   await page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true }).check();
   await reveal(page).click();
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
@@ -104,5 +105,39 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data]);
   await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
   expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toContain(hash);
+  await page.evaluate((original) => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount(original), reviewed.params[0].from);
+  await reveal(page).click();
+  await connectReplacement.click();
+  await disclosure(page).getByRole('button', { name: 'Continue to wallet' }).click();
+  await expect(page.getByText(hash, { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download local receipt' })).toBeVisible();
   expect(state.sendCalls).toBe(1);
+});
+
+test('a newly revealed checkout cannot inherit the previous wallet’s receipt file', async ({ page, context }) => {
+  await mockNetwork(context, {});
+  await injectWallet(page, {});
+  await configureRpc(page);
+  await page.goto('/');
+  await generateKeys(page);
+  const link = await createInvoice(page);
+  await openFresh(page, link);
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+  await disclosure(page).getByRole('button', { name: 'Continue to wallet', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Prepare payment' })).toBeVisible();
+  const file = page.locator('section[aria-labelledby="seller-receipt-h"] form input[type=file]');
+  const filename = 'private-receipt-account-286.json';
+  await file.setInputFiles({ name: filename, mimeType: 'application/json', buffer: Buffer.from('{}') });
+  expect(await file.evaluate((element: HTMLInputElement) => element.files?.[0]?.name)).toBe(filename);
+  await page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true }).check();
+  await expectMaskedDocument(page, [filename]);
+  await reveal(page).click();
+  expect(await file.evaluate((element: HTMLInputElement) => element.files?.[0]?.name)).toBe(filename);
+  await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
+  await expect(reveal(page)).toBeVisible();
+  await reveal(page).click();
+  await expect(file).toHaveValue('');
+  expect(await file.evaluate((element: HTMLInputElement) => element.files?.length)).toBe(0);
+  await expectMaskedDocument(page, [filename]);
 });

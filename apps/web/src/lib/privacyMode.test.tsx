@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, isInaccessible, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, isInaccessible, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type ReactNode } from 'react';
+import { ConfirmAction } from '../components/ConfirmAction';
 import { SensitiveContent } from '../components/SensitiveContent';
 import { PrivateHistory } from '../components/PrivateHistory';
 import { notifyAppLock } from './appLock';
@@ -90,6 +91,33 @@ describe('temporary privacy reveals', () => {
     expect(hidden()).toBe(false);
     act(invalidate);
     expect(hidden()).toBe(true);
+  });
+
+  it('discards pending confirmation when a separately revealed history closes', () => {
+    const onConfirm = vi.fn();
+    const native = vi.spyOn(window, 'confirm');
+    render(<PrivacyProvider enabled scope="pay"><Controls />
+      <PrivateHistory unlocked scope="actions">
+        <ConfirmAction message="Confirm the fixture action" onConfirm={onConfirm}>Clear fixture</ConfirmAction>
+      </PrivateHistory>
+    </PrivacyProvider>);
+    reveal();
+    const historyControls = () => screen.getAllByRole('button', { name: 'Reveal history for 30 seconds' });
+    fireEvent.click(historyControls().at(-1)!);
+    fireEvent.click(screen.getByRole('button', { name: 'Clear fixture' }));
+    const group = () => screen.queryByRole('group', { name: 'Confirm the fixture action' });
+    expect(group()).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Hide transaction history' }));
+    expect(group()).toBeNull();
+    fireEvent.click(historyControls().at(-1)!);
+    expect(group()).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Clear fixture' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(onConfirm).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Clear fixture' }));
+    fireEvent.click(within(group()!).getByRole('button', { name: 'Clear fixture' }));
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(native).not.toHaveBeenCalled();
   });
 
   it('requires new consent after a view or privacy-mode change', () => {

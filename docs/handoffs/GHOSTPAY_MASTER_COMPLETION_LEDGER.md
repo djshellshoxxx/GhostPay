@@ -1,5 +1,12 @@
 # GhostPay authoritative completion ledger
 
+## Issue #286 masking candidate
+
+Global sensitive-data masking is under qualification in [PR #569](https://github.com/djshellshoxxx/GhostPay/pull/569),
+based on the integrated #372/#373 privacy and custody stack. Check exact-source results
+for both Pages profiles before accepting the requirement. The remaining four issue #286
+requirements retain their individual release gates.
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for

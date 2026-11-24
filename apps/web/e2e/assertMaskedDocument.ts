@@ -4,7 +4,7 @@ import { expect, type Page } from '@playwright/test';
 export async function expectMaskedDocument(page: Page, values: readonly string[]): Promise<void> {
   await expect(page).toHaveTitle('GhostPay');
   const needles = values.map((value) => value.toLowerCase());
-  expect(needles).not.toContain('');
+  expect(needles.some((needle) => needle.length === 0)).toBe(false);
   const tree = (await page.locator('body').ariaSnapshot()).toLowerCase();
   expect(needles.findIndex((needle) => tree.includes(needle)), 'private fixture index in accessibility tree').toBe(-1);
   const leaked = await page.evaluate((secrets) => {

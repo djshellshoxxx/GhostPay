@@ -229,10 +229,10 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       ))}
       <Notice kind="info">{t('policy.withdraw.storageNotice')}</Notice>
       {attempts.length > 0 && <section aria-label={t('policy.withdraw.attempts')}>
-        {attempts.map((attempt) => <p key={attempt.id}>
+        {attempts.map((attempt) => <div key={attempt.id}>
           <Mono>{attempt.hash ?? attempt.status}</Mono>{' '}
           <ConfirmAction disabled={busy} message={t('policy.withdraw.clearConfirm')} onConfirm={() => { clear(attempt.key); }}>{t('policy.withdraw.clearAttempt')}</ConfirmAction>
-        </p>)}
+        </div>)}
       </section>}
       {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
     </li>

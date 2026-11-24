@@ -1037,10 +1037,12 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
         <ConfirmAction
           className="btn btn-danger"
           message={t('scan.tags.deleteConfirm')} onConfirm={() => {
-            services.vault.wipe().then(
+            revokePrivacyReveal();
+            setList(undefined);
+            const wiping = services.vault.wipe();
+            force((n) => n + 1);
+            wiping.then(
               () => {
-                setList(undefined);
-                force((n) => n + 1);
                 app.announce(latestT.current('scan.tags.deleted'));
               },
               (e: unknown) => {

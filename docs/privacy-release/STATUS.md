@@ -24,6 +24,13 @@ The separate branch `feature/ghostpay-retention-completion-20261120` starts at c
 
 The initial unpublished pre-restoration work was lost during workspace cleanup after disk exhaustion. Its historical 482-test result does not qualify this source. This checkpoint is based on the restored published baseline and retained current-cycle commits/logs.
 
+## Current global masking qualification
+
+PR #569 extends the #373 candidate to remove hidden document values, revoke local-wallet
+reveals and bind completed receipt presentation to its originating account in privacy mode.
+The historical results below apply to their recorded revisions. Track the integrated
+full/lean browser and unit results in [PR #569](https://github.com/djshellshoxxx/GhostPay/pull/569).
+
 ## Feature status
 
 | Release / specification | Implemented behavior and latest follow-through | Status and evidence |

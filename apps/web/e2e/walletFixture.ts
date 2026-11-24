@@ -7,7 +7,7 @@ export interface WalletControls {
   pending: boolean;
   changeAccountOnRecheck: boolean;
   releaseSend(): void;
-  changeAccount(): void;
+  changeAccount(next?: string): void;
   replaceProvider(): void;
 }
 
@@ -29,8 +29,8 @@ export async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls
       pending: false,
       changeAccountOnRecheck: false,
       releaseSend: () => { resolveSend?.(); },
-      changeAccount: () => {
-        account = '0x6666666666666666666666666666666666666666';
+      changeAccount: (next = '0x6666666666666666666666666666666666666666') => {
+        account = next;
         for (const listener of listeners.get('accountsChanged') ?? []) listener();
       },
       replaceProvider: () => {

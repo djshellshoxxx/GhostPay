@@ -1335,7 +1335,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
             <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
+              {(id, describedBy) => <input key={owner ?? 'disconnected'} aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
             </Field>
             <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
               {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
