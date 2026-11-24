@@ -107,6 +107,7 @@ export interface ScanParams {
   /** Preserve relevant evidence before a checkpoint can advance past it. */
   readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
     readonly finalizedThrough: bigint;
+    readonly resumed: boolean;
     readonly from: bigint;
     readonly through: bigint;
     readonly canonicalHash: (height: bigint) => Promise<Hex>;
@@ -231,6 +232,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let batchId = 0;
   let canSaveCheckpoint = true;
   let retryHeight: bigint | undefined;
+  const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
+  const uncertainFrom = (from: bigint, head: bigint): bigint => {
+    const first = finalizedAt(head) + 1n;
+    return first < 0n ? 0n : first < from ? first : from;
+  };
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -279,7 +285,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       }).catch(async (cause: unknown) => {
-        if (!p.signal.aborted) await p.onUnresolvedEvidence?.(cursor.nextBlock);
+        if (!p.signal.aborted && p.onUnresolvedEvidence !== undefined) {
+          let from = cursor.nextBlock;
+          if (cursor.last !== undefined) {
+            // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.
+            if (secondaryHead !== undefined) from = uncertainFrom(from, secondaryHead);
+            try { from = uncertainFrom(from, await p.client.blockNumber()); } catch { /* Retain the known boundary. */ }
+          }
+          if (!p.signal.aborted) await p.onUnresolvedEvidence(from);
+        }
         throw cause;
       });
       if (p.signal.aborted) break;
@@ -490,7 +504,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // or continue into later pages, since a later successful page could otherwise checkpoint
       // past these withheld logs and permanently skip them on resume.
       if (disagree) {
-        await p.onUnresolvedEvidence?.(pageFrom);
+        await p.onUnresolvedEvidence?.(uncertainFrom(pageFrom, pageHead));
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
@@ -499,14 +513,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         break;
       }
       // Include the agreed finality boundary even when no new blocks were scanned.
-      const finalizedThrough = pageHead + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
+      const finalizedThrough = finalizedAt(pageHead);
+      const resumed = p.cursor.last !== undefined;
       if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
-        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough,
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed,
         canonicalHash: (height) => canonicalHashAt(p, height),
         retryFrom: (height) => {
           const retry = height > pageHead ? pageHead + 1n : height;
-          // Only a loss of depth for retained evidence can rewind a still-canonical start.
-          if (retry >= 0n && retry > finalizedThrough && retry < persistenceFloor) persistenceFloor = retry;
+          // A resumed scan may need to revisit a linked observation quarantined during an earlier interruption.
+          if (retry >= 0n && (resumed || retry > finalizedThrough) && retry < persistenceFloor) persistenceFloor = retry;
           if (retryHeight === undefined || retry < retryHeight) retryHeight = retry;
         },
       }) === false) canSaveCheckpoint = false;

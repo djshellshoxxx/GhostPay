@@ -137,6 +137,7 @@ export interface Cutoff {
 }
 interface ScannedPaymentPage {
   readonly finalizedThrough?: bigint;
+  readonly resumed?: boolean;
   readonly from: bigint;
   readonly through: bigint;
   readonly canonicalHash: (height: bigint) => Promise<string>;
@@ -1039,7 +1040,7 @@ class ReconciliationVault {
               changed = true;
             }
           } else if (record.invoiceDigest === undefined || record.evidenceStatus !== 'unverified-at-scan' ||
-              height < page.from || height > page.through) continue;
+              (height < page.from && !page.resumed) || height > page.through) continue;
           if (retryHeight === undefined || height < retryHeight) retryHeight = height;
         }
       }

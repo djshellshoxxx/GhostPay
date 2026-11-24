@@ -1561,6 +1561,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
   });
 
   it.each([
+    { initialHead: 239, lowerHead: 119, expectFinal: false }, // neither source can return the anchor
     { initialHead: 219, lowerHead: 119, expectFinal: false }, // checkpoint parent becomes the tip
     { initialHead: 239, lowerHead: 218, expectFinal: false }, // 99 confirmations behind the cursor
     { initialHead: 239, lowerHead: 219, expectFinal: true },  // exactly 100 confirmations
@@ -1582,7 +1583,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
         } };
       };
       return scan(s, KEY, { client: clientAtHead(), secondaryClient: clientAtHead(), cursor: checkpoints.load(chain.chainId, KEY) ?? { nextBlock: 0n },
-        checkpoints, onPageMatches: async (matches, page) => {
+        checkpoints, onUnresolvedEvidence: (from) => vault.quarantineInvoicePayments(from), onPageMatches: async (matches, page) => {
           await vault.observeInvoicePayments(matches.map((match) => recordFromObservedMatch(match, KEY)), undefined, page);
           return true;
         } });
@@ -1594,12 +1595,23 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     const [original] = await vault.read();
     expect(typeof original?.lateAcceptedAt).toBe('number');
     expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(BigInt(initialHead - 99));
-    expect((await rescan(lowerHead)).discrepancies).toEqual([]);
+    const lostAnchor = lowerHead < initialHead - 100;
+    if (lostAnchor) {
+      await expect(rescan(lowerHead)).rejects.toThrow(/checkpoint block unavailable/);
+      expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(BigInt(initialHead - 99));
+    } else {
+      expect((await rescan(lowerHead)).discrepancies).toEqual([]);
+    }
     vault.lock();
     await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
     expect(summarizeInvoicePayments(invoice, await vault.read(), scope).kind).toBe(expectFinal ? 'equal' : 'unlinked');
     expect(await vault.read()).toMatchObject([{ id: payment.id, lateAcceptedAt: original!.lateAcceptedAt,
       invoiceDigest: invoice.invoiceDigest, evidenceStatus: expectFinal ? 'verified-at-scan' : 'unverified-at-scan' }]);
+    if (lostAnchor) {
+      // Once the unchanged anchor is reachable, rewind to the earlier quarantined payment.
+      expect((await rescan(269)).discrepancies).toEqual([]);
+      expect(summarizeInvoicePayments(invoice, await vault.read(), scope).kind).toBe('unlinked');
+    }
     if (!expectFinal) expect(checkpoints.load(chain.chainId, KEY)).toEqual({
       nextBlock: 120n, last: { number: 119n, hash: blockHash(119) },
     });
