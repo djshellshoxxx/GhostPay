@@ -1,3 +1,12 @@
+# QR exchange interrupted qualification completion — 2026-11-24
+
+Worker: `9723b6705f45-root`, branch `finish/qr-browser-qualification-20261124`.
+Parent: PR #581 `41a598b8433e10a95598c72c2a23027e63010024`; main `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Owned scope: this additive claim, focused QR browser fixtures and an evidence handoff. Production QR changes are retained from #581; do not overwrite donor branches.
+Acceptance: independently run QR package validation and Create → PNG → Pay browser journeys, camera fallback/cleanup, and reject wrong-family/damaged input with synthetic fixtures. Fix confirmed in-scope qualification failures while preserving production and release gates. Record exact executable evidence and pending checks. No release deployment or real funds. Recheck branch heads before publication/integration.
+
+---
+
 # GP-BUG — Template clock rollback breaks persistence (2026-11-24 UTC)
 
 Worker: sequential BUG-ONLY coordinator, round 11; no independent verifier available. Isolated branch `automation/20261124/bug/template-clock-rollback-r11`; base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
@@ -35,6 +44,32 @@ Owned paths: this additive claim, `packages/scan-source/src/validate.ts`, additi
 Dependencies: none; do not edit or merge C1 #504 or its children #510→#512→#517. Repository integration lock `automation/ghostpay-integration-lock` last read released generation 12; no lock acquired and no authority to integrate main.
 Finding: exported `parseAnnouncement(raw: unknown)` promises never to throw on hostile records, but reads nine record properties directly. An input accessor or revoked Proxy throws, aborting the scan instead of dropping that malformed record. Reproduction must be a failing regression before repair.
 Acceptance: getter/trap and revoked-Proxy cases return `undefined` without throwing; all raw fields, including optional transactionHash, are read no more than once; normal records, malformed optional hashes, canonical IDs and count/drop semantics remain unchanged. No crypto, backend, contract, deployment, dependency or real-funds edits. Hosted exact-head typecheck, lint, unit/browser gates and independent verification required before merge; do not interpret standalone checks as full qualification.
+# Qualify native QR image decoding on PR #508
+
+Worker: Codex, branch `codex/qualify-508-invoice-link`, based on #508 at `1cf9ec458bdd193f186499ac30ac3f7b207cfe0c`. Main at preflight: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Scope on this child branch: this entry and `packages/qr-exchange/src/readers.platform-candidates.test.ts`. The R14 owner retains the decoder and parent branch.
+Acceptance: mock one detection list with empty text before a signed invoice link, then a list with two usable links. Assert the exact returned link in each case and run the qr-exchange package suite.
+Follow-up on #547 at `4befc6434635f28ce9fd11822e819d5367f727d7`: Codex owns fuzz coverage in the same test file on this qualification branch. Check ordering, text-length boundaries, all-unusable lists and bitmap cleanup against generated detector results.
+
+# GP-BUG R14 — Select a usable platform QR candidate (2026-11-23)
+
+Worker: GhostPay BUG-ONLY scheduled coordinator, sequential implementer and source reviewer; no independent verifier assigned. Branch: `automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14`, base live main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/qr-exchange/src/readers.ts`, new `packages/qr-exchange/src/readers.platform-candidates.test.ts`, this additive registry claim, and new `docs/handoffs/QR_PLATFORM_CANDIDATES_R14_20261123.md`. Do not alter `readers.test.ts` or another worker's branch.
+Observed source defect: `decodeQrImage` considers only `found[0]?.rawValue` from the platform BarcodeDetector; when the first recognized code has an empty or overlong decoded text but a later detected code is valid, it returns null, leaving a legitimate scannable QR unread. Source `readers.ts` blob `caea9b8a3bbfeb9e626814e5db3882e22e568921`.
+Acceptance: regression FIRST for multi-result native scan (bad first/valid second, valid-first ordering), preserve existing single valid/invalid result and empty-result jsQR behavior, perform the smallest selection fix. Test exact-head hosted CI; separate native-browser/independent review required. Never claim full local Vitest without native checkout.
+Ownership preflight: live open PR listing and changed-file checks including #238/#246/#248–254/#261/#262/#264/#270/#278/#294/#302/#307/#310/#365/#372/#390/#504 and relevant recent bug PRs show no direct `readers.ts` claim in examined sets; complete 262-open-PR file audit remains a merge gate. Existing #294/#302/#307 own `assembler.ts`; do not touch. Main integration lease `automation/ghostpay-integration-lock` generation 12 is released, not held by this worker. No lock acquisition or main merge.
+No new features, UI, dep, contracts, funds, real-world traffic, release or deployment.
+# GP-BUG — QR camera stream cleanup on attachment failure (2026-11-23)
+
+Worker: GhostPay BUG-ONLY automation coordinator (single sequential source/runtime verifier; no independent reviewer available).
+Branch: `automation/20261123-r12/bug/qr-camera-attach-cleanup`; exact live main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned files: `packages/qr-exchange/src/camera.ts`, new `packages/qr-exchange/src/camera.attach-boundary.test.ts`, this additive registry claim, and new `docs/handoffs/QR_CAMERA_ATTACH_BOUNDARY_20261123.md`. Existing `camera.test.ts` and other workers' branches remain untouched.
+Observed defect: after getUserMedia resolves a track-bearing stream, a throwing `video.srcObject` setter is outside the try/catch cleanup boundary; `startCamera` rejects with the platform error and leaves tracks running. Source-body-matched Node/V8 reproduction on main blob `d849dfa89a64837e9ede9eca2c03fa3064cafcf5` observed one attachment failure, zero stops and zero play calls. Ordinary attachment and playback succeeded.
+Acceptance: commit a failing dedicated regression before source repair; stop only the acquired stream on failed attachment and return existing `CAMERA_UNAVAILABLE`, without touching another stream, normal acquisition/play behavior, scanner, protocols or devices. Verify source-body-matched red/green and neighboring failure/abort cases; exact-head hosted CI and independent review still required; keep PR draft, no merge without legitimate integration lock and all checks.
+Ownership: fetched live main, AGENTS/workflow/handoff/registry, PR #390 status/reviews/workflows; inspected changed file lists for all 257 open PRs through #502 across three pages, with no active PR owning the selected camera source or new test path. Integration metadata generation 12 is released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no implied merge authority.
+
+---
+
 # BUG-ONLY R13 — reject duplicate Accept-Language q parameters (2026-11-23)
 
 Worker: one ChatGPT coordinator, sequential source review and regression-first implementation; no independent verifier available. Branch: `automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
@@ -870,6 +905,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
 
+
+---
+
+# 2026-11-23 — QR SVG sparse matrix rejection
+
+Worker: sequential ChatGPT BUG-ONLY coordinator; no separate independent verifier. Branch `automation/20261123T2221Z/bug/qr-svg-sparse-matrix` from `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/qr-exchange/src/generate.ts`, new `packages/qr-exchange/src/generate.sparse.test.ts`, new `docs/handoffs/QR_SVG_SPARSE_MATRIX_20261123.md`, and this additive claim only. All 279 open PR file inventories in the initial snapshot through #524 checked; no collision on generate paths. Newer open PRs checked before branch creation. Adjacent owner PRs remain untouched.
+Observed source-matched Node reproduction: Array.every skips sparse slots, so an incomplete QR matrix emits a misleading SVG rather than BAD_INPUT (4/10 cases fail). Acceptance: test-first hole rejection at first/middle/last/all slots, preserve dense boolean matrices and dimension/type checks. No change to QR generation, dependencies, funds, contracts, release or deployment. Full hosted CI and independent review required; integration lease generation 12 released, not acquired. PR #390 exact head green; independent review absent; no owner branch edits.
 ---
 
 # GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
@@ -880,6 +923,26 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+## QR exchange browser completion
+
+- Worker: Codex on `codex/qr-exchange-browser-completion`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+- Integrate the existing QR-only candidate heads #547 (including #508), #503 and #525 on this isolated branch. Original worker branches remain independently owned.
+- Own camera candidate selection and runtime fallback in `packages/qr-exchange/src/readers.ts`, associated QR unit tests, and the browser regression for generated invoice images in `apps/web/e2e`. Qualify the existing image, generation, validation and permissions paths in both Pages profiles.
+- Acceptance: preserve first usable native result order, decode generated invoices with unavailable or failing native QR support, reject unsupported/damaged input, stop tracks, and require the existing explicit invoice review. No changes to payment execution or feature gates.
+## QR SVG sparse-cell qualification, 2026-11-24 UTC
+
+Worker `codex-fe9aff486805` is qualifying the existing #525 change at `06973f60031c49c4e8004cffea77b5627bb81632` on main `f76904301cff0b24d65ea4e31cbf37d470db4d95` in `qualify/qr525-sparse-cells-20261124`. Owned files are `packages/qr-exchange/src/generate.ts` and `generate.sparse.test.ts` beside it. Resolve both hosted lint errors, check that missing SVG cells are rejected and verify valid coordinates with the package suite. Return the tested work to #525.
+
+
+## Bounded QR software decoder completion — 2026-11-24
+
+- Worker: `/root/unique_history`, delegated by the branch completion coordinator. Branch `finish/qr-decoder-20261124`, parent #581 `41a598b8433e10a95598c72c2a23027e63010024`.
+- Own `packages/qr-exchange/vendor/` (exact pinned jsqr 1.4.0 bundle, Apache license, narrow type declaration and provenance), lazy-reader import, package file inclusion, new deterministic decoder regression/provenance tests, and `docs/handoffs/QR_DECODER_COMPLETION_20261124.md`. Parent owns browser qualification and rollup.
+- Scope: correct the version-23 alignment center 74 to 78; retry only the two adjacent valid QR dimensions when the locator returns a side congruent to 3 modulo 4, bounded to 21..177. Preserve original extraction, error correction, payload parsing and validation. Keep pinned npm jsqr as the untouched provenance/control dependency.
+- Acceptance: baseline-reproducing tests for version 23 and fractional-raster version 25 plus valid neighbors; no unbounded search; vendor bytes equal pinned upstream plus exactly the two documented corrections; package coverage/typecheck/lint/build pass, independent source and browser review before integration. No installed dependency mutation, remote writes, feature gates, deployment, payment signing or real funds.
+
+---
 
 ## Package fix consolidation, 2026-11-24 UTC
 

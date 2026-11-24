@@ -45,7 +45,7 @@ export async function createInvoice(page: Page, opts: InvoiceOptions = {}): Prom
   const box = page.getByRole('textbox', { name: 'Link', exact: true });
   await expect(box).toBeVisible();
   const link = await box.inputValue();
-  expect(link.startsWith(`${ORIGIN}/#gpi=v1.`)).toBe(true);
+  expect(link.startsWith(`${new URL(page.url()).origin}/#gpi=v1.`)).toBe(true);
   return link;
 }
 
