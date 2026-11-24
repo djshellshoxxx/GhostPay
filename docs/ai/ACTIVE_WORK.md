@@ -835,6 +835,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
 
+
+---
+
+# 2026-11-23 — QR SVG sparse matrix rejection
+
+Worker: sequential ChatGPT BUG-ONLY coordinator; no separate independent verifier. Branch `automation/20261123T2221Z/bug/qr-svg-sparse-matrix` from `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/qr-exchange/src/generate.ts`, new `packages/qr-exchange/src/generate.sparse.test.ts`, new `docs/handoffs/QR_SVG_SPARSE_MATRIX_20261123.md`, and this additive claim only. All 279 open PR file inventories in the initial snapshot through #524 checked; no collision on generate paths. Newer open PRs checked before branch creation. Adjacent owner PRs remain untouched.
+Observed source-matched Node reproduction: Array.every skips sparse slots, so an incomplete QR matrix emits a misleading SVG rather than BAD_INPUT (4/10 cases fail). Acceptance: test-first hole rejection at first/middle/last/all slots, preserve dense boolean matrices and dimension/type checks. No change to QR generation, dependencies, funds, contracts, release or deployment. Full hosted CI and independent review required; integration lease generation 12 released, not acquired. PR #390 exact head green; independent review absent; no owner branch edits.
 ---
 
 # GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
@@ -852,3 +860,6 @@ Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exac
 - Integrate the existing QR-only candidate heads #547 (including #508), #503 and #525 on this isolated branch. Original worker branches remain independently owned.
 - Own camera candidate selection and runtime fallback in `packages/qr-exchange/src/readers.ts`, associated QR unit tests, and the browser regression for generated invoice images in `apps/web/e2e`. Qualify the existing image, generation, validation and permissions paths in both Pages profiles.
 - Acceptance: preserve first usable native result order, decode generated invoices with unavailable or failing native QR support, reject unsupported/damaged input, stop tracks, and require the existing explicit invoice review. No changes to payment execution or feature gates.
+## QR SVG sparse-cell qualification, 2026-11-24 UTC
+
+Worker `codex-fe9aff486805` is qualifying the existing #525 change at `06973f60031c49c4e8004cffea77b5627bb81632` on main `f76904301cff0b24d65ea4e31cbf37d470db4d95` in `qualify/qr525-sparse-cells-20261124`. Owned files are `packages/qr-exchange/src/generate.ts` and `generate.sparse.test.ts` beside it. Resolve both hosted lint errors, check that missing SVG cells are rejected and verify valid coordinates with the package suite. Return the tested work to #525.
