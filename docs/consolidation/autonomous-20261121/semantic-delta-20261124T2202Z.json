@@ -69,7 +69,17 @@
             "tree": "af61e24cb588fbf082915deac110c10cca008e70",
             "ahead": 26,
             "behind": 0,
-            "exactOriginalPaths": 7
+            "exactOriginalPaths": 8,
+            "exactOriginalPathList": [
+              "apps/web/src/features/btc/fixtures.testutil.ts",
+              "apps/web/src/features/btc/oracleSource.test.ts",
+              "apps/web/src/features/btc/oracleSource.ts",
+              "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+              "apps/web/src/features/btc/scanWorkerMessages.ts",
+              "apps/web/src/features/btc/verification.ts",
+              "packages/btc-silent-payments/src/scan/headersync.test.ts",
+              "packages/btc-silent-payments/src/scan/headersync.ts"
+            ]
           },
           {
             "pr": 254,
@@ -77,7 +87,17 @@
             "tree": "b57e3a1b5c48b329e38fa99bb0846fe6d6f0f228",
             "ahead": 59,
             "behind": 0,
-            "exactOriginalPaths": 8
+            "exactOriginalPaths": 8,
+            "exactOriginalPathList": [
+              "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+              "apps/web/src/features/btc/fixtures.testutil.ts",
+              "apps/web/src/features/btc/oracleSource.test.ts",
+              "apps/web/src/features/btc/oracleSource.ts",
+              "apps/web/src/features/btc/scan.spends.test.ts",
+              "apps/web/src/features/btc/verification.ts",
+              "packages/btc-silent-payments/src/scan/headersync.test.ts",
+              "packages/btc-silent-payments/src/scan/headersync.ts"
+            ]
           },
           {
             "pr": 382,
@@ -85,9 +105,17 @@
             "tree": "e1f2b199f6ae15cb9371e57078a6e9abcd312b13",
             "ahead": 768,
             "behind": 0,
-            "exactOriginalPaths": 7,
+            "exactOriginalPaths": 6,
             "parentPr": 372,
-            "parentHead": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d"
+            "parentHead": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+            "exactOriginalPathList": [
+              "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+              "apps/web/src/features/btc/oracleSource.test.ts",
+              "apps/web/src/features/btc/oracleSource.ts",
+              "apps/web/src/features/btc/scan.spends.test.ts",
+              "packages/btc-silent-payments/src/scan/headersync.test.ts",
+              "packages/btc-silent-payments/src/scan/headersync.ts"
+            ]
           }
         ],
         "mainSource": "apps/web/src/features/btc/scan.ts blob 225c60b88048668f544c3ef2550a5e667298f58b lines 182-186 unconditionally calls client.isUnspent for each candidate; main worker protocol does not carry providerSpentCheck. English copy identifies provider as spent-status source, but does not explicitly state the matched outpoint disclosure in btc.verification.limit.spent or btc.scan.singleProvider.",
