@@ -1,6 +1,6 @@
 # 18 — Requirement 3q: Browser-only stealth keypair export and independent recovery
 
-**Status:** Implemented on `main` by selective, source-pinned extraction from PR #372 (head `055d33e0`); normative formats in [18a](18-stealth-keypair-export-formats.md), executed checks and open gates in the [M2 P0-KEYS extraction record](../engineering/milestones/M2-P0-KEYS.md). External device, browser and third-party wallet acceptance remain pending. This is not a release-complete claim.
+**Status:** The [#539 extraction checkpoint](https://github.com/djshellshoxxx/GhostPay/commit/caef97781b407b105c8dce177c76dd515462e94e) includes the export codec and standalone decoder. Browser integration from [#372](https://github.com/djshellshoxxx/GhostPay/pull/372) is pending on that checkpoint. See the [recovery guide](../user/recover-stealth-payment-keys.md) for available paths and test coverage, and [18a](18-stealth-keypair-export-formats.md) for the normative formats.
 **Priority:** Core seller portability, before beta exit.
 **Scope:** ERC-5564 scheme-1 EVM one-time addresses. Bitcoin BIP-352, contract accounts, ERC-4337 and EIP-7702 have different custody/key models and are excluded until separately specified.
 **Existing integration:** `packages/core-crypto/src/stealth.ts` (`checkAnnouncement`, `deriveStealthSecret`); seller scan/payment details; encrypted local vault and backup. No remote key-generation, account or recovery backend.

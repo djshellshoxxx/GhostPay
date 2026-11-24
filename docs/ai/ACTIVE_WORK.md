@@ -1,3 +1,11 @@
+# Verify spending from an encrypted single-payment backup
+
+Worker: Codex, branch `codex/verify-encrypted-payment-spend`, based on recovery PR #539 at `caef97781b407b105c8dce177c76dd515462e94e`. Main at inspection was `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+
+Scope: a proposed addition to `scripts/recovery/raw-key-anvil.test.mjs` on this child branch, plus recovery availability and test instructions in the Spec 18 guide and references. Preserve the raw-key control. Use the existing exporter and standalone decoder to recover a single synthetic payment and spend on a loopback chain with an independent wallet tool. Check the authenticated chain, sender, receipt and resulting balances. Document which recovery controls exist on this extraction. Also cover conflicting header-inspection and private-key display flags in the standalone decoder and its existing CLI tests. Header inspection must never reveal a key. The Scan and Seller Keys integration stays with #539 and its browser acceptance with #542.
+
+---
+
 # M2 P0-KEYS — independent payment-key export/recovery onto main (2026-11-23)
 
 Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr) with a core-implementation subagent; independent security/QA review subagents before PR is marked ready.

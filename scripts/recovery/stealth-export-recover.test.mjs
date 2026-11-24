@@ -347,6 +347,20 @@ test('CLI: public record and raw-key files need no passphrase; the raw key print
   assert.match(big.stderr, /tooLarge/);
 });
 
+test('CLI: header inspection refuses private-key display in either argument order', () => {
+  const raw = fileOf('inspect-raw.txt', files.rawPrivateKey.text);
+  const encrypted = fileOf('inspect-encrypted.json', files.single.text);
+  for (const path of [raw, encrypted]) {
+    for (const flags of [['--inspect', '--reveal-private-keys'], ['--reveal-private-keys', '--inspect']]) {
+      const result = cli([path, ...flags]);
+      assert.ok(result.stdout.length === 0, 'conflicting flags produced output');
+      assert.ok(!leaks(result.stderr), 'error output contained key material');
+      assert.equal(result.status, 2);
+      assert.match(result.stderr, /^error: .*--inspect.*--reveal-private-keys/);
+    }
+  }
+});
+
 test('CLI: expected chain is enforced for raw keys, public records and header-only inspection', () => {
   for (const [name, text, flags] of [
     ['chain-raw.txt', files.rawPrivateKey.text, ['--reveal-private-keys']],

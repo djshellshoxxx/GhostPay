@@ -591,7 +591,7 @@ export function detectFormat(text) {
 // --- CLI ------------------------------------------------------------------------------------------------------------
 
 const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [options]
-  --inspect                  validate and print the public header only (no passphrase, no decryption)
+  --inspect                  validate and print public information only (incompatible with --reveal-private-keys)
   --expected-chain <id>      require this chain in a payment, public or raw-key file (also with --inspect)
                              a master backup is chain-neutral and refuses this option
   --scan-announcement <json> master backup only: derive the one-time address for an announcement given as JSON
@@ -623,6 +623,7 @@ function parseArgs(argv) {
     else if (opts.file === undefined) opts.file = a;
     else throw new UsageError('only one file may be given');
   }
+  if (opts.inspect && opts.reveal) throw new UsageError('--inspect and --reveal-private-keys cannot be used together');
   if (opts.file === undefined) throw new UsageError('a file is required');
   return opts;
 }

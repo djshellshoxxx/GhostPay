@@ -7,17 +7,17 @@
 
 ## Status
 
-Current source, executed checks and remaining acceptance gates on `main` are recorded in the
-[M2 P0-KEYS extraction record](../engineering/milestones/M2-P0-KEYS.md). The feature was extracted from PR #372
-(head `055d33e0`); results recorded for that branch are not re-claimed here.
+If you already have a Spec 18 export, you can open it offline with the [reference recovery script](#option-b-the-reference-recovery-script).
+The [#539 source tree](https://github.com/djshellshoxxx/GhostPay/commit/caef97781b407b105c8dce177c76dd515462e94e)
+includes both the vault codec and the standalone Node script. The Scan export and Seller keys import controls are still pending there.
 
-| Path | Status |
+| Recovery path | What has been checked |
 |---|---|
-| Reference recovery script (`scripts/recovery/stealth-export-recover.mjs`) | Implemented; tested against the reference vectors and against files freshly written by the GhostPay codec |
-| Raw private key in an independent EVM wallet tool | Passed with workflow-pinned Foundry 1.8.5 `cast` and Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): the synthetic key reproduced its address and signed a successful transfer on a loopback chain. No public network or real funds. |
-| Recovery outside a GhostPay checkout | Passed in fresh Node 22.23.5 processes with only the script, its two noble dependencies and test exports readable. All five file types opened; archive and master recovery reproduced the expected private keys. |
-| Loading an export in a freshly opened GhostPay page | Covered by component and app-level unit tests (jsdom) that open each file type in a fresh session. Browser (Playwright) journeys were not run for this extraction; see the extraction record. Viewport emulation is not native-device acceptance. |
-| Import into third-party wallets, hardware wallets or phones | **Pending: not exercised.** No wallet, device or browser beyond the rows above has been tested |
+| Offline decoder | Opens the five reference file types in a fresh Node process. The tests also open fresh exports from the vault codec. |
+| Spending from an encrypted single-payment file | The codec writes a fresh synthetic file. The standalone decoder opens it in a separate process. Foundry signs a transfer with the recovered key on a loopback Anvil chain using the file’s chain ID. The test checks sender, recipient, fee, balances and nonce. |
+| Spending from a raw private-key file | A separate test uses Foundry to derive the reference address and sign a transfer. |
+| Fresh-browser import and export | The browser instructions below apply to the [#372 implementation](https://github.com/djshellshoxxx/GhostPay/pull/372). The [#539 integration](https://github.com/djshellshoxxx/GhostPay/pull/539) tracks availability in Pages. |
+| Third-party wallet apps and hardware devices | Acceptance testing is pending. |
 
 ## Which file do I have?
 
@@ -77,6 +77,9 @@ that boundary. Encrypting the private-key body protects its stored key material 
 
 ## Option A: GhostPay in a fresh browser
 
+Use these steps in a build that includes **Open a stealth key export**. If Seller keys only offers the regular
+keystore form, use [the reference recovery script](#option-b-the-reference-recovery-script) for a Spec 18 file.
+
 Open **Seller keys**, then **Open a stealth key export**. The app accepts an encrypted export without the original
 installation, site, host or account: GhostPay is a static page and does no server-side recovery. Use a new browser
 profile, open a GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
@@ -118,9 +121,6 @@ Restoring the master pair creates a **new invoice-signing key**. The master file
 and cannot preserve the new one. Use the full seller-keystore backup after restoration if you need to preserve the
 new signer. Verifying a Spec 18 file does not mark the complete three-key seller session as backed up.
 
-Status: source-specific Chromium passes and the remaining full product gates are recorded in the completion
-report. Native mobile browsers, Safari, hardware wallets and named third-party wallet apps remain untested.
-
 ## Option B: the reference recovery script
 
 The script is a separate implementation of the formats. It uses only Node.js built-ins (`node:crypto` scrypt and
@@ -140,7 +140,8 @@ requests.
    In that folder the commands below use `node stealth-export-recover.mjs` instead of the repository path. Disconnect
    from the network before supplying the backup or passphrase. No GhostPay packages, browser storage or hosted
    service are required at recovery time.
-2. Check a file without a passphrase (header only, nothing is decrypted):
+2. Use `--inspect` to check public information without entering the passphrase. Combining it with
+   `--reveal-private-keys` returns a usage error before the file is opened.
 
    ```sh
    node scripts/recovery/stealth-export-recover.mjs ghostpay-stealth-keypairs.json --inspect
@@ -252,12 +253,13 @@ meta-address. Treat it like the keys themselves.
 ## For developers: checking the reference implementation
 
 ```sh
-node --test scripts/recovery/*.test.mjs
+node scripts/build-workspaces.mjs --workspace @ghostpay/ux-vault
+REQUIRE_ANVIL=1 node --test scripts/recovery/*.test.mjs
 ```
 
 The tests decrypt every file in `test-vectors/stealth-export.json` (TEST-ONLY keys and passphrase), refuse every
 `invalid` vector with its documented error code, check tampering and bounds, recover the archive-omitted `a3` payment
-from the master backup, and decrypt files freshly written by `@ghostpay/ux-vault` (run `npm run build:libs` first).
+from the master backup, and decrypt files freshly written by the built `@ghostpay/ux-vault` codec.
 The standalone test copies the script and only its two noble dependencies into a fresh directory and restricts
 the child process's filesystem reads to that directory. It checks all five formats, recovers the expected archive
 keys, verifies that unlisted payments are absent, and derives an archive-omitted key from the master backup without
