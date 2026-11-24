@@ -94,7 +94,7 @@ describe('hostile wallet discovery boundaries', () => {
       win.announce(detail('huge-name', huge)); win.announce(detail(huge));
       win.announce({ info: { uuid: 'bounded', name: 'x'.repeat(100), rdns: huge, icon: `data:image/png;base64,${huge}` }, provider });
     };
-    expect(await discoverWallets(win, 0)).toEqual([{ id: '6963:bounded', name: 'x'.repeat(40), kind: 'eip6963', provider }]);
+    expect(await discoverWallets(win, 0)).toEqual([{ id: '6963:bounded', name: 'x'.repeat(40), kind: 'eip6963', provider, requireLifecycleEvents: true }]);
   });
 
   it.each(['getter', 'revoked', 'request-getter'])('contains hostile injected fallback reflection: %s', async (mode) => {

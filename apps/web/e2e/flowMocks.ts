@@ -155,10 +155,10 @@ export async function mockNetwork(
   return { requests };
 }
 
-export async function configureRpc(page: Page): Promise<void> {
-  await page.addInitScript((rpc) => {
-    window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
-  }, RPC);
+export async function configureRpc(page: Page, options: { readonly autoClearFragment?: boolean } = {}): Promise<void> {
+  await page.addInitScript((settings) => {
+    window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify(settings));
+  }, { rpcUrls: { '84532': RPC }, ...options });
 }
 
 /** Mock network state that {@link mockNetwork} serves (logs plus canonical transaction/receipt evidence). */

@@ -8,18 +8,14 @@ for (const switchAt of ['open disclosure', 'away from checkout', 'direct reload'
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
     await injectWallet(page, state);
-    await configureRpc(page);
+    await configureRpc(page, { autoClearFragment: false });
     await page.goto('/');
     await generateKeys(page);
     const memo = 'Account A private service reference';
     const link = await createInvoice(page, { encrypt: true, memo });
-    await page.evaluate(() => {
-      const key = 'ghostpay.settings.v1';
-      const settings = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, unknown>;
-      localStorage.setItem(key, JSON.stringify({ ...settings, autoClearFragment: false }));
-    });
     await openFresh(page, link);
     await expect(page.getByText(memo)).toBeVisible();
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.settings.v1') ?? '{}').autoClearFragment)).toBe(false);
     expect(new URL(page.url()).hash).toBe(new URL(link).hash);
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
