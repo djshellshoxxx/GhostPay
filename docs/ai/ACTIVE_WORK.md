@@ -3164,3 +3164,12 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ### 2026-11-24 bounded deployment diagnostic completion
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
+
+
+---
+
+# GP-BUG — Negative handled timestamp breaks recurring schedule evaluation (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator, isolated branch `automation/20261124T2125Z/bug/schedule-negative-handled`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-schedule/src/schedule.ts`, new `packages/ux-schedule/src/schedule.negative-handled.test.ts`, this additive ownership claim and `docs/handoffs/UX_SCHEDULE_NEGATIVE_HANDLED_20261124.md`. All 243 open PR changed-file inventories at discovery checked; none contains either product or regression path; no conflicting claim identified in main ACTIVE_WORK. Recheck before integration.
+Evidence: source blob a8161275fd2efd3c4f47a90a90cf9c4d24016e1c: markHandled accepts negative safe integers, producing lastHandledMs=-1 from a new schedule, whereas evaluateRecurrence rejects negative lastHandledMs. Source-body V8 probes show two failures and four controls passing. Acceptance: test-first rejection of negative timestamps for both fresh and already-handled schedules; preserve nonnegative monotonic behavior and normal evaluation. No funds, runtime changes outside this helper, deployment, or dependency changes. Generation-20 integration lease released, not acquired. Local git DNS unavailable; hosted CI and separate independent review remain mandatory. No direct browser reachability claimed.
