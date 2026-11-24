@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import fc from 'fast-check';
 import { afterEach, expect, it, vi } from 'vitest';
 import { AppLean } from '../AppLean';
 import * as downloads from '../components/Common';
@@ -16,6 +17,11 @@ vi.mock('../lib/reconciliationVault', async (importOriginal) => ({
   createCurrentReconciliationVault: openVault,
   releaseFromCurrentReconciliationState: releaseState,
 }));
+
+// Resolve the callback inside async act so storage continuations and layout effects finish together.
+function settle(action: () => void): Promise<void> {
+  return act(() => Promise.resolve(action()));
+}
 
 afterEach(() => { clearSession(); openVault.mockReset(); releaseState.mockReset(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
@@ -34,7 +40,7 @@ it('opens the real Pages route and handles loading, empty, stale, error, retry a
   expect(document.activeElement?.id).toBe('main');
   await user.click(await screen.findByRole('button', { name: 'Open encrypted dashboard' }));
   expect(screen.getByText('Loading merchant dashboard…')).toBeTruthy();
-  await act(async () => { finishRead?.(); });
+  await settle(() => { finishRead?.(); });
   expect(await screen.findByText('No records match this view.')).toBeTruthy();
   expect(document.activeElement?.textContent).toBe('Network overview');
   openVault.mockRejectedValueOnce(new Error('private-internal-detail'));
@@ -43,7 +49,7 @@ it('opens the real Pages route and handles loading, empty, stale, error, retry a
   expect((await screen.findByRole('alert')).textContent).toContain('GhostPay could not read the encrypted merchant dashboard.');
   expect(screen.queryByText('private-internal-detail')).toBeNull();
   await user.click(screen.getByRole('button', { name: 'Try again' }));
-  await act(async () => { notifyAppLock('idle'); finishRead?.(); });
+  await settle(() => { notifyAppLock('idle'); finishRead?.(); });
   expect(screen.getByText('The encrypted dashboard is locked.')).toBeTruthy();
   expect(screen.queryByText('No records match this view.')).toBeNull();
 });
@@ -106,3 +112,79 @@ it('requires a fresh preview if an expiry changes the selected status before app
   expect(readState).toHaveBeenCalledTimes(1);
   expect(screen.getByText('No records match this view.')).toBeTruthy();
 });
+
+it.each(['opening', 'ready', 'refreshing', 'error'] as const)(
+  'preserves the keyboard destination across overlapping updates while %s',
+  async (phase) => {
+    generateSession();
+    const empty = { records: [], invoices: [], receipts: [], readOnly: false };
+    const update = fc.record({
+      focus: fc.constantFrom('stay', 'network', 'navigation'),
+      afterSignal: fc.boolean(),
+      finishPrevious: fc.boolean(),
+      previousFails: fc.boolean(),
+    });
+
+    await fc.assert(fc.asyncProperty(fc.array(update, { minLength: 1, maxLength: 4 }), fc.boolean(), async (updates, finalFails) => {
+      const reads: ((fail: boolean) => void)[] = [];
+      openVault.mockResolvedValue({
+        lock: vi.fn(),
+        readState: () => new Promise((resolve, reject) => {
+          reads.push((fail) => { if (fail) reject(new Error('fixture read failure')); else resolve(empty); });
+        }),
+      });
+
+      renderWith(<AppLean />);
+      try {
+        const nav = screen.getByRole('button', { name: 'Merchant dashboard' });
+        fireEvent.click(nav);
+        const network = await screen.findByLabelText('Network');
+        await settle(() => { fireEvent.click(screen.getByRole('button', { name: 'Open encrypted dashboard' })); });
+        if (phase !== 'opening') {
+          await settle(() => { reads[0]!(phase === 'error'); });
+          if (phase === 'refreshing') {
+            await settle(() => { fireEvent.click(screen.getByRole('button', { name: 'Refresh local records' })); });
+          }
+        }
+
+        let persistent: HTMLElement | undefined;
+        const late: (() => void)[] = [];
+        for (const step of updates) {
+          const moveFocus = (): void => {
+            if (step.focus === 'stay') return;
+            persistent = step.focus === 'network' ? network : nav;
+            persistent.focus();
+          };
+          const previous = reads[reads.length - 1]!;
+          const count = reads.length;
+          await settle(() => {
+            if (!step.afterSignal) moveFocus();
+            window.dispatchEvent(new Event(RECONCILIATION_VAULT_CHANGE_EVENT));
+            if (step.afterSignal) moveFocus();
+          });
+          expect(reads).toHaveLength(count + 1);
+          const finishPrevious = (): void => { previous(step.previousFails); };
+          if (step.finishPrevious) await settle(finishPrevious);
+          else late.push(finishPrevious);
+          expect(document.activeElement === (persistent ?? screen.getByText('Merchant records are being refreshed…'))).toBe(true);
+        }
+
+        await settle(() => { reads[reads.length - 1]!(finalFails); });
+        await settle(() => { for (const finish of late.reverse()) finish(); });
+        const destination = finalFails
+          ? screen.getByRole('button', { name: 'Try again' })
+          : screen.getByRole('heading', { name: 'Network overview' });
+        expect(document.activeElement === (persistent ?? destination)).toBe(true);
+      } finally {
+        cleanup();
+      }
+    }), {
+      seed: 543, numRuns: 32,
+      examples: [
+        [[{ focus: 'stay', afterSignal: false, finishPrevious: false, previousFails: true }], false],
+        [[{ focus: 'network', afterSignal: false, finishPrevious: true, previousFails: false }], true],
+        [[{ focus: 'navigation', afterSignal: true, finishPrevious: true, previousFails: true }], false],
+      ],
+    });
+  },
+);

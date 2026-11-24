@@ -1,4 +1,4 @@
-import { createReconciliationApi, type ReconciliationVaultStore, type ReconciliationVaultHandle } from '@ghostpay/ux-vault/portable';
+import { createReconciliationApi, type ReconciliationState, type ReconciliationVaultStore, type ReconciliationVaultHandle } from '@ghostpay/ux-vault/portable';
 import { UserFacingError, type MessageDescriptor } from './errors';
 import { captureSessionGuard, getSessionPublic, revealViewingKey } from './session';
 import { checkpointKeyId } from './scanClient';

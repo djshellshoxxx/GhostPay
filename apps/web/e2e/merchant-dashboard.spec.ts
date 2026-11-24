@@ -137,3 +137,41 @@ test('keeps focus on Network for a background ledger refresh and announces an ex
   expect(await focused.jsonValue()).toEqual(['Merchant records are being refreshed…', 'Network overview']);
   await expect(record).toHaveText(/Open · no linked evidence/);
 });
+
+test('respects focus moved to Network during the first read, and restores focus after a failed refresh', async ({ page }) => {
+  await page.goto('/');
+  await generateKeys(page);
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Merchant dashboard' }).click();
+  const network = page.getByLabel('Network', { exact: true });
+  // Interrupt at the real progress focus event, before IndexedDB can return an empty ledger.
+  await network.evaluate((picker) => {
+    const interrupt = (event: FocusEvent): void => {
+      if (!(event.target instanceof HTMLElement) || event.target.textContent !== 'Loading merchant dashboard…') return;
+      document.removeEventListener('focusin', interrupt);
+      picker.focus();
+      window.dispatchEvent(new Event('focus'));
+    };
+    document.addEventListener('focusin', interrupt);
+  });
+  await page.getByRole('button', { name: 'Open encrypted dashboard' }).click();
+  const overview = page.getByRole('heading', { name: 'Network overview' });
+  await expect(overview).toBeVisible();
+  await expect(network).toBeFocused();
+
+  // Abort exactly one ledger read; the next foreground refresh uses IndexedDB normally.
+  await page.evaluate(() => {
+    const transaction = IDBDatabase.prototype.transaction;
+    IDBDatabase.prototype.transaction = function (...args) {
+      const tx = transaction.apply(this, args);
+      if (this.name === 'ghostpay-reconciliation-encrypted' && tx.mode === 'readonly') {
+        IDBDatabase.prototype.transaction = transaction;
+        queueMicrotask(() => { tx.abort(); });
+      }
+      return tx;
+    };
+  });
+  await page.getByRole('button', { name: 'Refresh local records' }).click();
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeFocused();
+  await page.evaluate(() => { window.dispatchEvent(new Event('focus')); });
+  await expect(overview).toBeFocused();
+});
