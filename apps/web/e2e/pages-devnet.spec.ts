@@ -573,6 +573,15 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expectNoKeys(sp);
     expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
 
+    // A freshly restarted profile cannot confirm deletion of this locked vault with a stray click.
+    await keysView(sp).getByRole('button', { name: 'Delete encrypted vault' }).click();
+    const confirmDelete = keysView(sp).getByRole('button', { name: 'Confirm delete encrypted vault' });
+    await expect(confirmDelete).toBeDisabled();
+    await keysView(sp).getByLabel(/This vault may be the only copy/).fill('delete');
+    await expect(confirmDelete).toBeDisabled();
+    await keysView(sp).getByRole('button', { name: 'Cancel', exact: true }).click();
+    expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
+
     // Wrong passphrase: refused, nothing loaded, vault untouched.
     await keysView(sp).getByLabel('Vault passphrase').fill(WRONG_PASS);
     await keysView(sp).getByRole('button', { name: 'Unlock saved vault' }).click();

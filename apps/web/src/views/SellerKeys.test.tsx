@@ -178,7 +178,7 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByText('Import existing keys (hex)'));
     const hint = document.getElementById(screen.getByLabelText('Invoice-signing private key (optional)').getAttribute('aria-describedby') ?? '');
-    expect(hint?.textContent).toMatch(/Importing the same two hex keys again produces a different signer\./);
+    expect(hint?.textContent).toMatch(/It exists only in this tab until you download the encrypted keystore or save the vault: if the tab closes or the idle lock wipes the keys before then, your hex keys load the spending and viewing keys again, but with a new signing key\./);
   });
 
   it('C-R10: says that only the generated signing key is lost before keys from a hex import are replaced or wiped', async () => {

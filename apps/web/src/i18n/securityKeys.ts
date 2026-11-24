@@ -1207,7 +1207,7 @@ export const SECURITY_KEY_GROUPS = {
     'app.idle.wiped',
     'app.idle.kept',
     'app.idle.wipedNotice',
-    'app.idle.keptSigner',
+    'app.idle.signerLost',
     'errorBoundary.title',
     'errorBoundary.body',
     'errorBoundary.reloadHint',

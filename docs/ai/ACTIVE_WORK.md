@@ -1,8 +1,8 @@
 # GP-PAGES-02 seller recovery and sole-copy safeguards
 
-Worker: Codex on `codex/gp-pages-02-recovery-proof`, based on #540 at `8daebb0fa4a1cc1f771dbe724dede67f00028298` (child of #530). Main was `f76904301cff0b24d65ea4e31cbf37d470db4d95` at discovery. #539/#560 own individual payment exports. #365 owns sleep-time enforcement. This branch changes the seller-custody decision after the existing lock signal, carries the beforeunload check from #260, and extends the existing Pages/Anvil restoration journey. No writes to the owner branches.
+Worker: Codex on `codex/gp-pages-02-recovery-proof`, based on #540 at `8daebb0fa4a1cc1f771dbe724dede67f00028298` (child of #530). Main was `f76904301cff0b24d65ea4e31cbf37d470db4d95` at discovery. #539/#560 own individual payment exports. #577 retains the sole invoice signer inside #544's existing recovery-only idle state. This branch uses #260's close/reload guard and the existing Pages/Anvil restoration journey. Both changes go through their respective owners.
 
-Owned paths on this branch: AppShell custody handling and its tests, the matching seller-key UI strings and security catalog entries, session documentation, the Pages devnet recovery test, and the seller recovery section of the product guide. Acceptance: failed authentication installs nothing, a newly restored profile can sign from the actual payment address, and an unbacked generated invoice signer survives idle. Warn before leaving without externally recoverable keys. Preserve the verified-session lock behavior.
+Owned paths: AppShell's beforeunload check, Seller Keys vault deletion and tests, corresponding security strings, the Pages recovery journey and recovery documentation. Acceptance: a download alone keeps the leave-page warning armed, a failed or unrelated file installs nothing, typed destructive confirmation protects a locked vault, same-meta/different-signer deletion fails closed, and the restored profile signs from the original payment address. No release, deployment or owner-branch writes.
 
 ---
 
