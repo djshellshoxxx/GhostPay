@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
-import { keccak256 } from 'viem';
+import { canonicalManifestJson, loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
+import { keccak256, toBytes } from 'viem';
 import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -219,6 +219,23 @@ describe('runCli', () => {
     expect(main.err.join('\n')).toContain('signature');
   });
 
+  it.each(['', 'GhostPay/receipt/v1\n'])('refuses a structured manifest signed with foreign domain %j before ops probes', async (domain) => {
+    const manifest = loadDeployment(MANIFEST, CHAIN);
+    const digest = keccak256(toBytes(domain + canonicalManifestJson(manifest)));
+    const bytes = Uint8Array.from(digest.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+    const signature = `0x${Array.from(secp256k1.sign(bytes, TEST_SK, { prehash: false, lowS: true }), (b) => b.toString(16).padStart(2, '0')).join('')}`;
+    const wrong = rig({ files: { '/m/84532.json': JSON.stringify({ ...(JSON.parse(MANIFEST) as Record<string, unknown>), signature }) } });
+    let rpcCalls = 0;
+    expect(await runCli(['--config', '/cfg.json', '--dry-run'], ENV, {
+      ...wrong.deps,
+      releaseKeys: [TEST_KEY],
+      createRpc: () => { rpcCalls += 1; throw new Error('a refused manifest must not reach RPC'); },
+    })).toBe(3);
+    expect(wrong.err.join('\n')).toContain('signature');
+    expect(rpcCalls).toBe(0);
+    const accepted = rig();
+    expect(await runCli(['--config', '/cfg.json', '--dry-run'], ENV, { ...accepted.deps, releaseKeys: [TEST_KEY] })).toBe(0);
+  });
   it('parses only bounded compressed release keys from the environment', async () => {
     const invalid = rig();
     const fromEnv = await runCli(['--config', '/cfg.json', '--dry-run'], { ...ENV, GHOSTPAY_RELEASE_PUBKEYS: TEST_KEY }, { ...invalid.deps, releaseKeys: undefined });

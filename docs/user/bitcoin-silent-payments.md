@@ -18,9 +18,10 @@ Source: `apps/web/src/features/btc/network.ts`. The app refuses a server whose g
 ## Seller: receive
 
 1. Open **Bitcoin** in the web app and choose a test network.
-2. Create a wallet. The app generates a random 32-byte seed and shows it **once**. Write it down offline. It is not stored.
-3. Share the `tsp1...` address, the `bitcoin:?sp=...` link or the QR code.
-4. The keys stay in page memory. They are dropped when you press **Lock** or leave the view.
+2. Create a wallet. The app generates a random 32-byte seed. It is not stored, and it stays hidden until you press **Show backup seed**. It hides again after 60 seconds or as soon as the tab is hidden; you can show it again while the wallet is loaded. Write it down offline.
+3. **Copy seed** asks first: other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. **Hide seed**, **Lock**, the app lock and leaving the view empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in the page.
+4. Share the `tsp1...` address, the `bitcoin:?sp=...` link or the QR code.
+5. The keys stay in page memory. They are wiped when you press **Lock**, when the app locks, or when you leave the view.
 
 ## Seller: scan
 
@@ -28,9 +29,10 @@ Scanning needs an Esplora-compatible server URL that you supply. No public serve
 
 - The app downloads each block's transactions and computes the tweak locally. Keys never leave the page.
 - The server sees block heights, the outputs you check for spends, and any transaction you broadcast.
-- A malicious server can hide payments or lie about spent state. It cannot spend your funds.
-- Each scanned block is checked locally: the header hashes to the served block hash, its proof of work meets the network limit, txids recomputed from the served transactions produce the header's Merkle root, and consecutive heights link back to the pinned genesis. Omitted, injected or edited transactions in a block are refused.
-- These checks do not pick the best chain (no difficulty retarget, chain work or fork choice), and test-network proof of work is cheap. A dishonest server can still serve a self-consistent low-work fork, and witness data and spent state remain its word. Treat a found payment as unconfirmed until you check it on a node you trust.
+- A malicious server can hide payments, invent payments (see below) or lie about spent state. It cannot spend your funds.
+- Each scanned block is checked locally: the header hashes to the served block hash, its proof of work meets the network limit, txids recomputed from the served transactions produce the header's Merkle root, and the witness data matches the coinbase witness commitment (BIP-141). Omitted, injected or edited transactions in a block are refused.
+- Before scanning, the view loads and rechecks a header chain anchored to the pinned genesis block, then checks linkage, proof of work, difficulty rules, timestamps and versions. Among branches the server supplies, it keeps the one with the most cumulative work. Every scanned block must match this checked chain at its height, even when the requested scan starts later than genesis.
+- This is header-chain validation, not SPV or full transaction/script validation. A server can hide a heavier chain or mine its own heavier fork cheaply on a test network. The scripts and amounts of the outputs a transaction spends (from earlier blocks), and spent status, remain server-supplied. Confirm a payment with a source you trust before relying on it. See the [exact scan disclosures](../../apps/web/src/features/btc/verification.ts).
 - A scan covers at most 500 blocks per run.
 
 Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../operators/local-scanner-and-rpc.md).
@@ -43,7 +45,7 @@ Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../
 4. The app signs with the software key and checks every signature. It aborts if the fee or size differs from what you reviewed.
 5. Broadcasting is a separate click.
 
-The sweep uses BIP-125 signalling. There is no fee-bump button. To replace a stuck sweep, scan again, pick the same inputs and sweep with a higher rate.
+The sweep uses BIP-125 signalling. The view has no fee-bump button or replacement workflow for a stuck, unconfirmed sweep.
 
 ## What is public
 

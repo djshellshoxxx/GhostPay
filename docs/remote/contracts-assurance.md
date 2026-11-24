@@ -43,3 +43,15 @@ The Echidna exit output therefore shows "failed" lines by design.
 - Router stealth set is 4 code-less EOAs; hostile receivers/reentrant tokens are not in the Echidna harness (covered by existing Foundry tests only).
 - Policy harness uses one two-leaf merkle tree and a fixed 1 day delay/window; PolicyAccountFactory is not fuzzed.
 - Corpus dirs are not committed.
+
+## Update 2026-11-18 (consolidation)
+
+The run above used Echidna 2.3.1; the repository pins Echidna 2.2.7 in `contract-analysis.yml`. With 2.2.7, CI
+run 43981233671 (source `beb525dd`) reached every canary except `echidna_canary_exec_native` in a 300,063-call
+Policy campaign, so the runner failed while every safety property passed. The path was reachable but improbable
+per 20-call sequence. The Policy harness now adds owner-signed, within-limit `requestNative`/`requestToken`
+actions and an open-request `executePending` action (no property, threshold or budget change); see
+`test/echidna/EchidnaPolicyReachability.t.sol`. Local 2.2.7 runs at the full budget (1 and 2 workers) reached
+all Policy canaries with all safety properties passing. CI's 4-worker run on the final source remains the
+qualifying evidence, and release builds require it.
+

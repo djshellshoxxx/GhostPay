@@ -1,0 +1,21 @@
+{
+  "name": "@ghostpay/portable-hosting-kit",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "Package, verify, preview and generate hosting profiles (static server, container, Tor, I2P) for a static site such as the GhostPay web bundle. No runtime dependencies.",
+  "type": "module",
+  "bin": {
+    "ghostpay-host": "bin/ghostpay-host.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+    "test:coverage": "node --test --experimental-test-coverage --test-concurrency=4 \"test/**/*.test.mjs\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint --config eslint.config.mjs .",
+    "check": "npm run lint && npm run typecheck && npm test"
+  }
+}

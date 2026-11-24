@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { clearSession, generateSession, revealViewingKey } from './session';
 import { MemoryTagStore, TagVault, type TagPayload } from './tags';
 const key = (): Uint8Array => new Uint8Array(32).fill(7);
 const payload = (): TagPayload => ({ stealthAddress: `0x${'01'.repeat(20)}`, announcementId: `0x${'ab'.repeat(32)}:0`, logIndex: 0, clientLabel: 'private label' });
@@ -80,4 +81,38 @@ it('refuses to initialize over orphaned ciphertext without its profile', async (
   const vault = new TagVault(orphan);
   await expect(vault.unlock(key())).rejects.toThrow(/profile|kept/i);
   expect(await orphan.getAll()).toHaveLength(1); expect(await orphan.getMeta()).toBeUndefined();
+});
+
+describe('L1-04: tag keys stay bound to the seller keys that unlocked them', () => {
+  afterEach(() => { clearSession(); });
+  const tagOf = (clientLabel: string): TagPayload => ({ ...payload(), clientLabel });
+
+  it('locks when the keys are wiped, so identity B never writes under identity A\'s tag profile', async () => {
+    const store = new MemoryTagStore(), vault = new TagVault(store);
+    generateSession();                                   // identity A unlocks tags
+    await vault.unlock(revealViewingKey());
+    clearSession();                                      // Seller keys: "Wipe keys from memory"
+    expect(vault.unlocked).toBe(false);
+    generateSession();                                   // identity B in the same tab
+    await expect(vault.save(84532, tagOf('client of B'))).rejects.toThrow(/locked|Unlock/);
+    await expect(vault.list()).rejects.toThrow(/locked|Unlock/);
+    expect(await store.getAll()).toHaveLength(0);
+    // B's own key cannot open A's profile, and nothing of B's ever landed in it.
+    await expect(vault.unlock(revealViewingKey())).rejects.toThrow(/different viewing key/);
+  });
+
+  it('does not finish an unlock or a save that started before the keys changed', async () => {
+    const store = new MemoryTagStore(), vault = new TagVault(store);
+    generateSession();
+    const unlocking = vault.unlock(revealViewingKey());
+    generateSession();                                   // keys replaced while the tag keys are derived
+    await expect(unlocking).rejects.toThrow(/changed/);
+    expect(vault.unlocked).toBe(false);
+    expect(await store.getMeta()).toBeUndefined();
+    await vault.unlock(revealViewingKey());
+    const saving = vault.save(84532, tagOf('client of the old keys'));
+    clearSession();                                      // keys wiped before the write commits
+    await expect(saving).rejects.toThrow(/changed|locked|Unlock/);
+    expect(await store.getAll()).toHaveLength(0);
+  });
 });

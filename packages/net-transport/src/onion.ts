@@ -73,7 +73,8 @@ export function validateOnionUrl(raw: string, o: OnionUrlOptions = {}): string {
   const m = /^(https?):\/\/([^/?#]*)/.exec(raw);
   if (m === null) return bad();
   const authority = m[2] as string;
-  if (authority.includes('@') || authority !== authority.toLowerCase()) return bad();
+  // Reject escaped hostname bytes before URL percent-decoding can hide noncanonical input.
+  if (authority.includes('@') || authority.includes('%') || authority !== authority.toLowerCase()) return bad();
   if (m[1] === 'http' && o.allowHttp !== true) return bad();
   let u: URL;
   try {

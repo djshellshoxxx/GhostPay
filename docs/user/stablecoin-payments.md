@@ -38,7 +38,7 @@ Only Circle's published testnet addresses are listed. The EURC addresses were ta
 - **Permit support.** The relayer sweep path needs `permit`. A token without `permit` (USDT-style) cannot use the relayer and needs the direct sweep path. No such token is allowlisted yet.
 - **Non-standard approve.** The allowlist has a flag for tokens whose `approve` needs a zero first or returns no bool. No listed token sets it, but the code expects a safe-approve wrapper for any token that does.
 - **Decimals.** Amounts use 6 decimals. Check the displayed value, not a number you calculated yourself.
-- **Fiat quotes.** Stablecoin invoices are priced in the token. A fiat-priced invoice needs a price feed. None is configured, so no fiat quote is shown.
+- **Fiat quotes.** Stablecoin invoices are priced in the token. A fiat-priced invoice needs a price feed. Feeds exist only for ETH/USD and USDC/USD on Sepolia and Base Sepolia (`packages/chain-adapters/src/quote.ts`); on other chains or pairs no fiat quote is shown.
 
 ## Privacy notes
 

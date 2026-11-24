@@ -1,3 +1,4 @@
+import type { MessageDescriptor } from '../../lib/errors';
 import {
   buildTrxTransfer,
   decodeRawTx,
@@ -26,7 +27,7 @@ export interface SweepReview {
   /** Upper bound reserved for bandwidth (and activation); what is not burned stays at the one-time address. */
   readonly feeReserveSun: bigint;
   readonly sendSun: bigint;
-  readonly warnings: readonly string[];
+  readonly warnings: readonly MessageDescriptor[];
 }
 
 export interface SignedSweep {
@@ -54,7 +55,7 @@ export function reviewSweep(wallet: TronWallet, found: FoundPayment, destination
   const dest = destination.trim();
   decodeTronAddress(dest);
   if (dest === found.stealthAddress) {
-    throw new TronViewError('Choose a different address than the one-time address being swept.');
+    throw new TronViewError({ key: 'chainView.error.sameAddress' });
   }
   const probe = buildTrxTransfer({
     owner: found.stealthAddress,
@@ -67,13 +68,13 @@ export function reviewSweep(wallet: TronWallet, found: FoundPayment, destination
   const activationSun = ctx.destinationActivated ? 0n : ACTIVATION_FEE_SUN;
   const feeReserveSun = bandwidthSun + activationSun;
   const sendSun = found.balanceSun - feeReserveSun;
-  if (sendSun <= 0n) throw new TronViewError('The balance does not cover the fee reserve.');
-  const warnings = [
-    'Sweeping links this one-time address to the destination on-chain. Use a fresh destination if that matters.',
-    'The fee reserve is an upper bound for a fresh address that has no free bandwidth. The network burns only what it needs; the rest stays at the one-time address.',
+  if (sendSun <= 0n) throw new TronViewError({ key: 'tron.error.balanceFee' });
+  const warnings: MessageDescriptor[] = [
+    { key: 'chainView.sweep.links' },
+    { key: 'tron.sweep.feeReserve' },
   ];
   if (!ctx.destinationActivated) {
-    warnings.push('The destination has never been used on-chain, so the network burns about 1 TRX extra to activate it. This is included in the reserve.');
+    warnings.push({ key: 'tron.sweep.activation' });
   }
   return {
     networkLabel: wallet.net.label,
@@ -100,7 +101,7 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
   const { rpc, wallet, found, review, signal } = p;
   const balance = await getBalanceSun(rpc, found.stealthAddress, signal);
   if (balance !== review.totalSun) {
-    throw new TronViewError('The balance changed since the review. Scan again before sweeping.');
+    throw new TronViewError({ key: 'tron.error.balanceChanged' });
   }
   const head = await getNowBlock(rpc, signal);
   const tx = buildTrxTransfer({
@@ -113,8 +114,9 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
   // The bytes about to be signed must say exactly what the review said.
   const decoded = decodeRawTx(tx.rawData);
   if (decoded.kind !== 'trx' || decoded.owner !== found.stealthAddress || decoded.to !== review.destination || decoded.amount !== review.sendSun) {
-    throw new TronViewError('The transaction does not match the review. Nothing was signed.');
+    throw new TronViewError({ key: 'tron.error.reviewMismatch' });
   }
+  if (signal?.aborted === true) throw new TronViewError({ key: 'tron.error.aborted' });
   const key = deriveTronStealthKey(
     { stealthAddress: found.stealthAddress, memo: found.memo },
     { viewingSecret: wallet.keys.viewingSecret, spendingSecret: wallet.keys.spendingSecret },
@@ -125,3 +127,7 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
     zeroize(key);
   }
 }
+
+// i18n-use: chainView.error.sameAddress tron.error.balanceFee chainView.sweep.links tron.sweep.feeReserve tron.sweep.activation tron.error.balanceChanged tron.error.reviewMismatch
+
+// i18n-use: tron.error.aborted

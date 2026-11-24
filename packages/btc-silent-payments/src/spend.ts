@@ -1,11 +1,12 @@
 import { schnorr } from '@noble/curves/secp256k1.js';
 import { Address, NETWORK, OutScript, TEST_NETWORK, Transaction } from '@scure/btc-signer';
-import type { SilentPaymentNetwork } from './address.js';
-import { toHex } from './ecc.js';
-import { fail } from './errors.js';
+import { decodeSilentPaymentAddress, type SilentPaymentNetwork } from './address.js';
+import { pointFromCompressed, toHex, xOnly } from './ecc.js';
+import { fail, SilentPaymentError } from './errors.js';
+import { publicKeyOf } from './keys.js';
 import { spendPrivateKey } from './receiver.js';
-import { createSilentPaymentOutputs } from './sender.js';
-import { zeroize, type SecretScalar } from './secret.js';
+import { buildSenderContext, createSilentPaymentOutputs, senderEcdhSharedSecret, silentPaymentOutputsFromShares } from './sender.js';
+import { parseCompressedPoint, secretScalarFromBytes, zeroize, type CompressedPoint, type SecretScalar } from './secret.js';
 
 /** A detected silent-payment output the wallet can spend (key-path, BIP-341/BIP-352). */
 export interface SpendableOutput {
@@ -45,10 +46,18 @@ export interface BuildSpendParams {
   readonly network: SilentPaymentNetwork;
   /** With `network: 'testnet'`: use `bcrt` instead of `tb` for regular addresses (bitcoind regtest). Default false. */
   readonly regtest?: boolean;
-  /** Outputs and change below this are rejected / folded into the fee. Default 546. */
+  /**
+   * Outputs and change below this are rejected / folded into the fee. Default {@link DUST_LIMIT_SATS} (546),
+   * which is also the hard minimum: a lower value is raised to it.
+   */
   readonly dustLimitSats?: bigint;
   /** Signal BIP-125 replaceability. Default true. */
   readonly rbf?: boolean;
+  /**
+   * Spec 11 fee guard: a fee above 50% of the inputs is refused (`FEE_TOO_HIGH`) unless this is `true`.
+   * {@link MAX_FEE_RATE_SAT_PER_VB} stays enforced either way. Default false.
+   */
+  readonly forceHighFee?: boolean;
 }
 
 /** Result of {@link buildSpendTransaction}. */
@@ -66,8 +75,14 @@ export interface SpendResult {
   readonly changeIndex: number | null;
 }
 
-const DEFAULT_DUST = 546n;
-/** Safety cap against fat-finger fee rates. */
+/** Consensus-style dust floor (Core's 546 sat): the hard minimum for every output this package creates. */
+export const DUST_LIMIT_SATS = 546n;
+/**
+ * Wallet-policy dust threshold (spec 11, default 1000 sat): detected outputs below it are hidden from sweeps by
+ * `selectOutputsForSweep` unless the caller overrides. The scanner still reports them.
+ */
+export const DEFAULT_WALLET_DUST_SATS = 1000n;
+/** Safety cap against fat-finger fee rates; `forceHighFee` does not lift it. */
 export const MAX_FEE_RATE_SAT_PER_VB = 10_000;
 const MAX_INPUTS = 5_000;
 const P2TR_SCRIPT_LEN = 34;
@@ -95,6 +110,18 @@ function feeFor(feeRate: number, vsize: number): bigint {
   return (milli * BigInt(vsize) + 999n) / 1000n;
 }
 
+/** Effective output dust limit: the caller's value, never below {@link DUST_LIMIT_SATS}. */
+function dustLimit(v: bigint | undefined): bigint {
+  if (v === undefined) return DUST_LIMIT_SATS;
+  if (typeof v !== 'bigint' || v < 0n) return fail('INVALID_INPUT');
+  return v > DUST_LIMIT_SATS ? v : DUST_LIMIT_SATS;
+}
+
+/** Spec 11: a fee above half of the inputs needs an explicit `forceHighFee`. Exactly half is allowed. */
+function checkFeeShare(fee: bigint, total: bigint, forceHighFee: boolean | undefined): void {
+  if (fee * 2n > total && forceHighFee !== true) return fail('FEE_TOO_HIGH');
+}
+
 function isSilentPaymentAddress(address: string): boolean {
   return /^t?sp1/i.test(address);
 }
@@ -114,10 +141,13 @@ function scriptOf(address: string, network: SilentPaymentNetwork, regtest: boole
   }
 }
 
-function amount(v: bigint | undefined): bigint {
+function amount(v: unknown): bigint {
   if (typeof v !== 'bigint' || v <= 0n || v > SATS_MAX) return fail('INVALID_AMOUNT');
   return v;
 }
+
+/** @internal Validates a satoshi amount: a `bigint` in [1, 21e6 BTC]; throws `INVALID_AMOUNT`. */
+export const checkAmountSats: (v: unknown) => bigint = amount;
 
 interface PlannedOutput {
   readonly address: string;
@@ -163,6 +193,8 @@ export interface PreviewSweepParams {
   readonly network: SilentPaymentNetwork;
   readonly regtest?: boolean;
   readonly dustLimitSats?: bigint;
+  /** As {@link BuildSpendParams.forceHighFee}. */
+  readonly forceHighFee?: boolean;
 }
 
 /** Result of {@link previewSweep}. */
@@ -188,8 +220,7 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
   if (n === 0 || n > MAX_INPUTS) return fail('INVALID_INPUT');
   if (!Number.isFinite(p.feeRate) || p.feeRate <= 0) return fail('INVALID_INPUT');
   if (p.feeRate > MAX_FEE_RATE_SAT_PER_VB) return fail('FEE_TOO_HIGH');
-  const dust = p.dustLimitSats ?? DEFAULT_DUST;
-  if (dust < 0n) return fail('INVALID_INPUT');
+  const dust = dustLimit(p.dustLimitSats);
   let total = 0n;
   for (const a of p.inputAmountsSats) total += amount(a);
   const isSp = isSilentPaymentAddress(p.address);
@@ -199,7 +230,7 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
   const sendSats = total - feeSats;
   if (sendSats <= 0n) return fail('INSUFFICIENT_FUNDS');
   if (sendSats < dust) return fail('DUST_OUTPUT');
-  if (feeSats * 2n > total && feeSats > 10_000n) return fail('FEE_TOO_HIGH');
+  checkFeeShare(feeSats, total, p.forceHighFee);
   return { vsize, feeSats, sendSats, destinationIsSilentPayment: isSp };
 }
 
@@ -214,7 +245,8 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
  * of a silent payment is final. Sighash is SIGHASH_DEFAULT (64-byte signatures). Silent-payment
  * destinations and change are derived with BIP-352 over the spent inputs (all P2TR, hence eligible).
  * Fees: `ceil(feeRate * vsize)` with an exact vsize ({@link estimateKeyPathVsize}); change below the
- * dust limit is folded into the fee. After signing, every signature is verified with noble schnorr
+ * dust limit is folded into the fee; a fee above half of the inputs is refused unless `forceHighFee` is set
+ * (spec 11). After signing, every signature is verified with noble schnorr
  * and the vsize is checked against the estimate; any mismatch throws and nothing is returned.
  * Output order is destinations then change (callers wanting shuffling must build their own).
  * Hardware-wallet signing is out of scope. Regular addresses are `tb` for `testnet`, or `bcrt` when `regtest` is set.
@@ -227,13 +259,56 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
  * @security Handles spending secrets; not constant-time; zeroization best-effort.
  */
 export function buildSpendTransaction(params: BuildSpendParams): SpendResult {
+  const plan = planSpend(params);
+  const { outputs, network } = params;
+  // Signing keys, one per input, validated against the claimed output keys.
+  const keys: SecretScalar[] = [];
+  const cleanup: Uint8Array[] = [];
+  try {
+    for (const o of outputs) {
+      const k = spendPrivateKey(params.spendSecret, o.spendTweak);
+      cleanup.push(k.privateKey);
+      if (toHex(k.xOnlyPublicKey) !== toHex(o.xOnlyPublicKey)) return fail('INVALID_INPUT');
+      keys.push(k.privateKey);
+    }
+    const spAddrs = plan.order.filter((p) => p.isSp).map((p) => p.address);
+    const spKeys =
+      spAddrs.length === 0
+        ? []
+        : createSilentPaymentOutputs({
+            inputs: keys.map((privateKey) => ({ privateKey, isTaproot: true })),
+            outpoints: outputs.map((o) => ({ txid: o.txid, vout: o.vout })),
+            recipients: spAddrs,
+            network,
+          });
+    const { tx, prevouts } = assembleUnsigned(params, plan, spKeys);
+    const scripts = prevouts.map((p) => p.script);
+    const amounts = prevouts.map((p) => p.amountSats);
+    keys.forEach((key, i) => {
+      const digest = tx.preimageWitnessV1(i, scripts, 0, amounts);
+      tx.updateInput(i, { tapKeySig: schnorr.sign(digest, key) });
+    });
+    return finishSigned(tx, prevouts, plan, outputs.length);
+  } finally {
+    zeroize(...cleanup);
+  }
+}
+
+interface SpendPlan {
+  readonly order: readonly PlannedOutput[];
+  readonly fee: bigint;
+  readonly change: bigint;
+  readonly lenOf: (p: { address: string; isSp: boolean }) => number;
+}
+
+/** Validation and fee math shared by the software and the external-signer path (no secrets involved). */
+function planSpend(params: Omit<BuildSpendParams, 'spendSecret'>): SpendPlan {
   const { outputs, destinations, network } = params;
-  const dust = params.dustLimitSats ?? DEFAULT_DUST;
   if (outputs.length === 0 || outputs.length > MAX_INPUTS || destinations.length === 0)
     return fail('INVALID_INPUT');
   if (!Number.isFinite(params.feeRate) || params.feeRate <= 0) return fail('INVALID_INPUT');
   if (params.feeRate > MAX_FEE_RATE_SAT_PER_VB) return fail('FEE_TOO_HIGH');
-  if (dust < 0n) return fail('INVALID_INPUT');
+  const dust = dustLimit(params.dustLimitSats);
 
   const seen = new Set<string>();
   let total = 0n;
@@ -290,7 +365,7 @@ export function buildSpendTransaction(params: BuildSpendParams): SpendResult {
       if (fee > feeNoChange + dust) return fail('INSUFFICIENT_FUNDS'); // refuse to burn a large leftover: need a change address
     }
   }
-  if (fee * 2n > total && fee > 10_000n) return fail('FEE_TOO_HIGH');
+  checkFeeShare(fee, total, params.forceHighFee);
 
   const order: PlannedOutput[] = [...planned];
   if (change > 0n) {
@@ -300,67 +375,347 @@ export function buildSpendTransaction(params: BuildSpendParams): SpendResult {
       amountSats: change,
     });
   }
+  return { order, fee, change, lenOf };
+}
 
-  // Signing keys, one per input, validated against the claimed output keys.
-  const keys: SecretScalar[] = [];
-  const cleanup: Uint8Array[] = [];
+interface Prevout {
+  readonly script: Uint8Array;
+  readonly amountSats: bigint;
+}
+
+/** Unsigned transaction: inputs in the given order, outputs = destinations then change. */
+function assembleUnsigned(
+  params: Omit<BuildSpendParams, 'spendSecret'>,
+  plan: SpendPlan,
+  spKeys: readonly { readonly xOnlyPublicKey: Uint8Array }[],
+): { tx: Transaction; prevouts: Prevout[] } {
+  const { outputs, network } = params;
+  const tx = new Transaction({ version: 2, allowUnknownOutputs: false });
+  const prevouts = outputs.map((o) => ({
+    script: Uint8Array.of(0x51, 0x20, ...o.xOnlyPublicKey),
+    amountSats: o.amountSats,
+  }));
+  outputs.forEach((o, i) => {
+    tx.addInput({
+      txid: o.txid.toLowerCase(),
+      index: o.vout,
+      sequence: params.rbf === false ? 0xfffffffe : 0xfffffffd,
+      witnessUtxo: { script: (prevouts[i] as Prevout).script, amount: o.amountSats },
+    });
+  });
+  let spIdx = 0;
+  for (const p of plan.order) {
+    if (p.isSp) {
+      const d = spKeys[spIdx++];
+      if (d === undefined) return fail('INVALID_INPUT');
+      tx.addOutput({ script: Uint8Array.of(0x51, 0x20, ...d.xOnlyPublicKey), amount: p.amountSats });
+    } else {
+      tx.addOutputAddress(p.address, p.amountSats, btcNetwork(network, params.regtest === true));
+    }
+  }
+  return { tx, prevouts };
+}
+
+/** Finalizes a transaction whose inputs all carry `tapKeySig`, then verifies signatures and vsize independently. */
+function finishSigned(tx: Transaction, prevouts: readonly Prevout[], plan: SpendPlan, nInputs: number): SpendResult {
+  const psbt = tx.toPSBT();
+  tx.finalize();
+  const rawTx = tx.extract();
+  if (!verifyKeyPathSpend(rawTx, prevouts)) return fail('SIGNATURE_INVALID');
+  if (tx.vsize !== estimateKeyPathVsize(nInputs, plan.order.map(plan.lenOf))) return fail('SIGNATURE_INVALID');
+  const changeIndex = plan.change > 0n ? plan.order.length - 1 : null;
+  return { psbt, rawTx, txid: tx.id, feeSats: plan.fee, vsize: tx.vsize, changeSats: plan.change, changeIndex };
+}
+
+/** An input as the external signer sees it. */
+export interface SignerInput {
+  /** Display-order hex. */
+  readonly txid: string;
+  readonly vout: number;
+  readonly amountSats: bigint;
+  /** 32-byte x-only output key being spent. */
+  readonly xOnlyPublicKey: Uint8Array;
+  /** Scanner tweak (includes the label tweak); with `b_spend` it gives the input key. */
+  readonly spendTweak: SecretScalar;
+}
+
+/** What the host asks the signer to sign. */
+export interface SignSpendRequest {
+  /** Unsigned PSBT (BIP-174) with `witnessUtxo` on every input; inputs in the same order as `inputs`. */
+  readonly psbt: Uint8Array;
+  readonly inputs: readonly SignerInput[];
+  /** Outputs that pay silent payment addresses, in derivation order (that order fixes `k`). */
+  readonly silentPaymentOutputs: readonly { readonly outputIndex: number; readonly address: string }[];
+  readonly network: SilentPaymentNetwork;
+  readonly regtest?: boolean;
+}
+
+/**
+ * Spend-key holder for BIP-352 spends: a hardware wallet driver or {@link SoftwareSilentPaymentSigner}.
+ *
+ * The host never sees `b_spend`. The signer must, before signing: check every input key equals
+ * `b_spend + tweak` (parity-normalized) for the claimed output key and amount, refuse any sighash other than
+ * SIGHASH_DEFAULT (so ANYONECANPAY / collaborative transactions are impossible) and any foreign input,
+ * re-derive every silent-payment output itself from its own keys and the transaction's outpoints, and show
+ * the user what is being paid before signing.
+ */
+export interface SilentPaymentSigner {
+  readonly kind: 'software' | 'hardware';
+  /** `B_spend`. */
+  getSpendPublicKey(signal?: AbortSignal): Promise<CompressedPoint>;
+  /**
+   * `input_hash * a * B_scan` for a transaction spending exactly `inputs` (all of them; `a` is the sum of
+   * the parity-normalized input keys and `input_hash` is computed by the signer from the inputs' outpoints).
+   */
+  computeEcdhShare(req: { readonly inputs: readonly SignerInput[]; readonly scanPublicKey: Uint8Array }, signal?: AbortSignal): Promise<Uint8Array>;
+  /** One 64-byte BIP-340 signature per input (SIGHASH_DEFAULT), in input order. */
+  signSpend(req: SignSpendRequest, signal?: AbortSignal): Promise<readonly Uint8Array[]>;
+}
+
+/**
+ * {@link buildSpendTransaction} with an external {@link SilentPaymentSigner} holding `b_spend`.
+ *
+ * The host derives no private key: it checks the claimed output keys against `B_spend + tweak * G`, derives
+ * silent-payment destinations from ECDH shares the signer computes, builds the unsigned PSBT, and verifies the
+ * returned signatures independently (noble BIP-340 over the BIP-341 sighash) before returning anything.
+ *
+ * @throws {SilentPaymentError} as {@link buildSpendTransaction}, plus `SIGNER_REFUSED` (the signer declined or
+ * returned malformed data) and `TRANSPORT_FAILURE` (the signer threw a non-package error).
+ */
+export async function buildSpendTransactionWithSigner(
+  params: Omit<BuildSpendParams, 'spendSecret'>,
+  signer: SilentPaymentSigner,
+  signal?: AbortSignal,
+): Promise<SpendResult> {
+  const plan = planSpend(params);
+  const { outputs, network } = params;
+  const spendPub = parseSignerPoint(await callSigner(() => signer.getSpendPublicKey(signal)));
+  for (const o of outputs) {
+    const p = pointFromCompressed(spendPub).add(pointFromCompressed(publicKeyOf(o.spendTweak)));
+    if (p.is0() || toHex(xOnly(p)) !== toHex(o.xOnlyPublicKey)) return fail('INVALID_INPUT');
+  }
+  const inputs: SignerInput[] = outputs.map((o) => ({ txid: o.txid, vout: o.vout, amountSats: o.amountSats, xOnlyPublicKey: o.xOnlyPublicKey, spendTweak: o.spendTweak }));
+  const spEntries = plan.order.map((p, outputIndex) => ({ ...p, outputIndex })).filter((p) => p.isSp);
+  const spAddrs = spEntries.map((p) => p.address);
+  const shares = new Map<string, CompressedPoint>();
+  for (const a of spAddrs) {
+    const scan = decodeSilentPaymentAddress(a, network).scanPublicKey;
+    if (!shares.has(toHex(scan))) {
+      shares.set(toHex(scan), parseSignerPoint(await callSigner(() => signer.computeEcdhShare({ inputs, scanPublicKey: scan }, signal))));
+    }
+  }
+  const spKeys = spAddrs.length === 0 ? [] : silentPaymentOutputsFromShares(spAddrs, network, (scan) => shares.get(toHex(scan)) as CompressedPoint);
+  const { tx, prevouts } = assembleUnsigned(params, plan, spKeys);
+  const sigs: unknown = await callSigner(() =>
+    signer.signSpend(
+      {
+        psbt: tx.toPSBT(),
+        inputs,
+        silentPaymentOutputs: spEntries.map((p) => ({ outputIndex: p.outputIndex, address: p.address })),
+        network,
+        ...(params.regtest === undefined ? {} : { regtest: params.regtest }),
+      },
+      signal,
+    ),
+  );
+  if (!Array.isArray(sigs) || sigs.length !== outputs.length) return fail('SIGNER_REFUSED');
+  sigs.forEach((sig: unknown, i) => {
+    if (!(sig instanceof Uint8Array) || sig.length !== 64) return fail('SIGNER_REFUSED');
+    tx.updateInput(i, { tapKeySig: sig });
+  });
+  return finishSigned(tx, prevouts, plan, outputs.length);
+}
+
+async function callSigner<T>(f: () => Promise<T>): Promise<T> {
   try {
-    for (const o of outputs) {
-      const k = spendPrivateKey(params.spendSecret, o.spendTweak);
-      cleanup.push(k.privateKey);
-      if (toHex(k.xOnlyPublicKey) !== toHex(o.xOnlyPublicKey)) return fail('INVALID_INPUT');
-      keys.push(k.privateKey);
-    }
+    return await f();
+  } catch (e) {
+    if (e instanceof SilentPaymentError) throw e;
+    return fail('TRANSPORT_FAILURE');
+  }
+}
 
-    const spAddrs = order.filter((p) => p.isSp).map((p) => p.address);
-    const spKeys =
-      spAddrs.length === 0
-        ? []
-        : createSilentPaymentOutputs({
-            inputs: keys.map((privateKey) => ({ privateKey, isTaproot: true })),
-            outpoints: outputs.map((o) => ({ txid: o.txid, vout: o.vout })),
-            recipients: spAddrs,
-            network,
-          });
+function parseSignerPoint(v: unknown): CompressedPoint {
+  if (!(v instanceof Uint8Array)) return fail('SIGNER_REFUSED');
+  try {
+    return parseCompressedPoint(v);
+  } catch {
+    return fail('SIGNER_REFUSED');
+  }
+}
 
-    const tx = new Transaction({ version: 2, allowUnknownOutputs: false });
-    const prevouts = outputs.map((o) => ({
-      script: Uint8Array.of(0x51, 0x20, ...o.xOnlyPublicKey),
-      amountSats: o.amountSats,
-    }));
-    outputs.forEach((o, i) => {
-      tx.addInput({
-        txid: o.txid.toLowerCase(),
-        index: o.vout,
-        sequence: params.rbf === false ? 0xfffffffe : 0xfffffffd,
-        witnessUtxo: { script: (prevouts[i] as { script: Uint8Array }).script, amount: o.amountSats },
-      });
-    });
-    let spIdx = 0;
-    for (const p of order) {
-      if (p.isSp) {
-        const d = spKeys[spIdx++];
-        if (d === undefined) return fail('INVALID_INPUT');
-        tx.addOutput({ script: Uint8Array.of(0x51, 0x20, ...d.xOnlyPublicKey), amount: p.amountSats });
-      } else {
-        tx.addOutputAddress(p.address, p.amountSats, btcNetwork(network, params.regtest === true));
+/** What a signer shows the user before signing (a hardware device would render this on its screen). */
+export interface SpendSummary {
+  readonly inputsSats: bigint;
+  readonly feeSats: bigint;
+  readonly outputs: readonly {
+    readonly index: number;
+    readonly amountSats: bigint;
+    /** Regular address, or the silent payment address this output was verified to pay. */
+    readonly address: string;
+    readonly silentPayment: boolean;
+  }[];
+}
+
+export interface SoftwareSignerOptions {
+  /**
+   * Confirmation step (stand-in for a device screen). Must resolve to exactly `true` to sign. Default: approve.
+   */
+  readonly confirm?: (summary: SpendSummary) => boolean | Promise<boolean>;
+}
+
+/**
+ * Reference {@link SilentPaymentSigner} in software: holds `b_spend` in memory and enforces every check a
+ * hardware signer must. Not a hardware wallet: the key lives in this JavaScript process (no secure element,
+ * no trusted display, no constant-time guarantee). It keeps its own copy of `b_spend`: call {@link dispose}
+ * once signing is done.
+ */
+export class SoftwareSilentPaymentSigner implements SilentPaymentSigner {
+  public readonly kind = 'software' as const;
+  readonly #spendSecret: SecretScalar;
+  readonly #confirm: NonNullable<SoftwareSignerOptions['confirm']>;
+  #disposed = false;
+
+  public constructor(spendSecret: SecretScalar, o: SoftwareSignerOptions = {}) {
+    this.#spendSecret = secretScalarFromBytes(spendSecret);
+    this.#confirm = o.confirm ?? (() => true);
+  }
+
+  /**
+   * Wipes this signer's own copy of `b_spend` (best effort, as {@link zeroize}) and refuses every later request with
+   * `SIGNER_REFUSED`. The `spendSecret` passed to the constructor is the caller's to wipe. Safe to call again.
+   */
+  public dispose(): void {
+    this.#disposed = true;
+    zeroize(this.#spendSecret);
+  }
+
+  public getSpendPublicKey(signal?: AbortSignal): Promise<CompressedPoint> {
+    if (signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
+    if (this.#disposed) return Promise.reject(new SilentPaymentError('SIGNER_REFUSED'));
+    return Promise.resolve(publicKeyOf(this.#spendSecret));
+  }
+
+  /** Derives and checks every input key; the caller must zeroize the result. */
+  #keys(inputs: readonly SignerInput[]): SecretScalar[] {
+    const list: readonly SignerInput[] = Array.isArray(inputs) ? inputs : [];
+    if (list.length === 0 || list.length > MAX_INPUTS) return fail('SIGNER_REFUSED');
+    const keys: SecretScalar[] = [];
+    try {
+      for (const i of list) {
+        const k = spendPrivateKey(this.#spendSecret, i.spendTweak);
+        keys.push(k.privateKey);
+        if (toHex(k.xOnlyPublicKey) !== toHex(i.xOnlyPublicKey)) return fail('SIGNER_REFUSED');
       }
+      return keys;
+    } catch (e) {
+      zeroize(...keys);
+      throw e;
     }
+  }
 
-    const scripts = prevouts.map((p) => p.script);
-    const amounts = prevouts.map((p) => p.amountSats);
-    keys.forEach((key, i) => {
-      const digest = tx.preimageWitnessV1(i, scripts, 0, amounts);
-      tx.updateInput(i, { tapKeySig: schnorr.sign(digest, key) });
-    });
-    const psbt = tx.toPSBT();
-    tx.finalize();
-    const rawTx = tx.extract();
-    if (!verifyKeyPathSpend(rawTx, prevouts)) return fail('SIGNATURE_INVALID');
-    if (tx.vsize !== estimateKeyPathVsize(outputs.length, order.map(lenOf))) return fail('SIGNATURE_INVALID');
-    const changeIndex = change > 0n ? order.length - 1 : null;
-    return { psbt, rawTx, txid: tx.id, feeSats: fee, vsize: tx.vsize, changeSats: change, changeIndex };
-  } finally {
-    zeroize(...cleanup);
+  public computeEcdhShare(req: { readonly inputs: readonly SignerInput[]; readonly scanPublicKey: Uint8Array }, signal?: AbortSignal): Promise<Uint8Array> {
+    if (signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
+    if (this.#disposed) return Promise.reject(new SilentPaymentError('SIGNER_REFUSED'));
+    const keys = this.#keys(req.inputs);
+    try {
+      const ctx = buildSenderContext(
+        keys.map((privateKey) => ({ privateKey, isTaproot: true })),
+        req.inputs.map((i) => ({ txid: i.txid, vout: i.vout })),
+      );
+      try {
+        return Promise.resolve(senderEcdhSharedSecret(ctx, req.scanPublicKey));
+      } finally {
+        zeroize(ctx.inputPrivateKeySum, ctx.inputHash);
+      }
+    } finally {
+      zeroize(...keys);
+    }
+  }
+
+  public async signSpend(req: SignSpendRequest, signal?: AbortSignal): Promise<readonly Uint8Array[]> {
+    if (signal?.aborted === true) return fail('ABORTED');
+    if (this.#disposed) return fail('SIGNER_REFUSED');
+    let tx: Transaction;
+    try {
+      tx = Transaction.fromPSBT(req.psbt, { allowUnknownOutputs: true });
+    } catch {
+      return fail('SIGNER_REFUSED');
+    }
+    const keys = this.#keys(req.inputs);
+    try {
+      if (tx.inputsLength !== req.inputs.length) return fail('SIGNER_REFUSED');
+      const scripts: Uint8Array[] = [];
+      const amounts: bigint[] = [];
+      let inputsSats = 0n;
+      req.inputs.forEach((want, i) => {
+        const got = tx.getInput(i);
+        const script = Uint8Array.of(0x51, 0x20, ...want.xOnlyPublicKey);
+        const utxo = got.witnessUtxo;
+        if (
+          got.txid === undefined || toHex(got.txid) !== want.txid.toLowerCase() || got.index !== want.vout ||
+          utxo === undefined || toHex(utxo.script) !== toHex(script) || utxo.amount !== want.amountSats ||
+          (got.sighashType !== undefined && got.sighashType !== 0) || got.tapKeySig !== undefined
+        ) {
+          return fail('SIGNER_REFUSED');
+        }
+        scripts.push(script);
+        amounts.push(want.amountSats);
+        inputsSats += want.amountSats;
+      });
+
+      // Re-derive every silent-payment output from this signer's own keys.
+      const sp = req.silentPaymentOutputs;
+      const indices = new Set(sp.map((s) => s.outputIndex));
+      if (indices.size !== sp.length || sp.some((s) => !Number.isInteger(s.outputIndex) || s.outputIndex < 0 || s.outputIndex >= tx.outputsLength)) {
+        return fail('SIGNER_REFUSED');
+      }
+      if (sp.length > 0) {
+        const derived = createSilentPaymentOutputs({
+          inputs: keys.map((privateKey) => ({ privateKey, isTaproot: true })),
+          outpoints: req.inputs.map((i) => ({ txid: i.txid, vout: i.vout })),
+          recipients: sp.map((s) => s.address),
+          network: req.network,
+        });
+        sp.forEach((s, j) => {
+          const script = tx.getOutput(s.outputIndex).script;
+          const d = derived[j] as { xOnlyPublicKey: Uint8Array };
+          if (script === undefined || toHex(script) !== toHex(Uint8Array.of(0x51, 0x20, ...d.xOnlyPublicKey))) return fail('SIGNER_REFUSED');
+        });
+      }
+
+      const net = btcNetwork(req.network, req.regtest === true);
+      let outSats = 0n;
+      const outputs: SpendSummary['outputs'][number][] = [];
+      for (let i = 0; i < tx.outputsLength; i++) {
+        const o = tx.getOutput(i);
+        if (o.script === undefined || o.amount === undefined) return fail('SIGNER_REFUSED');
+        outSats += o.amount;
+        const spEntry = sp.find((s) => s.outputIndex === i);
+        let address: string;
+        if (spEntry !== undefined) address = spEntry.address;
+        else {
+          try {
+            address = Address(net).encode(OutScript.decode(o.script));
+          } catch {
+            return fail('SIGNER_REFUSED'); // never sign an output the user cannot be shown
+          }
+        }
+        outputs.push({ index: i, amountSats: o.amount, address, silentPayment: spEntry !== undefined });
+      }
+      if (outSats > inputsSats) return fail('SIGNER_REFUSED');
+      const summary: SpendSummary = { inputsSats, feeSats: inputsSats - outSats, outputs };
+      let ok: unknown;
+      try {
+        ok = await this.#confirm(summary);
+      } catch {
+        ok = false;
+      }
+      if (ok !== true) return fail('SIGNER_REFUSED');
+
+      return keys.map((key, i) => schnorr.sign(tx.preimageWitnessV1(i, scripts, 0, amounts), key));
+    } finally {
+      zeroize(...keys);
+    }
   }
 }

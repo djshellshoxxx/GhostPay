@@ -1,5 +1,7 @@
 # GitHub Pages prototype hosting
 
+> **Superseded (2026-11-12)** by [docs/pages/README.md](../pages/README.md): the lean-profile build `scripts/pages/build-pages.sh`, the verifier, and `.github/workflows/pages.yml` (GitHub Actions source, not the `gh-pages` branch). Kept as history; do not follow the manual steps below for a release.
+
 Prototype only. Serves the static SPA `apps/web` at https://djshellshoxxx.github.io/GhostPay/ from the orphan branch `gh-pages` (only build output + `.nojekyll`).
 
 ## Findings

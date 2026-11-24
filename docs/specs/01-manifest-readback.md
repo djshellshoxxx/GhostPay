@@ -1,5 +1,7 @@
 # 01 Manifest read-back and authentication
 
+> **Implementation status (2026-11-11, commit 364b1f18):** the read-back is implemented as `verifyDeployment` in `packages/chain-adapters/src/verify.ts` (there is no `readback.ts`). The manifest signature is a compact secp256k1 ECDSA signature over a domain-prefixed canonical digest (`STRUCTURED_MANIFEST_SIGNING_DOMAIN`), not Ed25519; the announcer codehash is not pinned (`verify.ts`: "its hash is not pinned here"); no 10-minute result cache exists in `verify.ts` or `apps/web/src/lib/deployment.ts`.
+
 Priority P0 | Effort M (3-5 d) | Owner: chain-adapters + web | Deps: none in-repo; release key (owner) only for the signature half
 Sources: gap-analysis s2 item 1; ADR-0007, ADR-0015; DEPLOYMENT_MANIFEST.md; audits S3-01/A-07/G-05.
 

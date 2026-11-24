@@ -40,6 +40,7 @@ function match(overrides: Partial<ScanMatch> = {}): ScanMatch {
       transactionHash: TX,
       blockNumber: 123n,
       blockHash: BLOCK_HASH,
+      blockTimestamp: '1800000000',
       logIndex: 4,
       id: `${BLOCK_HASH}:4`,
       schemeId: 1n,
@@ -67,6 +68,7 @@ describe('local verified-scan reconciliation ledger', () => {
       transactionHash: TX,
       blockNumber: '123',
       blockHash: BLOCK_HASH,
+      blockTimestamp: '1800000000',
       logIndex: 4,
       stealthAddress: ADDRESS,
       asset: TOKEN,
@@ -97,6 +99,17 @@ describe('local verified-scan reconciliation ledger', () => {
     expect(() => recordFromVerifiedMatch(match(), KEY, undefined, Number.MAX_SAFE_INTEGER)).toThrow(
       /timestamp/,
     );
+  });
+
+  it('rejects malformed verified block timestamps', () => {
+    expect(() => recordFromVerifiedMatch(match({ announcement: { ...match().announcement, blockTimestamp: '0x1' } }), KEY)).toThrow(/timestamp/);
+  });
+
+  it('refuses a record whose recipient differs from the verified announcement', () => {
+    expect(() => recordFromVerifiedMatch(match({ stealthAddress: `0x${'9'.repeat(40)}` }), KEY))
+      .toThrow(/recipient does not match/);
+    // Normalisation does not reject the same address in a different case.
+    expect(recordFromVerifiedMatch(match({ stealthAddress: `0x${ADDRESS.slice(2).toUpperCase()}` }), KEY).stealthAddress).toBe(ADDRESS);
   });
 
   it('preserves existing legacy records for untrusted read/export/delete without permitting a new plaintext write', () => {

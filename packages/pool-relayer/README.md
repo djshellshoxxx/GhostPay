@@ -13,7 +13,7 @@ entry. Private, `UNLICENSED`, not audited, never run on a public network.
 
 ## Server (`src/main.ts`)
 
-`node:http`, routes `/healthz`, `/v1/info`, `/v1/quote`, `/v1/relay`; 16 KiB body cap; CORS allowlist (default none); security headers. Environment variables are documented at the top of `src/main.ts`. The hot key is read from `POOL_RELAYER_KEY` and removed from `process.env` after parsing. Use testnet-only keys.
+`node:http`, routes `/healthz`, `/v1/info`, `/v1/quote`, `/v1/relay`; 16 KiB body cap; CORS allowlist (default none); security headers. Environment variables are documented at the top of `src/main.ts`. The hot key is read from a mode-600 file named by `POOL_RELAYER_KEY_FILE` (preferred; same descriptor-bound loader as `apps/relayer`, from `@ghostpay/relayer-guard/secrets`) or from `POOL_RELAYER_KEY`, which is refused under `NODE_ENV=production` unless `ALLOW_SECRET_ENV=1`. Deleting the variable from `process.env` after parsing does not scrub `/proc/<pid>/environ`; prefer the file. Use testnet-only keys.
 
 ## Tests
 

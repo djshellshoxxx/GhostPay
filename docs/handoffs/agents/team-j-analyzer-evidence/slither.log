@@ -1,0 +1,4 @@
+'forge clean' running (wd: /workspace/scratch/a9f2ae0b1bda/ghostpay-audit/packages/contracts)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /workspace/scratch/a9f2ae0b1bda/ghostpay-audit/packages/contracts)
+INFO:Slither:. analyzed (34 contracts with 64 detectors), 0 result(s) found

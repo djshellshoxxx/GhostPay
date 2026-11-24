@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 // Post-build scan of apps/web/dist (npm run build -> postbuild). Fails the build on dynamic code, HTML injection,
-// unexpected origins/hostnames, source maps, inline script/style, or network APIs inside the scanner worker.
+// unexpected origins/hostnames, source maps, inline script/style, network APIs inside the scanner worker, or markers
+// of preserved code that the lean beta does not ship.
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
+import ts from 'typescript';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +44,20 @@ const FORBIDDEN_JS = [
 
 const WORKER_FORBIDDEN = ['fetch(', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'importScripts', 'navigator.serviceWorker'];
 
+/**
+ * Release boundary of the lean beta (audit L8-04): fixed strings from preserved code that is not shipped. One import of a
+ * preserved factory (ESLint also forbids those in apps/web) would pull its module, and with it the marker, into the bundle.
+ */
+const PRESERVED_CODE_MARKERS = [
+  { marker: 'PIR server request failed', reason: '@ghostpay/pir-two-server client' },
+  { marker: 'window outside the PIR shard', reason: '@ghostpay/scan-source createPir2Source / createScanSource' },
+  { marker: 'light client could not confirm a block hash', reason: '@ghostpay/scan-source createLightSource' },
+  { marker: 'sources disagree on the announcement set', reason: '@ghostpay/scan-source createQuorumSource' },
+  { marker: 'Two-server PIR scanning (research PoC', reason: '@ghostpay/scan-source SCAN_MODE_CLAIMS / describeScanMode' },
+  { marker: 'groth16', reason: 'zero-knowledge pool prover' },
+  { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -71,6 +87,37 @@ function scanHosts(text, label, problems) {
   }
 }
 
+/**
+ * Scan a source file for forbidden sinks using the TypeScript AST, so comment-like text inside strings, templates,
+ * regular expressions or JSX cannot erase adjacent executable sinks. This checks syntax, not alias/data flow.
+ * Fails closed: a file that does not parse is reported.
+ * @returns Problem kinds found, e.g. `dangerouslySetInnerHTML`, `innerHTML/outerHTML assignment`, `eval/new Function`.
+ */
+export function scanSourceSinks(text, fileName) {
+  const kind = fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const sf = ts.createSourceFile(fileName, text, ts.ScriptTarget.ESNext, true, kind);
+  const found = new Set();
+  if (sf.parseDiagnostics.length > 0) found.add('could not be parsed');
+  const calleeIdent = (e) => {
+    while (ts.isParenthesizedExpression(e)) e = e.expression;
+    if (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.CommaToken) return calleeIdent(e.right);
+    return ts.isIdentifier(e) ? e.text : undefined;
+  };
+  const visit = (n) => {
+    if ((ts.isIdentifier(n) || ts.isStringLiteralLike(n)) && n.text === 'dangerouslySetInnerHTML') found.add('dangerouslySetInnerHTML');
+    if (ts.isBinaryExpression(n) && n.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && n.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+      const l = n.left;
+      const name = ts.isPropertyAccessExpression(l) ? l.name.text : ts.isElementAccessExpression(l) && ts.isStringLiteralLike(l.argumentExpression) ? l.argumentExpression.text : undefined;
+      if (name === 'innerHTML' || name === 'outerHTML') found.add('innerHTML/outerHTML assignment');
+    }
+    if (ts.isCallExpression(n) && calleeIdent(n.expression) === 'eval') found.add('eval/new Function');
+    if (ts.isNewExpression(n) && calleeIdent(n.expression) === 'Function') found.add('eval/new Function');
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
+  return [...found];
+}
+
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 export function scanBundle(distDir, srcDir, viteConfigPath) {
   const problems = [];
@@ -95,6 +142,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
           if (n > 0) problems.push(`${r}: ${name} (${String(n)} occurrence${n === 1 ? '' : 's'})`);
         }
         scanInnerHtml(text, r, problems);
+        for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
         }
@@ -106,10 +156,22 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
   if (!existsSync(indexPath)) problems.push('index.html missing');
   else {
     const html = readFileSync(indexPath, 'utf8');
-    for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-      if (!/\bsrc\s*=/.test(m[1])) problems.push('index.html: inline <script>');
-      else if (m[2].trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(m[1])) problems.push('index.html: remote script');
+    // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
+    // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
+    // the end of the document. Neither form may escape the inline-code checks.
+    const scriptStart = /<script\b([^>]*)>/gi;
+    const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
+    for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
+      const attrs = start[1];
+      scriptEnd.lastIndex = scriptStart.lastIndex;
+      const end = scriptEnd.exec(html);
+      const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
+      if (end === null) problems.push('index.html: unterminated <script>');
+      if (!/\bsrc\s*=/.test(attrs)) problems.push('index.html: inline <script>');
+      else if (body.trim() !== '') problems.push('index.html: script with both src and inline body');
+      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push('index.html: remote script');
+      if (end === null) break;
+      scriptStart.lastIndex = scriptEnd.lastIndex;
     }
     if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
     if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
@@ -147,10 +209,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
-      if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
-      if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);
+      for (const kind of scanSourceSinks(readFileSync(f, 'utf8'), r)) problems.push(`src/${r}: ${kind}`);
     }
   }
   return problems;

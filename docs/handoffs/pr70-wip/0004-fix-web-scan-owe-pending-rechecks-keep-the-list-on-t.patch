@@ -1,0 +1,703 @@
+From 0057683222efec3e2f4a51c30cef8bdf56ea819b Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 11 Nov 2026 01:32:54 +0000
+Subject: [PATCH 4/4] fix(web-scan): owe pending rechecks, keep the list on
+ typed starts, persist the rescan block
+
+Review of a104be8 on #70:
+
+- H1: withOwedRechecks also owes the block of any match whose receipt is
+  'pending' below the saved nextBlock, retried or not. A genuine router
+  payment whose recheck found real but not-yet-final evidence (a head drop,
+  a provider switch) was in 'retried' and below the floor, so neither the
+  list nor the pending rule held it. It stays capped by RECHECK_MAX and is
+  counted in any overflow; pending needs a real router transfer, so spam
+  cannot pin the list with it.
+- M1: a typed start (Resume unchecked) copies checkpoint.recheck and
+  checkpoint.rescanFrom into its cursor, so owed blocks below the typed
+  start keep their one retry (owedRechecks drops entries >= nextBlock).
+- M2: ScanCursor.rescanFrom persists the rescan block of an overflow
+  (decimal string, validated < nextBlock on load; a malformed value is
+  dropped and the rest of the cursor kept; old checkpoints load unchanged).
+  It is carried on every save while the run starts above it, a lower block
+  wins over a new overflow's, and a run starting at or below it clears it
+  on save. The Scan view shows the notice from the stored checkpoint too,
+  with the new count-neutral critical key scan.recheck.overflowSaved
+  (en source, es/ja/ar machine drafts).
+- M3: restores the direct-cursor case recheck [120, 120, SETTLED, HEAD]:
+  single-block reads are exactly [120], so the '< nextBlock' filter of
+  owedRechecks is pinned again (mutation X1 now fails).
+- withOwedRechecks JSDoc documents the accepted spam case: with 9 or more
+  always-failing router claims, following the notice cannot clear it (no
+  funds lost).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01KtKj8jKCxc3mPzqqbW35tq
+---
+ apps/web/locales/ar.json            |   3 +-
+ apps/web/locales/en.json            |   3 +-
+ apps/web/locales/es.json            |   3 +-
+ apps/web/locales/ja.json            |   3 +-
+ apps/web/src/i18n/securityKeys.ts   |   1 +
+ apps/web/src/lib/scanClient.test.ts | 169 +++++++++++++++++++++++++++-
+ apps/web/src/lib/scanClient.ts      |  90 ++++++++++-----
+ apps/web/src/views/Scan.test.tsx    | 104 ++++++++++++++++-
+ apps/web/src/views/Scan.tsx         |  13 ++-
+ packages/chain-adapters/src/logs.ts |  10 +-
+ 10 files changed, 358 insertions(+), 41 deletions(-)
+
+diff --git a/apps/web/locales/ar.json b/apps/web/locales/ar.json
+index dd5f3a7..7dd20f6 100644
+--- a/apps/web/locales/ar.json
++++ b/apps/web/locales/ar.json
+@@ -568,6 +568,7 @@
+     "policy.receive.result": "قُرئ {count} إعلان سياسة، منها {fresh} جديد لمفاتيحك.",
+     "policy.receive.capped": "توقّف عند الحد: امسح مجددًا للمتابعة.",
+     "ledger.import.invalidated": "{count, plural, =0 {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} zero {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} one {سيؤدي التفعيل إلى اعتبار ملاحظة واحدة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} two {سيؤدي التفعيل إلى اعتبار ملاحظتين غير صالحتين بسبب سجل إعادة تنظيم السلسلة.} few {سيؤدي التفعيل إلى اعتبار # ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} many {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} other {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.}}",
+-    "scan.recheck.overflow": "{count, plural, zero {لا توجد دفعات تعذّر على RPC الخاص بك تأكيدها. أعد الفحص بدءًا من الكتلة {block} إذا لزم الأمر.} one {تعذّر على RPC الخاص بك تأكيد دفعة واحدة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} two {تعذّر على RPC الخاص بك تأكيد دفعتين، ولن يُعاد التحقق منهما تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منهما.} few {تعذّر على RPC الخاص بك تأكيد # دفعات، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} many {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} other {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.}}"
++    "scan.recheck.overflow": "{count, plural, zero {لا توجد دفعات تعذّر على RPC الخاص بك تأكيدها. أعد الفحص بدءًا من الكتلة {block} إذا لزم الأمر.} one {تعذّر على RPC الخاص بك تأكيد دفعة واحدة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} two {تعذّر على RPC الخاص بك تأكيد دفعتين، ولن يُعاد التحقق منهما تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منهما.} few {تعذّر على RPC الخاص بك تأكيد # دفعات، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} many {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} other {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.}}",
++    "scan.recheck.overflowSaved": "تعذّر على RPC الخاص بك تأكيد بعض الدفعات، ولم يُعَد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها."
+   }
+ }
+diff --git a/apps/web/locales/en.json b/apps/web/locales/en.json
+index 3502a62..a319aaa 100644
+--- a/apps/web/locales/en.json
++++ b/apps/web/locales/en.json
+@@ -568,6 +568,7 @@
+     "policy.receive.result": "{count} policy announcement(s) read, {fresh} new for your keys.",
+     "policy.receive.capped": "Stopped at a cap: scan again to continue.",
+     "ledger.import.invalidated": "{count, plural, =0 {Activating would mark no observations invalid because of reorg history.} one {Activating would mark # observation invalid because of reorg history.} other {Activating would mark # observations invalid because of reorg history.}}",
+-    "scan.recheck.overflow": "{count, plural, one {# payment could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check it.} other {# payments could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check them.}}"
++    "scan.recheck.overflow": "{count, plural, one {# payment could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check it.} other {# payments could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check them.}}",
++    "scan.recheck.overflowSaved": "Some payments could not be confirmed by your RPC and were not checked again automatically. Rescan from block {block} to check them."
+   }
+ }
+diff --git a/apps/web/locales/es.json b/apps/web/locales/es.json
+index 9219cd7..df73cb7 100644
+--- a/apps/web/locales/es.json
++++ b/apps/web/locales/es.json
+@@ -568,6 +568,7 @@
+     "policy.receive.result": "Se leyeron {count} anuncios de política; {fresh} son nuevos para tus claves.",
+     "policy.receive.capped": "Se detuvo por un límite: vuelve a analizar para continuar.",
+     "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}",
+-    "scan.recheck.overflow": "{count, plural, one {Tu RPC no pudo confirmar # pago y no se volverá a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlo.} many {Tu RPC no pudo confirmar # de pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.} other {Tu RPC no pudo confirmar # pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.}}"
++    "scan.recheck.overflow": "{count, plural, one {Tu RPC no pudo confirmar # pago y no se volverá a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlo.} many {Tu RPC no pudo confirmar # de pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.} other {Tu RPC no pudo confirmar # pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.}}",
++    "scan.recheck.overflowSaved": "Tu RPC no pudo confirmar algunos pagos y no se volvieron a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos."
+   }
+ }
+diff --git a/apps/web/locales/ja.json b/apps/web/locales/ja.json
+index 8967580..6dc3cd0 100644
+--- a/apps/web/locales/ja.json
++++ b/apps/web/locales/ja.json
+@@ -568,6 +568,7 @@
+     "policy.receive.result": "ポリシーのアナウンスを{count}件読み取り、そのうち自分の鍵に対応する新規分は{fresh}件です。",
+     "policy.receive.capped": "上限に達して停止しました。続けるには再度スキャンしてください。",
+     "ledger.import.invalidated": "{count, plural, =0 {有効化しても、再編成の履歴を理由に無効とされる観測記録はありません。} other {有効化すると、再編成の履歴を理由に#件の観測記録が無効とされます。}}",
+-    "scan.recheck.overflow": "{count, plural, other {#件の支払いをRPCで確認できませんでした。今後は自動では再確認されません。確認するには、ブロック{block}から再スキャンしてください。}}"
++    "scan.recheck.overflow": "{count, plural, other {#件の支払いをRPCで確認できませんでした。今後は自動では再確認されません。確認するには、ブロック{block}から再スキャンしてください。}}",
++    "scan.recheck.overflowSaved": "一部の支払いをRPCで確認できず、自動では再確認されませんでした。確認するには、ブロック{block}から再スキャンしてください。"
+   }
+ }
+diff --git a/apps/web/src/i18n/securityKeys.ts b/apps/web/src/i18n/securityKeys.ts
+index 23cc01b..6df5efa 100644
+--- a/apps/web/src/i18n/securityKeys.ts
++++ b/apps/web/src/i18n/securityKeys.ts
+@@ -323,6 +323,7 @@ export const SECURITY_KEY_GROUPS = {
+   ],
+   scanCompleteness: [
+     'scan.recheck.overflow',
++    'scan.recheck.overflowSaved',
+   ],
+ } as const satisfies Readonly<Record<string, readonly MessageKey[]>>;
+ 
+diff --git a/apps/web/src/lib/scanClient.test.ts b/apps/web/src/lib/scanClient.test.ts
+index 01646c0..2337bd8 100644
+--- a/apps/web/src/lib/scanClient.test.ts
++++ b/apps/web/src/lib/scanClient.test.ts
+@@ -815,6 +815,42 @@ describe('localCheckpointStore', () => {
+     expect(localCheckpointStore(st).load(1, KEY)).toEqual({ nextBlock: 500n, recheck: [1n, 2n, 3n, 4n, 5n, 6n, 7n, 499n] });
+     expect(RECHECK_MAX).toBe(8);
+   });
++  it('round-trips the rescan block of an overflow as a decimal string, and omits it when absent', () => {
++    const st = mem();
++    const cp = localCheckpointStore(st);
++    const last = { number: 999n, hash: `0x${'a'.repeat(64)}` } as const;
++    cp.save(1, KEY, { nextBlock: 1000n, last, recheck: [120n], rescanFrom: 120n });
++    expect(JSON.parse(st.getItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`)!)).toEqual({ nextBlock: '1000', last: { number: '999', hash: last.hash }, recheck: ['120'], rescanFrom: '120' });
++    expect(cp.load(1, KEY)).toEqual({ nextBlock: 1000n, last, recheck: [120n], rescanFrom: 120n });
++    cp.save(2, KEY, { nextBlock: 1000n, rescanFrom: 0n });
++    expect(cp.load(2, KEY)).toEqual({ nextBlock: 1000n, rescanFrom: 0n });
++    cp.save(3, KEY, { nextBlock: 1000n });
++    expect(st.getItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`)).toBe(JSON.stringify({ nextBlock: '1000' }));
++    expect(cp.load(3, KEY)).not.toHaveProperty('rescanFrom');
++  });
++  it('loads a checkpoint written before the rescan block unchanged', () => {
++    const st = mem();
++    const hash = `0x${'b'.repeat(64)}`;
++    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', last: { number: '499', hash }, recheck: ['120'] }));
++    const loaded = localCheckpointStore(st).load(1, KEY);
++    expect(loaded).toEqual({ nextBlock: 500n, last: { number: 499n, hash }, recheck: [120n] });
++    expect(loaded).not.toHaveProperty('rescanFrom');
++  });
++  it('drops a malformed rescan block on load and keeps the rest of the checkpoint', () => {
++    const hash = `0x${'c'.repeat(64)}`;
++    const malformed: readonly unknown[] = [120, null, ['120'], { block: '120' }, '', '12a', '-1', '0x10', '1.5', '123456789012345678901', '500', '501'];
++    for (const rescanFrom of malformed) {
++      const st = mem();
++      st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', last: { number: '499', hash }, recheck: ['120'], rescanFrom }));
++      const loaded = localCheckpointStore(st).load(1, KEY);
++      expect(loaded, JSON.stringify(rescanFrom)).toEqual({ nextBlock: 500n, last: { number: 499n, hash }, recheck: [120n] });
++      expect(loaded, JSON.stringify(rescanFrom)).not.toHaveProperty('rescanFrom');
++    }
++    // A malformed recheck list does not drop a valid rescan block.
++    const st = mem();
++    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', recheck: ['600'], rescanFrom: '499' }));
++    expect(localCheckpointStore(st).load(1, KEY)).toEqual({ nextBlock: 500n, rescanFrom: 499n });
++  });
+ 
+   describe('receipt verification and second provider', () => {
+     const run = async (s: ReturnType<typeof setup>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}) => {
+@@ -1438,12 +1474,14 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+       expect(spammed.positions).toEqual(clean.positions);
+       const [run1, run2, run3] = spammed.results;
+       expect(run1?.matches.length).toBe(20);
+-      expect(spammed.cp.saves[0]).toEqual({ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX) });
++      expect(spammed.cp.saves[0]).toEqual({ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX), rescanFrom: blocks[0] });
+       // fromBlock is the lowest owed block of the whole set (the first kept one): a rescan from it covers all 20.
+       expect(run1?.recheckOverflow).toEqual({ count: 12, fromBlock: blocks[0] });
+       // Run 2 re-checks the 8 owed blocks once, and nothing is carried again.
+       expect(run2?.matches.map((m) => m.announcement.blockNumber)).toEqual(blocks.slice(0, RECHECK_MAX));
+       expect(spammed.cp.saves[1]).not.toHaveProperty('recheck');
++      // The rescan block is carried, since the 12 dropped payments are still unchecked.
++      expect(spammed.cp.saves[1]).toMatchObject({ rescanFrom: blocks[0] });
+       expect(run2).not.toHaveProperty('recheckOverflow');
+       expect(run3?.matches).toEqual([]);
+     });
+@@ -1501,6 +1539,133 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+       expect(singleBlockReads.map((c) => (c.params[0] as LogFilter).fromBlock)).toEqual(valid.slice(0, RECHECK_MAX));
+     });
+ 
++    it('re-checks a passed-in cursor\'s owed block once, and never one at or after its nextBlock (fewer than RECHECK_MAX)', async () => {
++      const s = setup(); const cp = memStore();
++      const { client, receipts } = flaky([s.mine.log], () => false);
++      // Under the cap, so only the '< nextBlock' filter keeps SETTLED and HEAD out (the cap cannot).
++      const res = await scan(s, KEY, { client, checkpoints: cp.store, cursor: { nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n, 120n, SETTLED, BigInt(HEAD)] } });
++      expect(res.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'verified']]);
++      expect(receipts.get(txOf(s.mine.log))).toBe(1);
++      const singleBlockReads = client.calls.filter((c) => c.method === 'eth_getLogs' && (c.params[0] as LogFilter).fromBlock === (c.params[0] as LogFilter).toBlock);
++      expect(singleBlockReads.map((c) => (c.params[0] as LogFilter).fromBlock)).toEqual([120n]);
++    });
++
++    /** A provider that is far behind (head 150) until the first receipt read, as after a head drop or a provider switch. */
++    const behindUntilReceipt = (base: ReturnType<typeof chainWith>): ReturnType<typeof chainWith> => {
++      let behind = true;
++      return {
++        ...base,
++        blockNumber: () => (behind ? Promise.resolve(150n) : base.blockNumber()),
++        request: (method, params) => { if (method === 'eth_getTransactionReceipt') behind = false; return base.request(method, params); },
++      };
++    };
++
++    it('H1: an owed block whose recheck is still pending (real evidence, not yet final) is owed again, and a later run verifies it', async () => {
++      const s = setup(); const cp = memStore();
++      // Block 120 has 31 confirmations on the provider serving the recheck pass, below finalityDepth: its real evidence is pending.
++      const client = behindUntilReceipt(chainWith(HEAD, [s.mine.log]));
++      const first = await scan(s, KEY, { client, checkpoints: cp.store, cursor: { nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n] } });
++      expect(first.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'pending']]);
++      // Below the floor (this run's start), so the pending rule cannot hold the cursor at it: it is owed again instead.
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n] });
++      const second = await resumeWith(s, cp, { client: chainWith(HEAD, [s.mine.log]) });
++      expect(second.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'verified']]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++    });
++
++    it('H1: a pending recheck holds the save at the run start; the claims after it are re-read by the next run, not owed', async () => {
++      const s = setup(); const cp = memStore();
++      const meta = encodeMetaAddress(s.keys);
++      // 8 always-failing claims in page 1, plus a genuine payment at block 120 owed from an earlier run.
++      const spam = Array.from({ length: 8 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + 2000 * i, index: 0, caller: FAKE_ROUTER }));
++      const spamBlocks = spam.map((_, i) => BigInt(1000 + 2000 * i));
++      const spamTx = new Set(spam.map((x) => txOf(x.log)));
++      const { client: failing } = flaky([s.mine.log, ...spam.map((x) => x.log)], (tx) => spamTx.has(tx));
++      const first = await scan(s, KEY, { client: behindUntilReceipt(failing), checkpoints: cp.store, maxPages: 1, cursor: { nextBlock: 500n, recheck: [120n] } });
++      expect(first.matches.find((m) => m.announcement.blockNumber === 120n)?.receipt).toBe('pending');
++      // The pending rule pulls the save down to the floor (the run start), so the spam blocks are at or after it: the
++      // main scan re-reads them, and only the pending block is owed (the list never exceeds what the pass read).
++      expect(cp.saves).toEqual([{ nextBlock: 500n, last: { number: 499n, hash: blockHash(499) }, recheck: [120n] }]);
++      expect(first).not.toHaveProperty('recheckOverflow');
++      // Next run, with the head back: 120 is verified by its retry, the spam is found again and owed, and the cursor moves.
++      const second = await resumeWith(s, cp, { client: failing, maxPages: 1 });
++      expect(second.matches.find((m) => m.announcement.blockNumber === 120n)?.receipt).toBe('verified');
++      expect(cp.saves.at(-1)).toMatchObject({ recheck: spamBlocks });
++      expect(cp.saves.at(-1)).not.toHaveProperty('rescanFrom');
++    });
++
++    describe('M2: the rescan block of an overflow is persisted with the checkpoint', () => {
++      const spamOf = (s: ReturnType<typeof setup>) => {
++        const meta = encodeMetaAddress(s.keys);
++        // 10 always-failing claims in page 1 (0..49,999): 8 kept, 2 dropped.
++        const spam = Array.from({ length: 10 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + 2000 * i, index: 0, caller: FAKE_ROUTER }));
++        return { logs: spam.map((x) => x.log), blocks: spam.map((_, i) => BigInt(1000 + 2000 * i)) };
++      };
++
++      it('survives a reload, is carried by a resume, and is cleared by a rescan from it', async () => {
++        const s = setup(); const cp = memStore();
++        const { logs, blocks } = spamOf(s);
++        let down = true;
++        const { client } = flaky(logs, () => down);
++        const first = await scan(s, KEY, { client, checkpoints: cp.store, maxPages: 1 });
++        expect(first.recheckOverflow).toEqual({ count: 2, fromBlock: blocks[0] });
++        expect(JSON.parse(cp.map.get(`ghostpay.scan.checkpoint.v2.${String(chain.chainId)}.${KEY}`)!)).toMatchObject({ nextBlock: '50000', rescanFrom: '1000' });
++        // A reload: a fresh store over the same storage still knows where to rescan from.
++        const reloaded = localCheckpointStore({ getItem: (k) => cp.map.get(k) ?? null, setItem: (k, v) => void cp.map.set(k, v), removeItem: (k) => void cp.map.delete(k) });
++        expect(reloaded.load(chain.chainId, KEY)).toEqual({ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX), rescanFrom: blocks[0] });
++        // A resume (start above the block): the kept blocks get their one retry and are not owed again, but the rescan
++        // block is carried with every save, since the dropped payments are still unchecked.
++        const second = await resumeWith(s, cp, { client, maxPages: 1 });
++        expect(second).not.toHaveProperty('recheckOverflow');
++        expect(cp.saves.at(-1)).toEqual({ nextBlock: 100_000n, last: { number: 99_999n, hash: blockHash(99_999) }, rescanFrom: blocks[0] });
++        const third = await resumeWith(s, cp, { client });
++        expect(third.matches).toEqual([]);
++        expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR, rescanFrom: blocks[0] });
++        // A rescan from the block (as the view builds it), once the RPC works: every claim verified, and its save clears it.
++        down = false;
++        const rescan = await scan(s, KEY, { client, checkpoints: cp.store, cursor: { nextBlock: blocks[0]!, rescanFrom: blocks[0]! } });
++        expect(rescan.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual(blocks.map((b) => [b, 'verified']));
++        expect(rescan).not.toHaveProperty('recheckOverflow');
++        expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++      });
++
++      it('a run that saves nothing keeps it, and a run that starts below it and saves clears it', async () => {
++        const s = setup(); const cp = memStore();
++        const { logs, blocks } = spamOf(s);
++        const { client } = flaky(logs, () => true);
++        await scan(s, KEY, { client, checkpoints: cp.store, maxPages: 1 });
++        expect(cp.store.load(chain.chainId, KEY)?.rescanFrom).toBe(blocks[0]);
++        // Cancelled before any save: the stored block stays.
++        const ctl = new AbortController(); ctl.abort();
++        await resumeWith(s, cp, { client, signal: ctl.signal });
++        expect(cp.saves).toHaveLength(1);
++        expect(cp.store.load(chain.chainId, KEY)?.rescanFrom).toBe(blocks[0]);
++        // A start below it, with nothing owed this time: its save clears the block.
++        const clean = await scan(s, KEY, { client: chainWith(HEAD, []), checkpoints: cp.store, maxPages: 1, cursor: { nextBlock: 500n, rescanFrom: blocks[0]! } });
++        expect(clean).not.toHaveProperty('recheckOverflow');
++        expect(cp.saves).toHaveLength(2);
++        expect(cp.saves.at(-1)).not.toHaveProperty('rescanFrom');
++        expect(cp.store.load(chain.chainId, KEY)).not.toHaveProperty('rescanFrom');
++      });
++
++      it('a new overflow above a carried block keeps the lower one, in the save and in the report', async () => {
++        const s = setup(); const cp = memStore();
++        const { logs } = spamOf(s);
++        const { client } = flaky(logs, () => true);
++        const res = await scan(s, KEY, { client, checkpoints: cp.store, maxPages: 1, cursor: { nextBlock: 500n, rescanFrom: 100n } });
++        expect(res.recheckOverflow).toEqual({ count: 2, fromBlock: 100n });
++        expect(cp.saves[0]).toMatchObject({ rescanFrom: 100n });
++      });
++
++      it('an invalid carried block (at or after the run start, or not a block number) is not carried', async () => {
++        const s = setup(); const cp = memStore();
++        for (const rescanFrom of [500n, 501n, -1n, '100' as unknown as bigint]) {
++          await scan(s, KEY, { client: chainWith(HEAD, []), checkpoints: cp.store, maxPages: 1, cursor: { nextBlock: 500n, rescanFrom } });
++          expect(cp.saves.at(-1), String(rescanFrom)).not.toHaveProperty('rescanFrom');
++        }
++      });
++    });
++
+     it('M1: reports the overflow with the progress of the save that truncated the list, so a later failure cannot hide it', async () => {
+       const s = setup(); const cp = memStore();
+       const meta = encodeMetaAddress(s.keys);
+@@ -1512,7 +1677,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+       const progress: ScanProgress[] = [];
+       await expect(scan(s, KEY, { client: broken, checkpoints: cp.store, onProgress: (p) => progress.push(p) })).rejects.toThrow();
+       // The truncated list was saved...
+-      expect(cp.saves).toEqual([{ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX) }]);
++      expect(cp.saves).toEqual([{ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX), rescanFrom: blocks[0] }]);
+       // ...and reported right after that save, with the block a rescan must start from (the lowest owed one).
+       expect(progress.map((p) => p.recheckOverflow).filter((o) => o !== undefined)).toEqual([{ count: 2, fromBlock: blocks[0] }]);
+       expect(progress.find((p) => p.recheckOverflow !== undefined)?.nextBlock).toBe(50_000n);
+diff --git a/apps/web/src/lib/scanClient.ts b/apps/web/src/lib/scanClient.ts
+index c0b146c..acd1042 100644
+--- a/apps/web/src/lib/scanClient.ts
++++ b/apps/web/src/lib/scanClient.ts
+@@ -50,7 +50,8 @@ export interface ScanMatch {
+    * Set on a `claimed` router match whose check could not be completed (an RPC failure, a reorg race or head skew
+    * between two providers, see `PaymentVerification.retryable`), as opposed to one its evidence refuted. The saved
+    * checkpoint lists its block in `ScanCursor.recheck`, so the next run checks it once more, unless this match was
+-   * itself that one retry. Absent otherwise.
++   * itself that one retry. Absent otherwise. (A `pending` match below the saved position is owed a recheck as well,
++   * without this flag: see {@link withOwedRechecks}.)
+    */
+   readonly recheck?: true;
+ }
+@@ -95,9 +96,9 @@ export interface RecheckOverflow {
+   readonly count: number;
+   /**
+    * Where a rescan must start: the lowest block owed a recheck of the whole set, kept or dropped (so the first kept
+-   * block, not the first dropped one). A rescan typed from here starts without the stored list and its first save
+-   * replaces that list, so starting any higher would lose the kept payments; from here the main scan re-reads every
+-   * kept and dropped claim.
++   * block, not the first dropped one), or the rescan block carried from an earlier overflow (`ScanCursor.rescanFrom`)
++   * when that is lower. A rescan typed from here re-reads every kept and dropped claim in its main scan; starting any
++   * higher would skip some of them. It is saved with the checkpoint as `ScanCursor.rescanFrom`.
+    */
+   readonly fromBlock: bigint;
+ }
+@@ -180,9 +181,13 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+  * Before the main scan, each block in `p.cursor.recheck` (below `p.cursor.nextBlock`, at most {@link RECHECK_MAX}) is
+  * read again on its own, with the same announcer and router filters, and its router-posted announcements go through
+  * the same worker matching and payment verification; with a second provider that block's logs must reconcile first.
+- * The results join this run's matches (deduplicated by announcement id), but a block retried here is never owed again,
+- * whatever its outcome: one retry per claim. A read or check in this pass that fails drops that block, never the run.
+- * The silent drops of this pass are listed on {@link withOwedRechecks}.
++ * The results join this run's matches (deduplicated by announcement id), but a block retried here is not owed again,
++ * whatever its outcome, except `pending` (real evidence not yet final): one retry per claim. A read or check in this
++ * pass that fails drops that block, never the run. The silent drops of this pass are listed on {@link withOwedRechecks}.
++ *
++ * `p.cursor.rescanFrom` (an outstanding overflow, see {@link RecheckOverflow}) is carried into every checkpoint this run
++ * saves while it is below the run start; a run that starts at or below it re-reads those blocks in its main scan, so its
++ * saves leave it out.
+  */
+ export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag; readonly recheckOverflow?: RecheckOverflow }> {
+   let worker: ScanWorkerLike | undefined;
+@@ -250,9 +255,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+   // The highest page head seen this run. A later page head more than finalityDepth below it is not normal lag between
+   // load-balanced backends: such a provider cannot be trusted to place the privacy windows, so the set is partial.
+   let maxHead = 0n;
+-  // Announcement ids matched by the recheck pass: they are never owed a recheck again.
++  // Announcement ids matched by the recheck pass: never owed a recheck again, unless still pending (see withOwedRechecks).
+   const retried = new Set<string>();
+   let recheckOverflow: RecheckOverflow | undefined;
++  // An outstanding overflow's rescan block, carried while this run starts above it (see the JSDoc).
++  const carriedRescan = typeof p.cursor.rescanFrom === 'bigint' && p.cursor.rescanFrom >= 0n && p.cursor.rescanFrom < p.cursor.nextBlock ? p.cursor.rescanFrom : undefined;
+   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
+   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
+   const claimLedger = new Map<string, number>();
+@@ -583,7 +590,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+           break;
+         }
+         if (saved !== undefined) {
+-          const owed = withOwedRechecks(saved as ScanCursor, all, retried);
++          const owed = withOwedRechecks(saved as ScanCursor, all, retried, carriedRescan);
+           recheckOverflow = owed.overflow;
+           p.checkpoints.save(p.chain.chainId, p.keyId, owed.cursor);
+           savedOverflow = owed.overflow;
+@@ -719,13 +726,25 @@ function owedRechecks(cursor: ScanCursor): readonly bigint[] {
+ }
+ 
+ /**
+- * The checkpoint to save, carrying `recheck`: the blocks below its `nextBlock` of this run's main-scan matches marked
+- * `recheck`, unique and ascending, capped to the {@link RECHECK_MAX} lowest. Blocks at or after `nextBlock` (the replay
+- * tail) are left out: the next run's main scan re-reads them anyway, and the stored list must stay below `nextBlock` or
+- * `localCheckpointStore` drops it whole on load. A match from the recheck pass (`retried`) is never owed again, whatever
+- * its outcome: one retry per claim, so a claim built to fail every check costs one bounded read on the next run and
+- * nothing after. What does not fit the cap is reported as `overflow`: the count dropped, and `fromBlock`, the lowest owed
+- * block of the whole set (the first kept one), so that a rescan from it re-scans every kept and dropped claim.
++ * The checkpoint to save, carrying `recheck` and `rescanFrom`.
++ *
++ * `recheck`: the blocks below its `nextBlock` of this run's matches that are owed a retry, unique and ascending, capped
++ * to the {@link RECHECK_MAX} lowest. A match is owed one when it is
++ * - a main-scan match marked `recheck` (its check failed on an RPC error, a reorg race or head skew), or
++ * - any match whose receipt is `pending`, from the recheck pass (`retried`) or not: real transfer evidence that is not
++ *   yet final (after a head drop or a provider switch, say), below the floor, so the pending rule of `persistable`
++ *   cannot hold the cursor at it. It is owed again until it is final. A spammer cannot use this to pin the list:
++ *   pending needs a real router transfer to the scanned keys.
++ * Blocks at or after `nextBlock` (the replay tail) are left out: the next run's main scan re-reads them anyway, and the
++ * stored list must stay below `nextBlock` or `localCheckpointStore` drops it whole on load. Any other match from the
++ * recheck pass is never owed again, whatever its outcome: one retry per claim, so a claim built to fail every check
++ * costs one bounded read on the next run and nothing after.
++ *
++ * What does not fit the cap is reported as `overflow`: the count dropped, and `fromBlock`, the lowest owed block of the
++ * whole set (the first kept one), or `carried` when that is lower, so that a rescan from it re-scans every kept and
++ * dropped claim. `rescanFrom` is that block. Without a new overflow it is `carried` (this run's start was above it), so
++ * the block stays saved, and the Scan view keeps its notice, until a run starting at or below it saves. Either way it
++ * is saved only below `nextBlock`; at or after it the next run's main scan re-reads those blocks.
+  *
+  * Accepted: a run that saves no checkpoint (cancelled, failed, held by a discrepancy or a budget before any save) leaves
+  * the stored list in place, so its blocks are re-checked again on the next run. That repeats at most
+@@ -737,20 +756,28 @@ function owedRechecks(cursor: ScanCursor): readonly bigint[] {
+  * - a recheck block whose claims would take the run past `maxMatchesPerScan` (it is skipped, not verified);
+  * - matches cleared by a reorg rollback before the save, whose blocks are then re-read by the main scan.
+  * In each case the block is not owed again: one retry per claim. A rescan from the block, or from before it, finds it.
++ *
++ * Accepted (spam): with more than {@link RECHECK_MAX} router claims that fail their check every time, following the
++ * overflow notice cannot clear it: the rescan finds them again, they overflow again, and the notice comes back at
++ * their lowest block. No funds are lost (every genuine payment is re-scanned by that rescan); the notice just stays.
+  */
+-function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retried: ReadonlySet<string>): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
+-  const { recheck: _previous, ...base } = saved;
+-  void _previous;
++function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retried: ReadonlySet<string>, carried: bigint | undefined): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
++  const { recheck: _previous, rescanFrom: _rescan, ...base } = saved;
++  void _previous; void _rescan;
+   const owed = new Set<bigint>();
+   for (const m of matches) {
+-    if (m.recheck === true && !retried.has(m.announcement.id) && m.announcement.blockNumber < saved.nextBlock) owed.add(m.announcement.blockNumber);
++    if (m.announcement.blockNumber >= saved.nextBlock) continue;
++    if (m.receipt === 'pending' || (m.recheck === true && !retried.has(m.announcement.id))) owed.add(m.announcement.blockNumber);
+   }
+   const sorted = [...owed].sort(ascending);
+   const kept = sorted.slice(0, RECHECK_MAX);
+   const dropped = sorted.slice(RECHECK_MAX);
++  const lowest = dropped.length === 0 ? undefined : kept[0];
++  const stillOwed = carried !== undefined && carried < saved.nextBlock ? carried : undefined;
++  const rescanFrom = lowest === undefined ? stillOwed : stillOwed !== undefined && stillOwed < lowest ? stillOwed : lowest;
+   return {
+-    cursor: kept.length === 0 ? base : { ...base, recheck: kept },
+-    ...(dropped.length === 0 || kept[0] === undefined ? {} : { overflow: { count: dropped.length, fromBlock: kept[0] } }),
++    cursor: { ...base, ...(kept.length === 0 ? {} : { recheck: kept }), ...(rescanFrom === undefined ? {} : { rescanFrom }) },
++    ...(lowest === undefined || rescanFrom === undefined ? {} : { overflow: { count: dropped.length, fromBlock: rescanFrom } }),
+   };
+ }
+ 
+@@ -783,6 +810,7 @@ function zeroizeBytes(b: Uint8Array): void {
+ // v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
+ // v2 + recheck (additive, same slot): an optional `recheck` array of decimal block strings. A v2 entry written before it
+ // loads unchanged, and an older reader ignores the field.
++// v2 + rescanFrom (additive, same slot): an optional decimal block string, likewise.
+ const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
+ const KEY_ID = /^[0-9a-f]{64}$/;
+ const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+@@ -816,11 +844,13 @@ function loadRecheck(raw: unknown, nextBlock: bigint): readonly bigint[] | undef
+ /**
+  * Public scan cursor persistence (block numbers and a hash only; no keys, no matches). Tolerates storage failures.
+  *
+- * Format v2 (`ghostpay.scan.checkpoint.v2.<chainId>.<keyId>`): `{ nextBlock, last?: { number, hash }, recheck? }` with
+- * block numbers as decimal strings. `recheck` (added with the one-retry list, see `ScanCursor.recheck`) is optional and
+- * written only when non-empty; entries without it load as before. A malformed `recheck` (not an array, more than
+- * {@link RECHECK_MAX} entries, a non-decimal string, unsorted, duplicated, or an entry at or after `nextBlock`) is dropped
+- * on load and the rest of the checkpoint is kept.
++ * Format v2 (`ghostpay.scan.checkpoint.v2.<chainId>.<keyId>`): `{ nextBlock, last?: { number, hash }, recheck?,
++ * rescanFrom? }` with block numbers as decimal strings. `recheck` (added with the one-retry list, see
++ * `ScanCursor.recheck`) is optional and written only when non-empty; entries without it load as before. A malformed
++ * `recheck` (not an array, more than {@link RECHECK_MAX} entries, a non-decimal string, unsorted, duplicated, or an entry
++ * at or after `nextBlock`) is dropped on load and the rest of the checkpoint is kept. `rescanFrom` (the rescan block of
++ * an outstanding overflow, see `ScanCursor.rescanFrom`) is optional and written only when set; a malformed one (not a
++ * decimal string, or not below `nextBlock`) is dropped on load the same way, independently of `recheck`.
+  */
+ export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+   return {
+@@ -829,11 +859,12 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
+         const k = slot(chainId, keyId);
+         const text = k === undefined ? undefined : storage?.getItem(k);
+         if (text === null || text === undefined) return undefined;
+-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown }; recheck?: unknown };
++        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown }; recheck?: unknown; rescanFrom?: unknown };
+         if (typeof o.nextBlock !== 'string' || !DECIMAL.test(o.nextBlock)) return undefined;
+         const nextBlock = BigInt(o.nextBlock);
+         const recheck = loadRecheck(o.recheck, nextBlock);
+-        const owed = recheck === undefined ? {} : { recheck };
++        const rescanFrom = typeof o.rescanFrom === 'string' && DECIMAL.test(o.rescanFrom) && BigInt(o.rescanFrom) < nextBlock ? BigInt(o.rescanFrom) : undefined;
++        const owed = { ...(recheck === undefined ? {} : { recheck }), ...(rescanFrom === undefined ? {} : { rescanFrom }) };
+         const last = o.last;
+         if (last !== undefined && typeof last.number === 'string' && DECIMAL.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+           return { nextBlock, last: { number: BigInt(last.number), hash: last.hash as `0x${string}` }, ...owed };
+@@ -851,6 +882,7 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
+           nextBlock: cursor.nextBlock.toString(),
+           ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }),
+           ...(cursor.recheck === undefined || cursor.recheck.length === 0 ? {} : { recheck: cursor.recheck.map((block) => block.toString()) }),
++          ...(cursor.rescanFrom === undefined ? {} : { rescanFrom: cursor.rescanFrom.toString() }),
+         };
+         storage?.setItem(k, JSON.stringify(body));
+       } catch {
+diff --git a/apps/web/src/views/Scan.test.tsx b/apps/web/src/views/Scan.test.tsx
+index 68d0429..21cc593 100644
+--- a/apps/web/src/views/Scan.test.tsx
++++ b/apps/web/src/views/Scan.test.tsx
+@@ -1,9 +1,9 @@
+ // @vitest-environment jsdom
+-import { screen, waitFor, within } from '@testing-library/react';
++import { cleanup, screen, waitFor, within } from '@testing-library/react';
+ import userEvent from '@testing-library/user-event';
+ import { beforeEach, describe, expect, it, vi } from 'vitest';
+ import { act } from '@testing-library/react';
+-import { checkpointKeyId } from '../lib/scanClient';
++import { checkpointKeyId, localCheckpointStore } from '../lib/scanClient';
+ import * as scanClient from '../lib/scanClient';
+ import { clearSession, generateSession, importSession, withSessionSecrets } from '../lib/session';
+ import * as sessionModule from '../lib/session';
+@@ -19,7 +19,7 @@ import { verifyReceipt } from '../lib/receipts';
+ import { RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
+ import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
+ import { captureSessionGuard, revealViewingKey } from '../lib/session';
+-import { ghostPayRouterAbi, grossForNet, validateAnnouncementLog, type Address, type Hex } from '@ghostpay/chain-adapters';
++import { ChainAdapterError, ghostPayRouterAbi, grossForNet, validateAnnouncementLog, type Address, type Hex } from '@ghostpay/chain-adapters';
+ import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
+ import { parseMetadata } from '@ghostpay/core-crypto';
+ import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
+@@ -67,6 +67,36 @@ async function openScan(services: Services, pickBaseSepolia = true): Promise<Ret
+   return user;
+ }
+ 
++/**
++ * Router payments to `metaAddress` in the given blocks, each with its token Transfer, on an RPC with head `head`. Their
++ * receipt reads throw (an RPC failure) while `down()` says so; otherwise they verify.
++ */
++function routerPaymentsRpc(metaAddress: string, blocks: readonly number[], head: number, down: () => boolean) {
++  const payer = '0x2222222222222222222222222222222222222222' as Address;
++  const TOKEN = '0x036cbd53842c5426634e7929541ec2318f3dcf7e';
++  const logs = blocks.map((block) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress, block, index: 1, caller: FAKE_ROUTER }).log);
++  const transferOf = (log: (typeof logs)[number]) => ({
++    address: TOKEN, topics: [TRANSFER_TOPIC, topicAddress(payer), log.topics?.[2] ?? '0x'], data: `0x${1_000_000n.toString(16).padStart(64, '0')}`,
++    blockNumber: log.blockNumber, blockHash: log.blockHash, transactionHash: log.transactionHash, logIndex: '0x0',
++  });
++  return chainWithLogs(84532, head, logs, (method, params) => {
++    if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === TOKEN) {
++      const f = params[0] as { fromBlock: bigint; toBlock: bigint };
++      return logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock).map(transferOf);
++    }
++    if (method !== 'eth_getTransactionReceipt' && method !== 'eth_getTransactionByHash') return undefined;
++    if (method === 'eth_getTransactionReceipt' && down()) throw new ChainAdapterError('RPC_FAILURE', 'timeout');
++    const log = logs.find((l) => l.transactionHash?.toLowerCase() === String(params[0]).toLowerCase());
++    if (log === undefined) return null;
++    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], log.data as Hex);
++    const parsed = parseMetadata(metadata);
++    if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
++    const common = { to: FAKE_ROUTER, from: payer, blockHash: log.blockHash, blockNumber: log.blockNumber };
++    if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: log.transactionHash, logs: [transferOf(log), log] };
++    return { ...common, hash: log.transactionHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, `0x${log.topics[2]!.slice(-40)}`, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
++  });
++}
++
+ describe('Scan and receive', () => {
+   it('needs keys first', async () => {
+     const user = await openScan(makeServices(), false);
+@@ -569,6 +599,74 @@ describe('Scan and receive', () => {
+     expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull();
+   });
+ 
++  it('a typed start above a stored owed block keeps its one retry (M1)', async () => {
++    const pub = generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    // A router payment at block 1000 whose check failed in an earlier run: the stored checkpoint owes it one retry.
++    const rpc = routerPaymentsRpc(pub.metaAddress, [1000], 30_000, () => false);
++    const checkpoints = memoryCheckpoints();
++    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
++    checkpoints.save(84532, keyId, { nextBlock: 5000n, recheck: [1000n] });
++    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints, createScanWorker: () => new InlineWorker() }));
++    // The seller unchecks Resume and types a start above the owed block.
++    await user.click(screen.getByLabelText('Resume from checkpoint'));
++    await user.type(screen.getByLabelText('Start block'), '2000');
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\. .* Started at block 2000\./)).toBeTruthy(); });
++    // The recheck pass read block 1000 (through the windowed scan client, so as part of its aligned window), although the
++    // main scan started at 2000; it verified the payment there.
++    const logReads = rpc.calls.filter((c) => c.method === 'eth_getLogs').map((c) => c.params[0] as { fromBlock: bigint; toBlock: bigint });
++    expect(logReads.some((f) => f.fromBlock <= 1000n && f.toBlock >= 1000n)).toBe(true);
++    const shown = [...document.querySelectorAll('ul.matches > li')].map((li) => li.textContent ?? '');
++    expect(shown).toHaveLength(1);
++    expect(shown[0]).toMatch(/in block 1000(?!\d)/);
++    expect(screen.queryByText(/Claimed, not confirmed/)).toBeNull();
++    // Retried once: not owed again.
++    expect(checkpoints.load(84532, keyId)).not.toHaveProperty('recheck');
++  });
++
++  it('keeps the recheck overflow notice across a reload and a resume, until a rescan from its block (M2)', async () => {
++    const pub = generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    const blocks = Array.from({ length: 10 }, (_, i) => 1000 + 2000 * i);
++    let rpcDown = true;
++    const rpc = routerPaymentsRpc(pub.metaAddress, blocks, 30_000, () => rpcDown);
++    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
++    const services = () => makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints: localCheckpointStore(window.localStorage), createScanWorker: () => new InlineWorker() });
++    const neutral = 'Some payments could not be confirmed by your RPC and were not checked again automatically. Rescan from block 1000 to check them.';
++    let user = await openScan(services());
++    await user.type(screen.getByLabelText('Start block'), '0');
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
++    expect(screen.getByText('2 payments could not be confirmed by your RPC and will not be checked again automatically. Rescan from block 1000 to check them.')).toBeTruthy();
++    expect(localCheckpointStore(window.localStorage).load(84532, keyId)?.rescanFrom).toBe(1000n);
++
++    // A reload: the view state is gone, the stored checkpoint still names the block (the count is no longer known).
++    cleanup();
++    user = await openScan(services());
++    expect(screen.getByText(neutral)).toBeTruthy();
++    expect(screen.queryByText(/2 payments could not be confirmed/)).toBeNull();
++
++    // A resume instead of the rescan: the notice stays, and the block is carried by its save.
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\. .*\(from checkpoint\)/)).toBeTruthy(); });
++    expect(screen.getByText(neutral)).toBeTruthy();
++    expect(localCheckpointStore(window.localStorage).load(84532, keyId)?.rescanFrom).toBe(1000n);
++
++    // Following the notice, with the RPC working again: every payment verified, and the notice is gone for good.
++    rpcDown = false;
++    await user.click(screen.getByLabelText('Resume from checkpoint'));
++    await user.type(screen.getByLabelText('Start block'), '1000');
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\. .* Started at block 1000\./)).toBeTruthy(); });
++    expect(screen.queryByText(/Claimed, not confirmed/)).toBeNull();
++    expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull();
++    expect(localCheckpointStore(window.localStorage).load(84532, keyId)).not.toHaveProperty('rescanFrom');
++    cleanup();
++    await openScan(services());
++    expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull();
++  });
++
+   it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+     const pub = generateSession();
+     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+diff --git a/apps/web/src/views/Scan.tsx b/apps/web/src/views/Scan.tsx
+index 979bf70..8ce7589 100644
+--- a/apps/web/src/views/Scan.tsx
++++ b/apps/web/src/views/Scan.tsx
+@@ -91,6 +91,9 @@ export function Scan(): ReactNode {
+   // `fromBlock` is the lowest owed block, kept or dropped, so a rescan from it re-checks all of them in the main scan.
+   // The block is passed as text so it is shown without digit grouping, exactly as Start block accepts it.
+   const describeRecheckOverflow = (o: RecheckOverflow): string => t('scan.recheck.overflow', { count: o.count, block: o.fromBlock.toString() });
++  // The same notice from the stored checkpoint (ScanCursor.rescanFrom), so it outlives a later Scan click and a reload
++  // until a scan from that block, or from before it, saves. The count is not stored, so this copy does not give one.
++  const recheckNotice = recheckNote ?? (checkpoint?.rescanFrom === undefined ? undefined : t('scan.recheck.overflowSaved', { block: checkpoint.rescanFrom.toString() }));
+ 
+   const begin = (): void => {
+     if (keyId === undefined || abort.current !== undefined) return;
+@@ -154,7 +157,13 @@ export function Scan(): ReactNode {
+             setError('Enter the block number to start scanning from.');
+             return;
+           }
+-          cursor = { nextBlock: BigInt(start.trim()) };
++          // A typed start keeps what the stored checkpoint still owes: its recheck list (owed blocks at or after the start
++          // are left to the main scan) and an outstanding rescan block (cleared once a run from at or below it saves).
++          cursor = {
++            nextBlock: BigInt(start.trim()),
++            ...(checkpoint?.recheck === undefined ? {} : { recheck: checkpoint.recheck }),
++            ...(checkpoint?.rescanFrom === undefined ? {} : { rescanFrom: checkpoint.rescanFrom }),
++          };
+         }
+         const checked = await verifyManifestState(manifest, rpc);
+         assertScopeCurrent();
+@@ -322,7 +331,7 @@ export function Scan(): ReactNode {
+       {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
+       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
+       {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
+-      {recheckNote !== undefined && <Notice kind="warn">{recheckNote}</Notice>}
++      {recheckNotice !== undefined && <Notice kind="warn">{recheckNotice}</Notice>}
+       {error !== undefined && <Notice kind="error">{error}</Notice>}
+ 
+       <Matches
+diff --git a/packages/chain-adapters/src/logs.ts b/packages/chain-adapters/src/logs.ts
+index e4665b3..9b8d51b 100644
+--- a/packages/chain-adapters/src/logs.ts
++++ b/packages/chain-adapters/src/logs.ts
+@@ -37,9 +37,17 @@ export interface ScanCursor {
+    * its check could not be completed (`PaymentVerification.retryable`: an RPC failure, a reorg race, or head skew between
+    * two providers) on a block the cursor has already passed. Sorted ascending, unique, every entry `< nextBlock`, at most
+    * {@link RECHECK_MAX} entries. {@link fetchAnnouncements} ignores it; the web scanner re-reads these blocks once at the
+-   * start of the next run and never carries a retried block forward again. Absent (or empty) when nothing is owed.
++   * start of the next run and never carries a retried block forward again, unless its check found real transfer
++   * evidence that is not yet final (`pending`), which is owed again until it is. Absent (or empty) when nothing is owed.
+    */
+   readonly recheck?: readonly bigint[];
++  /**
++   * Where a rescan must start to re-check payments that did not fit `recheck` (an overflow): the lowest block owed a
++   * recheck when the list was truncated, `< nextBlock`. {@link fetchAnnouncements} ignores it; the web scanner carries
++   * it forward on every save until a run that starts at or below it saves a checkpoint, and keeps a notice shown while
++   * it is set. Absent when no overflow is outstanding.
++   */
++  readonly rescanFrom?: bigint;
+ }
+ 
+ /** Options for {@link fetchAnnouncements}. */
+-- 
+2.43.0
+

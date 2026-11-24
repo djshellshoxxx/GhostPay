@@ -3,7 +3,7 @@ import { keccak_256 } from '@noble/hashes/sha3.js';
 import { bytesToHex, concatBytes, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { TlvEncoder, U64_MAX } from './encoding.js';
 import { MultisigError } from './errors.js';
-import { ACCOUNT_ID_RE, CONTROLLER_RE, PUBKEY_RE, decimalString, int, readExact, str } from './validate.js';
+import { ACCOUNT_ID_RE, CONTROLLER_RE, PUBKEY_RE, decimalString, int, readArray, readExact, str } from './validate.js';
 
 /** Maximum number of signers in a policy. */
 export const MAX_SIGNERS = 20;
@@ -53,14 +53,14 @@ export interface MultisigPolicy extends PolicyBody {
 }
 
 function validateSigners(value: unknown, path: string): Signer[] {
-  if (!Array.isArray(value)) throw new MultisigError('POLICY', path);
-  if (value.length < 1 || value.length > MAX_SIGNERS) throw new MultisigError('POLICY', path);
+  const values = readArray(value, MAX_SIGNERS, 'POLICY', path);
+  if (values.length < 1) throw new MultisigError('POLICY', path);
   const seenX = new Set<string>();
   const seenController = new Set<string>();
   const out: Signer[] = [];
-  for (let i = 0; i < value.length; i++) {
+  for (let i = 0; i < values.length; i++) {
     const p = `${path}[${i}]`;
-    const r = readExact(value[i] as unknown, ['publicKey', 'controller'], 'POLICY', p);
+    const r = readExact(values[i], ['publicKey', 'controller'], 'POLICY', p);
     const publicKey = str(r.publicKey, PUBKEY_RE, 'POLICY', `${p}.publicKey`);
     const controller = str(r.controller, CONTROLLER_RE, 'POLICY', `${p}.controller`);
     try {

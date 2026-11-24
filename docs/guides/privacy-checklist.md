@@ -6,13 +6,13 @@
 
 ## Do
 
-- [ ] **Do** use test funds on testnets while GhostPay is pre-audit and undeployed.
+- [ ] **Do** use test funds on testnets while GhostPay is pre-audit and live qualification is not established.
 - [ ] **Do** sweep to a **fresh destination** each time.
 - [ ] **Do** verify the one-time address's **real balance** before delivering goods.
 - [ ] **Do** back up the encrypted keystore and keep the passphrase elsewhere.
 - [ ] **Do** configure your own RPC (or a node you run) for scanning and sweeping.
 - [ ] **Do** paste invoice links into the Pay page or use a private window.
-- [ ] **Do** compare router and fee-recipient addresses with a source you trust; the manifest is not yet authenticated.
+- [ ] **Do** compare router and fee-recipient addresses with a source you trust. The app requires a valid configured release signature on its bundled manifest and checks the deployment against your RPC before payment. Missing or invalid deployment information keeps payments disabled ([verification rules](../DEPLOYMENT_MANIFEST.md)).
 - [ ] **Do** read the destination on screen before signing a sweep (no wallet confirmation on that path).
 - [ ] **Do** sweep batches rather than instantly after each payment, knowing this only blurs timing.
 - [ ] **Do** report vulnerabilities privately ([SECURITY.md](../../SECURITY.md)).

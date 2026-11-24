@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/workflows/ghostpay-parallel-review.yml'
       - 'scripts/tests/ghostpay-parallel-review-workflow.test.mjs'
+      - 'scripts/tests/ghostpay-automation-hardening.test.mjs'
+      - '.github/workflows/ghostpay-codex-cloud.yml'
+      - '.github/actions/setup-node-libs/action.yml'
   workflow_dispatch:
   schedule:
     - cron: '43 10,22 * * *'
@@ -27,6 +30,8 @@ jobs:
         with:
           persist-credentials: false
       - run: node --test scripts/tests/ghostpay-parallel-review-workflow.test.mjs
+      # Hardening invariants for both API-funded workflows (agent path policy, merge gate, restore-only cache).
+      - run: node --test scripts/tests/ghostpay-automation-hardening.test.mjs
 
   research:
     needs: validate

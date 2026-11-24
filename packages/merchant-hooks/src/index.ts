@@ -11,6 +11,7 @@ export {
   retryDelaySeconds,
   parseWebhookEvent,
   serializeWebhookEvent,
+  type IdempotencyClaim,
   type NonceStore,
   type VerifyResult,
   type VerifyFailure,

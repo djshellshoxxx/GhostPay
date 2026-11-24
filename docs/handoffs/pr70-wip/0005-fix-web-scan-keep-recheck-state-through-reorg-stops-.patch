@@ -1,0 +1,687 @@
+From 8d54d1328cc9aa8857486cbb6f4b8fac6ab7a8a5 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 11 Nov 2026 02:13:36 +0000
+Subject: [PATCH] fix(web-scan): keep recheck state through reorg stops; never
+ skip blocks below a window reorg (pre-existing)
+
+H1 (introduced by the recheck design): the reorg stop paths of runScan (the
+announcement limit, the match limit, a provider disagreement, an open-lane
+deferral, and an anchor the second provider does not corroborate after a
+reorg) called checkpoints.clear(). That deleted the persisted rescanFrom and
+the recheck list, pending-owed blocks included, so the overflow notice
+vanished without a save. Each path now saves an anchor-less checkpoint
+{ nextBlock: lo } (reorgStopCheckpoint) instead. It carries the owed blocks
+below lo: the stored list (the incoming cursor's, or this run's last save),
+this run's pending and main-scan recheck matches, and the rescan block when
+it is below lo. They are capped and counted by withOwedRechecks itself. No
+anchor is persisted, so the fail-closed intent of the clear is kept: no
+orphaned anchor can be treated as canonical on resume. An overflow found by
+such a save is reported on that progress and on the result.
+
+H2 (pre-existing on the integration base 4a38efd, in the same lines): a
+window-end reorg reports rolledBackTo = w.from of a later window, above the
+page start. The limit, deferral and disagreement stops set the cursor there,
+so announcements in [page start, w.from) were never processed and were
+skipped for good, with any genuine payment in them. Every reorg stop now
+holds the in-memory cursor and the save at lo = min(rolledBackTo, page
+start). Both provider comparisons of a reorg page also start at lo.
+
+M1/M2/L2: pin the pending-owed bound (a pending match at or after the saved
+nextBlock is not owed; a lower owed block keeps its retry after a reload),
+the typed-start rescanFrom carry in the view, and the carried < nextBlock
+guard.
+
+L1: while the rescan block an earlier session handed this run is still owed,
+the overflow is marked countKnown: false and the view shows the
+count-neutral scan.recheck.overflowSaved copy. A reorg stop that carries
+this run's own rescan block keeps the count known.
+
+L3: document that a pending recheck below the run start pins saves to the
+run start while it stays pending (fail closed; spam cannot cause it).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01KtKj8jKCxc3mPzqqbW35tq
+---
+ apps/web/src/lib/scanClient.test.ts | 253 +++++++++++++++++++++++++++-
+ apps/web/src/lib/scanClient.ts      | 114 +++++++++----
+ apps/web/src/views/Scan.test.tsx    |  78 +++++++++
+ apps/web/src/views/Scan.tsx         |   5 +-
+ 4 files changed, 412 insertions(+), 38 deletions(-)
+
+diff --git a/apps/web/src/lib/scanClient.test.ts b/apps/web/src/lib/scanClient.test.ts
+index 2337bd8..7a0b8a2 100644
+--- a/apps/web/src/lib/scanClient.test.ts
++++ b/apps/web/src/lib/scanClient.test.ts
+@@ -1,4 +1,4 @@
+-import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
++import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
+ import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
+ import { describe, expect, it, vi } from 'vitest';
+ import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
+@@ -1133,7 +1133,9 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+     // The log fetch sees head 5000; the payment check right after sees 2500 (a lagging, load-balanced backend).
+     let heads = 0;
+     const client = { ...base, blockNumber: () => Promise.resolve(heads++ === 0 ? 5000n : 2500n) };
+-    const store = memoryStore();
++    const backing = memoryStore();
++    const saves: ScanCursor[] = [];
++    const store: CheckpointStore = { ...backing, save: (c, k, cursor) => { saves.push(cursor); backing.save(c, k, cursor); } };
+     const res = await runScan({
+       chain, manifest, client, cursor: { nextBlock: 2000n }, checkpoints: store,
+       ...keyArgs(keys),
+@@ -1142,6 +1144,10 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+     expect(res.matches[0]?.receipt).toBe('pending');
+     // Not 4901 (head 5000 minus finalityDepth): the next session must re-scan block 2495 and re-verify it.
+     expect(store.load(84532, KEY)?.nextBlock).toBe(2495n);
++    // The pending block is the saved nextBlock itself: the main scan re-reads it, so it is not owed a recheck (the
++    // written cursor, not only the loaded one, since the store would drop such a list on load).
++    expect(saves).toHaveLength(1);
++    expect(saves[0]).not.toHaveProperty('recheck');
+   });
+ 
+   it('reports the privacy set against the chain head, marked partial, when the budget stops the run early (A5)', async () => {
+@@ -1208,19 +1214,19 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+     expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
+   });
+ 
+-  it('holds the cursor at the rollback and clears the orphaned checkpoint when a reorg page is deferred by the budget (A5)', async () => {
++  it('holds the cursor at the rollback and replaces the orphaned checkpoint with an anchor-less one when a reorg page is deferred by the budget (A5)', async () => {
+     const keys = generateKeySet();
+     const stranger = encodeMetaAddress(generateKeySet());
+     const spam = [...spamAt(stranger, 10, 2), ...spamAt(stranger, 60_000, 2)];
+     const { client, forkPastBlock } = forkingClient((from, to) =>
+       spam.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to));
+     const cleared: number[] = [];
+-    const saved: bigint[] = [];
++    const saved: ScanCursor[] = [];
+     const reorgs: bigint[] = [];
+     const res = await runScan({
+       // The first page is never deferred; its replay after the fork is, because it no longer fits the budget.
+       chain, manifest, client, openLaneBudget: 1, cursor: { nextBlock: 0n },
+-      checkpoints: { load: () => undefined, save: (_c, _k, c) => void saved.push(c.nextBlock), clear: (c) => void cleared.push(c) },
++      checkpoints: { load: () => undefined, save: (_c, _k, c) => void saved.push(c), clear: (c) => void cleared.push(c) },
+       ...keyArgs(keys),
+       onProgress: forkPastBlock,
+       onReorg: (to) => { reorgs.push(to); },
+@@ -1228,7 +1234,10 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+     expect(reorgs).toEqual([0n]);
+     expect(res.backlog).toBe(2);
+     expect(res.cursor).toEqual({ nextBlock: 0n });
+-    expect(cleared).toEqual([84532]);
++    // The orphaned checkpoint (page 1's anchor) is replaced by an anchor-less one at the rollback, never kept.
++    expect(saved.at(-1)).toEqual({ nextBlock: 0n });
++    expect(saved.at(-1)).not.toHaveProperty('last');
++    expect(cleared).toEqual([]);
+   });
+ });
+ 
+@@ -1653,7 +1662,8 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+         const { logs } = spamOf(s);
+         const { client } = flaky(logs, () => true);
+         const res = await scan(s, KEY, { client, checkpoints: cp.store, maxPages: 1, cursor: { nextBlock: 500n, rescanFrom: 100n } });
+-        expect(res.recheckOverflow).toEqual({ count: 2, fromBlock: 100n });
++        // The carried block stands for an earlier overflow whose count was not stored: the total is not known (L1).
++        expect(res.recheckOverflow).toEqual({ count: 2, fromBlock: 100n, countKnown: false });
+         expect(cp.saves[0]).toMatchObject({ rescanFrom: 100n });
+       });
+ 
+@@ -1820,3 +1830,232 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+     vault.lock();
+   });
+ });
++
++describe('reorg stops keep what the checkpoint owes, and never skip blocks below a window-end reorg', () => {
++  const HEAD = 120_000;
++  const DIRECT = '0x9999999999999999999999999999999999999999' as Address;
++  const START = 2000n; // the page start of a resumed run
++  const ANCHOR = { number: START - 1n, hash: blockHash(Number(START) - 1) as Hex };
++  type Params = Parameters<typeof runScan>[0];
++  const memStore = () => {
++    const map = new Map<string, string>();
++    const saves: ScanCursor[] = [];
++    const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v), removeItem: (k: string) => void map.delete(k) };
++    const store = localCheckpointStore(storage);
++    const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
++    // A fresh store over the same storage, as after a reload.
++    return { map, saves, store: recording, reload: () => localCheckpointStore(storage) };
++  };
++  const scan = (s: ReturnType<typeof setup>, extra: Partial<Params> & Pick<Params, 'client'>) => runScan({
++    chain, manifest, cursor: { nextBlock: 0n },
++    spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
++    viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
++    ...extra,
++  });
++  /**
++   * The provider answers a different hash for `block` the first time it is asked, then the canonical one: a window ending
++   * there was processed on a fork, so the fetch reports a window-end reorg at that window's start (its `w.from`).
++   */
++  const windowEndFork = <C extends ReturnType<typeof chainWith>>(base: C, block: bigint): C => {
++    let first = true;
++    return { ...base, getBlock: (n: bigint) => {
++      if (n !== block || !first) return base.getBlock(n);
++      first = false;
++      return Promise.resolve({ number: n, hash: blockHash(Number(n) + 7_000_000) as Hex, parentHash: blockHash(Number(n) - 1) as Hex });
++    } };
++  };
++  const strangerAt = (block: number, index: number) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block, index, caller: FAKE_ROUTER }).log;
++
++  it('H1: a window-end reorg stopped by the announcement limit keeps the stored recheck list and rescan block, without the anchor', async () => {
++    const s = setup(); const cp = memStore();
++    // Two announcements in [2000, 3000), the windows the fork leaves valid: more than the per-run limit of 1.
++    const client = windowEndFork(chainWith(HEAD, [strangerAt(2500, 0), strangerAt(2600, 1)]), 3999n);
++    cp.store.save(chain.chainId, KEY, { nextBlock: START, last: ANCHOR, recheck: [1000n], rescanFrom: 900n });
++    const reorgs: bigint[] = [];
++    const res = await scan(s, { client, checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)!, maxAnnouncementsPerScan: 1, onReorg: (to) => { reorgs.push(to); } });
++    expect(reorgs).toEqual([3000n]);
++    expect(res.limitReached).toBe(true);
++    // Not cleared: block 1000 keeps its retry and the rescan block (the notice the view shows) survives a reload.
++    expect(cp.reload().load(chain.chainId, KEY)).toEqual({ nextBlock: START, recheck: [1000n], rescanFrom: 900n });
++    expect(cp.saves.at(-1)).not.toHaveProperty('last');
++  });
++
++  it('H1: a reorg stop carries this run\'s owed blocks below the rollback, as at any save', async () => {
++    const s = setup(); const cp = memStore();
++    const meta = encodeMetaAddress(s.keys);
++    // Page 1 (0..49,999) finds a router claim at 1000 whose check fails in transit; page 2 forks at its second window
++    // and is deferred by the open-lane budget (page 1 used it up).
++    const claim = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000, index: 0, caller: FAKE_ROUTER });
++    const spam = [makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 10, index: 0, caller: DIRECT }).log,
++      makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 50_500, index: 0, caller: DIRECT }).log];
++    const base = chainWith(HEAD, [claim.log, ...spam]);
++    const failing: ReturnType<typeof chainWith> = { ...base, request: (method, params) => (method === 'eth_getTransactionReceipt' ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout')) : base.request(method, params)) };
++    const res = await scan(s, { client: windowEndFork(failing, 51_999n), checkpoints: cp.store, openLaneBudget: 1 });
++    expect(res.backlog).toBe(1);
++    expect(res.matches.map((m) => [m.announcement.blockNumber, m.receipt, m.recheck])).toEqual([[1000n, 'claimed', true]]);
++    expect(cp.saves.at(-1)).toEqual({ nextBlock: 50_000n, recheck: [1000n] });
++    expect(cp.reload().load(chain.chainId, KEY)).toEqual({ nextBlock: 50_000n, recheck: [1000n] });
++  });
++
++  it('H1: a reorg stop caps and counts the owed blocks as any save does, and reports the overflow with its progress', async () => {
++    const s = setup(); const cp = memStore();
++    const meta = encodeMetaAddress(s.keys);
++    // Page 1 (0..49,999): 10 router claims whose check fails in transit (8 kept, 2 dropped). Page 2 forks at its second
++    // window and is deferred by the open-lane budget, which page 1 used up.
++    const claims = Array.from({ length: 10 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + 2000 * i, index: 0, caller: FAKE_ROUTER }));
++    const blocks = claims.map((_, i) => BigInt(1000 + 2000 * i));
++    const spam = [makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 10, index: 0, caller: DIRECT }).log,
++      makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 50_500, index: 0, caller: DIRECT }).log];
++    const base = chainWith(HEAD, [...claims.map((x) => x.log), ...spam]);
++    const failing: ReturnType<typeof chainWith> = { ...base, request: (method, params) => (method === 'eth_getTransactionReceipt' ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout')) : base.request(method, params)) };
++    const progress: ScanProgress[] = [];
++    const res = await scan(s, { client: windowEndFork(failing, 51_999n), checkpoints: cp.store, openLaneBudget: 1, onProgress: (x) => progress.push(x) });
++    expect(res.backlog).toBe(1);
++    expect(cp.saves).toEqual([
++      { nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX), rescanFrom: 1000n },
++      // The anchor-less replacement: the stored list plus this run's dropped blocks, capped again to the same 8.
++      { nextBlock: 50_000n, recheck: blocks.slice(0, RECHECK_MAX), rescanFrom: 1000n },
++    ]);
++    // Every claim behind this run's own rescan block is in this run's matches: the count stays known.
++    expect(res.recheckOverflow).toEqual({ count: 2, fromBlock: 1000n });
++    expect(progress.at(-1)).toMatchObject({ backlog: 1, recheckOverflow: { count: 2, fromBlock: 1000n } });
++    expect(progress.at(-1)?.recheckOverflow).not.toHaveProperty('countKnown');
++  });
++
++  it('H2: the announcement limit on a window-end reorg page holds the cursor at the page start; a payment there is found on resume', async () => {
++    const s = setup(); const cp = memStore();
++    const paid = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2500, index: 0, caller: FAKE_ROUTER });
++    const logs = [paid.log, strangerAt(2600, 1)];
++    cp.store.save(chain.chainId, KEY, { nextBlock: START, last: ANCHOR });
++    const res = await scan(s, { client: windowEndFork(chainWith(HEAD, logs), 3999n), checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)!, maxAnnouncementsPerScan: 1 });
++    expect(res.limitReached).toBe(true);
++    // The fork is at 3000, but [2000, 3000) was never processed: neither cursor may pass the page start.
++    expect(res.cursor.nextBlock).toBeLessThanOrEqual(START);
++    expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBeLessThanOrEqual(START);
++    const resumed = await scan(s, { client: chainWith(HEAD, logs), checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)! });
++    expect(resumed.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[2500n, 'verified']]);
++  });
++
++  it('H2: an open-lane deferral on a window-end reorg page holds the cursor at the page start; a direct payment there is found on resume', async () => {
++    const s = setup(); const cp = memStore();
++    // Page 1 (0..49,999) uses the open-lane budget; page 2 starts at 50,000 and forks at its second window (51,000).
++    const spam = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 10, index: 0, caller: DIRECT }).log;
++    const direct = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 50_600, index: 0, caller: DIRECT });
++    const logs = [spam, direct.log];
++    const res = await scan(s, { client: windowEndFork(chainWith(HEAD, logs), 51_999n), checkpoints: cp.store, openLaneBudget: 1 });
++    expect(res.backlog).toBe(1);
++    expect(res.cursor.nextBlock).toBeLessThanOrEqual(50_000n);
++    expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBeLessThanOrEqual(50_000n);
++    const resumed = await scan(s, { client: chainWith(HEAD, logs), checkpoints: cp.store, openLaneBudget: 1, cursor: cp.store.load(chain.chainId, KEY)! });
++    expect(resumed.matches.map((m) => m.stealthAddress)).toEqual([direct.stealthAddress]);
++  });
++
++  it('H2: a provider disagreement on a window-end reorg page holds the cursor at the page start, and the page is compared from its start', async () => {
++    const s = setup(); const cp = memStore();
++    const paid = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2500, index: 0, caller: FAKE_ROUTER });
++    const logs = [paid.log];
++    const id = `${paid.log.blockHash}:${String(Number(BigInt(paid.log.logIndex)) + 100)}`;
++    // The second provider agrees on [2000, 2999] when the reorg page is first compared, and has lost the payment when the
++    // page is compared again before its matches are exposed.
++    const second = chainWith(HEAD, logs);
++    let pageReads = 0;
++    const secondary: ReturnType<typeof chainWith> = { ...second, getLogs: async (f) => {
++      const out = await second.getLogs(f);
++      if (f.address.toLowerCase() !== FAKE_ANNOUNCER.toLowerCase() || f.fromBlock !== START) return out;
++      return ++pageReads === 1 ? out : [];
++    } };
++    cp.store.save(chain.chainId, KEY, { nextBlock: START, last: ANCHOR });
++    const reorgs: bigint[] = [];
++    const res = await scan(s, { client: windowEndFork(chainWith(HEAD, logs), 3999n), secondaryClient: secondary, checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)!, onReorg: (to) => { reorgs.push(to); } });
++    // Both comparisons asked the second provider about the page from its start (2000), not from the fork (3000).
++    expect(pageReads).toBe(2);
++    expect(reorgs).toEqual([3000n]);
++    expect(res.discrepancies).toEqual([{ kind: 'missing_in_secondary', ref: id }]);
++    expect(res.matches).toEqual([]);
++    expect(res.cursor.nextBlock).toBeLessThanOrEqual(START);
++    expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBeLessThanOrEqual(START);
++    const resumed = await scan(s, { client: chainWith(HEAD, logs), secondaryClient: chainWith(HEAD, logs), checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)! });
++    expect(resumed.discrepancies).toEqual([]);
++    expect(resumed.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[2500n, 'verified']]);
++  });
++
++  it('H1/H2: the match limit on a window-end reorg page holds the cursor at the page start and keeps what the checkpoint owes', async () => {
++    const s = setup(); const cp = memStore();
++    const meta = encodeMetaAddress(s.keys);
++    const paid = [2500, 2600].map((block, index) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block, index, caller: FAKE_ROUTER }));
++    const logs = paid.map((x) => x.log);
++    cp.store.save(chain.chainId, KEY, { nextBlock: START, last: ANCHOR, recheck: [1000n], rescanFrom: 900n });
++    const res = await scan(s, { client: windowEndFork(chainWith(HEAD, logs), 3999n), checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)!, maxMatchesPerScan: 1 });
++    expect(res.limitReached).toBe(true);
++    expect(res.cursor.nextBlock).toBeLessThanOrEqual(START);
++    expect(cp.reload().load(chain.chainId, KEY)).toEqual({ nextBlock: START, recheck: [1000n], rescanFrom: 900n });
++    const resumed = await scan(s, { client: chainWith(HEAD, logs), checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)! });
++    expect(resumed.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[2500n, 'verified'], [2600n, 'verified']]);
++  });
++
++  it('H1: an uncorroborated anchor after a window-end reorg saves the page start, keeping what the checkpoint owes', async () => {
++    const s = setup(); const cp = memStore();
++    const paid = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2500, index: 0, caller: FAKE_ROUTER });
++    const logs = [paid.log];
++    // The second provider agrees on the page (both comparisons) and then reports another hash for the page-end anchor
++    // (2999) when the checkpoint anchor is corroborated.
++    const second = chainWith(HEAD, logs);
++    let pageReads = 0;
++    let anchorReads = 0;
++    const secondary: ReturnType<typeof chainWith> = {
++      ...second,
++      getLogs: (f) => { if (f.address.toLowerCase() === FAKE_ANNOUNCER.toLowerCase() && f.fromBlock === START) pageReads++; return second.getLogs(f); },
++      getBlock: (n) => (n === START + 999n && pageReads >= 2 && ++anchorReads >= 2
++        ? Promise.resolve({ number: n, hash: blockHash(Number(n) + 9_000_000) as Hex, parentHash: blockHash(Number(n) - 1) as Hex })
++        : second.getBlock(n)),
++    };
++    cp.store.save(chain.chainId, KEY, { nextBlock: START, last: ANCHOR, recheck: [1000n], rescanFrom: 900n });
++    const res = await scan(s, { client: windowEndFork(chainWith(HEAD, logs), 3999n), secondaryClient: secondary, checkpoints: cp.store, cursor: cp.store.load(chain.chainId, KEY)! });
++    expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: (START + 999n).toString() }]);
++    // The page itself was processed and reconciled: its match is shown, and the in-memory cursor is after it.
++    expect(res.matches.map((m) => m.announcement.blockNumber)).toEqual([2500n]);
++    expect(res.cursor.nextBlock).toBe(3000n);
++    // Nothing is saved from the primary alone: the checkpoint goes back to the page start without an anchor, still owing.
++    expect(cp.reload().load(chain.chainId, KEY)).toEqual({ nextBlock: START, recheck: [1000n], rescanFrom: 900n });
++  });
++
++  it('M1: a pending match at or after the saved nextBlock is not owed, so a lower owed block keeps its retry after a reload', async () => {
++    const s = setup(); const cp = memStore();
++    const meta = encodeMetaAddress(s.keys);
++    // Block 120: a router claim whose check fails in transit (owed). Block 2495: a real payment the check sees as pending
++    // (the log fetch sees head 5000, the payment check 2500), so the pending rule saves nextBlock 2495.
++    const claim = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
++    const near = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 2495, index: 0, caller: FAKE_ROUTER });
++    const base = chainWith(2500, [claim.log, near.log]);
++    const claimTx = claim.log.transactionHash!.toLowerCase();
++    let heads = 0;
++    const client: ReturnType<typeof chainWith> = {
++      ...base,
++      blockNumber: () => Promise.resolve(heads++ === 0 ? 5000n : 2500n),
++      request: (method, params) => (method === 'eth_getTransactionReceipt' && String(params[0]).toLowerCase() === claimTx ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout')) : base.request(method, params)),
++    };
++    const res = await scan(s, { client, checkpoints: cp.store });
++    expect(res.matches.map((m) => [m.announcement.blockNumber, m.receipt, m.recheck])).toEqual([[120n, 'claimed', true], [2495n, 'pending', undefined]]);
++    expect(cp.saves).toEqual([{ nextBlock: 2495n, last: { number: 2494n, hash: blockHash(2494) }, recheck: [120n] }]);
++    // A reload keeps the list (a list holding 2495 would be dropped whole on load, losing block 120's retry).
++    const reloaded = cp.reload().load(chain.chainId, KEY);
++    expect(reloaded).toEqual({ nextBlock: 2495n, last: { number: 2494n, hash: blockHash(2494) }, recheck: [120n] });
++    const next = await scan(s, { client: chainWith(2500, [claim.log, near.log]), checkpoints: cp.store, cursor: reloaded! });
++    expect(next.matches.find((m) => m.announcement.blockNumber === 120n)?.receipt).toBe('verified');
++  });
++
++  it('L2: a carried rescan block at or after the saved nextBlock is not saved (the save already re-reads it)', async () => {
++    const s = setup(); const cp = memStore();
++    // The run starts at 4000 above the carried block 3000, but its stored anchor was orphaned (a reorg to 0), and a
++    // pending payment at 2495 then holds the save at 2495, below the carried block.
++    const near = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2495, index: 0, caller: FAKE_ROUTER });
++    const base = chainWith(2500, [near.log]);
++    let heads = 0;
++    const client: ReturnType<typeof chainWith> = { ...base, blockNumber: () => Promise.resolve(heads++ === 0 ? 5000n : 2500n) };
++    const res = await scan(s, { client, checkpoints: cp.store, cursor: { nextBlock: 4000n, last: { number: 3999n, hash: blockHash(9_999_999) as Hex }, rescanFrom: 3000n } });
++    expect(res.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[2495n, 'pending']]);
++    expect(cp.saves.at(-1)?.nextBlock).toBe(2495n);
++    expect(cp.saves.at(-1)).not.toHaveProperty('rescanFrom');
++    expect(res).not.toHaveProperty('recheckOverflow');
++  });
++});
+diff --git a/apps/web/src/lib/scanClient.ts b/apps/web/src/lib/scanClient.ts
+index acd1042..d83cf8d 100644
+--- a/apps/web/src/lib/scanClient.ts
++++ b/apps/web/src/lib/scanClient.ts
+@@ -92,8 +92,14 @@ export interface SecondaryLag {
+  * were dropped. The dropped payments are not checked again automatically.
+  */
+ export interface RecheckOverflow {
+-  /** Owed blocks that did not fit the saved list. */
++  /** Owed blocks of this save that did not fit the saved list (the total when `countKnown` is absent). */
+   readonly count: number;
++  /**
++   * `false` while the rescan block this run was handed (`ScanCursor.rescanFrom`, an earlier session's overflow) is still
++   * owed, whether or not it is `fromBlock`: that overflow's count is not stored and its dropped claims were not re-read,
++   * so `count` is only part of the total and the Scan view shows its count-neutral notice. Absent otherwise.
++   */
++  readonly countKnown?: false;
+   /**
+    * Where a rescan must start: the lowest block owed a recheck of the whole set, kept or dropped (so the first kept
+    * block, not the first dropped one), or the rescan block carried from an earlier overflow (`ScanCursor.rescanFrom`)
+@@ -188,6 +194,12 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+  * `p.cursor.rescanFrom` (an outstanding overflow, see {@link RecheckOverflow}) is carried into every checkpoint this run
+  * saves while it is below the run start; a run that starts at or below it re-reads those blocks in its main scan, so its
+  * saves leave it out.
++ *
++ * A reorg page that stops the run (the announcement or match limit, an open-lane deferral, a provider disagreement, or
++ * an anchor the second provider does not corroborate) holds the cursor at `min(rolledBackTo, page start)`: a reorg found
++ * at a later window's end rolls back above the page start, and the page's blocks below it were never processed. The
++ * checkpoint, whose anchor may be orphaned, is replaced by an anchor-less one there, which keeps what the stored
++ * checkpoint owed (see {@link reorgStopCheckpoint}).
+  */
+ export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag; readonly recheckOverflow?: RecheckOverflow }> {
+   let worker: ScanWorkerLike | undefined;
+@@ -260,6 +272,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+   let recheckOverflow: RecheckOverflow | undefined;
+   // An outstanding overflow's rescan block, carried while this run starts above it (see the JSDoc).
+   const carriedRescan = typeof p.cursor.rescanFrom === 'bigint' && p.cursor.rescanFrom >= 0n && p.cursor.rescanFrom < p.cursor.nextBlock ? p.cursor.rescanFrom : undefined;
++  // What the stored checkpoint owes right now: the incoming cursor's, until this run saves one of its own.
++  let stored: { readonly recheck: readonly bigint[]; readonly rescanFrom: bigint | undefined } = { recheck: owedRechecks(p.cursor), rescanFrom: carriedRescan };
+   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
+   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
+   const claimLedger = new Map<string, number>();
+@@ -450,7 +464,22 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       reachableHead = pageHead;
+       if (pageHead > maxHead) maxHead = pageHead;
+       skipped += res.skipped;
+-      const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
++      // The first block this page's announcements cover, and where a stop on a reorg page holds the cursor (see the
++      // JSDoc): a window-end reorg rolls back to a later window's start, above the page start, but the logs from the page
++      // start up to there are this page's too, unprocessed until the page completes.
++      const pageStart = cursor.nextBlock;
++      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < pageStart ? res.reorg.rolledBackTo : pageStart;
++      /** A stop on a reorg page: the in-memory cursor goes back to `pageFrom` and the checkpoint is replaced there. */
++      const holdAtRollback = (): RecheckOverflow | undefined => {
++        cursor = { nextBlock: pageFrom };
++        if (p.checkpoints === undefined) return undefined;
++        const owed = reorgStopCheckpoint(pageFrom, stored, all, retried, carriedRescan);
++        p.checkpoints.save(p.chain.chainId, p.keyId, owed.cursor);
++        stored = { recheck: owed.cursor.recheck ?? [], rescanFrom: owed.cursor.rescanFrom };
++        recheckOverflow = owed.overflow;
++        return owed.overflow;
++      };
++      const reported = (o: RecheckOverflow | undefined): { readonly recheckOverflow?: RecheckOverflow } => (o === undefined ? {} : { recheckOverflow: o });
+       if (res.reorg !== undefined) {
+         persistenceFloor = res.reorg.rolledBackTo;
+         // Hide uncertain results immediately, while retaining the caller's observations for a
+@@ -496,11 +525,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       }
+       if (scanned + res.announcements.length > maxAnnouncements) {
+         limitReached = true;
+-        if (res.reorg !== undefined) {
+-          cursor = { nextBlock: res.reorg.rolledBackTo };
+-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+-        }
+-        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
++        const overflow = res.reorg === undefined ? undefined : holdAtRollback();
++        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached, ...reported(overflow) });
+         break;
+       }
+       // Spec 05: router-posted announcements (trusted lane) go first; the open lane has a per-run budget. A page whose open
+@@ -521,11 +547,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       const uniqueClaims = claimsOf(res.announcements, reply.matches);
+       if (all.length + uniqueClaims.length > maxMatches) {
+         limitReached = true;
+-        if (res.reorg !== undefined) {
+-          cursor = { nextBlock: res.reorg.rolledBackTo };
+-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+-        }
+-        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
++        const overflow = res.reorg === undefined ? undefined : holdAtRollback();
++        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached, ...reported(overflow) });
+         break;
+       }
+       const verified = await verifyClaims(uniqueClaims, reply.matches);
+@@ -558,20 +581,14 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       // or continue into later pages, since a later successful page could otherwise checkpoint
+       // past these withheld logs and permanently skip them on resume.
+       if (disagree) {
+-        if (res.reorg !== undefined) {
+-          cursor = { nextBlock: res.reorg.rolledBackTo };
+-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+-        }
+-        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
++        const overflow = res.reorg === undefined ? undefined : holdAtRollback();
++        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, ...reported(overflow) });
+         break;
+       }
+       if (deferred > 0) {
+         backlog = deferred;
+-        if (res.reorg !== undefined) {
+-          cursor = { nextBlock: res.reorg.rolledBackTo };
+-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+-        }
+-        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
++        const overflow = res.reorg === undefined ? undefined : holdAtRollback();
++        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog, ...reported(overflow) });
+         break;
+       }
+       cursor = res.cursor;
+@@ -585,14 +602,21 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+           const conflicts = saved as readonly ProviderDiscrepancy[];
+           discrepancies.push(...conflicts);
+           p.onDiscrepancy?.(conflicts);
+-          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+-          p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
++          // The page was processed, so the in-memory cursor stays after it; the checkpoint goes back to the page start.
++          let overflow: RecheckOverflow | undefined;
++          if (res.reorg !== undefined) {
++            const processed = cursor;
++            overflow = holdAtRollback();
++            cursor = processed;
++          }
++          p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, ...reported(overflow) });
+           break;
+         }
+         if (saved !== undefined) {
+-          const owed = withOwedRechecks(saved as ScanCursor, all, retried, carriedRescan);
++          const owed = withOwedRechecks(saved as ScanCursor, all, retried, carriedRescan, carriedRescan);
+           recheckOverflow = owed.overflow;
+           p.checkpoints.save(p.chain.chainId, p.keyId, owed.cursor);
++          stored = { recheck: owed.cursor.recheck ?? [], rescanFrom: owed.cursor.rescanFrom };
+           savedOverflow = owed.overflow;
+         }
+       }
+@@ -740,15 +764,30 @@ function owedRechecks(cursor: ScanCursor): readonly bigint[] {
+  * recheck pass is never owed again, whatever its outcome: one retry per claim, so a claim built to fail every check
+  * costs one bounded read on the next run and nothing after.
+  *
++ * `carriedRecheck` (only from {@link reorgStopCheckpoint}) are owed blocks the stored checkpoint already lists; they join
++ * the set under the same rules (below `nextBlock`, unique, capped, counted).
++ *
+  * What does not fit the cap is reported as `overflow`: the count dropped, and `fromBlock`, the lowest owed block of the
+  * whole set (the first kept one), or `carried` when that is lower, so that a rescan from it re-scans every kept and
+  * dropped claim. `rescanFrom` is that block. Without a new overflow it is `carried` (this run's start was above it), so
+  * the block stays saved, and the Scan view keeps its notice, until a run starting at or below it saves. Either way it
+  * is saved only below `nextBlock`; at or after it the next run's main scan re-reads those blocks.
+  *
+- * Accepted: a run that saves no checkpoint (cancelled, failed, held by a discrepancy or a budget before any save) leaves
+- * the stored list in place, so its blocks are re-checked again on the next run. That repeats at most
+- * {@link RECHECK_MAX} single-block reads per run and never moves the cursor back.
++ * `earlier` is the rescan block this run was handed (`p.cursor.rescanFrom`, the same as `carried` except from
++ * {@link reorgStopCheckpoint}). While it is still owed (below `nextBlock`) the overflow is marked `countKnown: false`,
++ * whichever block `fromBlock` is: that earlier overflow's count is not stored and its dropped claims were not re-read by
++ * this run, so `count` is only part of the total. A rescan block from this run's own earlier save, carried by a reorg
++ * stop, leaves the count known: every claim behind it is among `matches`.
++ *
++ * Accepted (fail closed): a `pending` block from the recheck pass, below this run's start, is below the persistence
++ * floor, so the pending rule of `persistable` pulls every save of this run down to the floor (the run start) while it
++ * stays pending, and the run's progress is saved only from the next run that sees it final. That needs real transfer
++ * evidence from the router to the scanned keys, so spam cannot cause it.
++ *
++ * Accepted: a run that saves no checkpoint (cancelled, failed, held by a discrepancy or a budget before any save; a stop
++ * on a reorg page does save, see {@link reorgStopCheckpoint}) leaves the stored list in place, so its blocks are
++ * re-checked again on the next run. That repeats at most {@link RECHECK_MAX} single-block reads per run and never moves
++ * the cursor back.
+  *
+  * Silent drops (no notice in this round; the payment stays found as `claimed` in that run, never shown as received):
+  * - a recheck read or check that throws (an RPC failure on the single-block read, the worker, or the verification);
+@@ -761,10 +800,11 @@ function owedRechecks(cursor: ScanCursor): readonly bigint[] {
+  * overflow notice cannot clear it: the rescan finds them again, they overflow again, and the notice comes back at
+  * their lowest block. No funds are lost (every genuine payment is re-scanned by that rescan); the notice just stays.
+  */
+-function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retried: ReadonlySet<string>, carried: bigint | undefined): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
++function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retried: ReadonlySet<string>, carried: bigint | undefined, earlier: bigint | undefined, carriedRecheck: readonly bigint[] = []): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
+   const { recheck: _previous, rescanFrom: _rescan, ...base } = saved;
+   void _previous; void _rescan;
+   const owed = new Set<bigint>();
++  for (const block of carriedRecheck) if (block >= 0n && block < saved.nextBlock) owed.add(block);
+   for (const m of matches) {
+     if (m.announcement.blockNumber >= saved.nextBlock) continue;
+     if (m.receipt === 'pending' || (m.recheck === true && !retried.has(m.announcement.id))) owed.add(m.announcement.blockNumber);
+@@ -775,12 +815,26 @@ function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retr
+   const lowest = dropped.length === 0 ? undefined : kept[0];
+   const stillOwed = carried !== undefined && carried < saved.nextBlock ? carried : undefined;
+   const rescanFrom = lowest === undefined ? stillOwed : stillOwed !== undefined && stillOwed < lowest ? stillOwed : lowest;
++  const countKnown = earlier === undefined || earlier >= saved.nextBlock;
+   return {
+     cursor: { ...base, ...(kept.length === 0 ? {} : { recheck: kept }), ...(rescanFrom === undefined ? {} : { rescanFrom }) },
+-    ...(lowest === undefined || rescanFrom === undefined ? {} : { overflow: { count: dropped.length, fromBlock: rescanFrom } }),
++    ...(lowest === undefined || rescanFrom === undefined ? {} : { overflow: { count: dropped.length, fromBlock: rescanFrom, ...(countKnown ? {} : { countKnown: false as const }) } }),
+   };
+ }
+ 
++/**
++ * The checkpoint that replaces the stored one when a reorg page stops the run: `{ nextBlock: lo }` with no anchor (the
++ * stored anchor may be orphaned, and none is persisted that a later resume could treat as canonical), carrying what the
++ * stored checkpoint owes below `lo`: its `recheck` list (the incoming cursor's, or this run's last save), this run's own
++ * owed blocks (pending, or a main-scan match marked `recheck`), and its rescan block, merged, capped and counted as by
++ * {@link withOwedRechecks}. Clearing it instead would delete the list and the rescan block, and with them the overflow
++ * notice. Like a run that saves nothing, the stored list is kept whole: its blocks get their retry on the next run even
++ * when this run's recheck pass already read them (at most {@link RECHECK_MAX} single-block reads, never a held cursor).
++ */
++function reorgStopCheckpoint(lo: bigint, stored: { readonly recheck: readonly bigint[]; readonly rescanFrom: bigint | undefined }, matches: readonly ScanMatch[], retried: ReadonlySet<string>, earlier: bigint | undefined): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
++  return withOwedRechecks({ nextBlock: lo }, matches, retried, stored.rescanFrom, earlier, stored.recheck);
++}
++
+ /** Fresh primary, secondary and primary re-read of one block; returns the agreed hash or the discrepancy. */
+ async function corroborateAnchor(p: ScanParams, secondary: RpcClient, height: bigint): Promise<string | readonly ProviderDiscrepancy[]> {
+   const ref = height.toString();
+diff --git a/apps/web/src/views/Scan.test.tsx b/apps/web/src/views/Scan.test.tsx
+index 21cc593..9967d5d 100644
+--- a/apps/web/src/views/Scan.test.tsx
++++ b/apps/web/src/views/Scan.test.tsx
+@@ -667,6 +667,84 @@ describe('Scan and receive', () => {
+     expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull();
+   });
+ 
++  it('keeps the stored recheck list, rescan block and its notice when a window-end reorg page stops the run (H1)', async () => {
++    const pub = generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    const { encodeMetaAddress, generateKeySet } = await import('@ghostpay/core-crypto');
++    const strangers = [2500, 2600].map((block, index) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block, index, caller: FAKE_ROUTER }).log);
++    // Block 3999 first reads as a fork block, then canonically: the window ending there reorgs, rolling back to 3000.
++    let forked = false;
++    const rpc = chainWithLogs(84532, 30_000, strangers, (method, params) => {
++      if (method !== 'eth_getBlockByNumber' || Number(params[0]) !== 3999 || forked) return undefined;
++      forked = true;
++      return { hash: `0x${(3999 + 7_000_000).toString(16).padStart(64, '0')}`, parentHash: `0x${(3998).toString(16).padStart(64, '0')}`, number: '0xf9f' };
++    });
++    const storage = new Map<string, string>();
++    const checkpoints = localCheckpointStore({ getItem: (k) => storage.get(k) ?? null, setItem: (k, v) => void storage.set(k, v), removeItem: (k) => void storage.delete(k) });
++    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
++    checkpoints.save(84532, keyId, { nextBlock: 2000n, last: { number: 1999n, hash: `0x${(1999).toString(16).padStart(64, '0')}` }, recheck: [1000n], rescanFrom: 900n });
++    // The real scan, with an announcement budget of one, so the reorg page (two announcements below 3000) stops the run.
++    const real = scanClient.runScan;
++    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => real({ ...p, maxAnnouncementsPerScan: 1 }));
++    const neutral = 'Some payments could not be confirmed by your RPC and were not checked again automatically. Rescan from block 900 to check them.';
++    try {
++      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints, createScanWorker: () => new InlineWorker() }));
++      expect(screen.getByText(neutral)).toBeTruthy();
++      await user.click(screen.getByRole('button', { name: 'Start scan' }));
++      await waitFor(() => { expect(screen.getByText(/Stopped at the safety limit\./)).toBeTruthy(); });
++      expect(forked).toBe(true);
++      // Not cleared: the anchor-less checkpoint at the page start still owes block 1000 and the rescan block.
++      expect(checkpoints.load(84532, keyId)).toEqual({ nextBlock: 2000n, recheck: [1000n], rescanFrom: 900n });
++      expect(screen.getByText(/resume from block 2000 to continue/)).toBeTruthy();
++      expect(screen.getByText(neutral)).toBeTruthy();
++    } finally { runner.mockRestore(); }
++  });
++
++  it('a typed start above a stored rescan block keeps it and its notice; a typed start at or below it clears both (M2)', async () => {
++    const pub = generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    const rpc = routerPaymentsRpc(pub.metaAddress, [], 30_000, () => false);
++    const checkpoints = memoryCheckpoints();
++    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
++    checkpoints.save(84532, keyId, { nextBlock: 5000n, rescanFrom: 500n });
++    const neutral = 'Some payments could not be confirmed by your RPC and were not checked again automatically. Rescan from block 500 to check them.';
++    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints, createScanWorker: () => new InlineWorker() }));
++    expect(screen.getByText(neutral)).toBeTruthy();
++    await user.click(screen.getByLabelText('Resume from checkpoint'));
++    await user.type(screen.getByLabelText('Start block'), '2000');
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\. .* Started at block 2000\./)).toBeTruthy(); });
++    // The run saved (it moved the checkpoint) and carried the block, so the notice stays.
++    expect(checkpoints.load(84532, keyId)?.nextBlock).not.toBe(5000n);
++    expect(checkpoints.load(84532, keyId)?.rescanFrom).toBe(500n);
++    expect(screen.getByText(neutral)).toBeTruthy();
++    // A typed start at the block re-reads every owed payment: its save clears the block and the notice.
++    await user.clear(screen.getByLabelText('Start block'));
++    await user.type(screen.getByLabelText('Start block'), '500');
++    await user.click(screen.getByRole('button', { name: 'Start scan' }));
++    await waitFor(() => { expect(screen.getByText(/Finished\. .* Started at block 500\./)).toBeTruthy(); });
++    expect(checkpoints.load(84532, keyId)).not.toHaveProperty('rescanFrom');
++    expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull();
++  });
++
++  it('shows the count-neutral recheck notice when the overflow count is not known (a carried lower block, L1)', async () => {
++    generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
++      p.onProgress?.({ nextBlock: 50_000n, scanned: 10, matches: 10, skipped: 0, caughtUp: false, recheckOverflow: { count: 2, fromBlock: 100n, countKnown: false } });
++      p.viewingKey.fill(0);
++      return Promise.resolve({ matches: [], cursor: { nextBlock: 50_000n }, scanned: 10, discrepancies: [], limitReached: false, routerOnlyBlocks: [], recheckOverflow: { count: 2, fromBlock: 100n, countKnown: false } });
++    });
++    try {
++      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
++      await user.type(screen.getByLabelText('Start block'), '1000');
++      await user.click(screen.getByRole('button', { name: 'Start scan' }));
++      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
++      expect(screen.getByText('Some payments could not be confirmed by your RPC and were not checked again automatically. Rescan from block 100 to check them.')).toBeTruthy();
++      expect(screen.queryByText(/2 payments could not be confirmed/)).toBeNull();
++    } finally { runner.mockRestore(); }
++  });
++
+   it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+     const pub = generateSession();
+     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+diff --git a/apps/web/src/views/Scan.tsx b/apps/web/src/views/Scan.tsx
+index 8ce7589..0d643e0 100644
+--- a/apps/web/src/views/Scan.tsx
++++ b/apps/web/src/views/Scan.tsx
+@@ -90,7 +90,10 @@ export function Scan(): ReactNode {
+   // Unconfirmed router claims beyond the checkpoint's recheck list are not retried: say so, and where to rescan from.
+   // `fromBlock` is the lowest owed block, kept or dropped, so a rescan from it re-checks all of them in the main scan.
+   // The block is passed as text so it is shown without digit grouping, exactly as Start block accepts it.
+-  const describeRecheckOverflow = (o: RecheckOverflow): string => t('scan.recheck.overflow', { count: o.count, block: o.fromBlock.toString() });
++  // While an earlier session's overflow is still owed (`countKnown: false`) the total is not known: no count is given.
++  const describeRecheckOverflow = (o: RecheckOverflow): string => (o.countKnown === false
++    ? t('scan.recheck.overflowSaved', { block: o.fromBlock.toString() })
++    : t('scan.recheck.overflow', { count: o.count, block: o.fromBlock.toString() }));
+   // The same notice from the stored checkpoint (ScanCursor.rescanFrom), so it outlives a later Scan click and a reload
+   // until a scan from that block, or from before it, saves. The count is not stored, so this copy does not give one.
+   const recheckNotice = recheckNote ?? (checkpoint?.rescanFrom === undefined ? undefined : t('scan.recheck.overflowSaved', { block: checkpoint.rescanFrom.toString() }));
+-- 
+2.43.0
+

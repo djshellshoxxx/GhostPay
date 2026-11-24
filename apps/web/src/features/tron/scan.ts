@@ -43,11 +43,11 @@ export interface ScanParams {
  */
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { rpc, wallet, fromBlock, signal } = p;
-  if (fromBlock < 0n) throw new TronViewError('Enter the first block to scan.');
+  if (fromBlock < 0n) throw new TronViewError({ key: 'tron.block.required' });
   const toBlock = (await getNowBlock(rpc, signal)).number;
   if (toBlock < fromBlock) return { fromBlock, toBlock, found: [], emptiedCount: 0, tokenCount: 0 };
   if (toBlock - fromBlock + 1n > BigInt(MAX_SCAN_BLOCKS)) {
-    throw new TronViewError(`Scan at most ${String(MAX_SCAN_BLOCKS)} blocks at a time. Choose a later first block.`);
+    throw new TronViewError({ key: 'tron.error.scanRange', values: { limit: String(MAX_SCAN_BLOCKS) } });
   }
   const found: FoundPayment[] = [];
   const seen = new Set<string>();
@@ -83,3 +83,5 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   }
   return { fromBlock, toBlock, found, emptiedCount, tokenCount };
 }
+
+// i18n-use: tron.block.required tron.error.scanRange

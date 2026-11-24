@@ -32,6 +32,7 @@ export {
   MAX_APPROVALS,
   signProposal,
   evaluateApprovals,
+  validateApproval,
   assertBound,
   type Approval,
   type ApprovalRejection,
@@ -41,6 +42,7 @@ export {
   MAX_QUEUED,
   MAX_CLOCK_SKEW_SECONDS,
   createAccountState,
+  validateAccountState,
   queueProposal,
   executeProposal,
   pruneExpired,
@@ -49,3 +51,12 @@ export {
   type QueueResult,
   type ExecuteResult,
 } from './account.js';
+export {
+  MAX_STATE_EXCHANGE_BYTES,
+  MAX_PROPOSAL_EXCHANGE_BYTES,
+  serializeAccountState,
+  parseAccountState,
+  serializeProposalExchange,
+  parseProposalExchange,
+  type ProposalExchange,
+} from './exchange.js';

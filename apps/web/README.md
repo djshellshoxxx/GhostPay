@@ -17,8 +17,11 @@ Defined in `src/App.tsx` and `src/views/`:
 | Scan (`Scan.tsx`) | Find payments with the viewing key |
 | Sweep (`Sweep.tsx`) | Move a one-time address balance to a destination |
 | Bitcoin (`src/features/btc/`) | Silent payments on testnet4, signet and regtest; mainnet disabled |
+| Solana (`src/features/solana/`) | Solana view, mounted by `src/App.tsx` in the full build profile |
+| TRON (`src/features/tron/`) | TRON view, mounted by `src/App.tsx` in the full build profile |
+| Policy (`src/features/policy/`) | Experimental; added only when `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1` |
 | Public registry (`src/features/registry/`) | ERC-6538 registry flow (testnet) |
-| Settings (`Settings.tsx`) | RPC URL per chain, relayer URL (https only), payment delay range, idle-clear of local tags, theme, pinned seller signing keys |
+| Settings (`Settings.tsx`) | RPC URL per chain, relayer URL (https only), payment delay range, idle lock (locks local tags; wipes seller keys only when they can be loaded again, never keys with no backup; hex keys imported without their signing key are wiped, and the signing key generated for them is lost with a notice), theme, pinned seller signing keys |
 | About (`About.tsx`) | Project status and limits |
 
 ## Workspace dependencies
@@ -49,11 +52,14 @@ The Bitcoin regtest end-to-end test (`src/features/btc/regtest.e2e.test.ts`) nee
 
 ## Embed script
 
-`public/ghostpay-embed-v1.js` is the popup embed SDK. Its behaviour is covered by `src/embed.test.ts`.
+`public/ghostpay-embed-v1.js` is the popup embed SDK (frozen); `public/ghostpay-embed-v2.js` adds the optional iframe mode. Their
+behaviour is covered by `src/embed.test.ts` and `src/embedV2.test.ts`. No SRI value is published yet (audit S3-10 and S3-11 are open:
+`scripts/embed-sri.mjs` and `scripts/csp.mjs` are not wired into the build, see [DEVIATIONS.md](DEVIATIONS.md) items 6 and 20).
+Merchants who pin the SDK compute the SHA-384 of the exact file they embed; a changed file then fails closed.
 
 ## Hosting
 
-Prototype hosting on GitHub Pages (base path, CSP limits, theme overlay): [`docs/remote/pages-prototype.md`](../../docs/remote/pages-prototype.md). This is not a hardened production host, and no official host exists.
+GitHub Pages static beta (lean profile, demonstration build unless a signed testnet manifest is bundled, CSP and header limits, verification): [`docs/pages/README.md`](../../docs/pages/README.md), built by `scripts/pages/build-pages.sh` and published only by a manual run of `.github/workflows/pages.yml` on `main`. This is not a hardened production host; see ADR-0015 and the proposed ADR-0029.
 
 ## User-facing guides
 

@@ -1,7 +1,11 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput } from './duplicateAttemptJournal';
+import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
+import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
+import type { MessageKey } from '../i18n/catalog';
+import { SOURCE_TRANSLATOR } from '../i18n/source';
+import type { Translator } from '../i18n/translator';
 
 /** Minimal EIP-1193 provider surface. */
 export interface Eip1193Provider {
@@ -101,7 +105,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
     const duration = Number.isFinite(waitMs) ? Math.max(0, Math.min(MAX_DISCOVERY_MS, waitMs)) : 150;
     await new Promise((resolve) => setTimeout(resolve, duration));
   } catch {
-    throw new UserFacingError('Wallet discovery could not start. Retry or use another wallet.');
+    throw new UserFacingError({ key: 'error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet' });
   } finally {
     active = false;
     try { win.removeEventListener('eip6963:announceProvider', onAnnounce); } catch { /* Closed callback ignores late events even if cleanup fails. */ }
@@ -127,17 +131,17 @@ const SCRIPTS: readonly (readonly [string, RegExp])[] = [
  * letters from several alphabets in one name (lookalikes), a non-ASCII name, or no rdns. Wallet identity is
  * self-declared by the page that announces it; these are hints, not proof.
  */
-export function walletWarnings(list: readonly WalletInfo[]): ReadonlyMap<string, readonly string[]> {
+export function walletWarnings(list: readonly WalletInfo[], t: Translator['t'] = SOURCE_TRANSLATOR.t): ReadonlyMap<string, readonly string[]> {
   const out = new Map<string, string[]>();
   const names = new Map<string, number>();
   for (const w of list) names.set(w.name.toLowerCase(), (names.get(w.name.toLowerCase()) ?? 0) + 1);
   for (const w of list) {
     const msgs: string[] = [];
-    if ((names.get(w.name.toLowerCase()) ?? 0) > 1) msgs.push('Another wallet announced the same name. Pick the one whose identifier you recognise.');
-    if (w.conflict === true) msgs.push('This wallet was announced twice with different names or identifiers. Treat it as suspicious.');
-    if (SCRIPTS.filter(([, re]) => re.test(w.name)).length > 1) msgs.push('The name mixes letters from different alphabets, which is a common lookalike trick.');
-    else if (/[^\x20-\x7e]/.test(w.name)) msgs.push('The name contains non-ASCII characters.');
-    if (w.kind === 'eip6963' && w.rdns === undefined) msgs.push('It did not announce a reverse-DNS identifier.');
+    if ((names.get(w.name.toLowerCase()) ?? 0) > 1) msgs.push(t('wallet.warning.duplicateName'));
+    if (w.conflict === true) msgs.push(t('wallet.warning.conflictingIdentity'));
+    if (SCRIPTS.filter(([, re]) => re.test(w.name)).length > 1) msgs.push(t('wallet.warning.mixedScript'));
+    else if (/[^\x20-\x7e]/.test(w.name)) msgs.push(t('wallet.warning.nonAscii'));
+    if (w.kind === 'eip6963' && w.rdns === undefined) msgs.push(t('wallet.warning.missingRdns'));
     if (msgs.length > 0) out.set(w.id, msgs);
   }
   return out;
@@ -155,10 +159,13 @@ async function call(p: Eip1193Provider, method: string, params?: readonly unknow
   } catch (e) {
     let code: number | undefined;
     try { code = typeof e === 'object' && e !== null ? cleanRpcCode((e as { code?: unknown }).code) : undefined; } catch { /* A thrown error can itself be a hostile proxy/accessor. */ }
-    if (code === 4001) throw new UserFacingError('You rejected the request in your wallet.');
+    if (code === 4001) throw new WalletRequestRejectedError();
     throw new WalletCallError(method, code);
   }
 }
+
+// Re-export preserves the public wallet API; the shared type avoids a wallet/outcome import cycle.
+export { WalletRequestRejectedError } from './transactionOutcome';
 
 /** Diagnostic codes only: EIP-1193 provider errors and standard JSON-RPC errors/server range. */
 function cleanRpcCode(code: unknown): number | undefined {
@@ -180,12 +187,12 @@ export class WalletCallError extends Error {
 }
 
 function toAccount(v: unknown): Address {
-  if (typeof v !== 'string' || !isAddress(v, { strict: false })) throw new UserFacingError('The wallet returned an invalid account.');
+  if (typeof v !== 'string' || !isAddress(v, { strict: false })) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidAccount' });
   return getAddress(v);
 }
 
 function firstAccount(v: unknown): Address {
-  if (!Array.isArray(v) || v.length === 0) throw new UserFacingError('The wallet returned no accounts.');
+  if (!Array.isArray(v) || v.length === 0) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedNoAccounts' });
   return toAccount(v[0]);
 }
 
@@ -198,9 +205,9 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
     id = parseQuantity(answer);
   } catch (e) {
     if (e instanceof UserFacingError || e instanceof WalletCallError) throw e;
-    throw new UserFacingError('The wallet returned an invalid chain id.');
+    throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidChainId' });
   }
-  if (id < 1n || id > BigInt(Number.MAX_SAFE_INTEGER)) throw new UserFacingError('The wallet returned an invalid chain id.');
+  if (id < 1n || id > BigInt(Number.MAX_SAFE_INTEGER)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidChainId' });
   const n = Number(id);
   // Consistency probe: a provider that answers net_version must agree with eth_chainId. This cannot defeat a
   // consistently lying provider; the independent RPC check after sending covers that when an RPC is configured.
@@ -212,7 +219,7 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
   }
   assertCurrent?.();
   if ((typeof net === 'string' || typeof net === 'number') && String(net) !== String(n)) {
-    throw new UserFacingError('The wallet gave contradictory chain ids. Refusing to continue.');
+    throw new UserFacingError({ key: 'error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue' });
   }
   return n;
 }
@@ -224,7 +231,7 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
 export async function connectWallet(wallet: WalletInfo, expectedChainId: number): Promise<WalletSession> {
   const requested = firstAccount(await call(wallet.provider, 'eth_requestAccounts'));
   const listed = firstAccount(await call(wallet.provider, 'eth_accounts'));
-  if (requested !== listed) throw new UserFacingError('The wallet reported inconsistent accounts. Refusing to continue.');
+  if (requested !== listed) throw new UserFacingError({ key: 'error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue' });
   let chainId = await readChainId(wallet.provider);
   if (chainId !== expectedChainId) {
     try {
@@ -234,7 +241,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number)
     }
     chainId = await readChainId(wallet.provider);
     if (chainId !== expectedChainId) {
-      throw new UserFacingError(`Your wallet is on chain ${String(chainId)} but this invoice requires chain ${String(expectedChainId)}. Switch networks in your wallet.`);
+      throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
     }
   }
   return { wallet, account: requested, chainId };
@@ -245,13 +252,13 @@ export async function recheckWallet(s: WalletSession, assertCurrent?: () => void
   assertCurrent?.();
   const acct = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
   assertCurrent?.();
-  if (acct !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
+  if (acct !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
   const chainId = await readChainId(s.wallet.provider, assertCurrent);
   assertCurrent?.();
-  if (chainId !== s.chainId) throw new UserFacingError('The wallet network changed. Reconnect and review again.');
+  if (chainId !== s.chainId) throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
   const finalAccount = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
   assertCurrent?.();
-  if (finalAccount !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
+  if (finalAccount !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
 }
 
 export interface TxRequest {
@@ -264,20 +271,48 @@ const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
 export interface WalletAttemptOptions {
   readonly kind: AttemptInput['kind'];
-  /** Logical action identity (for payments, the signed invoice digest), independent of fresh stealth randomness. */
+  /**
+   * Logical action identity. For payments, the signed invoice digest: it replaces the calldata, which carries fresh
+   * stealth randomness. For other kinds it narrows the calldata key, so the same approval or revoke for a later invoice
+   * is a new action while repeating it for one invoice stays a duplicate (L2-I3).
+   */
   readonly scope?: string;
+  /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
+  readonly logicalAction?: boolean;
+  /** Explicit journal store; policy operations use durable browser storage under an exclusive lock. */
+  readonly storage?: AttemptStorage;
 }
-export function walletAttemptKey(s: WalletSession, tx: TxRequest, options?: WalletAttemptOptions): string {
+export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, options?: WalletAttemptOptions): string {
+  const call = [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()];
+  const payment = options?.kind === 'payment' && options.scope !== undefined;
+  const logicalTransaction = options?.logicalAction === true;
+  if (logicalTransaction && (options.kind !== 'transaction' || typeof options.scope !== 'string' || !/^[A-Za-z0-9:._/-]{1,1024}$/.test(options.scope))) {
+    throw new UserFacingError({ key: 'policy.withdraw.logicalScope' });
+  }
   return keccak256(toBytes(JSON.stringify([
-    s.chainId, options?.kind === 'payment' && options.scope !== undefined ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
-    options?.scope ?? [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()],
+    s.chainId, payment ? 'invoice-payer' : logicalTransaction ? 'logical-relayer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    payment ? options.scope : logicalTransaction ? ['logical-transaction-v1', options.scope] : options?.scope === undefined ? call : [options.scope, ...call],
   ])));
 }
 /** Returned hash is preserved even if tab storage fails after broadcast. */
-export class WalletBroadcastError extends UserFacingError {
+export class WalletBroadcastError extends TransactionOutcomeError {
   public constructor(public readonly hash: Hex) {
-    super(`The wallet returned transaction ${hash}, but its hash could not be saved in this tab. Do not repeat the request; check your wallet.`);
+    super({ phase: 'verification-incomplete', hash, code: 'HASH_PERSISTENCE', message: { key: 'transaction.walletBroadcast', values: { hash } } });
     this.name = 'WalletBroadcastError';
+  }
+}
+
+/** The wallet was asked to submit; an RPC code is diagnostic data, never proof that nothing was broadcast. */
+export class WalletSubmissionUnknownError extends TransactionOutcomeError {
+  public constructor(public readonly rpcCode?: number, invalidHash = false) {
+    super({
+      phase: 'broadcast-unknown',
+      ...(rpcCode === undefined ? {} : { code: rpcCode }),
+      message: invalidHash
+        ? { key: 'error.wallet.theWalletDidNotReturnAValidTransactionHashThe' }
+        : { key: 'transaction.walletUnknown', values: { diagnostic: rpcCode === undefined ? '' : { key: 'transaction.code', values: { code: String(rpcCode) } } } },
+    });
+    this.name = 'WalletSubmissionUnknownError';
   }
 }
 function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert: () => void; dispose: () => void } {
@@ -295,14 +330,14 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
   if (provider.on !== undefined && provider.removeListener !== undefined) {
     try { for (const event of events) provider.on(event, onChanged); } catch {
       dispose();
-      throw new UserFacingError('The wallet could not be monitored for account or network changes. Reconnect before continuing.');
+      throw new UserFacingError({ key: 'error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork' });
     }
   }
   return {
     assert: () => {
       assertCurrent?.();
       if (changed || s.wallet.provider !== provider || s.account !== account || s.chainId !== chainId) {
-        throw new UserFacingError('The wallet account, network or provider changed. Reconnect and review again.');
+        throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
       }
     },
     dispose,
@@ -314,7 +349,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   try {
     await recheckWallet(s, authority.assert);
     authority.assert();
-    const storage = browserAttemptStorage();
+    const storage = options?.storage ?? browserAttemptStorage();
     const attempt = storage === undefined ? undefined : beginAttempt({
       key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
     }, storage);
@@ -327,9 +362,9 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       ]);
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
-      throw new UserFacingError('The wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly.');
+      throw new WalletSubmissionUnknownError(e instanceof WalletCallError ? e.rpcCode : undefined);
     }
-    if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new UserFacingError('The wallet did not return a valid transaction hash. The outcome is unknown; check your wallet before another attempt.');
+    if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new WalletSubmissionUnknownError(undefined, true);
     const normalized = hash.toLowerCase() as Hex;
     if (attempt !== undefined) {
       try { finishAttempt(attempt, normalized, storage); } catch { throw new WalletBroadcastError(normalized); }
@@ -347,7 +382,7 @@ export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: st
     authority.assert();
     const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', [s.account, typedDataJson]);
     authority.assert();
-    if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError('The wallet returned an invalid signature.');
+    if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidSignature' });
     return sig as Hex;
   } finally { authority.dispose(); }
 
@@ -356,10 +391,21 @@ export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: st
 /** Raised when the transaction the network saw differs from the one that was previewed. */
 export class SubmissionMismatchError extends UserFacingError {
   public constructor(public readonly field: string) {
-    super(`The wallet submitted a transaction that differs from the preview (${field}). Do not trust this payment: check your wallet and the block explorer.`);
+    super({ key: 'transaction.submissionMismatch', values: { field: { key: SUBMISSION_FIELD_KEYS[field] ?? 'transaction.field.unknown' } } });
     this.name = 'SubmissionMismatchError';
   }
 }
+
+const SUBMISSION_FIELD_KEYS: Readonly<Record<string, MessageKey>> = {
+  hash: 'transaction.field.hash',
+  sender: 'transaction.field.sender',
+  'destination contract': 'transaction.field.destination',
+  'call data': 'transaction.field.data',
+  value: 'transaction.field.value',
+  chain: 'transaction.field.chain',
+  'receipt destination': 'transaction.field.receiptDestination',
+};
+
 
 export interface RpcRequester {
   request(method: string, params: readonly unknown[]): Promise<unknown>;
@@ -376,7 +422,7 @@ export interface SeenTx {
 
 function parseSeenTx(v: unknown): SeenTx | undefined {
   if (v === null) return undefined;
-  if (typeof v !== 'object') throw new UserFacingError('Your RPC returned an unexpected transaction shape.');
+  if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
   try {
     return {
@@ -388,7 +434,7 @@ function parseSeenTx(v: unknown): SeenTx | undefined {
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
     };
   } catch {
-    throw new UserFacingError('Your RPC returned an unexpected transaction shape.');
+    throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   }
 }
 
@@ -439,7 +485,7 @@ export async function pollReceipt(
   for (let i = 0; i < attempts; i++) {
     const r = await rpc.request('eth_getTransactionReceipt', [hash]);
     if (r !== null) {
-      if (typeof r !== 'object') throw new UserFacingError('Your RPC returned an unexpected receipt shape.');
+      if (typeof r !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
       const o = r as Record<string, unknown>;
       let to: Address | undefined;
       try {
@@ -449,10 +495,12 @@ export async function pollReceipt(
         return { status: status === 1n ? 'success' : 'reverted', blockNumber: parseQuantity(o['blockNumber']) };
       } catch (e) {
         if (e instanceof UserFacingError) throw e;
-        throw new UserFacingError('Your RPC returned an unexpected receipt shape.');
+        throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
       }
     }
     await sleep(2000);
   }
   return undefined;
 }
+
+// i18n-use: error.wallet.invoiceChainMismatch error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork error.wallet.theWalletDidNotReturnAValidTransactionHashThe error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue error.wallet.theWalletNetworkChangedReconnectAndReviewAgain error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue error.wallet.theWalletReturnedAnInvalidAccount error.wallet.theWalletReturnedAnInvalidChainId error.wallet.theWalletReturnedAnInvalidSignature error.wallet.theWalletReturnedNoAccounts error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet error.wallet.youRejectedTheRequestInYourWallet error.wallet.yourRPCReturnedAnUnexpectedReceiptShape error.wallet.yourRPCReturnedAnUnexpectedTransactionShape policy.withdraw.logicalScope transaction.code transaction.field.chain transaction.field.data transaction.field.destination transaction.field.hash transaction.field.receiptDestination transaction.field.sender transaction.field.unknown transaction.field.value transaction.submissionMismatch transaction.walletBroadcast transaction.walletUnknown wallet.warning.conflictingIdentity wallet.warning.duplicateName wallet.warning.missingRdns wallet.warning.mixedScript wallet.warning.nonAscii

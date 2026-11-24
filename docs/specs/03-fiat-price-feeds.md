@@ -1,5 +1,7 @@
 # 03 Fiat price feeds and quote hardening
 
+> **2026-11-16 supporting implementation:** `readPrice` now accepts an explicit same-chain `sequencerFeed`, a separately configured `reference` reader/feed and `enforceUsdPeg`. These enforce sequencer-up status after a strict 3600-second recovery grace, fresh reference prices within 1% of the lower price, and the inclusive USD $0.98–$1.02 range. Callers must supply verified feed provenance and matching asset/currency; different feed addresses do not prove independent sources. No new feed address or production activation is included. Existing configured feed-decimal checks remain enforced. Tests include a compiled mock aggregator on Anvil; real-feed fork acceptance, consumer configuration and relayer signed pricing integration remain pending. See [Team D handoff](../handoffs/agents/TEAM_D_PRICE_GATES.md).
+
 Priority P0 (disable, S) then P2 (feeds, M) | Owner: chain-adapters + web | Deps: verified feed addresses (network-gated, owner/operator)
 Sources: ADR-0012; gap-analysis items 3, 7, 14; audits G-03, R-03, G-26; `quote.ts`.
 

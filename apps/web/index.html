@@ -13,44 +13,43 @@
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'"
     />
     <title>GhostPay</title>
-    <meta name="description" content="Stealth-address payments. Everything runs in your browser." />
-    <link rel="icon" href="data:," />
+    <meta name="description" content="Create signed invoices, review testnet payments and preserve original receipts on your device. Experimental GhostPay development build." />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <noscript><link rel="stylesheet" href="./help.css" /></noscript>
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <header>
+      <header class="site-header">
         <h1>GhostPay</h1>
         <p>Stealth-address payments. Unaudited software.</p>
       </header>
-      <nav aria-label="Help without JavaScript">
+      <nav class="site-nav" aria-label="Help without JavaScript">
         <ul>
           <li><a href="help.html">Help: paying an invoice, receiving, troubleshooting</a></li>
           <li><a href="privacy.html">Privacy: what this app does and does not hide</a></li>
         </ul>
       </nav>
-      <main>
+      <main id="content">
         <h2>This app needs JavaScript</h2>
         <p>
-          GhostPay runs entirely in your browser. Your keys are generated, stored, used for signing and used for
-          scanning on your own device, and they never leave it. That needs JavaScript and the Web Crypto API
-          (crypto.subtle and crypto.getRandomValues). There is no server-side version, because a server version would
-          have to hold your keys. The page loads no third-party code, no analytics and no remote fonts.
+          The GhostPay web interface uses JavaScript and the Web Crypto API to create keys, open signed invoices,
+          review transactions and scan payments. This page cannot perform those actions while JavaScript is disabled.
+          The project also has separate command-line and operator tools; their supported commands are documented
+          through the <a href="./help.html#technology">source and attribution guide</a>.
         </p>
         <p>
-          Text browsers such as lynx and w3m cannot run it. Turn JavaScript on in a current graphical browser
-          (Firefox, Chrome, Safari, Edge, Opera or similar) to use the app. The help and privacy pages linked above
-          work without JavaScript.
+          Use a compatible graphical browser on a secure origin to run the web app. The help and privacy pages
+          linked above work without JavaScript. Browser support and deployment verification are separate requirements:
+          enabling JavaScript does not enable a network whose deployment has not been verified.
         </p>
-        <h2>Pay an invoice using a wallet (no JavaScript needed)</h2>
-        <ol>
-          <li>Get the invoice from the seller as a link, a QR code or a pasted text block.</li>
-          <li>Read the amount, the asset, the chain and the expiry in the invoice text. If any of these is missing or unclear, stop and ask the seller.</li>
-          <li>Open your own wallet app. Open GhostPay in a browser with JavaScript on, or ask the seller for a plain payment link or address that your wallet supports.</li>
-          <li>Send exactly that amount of that asset on that chain to the address shown. Check the first and last characters of the address on your wallet screen against the invoice.</li>
-          <li>Keep the transaction hash. Send it to the seller as proof of payment.</li>
-        </ol>
-        <p>Never type a seed phrase or private key into any web page, including this one.</p>
+        <h2>Keep the original records</h2>
+        <p>
+          Save the original invoice and digital receipt files. A transaction hash is a reference used to look up a
+          transaction; it does not by itself prove that the correct recipient received the correct asset and amount.
+          A seller receipt signature establishes control of the signing key and the signed fields, not independent
+          payment verification. A QR image is a convenient representation of data, so retain the original file too.
+        </p>
       </main>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

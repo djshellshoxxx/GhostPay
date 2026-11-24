@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { beginAttempt, clearAttempt, finishAttempt, readAttempts, type AttemptStorage } from './duplicateAttemptJournal';
+import { ATTEMPT_JOURNAL_KEY, beginAttempt, clearAttempt, finishAttempt, readAttempts, type AttemptStorage } from './duplicateAttemptJournal';
 
 const key = '0x' + 'a'.repeat(64);
 const account = '0x' + '1'.repeat(40);
@@ -44,5 +44,20 @@ describe('tab-scoped duplicate-attempt journal', () => {
     expect(() => beginAttempt(input, { getItem: () => '{', setItem: () => undefined })).toThrow(/journal/i);
     expect(() => beginAttempt(input, { getItem: () => 'x'.repeat(100_001), setItem: () => undefined })).toThrow(/journal/i);
     expect(() => beginAttempt(input, { getItem: () => null, setItem: () => { throw new Error('quota'); } })).toThrow();
+  });
+  it('refuses coercible non-string kinds in persisted records', () => {
+    const store = storage();
+    const attempt = beginAttempt(input, store);
+    store.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([{ ...attempt, kind: ['payment'] }]));
+    expect(() => readAttempts(store)).toThrow(/journal/i);
+    expect(() => beginAttempt({ ...input, key: `0x${'d'.repeat(64)}` }, store)).toThrow(/journal/i);
+  });
+  it('rejects duplicate JSON fields instead of choosing a replacement action identity', () => {
+    const store = storage();
+    const attempt = beginAttempt(input, store);
+    const text = JSON.stringify([attempt]).replace(`"key":"${key}"`, `"key":"${key}","key":"0x${'d'.repeat(64)}"`);
+    store.setItem(ATTEMPT_JOURNAL_KEY, text);
+    expect(() => readAttempts(store)).toThrow(/journal/i);
+    expect(() => beginAttempt(input, store)).toThrow(/journal/i);
   });
 });

@@ -1,6 +1,6 @@
 # Sweep funds and gas privacy
 
-A *sweep* moves everything from a one-time address to a wallet you choose. It is the step where GhostPay's privacy is easiest to lose.
+A *sweep* moves the funds of a one-time address to a wallet you choose (a direct sweep of native coin keeps back the network fee; see step 4). It is the step where GhostPay's privacy is easiest to lose.
 
 > **Read this first.**
 >
@@ -18,7 +18,7 @@ The app's current Sweep page shows a generic linkability notice; the sharper pay
 3. Enter your **destination**. Use a fresh address you control.
 4. Choose how the network fee is paid:
    - **Through the relayer:** needs a relayer URL in Settings and a token that supports ERC-2612 `permit` (for example USDC). The relayer fee is deducted from the swept amount. You get a quote showing the fee and what you receive, then sign.
-   - **Directly:** the one-time address must already hold native coin for gas. The app signs an ordinary transfer with the stealth key and broadcasts it through your RPC.
+   - **Directly:** the one-time address must already hold native coin for gas. The app signs an ordinary transfer with the stealth key and broadcasts it through your RPC. For native coin it sends the balance minus the worst-case network fee: the gas estimated for your destination at twice the current gas price and, on OP Stack chains (Base, OP), twice the L1 data fee and operator fee quoted by the chain's fee oracle. The unused part of that reserve stays at the one-time address.
 5. The stealth key is derived in memory only for the signature and never displayed or stored. Because it is signed inside the page, there is no wallet confirmation on this path: **a compromised page could sweep to an attacker.** Read the destination on screen before you sign.
 6. Keep the transaction hash and check it on a block explorer you trust.
 

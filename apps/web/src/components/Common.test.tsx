@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from './Common';
+import { CopyButton, Field, Mono, Notice, SafeText, downloadBlob, downloadText } from './Common';
 
 afterEach(() => {
   cleanup();
@@ -61,9 +61,69 @@ describe('shared presentation helpers', () => {
     expect(blob).toHaveBeenCalledOnce();
     expect(clicked).toEqual({ href: 'blob:local', download: 'receipt.json', rel: 'noopener', connected: true });
     expect(click).toHaveBeenCalledOnce();
-    vi.advanceTimersByTime(1000);
-    expect(revoke).toHaveBeenCalledWith('blob:local');
+    expect(document.querySelector('a[download="receipt.json"]')).toBeNull();
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(999);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:local');
     vi.useRealTimers();
+  });
+
+  it('cleans up the temporary download anchor and Blob URL when browser click throws', () => {
+    const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:blocked');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('download blocked');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
+
+    expect(() => downloadText('blocked-receipt.json', '{"test":true}', 'application/json')).toThrow(blocked);
+    expect(blob).toHaveBeenCalledOnce();
+    expect(document.querySelector('a[download="blocked-receipt.json"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked');
+  });
+
+  it('revokes the Blob URL when attaching the download anchor fails', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:detached');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('document unavailable');
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => { throw blocked; });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click');
+
+    expect(() => downloadText('detached.json', '{}', 'application/json')).toThrow(blocked);
+    expect(click).not.toHaveBeenCalled();
+    expect(document.querySelector('a[download="detached.json"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:detached');
+  });
+
+  it('downloads a caller-built binary Blob unchanged and revokes its URL only after the delay', () => {
+    const bytes = new Blob([new Uint8Array([0, 255, 7])], { type: 'application/octet-stream' });
+    const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:bytes');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    vi.useFakeTimers();
+    downloadBlob('archive.gpa', bytes);
+    expect(blob).toHaveBeenCalledExactlyOnceWith(bytes);
+    expect(click).toHaveBeenCalledOnce();
+    expect(document.querySelector('a[download="archive.gpa"]')).toBeNull();
+    vi.advanceTimersByTime(999);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:bytes');
+  });
+
+  it('removes the anchor and revokes a binary Blob URL at once when the browser click throws', () => {
+    const bytes = new Blob([new Uint8Array([1, 2, 3])], { type: 'application/octet-stream' });
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:blocked-bytes');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('download blocked');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
+    vi.useFakeTimers();
+
+    expect(() => downloadBlob('blocked.gpa', bytes)).toThrow(blocked);
+    expect(document.querySelector('a[download="blocked.gpa"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked-bytes');
+    vi.runAllTimers();
+    expect(revoke).toHaveBeenCalledOnce();
   });
 
   it('renders sanitized text notices only when markers or mixed scripts need explanation', () => {
@@ -83,5 +143,41 @@ describe('shared presentation helpers', () => {
     render(<Mono>0xabc</Mono>);
     expect(screen.getByText('0xabc').tagName).toBe('CODE');
     expect(screen.getByText('0xabc').className).toContain('mono');
+  });
+});
+
+describe('CopyButton localization', () => {
+  it('shows the copy outcome in the active language (catalog draft) and English without a provider', async () => {
+    const { I18nProvider } = await import('../i18n/context');
+    const es = (await import('../../locales/es.json')).default as { messages: Record<string, string> };
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.reject(new Error('denied')) } });
+    render(<I18nProvider initialPreference="es" target={document.documentElement}><CopyButton text="x" label="Copiar" /></I18nProvider>);
+    await user.click(await screen.findByRole('button', { name: 'Copiar' }));
+    expect(await screen.findByRole('button', { name: es.messages['common.copy.failed'] ?? 'MISSING' })).toBeTruthy();
+  });
+
+  it('does not report a completed copy for replacement text', async () => {
+    let complete: (() => void) | undefined;
+    const pending = new Promise<void>((resolve) => { complete = resolve; });
+    const writeText = vi.fn(() => pending);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const { rerender } = render(<CopyButton text="first receipt" label="Copy receipt" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy receipt' }));
+    rerender(<CopyButton text="second receipt" label="Copy receipt" />);
+    await act(async () => { complete?.(); await pending; });
+    expect(writeText).toHaveBeenCalledWith('first receipt');
+    expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Copied' })).toBeNull();
+  });
+
+  it('clears a previous copy result when its text changes', async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.resolve() } });
+    const { rerender } = render(<CopyButton text="first receipt" label="Copy receipt" />);
+    await user.click(screen.getByRole('button', { name: 'Copy receipt' }));
+    expect(screen.getByRole('button', { name: 'Copied' })).toBeTruthy();
+    rerender(<CopyButton text="second receipt" label="Copy receipt" />);
+    expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
   });
 });

@@ -1,0 +1,96 @@
+name: Contract analysis
+on:
+  pull_request:
+    paths:
+      - 'packages/contracts/**'
+      - 'scripts/tests/echidna-runner.test.mjs'
+      - 'scripts/tests/mythril-runner.test.mjs'
+      - 'scripts/tests/contract-analysis-workflow.test.mjs'
+      - '.github/actions/setup-forge/**'
+      - '.github/workflows/contract-analysis.yml'
+      - '.github/workflows/nightly.yml'
+      - '.github/workflows/release.yml'
+  workflow_call:
+
+permissions:
+  contents: read
+
+# Superseded pull request analysis is cancelled. In-progress analysis for a caller (release on a tag, nightly) is
+# never cancelled by a newer run in the same group; a cancelled analyzer fails the calling release.
+concurrency:
+  group: contract-analysis-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analysis:
+    name: ${{ matrix.analyzer }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        analyzer: [echidna, mythril]
+    env:
+      ANALYZER: ${{ matrix.analyzer }}
+      ECHIDNA_VERSION: '2.2.7'
+      ECHIDNA_SHA256: 'd9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314'
+      REQUESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: ${{ matrix.analyzer }}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+      - name: Install checksum-pinned Echidna and crytic-compile
+        if: matrix.analyzer == 'echidna'
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/echidna.tar.gz"
+          curl -fsSL -o "$archive" "https://github.com/crytic/echidna/releases/download/v${ECHIDNA_VERSION}/echidna-${ECHIDNA_VERSION}-x86_64-linux.tar.gz"
+          echo "${ECHIDNA_SHA256}  $archive" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/ghostpay-analysis-bin"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/ghostpay-analysis-bin" echidna
+          echo "$RUNNER_TEMP/ghostpay-analysis-bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet 'crytic-compile==0.4.2'
+      - name: Install pinned Mythril with official compiler-host compatibility
+        if: matrix.analyzer == 'mythril'
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet 'mythril==0.24.8' 'solc-select==1.2.0' 'setuptools<81'
+          mkdir -p "$RUNNER_TEMP/ghostpay-analysis-bin"
+          install -m 755 packages/contracts/scripts/mythril-compat.py "$RUNNER_TEMP/ghostpay-analysis-bin/myth"
+          echo "$RUNNER_TEMP/ghostpay-analysis-bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/ghostpay-analysis-bin/myth" version
+          solc-select install 0.8.28
+          solc-select use 0.8.28
+      - name: Execute the unchanged full analyzer runner
+        id: analysis
+        timeout-minutes: 100
+        working-directory: packages/contracts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ghostpay-contract-analysis"
+          status=0
+          bash "scripts/run-${ANALYZER}.sh" > "$RUNNER_TEMP/ghostpay-contract-analysis/report.log" 2>&1 || status=$?
+          printf '%s\n' "$status" > "$RUNNER_TEMP/ghostpay-contract-analysis/exit-code.txt"
+          exit "$status"
+      - name: Preserve bounded output and exact source/outcome metadata
+        if: always()
+        env:
+          ANALYSIS_OUTCOME: ${{ steps.analysis.outcome }}
+        run: python3 packages/contracts/scripts/collect-analysis-report.py "$RUNNER_TEMP/ghostpay-contract-analysis" "$RUNNER_TEMP/ghostpay-contract-analysis-artifact"
+      - name: Upload analysis evidence even after a failing gate
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contract-analysis-${{ matrix.analyzer }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/ghostpay-contract-analysis-artifact
+          if-no-files-found: error
+          retention-days: 14

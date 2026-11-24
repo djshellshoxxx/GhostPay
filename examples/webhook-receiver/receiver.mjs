@@ -18,7 +18,10 @@ function readBody(req, limit) {
       }
       chunks.push(c);
     });
-    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('end', () => {
+      try { resolve(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.concat(chunks))); }
+      catch { reject(Object.assign(new Error('invalid-utf8'), { status: 400 })); }
+    });
     req.on('error', reject);
   });
 }
@@ -31,7 +34,7 @@ function reply(res, status, obj) {
 
 /**
  * @param {{ secret: Uint8Array, now?: () => number, onEvent: (event: object) => Promise<void> | void,
- *           toleranceSeconds?: number }} opts
+ *           toleranceSeconds?: number, store?: import('./durable-store.mjs').DurableWebhookStore }} opts
  * @returns {(req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse) => Promise<void>}
  */
 export function createReceiver(opts) {
@@ -42,10 +45,26 @@ export function createReceiver(opts) {
     try {
       if (req.url !== PATH) return reply(res, 404, { ok: false });
       if (req.method !== 'POST') return reply(res, 405, { ok: false });
+      if (!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(req.headers['content-type'] ?? '') ||
+          (req.headers['content-encoding'] !== undefined && req.headers['content-encoding'] !== 'identity')) return reply(res, 415, { ok: false });
       const header = req.headers['ghostpay-signature'];
       if (typeof header !== 'string') return reply(res, 400, { ok: false });
       // Verify the EXACT bytes received, before any JSON parsing.
       const body = await readBody(req, MAX_BODY_BYTES);
+      if (opts.store) {
+        const claim = opts.store.accept(opts.secret, body, header, { now: now(), toleranceSeconds: opts.toleranceSeconds });
+        if (claim.kind === 'invalid' || claim.kind === 'conflict') return reply(res, 400, { ok: false });
+        if (claim.kind === 'done') return reply(res, 200, { ok: true, duplicate: true });
+        if (claim.kind !== 'claimed') return reply(res, 503, { ok: false, retry: true });
+        try {
+          await opts.onEvent(claim.event, { idempotencyKey: claim.event.id });
+        } catch {
+          opts.store.uncertain(claim.event.id, claim.token, now());
+          return reply(res, 503, { ok: false, retry: true });
+        }
+        opts.store.complete(claim.event.id, claim.token, now());
+        return reply(res, 200, { ok: true });
+      }
       const v = verifyWebhook(opts.secret, body, header, {
         now: now(),
         nonces,
@@ -59,17 +78,22 @@ export function createReceiver(opts) {
       } catch {
         return reply(res, 400, { ok: false });
       }
-      // Idempotency: a retried delivery of the same event id is acknowledged but not processed twice.
-      if (!seen.claim(event.id)) return reply(res, 200, { ok: true, duplicate: true });
+      // Idempotency: a redelivery of an event already handled is acknowledged but not processed twice. A redelivery
+      // that arrives while an earlier delivery is still in onEvent() gets a retryable 503: that attempt may still
+      // fail, and a 2xx would stop the sender's retries.
+      const claim = seen.begin(event.id);
+      if (claim === 'done') return reply(res, 200, { ok: true, duplicate: true });
+      if (claim === 'processing') return reply(res, 503, { ok: false, retry: true });
       try {
         await opts.onEvent(event);
       } catch {
         seen.release(event.id); // let the sender's retry schedule try again
         return reply(res, 500, { ok: false });
       }
+      seen.complete(event.id);
       return reply(res, 200, { ok: true });
     } catch (e) {
-      return reply(res, e?.status === 413 ? 413 : 400, { ok: false });
+      return reply(res, [400, 413].includes(e?.status) ? e.status : opts.store ? 503 : 400, { ok: false });
     }
   };
 }

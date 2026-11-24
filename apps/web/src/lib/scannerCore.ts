@@ -8,6 +8,7 @@ import {
   parseCompressedPoint,
   secretScalarFromBytes,
   zeroize,
+  type AnnouncementCheck,
   type CompressedPoint,
   type SecretScalar,
 } from '@ghostpay/core-crypto';
@@ -46,12 +47,30 @@ function hexToPoint(hex: string): CompressedPoint {
   return parseCompressedPoint(Uint8Array.from(hex.match(/../g) ?? [], (h) => parseInt(h, 16)));
 }
 
+/** Distinct announcements remembered per session (spec 05 replay memo); the memo is dropped, not evicted, when full. */
+export const REPLAY_MEMO_LIMIT = 4096;
+const EPHEMERAL_HEX = /^0x(?:02|03)[0-9a-fA-F]{64}$/;
+const ADDRESS_HEX = /^0x[0-9a-fA-F]{40}$/;
+const METADATA_HEX = /^0x(?:[0-9a-fA-F]{2})+$/;
+
+/**
+ * Memo key for a well-formed announcement, or undefined when the outcome may depend on more than these fields. Given the
+ * keys, `checkAnnouncement` is a function of the ephemeral key, the announced tag (the first metadata byte), the announced
+ * address and the deep-scan flag alone, so an exact replay (the cheapest spam: copying an announcement) costs a lookup
+ * instead of an ECDH. Raw strings are kept as given: a checksum-cased address that fails the strict check is its own key.
+ */
+function memoKey(log: WireLog): string | undefined {
+  if ((log.schemeId !== 1n) || !EPHEMERAL_HEX.test(log.ephemeralPublicKey) || !ADDRESS_HEX.test(log.stealthAddress) || !METADATA_HEX.test(log.metadata)) return undefined;
+  return `${log.skipTag === true ? 'd' : 's'}|${log.ephemeralPublicKey}|${log.metadata.slice(2, 4).toLowerCase()}|${log.stealthAddress}`;
+}
+
 /** One scan: holds the viewing scalar only until `dispose()`. */
 export class ScanSession {
   private secret: SecretScalar | undefined;
   private readonly spend: CompressedPoint;
   private cancelled = false;
   private total = 0;
+  private readonly memo = new Map<string, AnnouncementCheck>();
 
   public constructor(viewingKey: Uint8Array, spendingPublicKey: string) {
     try {
@@ -64,6 +83,7 @@ export class ScanSession {
 
   public cancel(): void {
     this.cancelled = true;
+    this.memo.clear();
     if (this.secret !== undefined) zeroize(this.secret);
   }
 
@@ -79,7 +99,15 @@ export class ScanSession {
     for (let i = 0; i < logs.length; i++) {
       if (this.cancelled) break;
       const log = logs[i] as WireLog;
-      const hit = checkAnnouncement(log, secret, this.spend, log.skipTag === true ? { ignoreViewTag: true } : {});
+      const key = memoKey(log);
+      let hit = key === undefined ? undefined : this.memo.get(key);
+      if (hit === undefined) {
+        hit = checkAnnouncement(log, secret, this.spend, log.skipTag === true ? { ignoreViewTag: true } : {});
+        if (key !== undefined) {
+          if (this.memo.size >= REPLAY_MEMO_LIMIT) this.memo.clear();
+          this.memo.set(key, hit);
+        }
+      }
       this.total++;
       if (hit.matches) out.push({ id: log.id, stealthAddress: hit.stealthAddress, tagMatches: hit.tagMatches ?? true });
       if (onProgress !== undefined && i % 128 === 127) onProgress(this.total);
@@ -88,6 +116,7 @@ export class ScanSession {
   }
 
   public dispose(): void {
+    this.memo.clear();
     if (this.secret !== undefined) zeroize(this.secret);
     this.secret = undefined;
   }

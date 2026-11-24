@@ -12,6 +12,7 @@ export function LanguagePicker(props: { readonly allowPseudo?: boolean }): React
   const i18n = useI18n();
   const id = useId();
   const hintId = `${id}-hint`;
+  const persistenceId = `${id}-persistence`;
   const showPseudo = props.allowPseudo ?? import.meta.env.DEV;
   const list = showPseudo ? [...LANGUAGES, ...PSEUDO_LANGUAGES] : LANGUAGES;
 
@@ -26,7 +27,8 @@ export function LanguagePicker(props: { readonly allowPseudo?: boolean }): React
       <label htmlFor={id}>{i18n.t('i18n.picker.label')}</label>
       <select
         id={id}
-        aria-describedby={hintId}
+        aria-describedby={i18n.persisted ? hintId : `${hintId} ${persistenceId}`}
+        aria-busy={i18n.status === 'loading'}
         value={i18n.preference}
         onChange={(e) => {
           i18n.setPreference(e.target.value);
@@ -45,6 +47,10 @@ export function LanguagePicker(props: { readonly allowPseudo?: boolean }): React
       <p id={hintId} className="hint">
         {i18n.t('i18n.picker.hint')}
       </p>
+      <p className="hint" role="status" aria-live="polite" aria-atomic="true">
+        {i18n.status === 'loading' ? i18n.t('i18n.picker.loading') : ''}
+      </p>
+      {!i18n.persisted && <p id={persistenceId} className="hint" role="status">{i18n.t('i18n.picker.notPersisted')}</p>}
       {i18n.status === 'error' && <p role="alert">{i18n.t('i18n.loadFailed')}</p>}
     </div>
   );

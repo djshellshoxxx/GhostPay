@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 124,
+  "offset_end": 138,
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 712,
+      "merge_base": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 686,
+      "merge_base": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 689,
+      "merge_base": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 730,
+      "merge_base": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 696,
+      "merge_base": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 724,
+      "merge_base": "b1150eb8280ac5259fad620f0b762e83c19cf71d",
+      "files": [
+        [
+          "apps/web/src/lib/format.ts",
+          "modified",
+          5,
+          3
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "status": "diverged",
+      "ahead": 42,
+      "behind": 693,
+      "merge_base": "85f525165d6c94c3c6b908930df712e9e7ac66f7",
+      "files": [
+        [
+          "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+          "modified",
+          364,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "status": "diverged",
+      "ahead": 3,
+      "behind": 502,
+      "merge_base": "a89a2e948321314acf97db435e9776d9322a9461",
+      "files": [
+        [
+          "apps/web/src/lib/scanSpam.test.ts",
+          "modified",
+          22,
+          0
+        ],
+        [
+          "apps/web/src/lib/scanSpam.ts",
+          "modified",
+          4,
+          0
+        ],
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          1,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 697,
+      "merge_base": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "status": "diverged",
+      "ahead": 7,
+      "behind": 518,
+      "merge_base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "files": [
+        [
+          "apps/web/src/lib/qrKinds.test.ts",
+          "modified",
+          3,
+          0
+        ],
+        [
+          "apps/web/src/lib/qrKinds.ts",
+          "modified",
+          4,
+          3
+        ],
+        [
+          "apps/web/src/lib/relayerClient.test.ts",
+          "modified",
+          19,
+          0
+        ],
+        [
+          "apps/web/src/lib/relayerClient.ts",
+          "modified",
+          39,
+          2
+        ],
+        [
+          "apps/web/src/lib/scanSpam.test.ts",
+          "modified",
+          22,
+          0
+        ],
+        [
+          "apps/web/src/lib/scanSpam.ts",
+          "modified",
+          4,
+          0
+        ],
+        [
+          "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md",
+          "added",
+          11,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 708,
+      "merge_base": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 725,
+      "merge_base": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 709,
+      "merge_base": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 723,
+      "merge_base": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

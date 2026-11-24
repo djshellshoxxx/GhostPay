@@ -20,7 +20,7 @@ export function readExact(
   path: string,
 ): Record<string, unknown> {
   const rec = asRecord(value, code, path);
-  const own = Object.keys(rec);
+  const own = Reflect.ownKeys(rec);
   if (own.length !== keys.length) throw new MultisigError(code, path);
   const out: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
   for (const k of keys) {
@@ -88,3 +88,16 @@ export const INVOICE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 export const HEX32_RE = /^[0-9a-f]{64}$/;
 /** 64-byte compact signature, lowercase hex. */
 export const SIG_RE = /^[0-9a-f]{128}$/;
+
+/** Bounded dense data-only array; never invoke element accessors. */
+export function readArray(value: unknown, max: number, code: MultisigErrorCode, path: string): unknown[] {
+  if (!Array.isArray(value) || value.length > max) throw new MultisigError(code, path);
+  if (Reflect.ownKeys(value).length !== value.length + 1) throw new MultisigError(code, path);
+  const out: unknown[] = [];
+  for (let i = 0; i < value.length; i++) {
+    const d = Object.getOwnPropertyDescriptor(value, String(i));
+    if (d === undefined || !('value' in d)) throw new MultisigError(code, path);
+    out.push(d.value);
+  }
+  return out;
+}

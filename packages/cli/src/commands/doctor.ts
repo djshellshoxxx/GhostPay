@@ -19,7 +19,7 @@ interface Check {
   readonly detail: string;
 }
 
-const MIN_NODE_MAJOR = 20;
+const MIN_NODE_MAJOR = 22;
 const MIN_SANE_TIME = 1_700_000_000;
 /** Public secp256k1 generator G and 2G (compressed): the well-known points for keys 1 and 2. */
 const G = '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
@@ -57,7 +57,7 @@ export const doctorCommands: readonly Command[] = [
   {
     path: ['doctor'],
     summary: 'self-test this installation (offline)',
-    usage: 'ghostpay doctor\n  Checks Node version, WebCrypto, randomness, signing, encrypted links, catalogs and the clock. Makes no network calls.',
+    usage: 'ghostpay doctor\n  Checks Node >=22, WebCrypto, randomness, signing, encrypted links, catalogs and the clock. Makes no network calls.',
     opts: {},
     handler: async (ctx, a) => {
       noPositionals(a);
@@ -104,7 +104,7 @@ export const doctorCommands: readonly Command[] = [
       );
       const now = ctx.io.nowSeconds();
       checks.push({ name: 'clock', ok: Number.isSafeInteger(now) && now >= MIN_SANE_TIME, detail: now >= MIN_SANE_TIME ? 'looks sane' : 'system clock looks wrong; expiry checks depend on it' });
-      checks.push({ name: 'network', ok: true, detail: 'none used: this CLI makes no network calls and sends no telemetry' });
+      checks.push({ name: 'network', ok: true, detail: 'none used: this self-test makes no network calls and sends no telemetry' });
       const ok = checks.every((c) => c.ok);
       ctx.out({ ok, checks }, [...checks.map((c) => `${c.ok ? 'ok  ' : 'FAIL'} ${c.name.padEnd(10)} ${c.detail}`), ok ? 'all checks passed' : 'some checks failed'].join('\n'));
       return ok ? 0 : 1;

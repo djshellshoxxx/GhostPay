@@ -1,0 +1,1409 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "djshellshoxxx/GhostPay",
+    "baseCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "reviewDate": "2026-11-18",
+    "branchContext": "Current main baseline plus the scoped transport/startup repairs in codex/ghostpay-browser-isolation-20261118; active privacy integrations remain separate."
+  },
+  "scope": "Application-controlled browser networking for full and lean Pages builds; backend/node-only/unshipped research transports are not represented as shipped behavior.",
+  "evidenceKind": "Source-reviewed inventory. Regression and browser evidence is recorded separately in docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md; catalog coverage is not a guarantee of universal enforcement.",
+  "applicationEnforceable": [
+    "Validate endpoint scheme/host/path before dispatch",
+    "Reject redirects and unapproved endpoint switching",
+    "Omit application cookies/referrer and prevent response caching where APIs permit",
+    "Apply selected policy at each app-controlled dispatch and retry",
+    "Bound deadlines and response bytes",
+    "Minimize payloads and avoid keys/secret identifiers in network data",
+    "Require action-specific authorization",
+    "Keep network-free workers behind constrained main-thread bridges",
+    "Use same-origin active assets and detect new egress in tests"
+  ],
+  "unavoidableOrExternal": [
+    "Browser-selected DNS, source IP, TLS/SNI, timing, HTTP Origin/CORS, browser/extension traffic and endpoint logging cannot be fully hidden or governed by a static application.",
+    "Public-chain payer, amount, asset, timing and transaction relationships remain visible.",
+    "A selected RPC, relayer, oracle or merchant can observe requests it receives.",
+    "Host compromise can change JavaScript; an in-app hash is not independent source attestation.",
+    "Already-dispatched requests and broadcasts cannot be made unsent by a later policy change or page reload."
+  ],
+  "activeWorkBoundary": "Recovery/keypair export, Mythril remediation, broad consolidation, #222 privacy integration, #228 own-node guard, #231 sweep consent and #233 existing journey fixtures remain separate owners. This task repairs unowned lower transport/startup files.",
+  "surfaces": [
+    {
+      "id": "static-assets",
+      "flows": [
+        "startup",
+        "navigation",
+        "lazy-loaded-modules"
+      ],
+      "sourcePaths": [
+        "apps/web/index.html",
+        "apps/web/src/main.tsx",
+        "apps/web/src/styles/app.css",
+        "apps/web/vite.config.ts",
+        "apps/web/public/_headers"
+      ],
+      "symbols": [
+        "HTML resource loader",
+        "localBuildProfilePlugins"
+      ],
+      "trigger": "Loading or navigating the application loads HTML, modules, CSS, favicon and local resources.",
+      "destination": "Current hosting origin and subpath.",
+      "transport": "browser-resource-loader",
+      "sensitiveData": [
+        "IP address",
+        "user agent",
+        "request timing",
+        "URL path and query"
+      ],
+      "automatic": true,
+      "authorization": "The user's navigation initiates ordinary app resource loading; no separate network consent is requested.",
+      "privatePath": "Same-origin CSP restricts active assets. Ambient browser/network routing is external; same-origin resource loading is not routed through Services.fetchFn.",
+      "failureBehavior": "Ordinary browser load failures; no fallback CDN or mandatory third-party assets were found.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Source review only; hosting/CSP changes may overlap active Pages work.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "release-hash",
+      "flows": [
+        "startup",
+        "release-identification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/release.ts",
+        "apps/web/src/views/Home.tsx"
+      ],
+      "symbols": [
+        "computeReleaseHash",
+        "entryScriptUrl",
+        "Home"
+      ],
+      "trigger": "Home mounts and recomputes the entry-script hash.",
+      "destination": "The current entry script, validated against the page origin.",
+      "transport": "fetch",
+      "sensitiveData": [
+        "connection metadata",
+        "asset identity"
+      ],
+      "automatic": true,
+      "authorization": "Automatic after navigation to Home.",
+      "privatePath": "Same-origin HTTP(S) only, mode same-origin, redirect error; credentials omitted, no-store and no-referrer. Browser routing remains external.",
+      "failureBehavior": "Fixed hash-unavailable UI; no retry/fallback; 8 MiB streamed cap and 15-second deadline cover non-cooperative injected fetch/streams; late bodies discarded.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "root: release.ts and focused tests/browser acceptance",
+      "status": "implemented; qualification evidence in handoff",
+      "testPaths": [
+        "apps/web/src/lib/release.test.ts",
+        "apps/web/e2e/network-isolation.spec.ts"
+      ]
+    },
+    {
+      "id": "bundled-manifest",
+      "flows": [
+        "startup",
+        "manifest-loading"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/manifest.ts",
+        "apps/web/src/lib/bundledManifests.ts"
+      ],
+      "symbols": [
+        "loadDefaultManifest",
+        "loadBundledManifest",
+        "BUNDLED_MANIFESTS"
+      ],
+      "trigger": "A flow asks the default services for a deployment manifest.",
+      "destination": "None; manifest text is compiled into the application.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "No remote action or data transfer.",
+      "privatePath": "Local-only operation; no transport alternative is needed.",
+      "failureBehavior": "Absent, unsigned or invalid compiled manifest keeps affected payments disabled.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "defaultServices is actively owned by #222/#228; preserve bundled behavior.",
+      "status": "zero-egress"
+    },
+    {
+      "id": "manual-manifest-helper",
+      "flows": [
+        "manual-manifest-readback",
+        "test-fixture"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/manifest.ts"
+      ],
+      "symbols": [
+        "loadManifest"
+      ],
+      "trigger": "Manual/test helper invocation; not the default app service.",
+      "destination": "Caller-supplied base plus deployments/<chainId>.json.",
+      "transport": "fetch",
+      "sensitiveData": [
+        "chain selection",
+        "connection metadata"
+      ],
+      "automatic": false,
+      "authorization": "Caller must explicitly invoke this helper; default app does not fetch manifests.",
+      "privatePath": "No cookies, referrer, redirects or cache; caller-supplied fetch can govern routing.",
+      "failureBehavior": "Returns absent or invalid; no alternate manifest server is contacted.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Read-only helper inventory.",
+      "status": "helper-not-used-by-default-app"
+    },
+    {
+      "id": "evm-rpc-health",
+      "flows": [
+        "rpc-configuration",
+        "chain-validation"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Settings.tsx",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/AppShell.tsx",
+        "packages/chain-adapters/src/rpc.ts"
+      ],
+      "symbols": [
+        "createDefaultServices",
+        "createClient",
+        "rpcFor"
+      ],
+      "trigger": "Settings connection check or first creation of a selected chain client.",
+      "destination": "User-configured EVM RPC URL.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "chain selection",
+        "connection metadata"
+      ],
+      "automatic": true,
+      "authorization": "Explicit configuration/check, or automatic initialization during a requested flow.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Invalid chain/URL/transport fails; RPC retries must not change destination or weaken policy.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/#228 own defaultServices/Settings/RPC integration.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-deployment-readback",
+      "flows": [
+        "pay",
+        "scan",
+        "sweep",
+        "deployment-verification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/manifest.ts",
+        "packages/chain-adapters/src/deploymentsVerify.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/views/Scan.tsx"
+      ],
+      "symbols": [
+        "verifyManifestForFlow",
+        "verifyManifestState",
+        "verifyManifestOnChain"
+      ],
+      "trigger": "A configured flow verifies compiled contract addresses and runtime state.",
+      "destination": "Selected EVM RPC; public deployment contract addresses in eth_call/eth_getCode.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "chain and public-contract selection",
+        "connection metadata"
+      ],
+      "automatic": true,
+      "authorization": "Automatic prerequisite to the selected flow; not an authorization to send a transaction.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Any unavailable or mismatching readback blocks use of the manifest; no silent manifest substitution.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222 privacy and concurrent broad consolidation own related flows.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-scan-bulk",
+      "flows": [
+        "evm-scan"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "packages/chain-adapters/src/logs.ts",
+        "packages/net-transport/src/fetchTransport.ts"
+      ],
+      "symbols": [
+        "planScan",
+        "openScanClients",
+        "createWindowedScanClient",
+        "createFetchTransport"
+      ],
+      "trigger": "User starts a scan; the operation issues bounded block/log requests.",
+      "destination": "Settings RPC or explicitly configured per-chain scan endpoint/local proxy.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "block ranges",
+        "scan timing",
+        "chain choice"
+      ],
+      "automatic": true,
+      "authorization": "User-initiated scan; view/spend keys are used locally and are not in RPC filters.",
+      "privatePath": "Existing scan plan blocks required-private-path/direct conflict, requires a local proxy endpoint when selected, and omits the direct secondary RPC in required-local-proxy mode. Existing clients capture a plan; global per-dispatch policy changes need integration.",
+      "failureBehavior": "Configured private endpoint failure aborts instead of switching to Settings RPC. Bounded retries/windows remain on the same path.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/scan privacy/RPC-filter ownership; lower net-transport repair separately owned.",
+      "status": "baseline-source-reviewed",
+      "transportHardening": "Alternate/private scan endpoint transport settles bounded failures, drops late responses and redacts foreign transport errors; no endpoint fallback added. Upper-level policy remains separately owned.",
+      "testPaths": [
+        "packages/net-transport/src/fetchIsolation.test.ts",
+        "apps/web/src/lib/scanPrivacy.transport.test.ts"
+      ]
+    },
+    {
+      "id": "evm-scan-indexer",
+      "flows": [
+        "evm-scan",
+        "indexer"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanPrivacy.ts",
+        "packages/scan-source/src/indexer.ts"
+      ],
+      "symbols": [
+        "checkIndexerUrl",
+        "fetchHttpTransport",
+        "createIndexerScanClient"
+      ],
+      "trigger": "An explicitly configured indexer scan requests announcement windows.",
+      "destination": "User-configured indexer URL; selected RPC witnesses canonical blocks.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "chain choice",
+        "block ranges",
+        "activity timing"
+      ],
+      "automatic": true,
+      "authorization": "Indexer must be selected and configured; requests occur within an initiated scan.",
+      "privatePath": "Required local-proxy configuration only permits a loopback indexer. No automatic hosted indexer or PIR service is selected.",
+      "failureBehavior": "Bounded requests refuse redirects, cookies/referrer and oversized responses; no direct provider fallback.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222 owns scanPrivacy and scan-source work; verify exact indexer source path before final integration.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "evm-scan-verification",
+      "flows": [
+        "evm-scan",
+        "payment-evidence"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanClient.ts",
+        "packages/chain-adapters/src/payments.ts",
+        "packages/chain-adapters/src/verify.ts"
+      ],
+      "symbols": [
+        "verifyPayment",
+        "createClient.request"
+      ],
+      "trigger": "Local matching triggers payment/receipt/header verification.",
+      "destination": "The scan RPC and, when enabled, an independent secondary RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "matched transaction hashes",
+        "matched stealth-address relationships",
+        "receipt and timing interest"
+      ],
+      "automatic": true,
+      "authorization": "Part of the user-started scan; follow-up queries may reveal the local match set.",
+      "privatePath": "Selected scan transport applies. Bulk-evidence work exists in #222; ordinary per-match receipts must not be described as unlinkable.",
+      "failureBehavior": "Malformed or inconsistent evidence stays unverified; no payment success is inferred from a matching announcement alone.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222 and rpc-filter/privacy consolidation active.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-secondary-verification",
+      "flows": [
+        "evm-scan",
+        "independent-provider-check"
+      ],
+      "sourcePaths": [
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/views/Scan.tsx",
+        "packages/chain-adapters/src/rpc.ts"
+      ],
+      "symbols": [
+        "getSecondaryRpc",
+        "planScan.useSecondary",
+        "requestWithFallbackCheck"
+      ],
+      "trigger": "User-configured second RPC compares scan evidence.",
+      "destination": "Secondary Settings RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "same block/log/transaction interests disclosed to another provider"
+      ],
+      "automatic": true,
+      "authorization": "Separate endpoint configuration; automatic follow-up within a scan.",
+      "privatePath": "Required local-proxy plan disables the direct secondary path; two independent providers improve consistency but increase the set of observers.",
+      "failureBehavior": "Disagreement/refusal does not silently transform failed private routing into direct scanning.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/#228; do not duplicate existing ownership.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-payment-preflight",
+      "flows": [
+        "invoice-payment",
+        "fee-estimation",
+        "permit"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/payExec.ts",
+        "apps/web/src/lib/txGuard.ts"
+      ],
+      "symbols": [
+        "refreshContext",
+        "createPayContext",
+        "readAllowance",
+        "simulateCall"
+      ],
+      "trigger": "Invoice context refresh, wallet-connected preparation, fee/permit/allowance and simulation checks.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "payer account",
+        "recipient and stealth destination",
+        "token and amount",
+        "permit nonce",
+        "transaction calldata",
+        "fee/timing interest"
+      ],
+      "automatic": true,
+      "authorization": "Some context/readback runs after invoice input; signing and sending still require user action. Manual initiation alone is not proof of action-specific privacy consent.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Failed verification/simulation blocks sending; no automatic alternative RPC should be introduced.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Existing payment/consolidation owners; inspect exact overlap before edits.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "external-wallet-provider",
+      "flows": [
+        "wallet-discovery",
+        "connect",
+        "switch-chain",
+        "sign",
+        "send",
+        "registry",
+        "policy-account"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "apps/web/src/features/policy/PolicyReceive.tsx"
+      ],
+      "symbols": [
+        "discoverWallets",
+        "connectWallet",
+        "signTypedDataViaWallet",
+        "sendViaWallet"
+      ],
+      "trigger": "Explicit wallet discovery/connection, chain switch, signature or send; consistency probes surround authority-sensitive operations.",
+      "destination": "Injected EIP-1193 provider and the wallet's independently selected services.",
+      "transport": "external-wallet-provider",
+      "sensitiveData": [
+        "wallet accounts",
+        "chain",
+        "typed data",
+        "signature request",
+        "complete transaction",
+        "origin identity"
+      ],
+      "automatic": true,
+      "authorization": "Wallet connect/sign/send is explicit; consistency probes are automatic within that operation.",
+      "privatePath": "The app can refuse to invoke a provider and can explain exposure. It cannot force the extension/wallet RPC through the app's proxy, inspect wallet internals, or stop independent extension requests.",
+      "failureBehavior": "Wallet refusal/changed account/chain aborts the app flow; do not infer that an ambiguous send did not occur.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "External-wallet boundary; preserve existing wallet correctness safeguards.",
+      "status": "external-boundary"
+    },
+    {
+      "id": "evm-payment-status",
+      "flows": [
+        "payment-followup",
+        "receipt-polling"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/lib/payExec.ts",
+        "apps/web/src/lib/transactionOutcome.ts"
+      ],
+      "symbols": [
+        "verifySubmission",
+        "pollReceipt"
+      ],
+      "trigger": "After a user-approved send, poll transaction and receipt status.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "transaction hash",
+        "sender/recipient contract relationship",
+        "poll timing"
+      ],
+      "automatic": true,
+      "authorization": "Automatic bounded follow-up to an authorized send; not a new authorization to broadcast.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Unavailable/mismatching receipts remain unknown or failed as appropriate; no automatic duplicate send.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Payment/consolidation ownership.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-sweep-balance",
+      "flows": [
+        "sweep",
+        "balance-read"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/scanPrivacy.ts"
+      ],
+      "symbols": [
+        "readBalance",
+        "privatePathForbidsDirect",
+        "balanceAllowed"
+      ],
+      "trigger": "A selected payment opens Sweep, or user explicitly requests a balance when required by privacy settings.",
+      "destination": "Settings EVM RPC via eth_getBalance or token balanceOf.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "exact stealth owner",
+        "token",
+        "balance interest",
+        "network identity"
+      ],
+      "automatic": true,
+      "authorization": "Baseline conditionally suppresses automatic reads; #231 owns stronger action-bound balance consent.",
+      "privatePath": "The scan proxy and Settings RPC are separate at baseline. Opening a result must not be assumed to authorize a direct disclosure.",
+      "failureBehavior": "Unavailable balance is not zero and must not enable an unsafe spend. Failed private-path reads cannot change route.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#231 Sweep consent; #222/#228 policy integration.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-direct-sweep",
+      "flows": [
+        "direct-sweep",
+        "replacement-sweep",
+        "fee-estimation",
+        "broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/sweep.ts"
+      ],
+      "symbols": [
+        "directSweep",
+        "readBalance",
+        "eth_sendRawTransaction"
+      ],
+      "trigger": "Explicit preparation, signature and direct sweep/broadcast; replacement preparation uses the existing attempt state.",
+      "destination": "Settings EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "owner",
+        "destination",
+        "token",
+        "amount",
+        "nonce",
+        "native balance",
+        "gas estimate",
+        "signed raw transaction"
+      ],
+      "automatic": true,
+      "authorization": "Manual send workflow with multiple automatic prerequisite reads; each disclosed destination must be clear before execution.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Keep exact nonce/fee/attempt guards. Failed reads or ambiguous broadcast must not trigger endpoint downgrade or duplicate send.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/#231 Sweep and consolidation owners.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "evm-relayer-quote",
+      "flows": [
+        "relayed-sweep",
+        "quote"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx"
+      ],
+      "symbols": [
+        "requestQuote",
+        "getSweepQuote"
+      ],
+      "trigger": "User requests a relayer quote.",
+      "destination": "User-configured relayer base plus /v1/quote.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "chain",
+        "token",
+        "stealth owner",
+        "destination",
+        "amount",
+        "IP and timing"
+      ],
+      "automatic": false,
+      "authorization": "Explicit quote request with configured relayer; does not by itself authorize a sweep.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Existing relayer requests already omit credentials/referrer/cache and reject redirects.",
+      "failureBehavior": "Refusal/timeout yields a public error; no implicit direct sweep fallback. Baseline abort-only deadline is a separate liveness limitation.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222 owns relayerClient; do not duplicate its active changes.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "evm-relayer-submit",
+      "flows": [
+        "relayed-sweep",
+        "broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx"
+      ],
+      "symbols": [
+        "submitSweep",
+        "relayedSweep"
+      ],
+      "trigger": "User confirms the reviewed relayed sweep.",
+      "destination": "User-configured relayer base plus /v1/sweep.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "signed order",
+        "owner and destination",
+        "token and amount",
+        "fee",
+        "nonce/deadline",
+        "permit",
+        "quote token"
+      ],
+      "automatic": false,
+      "authorization": "Explicit signature and submission; quote consent is not persistent approval for unrelated submissions.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Request rejects redirects and omits credentials/referrer/cache; relayer network onward to its own RPC is outside the app.",
+      "failureBehavior": "Preserve before-broadcast refusal classification. Unknown or ambiguous responses remain potentially submitted and must not be automatically resent.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222 owns relayerClient/Sweep integration.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "evm-sweep-status",
+      "flows": [
+        "sweep-followup",
+        "replacement",
+        "attempt-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx"
+      ],
+      "symbols": [
+        "reconcileSweepLock",
+        "eth_getTransactionReceipt",
+        "eth_getTransactionCount"
+      ],
+      "trigger": "User checks an existing attempt or prepares a replacement/re-sign action.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "transaction hash",
+        "owner nonce",
+        "relayer order state",
+        "destination relationship"
+      ],
+      "automatic": true,
+      "authorization": "Explicit status/replacement flow with dependent reads; does not independently permit a new broadcast.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Unknown-after-handoff remains uncertain; a forgotten/missing receipt is not proof no transaction was sent.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/#231 and transaction/consolidation owners.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "registry-lookup",
+      "flows": [
+        "registry",
+        "ens"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "packages/chain-adapters/src/registry.ts",
+        "packages/chain-adapters/src/registryEns.ts"
+      ],
+      "symbols": [
+        "lookupMetaAddress",
+        "buildLookupCall"
+      ],
+      "trigger": "Explicit registrant address or ENS lookup.",
+      "destination": "Selected EVM RPC; ERC-6538 or universal resolver contracts.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "registrant address",
+        "ENS name",
+        "intended-payee relationship"
+      ],
+      "automatic": false,
+      "authorization": "User lookup action.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy. ENS path rejects offchain gateway continuation; no external resolver fetch is used.",
+      "failureBehavior": "Unavailable/invalid lookup fails without alternative gateway or chain fallback.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Registry/consolidation scope; source reviewed only.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "registry-publication",
+      "flows": [
+        "registry",
+        "public-identity-link"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "apps/web/src/lib/registry.ts",
+        "packages/chain-adapters/src/registryDelegation.ts",
+        "apps/web/src/lib/wallet.ts"
+      ],
+      "symbols": [
+        "buildRegisterKeys",
+        "signTypedDataViaWallet"
+      ],
+      "trigger": "User reviews and confirms publication/clearing/delegated registry operation.",
+      "destination": "Selected EVM RPC plus external wallet provider; eventual public chain.",
+      "transport": "json-rpc-and-external-wallet",
+      "sensitiveData": [
+        "wallet/meta-address association",
+        "public viewing/spending keys",
+        "signed registry authorization"
+      ],
+      "automatic": true,
+      "authorization": "Explicit registry consent/review and wallet action.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy. Wallet internals are external; clearing the current registry value cannot erase prior chain history.",
+      "failureBehavior": "Changed authority/failed readback/signature blocks operation; preserve stale-state guards.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Registry/consolidation ownership.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "policy-account",
+      "flows": [
+        "policy-payment",
+        "deploy",
+        "withdraw",
+        "policy-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/policy/PolicyReceive.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/chain.ts",
+        "apps/web/src/features/policy/withdrawalState.ts",
+        "apps/web/src/features/policy/paymentEvidence.ts"
+      ],
+      "symbols": [
+        "PolicyReceive",
+        "PolicyPay",
+        "getBalance"
+      ],
+      "trigger": "Full-profile policy account workflows and associated evidence/status checks.",
+      "destination": "Selected EVM RPC plus external wallet provider.",
+      "transport": "json-rpc-and-external-wallet",
+      "sensitiveData": [
+        "policy account",
+        "destination",
+        "balance",
+        "withdrawal/transaction history",
+        "calldata and signatures"
+      ],
+      "automatic": true,
+      "authorization": "Action-dependent explicit preparation/sign/send with automatic verification reads.",
+      "privatePath": "At the pinned baseline only EVM scan-private-path choices are enforced by scanPrivacy. Ordinary Settings RPC remains a separate path. Incoming own-node guard #228 checks every EVM dispatch but does not implement universal scan-private-path policy.",
+      "failureBehavior": "Malformed/stale evidence or changed authority blocks signing. Preserve withdrawal/attempt journal and do not broaden policy-recovery scope.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Policy/consolidation ownership; not part of this worker's implementation.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "merchant-profile-fetch",
+      "flows": [
+        "merchant-checkout",
+        "profile-load"
+      ],
+      "sourcePaths": [
+        "apps/web/src/components/MerchantProfilePanel.tsx",
+        "apps/web/src/lib/embedHost.ts",
+        "apps/web/src/lib/merchantIdentity.ts"
+      ],
+      "symbols": [
+        "fetchMerchantProfile",
+        "merchantProfileUrl"
+      ],
+      "trigger": "User presses Load for a merchant URL; merely opening checkout does not fetch it.",
+      "destination": "User-entered HTTPS profile URL, including any explicitly supplied query.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "merchant relationship",
+        "URL/query",
+        "IP and timing"
+      ],
+      "automatic": false,
+      "authorization": "Explicit load with cancel control; source origin and key pinning are separate decisions.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Existing helper rejects redirects and omits credentials/referrer/cache; bounded deadline and streamed 8 KB cap.",
+      "failureBehavior": "Returns undefined/visible load failure, discards stale responses and never substitutes another source.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Merchant integration source reviewed; no active mutation claimed.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "merchant-embed",
+      "flows": [
+        "merchant-checkout",
+        "completion-notification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/embedHost.ts",
+        "apps/web/src/lib/embedProtocol.ts",
+        "apps/web/public/ghostpay-embed-v2.js",
+        "apps/web/public/ghostpay-embed-v1.js"
+      ],
+      "symbols": [
+        "startEmbedHost",
+        "notifyEmbedDone",
+        "readProfileFromSearch"
+      ],
+      "trigger": "Configured merchant checkout handshake and final status notification; SDK may open a popup.",
+      "destination": "Verified exact parent origin via postMessage; application navigation for popup/frame.",
+      "transport": "cross-origin-window-message-and-navigation",
+      "sensitiveData": [
+        "status",
+        "chainId",
+        "optional transaction hash",
+        "public signed merchant profile/query"
+      ],
+      "automatic": true,
+      "authorization": "User checkout interaction; one accepted handshake per load; completion payload is an allowlist.",
+      "privatePath": "Not a proxy fetch. Default GitHub Pages does not enable the iframe host; messages use exact verified origin and source.",
+      "failureBehavior": "Handshake deadline/refusal follows existing SDK behavior. Parent site can independently transmit information it receives.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Merchant integration, external recipient boundary.",
+      "status": "external-boundary"
+    },
+    {
+      "id": "btc-esplora-bulk",
+      "flows": [
+        "bitcoin-scan",
+        "header-validation"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/headers.ts"
+      ],
+      "symbols": [
+        "EsploraClient",
+        "blockTxs",
+        "blockHash",
+        "headersBelow",
+        "checkNetwork"
+      ],
+      "trigger": "User starts scan/header validation against their selected source.",
+      "destination": "User-configured Esplora origin/prefix.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "network choice",
+        "heights and block hashes",
+        "block range",
+        "activity timing"
+      ],
+      "automatic": true,
+      "authorization": "Manual workflow initiates automatic public-chain data reads.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node Esplora is supported; no default remote server is supplied.",
+      "failureBehavior": "Fixed selected origin; no cookies/referrer/cache/redirects; network/genesis/proof checks and bounded readers refuse invalid data. No automatic alternative source.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "#222 owns BTC view/Esplora changes; preserve worker/source owners.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "btc-match-proof",
+      "flows": [
+        "bitcoin-scan",
+        "matched-output-validation",
+        "sweep-preflight"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/btc/oracleSource.ts"
+      ],
+      "symbols": [
+        "rawTransaction",
+        "merkleProof",
+        "isUnspent"
+      ],
+      "trigger": "A matched output is validated or refreshed.",
+      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "exact matched transaction IDs",
+        "outpoints",
+        "ownership interest"
+      ],
+      "automatic": true,
+      "authorization": "Automatic within an explicitly started scan or spend validation.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; public matched-output queries still reveal what is checked to that source.",
+      "failureBehavior": "Invalid proof/spentness stops qualification; do not describe these reads as unlinkable or silently switch endpoint.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "#222/BTC source ownership.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "btc-worker-bridge",
+      "flows": [
+        "bitcoin-scan",
+        "worker-source-access"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/src/features/btc/scanWorkerSource.ts",
+        "apps/web/src/features/btc/scanWorkerMessages.ts",
+        "apps/web/src/features/btc/scan.worker.ts"
+      ],
+      "symbols": [
+        "BtcScanSourceBridge",
+        "isScanSourcePath",
+        "scanForPaymentsInWorker"
+      ],
+      "trigger": "Scanner worker requests public source data from the main thread.",
+      "destination": "Fixed selected Esplora base plus a finite GET path allowlist.",
+      "transport": "worker-message-to-main-thread-http",
+      "sensitiveData": [
+        "public heights",
+        "block hashes",
+        "selected proof transaction IDs and outpoints"
+      ],
+      "automatic": true,
+      "authorization": "Part of the user-started scan; worker cannot choose arbitrary network origins.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Worker has no direct network API; bridge bounds method/path/pending requests and does not include spend secret or view key in network payload.",
+      "failureBehavior": "Cancel/deadline terminates bridge requests and discards late replies; source errors are fixed codes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "BTC worker/source scope; existing implementation source reviewed.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "btc-oracle-bridge",
+      "flows": [
+        "bitcoin-scan",
+        "optional-oracle",
+        "independent-source-check"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/oracleBridge.ts",
+        "apps/web/src/features/btc/oracleSource.ts",
+        "packages/btc-silent-payments/src/scan/blindbit.ts",
+        "packages/btc-silent-payments/src/scan/grpcWebUnary.ts",
+        "packages/btc-silent-payments/src/scan/blindbitGrpc.ts"
+      ],
+      "symbols": [
+        "BtcOracleBridge",
+        "normalizeOracleConfig",
+        "BlindBitClient",
+        "BlindBitGrpcClient"
+      ],
+      "trigger": "User explicitly selects BlindBit HTTP or gRPC-Web source and optionally another source.",
+      "destination": "Selected oracle endpoint(s); no endpoint is chosen automatically.",
+      "transport": "http-and-grpc-web",
+      "sensitiveData": [
+        "public network and height",
+        "capability queries",
+        "scan timing"
+      ],
+      "automatic": true,
+      "authorization": "Automatic within an opted-in scan; adding a second source adds another observer.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Main-thread bridge accepts public height/source-index requests, never wallet keys; requires capability/network/hash agreement.",
+      "failureBehavior": "Unavailable, incomplete or disagreeing oracle fails; bounded pending requests/deadline/body cap and no secret-bearing hosted scan mode.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "BTC source integration; exact package paths must be validated before final commit.",
+      "status": "baseline-source-reviewed"
+    },
+    {
+      "id": "btc-sweep",
+      "flows": [
+        "bitcoin-fees",
+        "bitcoin-sweep",
+        "bitcoin-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/sweep.ts",
+        "apps/web/src/features/btc/esplora.ts"
+      ],
+      "symbols": [
+        "feeRate",
+        "isUnspent",
+        "broadcast",
+        "signSweep"
+      ],
+      "trigger": "User requests review/sign/broadcast of selected outputs.",
+      "destination": "Selected Esplora /fee-estimates, outspend/proof paths and POST /tx.",
+      "transport": "http-get-and-post",
+      "sensitiveData": [
+        "chosen inputs",
+        "signed raw transaction",
+        "destination",
+        "amount",
+        "network timing"
+      ],
+      "automatic": true,
+      "authorization": "Explicit review/sign/broadcast with dependent validation requests.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Existing selected node remains the only broadcast target; public-chain input consolidation remains visible.",
+      "failureBehavior": "No automatic second endpoint or retry of an ambiguous broadcast found; keep input/fee/signature checks.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "#222 owns BTC view/sweep-related active source.",
+      "status": "baseline-source-reviewed",
+      "remainingTransportQualification": "Active owner follow-up: abort-only/non-cooperative injected transport deadline behavior remains unqualified; Esplora cap cancellation can await an unresponsive stream. This branch does not change these owned modules."
+    },
+    {
+      "id": "solana-rpc",
+      "flows": [
+        "solana-scan",
+        "balance",
+        "fee-and-rent",
+        "solana-sweep",
+        "solana-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/solana/rpc.ts",
+        "apps/web/src/features/solana/scan.ts",
+        "apps/web/src/features/solana/sweep.ts",
+        "packages/solana-stealth/src/rpc.ts"
+      ],
+      "symbols": [
+        "createHttpRpc",
+        "getSignaturesForAddress",
+        "getTransaction",
+        "getBalance",
+        "sendTransaction"
+      ],
+      "trigger": "User starts scan/sign/send; matching automatically reads each detected address balance.",
+      "destination": "User-configured Solana node; JSON-RPC POST.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "memo-program signatures",
+        "matched transactions",
+        "stealth balances",
+        "destination",
+        "signed wire transaction",
+        "IP and timing"
+      ],
+      "automatic": true,
+      "authorization": "Explicit workflow; automatic matched-address balance reads remain a disclosed correlation surface.",
+      "privatePath": "User-selected endpoint only; explicit omit credentials, no-store, no-referrer and redirect error. This adapter does not itself select a private route or enforce another tab's policy.",
+      "failureBehavior": "Bounded timeout/abort through fetch and stream reads, capped 8 MiB body, no endpoint retry/fallback, late body cleanup and fixed failure codes. Cancellation cannot retract already-sent bytes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "This branch owns only packages/solana-stealth/src/rpc.ts and its dedicated isolation tests; web views/wrappers remain active privacy-integration ownership.",
+      "status": "implemented; qualification evidence in handoff",
+      "testPaths": [
+        "packages/solana-stealth/src/rpc.isolation.test.ts",
+        "packages/solana-stealth/src/rpc.test.ts"
+      ]
+    },
+    {
+      "id": "tron-rpc",
+      "flows": [
+        "tron-scan",
+        "balance",
+        "destination-activation",
+        "tron-sweep",
+        "tron-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/features/tron/rpc.ts",
+        "apps/web/src/features/tron/scan.ts",
+        "apps/web/src/features/tron/sweep.ts",
+        "packages/tron-adapter/src/rpc.ts"
+      ],
+      "symbols": [
+        "createHttpRpc",
+        "getBlockRange",
+        "getTransactionInfo",
+        "getBalanceSun",
+        "isActivated",
+        "broadcastHex"
+      ],
+      "trigger": "User starts scan/review/sign/send; matched-address balance reads and destination activation checks follow.",
+      "destination": "User-configured TRON node, /wallet/* POST routes.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "block ranges",
+        "matched transaction IDs",
+        "stealth owner",
+        "destination activation",
+        "balances",
+        "signed transaction",
+        "IP and timing"
+      ],
+      "automatic": true,
+      "authorization": "Explicit workflow; destination activation read occurs during review before signing.",
+      "privatePath": "User-selected endpoint only; explicit omit credentials, no-store, no-referrer and redirect error. This adapter does not itself select a private route or enforce another tab's policy.",
+      "failureBehavior": "Bounded timeout/abort through fetch and stream reads, capped 8 MiB body, no endpoint retry/fallback, late body cleanup and fixed failure codes. Cancellation cannot retract already-sent bytes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "This branch owns only packages/tron-adapter/src/rpc.ts and its dedicated isolation tests; web views/wrappers remain active privacy-integration ownership.",
+      "status": "implemented; qualification evidence in handoff",
+      "testPaths": [
+        "packages/tron-adapter/src/rpc.isolation.test.ts",
+        "packages/tron-adapter/src/rpc.test.ts"
+      ]
+    },
+    {
+      "id": "local-invoice-and-qr",
+      "flows": [
+        "invoice-create",
+        "invoice-import",
+        "invoice-export",
+        "qr",
+        "camera"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/invoiceCreate.ts",
+        "apps/web/src/lib/qr.ts",
+        "apps/web/src/lib/qrClassify.ts",
+        "apps/web/src/lib/qrPayload.ts",
+        "apps/web/src/lib/qrMultipart.ts",
+        "apps/web/src/lib/fragment.ts"
+      ],
+      "symbols": [
+        "createInvoice",
+        "readInvoiceFragment",
+        "clearFragment"
+      ],
+      "trigger": "User creates/imports/exports a signed invoice or encodes/decodes QR/camera data.",
+      "destination": "None for local payload processing; opening an invoice link separately loads the host.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": false,
+      "authorization": "Explicit local actions.",
+      "privatePath": "Local-only operation; no transport alternative is needed.",
+      "failureBehavior": "Malformed input rejected locally. URL fragments are not in normal HTTP requests, but holders, clipboard and browser history may retain them.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Invoice/default privacy and recovery owners; preserve formats and encrypted behavior.",
+      "status": "zero-egress"
+    },
+    {
+      "id": "local-key-and-recovery",
+      "flows": [
+        "key-generation",
+        "key-import",
+        "key-backup",
+        "encrypted-local-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/lib/appLock.ts",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "symbols": [
+        "authorizeKeyExport",
+        "clearSession",
+        "notifyAppLock"
+      ],
+      "trigger": "User generates/imports/unlocks/exports local key material or idle lock fires.",
+      "destination": "None; local memory/files/encrypted persistence.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Explicit unlock/export; automatic idle locking is local.",
+      "privatePath": "Local-only operation; no transport alternative is needed. This work does not change or qualify the actively owned spec-18 recovery feature.",
+      "failureBehavior": "Preserve essential encrypted storage, recoverability and session guards. OS/download/extension leakage and best-effort JavaScript zeroization are outside network isolation.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Recovery/keypair export ownership excluded from implementation.",
+      "status": "zero-egress"
+    },
+    {
+      "id": "local-preferences-and-pins",
+      "flows": [
+        "rpc-settings",
+        "scan-policy-settings",
+        "merchant-pinning"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/settings.ts",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/merchantIdentity.ts"
+      ],
+      "symbols": [
+        "loadSettings",
+        "saveSettings",
+        "loadScanPrivacy",
+        "saveScanPrivacy",
+        "rememberMerchantKey"
+      ],
+      "trigger": "Preferences load on app/view startup or are explicitly changed.",
+      "destination": "Browser localStorage only.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "User saves selected public endpoints/preferences or explicitly confirms a merchant signer.",
+      "privatePath": "Settings are not network routing themselves. Baseline settings parsing can fall back to defaults and clients may capture stale state; per-dispatch/cross-tab consistency remains an integration gap.",
+      "failureBehavior": "Storage failures are handled locally; they must not be represented as proof private routing remains active. Do not add sensitive per-action consent records to plaintext persistence.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "#222/#228 active settings/selection ownership.",
+      "status": "zero-egress-with-policy-integration-gap"
+    },
+    {
+      "id": "external-navigation",
+      "flows": [
+        "help",
+        "source",
+        "standards",
+        "explorer",
+        "wallet-links"
+      ],
+      "sourcePaths": [
+        "apps/web/help.html",
+        "apps/web/privacy.html",
+        "apps/web/src/views/About.tsx",
+        "apps/web/src/views/Sweep.tsx"
+      ],
+      "symbols": [
+        "HTML anchor navigation"
+      ],
+      "trigger": "User activates an external link.",
+      "destination": "The explicitly linked source/standards/explorer/wallet destination.",
+      "transport": "browser-navigation",
+      "sensitiveData": [
+        "destination URL",
+        "possibly public transaction hash",
+        "network metadata"
+      ],
+      "automatic": false,
+      "authorization": "Explicit navigation, distinct from implicit RPC fallback.",
+      "privatePath": "Document no-referrer mitigates the referrer; browser and destination handling are external. Do not silently open links as a fallback.",
+      "failureBehavior": "Ordinary navigation failure; no app-controlled alternate endpoint.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Read-only external-navigation inventory.",
+      "status": "external-boundary"
+    },
+    {
+      "id": "wallet-icons",
+      "flows": [
+        "wallet-discovery",
+        "wallet-picker"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/views/Pay.tsx"
+      ],
+      "symbols": [
+        "discoverWallets",
+        "ICON_RE",
+        "MAX_ICON"
+      ],
+      "trigger": "Wallet discovery returns icon metadata; picker displays it.",
+      "destination": "None for accepted data:image base64 URI.",
+      "transport": "data-uri-image",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Wallet discovery action; icon display is automatic.",
+      "privatePath": "Short bounded data URIs only; remote image URLs are omitted, preventing a wallet-supplied icon endpoint.",
+      "failureBehavior": "Invalid/oversized icon is not displayed; no remote fallback.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Wallet source reviewed; preserve whitelist.",
+      "status": "zero-egress"
+    },
+    {
+      "id": "workers-without-direct-network",
+      "flows": [
+        "evm-local-matching",
+        "bitcoin-local-matching"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanner.worker.ts",
+        "apps/web/src/lib/scannerCore.ts",
+        "apps/web/src/lib/workerFactory.ts",
+        "apps/web/src/features/btc/scan.worker.ts",
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/scripts/scan-bundle.mjs"
+      ],
+      "symbols": [
+        "createBrowserScanWorker",
+        "createBtcScanWorker",
+        "WORKER_FORBIDDEN"
+      ],
+      "trigger": "App loads same-origin worker code for a user-started scan; secrets enter only documented local worker channels.",
+      "destination": "Same-origin worker script load; no direct worker network calls.",
+      "transport": "worker-loader-and-local-postmessage",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Part of user-started scanning.",
+      "privatePath": "Bundle/source guards prohibit worker network primitives. BTC network needs pass through the separately inventoried main-thread bridges.",
+      "failureBehavior": "Worker termination/cancellation stops computation and bridge ownership; do not claim worker isolation controls the browser or extensions.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Worker/source owners; no implementation in this work.",
+      "status": "zero-direct-egress"
+    },
+    {
+      "id": "absent-network-apis-and-updates",
+      "flows": [
+        "telemetry",
+        "xhr",
+        "websocket",
+        "eventsource",
+        "beacon",
+        "service-worker",
+        "automatic-updater"
+      ],
+      "sourcePaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/vite.config.ts",
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/public/_headers"
+      ],
+      "symbols": [
+        "privacy invariants",
+        "bundle scan"
+      ],
+      "trigger": "No production app invocation of these transports or service-worker/updater registration was found at the source pin.",
+      "destination": "None; no mandatory telemetry/error-reporting/update endpoint found.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": false,
+      "authorization": "No app-owned action exists at baseline.",
+      "privatePath": "CSP connect-src allows https: and wss: for runtime endpoint selection; permission is not evidence of a WebSocket implementation. No service worker means there is no app service-worker cache/proxy to enforce policy.",
+      "failureBehavior": "Source/bundle tests should fail on new unapproved egress. Runtime-generated URLs and independent extensions still require distinct review.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Review-only negative inventory; future source changes require re-inventory.",
+      "status": "absent-at-source-pin"
+    }
+  ],
+  "policyScopeStatement": "The current branch does not implement universal private-path enforcement. Settings persistence, cross-tab changes, consent, cached clients, other-chain routing and active integration PRs remain explicit dependencies.",
+  "nonShippedAdapters": [
+    {
+      "path": "packages/net-transport/src/fetchAdapter.ts",
+      "status": "library-only; no current apps/web importer",
+      "change": "Honor Request method and cancellation before dispatch; cancellation after dispatch cannot retract bytes."
+    }
+  ]
+}

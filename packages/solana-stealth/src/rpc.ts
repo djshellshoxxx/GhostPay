@@ -36,11 +36,83 @@ function isLocalHost(host: string): boolean {
   return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
 }
 
+/** Largest response body read, in bytes: a hostile server must not make the tab buffer an unbounded body. */
+const MAX_BODY_BYTES = 8 * 1024 * 1024;
+/** Private identity distinguishes our size refusal from an error supplied by injected transport code. */
+const RESPONSE_LIMIT_FAILURE = new SolanaStealthError('INVALID_RESPONSE');
+
+/** Cancellation is best effort; an injected stream must not delay a refusal. */
+function cancelBody(body: ReadableStream<Uint8Array> | ReadableStreamDefaultReader<Uint8Array> | null): void {
+  try {
+    void body?.cancel().catch(() => undefined);
+  } catch {
+    // An injected stream may also throw synchronously during cleanup.
+  }
+}
+
+/** Bound fetch and each stream read even when an injected implementation ignores abort. */
+function interruptible<T>(run: () => Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort);
+      reject(new Error('RPC request aborted'));
+    };
+    if (signal.aborted) { onAbort(); return; }
+    signal.addEventListener('abort', onAbort, { once: true });
+    try {
+      void run().then(
+        (value) => { signal.removeEventListener('abort', onAbort); resolve(value); },
+        () => { signal.removeEventListener('abort', onAbort); reject(new Error('RPC request failed')); },
+      );
+    } catch {
+      signal.removeEventListener('abort', onAbort);
+      reject(new Error('RPC request failed'));
+    }
+  });
+}
+
+/**
+ * Reads the body as UTF-8 text through the byte cap: a declared `Content-Length` above it is refused unread, and the
+ * download is cancelled as soon as the streamed bytes pass it.
+ * @throws {SolanaStealthError} `INVALID_RESPONSE` past the cap; stream errors propagate as thrown.
+ */
+async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<string> {
+  if (Number(res.headers.get('content-length')) > max) {
+    cancelBody(res.body);
+    throw RESPONSE_LIMIT_FAILURE;
+  }
+  if (res.body === null) return '';
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  let complete = false;
+  try {
+    for (;;) {
+      const { done, value } = await interruptible(() => reader.read(), signal);
+      if (done) { complete = true; break; }
+      total += value.byteLength;
+      if (total > max) throw RESPONSE_LIMIT_FAILURE;
+      chunks.push(value);
+    }
+  } finally {
+    if (!complete) cancelBody(reader);
+    reader.releaseLock();
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 /**
  * JSON-RPC 2.0 client over HTTP.
  *
  * @remarks No default endpoint: the caller must choose one (privacy: the RPC operator sees every
- * scanned signature and the scanner's IP). Response `id` must echo the request id.
+ * scanned signature and the scanner's IP). Response `id` must echo the request id. Bodies above 8 MiB
+ * are refused while they stream.
  * @throws {SolanaStealthError} `INVALID_INPUT` (bad URL), `TRANSPORT_FAILURE`, `INVALID_RESPONSE`,
  * `RPC_ERROR`, `ABORTED`.
  */
@@ -54,30 +126,49 @@ export function createHttpRpc(opts: HttpRpcOptions): SolanaRpc {
   if (!(url.protocol === 'https:' || (url.protocol === 'http:' && isLocalHost(url.hostname)))) {
     return fail('INVALID_INPUT');
   }
-  if (url.username !== '' || url.password !== '') return fail('INVALID_INPUT');
+  if (url.username !== '' || url.password !== '' || opts.url.includes('#')) return fail('INVALID_INPUT');
   const doFetch = opts.fetch ?? globalThis.fetch;
   const timeoutMs = opts.timeoutMs ?? 20_000;
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 2_147_483_647) return fail('INVALID_INPUT');
   let nextId = 1;
   return {
     async request(method, params, signal) {
       if (isAborted(signal)) return fail('ABORTED');
       const id = nextId++;
-      const timeout = AbortSignal.timeout(timeoutMs);
-      const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
+      const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal?.addEventListener('abort', abort, { once: true });
+      const timer = setTimeout(abort, timeoutMs);
       let text: string;
+      let received: Response | undefined;
       try {
-        const res = await doFetch(url, {
+        const payload = JSON.stringify({ jsonrpc: '2.0', id, method, params });
+        const res = await interruptible(() => doFetch(url, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
-          signal: combined,
+          body: payload,
+          signal: controller.signal,
           redirect: 'error',
-        });
-        if (!res.ok) return fail('TRANSPORT_FAILURE');
-        text = await res.text();
+          credentials: 'omit',
+          cache: 'no-store',
+          referrerPolicy: 'no-referrer',
+        }).then((value) => {
+          received = value;
+          if (controller.signal.aborted) cancelBody(value.body);
+          return value;
+        }), controller.signal);
+        if (!res.ok) { cancelBody(res.body); return fail('TRANSPORT_FAILURE'); }
+        text = await readCapped(res, MAX_BODY_BYTES, controller.signal);
+        if (controller.signal.aborted) return fail(isAborted(signal) ? 'ABORTED' : 'TRANSPORT_FAILURE');
       } catch (e) {
-        if (e instanceof SolanaStealthError) throw e;
-        return fail(isAborted(signal) ? 'ABORTED' : 'TRANSPORT_FAILURE');
+        controller.abort();
+        // Abort can race the promise continuation after fetch has supplied an unread response.
+        if (received !== undefined && !received.bodyUsed) cancelBody(received.body);
+        if (isAborted(signal)) return fail('ABORTED');
+        return fail(e === RESPONSE_LIMIT_FAILURE ? 'INVALID_RESPONSE' : 'TRANSPORT_FAILURE');
+      } finally {
+        clearTimeout(timer);
+        signal?.removeEventListener('abort', abort);
       }
       let body: unknown;
       try {

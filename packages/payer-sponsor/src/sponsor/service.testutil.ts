@@ -36,6 +36,11 @@ export class FakeChain implements SponsorChain {
   public simOk = true;
   public simThrows = false;
   public sendThrows = false;
+  public receiptThrows = false;
+  /** Optional hook awaited inside `send` (concurrency tests). */
+  public sendHook: (() => Promise<void>) | undefined;
+  public activeSends = 0;
+  public maxActiveSends = 0;
   /** Default logs: a huge Transfer of TOKEN to FEE_TO (stands for the sponsor fee payment). */
   public logs: SponsorReceipt['logs'] = [
     { address: TOKEN, topics: [TRANSFER, pad32(addr(0x1234)), pad32(FEE_TO)], data: `0x${'ff'.repeat(32)}` },
@@ -62,10 +67,20 @@ export class FakeChain implements SponsorChain {
   };
   public send = async (c: SponsorCall, gasLimit: bigint): Promise<Hex> => {
     if (this.sendThrows) throw new Error('rpc down');
-    this.sent.push({ call: c, gasLimit });
-    return `0x${'ab'.repeat(32)}`;
+    this.activeSends += 1;
+    this.maxActiveSends = Math.max(this.maxActiveSends, this.activeSends);
+    try {
+      await this.sendHook?.();
+      this.sent.push({ call: c, gasLimit });
+      return `0x${'ab'.repeat(32)}`;
+    } finally {
+      this.activeSends -= 1;
+    }
   };
-  public waitForReceipt = async (): Promise<SponsorReceipt> => ({ ...this.receipt, logs: this.logs });
+  public waitForReceipt = async (): Promise<SponsorReceipt> => {
+    if (this.receiptThrows) throw new Error('timeout');
+    return { ...this.receipt, logs: this.logs };
+  };
   public getCode = async (a: Address): Promise<Hex | undefined> => this.codes.get(a.toLowerCase());
 }
 

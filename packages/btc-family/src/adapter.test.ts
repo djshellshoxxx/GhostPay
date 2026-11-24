@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { DetectedBitcoinPayment } from './adapter-types.js';
 import { BTC_FAMILY_FEES, createBtcFamilyAdapter } from './adapter.js';
 import { BtcFamilyError } from './errors.js';
-import { asTestnet, blockHashOf, makeBlock, p2pkhInput, p2wpkhInput } from './fixtures.testutil.js';
+import { asTestnet, blockHashOf, fakeTxid, makeBlock, p2pkhInput, p2wpkhInput } from './fixtures.testutil.js';
 import { generateKeys } from './keys.js';
 import { changeAddress, labeledAddress, silentPaymentAddress } from './labels.js';
 import {
@@ -14,7 +14,7 @@ import {
   LITECOIN_TESTNET,
 } from './params.js';
 import { seededRng } from './rng.testutil.js';
-import { scanBlocks, type BlockData, type TweakSource } from './scan.js';
+import { scanBlocks, type BlockData, type ReceivedOutput, type TweakSource } from './scan.js';
 import { spendPrivateKey } from './receiver.js';
 import { toHex } from './ecc.js';
 
@@ -300,5 +300,29 @@ describe('scanBlocks', () => {
     );
     expect(r).toHaveLength(1);
     expect(r[0]).not.toHaveProperty('txid');
+  });
+
+  it('reports every output paying a matched key with its own outpoint and amount (R16-2, as BITCOIN-02)', async () => {
+    const b = makeBlock(chain, 1, [{ inputs: [p2wpkhInput('real')], recipients: [silentPaymentAddress(chain, k)] }]);
+    expect(b.outputs).toHaveLength(1);
+    const real = b.outputs[0]!;
+    // A later (dust) output in the same block that reuses the payment's x-only key.
+    const copy = { xOnlyPublicKey: real.xOnlyPublicKey, txid: fakeTxid('copy'), vout: 7, amountSats: 330n };
+    const got: ReceivedOutput[] = [];
+    const source = new FakeSource(new Map([[1, { ...b, outputs: [real, copy] }]]), 1);
+    for await (const r of scanBlocks({ source, keys, fromHeight: 1 })) got.push(r);
+    expect(got.map((r) => [r.txid, r.vout, r.amountSats, r.duplicateKey])).toEqual([
+      [real.txid, real.vout, real.amountSats, true],
+      [copy.txid, copy.vout, copy.amountSats, true],
+    ]);
+    expect(got.every((r) => toHex(r.xOnlyPublicKey) === toHex(real.xOnlyPublicKey))).toBe(true);
+    // The same outpoint listed twice is reported once; a lone output is not flagged.
+    const twice = new FakeSource(new Map([[1, { ...b, outputs: [real, real] }]]), 1);
+    const once: ReceivedOutput[] = [];
+    for await (const r of scanBlocks({ source: twice, keys, fromHeight: 1 })) once.push(r);
+    expect(once.map((r) => [r.txid, r.vout])).toEqual([[real.txid, real.vout]]);
+    const single: ReceivedOutput[] = [];
+    for await (const r of scanBlocks({ source: new FakeSource(new Map([[1, b]]), 1), keys, fromHeight: 1 })) single.push(r);
+    expect(single.map((r) => r.duplicateKey)).toEqual([false]);
   });
 });

@@ -273,3 +273,24 @@ describe('evaluateRecurrence (skipped / missed / never auto-send)', () => {
     expect(() => evaluateRecurrence({ rule: r, tz: UTC, clock: () => NaN, lastHandledMs: null })).toThrow();
   });
 });
+
+describe('runtime scheduling bounds and timezone changes', () => {
+  it.each([NaN, Infinity, -Infinity, 1.5])('rejects invalid catch-up limit %s', (maxCatchUp) => {
+    expect(() => evaluateRecurrence({ rule: rule({}), tz: UTC, clock: fixed(utc(2026, 3, 1)), lastHandledMs: null, policy: 'catch-up', maxAgeMs: 100 * MS_DAY, maxCatchUp })).toThrow(RangeError);
+  });
+  it.each([NaN, Infinity, -Infinity])('rejects non-finite upcoming count %s', (count) => {
+    expect(() => listUpcoming(rule({}), UTC, 0, count)).toThrow(RangeError);
+  });
+  it.each([NaN, Infinity, -1, 1.5])('rejects malformed handled time %s', (lastHandledMs) => {
+    expect(() => evaluateRecurrence({ rule: rule({}), tz: UTC, clock: fixed(utc(2026, 3, 1)), lastHandledMs })).toThrow(RangeError);
+  });
+  it('changing injected zone preserves last-handled boundary and user confirmation', () => {
+    const r = rule({ startDate: {year:2026,month:3,day:7} });
+    const handled = utc(2026,3,8,13); // 09:00 in the original NY zone after DST.
+    const e = evaluateRecurrence({rule:r,tz:()=>-480,clock:fixed(utc(2026,3,9,18)),lastHandledMs:handled,policy:'catch-up'});
+    expect(e.due.map(d=>d.dueAtMs)).toEqual([utc(2026,3,8,17),utc(2026,3,9,17)]);
+    expect(e.due.every(d=>d.needsUserConfirm)).toBe(true);
+    // The caller pins the zone for stable civil-day identity; changing it explicitly recomputes future UTC occurrences.
+    expect(e.due.every(d=>d.dueAtMs>handled)).toBe(true);
+  });
+});

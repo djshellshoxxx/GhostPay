@@ -98,11 +98,12 @@ describe('B3 spend: leftover without change address (boundary pinned, matches DE
   });
 });
 
-describe('B6 spend: fee sanity guard (behaviour pinned)', () => {
-  it('a fee above half of the inputs is only refused once it also exceeds 10 000 sats', () => {
-    // 2000 sat input, sweep at 10 sat/vB: fee ~1100 sats (>50% of the input) is still allowed
-    const o = fund('b6', 2_000n);
-    const r = buildSpendTransaction({ ...base, outputs: o, destinations: [{ address: dest }], feeRate: 12 });
+describe('B6 spend: fee sanity guard (spec 11 rule)', () => {
+  it('a fee above half of the inputs is refused unless the caller forces it', () => {
+    // 2000 sat input, sweep at 12 sat/vB: fee ~1100 sats (>50% of the input). Before spec 11 this was allowed
+    // because the fee stayed under 10 000 sats; now it needs an explicit `forceHighFee`.
+    expect(code(() => buildSpendTransaction({ ...base, outputs: fund('b6a', 2_000n), destinations: [{ address: dest }], feeRate: 12 }))).toBe('FEE_TOO_HIGH');
+    const r = buildSpendTransaction({ ...base, outputs: fund('b6b', 2_000n), destinations: [{ address: dest }], feeRate: 12, forceHighFee: true });
     expect(r.feeSats * 2n > 2_000n).toBe(true);
   });
 });

@@ -8,7 +8,7 @@ import { encodeTronMetaAddress } from './meta.js';
 import { seededRng } from './rng.testutil.js';
 import { TRANSFER_TOPIC, parseCandidate, scanTron } from './scan.js';
 import type { TronRpc } from './rpc.js';
-import { recoverTronSigner, decodeRawTx } from './tx.js';
+import { recoverTronSigner, decodeRawTx, buildTrxTransfer } from './tx.js';
 
 const USDT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
 const PAYER = 'TMVQGm1qAQYVdetCeGRRkTWYYrLXuHK2HC';
@@ -85,6 +85,13 @@ async function collect(it: AsyncIterable<unknown>): Promise<unknown[]> {
 }
 const sc = new AbortController();
 
+describe('block range completeness (SOLANA-TRON-08)', () => {
+  it('fails closed when the node omits blocks from the requested range', async () => {
+    const rpc = mockRpc([{ number: 1 }, { number: 3 }, { number: 4 }]); // block 2 missing
+    await expect(collect(scanTron(rpc, { fromBlock: 1n, toBlock: 4n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }))).rejects.toThrow(/invalid response/);
+  });
+});
+
 describe('scan with mock RPC', () => {
   it('adapter.scan needs an rpc', () => {
     expect(() => adapter.scan({ fromBlock: 1n }, { viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey }, sc.signal)).toThrow();
@@ -148,6 +155,23 @@ describe('scan with mock RPC', () => {
     const rpc = mockRpc([{ number: 5, transactions: [failed, forged] }]);
     expect(await collect(scanTron(rpc, { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }))).toHaveLength(0);
   });
+  it('skips a tx whose node JSON disagrees with the hashed raw_data_hex (EXTRA-09)', async () => {
+    const trx = build('trx', 5_000_000n, 'a');
+    const good = nodeTx(trx);
+    const d = decodeRawTx(trx.tx.rawData);
+    // Hashed bytes: same memo, but a 1 sun payment to someone else. JSON still claims 5 TRX to the stealth address.
+    const real = buildTrxTransfer({ owner: PAYER, to: USDT, amountSun: 1n, refBlock, timestampMs: 1_700_000_000_000n, memo: d.memo });
+    const lying = { ...good, raw_data_hex: real.rawDataHex, txID: real.txID };
+    const opts = { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal };
+    expect(parseCandidate(lying)).toBeUndefined();
+    expect(await collect(scanTron(mockRpc([{ number: 5, transactions: [lying] }]), opts))).toHaveLength(0);
+    // Control: the honest JSON for the same bytes is accepted.
+    expect(await collect(scanTron(mockRpc([{ number: 5, transactions: [good] }]), opts))).toHaveLength(1);
+    // Hashed bytes with a trailing unknown field are rejected even though the id matches them.
+    const padded = `${trx.tx.rawDataHex}6000`;
+    const trailing = { ...good, raw_data_hex: padded, txID: bytesToHex(sha256(Uint8Array.from(Buffer.from(padded, 'hex')))) };
+    expect(parseCandidate(trailing)).toBeUndefined();
+  });
   it('other recipients see nothing; pages across blocks; aborts', async () => {
     const other = generateKeySet(seededRng('other'));
     const trx = build('trx', 5n, 'a');
@@ -167,7 +191,7 @@ describe('scan with mock RPC', () => {
     await expect(collect(scanTron(bad({ block: [{ blockID: 'x', block_header: { raw_data: { number: 0 } } }] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad({ block: [{ blockID: BLOCK_ID, block_header: { raw_data: { number: -1 } } }] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad(null), o))).rejects.toThrow();
-    expect(await collect(scanTron(bad({}), o))).toEqual([]);
+    await expect(collect(scanTron(bad({}), o))).rejects.toThrow(); // SOLANA-TRON-08: an empty answer for a non-empty range is a gap
     const dup = { blockID: BLOCK_ID, block_header: { raw_data: { number: 0 } } };
     await expect(collect(scanTron(bad({ block: [dup, dup] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad({ block: [{ ...dup, transactions: 3 }] }), o))).rejects.toThrow();

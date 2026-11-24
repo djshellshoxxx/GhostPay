@@ -1,6 +1,6 @@
 # Deviations and open points (@ghostpay/tx-review)
 
-1. **Not integrated.** No call site in `apps/web` uses `assertReviewed`; the grep-enforced CI check of the spec (section 5) does not exist. This task could only touch this package.
+1. **Integrated in apps/web.** `apps/web/src/lib/txGuard.ts` imports and calls `assertReviewed`; the grep-enforced CI check of the spec (section 5) does not exist. This task could only touch this package.
 2. **`Intent` fields added beyond the spec sketch:** `router_payment` gains `method` and `deadline` (needed for the deadline rule and to bind the entry point); permit v/r/s are not part of the intent. `direct_sweep.from` is not in the spec's `decodeTx` input, so `TxInput` takes optional `from`, `maxPriorityFeePerGas` (both required for direct sweeps). `permit_sig` omits the token's domain name/version.
 3. **`ReviewPolicy.feeCaps.maxGasLimit` added** (spec has only `maxFeePerGasWei` and `maxFeeShareBps`) so the S3-09 gas cap has a bound. The fee-share cap for direct sweeps applies to native sweeps only (an ERC-20 amount is not comparable with a wei fee).
 4. **`review` takes an optional 5th argument `ctx.paymentGross`.** The spec signature cannot express "approve amount > gross" (S3-19); without it an approval is refused with `APPROVE_WITHOUT_PAYMENT`. Extra reasons not named in the spec: `DEADLINE_EXPIRED`, `DESTINATION_IS_PROTOCOL_CONTRACT` (uses `contracts.announcer`), `NON_CANONICAL_CALLDATA`, `INVALID_PAYMENT`, typed-data and tx-field failures.

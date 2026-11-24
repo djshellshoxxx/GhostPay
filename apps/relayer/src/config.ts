@@ -1,14 +1,17 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { isIP } from 'node:net';
+import { isAbsolute, join } from 'node:path';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
 import {
   findChain,
+  findFeed,
   findToken,
   loadDeployment,
   requireEnabledChain,
   verifyObjectManifestSignature,
   type DeploymentManifest,
+  type FeedConfig,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { TrustedProxies } from '@ghostpay/relayer-guard';
@@ -26,10 +29,13 @@ export interface ChainRuntimeConfig {
   readonly chainId: number;
   readonly name: string;
   readonly rpcUrl: string;
+  readonly secondaryRpcUrl?: string;
   readonly sweepRelayer: Address;
   readonly feeTo: Address;
   readonly tokens: readonly AllowedToken[];
-  readonly nativeUsdMicro: bigint;
+  readonly nativeUsdMicro?: bigint;
+  /** Explicit registry-feed mode; absence retains the configured fixed-price mode. Never used as a fallback. */
+  readonly nativeUsdFeed?: { readonly feed: FeedConfig & { readonly decimals: number }; readonly maxAgeSeconds: number };
   readonly gasUnits: { readonly sweep: bigint; readonly sweepWithPermit: bigint };
   readonly maxGasLimit: bigint;
   readonly maxGasPriceWei: bigint;
@@ -48,7 +54,8 @@ export interface RelayerConfig {
   /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
   readonly trustedProxies: readonly string[];
   readonly allowFeeToHotKey: boolean;
-  readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number };
+  /** `griefReserveBps`: spec 04 griefing margin added to the gas term of the sponsor fee (default 0, operator-tuned). */
+  readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number; readonly griefReserveBps?: number };
   readonly quoteTtlSeconds: number;
   readonly minDeadlineSeconds: number;
   readonly maxDeadlineSeconds: number;
@@ -62,12 +69,16 @@ export interface RelayerConfig {
     /** Process-wide `/v1/quote` budget (anonymous RPC cost control, S3-07). */
     readonly quoteGlobalPerMinute: number;
     readonly quoteGlobalBurst: number;
+    /** `/v1/quote` budget per client network group (IPv4 /24, IPv6 /48), checked before the global one (L5-03). */
+    readonly quoteGroupPerMinute: number;
+    readonly quoteGroupBurst: number;
   };
   readonly breaker: {
     readonly windowSize: number;
     readonly minSamples: number;
     readonly failureRatio: number;
     readonly cooldownSeconds: number;
+    /** A half-open probe's time for its in-lane work up to the broadcast; the breaker adds `queue.receiptTimeoutSeconds`. */
     readonly probeTimeoutSeconds: number;
   };
   /** Caps gas paid without reimbursement (reverted or front-run sweeps, S3-06). */
@@ -77,12 +88,26 @@ export interface RelayerConfig {
     readonly globalWei: bigint;
     readonly maxKeys: number;
   };
-  /** Bearer token that enables `GET /metrics` (absent: route disabled). */
+  /** Enables the separate metrics listener. */
+  readonly metricsEnabled: boolean;
+  /** Metrics listener bind address. */
+  readonly metricsBind: string;
+  readonly metricsPort: number;
+  /** Optional bearer token for metrics routes. */
   readonly metricsToken?: string;
-  /** https URL receiving alert JSON (absent: alerts are log-only). */
+  /** HTTPS alert URL. */
   readonly alertWebhookUrl?: string;
+  /** Exact host allowlist for the alert URL. */
+  readonly alertWebhookAllowedHosts?: readonly string[];
+  /** HMAC secret for signed alert payloads. */
+  readonly alertWebhookSecret?: string;
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
+  /**
+   * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
+   * forgets the spent daily budget and unsettled transactions (allowed only when NODE_ENV=development or NODE_ENV=test).
+   */
+  readonly stateFile?: string;
   readonly chains: readonly ChainRuntimeConfig[];
 }
 
@@ -128,7 +153,7 @@ function bigOf(o: JsonObject, key: string, path: string, min: bigint): bigint {
 function sub(o: JsonObject, key: string, path: string, allowed: readonly string[]): JsonObject {
   const v = o[key];
   if (v === undefined) return {};
-  return wrap(() => parseObject(v, key, [], allowed), `${path}.${key}`);
+  return objectAt(v, `${path}.${key}`, [], allowed);
 }
 
 /** Converts validation errors of the shared request helpers into startup errors. */
@@ -138,6 +163,24 @@ function wrap<T>(fn: () => T, path: string): T {
   } catch {
     return bad(path, 'invalid');
   }
+}
+
+/** Shape of a configuration key. Anything else is not echoed back: it could be a secret pasted in the wrong place. */
+const KEY_SHAPE = /^[a-z][A-Za-z0-9]{0,30}$/;
+
+/**
+ * {@link parseObject} for the configuration file, whose errors name an unknown key (L5-07): a bare `invalid` left
+ * operators guessing, for example after `trustProxyHops` was replaced by `trustedProxies`.
+ */
+function objectAt(v: unknown, path: string, required: readonly string[], optional: readonly string[] = []): JsonObject {
+  if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
+    const unknown = Object.keys(v).find((k) => !required.includes(k) && !optional.includes(k));
+    if (unknown === 'trustProxyHops') {
+      return bad(`${path}.trustProxyHops`, 'unknown key; it was replaced by trustedProxies, the list of reverse-proxy addresses or CIDR blocks whose X-Forwarded-For is honoured (apps/relayer/README.md)');
+    }
+    if (unknown !== undefined) return KEY_SHAPE.test(unknown) ? bad(`${path}.${unknown}`, 'unknown key') : bad(path, 'unknown key (name not shown)');
+  }
+  return wrap(() => parseObject(v, 'config', required, optional), path);
 }
 
 function parseOrigins(v: unknown): string[] {
@@ -163,7 +206,7 @@ function parseTokens(chainId: number, v: unknown, path: string): AllowedToken[] 
   const seen = new Set<string>();
   return v.map((raw: unknown, i): AllowedToken => {
     const p = `${path}.tokens[${String(i)}]`;
-    const t = wrap(() => parseObject(raw, 'token', ['address', 'usdStable'], ['symbol', 'decimals', 'permit']), p);
+    const t = objectAt(raw, p, ['address', 'usdStable'], ['symbol', 'decimals', 'permit']);
     if (t['usdStable'] !== true) return bad(p, 'only USD stablecoins are supported in v1 (usdStable must be true)');
     const address = wrap(() => parseAddress(t['address'], 'token'), `${p}.address`);
     if (seen.has(address)) return bad(p, 'duplicate token');
@@ -186,15 +229,11 @@ function parseTokens(chainId: number, v: unknown, path: string): AllowedToken[] 
 
 function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean; allowFeeToHotKey: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
   const path = `chains[${String(i)}]`;
-  const c = wrap(
-    () =>
-      parseObject(
-        raw,
-        'chain',
-        ['chainId', 'tokens', 'nativeUsdPrice', 'gasUnits', 'maxGasLimit', 'maxGasPriceWei', 'dailyBudgetWei', 'minBalanceWei'],
-        ['rpcUrl', 'rpcUrlEnv', 'sweepRelayer', 'feeTo'],
-      ),
+  const c = objectAt(
+    raw,
     path,
+    ['chainId', 'tokens', 'gasUnits', 'maxGasLimit', 'maxGasPriceWei', 'dailyBudgetWei', 'minBalanceWei'],
+    ['rpcUrl', 'rpcUrlEnv', 'secondaryRpcUrl', 'secondaryRpcUrlEnv', 'sweepRelayer', 'feeTo', 'nativeUsdPrice', 'nativeUsdFeed'],
   );
   const chainId = c['chainId'];
   if (typeof chainId !== 'number' || !Number.isSafeInteger(chainId) || chainId < 1) return bad(`${path}.chainId`, 'invalid');
@@ -254,12 +293,29 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     return bad(`${path}.rpcUrl`, 'rejected (https/wss only; credentials in URL not allowed)');
   }
 
-  const price = c['nativeUsdPrice'];
-  let nativeUsdMicro: bigint;
-  try {
-    nativeUsdMicro = parseUsdMicro(typeof price === 'string' ? price : '');
-  } catch {
-    return bad(`${path}.nativeUsdPrice`, 'must be a positive decimal string with <= 6 fractional digits');
+  let secondaryRpcUrl: string | undefined;
+  if (c['secondaryRpcUrl'] !== undefined || c['secondaryRpcUrlEnv'] !== undefined) {
+    if (c['secondaryRpcUrl'] !== undefined && c['secondaryRpcUrlEnv'] !== undefined) return bad(`${path}.secondaryRpcUrl`, 'set exactly one endpoint source');
+    const secondaryEnv = c['secondaryRpcUrlEnv'];
+    if (secondaryEnv !== undefined && (typeof secondaryEnv !== 'string' || !/^[A-Z_][A-Z0-9_]{0,63}$/.test(secondaryEnv))) return bad(`${path}.secondaryRpcUrlEnv`, 'must be an env var name');
+    const rawSecondary = typeof secondaryEnv === 'string' ? ctx.env[secondaryEnv] : c['secondaryRpcUrl'];
+    try {
+      if (typeof rawSecondary !== 'string') throw new Error('missing');
+      secondaryRpcUrl = validateRpcUrl(rawSecondary, { allowInsecureLocalhost: top.insecureRpc });
+      if (secondaryRpcUrl === rpcUrl) throw new Error('same endpoint');
+    } catch { return bad(`${path}.secondaryRpcUrl`, 'must be a distinct valid endpoint'); }
+  }
+  if ((c['nativeUsdPrice'] === undefined) === (c['nativeUsdFeed'] === undefined)) return bad(path, 'set exactly one of nativeUsdPrice and nativeUsdFeed');
+  let nativeUsdMicro: bigint | undefined;
+  let nativeUsdFeed: ChainRuntimeConfig['nativeUsdFeed'];
+  if (c['nativeUsdFeed'] !== undefined) {
+    const selection = objectAt(c['nativeUsdFeed'], `${path}.nativeUsdFeed`, ['maxAgeSeconds']);
+    const feed = known === undefined ? undefined : findFeed(chainId, known.nativeSymbol, 'USD');
+    if (feed?.decimals === undefined) return bad(`${path}.nativeUsdFeed`, 'no sourced native/USD feed in the configured registry');
+    nativeUsdFeed = { feed: { ...feed, decimals: feed.decimals }, maxAgeSeconds: numberOr(selection, 'maxAgeSeconds', `${path}.nativeUsdFeed`, 0, 1, 604_800) };
+  } else {
+    try { nativeUsdMicro = parseUsdMicro(typeof c['nativeUsdPrice'] === 'string' ? c['nativeUsdPrice'] : ''); }
+    catch { return bad(`${path}.nativeUsdPrice`, 'must be a positive decimal string with <= 6 fractional digits'); }
   }
   const gu = sub(c, 'gasUnits', path, ['sweep', 'sweepWithPermit']);
   const gasUnits = { sweep: bigOf(gu, 'sweep', `${path}.gasUnits`, 21_000n), sweepWithPermit: bigOf(gu, 'sweepWithPermit', `${path}.gasUnits`, 21_000n) };
@@ -268,10 +324,12 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     chainId,
     name,
     rpcUrl,
+    ...(secondaryRpcUrl === undefined ? {} : { secondaryRpcUrl }),
     sweepRelayer: getAddress(sweepRelayer),
     feeTo,
     tokens: parseTokens(chainId, c['tokens'], path),
-    nativeUsdMicro,
+    ...(nativeUsdMicro === undefined ? {} : { nativeUsdMicro }),
+    ...(nativeUsdFeed === undefined ? {} : { nativeUsdFeed }),
     gasUnits,
     maxGasLimit: bigOf(c, 'maxGasLimit', path, 21_000n),
     maxGasPriceWei: bigOf(c, 'maxGasPriceWei', path, 1n),
@@ -322,25 +380,45 @@ function envNameOf(o: JsonObject, key: string): string | undefined {
 }
 
 /** Resolves the metrics bearer token and the alert webhook URL from the environment (names only in the file). */
-function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsToken?: string; alertWebhookUrl?: string } {
-  const out: { metricsToken?: string; alertWebhookUrl?: string } = {};
+function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsEnabled: boolean; metricsBind: string; metricsPort: number; metricsToken?: string; alertWebhookUrl?: string; alertWebhookAllowedHosts?: readonly string[]; alertWebhookSecret?: string } {
+  const out: { metricsEnabled: boolean; metricsBind: string; metricsPort: number; metricsToken?: string; alertWebhookUrl?: string; alertWebhookAllowedHosts?: readonly string[]; alertWebhookSecret?: string } = {
+    metricsEnabled: ctx.env['METRICS_ENABLED'] === '1',
+    metricsBind: ctx.env['METRICS_BIND'] ?? '127.0.0.1',
+    metricsPort: Number(ctx.env['METRICS_PORT'] ?? '9464'),
+  };
+  if (ctx.env['METRICS_ENABLED'] !== undefined && !['0', '1'].includes(ctx.env['METRICS_ENABLED'] ?? '')) return bad('METRICS_ENABLED', 'must be 0 or 1');
+  if (ctx.env['METRICS_BIND'] !== undefined && isIP(out.metricsBind) === 0) return bad('METRICS_BIND', 'must be an IP address');
+  if (ctx.env['METRICS_PORT'] !== undefined && !/^\d{1,5}$/.test(ctx.env['METRICS_PORT'])) return bad('METRICS_PORT', 'must be an integer from 0 to 65535');
+  if (!Number.isInteger(out.metricsPort) || out.metricsPort < 0 || out.metricsPort > 65535) return bad('METRICS_PORT', 'must be an integer from 0 to 65535');
+  if (ctx.env['METRICS_TOKEN'] !== undefined) {
+    const token = ctx.env['METRICS_TOKEN'];
+    if (!/^[A-Za-z0-9._~+/=-]{32,256}$/.test(token)) return bad('METRICS_TOKEN', 'must hold a token of 32..256 URL-safe characters');
+    out.metricsToken = token;
+  }
   const tokenVar = envNameOf(o, 'metricsTokenEnv');
   if (tokenVar !== undefined) {
-    const t = ctx.env[tokenVar];
+    const t = out.metricsToken ?? ctx.env[tokenVar];
     if (typeof t !== 'string' || !/^[A-Za-z0-9._~+/=-]{32,256}$/.test(t)) return bad('metricsTokenEnv', 'variable must hold a token of 32..256 URL-safe characters');
     out.metricsToken = t;
   }
   const hookVar = envNameOf(o, 'alertWebhookUrlEnv');
-  if (hookVar !== undefined) {
-    const raw = ctx.env[hookVar];
+  const rawUrl = ctx.env['ALERT_WEBHOOK_URL'] ?? (hookVar === undefined ? undefined : ctx.env[hookVar]);
+  if (rawUrl !== undefined || hookVar !== undefined) {
     let u: URL | undefined;
     try {
-      u = raw === undefined ? undefined : new URL(raw);
+      u = rawUrl === undefined ? undefined : new URL(rawUrl);
     } catch {
       u = undefined;
     }
     if (u === undefined || u.protocol !== 'https:' || u.username !== '' || u.password !== '') return bad('alertWebhookUrlEnv', 'variable must hold an https URL without credentials');
     out.alertWebhookUrl = u.toString();
+    const hosts = (ctx.env['ALERT_WEBHOOK_ALLOWED_HOSTS'] ?? '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+    const validHost = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))+$/;
+    if (hosts.length === 0 || hosts.some((h) => !validHost.test(h)) || !hosts.includes(u.hostname.toLowerCase().replace(/\.$/, ''))) return bad('ALERT_WEBHOOK_ALLOWED_HOSTS', 'must allow the alert URL host');
+    out.alertWebhookAllowedHosts = hosts;
+    const secret = ctx.env['ALERT_WEBHOOK_SECRET'];
+    if (typeof secret !== 'string' || secret.length < 32 || secret.length > 256) return bad('ALERT_WEBHOOK_SECRET', 'must contain 32..256 characters');
+    out.alertWebhookSecret = secret;
   }
   return out;
 }
@@ -354,16 +432,13 @@ function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsToken?: st
  * @throws {ConfigError} on any problem; the message never contains secret values.
  */
 export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
-  const o = wrap(
-    () =>
-      parseObject(
-        raw,
-        'config',
-        ['allowedOrigins', 'chains'],
-        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv'],
-      ),
+  const o = objectAt(
+    raw,
     '$',
+    ['allowedOrigins', 'chains'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
   );
+  const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
   const host = listen['host'] ?? '127.0.0.1';
   if (typeof host !== 'string' || host === '' || host.length > 255) return bad('listen.host', 'invalid');
@@ -371,10 +446,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const minDeadlineSeconds = numberOr(dl, 'minSeconds', 'deadline', 30, 1, MAX_DEADLINE_WINDOW_SECONDS);
   const maxDeadlineSeconds = numberOr(dl, 'maxSeconds', 'deadline', MAX_DEADLINE_WINDOW_SECONDS, 1, MAX_DEADLINE_WINDOW_SECONDS);
   if (minDeadlineSeconds >= maxDeadlineSeconds) return bad('deadline', 'minSeconds must be below maxSeconds');
-  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst']);
+  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst', 'quoteGroupPerMinute', 'quoteGroupBurst']);
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
-  const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds']);
+  const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
@@ -397,8 +472,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       coverPercent: numberOr(ga, 'coverPercent', 'gas', 100, 1, 300),
       maxMovePercent: numberOr(ga, 'maxMovePercent', 'gas', 25, 0, 500),
       quoteCacheSeconds: numberOr(ga, 'quoteCacheSeconds', 'gas', 3, 0, 60),
+      griefReserveBps: numberOr(ga, 'griefReserveBps', 'gas', 0, 0, 5000),
     },
-    quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
+    // Spec 04: quote TTL <= 60 s bounds how long a priced gas cost can be held against the relayer.
+    quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 60, 10, 60),
     minDeadlineSeconds,
     maxDeadlineSeconds,
     rateLimit: {
@@ -410,6 +487,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       saltRotationHours: numberOr(rl, 'saltRotationHours', 'rateLimit', 24, 1, 24),
       quoteGlobalPerMinute: numberOr(rl, 'quoteGlobalPerMinute', 'rateLimit', 600, 1, 1_000_000, false),
       quoteGlobalBurst: numberOr(rl, 'quoteGlobalBurst', 'rateLimit', 100, 1, 1_000_000, false),
+      quoteGroupPerMinute: numberOr(rl, 'quoteGroupPerMinute', 'rateLimit', 60, 1, 1_000_000, false),
+      quoteGroupBurst: numberOr(rl, 'quoteGroupBurst', 'rateLimit', 20, 1, 1_000_000, false),
     },
     breaker: {
       windowSize,
@@ -430,8 +509,30 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),
+    ...(stateFile === undefined ? {} : { stateFile }),
     chains,
   };
+}
+
+/**
+ * `state`: exactly one of `{ "file": "/abs/path.json" }` (restart-safe budget and transaction journal) or
+ * `{ "ephemeral": true }`. Required, so an operator cannot lose restart safety by omission.
+ */
+function parseState(raw: unknown, ctx: ConfigContext): string | undefined {
+  if (raw === undefined) return bad('state', 'required: { "file": "/abs/path" } or { "ephemeral": true }');
+  const s = objectAt(raw, 'state', [], ['file', 'ephemeral']);
+  const file = s['file'];
+  const ephemeral = s['ephemeral'];
+  if ((file === undefined) === (ephemeral === undefined)) return bad('state', 'set exactly one of file or ephemeral');
+  if (ephemeral !== undefined) {
+    if (ephemeral !== true) return bad('state.ephemeral', 'must be true');
+    const mode = ctx.env['NODE_ENV'];
+    if (mode !== 'development' && mode !== 'test') return bad('state.ephemeral', 'requires NODE_ENV=development or NODE_ENV=test');
+    return undefined;
+  }
+  if (typeof file !== 'string' || !isAbsolute(file) || file.length > 1024 || file.includes('\0') || file.endsWith('/'))
+    return bad('state.file', 'must be an absolute file path');
+  return file;
 }
 
 /**

@@ -7,7 +7,7 @@ BIP-352 **Silent Payments** for GhostPay's Bitcoin tier (docs/MULTICHAIN_SPEC.md
 Scope: seller side (keys, `sp1...` / `tsp1...` addresses, labels, `bitcoin:?sp=` URIs), sender-side output
 derivation, receiver-side scanning and spend-key derivation, a block scanner over an injected tweak source, and an
 adapter, and spending: signed PSBT / raw-transaction sweeps of detected outputs (`buildSpendTransaction`, via
-`@scure/btc-signer`). **Not included:** hardware-wallet signing (out of scope), gRPC, running a node, coin selection. See `DEVIATIONS.md` for every deviation and
+`@scure/btc-signer`). **Not included:** hardware-wallet signing (out of scope), running a node, coin selection. An optional binary unary gRPC-Web adapter is available beside the HTTP source; it is not enabled in the UI. See `DEVIATIONS.md` for every deviation and
 unverified item.
 
 ## Verification status
@@ -54,7 +54,7 @@ for await (const hit of scanBlocks({ source, keys: { scanSecret: keys.scanSecret
 | `sender.ts` | input key sum (taproot parity), `input_hash`, grouping by `B_scan`, `k` counters, `K_max` |
 | `inputs.ts`, `tx.ts` | eligible input rules (P2TR, P2WPKH, P2SH-P2WPKH, P2PKH), NUMS skip, outpoints, witness parsing |
 | `receiver.ts` | tweak data, scanning with labels, spend key with even-y normalization |
-| `scan/` | `TweakSource` interface, `InMemoryTweakSource`, `BlindBitClient` (HTTP, see caveats), `scanBlocks` |
+| `scan/` | `TweakSource` interface, `InMemoryTweakSource`, `BlindBitClient` (HTTP, see caveats), `BlindBitGrpcClient` (explicit HTTPS gRPC-Web proxy), `scanBlocks` |
 | `spend.ts` | key-path sweep of silent-payment outputs: BIP-352 spend tweak (labels, parity), fee/vsize, change, signed PSBT, schnorr self-verification |
 | `adapter.ts`, `adapter-types.ts` | Bitcoin `ChainAdapter`; copied interface with a drift test |
 | `units.ts`, `uri.ts` | sats <-> BTC decimal strings, `bitcoin:?sp=` builder and strict parser |
@@ -73,7 +73,38 @@ const r = buildSpendTransaction({
 // r.psbt (signed), r.rawTx, r.txid, r.feeSats, r.vsize
 ```
 
-Hardware-wallet signing is out of scope (software keys only; see `DEVIATIONS.md`).
+External signers (spec 11): `buildSpendTransactionWithSigner(params, signer)` takes a `SilentPaymentSigner`
+(spend public key, ECDH share, sign) instead of `spendSecret`. `SoftwareSilentPaymentSigner` is the reference
+implementation; it keeps its own copy of `b_spend`, which `dispose()` wipes (best effort) once signing is done. No
+hardware wallet driver is shipped (see `DEVIATIONS.md`).
+
+Wallet policy (spec 11, `policy.ts`, pure; nothing is persisted by this package):
+
+```ts
+// Consolidation by label: never spend outputs of different labels together (it links the labels on-chain).
+const sel = selectOutputsForSweep({ outputs: matches, mode: 'single-label', label: 3 }); // or mode: 'all' (+ force: true)
+// sel.outputs -> buildSpendTransaction / previewSweep; sel.excludedDust: below DEFAULT_WALLET_DUST_SATS (1000, override
+// with includeDust or walletDustSats). Mixing labels in mode 'all' throws SpendPolicyError { policy: 'LABEL_MIX' }.
+// Destination reuse: the caller stores DestinationHistory (addresses only, at most 1024 entries) and asks before signing.
+const warn = checkDestinationReuse(address, parseDestinationHistory(storedJson)); // { reused, firstSeenCount, code }
+const next = recordDestination(history, address); // after the send; serializeDestinationHistory(next) to store
+```
+
+Fee guard: a fee above 50% of the inputs is `FEE_TOO_HIGH` unless `forceHighFee: true` (`MAX_FEE_RATE_SAT_PER_VB`
+still applies). Created outputs never go below `DUST_LIMIT_SATS` (546), whatever `dustLimitSats` says.
+
+Header chain and scan state (spec 12): `HeaderChain` (retarget, MTP, chain work, most-work selection above a pinned
+checkpoint), `syncHeaderChain` / `syncHeaderChainFromSources`, `HeaderAnchoredTweakSource`, `verifyBlockTransactions`
+(txid Merkle root + BIP-141 witness commitment), and `resumeScan` with a serializable `ScanState`. These are header-only
+checks with most-work selection, not SPV and not full validation; see `DEVIATIONS.md` for exactly what they cover.
+
+Spent tracking and second sources (spec 12): a `TweakSource` may implement `getSpends(height)` (every outpoint the
+block consumes); `scanBlocks({ watchOutpoints, onSpend })` then reports spends of persisted or newly found outputs
+locally, and `resumeScan` records them in `ScanState` (`match.spent`, cleared again on a reorg rollback), so a wallet
+learns confirmed spends without asking a server per outpoint (mempool spends stay unknown). `crossCheckSample:
+{ rate, random }` extends the second-source `crossCheck` to a random sample of blocks without matches.
+`syncHeaderChainFromSources` returns a `SourceAgreement` per source (`behindBy`, `lighter`, `conflicting`) and can fail
+closed with `requireAgreement`; disagreement, not withholding, is what it can show.
 
 ## Security notes
 
@@ -95,3 +126,9 @@ npm run lint
 npm test          # vitest with coverage thresholds 95 / 90 / 95 / 95
 npm run build
 ```
+
+## Optional BlindBit gRPC-Web source
+
+`BlindBitGrpcClient` accepts an explicit HTTPS proxy URL, exact expected network and injected `fetch` transport. It uses unary `GetInfo`, `GetBlockHashByHeight` and `GetFullBlock`; it does not upload wallet material, use short keys as payment evidence, or expose incomplete block inputs as `getSpends`. Responses must carry one bounded data frame and a terminal successful gRPC trailer. Generated protobuf decoding retains uint64 amounts as bigint and rejects malformed/ambiguous identities before returning them.
+
+The same oracle's network/hash assertions are consistency checks, not independent chain verification. Keep local header verification, optional cross-checks and independent output verification. The raw upstream gRPC listener requires an operator-provided HTTPS/CORS gRPC-Web proxy. No endpoint, production activation, real oracle or wallet qualification is bundled. See [schema provenance](proto/blindbit/README.md) and the package deviations.

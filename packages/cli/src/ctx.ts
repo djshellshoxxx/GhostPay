@@ -1,5 +1,5 @@
 import { type Parsed, parseArgs, type OptSpec } from './args.js';
-import { ioError, MAX_INPUT_CHARS, type Io, usageError } from './io.js';
+import { ioError, MAX_BINARY_BYTES, MAX_INPUT_CHARS, type Io, usageError } from './io.js';
 
 /** Per-invocation context handed to command handlers. */
 export class Ctx {
@@ -32,6 +32,40 @@ export class Ctx {
   public async read(path: string): Promise<string> {
     if (path === '-') return this.stdin();
     return this.limit(await this.guard(() => this.io.readFile(path), path));
+  }
+
+  /** Secret paths use the private descriptor reader; test adapters may use readFile. */
+  public async secret(path: string): Promise<string> {
+    if (path === '-') return this.stdin();
+    try {
+      return this.limit(await (this.io.readSecretFile ?? this.io.readFile)(path));
+    } catch {
+      throw ioError('SECRET_READ_FAILED', 'cannot read the private secret file.', 'Use an owned regular file with owner-only permissions (0600 on POSIX). On Windows use stdin or a named environment source; this adapter cannot qualify file ACLs.');
+    }
+  }
+
+  /** Binary input for existing encrypted archives, with the same single-stdin rule. */
+  public async readBytes(path: string): Promise<Uint8Array> {
+    if (path === '-' && this.stdinUsed) throw usageError('STDIN_TWICE', 'only one input can be read from stdin.');
+    if (path === '-') this.stdinUsed = true;
+    try {
+      const data = path === '-'
+        ? this.io.readBinaryStdin === undefined ? new TextEncoder().encode(await this.io.readStdin()) : await this.io.readBinaryStdin()
+        : this.io.readBinaryFile === undefined ? new TextEncoder().encode(await this.io.readFile(path)) : await this.io.readBinaryFile(path);
+      if (data.byteLength > MAX_BINARY_BYTES) throw new Error('too large');
+      return data;
+    } catch { throw ioError('READ_FAILED', 'cannot read the bounded archive input.', 'Use a regular file or stdin within the 20 MiB archive limit.'); }
+  }
+
+  /** Binary files are explicit outputs; bytes are never accidentally printed to a terminal. */
+  public async writeBytesOut(a: Parsed, data: Uint8Array): Promise<boolean> {
+    const path = a.values.get('out');
+    if (path === undefined) return false;
+    if (data.byteLength > MAX_BINARY_BYTES) throw ioError('OUTPUT_TOO_LARGE', 'archive exceeds the 20 MiB output limit.');
+    if (this.io.writeBinaryFile === undefined) throw ioError('BINARY_IO_UNAVAILABLE', 'binary output is unavailable in this adapter.');
+    try { await this.io.writeBinaryFile(path, data, { overwrite: a.flags.has('force') }); }
+    catch { throw ioError('WRITE_FAILED', 'cannot publish the archive output.', 'The output may already exist; select a new path or explicitly use --force.'); }
+    return true;
   }
 
   private async guard(f: () => Promise<string>, what: string): Promise<string> {

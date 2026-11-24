@@ -1,0 +1,239 @@
+{
+  "base": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+  "product": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+  "branch": "codex/ghostpay-hosting-timestamp-20261119",
+  "node_version": "22.23.4",
+  "node_executable": "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+  "observed_hosted_failure": {
+    "pr": 260,
+    "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+    "workflow_run": 44485361026,
+    "job": 135427352070,
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485361026/job/135427352070",
+    "source": "privacy_completion independently retrieved job logs and compared source blobs",
+    "request": "GET /assets/font.woff2",
+    "preview": {
+      "etag": "\"6afeb81e-8\"",
+      "last_modified": "Thu, 19 Nov 2026 08:49:34 GMT"
+    },
+    "nginx": {
+      "etag": "\"6afeb81f-8\"",
+      "last_modified": "Thu, 19 Nov 2026 08:49:35 GMT"
+    },
+    "tests": {
+      "pass": 289,
+      "fail": 1,
+      "skip": 6
+    }
+  },
+  "cause": {
+    "node_internal_source": "process.binding(\"natives\")[\"internal/fs/utils\"] (installed Node22.23.4)",
+    "dateFromMs": "return new Date(MathRound(Number(ms)))",
+    "preview": "Math.floor(st.mtimeMs / 1000)",
+    "old_export": "fs.utimes(dest, st.mtime, st.mtime)",
+    "deterministic_timestamp_seconds": "1795078174.9996",
+    "source_http_second": 1795078174,
+    "old_export_http_second": 1795078175,
+    "negative_numeric_utimes": "toUnixTimestamp maps negative numbers to DateNow()/1000; numeric strings pass through"
+  },
+  "changed_files": [
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "base_blob": "f72bf8517d82f1fb7a34a6a687c403d105cff144",
+      "product_blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+      "sha256": "a9906474a56a3e45699182e71b7b1fc7cf272a5304483d6f11e24646c84fde98"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "base_blob": "505a15d5b5ef7c77758029b31ab794ecc0d6168b",
+      "product_blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "sha256": "1b3d2da446e657802c957de14fa25cde2447d3ef7e6fc34487e43ab19d682d31"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "base_blob": "f838958a645c0c6f8abaa962edc72a72eaaa0c3a",
+      "product_blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+      "sha256": "c45152e8274aa7112baaeb45c5484c3d03deedd09282086802f11e566f3a1ebc"
+    }
+  ],
+  "unchanged_files": [
+    {
+      "path": "tools/portable-hosting-kit/src/serve/preview.mjs",
+      "base_blob": "07d074f2a42993380714752ca01d5d6e77e8701b",
+      "product_blob": "07d074f2a42993380714752ca01d5d6e77e8701b",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "base_blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7",
+      "product_blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+      "base_blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+      "product_blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+      "base_blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+      "product_blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+      "base_blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+      "product_blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/package.json",
+      "base_blob": "b454b1bdd1a93499d0a2e45b8cc782fb1ad85916",
+      "product_blob": "b454b1bdd1a93499d0a2e45b8cc782fb1ad85916",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/tsconfig.json",
+      "base_blob": "267122e4936d9b7810873ab52cf0496d20ba2d65",
+      "product_blob": "267122e4936d9b7810873ab52cf0496d20ba2d65",
+      "unchanged": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/eslint.config.mjs",
+      "base_blob": "c582c87d8383e5bef509125255913116d098ac95",
+      "product_blob": "c582c87d8383e5bef509125255913116d098ac95",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/hosting-kit.yml",
+      "base_blob": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      "product_blob": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "base_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "product_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged": true
+    }
+  ],
+  "verification": {
+    "red": {
+      "command": "node --test --test-concurrency=1 tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "source_blob": "f72bf8517d82f1fb7a34a6a687c403d105cff144",
+      "test_blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "exit_code": 1,
+      "tests": 11,
+      "pass": 9,
+      "fail": 2,
+      "skip": 0,
+      "duration_ms": 428.946936,
+      "log": "evidence/static-export-red.log"
+    },
+    "green": {
+      "command": "node --test --test-concurrency=1 tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "product": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+      "exit_code": 0,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "duration_ms": 420.240806,
+      "log": "evidence/static-export-green.log"
+    },
+    "full_kit": {
+      "command": "node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+      "cwd": "tools/portable-hosting-kit",
+      "product": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+      "exit_code": 0,
+      "tests": 299,
+      "suites": 3,
+      "pass": 285,
+      "fail": 0,
+      "skip": 14,
+      "duration_ms": 7893.821154,
+      "log": "evidence/full-kit.log",
+      "native_nginx_differential_executed": false,
+      "real_web_artifact_executed": false
+    },
+    "typecheck": {
+      "command": "node --max-old-space-size=512 ../../node_modules/typescript/bin/tsc -p tsconfig.json",
+      "cwd": "tools/portable-hosting-kit",
+      "exit_code": 0,
+      "log": "evidence/kit-typecheck.log"
+    },
+    "lint": {
+      "command": "node --max-old-space-size=512 ../../node_modules/eslint/bin/eslint.js --config eslint.config.mjs .",
+      "cwd": "tools/portable-hosting-kit",
+      "exit_code": 0,
+      "log": "evidence/kit-lint.log"
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "non_test_launch_error": {
+      "command": "/usr/bin/time -v node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+      "exit_code": 127,
+      "reason": "/usr/bin/time is absent; no tests started by this wrapper attempt",
+      "log": "evidence/unused-time-wrapper.log"
+    }
+  },
+  "independent_review": {
+    "reviewer": "/root/recovery_completion",
+    "product": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+    "verdict": "no introduced blocker",
+    "runtime_replay": "author-executed red/green logs independently inspected; no independent runtime replay",
+    "checks": [
+      "raw fractional seconds retained",
+      "negative numeric-string semantics inspected in installed Node22 source",
+      "explicit null preserves epoch",
+      "atime remains equal to copied mtime",
+      "overlay-null unchanged",
+      "no-follow/open/stat unchanged",
+      "exclusive creation unchanged",
+      "failure cleanup and atomic rename unchanged",
+      "preview/header/router/request matrix/configuration blobs unchanged",
+      "differential assertions unchanged"
+    ]
+  },
+  "limits": [
+    "Real nginx differential remains unexecuted locally because nginx is absent.",
+    "Original browser/container opt-ins and unavailable native transport tools were skipped.",
+    "Own checkout has no apps/web/dist; full-kit real-web case skipped. Existing root artifact evidence is not replaced or relabeled.",
+    "No web runtime, dependency, workflow, threshold, release, remote repository or deployment changes."
+  ],
+  "evidence": [
+    {
+      "path": "evidence/full-kit.log",
+      "bytes": 66842,
+      "sha256": "bce3f391c3efd284c3453ad4bfb9959dece492a27ca80aeb6cc09b83aeca4655"
+    },
+    {
+      "path": "evidence/kit-lint.log",
+      "bytes": 174,
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8"
+    },
+    {
+      "path": "evidence/kit-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/static-export-green.log",
+      "bytes": 2568,
+      "sha256": "d8bf082316b7cb1f4216766dc0969bb98ef2e6b81b130ec131f123a9de0b5bcf"
+    },
+    {
+      "path": "evidence/static-export-red.log",
+      "bytes": 4045,
+      "sha256": "56ced81a6119898719c0f097af536f4f47460443d98af54fdc28b1f3754c0ebb"
+    },
+    {
+      "path": "evidence/unused-time-wrapper.log",
+      "bytes": 60,
+      "sha256": "3e737f6a9117cec194b02103b357f8668fae9adb86a8a8cd0bf25efab8948548"
+    }
+  ]
+}

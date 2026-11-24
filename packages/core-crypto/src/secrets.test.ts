@@ -61,6 +61,19 @@ describe('secret redaction', () => {
     expect(copy.slice(0, 4)).toHaveLength(4);
   });
 
+  it('refuses the ES2023 copy methods and toBase64, which also hand out plain copies or text (L4-I3)', () => {
+    // Not in the ES2022 lib types; toBase64 does not exist in Node 22 at all, so it is checked by its message.
+    type Newer = { toReversed(): unknown; toSorted(): unknown; with(i: number, v: number): unknown; toBase64(): unknown };
+    for (const s of [keys.spendingSecret, keys.viewingSecret] as unknown as Newer[]) {
+      expect(() => s.toReversed()).toThrow(/must not be serialized/);
+      expect(() => s.toSorted()).toThrow(/must not be serialized/);
+      expect(() => s.with(0, 0)).toThrow(/must not be serialized/);
+      expect(() => s.toBase64()).toThrow(/must not be serialized/);
+    }
+    // The bytes are untouched and the explicit export boundary still returns a plain copy.
+    expect(Buffer.from(unsafeRevealSecret(keys.spendingSecret)).toString('hex')).toBe(spendHex);
+  });
+
   it('error messages and serialized errors never contain key material', () => {
     const msgs: string[] = [];
     const attempts: Array<() => unknown> = [

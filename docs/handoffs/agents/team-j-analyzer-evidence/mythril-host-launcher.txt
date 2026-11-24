@@ -1,0 +1,7 @@
+#!/tmp/ghostpay-analyzers/venv/bin/python
+# Transport-only compatibility for py-solc-x 1.1.1's retired hostname.
+# Analyzer package/code and compiler version remain unchanged.
+import solcx.install
+solcx.install.BINARY_DOWNLOAD_BASE = 'https://binaries.soliditylang.org/{}-amd64/{}'
+from mythril.interfaces.cli import main
+main()

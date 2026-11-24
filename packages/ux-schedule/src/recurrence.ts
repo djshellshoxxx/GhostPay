@@ -189,6 +189,7 @@ export function nextOccurrence(rule: RecurrenceRule, tz: TzOffset, afterMs: numb
 
 /** Up to `count` (1..100) occurrences strictly after `afterMs`. */
 export function listUpcoming(rule: RecurrenceRule, tz: TzOffset, afterMs: number, count: number): number[] {
+  if (!Number.isFinite(count)) throw new RangeError('invalid upcoming count');
   const n = Math.min(Math.max(Math.trunc(count), 0), MAX_UPCOMING);
   const out: number[] = [];
   if (n === 0) return out;
@@ -243,8 +244,12 @@ export function evaluateRecurrence(opts: EvaluateOptions): Evaluation {
   const now = readClock(opts.clock);
   const maxAge = opts.maxAgeMs ?? DEFAULT_MAX_AGE_MS;
   if (!Number.isSafeInteger(maxAge) || maxAge < 0) throw new RangeError('invalid maxAgeMs');
+  if (!Number.isSafeInteger(opts.maxCatchUp ?? 5)) throw new RangeError('invalid maxCatchUp');
+  if (opts.lastHandledMs !== null && (!Number.isSafeInteger(opts.lastHandledMs) || opts.lastHandledMs < 0))
+    throw new RangeError('invalid lastHandledMs');
   const catchUp = Math.min(Math.max(opts.maxCatchUp ?? 5, 1), 20);
   const policy = opts.policy ?? 'latest-only';
+  if (policy !== 'latest-only' && policy !== 'catch-up') throw new RangeError('invalid missed policy');
   const pending: number[] = [];
   let nextMs: number | null = null;
   for (const o of occurrences(opts.rule, opts.tz)) {

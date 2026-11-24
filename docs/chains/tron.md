@@ -43,3 +43,7 @@ Consequences for GhostPay:
 ## What needs a real wallet / testnet funds (not done)
 
 Nile faucet funding, broadcasting any tx (`/wallet/broadcasthex` or `broadcasttransaction`, UNVERIFIED), obtaining a real Nile USDT contract address and a real ref block. The package never broadcasts. All tests use a mock RPC.
+
+## Qualification status (2026-11)
+
+Tested locally against a mock RPC only (73 tests in `tron-adapter`); no CI integration job, no Nile run; not externally qualified; mainnet disabled. Two defects fixed: `decodeRawTx` now requires the input to be byte-for-byte canonical (rejects duplicate, unknown, wrong-wire-type and over-long-varint encodings), and the scanner now cross-checks the node's JSON transaction against the hashed `raw_data_hex`. Open: scanning reads the unconfirmed head (no confirmation depth). Evidence and open items: [QUALIFICATION-2026-11.md](QUALIFICATION-2026-11.md).

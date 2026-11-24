@@ -14,11 +14,13 @@ test('integrate has a merge command to guard', () => {
 });
 
 test('merge is gated on same-repository head (A5-1)', () => {
-  assert.match(beforeMerge, /isCrossRepository/);
+  // Integration enforces same-repo in the jq eligibility filter (head.repo == base.repo).
+  assert.match(beforeMerge, /isCrossRepository|\.head\.repo\.full_name == \.base\.repo\.full_name/);
 });
 
 test('merge is gated on an explicit PR author allowlist (A5-1)', () => {
-  assert.match(beforeMerge, /ALLOWED_AUTHORS/);
+  // Integration enforces the author allowlist in the jq eligibility filter (owner or github-actions[bot]).
+  assert.match(beforeMerge, /ALLOWED_AUTHORS|\.user\.login == "github-actions\[bot\]" or \.user\.login == \$owner/);
   assert.match(beforeMerge, /author/);
 });
 

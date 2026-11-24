@@ -12,6 +12,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { createInvoice, signInvoice, signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { buildPaymentButton, buildPaymentLink, buildQrPayload } from '@ghostpay/merchant-hooks';
+import { fiatDecimals, toMinorUnits } from './money.mjs';
 
 const { values: a } = parseArgs({
   options: {
@@ -34,13 +35,6 @@ function die(msg) {
   process.exit(2);
 }
 
-/** "12.50" -> "1250" using string math only (money is never a float). Max 2 decimals. */
-function toMinorUnits(s) {
-  const m = /^(0|[1-9][0-9]{0,15})(?:\.([0-9]{1,2}))?$/.exec(s ?? '');
-  if (!m) die('--amount must be a decimal like 12.50 (max 2 decimals)');
-  return (BigInt(m[1]) * 100n + BigInt((m[2] ?? '').padEnd(2, '0') || '0')).toString();
-}
-
 function loadKey() {
   if (a.demo) return new Uint8Array(randomBytes(32)); // ephemeral demo key: the invoice cannot be tied to you
   if (!a['key-file']) die('pass --key-file (hex, mode 600) or --demo');
@@ -58,7 +52,10 @@ const demoMeta = () => {
   return `st:eth:0x${pub()}${pub()}`;
 };
 const meta = a.meta ?? (a.demo ? demoMeta() : die('pass --meta <stealth meta-address> or --demo'));
-const minor = toMinorUnits(a.amount);
+// Minor units as the GhostPay app reads them for this currency (0 decimals for JPY etc., else 2): see money.mjs.
+const minor =
+  toMinorUnits(a.amount, a.currency) ??
+  die(`--currency must be an ISO code like USD and --amount a decimal with at most ${fiatDecimals(a.currency)} decimals for it`);
 const now = Math.floor(Date.now() / 1000);
 const ttl = Number(a.ttl);
 if (!Number.isSafeInteger(ttl) || ttl < 60 || ttl > 86_400 * 30) die('--ttl must be 60..2592000 seconds');

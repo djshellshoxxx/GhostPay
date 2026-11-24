@@ -4,6 +4,8 @@
 Description=GhostPay gas-sponsorship relayer
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=10
 
 [Service]
 Type=simple
@@ -23,10 +25,22 @@ Environment=QUOTE_SECRET_FILE=%d/quote.secret
 # RPC URLs with API keys: EnvironmentFile must be mode 600 and contain e.g. RPC_URL_84532=https://...
 EnvironmentFile=/etc/ghostpay-relayer/rpc.env
 # ALLOW_MAINNET=1 is deliberately NOT set here.
+# Durable state (daily budget + unsettled transactions): /var/lib/ghostpay-relayer, created and owned by the service user.
+# The config's state.file must be /var/lib/ghostpay-relayer/state.json. It is the ONLY writable path (ProtectSystem=strict).
+StateDirectory=ghostpay-relayer
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/ghostpay-relayer
+# Restart delay: the process holds a heartbeat lock <state>.lock (30 s staleness). A restart by systemd is a new pid, so
+# the lock is taken over only once it is stale: keep RestartSec >= 10 and expect the first retries to be refused until
+# then. StartLimit* (in [Unit]) stops a crash loop.
 Restart=on-failure
-RestartSec=5
-TimeoutStopSec=30
+RestartSec=15
+# Graceful stop: shutdownGraceSeconds (default 15) must be shorter than this.
+TimeoutStopSec=45
 KillSignal=SIGTERM
+LimitNOFILE=4096
+MemoryMax=512M
+TasksMax=128
 
 NoNewPrivileges=true
 ProtectSystem=strict
@@ -36,10 +50,23 @@ PrivateDevices=true
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true
-RestrictAddressFamilies=AF_INET AF_INET6
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 RestrictNamespaces=true
 LockPersonality=true
+# V8 JIT needs writable+executable memory: MemoryDenyWriteExecute must stay off for node.
 MemoryDenyWriteExecute=false
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+# A filtered call fails with EPERM instead of killing the process with SIGSYS (e.g. node adjusting RLIMIT_NOFILE).
+SystemCallErrorNumber=EPERM
+ProtectClock=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectProc=invisible
+ProcSubset=pid
+RemoveIPC=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
 SystemCallArchitectures=native
 CapabilityBoundingSet=
 UMask=0077

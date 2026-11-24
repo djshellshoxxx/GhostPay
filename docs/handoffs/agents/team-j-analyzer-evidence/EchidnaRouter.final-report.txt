@@ -1,0 +1,51 @@
+echidna_router_never_holds_tokens: passing
+echidna_canary_buffer_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payWithBuffer(0,1,1)
+    EchidnaRouter.payWithBuffer(0,8455206926983382546538978218500,3368254976097224797)
+    EchidnaRouter.payWithBuffer(0,9174963081957776736821423,307373902256689)
+    EchidnaRouter.payWithBuffer(0,567386270923843231199427295404,15516848864281825122418)
+    EchidnaRouter.payWithBuffer(0,3883828585795073763846668842454084695358082,1)
+
+Traces: 
+
+echidna_fee_recipient_only_gets_bps: passing
+echidna_canary_erc20_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payErc20(0,3230736699,"\NUL")
+    EchidnaRouter.payErc20(0,1765471,"\NUL")
+    EchidnaRouter.payErc20(0,1,"\NUL")
+    EchidnaRouter.payErc20(0,197561115965997428,"\NUL")
+    EchidnaRouter.payErc20(0,139580568636074601,"\NUL")
+
+Traces: 
+
+echidna_canary_nonzero_fee: failed!💥  
+  Call sequence:
+    EchidnaRouter.payErc20(0,2308280083727739,"\NUL")
+    EchidnaRouter.payErc20(0,318564113012049915,"\NUL")
+    EchidnaRouter.payErc20(0,401,"\NUL")
+    EchidnaRouter.payErc20(0,5033112704760999508627127833565,"\NUL")
+    EchidnaRouter.payErc20(0,15411054087163789550480155705172,"\NUL")
+
+Traces: 
+
+echidna_native_fee_plus_net_eq_gross: passing
+echidna_fee_plus_net_eq_gross: passing
+echidna_canary_native_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,272,"\NUL")
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,1,"\NUL")
+
+Traces: 
+
+
+
+Unique instructions: 7786
+Unique codehashes: 7
+Corpus size: 10
+Seed: 20261021
+Total calls: 300021

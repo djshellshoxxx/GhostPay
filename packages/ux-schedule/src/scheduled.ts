@@ -144,7 +144,9 @@ export interface Acknowledgement {
  * match the stored snapshot, defeating UI/state substitution between display and confirm.
  */
 export function confirm(p: ScheduledPayment, ack: Acknowledgement, clock: Clock): Result<ScheduledPayment> {
-  const t = tick(p, clock);
+  // Bind expiry validation and the confirmation timestamp to one clock sample.
+  const now = readClock(clock);
+  const t = tick(p, () => now);
   if (t.state === 'expired') return err('expired', 'payment is past its max age');
   if (t.state !== 'due') return err('bad_state', `cannot confirm from state ${t.state}`);
   if ((ack as { userConfirmed: unknown }).userConfirmed !== true) {
@@ -153,7 +155,7 @@ export function confirm(p: ScheduledPayment, ack: Acknowledgement, clock: Clock)
   if (ack.recipient !== t.payment.recipient || ack.amount !== t.payment.amount) {
     return err('mismatch', 'acknowledged details do not match the scheduled payment');
   }
-  return ok({ ...t, state: 'confirmed', stateChangedAtMs: readClock(clock) });
+  return ok({ ...t, state: 'confirmed', stateChangedAtMs: now });
 }
 
 /** Cancel a non-terminal payment. */

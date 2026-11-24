@@ -40,6 +40,6 @@ Animated walk-through: [sweep through a relayer](../assets/animations/sweep-rela
 - Sweep several payments together rather than instantly after each one. This blurs timing only and is manual guidance; the app does not batch for you.
 - Use your own node or Tor for reads.
 - GhostPay has **no mixer** and no unlinkability mechanism after the sweep; research is listed in the roadmap but nothing is built.
-- The experimental [policy account](policy-accounts.md) fixes the destination in advance, which makes that link permanent. It is not in the app.
+- The experimental [policy account](policy-accounts.md) fixes the destination in advance, which makes that link permanent. Its experimental web controls are disabled by default and have no pinned deployment.
 
 Fees in detail: [Fees](../user/fees.md). Errors: [Troubleshooting by symptom](troubleshooting-by-symptom.md).

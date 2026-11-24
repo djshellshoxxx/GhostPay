@@ -16,7 +16,7 @@ function toNodes(parts: readonly Part[], tags: TagRenderers): ReactNode[] {
   return parts.map((p, i) => {
     if (typeof p === 'string') return p;
     const inner = toNodes(p.children, tags);
-    const wrap = tags[p.tag];
+    const wrap = Object.prototype.hasOwnProperty.call(tags, p.tag) ? tags[p.tag] : undefined;
     return <Fragment key={i}>{wrap === undefined ? inner : wrap(inner)}</Fragment>;
   });
 }

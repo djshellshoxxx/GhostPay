@@ -48,7 +48,8 @@
         },
         "amountMinor": {
           "type": "string",
-          "pattern": "^(?:0|[1-9][0-9]{0,29})$"
+          "pattern": "^(?:0|[1-9][0-9]{0,29})$",
+          "description": "Cumulative amount received so far for the invoice (not a single payment), as a decimal integer in minor units of data.currency; a running total for every event type (partial, paid, over, expired). Normative definition: docs/remote/usability/specs/webhooks.md R8. A webhook is a notification, never payment proof: confirm with the canonical on-chain verifier."
         },
         "paymentId": {
           "type": "string",

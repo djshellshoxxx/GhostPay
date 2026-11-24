@@ -1,0 +1,13 @@
+{
+  "exitCode": 137,
+  "nativeReturnCode": -9,
+  "budgetTermination": null,
+  "elapsedSeconds": 16.276545262997388,
+  "sampledMaxTreeRssKiB": 802368,
+  "childMaxRssKiB": 812540,
+  "childUserSeconds": 17.12279,
+  "childSystemSeconds": 1.9279169999999999,
+  "memoryBudgetMiB": 1024,
+  "rssSamplingSeconds": 1,
+  "processTimeoutSeconds": 900
+}

@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 159,
+  "offset_end": 173,
+  "results": [
+    {
+      "branch": "claude/ar-a0-pr47-green",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1317,
+      "merge_base": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-a4-btc-headersync",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1309,
+      "merge_base": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-a5-announcer-budget",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1314,
+      "merge_base": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-a6-combined-backup",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1308,
+      "merge_base": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-a7-policy-send-guard",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1311,
+      "merge_base": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-b1-core-journey",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1312,
+      "merge_base": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-b2-lean-bound-receipts",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1313,
+      "merge_base": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-b3-sweep-permit-states",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1286,
+      "merge_base": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-b5-testnet-feeds",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1316,
+      "merge_base": "76199cdac3ee336e2751995d511111467141d943",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c1-reconciliation-adr",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1313,
+      "merge_base": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c2-qr-pairing",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1311,
+      "merge_base": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1296,
+      "merge_base": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c4-i18n-pay",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1314,
+      "merge_base": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c4-i18n-scan",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1308,
+      "merge_base": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

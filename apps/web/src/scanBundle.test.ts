@@ -70,8 +70,17 @@ describe('scan-bundle', () => {
     ['eval in src', 'src/Bad.ts', 'eval("1");', /eval\/new Function/],
     ['sourcemap enabled', 'vite.config.ts', 'export default { build: { sourcemap: true } }', /sourcemap is enabled/],
     ['hidden sourcemap', 'vite.config.ts', "export default { build: { sourcemap: 'hidden' } }", /sourcemap is enabled/],
+    // Release boundary (audit L8-04): fixed strings of preserved code that one stray import would pull into the bundle.
+    ['preserved PIR client', 'dist/assets/a.js', 'throw new E("TRANSPORT","PIR server request failed")', /preserved-code marker "PIR server request failed"/],
+    ['preserved pir2 scan source', 'dist/assets/a.js', 'throw new S("OUT_OF_RANGE","window outside the PIR shard")', /preserved-code marker "window outside the PIR shard"/],
+    ['preserved light-client source', 'dist/assets/a.js', 'throw new S("HEAD_MISMATCH","light client could not confirm a block hash")', /preserved-code marker "light client could not confirm/],
+    ['preserved quorum source', 'dist/assets/a.js', 'throw new S("SOURCE_DISAGREE","sources disagree on the announcement set")', /preserved-code marker "sources disagree on the announcement set"/],
+    ['preserved scan-mode claims', 'dist/assets/a.js', 'var c={label:"Two-server PIR scanning (research PoC, testnet only)"}', /preserved-code marker "Two-server PIR scanning/],
+    ['preserved prover', 'dist/assets/a.js', 'var p={protocol:"groth16"}', /preserved-code marker "groth16"/],
+    ['preserved external pools', 'dist/assets/a.js', 'var id="privacy-pools"', /preserved-code marker "privacy-pools"/],
+    ['preserved code in the worker', 'dist/assets/scanner.worker-1.js', 'throw Error("PIR server request failed")', /scanner\.worker-1\.js: preserved-code marker/],
   ])('fails on %s', (_name, file, content, re) => {
-    const b = build({ [file.replace(/^dist\//, 'dist/')]: content });
+    const b = build({ [file]: content });
     const problems = scan(b);
     expect(problems.join('\n')).toMatch(re);
     expect(problems.length).toBeGreaterThan(0);
@@ -79,6 +88,35 @@ describe('scan-bundle', () => {
 
   it('ignores violations only present in test files and comments in source', () => {
     const b = build({ 'src/a.test.ts': 'el.innerHTML = "x"', 'src/Ok.ts': '// el.innerHTML = x\n/* eval("1") */\nexport const a = 1;' });
+    expect(scan(b)).toEqual([]);
+  });
+
+  it('does not let a URL string literal hide same-line src sinks from the comment stripper', () => {
+    const b = build({ 'src/Hide.ts': 'const u = "https://x.example/a"; el.innerHTML = y;\nconst v = `http://x`; eval("1");\n' });
+    const out = scan(b).join('\n');
+    expect(out).toMatch(/src\/Hide\.ts: innerHTML/);
+    expect(out).toMatch(/src\/Hide\.ts: eval/);
+  });
+
+  it.each([
+    ['nested template', 'Hidden.ts', 'const t = `${`//`}`; el.innerHTML = x;\n', 'innerHTML/outerHTML assignment'],
+    ['regex after a condition', 'Hidden.ts', 'if (a) /\\/*/.test(b); el.innerHTML = c; const r = /x*/;\n', 'innerHTML/outerHTML assignment'],
+    ['JSX URL text', 'Hidden.tsx', 'export const A = () => <a>https://x.y</a>; eval(z);\n', 'eval/new Function'],
+    ['compound assignment', 'Hidden.ts', 'el.innerHTML += x;\n', 'innerHTML/outerHTML assignment'],
+    ['string-keyed assignment', 'Hidden.ts', 'el["outerHTML"] = x;\n', 'innerHTML/outerHTML assignment'],
+    ['parenthesised eval', 'Hidden.ts', '(0, eval)("1");\n', 'eval/new Function'],
+    ['parenthesised constructor', 'Hidden.ts', 'new (Function)("return 1");\n', 'eval/new Function'],
+    ['comment-separated property', 'Hidden.ts', 'el /* first */ . /* second */ innerHTML = x;\n', 'innerHTML/outerHTML assignment'],
+    ['unparsable TypeScript', 'Hidden.ts', 'const = = = ;\n', 'could not be parsed'],
+  ])('rejects source sinks or parse failures after %s', (_name, file, text, problem) => {
+    expect(scan(build({ [`src/${file}`]: text }))).toContain(`src/${file}: ${problem}`);
+  });
+
+  it('does not mistake inert sink-looking strings, regex literals or JSX text for executable sinks', () => {
+    const b = build({
+      'src/Safe.tsx': 'const text = "el.innerHTML = x; eval(1); new Function(1)"; const r = /el.innerHTML = x/; export const A = () => <span>eval(x)</span>;\n',
+      'src/Compare.ts': 'if (a === b) { x.innerHTML == y; }\n',
+    });
     expect(scan(b)).toEqual([]);
   });
 
@@ -110,6 +148,19 @@ describe('scan-bundle', () => {
     expect(bad(GOOD_HTML.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'"))).toMatch(/unsafe-inline/);
     expect(bad(GOOD_HTML.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'"))).toMatch(/unsafe-inline styles/);
     expect(bad(GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', '<script src="./a.js">alert(1)</script>'))).toMatch(/both src and inline/);
+  });
+
+  it('still finds inline scripts whose end tag carries whitespace or attributes, or that are never closed', () => {
+    const bad = (html: string): string => scan(build({}, { html })).join('\n');
+    const module = '<script type="module" src="./assets/a.js"></script>';
+    // HTML parsers end a script element at `</script` followed by whitespace, `/` or `>`.
+    for (const end of ['</script >', '</SCRIPT\t>', '</script foo="bar">', '</script\n>']) {
+      expect(bad(GOOD_HTML.replace(module, `<script>alert(1)${end}`))).toMatch(/inline <script>/);
+    }
+    expect(bad(GOOD_HTML.replace(module, `<script src="./a.js">alert(1)</script >`))).toMatch(/both src and inline/);
+    // An unterminated element is not a parsable external script either.
+    expect(scan(build({}, { html: GOOD_HTML.replace(module, '<script>alert(1)') }))).toContain('index.html: unterminated <script>');
+    expect(scan(build())).toEqual([]);
   });
 
   it('requires a hardened _headers file', () => {

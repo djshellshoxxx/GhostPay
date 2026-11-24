@@ -24,7 +24,7 @@ if (p.kind === 'bitcoin') render(p.value.amountSats, p.value.silentPayment?.disp
 
 Dependencies (already used in this repo, exact pins): `@noble/hashes` 2.4.0 (keccak, sha256), `@scure/base` 1.2.6 (base58, bech32). `bitcoinjs/bip21` and `@solana/pay` were reviewed and not used (see ADR).
 
-Status: not wired into `apps/web`; the web app still uses `@ghostpay/btc-silent-payments` `buildBitcoinUri` (compatible output for the sp-only form). Test vectors: EIP-55, BIP-173/350 valid and invalid addresses, EIP-681 and BIP-21 spec examples, Solana Pay example, fuzz round-trips and mutation fuzzing.
+Status: used by `apps/web` for EIP-681, Solana Pay and TRON payment requests (`components/PaymentRequestQr.tsx`) and for QR classification (`lib/qrClassify.ts`). The BTC view still builds its `sp=` request with `@ghostpay/btc-silent-payments` `buildBitcoinUri` (compatible output for the sp-only form). Chain matrix: `docs/qr/CHAIN_URI_MATRIX.md`. Test vectors: EIP-55, BIP-173/350 valid and invalid addresses, EIP-681 and BIP-21 spec examples, Solana Pay example, fuzz round-trips and mutation fuzzing.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory

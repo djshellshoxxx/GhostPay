@@ -1,0 +1,151 @@
+{
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "ranges": [
+    [
+      0,
+      11
+    ],
+    [
+      12,
+      25
+    ],
+    [
+      26,
+      39
+    ],
+    [
+      40,
+      53
+    ],
+    [
+      54,
+      67
+    ],
+    [
+      68,
+      81
+    ],
+    [
+      82,
+      95
+    ],
+    [
+      96,
+      109
+    ],
+    [
+      110,
+      123
+    ],
+    [
+      124,
+      137
+    ],
+    [
+      138,
+      144
+    ]
+  ],
+  "stat": {
+    "n": 145,
+    "redundant": 65,
+    "positive": 80,
+    "code": 68,
+    "docs_only": 10,
+    "noncode_other": 2,
+    "capped": 13
+  },
+  "errors": [],
+  "small": [
+    {
+      "b": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "a": 3,
+      "f": [
+        "apps/web/public/ghostpay-embed-v2.js",
+        "apps/web/src/lib/embedPopup.noopener.test.ts",
+        "docs/handoffs/EMBED_NOOPENER_POPUP_20261120.md"
+      ]
+    },
+    {
+      "b": "automation/20261119T073600Z/bug/camera-visibility",
+      "a": 1,
+      "f": [
+        "apps/web/src/components/CameraImporter.tsx",
+        "apps/web/src/components/CameraImporter.visibility.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md"
+      ]
+    },
+    {
+      "b": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "a": 3,
+      "f": [
+        "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/LEDGER_ACTIONABILITY_20261120.md"
+      ]
+    },
+    {
+      "b": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "a": 2,
+      "f": [
+        "apps/web/src/lib/scanSpam.test.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "a": 2,
+      "f": [
+        "packages/cli/src/args.test.ts",
+        "packages/cli/src/args.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "a": 1,
+      "f": [
+        "packages/merchant-billing/src/schedule.test.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "a": 2,
+      "f": [
+        "packages/net-transport/src/core.test.ts",
+        "packages/net-transport/src/onion.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "a": 1,
+      "f": [
+        "apps/web/src/lib/format.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "a": 3,
+      "f": [
+        "apps/web/src/lib/scanSpam.test.ts",
+        "apps/web/src/lib/scanSpam.ts",
+        "docs/ai/ACTIVE_WORK.md"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "a": 2,
+      "f": [
+        "apps/web/src/lib/scanSpam.test.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "a": 1,
+      "f": [
+        "apps/web/src/components/TagArchive.test.tsx"
+      ]
+    }
+  ]
+}

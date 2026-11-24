@@ -1,5 +1,5 @@
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { encodeAbiParameters, getAddress, keccak256 } from 'viem/utils';
+import { encodeAbiParameters, getAddress, keccak256, toBytes } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { validateManifest, type DeploymentManifest } from './deployments.js';
 import { ChainAdapterError } from './errors.js';
@@ -194,6 +194,24 @@ describe('manifest signature', () => {
     expect(p['policyFactory']).toBeDefined();
     expect(Object.keys(p)).toEqual([...Object.keys(p)].sort());
   });
+  it('uses the versioned structured-manifest domain without changing canonical JSON', () => {
+    const domain = 'GhostPay/structured-deployment-manifest/v1\n';
+    const canonical = canonicalManifestJson(mf());
+    expect(manifestDigest(mf())).toBe(keccak256(toBytes(domain + canonical)));
+    expect(manifestDigest(mf())).not.toBe(keccak256(toBytes(canonical)));
+    expect(manifestDigest({ ...mf(), signature: '0xabcd' })).toBe(manifestDigest(mf()));
+  });
+  it.each(['', 'GhostPay/receipt/v1\n', 'GhostPay-deployment-manifest-v1\n'])(
+    'refuses a signature over the canonical JSON with foreign domain %j',
+    (domain) => {
+      const m = mf();
+      const digest = keccak256(toBytes(domain + canonicalManifestJson(m)));
+      const bytes = Uint8Array.from(digest.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+      const signature: Hex = `0x${hex(secp256k1.sign(bytes, sk, { prehash: false, lowS: true }))}`;
+      expect(verifyManifestSignature({ ...m, signature }, [pub])).toEqual({ status: 'invalid' });
+      expect(verifyManifestSignature(withSig(false), [pub])).toEqual({ status: 'valid', keyIndex: 0 });
+    },
+  );
   it('reports unsigned honestly', () => {
     expect(verifyManifestSignature(mf(), [])).toEqual({ status: 'unsigned' });
     expect(verifyManifestSignature(mf(), [pub])).toEqual({ status: 'unsigned' });

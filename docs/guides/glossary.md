@@ -1,6 +1,6 @@
 # Glossary
 
-Plain-language definitions. Terms marked *(planned)* or *(experimental)* are not available in the app.
+Plain-language definitions. A planned feature may be absent; an experimental feature may have gated test controls. Neither label establishes a qualified deployment.
 
 **Announcement.** A public on-chain event (ERC-5564) holding the one-time address, an ephemeral public key and a view tag. It tells the seller's scanner a payment may be theirs. It is a claim, not proof of payment.
 
@@ -8,17 +8,17 @@ Plain-language definitions. Terms marked *(planned)* or *(experimental)* are not
 
 **Bearer link.** A link that works for whoever holds it. Invoice links are bearer links.
 
-**BIP-352 / Silent payments.** Bitcoin's reusable-address scheme. See [Bitcoin silent payments](bitcoin-silent-payments.md). *(library only)*
+**BIP-352 / Silent payments.** Bitcoin's reusable-address scheme. See [Bitcoin silent payments](bitcoin-silent-payments.md). *(library and full-build test view)*
 
 **Checkout fee.** The 0.25% (25 bps) fee taken by the router, rounded down.
 
-**Deployment manifest.** A file listing contract and fee-recipient addresses per chain. Not yet authenticated by the app; nothing is deployed.
+**Deployment manifest.** A file listing contract and fee-recipient addresses per chain. The app accepts a bundled manifest only with a valid configured release signature, then checks the deployment against its RPC before payment. No deployment manifest ships in this repository; missing or invalid deployment information keeps payments disabled.
 
 **ERC-2612 permit.** A token feature that lets a signature approve spending without a separate approval transaction. Needed for the relayer sweep path.
 
 **ERC-5564.** The standard for stealth addresses and announcements.
 
-**ERC-6538.** A registry standard for publishing meta-addresses. The app does not publish to it. *(planned)*
+**ERC-6538.** A registry standard for publishing meta-addresses. The app has explicit-consent publishing, clearing and lookup controls, with registry verification.
 
 **Ephemeral key.** A fresh one-time key the payer generates so the one-time address cannot be derived by anyone else.
 
@@ -52,4 +52,4 @@ Plain-language definitions. Terms marked *(planned)* or *(experimental)* are not
 
 **Viewing key.** The secret that lets software find your payments. Cannot spend, but reveals your history. Never share it.
 
-**Wrong-tag payment.** A payment whose announcement carries a bad view tag, so a tag-filtered scan misses it. A deep scan is *(planned)*.
+**Wrong-tag payment.** A payment whose announcement carries a bad view tag, so a tag-filtered scan misses it. The opt-in deep scan checks router announcements without that filter while retaining full address verification; direct announcements stay tag-filtered.

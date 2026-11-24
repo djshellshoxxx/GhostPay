@@ -1,0 +1,7 @@
+/tmp/ghostpay-analyzers/venv/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+PolicyAccount rc=1
+/tmp/ghostpay-analyzers/venv/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/tmp/ghostpay-analyzers/mythril-remaining.sh: line 15:  1828 Killed                  timeout 960 myth analyze "src/$name.sol" --solv 0.8.28 --solc-json "$conf" --execution-timeout 900 -t 3 -o json > "$out"
+PolicyAccountFactory rc=137

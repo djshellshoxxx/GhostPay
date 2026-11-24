@@ -5,8 +5,9 @@
    binds the ciphertext through the GCM tag plus `AAD = "GPI1" || chainId || signer`. Because the AES key travels in the
    same fragment, anyone can re-encrypt, but nobody can alter the plaintext without invalidating the signature. A
    ciphertext-hash binding would make a signature specific to one envelope; if the owner wants that, it needs an ADR.
-2. **Invalid signatures do not throw** in `parseFragment`; they return `signatureValid: false` / `trust: 'invalid-signature'`
-   (task text). Callers must treat that as a hard stop. Every structural problem does throw.
+2. **Invalid signatures do not throw by default** in `parseFragment`; they return `signatureValid: false` /
+   `trust: 'invalid-signature'` (task text). Callers must treat that as a hard stop. The opt-in policy in item 15
+   instead throws for an invalid signature or a valid but unpinned signer. Every structural problem does throw.
 3. **Field choices the spec left open** (no ADR yet): `amountPolicy = {mode:'fiat_quote'} | {mode:'fixed_token', tokenAmount}`,
    `feePolicy = 'payer_pays' | 'seller_pays'`, `tax = {rateBps, minorUnits}`, line item = `{description, quantity, unitMinorUnits}`,
    times are unix seconds, token addresses and all hex are lowercase (no EIP-55 in the invoice, so one encoding per value).
@@ -31,3 +32,15 @@
 13. **Text hygiene (S3-12) is enforced at parse time** with `ForbiddenCharacterError` (`FORBIDDEN_CHARACTER`, subclass of `SchemaError`). U+180E, U+2028 and U+2029 are rejected in
    addition to the listed set (the web display sanitiser already treated them as invisible). `memo` may contain `\n`; no other field may. This is a behaviour change: memos with a line feed
    used to be rejected, and invoices containing the listed characters that older builds accepted are now rejected.
+14. **Invoice v2 (`bufferPolicy`, spec 13, ADR-0024).** `Invoice.v` is now `1 | 2`; v2 adds the required public field
+    `bufferPolicy {accepted, maxWei, minWei, refund: 'none'}` and v1 must not carry it. `createInvoice` emits v2 only when a
+    policy is given, so v1 links, signatures and vectors are unchanged. The signature domain string stays
+    `GhostPay.Invoice.v1\0` (it names the signing scheme, and `v` is inside the signed canonical invoice); the envelope stays
+    `#gpi=v1.`. Older parsers reject v2 at `v` (fail closed). The policy is enforced by the payer app only, not on-chain.
+15. **Opt-in signer policy restored from PR #218** (`b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`).
+    `ParseOptions.requirePinnedSigner` returns only `trusted-seller` invoices when set. Invalid signatures throw
+    `InvalidSignatureError` (`INVALID_SIGNATURE`) before a valid but unpinned key throws `UntrustedSignerError`
+    (`UNTRUSTED_SIGNER`). An empty or missing pin set rejects every parsed invoice. `openFragment` can still
+    request a passphrase before an invoice exists to authenticate. Earlier validation errors retain their types.
+    Both codes have static guidance in `packages/ux-core`. This is an additive shared API restoration: no current
+    browser caller opts in, no signature/encryption format changes, and default invoice review is unchanged.

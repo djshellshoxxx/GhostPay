@@ -1,8 +1,12 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { sanitizeDisplayText } from '../lib/sanitize';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import { ContextHelp } from './ContextHelp';
 
+// i18n-use: common.notice.info common.notice.warn common.notice.error common.notice.ok
 export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
-  const label = { info: 'Note', warn: 'Warning', error: 'Problem', ok: 'Done' }[props.kind];
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const label = t(`common.notice.${props.kind}`);
   return (
     <div className={`notice notice-${props.kind}`} role={props.kind === 'error' ? 'alert' : 'note'}>
       <strong className="notice-title">
@@ -18,14 +22,18 @@ export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok';
 export function Field(props: {
   readonly label: string;
   readonly hint?: string;
+  readonly help?: { readonly label: string; readonly text: string };
   readonly children: (id: string, describedBy: string | undefined) => ReactNode;
 }): ReactNode {
   const id = useId();
   const hintId = props.hint === undefined ? undefined : `${id}-hint`;
+  const helpId = props.help === undefined ? undefined : `${id}-help`;
+  const describedBy = [hintId, helpId].filter((value) => value !== undefined).join(' ') || undefined;
   return (
     <div className="field">
       <label htmlFor={id}>{props.label}</label>
-      {props.children(id, hintId)}
+      {props.children(id, describedBy)}
+      {props.help !== undefined && <ContextHelp id={`${id}-help`} label={props.help.label}>{props.help.text}</ContextHelp>}
       {props.hint !== undefined && (
         <p className="hint" id={hintId}>
           {props.hint}
@@ -36,41 +44,70 @@ export function Field(props: {
 }
 
 export function CopyButton(props: { readonly text: string; readonly label: string }): ReactNode {
-  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [result, setResult] = useState<{ readonly text: string; readonly state: 'copied' | 'failed' } | undefined>();
+  const attempt = useRef(0);
+  const currentText = useRef(props.text);
+  currentText.current = props.text;
+  const state = result?.text === props.text ? result.state : 'idle';
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  useEffect(() => {
+    setResult(undefined);
+    return () => { attempt.current += 1; };
+  }, [props.text]);
   return (
     <button
       type="button"
       className="btn"
       onClick={() => {
+        const text = props.text;
+        const request = ++attempt.current;
+        const finish = (state: 'copied' | 'failed'): void => {
+          if (request === attempt.current && currentText.current === text) setResult({ text, state });
+        };
         void (async () => {
           try {
-            await navigator.clipboard.writeText(props.text);
-            setState('copied');
+            await navigator.clipboard.writeText(text);
+            finish('copied');
           } catch {
-            setState('failed');
+            finish('failed');
           }
         })();
       }}
     >
-      {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed: select the text manually' : props.label}
+      {state === 'copied' ? t('common.copy.copied') : state === 'failed' ? t('common.copy.failed') : props.label}
     </button>
   );
 }
 
 export function Mono(props: { readonly children: ReactNode }): ReactNode {
-  return <code className="mono">{props.children}</code>;
+  return <code className="mono" dir="ltr">{props.children}</code>;
 }
 
 /** Triggers a local file download of text content (Blob URL, no network). */
 export function downloadText(filename: string, text: string, type: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type }));
+  downloadBlob(filename, new Blob([text], { type }));
+}
+
+/**
+ * Triggers a local file download of a Blob (Blob URL, no network). A throw from the anchor or the click is rethrown
+ * after the anchor is removed and the URL revoked, so a blocked download leaves neither behind.
+ */
+export function downloadBlob(filename: string, blob: Blob): void {
   const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  const url = URL.createObjectURL(blob);
+  try {
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+  } catch (error) {
+    URL.revokeObjectURL(url);
+    throw error;
+  } finally {
+    a.remove();
+  }
+  // Allow the browser to consume a successfully initiated download before revocation.
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 1000);
@@ -82,14 +119,15 @@ export function downloadText(filename: string, text: string, type: string): void
  */
 export function SafeText(props: { readonly value: string; readonly notice?: boolean }): ReactNode {
   const s = sanitizeDisplayText(props.value);
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   return (
     <>
       <span className="isolate">{s.text}</span>
       {props.notice !== false && (s.replaced > 0 || s.mixedScript) && (
         <span className="hint">
           {' '}
-          {s.replaced > 0 && `(${String(s.replaced)} hidden or direction-changing character${s.replaced === 1 ? '' : 's'} shown as ⟨U+…⟩.) `}
-          {s.mixedScript && '(A word mixes Latin letters with Cyrillic or Greek letters: check for lookalikes.)'}
+          {s.replaced > 0 && <>{t('common.safeText.hidden', { count: s.replaced })}{' '}</>}
+          {s.mixedScript && t('common.safeText.mixed')}
         </span>
       )}
     </>

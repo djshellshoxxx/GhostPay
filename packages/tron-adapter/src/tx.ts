@@ -1,6 +1,7 @@
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
+import { equalBytes } from '@noble/curves/utils.js';
 import { unsafeRevealSecret, zeroize, type SecretScalar } from '@ghostpay/core-crypto';
 import { decodeTronAddress, tronAddressFromHex as tronAddressFromHexUnsafe, tronAddressFromPublicKey } from './address.js';
 import { fail } from './errors.js';
@@ -167,8 +168,30 @@ export function decodeRawTx(raw: Uint8Array): DecodedRawTx {
     if (hex.length !== 42) return fail('INVALID_PROTOBUF');
     return tronAddressFromHexUnsafe(hex);
   };
+  /**
+   * Canonical re-encoding check: the bytes must be exactly what this package's builders emit for the
+   * decoded values. Protobuf decoders differ on duplicate scalar fields (last wins), unknown or
+   * wrong-wire-type fields, field order and over-long varints; an exact round-trip rules all of
+   * them out, so the decoded view is precisely what a node will execute.
+   */
+  const canonical = (kind: 'TransferContract' | 'TriggerSmartContract', typeNo: number, value: Uint8Array): void => {
+    const rebuilt = concat(
+      fBytes(1, common.refBlockBytes),
+      fBytes(4, common.refBlockHash),
+      fVarint(8, common.expirationMs),
+      fBytes(10, common.memo),
+      fBytes(11, contractEnvelope(typeNo, kind, value)),
+      fVarint(14, common.timestampMs),
+      fVarint(18, common.feeLimitSun),
+    );
+    if (!equalBytes(rebuilt, raw)) fail('INVALID_PROTOBUF');
+  };
   if (type === CONTRACT_TYPE_TRANSFER && url === `${TYPE_URL_PREFIX}TransferContract`) {
-    return { kind: 'trx', owner: addr(vb(1)), to: addr(vb(2)), amount: vf.find((x) => x.field === 3)?.varint ?? 0n, ...common };
+    const amount = vf.find((x) => x.field === 3)?.varint ?? 0n;
+    const owner = addr(vb(1));
+    const to = addr(vb(2));
+    canonical('TransferContract', CONTRACT_TYPE_TRANSFER, concat(fBytes(1, vb(1)), fBytes(2, vb(2)), fVarint(3, amount)));
+    return { kind: 'trx', owner, to, amount, ...common };
   }
   if (type === CONTRACT_TYPE_TRIGGER_SMART_CONTRACT && url === `${TYPE_URL_PREFIX}TriggerSmartContract`) {
     const data = vb(4);
@@ -177,7 +200,10 @@ export function decodeRawTx(raw: Uint8Array): DecodedRawTx {
     const to = addr(concat(Uint8Array.of(0x41), data.subarray(16, 36)));
     let amount = 0n;
     for (const b of data.subarray(36, 68)) amount = (amount << 8n) | BigInt(b);
-    return { kind: 'trc20', owner: addr(vb(1)), to, contract: addr(vb(2)), amount, ...common };
+    const owner = addr(vb(1));
+    const contract = addr(vb(2));
+    canonical('TriggerSmartContract', CONTRACT_TYPE_TRIGGER_SMART_CONTRACT, concat(fBytes(1, vb(1)), fBytes(2, vb(2)), fBytes(4, data)));
+    return { kind: 'trc20', owner, to, contract, amount, ...common };
   }
   return fail('INVALID_PROTOBUF');
 }

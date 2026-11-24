@@ -2,6 +2,11 @@
 
 This package is a **proof of concept** of dual-key ed25519 stealth payments for Solana, covering SOL and SPL tokens. It has **not been audited**. The design and threat model are in [ADR-0017](../../docs/adr/ADR-0017-solana-stealth.md).
 
+**Not interoperable with `@ghostpay/chain-solana`.** That package is a separate Solana stealth format: it uses
+`gpsol:` base58check meta-addresses and `gpst1:` + base64url memos, while this package uses `st:sol:`
+meta-addresses (with a cluster byte) and `gpst1:` + base58 memos. This package is the one imported by the web app
+(`apps/web`); the CLI imports `@ghostpay/chain-solana`. A meta-address or memo from one cannot be used with the other.
+
 ## What it does
 
 | Module | Contents |
@@ -28,4 +33,4 @@ npm run vectors -w @ghostpay/solana-stealth   # regenerate + independent Python 
 - Token-2022 extensions are not supported.
 - No mints are allowlisted.
 - No announcer program exists yet.
-- `solana-test-validator` was not available, so all chain tests use a mock RPC.
+- The package's own tests use a mock RPC. A real `solana-test-validator` run exists separately in `scripts/integration/solana-local.e2e.mjs` (invoked by `.github/workflows/integration.yml`).

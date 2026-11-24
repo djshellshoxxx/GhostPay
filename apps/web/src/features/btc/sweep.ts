@@ -1,10 +1,16 @@
 import {
-  buildSpendTransaction,
+  buildSpendTransactionWithSigner,
+  decodeSilentPaymentAddress,
   previewSweep,
+  SoftwareSilentPaymentSigner,
   satsToBtcString,
   SilentPaymentError,
   type SpendableOutput,
 } from '@ghostpay/btc-silent-payments';
+import type { MessageKey } from '../../i18n/catalog';
+import { SOURCE_TRANSLATOR } from '../../i18n/source';
+import type { Translator } from '../../i18n/translator';
+import { UserFacingError, displayMessage, type MessageDescriptor } from '../../lib/errors';
 import type { FoundPayment } from './scan';
 import type { BtcWallet } from './wallet';
 
@@ -22,9 +28,45 @@ export interface SweepReview {
   readonly sendSats: bigint;
   readonly rbf: true;
   readonly warnings: readonly string[];
+  /** Public descriptors render with the language current at review time, without rebuilding the transaction. */
+  readonly warningMessages: readonly MessageDescriptor[];
 }
 
 export const HIGH_FEE_RATE = 50;
+
+/**
+ * Checks a sweep destination for the wallet's network; no payment needs to be selected and no amount is involved.
+ * Silent payment addresses are decoded in full, as signing decodes them, not only recognised by their prefix.
+ * A bech32/bech32m regular address is valid all-lowercase or all-uppercase (BIP-173; QR codes often use uppercase)
+ * and is returned in its canonical lowercase form, which is how the signer displays it. Mixed case is refused.
+ * Base58 addresses are case-sensitive and are returned exactly as typed.
+ * @returns The trimmed address in canonical form: the string to show the user and to sign.
+ * @throws {SilentPaymentError} `INVALID_INPUT` when empty, `INVALID_ADDRESS` when not valid for the network.
+ */
+export function checkDestination(wallet: BtcWallet, destination: string): string {
+  const dest = destination.trim();
+  if (dest === '') throw new SilentPaymentError('INVALID_INPUT');
+  if (/^t?sp1/i.test(dest)) {
+    try {
+      decodeSilentPaymentAddress(dest, wallet.net.spNetwork);
+    } catch {
+      throw new SilentPaymentError('INVALID_ADDRESS');
+    }
+    return dest;
+  }
+  let canonical = dest;
+  if (BECH32_REGULAR.test(dest)) {
+    const lower = dest.toLowerCase();
+    if (dest !== lower && dest !== dest.toUpperCase()) throw new SilentPaymentError('INVALID_ADDRESS');
+    canonical = lower;
+  }
+  // The same regular-address decoding as review and signing; the 1 BTC placeholder input only keeps the amount checks quiet.
+  previewSweep({ inputAmountsSats: [100_000_000n], address: canonical, feeRate: 1, network: wallet.net.spNetwork, regtest: wallet.net.regtest });
+  return canonical;
+}
+
+/** Human-readable parts of the segwit address families; no base58 address on any network starts like this. */
+const BECH32_REGULAR = /^(bc|tb|bcrt)1/i;
 
 export function reviewSweep(
   wallet: BtcWallet,
@@ -32,8 +74,9 @@ export function reviewSweep(
   destination: string,
   feeRate: number,
 ): SweepReview {
-  const dest = destination.trim();
-  if (dest === '' || selected.length === 0) throw new SilentPaymentError('INVALID_INPUT');
+  if (destination.trim() === '' || selected.length === 0) throw new SilentPaymentError('INVALID_INPUT');
+  // Review, display and signing all use the one canonical spelling, so the signer's check compares like with like.
+  const dest = checkDestination(wallet, destination);
   const pv = previewSweep({
     inputAmountsSats: selected.map((s) => s.amountSats),
     address: dest,
@@ -42,10 +85,14 @@ export function reviewSweep(
     regtest: wallet.net.regtest,
   });
   const totalSats = selected.reduce((a, s) => a + s.amountSats, 0n);
-  const warnings: string[] = [];
-  if (feeRate > HIGH_FEE_RATE) warnings.push(`Fee rate ${String(feeRate)} sat/vB is high even for a test network.`);
-  if (pv.feeSats * 10n > totalSats) warnings.push('The fee is more than 10% of the swept amount.');
-  if (dest === wallet.address) warnings.push('The destination is this wallet\'s own receive address.');
+  const warningMessages: MessageDescriptor[] = [];
+  // Common-input ownership: inputs spent together are publicly attributed to one owner (PRIVACY-E2E-03).
+  if (selected.length > 1) {
+    warningMessages.push({ key: 'btc.sweep.linked', values: { count: String(selected.length) } });
+  }
+  if (feeRate > HIGH_FEE_RATE) warningMessages.push({ key: 'btc.sweep.highFeeRate', values: { rate: String(feeRate) } });
+  if (pv.feeSats * 10n > totalSats) warningMessages.push({ key: 'btc.sweep.largeFee' });
+  if (dest === wallet.address) warningMessages.push({ key: 'btc.sweep.ownAddress' });
   return {
     networkLabel: wallet.net.label,
     inputs: selected.map((s) => ({ txid: s.txid, vout: s.vout, amountSats: s.amountSats })),
@@ -57,7 +104,8 @@ export function reviewSweep(
     feeSats: pv.feeSats,
     sendSats: pv.sendSats,
     rbf: true,
-    warnings,
+    warnings: warningMessages.map((message) => displayMessage(message)),
+    warningMessages,
   };
 }
 
@@ -68,11 +116,16 @@ export interface SignedSweep {
   readonly vsize: number;
 }
 
+/** Which signer the view uses. Hardware wallets: interface only (spec 11), no device driver is shipped. */
+export const SIGNER_DESCRIPTION = SOURCE_TRANSLATOR.t('btc.sweep.signer');
+
 /**
- * Signs the reviewed sweep. Call only after the user approved the exact `review`. The result is
- * checked against the review (fee and size) and nothing is returned on any mismatch.
+ * Signs the reviewed sweep through the {@link SilentPaymentSigner} interface (here the software reference
+ * signer). Call only after the user approved the exact `review`. The signer's confirmation step re-checks that
+ * the transaction pays only the reviewed destination; the result is checked against the review (fee and size)
+ * and nothing is returned on any mismatch.
  */
-export function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], review: SweepReview): SignedSweep {
+export async function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], review: SweepReview): Promise<SignedSweep> {
   const same =
     selected.length === review.inputs.length &&
     selected.every((s, i) => {
@@ -87,43 +140,62 @@ export function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], 
     xOnlyPublicKey: s.xOnlyPublicKey,
     spendTweak: s.spendTweak,
   }));
-  const r = buildSpendTransaction({
-    outputs,
-    spendSecret: wallet.keys.spendSecret,
-    destinations: [{ address: review.destination }],
-    feeRate: review.feeRate,
-    network: wallet.net.spNetwork,
-    regtest: wallet.net.regtest,
-    rbf: review.rbf,
+  const signer = new SoftwareSilentPaymentSigner(wallet.keys.spendSecret, {
+    // Stand-in for a device screen: exactly one output, to the reviewed destination.
+    confirm: (s) => s.outputs.length === 1 && s.outputs[0]?.address === review.destination,
   });
-  if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
-  let hex = '';
-  for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
-  return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  try {
+    const r = await buildSpendTransactionWithSigner(
+      {
+        outputs,
+        destinations: [{ address: review.destination }],
+        feeRate: review.feeRate,
+        network: wallet.net.spNetwork,
+        regtest: wallet.net.regtest,
+        rbf: review.rbf,
+      },
+      signer,
+    );
+    if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
+    let hex = '';
+    for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
+    return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  } finally {
+    // Best effort: wipes the signer's own copy of the spend secret. The wallet's keys stay until Lock.
+    signer.dispose();
+  }
 }
 
 export function formatBtc(sats: bigint): string {
   return `${satsToBtcString(sats)} BTC`;
 }
 
-/** Plain-language message for package errors; never echoes input values. */
-export function btcErrorMessage(e: unknown): string {
-  if (e instanceof SilentPaymentError) {
-    const m: Partial<Record<string, string>> = {
-      INVALID_ADDRESS: 'That address is not valid for this network.',
-      INVALID_INPUT: 'Some input was missing or out of range.',
-      INVALID_AMOUNT: 'Invalid amount.',
-      INSUFFICIENT_FUNDS: 'The selected funds do not cover the fee.',
-      DUST_OUTPUT: 'The amount left after the fee is below the dust limit.',
-      FEE_TOO_HIGH: 'The fee is too high compared with the amount.',
-      NETWORK_MISMATCH: 'The server is not on the network you selected.',
-      TRANSPORT_FAILURE: 'The server could not be reached or refused the request.',
-      INVALID_RESPONSE: 'The server returned data this app cannot trust.',
-      REORG_DETECTED: 'The chain changed while scanning. Run the scan again.',
-      ABORTED: 'Cancelled.',
-      SIGNATURE_INVALID: 'Signing check failed; nothing was produced.',
-    };
-    return m[e.code] ?? 'Bitcoin operation failed.';
-  }
-  return e instanceof Error ? e.message : 'Bitcoin operation failed.';
+const FRIENDLY: Readonly<Record<string, MessageKey>> = {
+  INVALID_ADDRESS: 'btc.error.invalidAddress',
+  INVALID_INPUT: 'btc.error.invalidInput',
+  INVALID_AMOUNT: 'btc.error.invalidAmount',
+  INSUFFICIENT_FUNDS: 'btc.error.insufficientFunds',
+  DUST_OUTPUT: 'btc.error.dustOutput',
+  FEE_TOO_HIGH: 'btc.error.feeTooHigh',
+  NETWORK_MISMATCH: 'btc.error.networkMismatch',
+  TRANSPORT_FAILURE: 'btc.error.transportFailure',
+  INVALID_RESPONSE: 'btc.error.invalidResponse',
+  REORG_DETECTED: 'btc.error.reorgDetected',
+  ABORTED: 'btc.error.aborted',
+  SIGNATURE_INVALID: 'btc.error.signatureInvalid',
+  SIGNER_REFUSED: 'btc.error.signerRefused',
+  INVALID_HEADER: 'btc.error.invalidHeader',
+};
+
+/** Capture known public diagnostics only. Never retain an arbitrary exception message or a secret-bearing cause. */
+export function captureBtcErrorMessage(e: unknown): MessageDescriptor {
+  if (e instanceof UserFacingError && e.translation !== undefined) return e.translation;
+  return { key: e instanceof SilentPaymentError ? FRIENDLY[e.code] ?? 'btc.error.failed' : 'btc.error.failed' };
 }
+
+/** Compatible source-English API; UI state retains the descriptor and supplies its current translator on render. */
+export function btcErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  return displayMessage(captureBtcErrorMessage(e), t);
+}
+
+// i18n-use: btc.sweep.linked btc.sweep.highFeeRate btc.sweep.largeFee btc.sweep.ownAddress btc.error.invalidAddress btc.error.invalidInput btc.error.invalidAmount btc.error.insufficientFunds btc.error.dustOutput btc.error.feeTooHigh btc.error.networkMismatch btc.error.transportFailure btc.error.invalidResponse btc.error.reorgDetected btc.error.aborted btc.error.signatureInvalid btc.error.signerRefused btc.error.invalidHeader btc.error.failed

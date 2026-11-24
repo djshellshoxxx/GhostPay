@@ -1,9 +1,13 @@
+import { SOURCE_TRANSLATOR } from '../../i18n/source';
+import type { MessageKey } from '../../i18n/catalog';
+import type { Translator } from '../../i18n/translator';
+import { UserFacingError, displayMessage, type DisplayMessage, type MessageDescriptor } from '../../lib/errors';
 import { createHttpRpc, SolanaStealthError, toU64, type SolanaRpc } from '@ghostpay/solana-stealth';
 import { DEVNET_GENESIS, MAINNET_GENESIS, TESTNET_GENESIS, type SolNetworkInfo } from './network';
 
 /** An error whose message is written for the user and safe to display. */
-export class SolViewError extends Error {
-  public constructor(message: string) {
+export class SolViewError extends UserFacingError {
+  public constructor(message: string | MessageDescriptor) {
     super(message);
     this.name = 'SolViewError';
   }
@@ -25,44 +29,63 @@ export function createRpc(url: string, fetchFn: (url: string, init: RequestInit)
  */
 export async function checkNetwork(rpc: SolanaRpc, net: SolNetworkInfo, signal?: AbortSignal): Promise<void> {
   const r = await rpc.request('getGenesisHash', [], signal);
-  if (typeof r !== 'string') throw new SolViewError('The server sent an unexpected answer.');
-  if (r === MAINNET_GENESIS) throw new SolViewError('This server reports Solana mainnet. Mainnet is disabled.');
+  if (typeof r !== 'string') throw new SolViewError({ key: 'sol.error.response' });
+  if (r === MAINNET_GENESIS) throw new SolViewError({ key: 'sol.error.mainnet' });
   const expected = net.genesisHash;
   if (expected === undefined ? PUBLIC_GENESIS.includes(r) : r !== expected) {
-    throw new SolViewError(`This server is not on the network you selected (${net.label}).`);
+    throw new SolViewError({ key: 'sol.error.network', values: { network: net.label } });
   }
 }
 
 /** Lamport balance at finalized commitment. */
 export async function getBalance(rpc: SolanaRpc, address: string, signal?: AbortSignal): Promise<bigint> {
   const r = await rpc.request('getBalance', [address, { commitment: 'finalized' }], signal);
-  if (typeof r !== 'object' || r === null) throw new SolViewError('The server sent an unexpected answer.');
+  if (typeof r !== 'object' || r === null) throw new SolViewError({ key: 'sol.error.response' });
   return toU64((r as { value?: unknown }).value);
 }
 
 /** Submits a signed, base64 wire transaction. This package's library never sends; the view does, on request. */
 export async function sendTransaction(rpc: SolanaRpc, wireBase64: string, signal?: AbortSignal): Promise<string> {
   const r = await rpc.request('sendTransaction', [wireBase64, { encoding: 'base64', preflightCommitment: 'finalized' }], signal);
-  if (typeof r !== 'string' || r === '') throw new SolViewError('The server sent an unexpected answer.');
+  if (typeof r !== 'string' || r === '') throw new SolViewError({ key: 'sol.error.response' });
   return r;
 }
 
-const FRIENDLY: Readonly<Record<string, string>> = {
-  INVALID_ADDRESS: 'That is not a valid Solana address.',
-  INVALID_META_ADDRESS: 'That is not a valid Solana stealth address.',
-  BAD_CHECKSUM: 'The address checksum does not match.',
-  NETWORK_MISMATCH: 'That address is for a different Solana network.',
-  TRANSPORT_FAILURE: 'The server could not be reached or refused the request.',
-  RPC_ERROR: 'The server refused the request.',
-  INVALID_RESPONSE: 'The server sent an answer this app cannot read.',
-  INVALID_INPUT: 'One of the inputs is not valid.',
-  INVALID_AMOUNT: 'The amount is not valid.',
-  UNSUPPORTED: 'That range holds too many announcements to scan at once. Choose a later first slot.',
-  ABORTED: 'Cancelled.',
+const FRIENDLY: Readonly<Record<string, MessageKey>> = {
+  INVALID_SCALAR: 'sol.error.invalidScalar',
+  INVALID_POINT: 'sol.error.invalidPoint',
+  INVALID_META_ADDRESS: 'sol.error.invalidMetaAddress',
+  BAD_CHECKSUM: 'sol.error.badChecksum',
+  UNSUPPORTED_VERSION: 'sol.error.unsupportedVersion',
+  NETWORK_MISMATCH: 'sol.error.networkMismatch',
+  INVALID_SEED: 'sol.error.invalidSeed',
+  DERIVED_KEY_INVALID: 'sol.error.derivedKeyInvalid',
+  INVALID_ANNOUNCEMENT: 'sol.error.invalidAnnouncement',
+  INVALID_ADDRESS: 'sol.error.invalidAddress',
+  INVALID_AMOUNT: 'sol.error.invalidAmount',
+  BELOW_RENT_EXEMPT: 'sol.error.belowRentExempt',
+  INVALID_INPUT: 'sol.error.invalidInput',
+  CHAIN_MISMATCH: 'sol.error.chainMismatch',
+  CHAIN_DISABLED: 'sol.error.chainDisabled',
+  RNG_UNAVAILABLE: 'sol.error.rngUnavailable',
+  RNG_FAILURE: 'sol.error.rngFailure',
+  TRANSPORT_FAILURE: 'sol.error.transportFailure',
+  INVALID_RESPONSE: 'sol.error.invalidResponse',
+  RPC_ERROR: 'sol.error.rpcError',
+  ABORTED: 'sol.error.aborted',
+  UNSUPPORTED: 'sol.error.unsupported',
+  SIGNER_NOT_REQUIRED: 'sol.error.signerNotRequired',
+  SIGNATURE_INVALID: 'sol.error.signatureInvalid',
 };
 
-export function solErrorMessage(e: unknown): string {
-  if (e instanceof SolViewError) return e.message;
-  if (e instanceof SolanaStealthError) return FRIENDLY[e.code] ?? e.message;
-  return 'Something went wrong. Nothing was sent.';
+/** Capture only catalog-backed public diagnostics before an async result enters view state. */
+export function captureSolErrorMessage(e: unknown): DisplayMessage {
+  if (e instanceof SolViewError) return e.translation ?? e.message;
+  return { key: e instanceof SolanaStealthError ? FRIENDLY[e.code] ?? 'error.unknown' : 'error.unknown' };
 }
+
+export function solErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  return displayMessage(captureSolErrorMessage(e), t);
+}
+
+// i18n-use: sol.error.response sol.error.mainnet sol.error.network sol.error.invalidScalar sol.error.invalidPoint sol.error.invalidMetaAddress sol.error.badChecksum sol.error.unsupportedVersion sol.error.networkMismatch sol.error.invalidSeed sol.error.derivedKeyInvalid sol.error.invalidAnnouncement sol.error.invalidAddress sol.error.invalidAmount sol.error.belowRentExempt sol.error.invalidInput sol.error.chainMismatch sol.error.chainDisabled sol.error.rngUnavailable sol.error.rngFailure sol.error.transportFailure sol.error.invalidResponse sol.error.rpcError sol.error.aborted sol.error.unsupported sol.error.signerNotRequired sol.error.signatureInvalid

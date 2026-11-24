@@ -47,7 +47,7 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
 <rect class="bg" width="900" height="714"/>
 <text class="t h" x="24" y="34">Stealth payment flow (animated)</text>
-<text class="t m s" x="24" y="54">Plays in a loop. If you prefer reduced motion, everything is shown at once. Testnet design only; nothing deployed.</text>
+<text class="t m s" x="24" y="54">Plays in a loop. If you prefer reduced motion, everything is shown at once. Testnet design only; live qualification remains separate.</text>
 <rect id="seller" class="box acc" x="20" y="80" width="200" height="70" rx="8"/>
 <text class="t ta b" x="120.0" y="111.5">Seller</text>
 <text class="t ta m s" x="120.0" y="128.5">meta-address + keys</text>

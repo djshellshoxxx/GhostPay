@@ -1,0 +1,45 @@
+name: CLI operator qualification
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'apps/web/src/lib/**'
+      - 'examples/subscription-cron/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/build-workspaces.mjs'
+      - 'scripts/tests/build-cli.test.mjs'
+      - '.github/workflows/cli-operator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-operator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable-cli:
+    name: CLI (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:cli-build
+      - run: npm run build:cli
+      - run: npm run typecheck -w @ghostpay/cli
+      - run: npm test -w @ghostpay/cli -- --maxWorkers=2
+      - run: npm run test:compiled -w @ghostpay/cli

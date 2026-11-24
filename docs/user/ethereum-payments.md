@@ -39,7 +39,7 @@ Source: `packages/chain-adapters/src/config/chains.ts`. Enabling a chain require
 
 The seller sweeps the one-time address to a wallet. Native coin needs gas. There are two options:
 
-- **Direct sweep**: the one-time address must already hold enough native coin to pay its own gas. Funding it from your wallet links that wallet to the address. Avoid this.
+- **Direct sweep**: the one-time address must already hold enough native coin to pay its own gas (on OP Stack chains such as Base Sepolia also the L1 data fee, which the app keeps back from a native sweep). Funding it from your wallet links that wallet to the address. Avoid this.
 - **Relayer sweep**: a relayer pays gas and takes a fee inside your signed amount. The relayer sees the one-time address, destination and amount. The sweep guide describes this path only for tokens with `permit`, so treat native coin as a direct sweep unless the sweep screen offers otherwise.
 
 See [Sweep funds and gas privacy](sweep-and-gas-privacy.md).

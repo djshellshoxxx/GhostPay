@@ -28,16 +28,18 @@ export function createFetchRpc(url: string, fetchImpl: FetchLike): ChainRpc {
   if (u.username !== '' || u.password !== '') throw new Error('RPC URL must not embed credentials');
   let nextId = 1;
   const call = async (method: string, params: readonly unknown[], opts: RpcCallOptions | undefined): Promise<unknown> => {
+    const id = nextId++;
     const res = await fetchImpl(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: nextId++, method, params }),
+      body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
       signal: opts?.signal ?? new AbortController().signal,
     });
     if (!res.ok) throw new Error(`HTTP ${String(res.status)}`);
     const parsed: unknown = JSON.parse(await res.text());
     if (typeof parsed !== 'object' || parsed === null) throw new Error('malformed response');
-    const o = parsed as { result?: unknown; error?: unknown };
+    const o = parsed as { jsonrpc?: unknown; id?: unknown; result?: unknown; error?: unknown };
+    if (o.jsonrpc !== '2.0' || typeof o.id !== 'number' || o.id !== id) throw new Error('JSON-RPC error');
     if (o.error !== undefined || o.result === undefined) throw new Error('JSON-RPC error');
     return o.result;
   };

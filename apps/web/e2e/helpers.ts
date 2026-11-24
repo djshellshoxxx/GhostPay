@@ -2,10 +2,15 @@ import { expect, type Page } from '@playwright/test';
 
 export const ORIGIN = 'http://localhost:4173';
 
-/** Opens the app, generates seller keys in memory and returns the public meta-address. */
+/**
+ * Opens the app, generates seller keys in memory and returns the public meta-address. Fresh keys have no backup, so the
+ * meta-address and Create invoice stay behind the backup gate (L1-01); these flows type its waiver.
+ */
 export async function generateKeys(page: Page): Promise<string> {
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
   await page.getByRole('button', { name: 'Generate new keys' }).click();
+  await page.getByLabel(/To continue without a backup, type/).fill('continue without backup');
+  await page.getByRole('button', { name: 'Continue without a backup' }).click();
   const meta = page.locator('code', { hasText: /^st:eth:0x/ });
   await expect(meta).toBeVisible();
   return (await meta.textContent()) ?? '';

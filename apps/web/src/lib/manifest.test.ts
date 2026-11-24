@@ -4,7 +4,7 @@ import { ed25519 } from '@noble/curves/ed25519.js';
 import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
-import { loadManifest, verifyManifestForFlow, verifyManifestState } from './manifest';
+import { loadBundledManifest, loadManifest, verifyManifestForFlow, verifyManifestState } from './manifest';
 
 const ok = (body: string, status = 200): Promise<Response> => Promise.resolve(new Response(body, { status }));
 
@@ -109,5 +109,32 @@ describe('loadManifest', () => {
       const invalid = { status: 'invalid', reason: 'x' } as const;
       expect(await verifyManifestForFlow(invalid, base)).toEqual(invalid);
     });
+  });
+});
+
+
+describe('static Pages deployment-manifest gates', () => {
+  it('rejects testnet manifests without pinned release verification keys', () => {
+    const state = loadBundledManifest(84532, { '84532': fakeManifestJson(84532) }, []);
+    expect(state.status).toBe('invalid');
+    if (state.status === 'invalid') expect(state.reason).toMatch(/No release verification key/);
+  });
+
+  it('ignores manifests inherited from the source object prototype', () => {
+    const inherited = Object.create({ '84532': fakeManifestJson(84532) }) as Record<string, string>;
+    expect(loadBundledManifest(84532, inherited, [`02${'11'.repeat(32)}`])).toEqual({ status: 'absent' });
+  });
+
+  it('rejects an unsigned bundled manifest even when a release key is configured', () => {
+    const state = loadBundledManifest(84532, { '84532': fakeManifestJson(84532) }, [`02${'11'.repeat(32)}`]);
+    expect(state.status).toBe('invalid');
+  });
+
+  it('requires on-chain verification before a loaded manifest can authorize payment flows', async () => {
+    const state = { status: 'loaded', manifest: backedManifest(84532) } as const;
+    expect((await verifyManifestForFlow(state, undefined)).status).toBe('invalid');
+    const offline = mockRpc(84532, () => { throw new Error('offline'); });
+    expect((await verifyManifestForFlow(state, offline)).status).toBe('invalid');
+    expect((await verifyManifestForFlow(state, withManifestChain(offline))).status).toBe('loaded');
   });
 });

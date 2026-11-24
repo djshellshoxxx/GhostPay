@@ -1,7 +1,7 @@
 import { fail } from './errors.js';
 import { parseSolanaAddress } from './addresses.js';
 import { parseDecimal, toAtomic, type Decimal } from './decimal.js';
-import { buildQuery, parseQuery, splitUri } from './query.js';
+import { boundBuiltUri, buildQuery, parseQuery, splitUri } from './query.js';
 import { recipientInfo, type RecipientInfo } from './recipient.js';
 import { checkText, hasMixedScript, MAX_LABEL_BYTES, MAX_MEMO_BYTES, MAX_MESSAGE_BYTES } from './text.js';
 
@@ -101,5 +101,5 @@ export function buildSolanaPay(p: BuildSolanaParams): string {
   if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
   if (p.memo !== undefined) pairs.push(['memo', checkText(p.memo, MAX_MEMO_BYTES)]);
   const head = `solana:${parseSolanaAddress(p.recipient)}`;
-  return pairs.length === 0 ? head : `${head}?${buildQuery(pairs)}`;
+  return boundBuiltUri(pairs.length === 0 ? head : `${head}?${buildQuery(pairs)}`);
 }

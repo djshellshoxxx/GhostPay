@@ -94,6 +94,12 @@ describe('signing', () => {
 
 describe('signature rejection', () => {
   const good = sampleSigned();
+  it('rejects sparse line items instead of accepting the signature of an empty list', () => {
+    const empty = sampleSigned({ lineItems: [] });
+    const sparse = { ...empty.invoice, lineItems: new Array<Invoice['lineItems'][number]>(1) };
+    expect(() => verifyInvoiceSignature({ invoice: sparse, signature: empty.signature })).toThrow(SchemaError);
+    expect(() => signInvoice(sparse, SIGNING_KEY)).toThrow(SchemaError);
+  });
   it('rejects high-s (malleated) signatures', () => {
     const r = good.signature.slice(0, 64);
     const s = BigInt(`0x${good.signature.slice(64)}`);

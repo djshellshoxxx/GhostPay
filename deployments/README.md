@@ -1,7 +1,7 @@
 # Deployment manifests
 
 One JSON file per chain, named `<chainId>.json` (for example `84532.json`), validated against
-[`schema.json`](./schema.json). **This directory contains no real deployments yet.** A manifest is
+[`schema.json`](./schema.json). **This directory contains no deployment of record yet** (the only file, `31337.json`, is an unsigned local anvil record). A manifest is
 written only after a real, verified deployment and is the single source of truth the UI, relayer and
 scanner read for contract addresses and the fee recipient. The fee recipient is never hard-coded in
 source (see `docs/FEE_SCHEDULE.md`).
@@ -22,7 +22,7 @@ source (see `docs/FEE_SCHEDULE.md`).
 | `bytecodeHashes` | object | `{ "router": <bytes32>, "sweepRelayer": <bytes32> }`: `keccak256` of the **deployed (runtime) bytecode** read from the chain (`cast codehash`). |
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | address / decimal string, optional | Policy-guarded account (scheme `0x47500002`, `docs/CONTRACTS_SPEC.md` section 4), written by `forge script script/DeployPolicy.s.sol`. All five are required together once `policyFactory` is present. `policyFlatFee` is a decimal string in `policyFeeToken` base units (F-SECURE; may exceed 2^53). `deployTx` and `bytecodeHashes` may carry matching optional `policyImplementation` / `policyFactory` entries. Manifests without these fields stay valid. |
 | `date` | string | RFC 3339 UTC deployment timestamp. |
-| `signature` | string, optional in the shared schema | Compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`, i.e. `keccak256(canonicalManifestJson(manifest))`. Required for any web deployment file because builds fail closed without configured release keys and a valid signature. |
+| `signature` | string, optional in the shared schema | Compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`, i.e. `keccak256(utf8(STRUCTURED_MANIFEST_SIGNING_DOMAIN + canonicalManifestJson(manifest)))`. The exported domain is `GhostPay/structured-deployment-manifest/v1\n` with one newline byte. Required for any web deployment file because builds fail closed without configured release keys and a valid signature. |
 
 ## Procedure
 
@@ -37,6 +37,11 @@ source (see `docs/FEE_SCHEDULE.md`).
    command exists; do not substitute the legacy `manifestSigningBytes` raw-text scheme used by the relayer compatibility
    verifier. Only after signing, explicitly copy the file to `apps/web/deployments/<chainId>.json`; validate the schema
    and web bundle with the matching pinned public key before committing both copies in a reviewed pull request.
+
+Structured signatures over the old unprefixed canonical JSON must be signed again
+with the updated `manifestDigest`; there is no migration fallback. This does not
+change canonical JSON, the schema, the separate legacy text API, or selection of
+the approved offline production key.
 
 ## Example (shape only, placeholder values)
 

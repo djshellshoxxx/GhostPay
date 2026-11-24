@@ -2,8 +2,26 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"],
-    "rootDir": "."
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@ghostpay/core-crypto": [
+        "../core-crypto/src/index.ts"
+      ],
+      "@ghostpay/invoice-schema": [
+        "../invoice-schema/src/index.ts"
+      ],
+      "@ghostpay/chain-adapters": [
+        "../chain-adapters/src/index.ts"
+      ],
+      "@ghostpay/ux-vault/portable": [
+        "./src/portable.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "vitest.config.ts"
+  ]
 }

@@ -6,7 +6,7 @@ import { tronAddressFromHex, tronAddressToHex } from './address.js';
 import { fail } from './errors.js';
 import { checkTronAnnouncement } from './meta.js';
 import { getBlockRange, getNowBlock, getTransactionInfo, type TronRpc } from './rpc.js';
-import { TRC20_TRANSFER_SELECTOR } from './tx.js';
+import { decodeRawTx, TRC20_TRANSFER_SELECTOR } from './tx.js';
 
 /** keccak256("Transfer(address,address,uint256)") as hex, the ERC-20/TRC-20 event topic. */
 export const TRANSFER_TOPIC = bytesToHex(keccak_256(new TextEncoder().encode('Transfer(address,address,uint256)')));
@@ -71,6 +71,28 @@ export function parseCandidate(tx: unknown): (Candidate & { txID: string }) | un
   try {
     const payer = tronAddressFromHex(value['owner_address']);
     const txID = tx['txID'].toLowerCase();
+    const cand = jsonCandidate(c, value, payer, txID, memo);
+    if (cand === undefined) return undefined;
+    // The node-supplied JSON `raw_data` is NOT covered by the txID hash; only `raw_data_hex` is.
+    // Decode the hashed bytes strictly and require them to say exactly what the JSON says.
+    const d = decodeRawTx(hexToBytes(rawHex));
+    const sameMemo = d.memo.length === memo.length && d.memo.every((b, i) => b === memo[i]);
+    const kindOk = cand.asset === 'native' ? d.kind === 'trx' : d.kind === 'trc20' && d.contract === cand.asset;
+    if (!kindOk || !sameMemo || d.owner !== cand.payer || d.to !== cand.to || d.amount !== cand.amount) return undefined;
+    return cand;
+  } catch {
+    return undefined;
+  }
+}
+
+function jsonCandidate(
+  c: Rec,
+  value: Rec,
+  payer: string,
+  txID: string,
+  memo: Uint8Array,
+): (Candidate & { txID: string }) | undefined {
+  try {
     if (c['type'] === 'TransferContract') {
       const amt = value['amount'];
       if (typeof value['to_address'] !== 'string' || typeof amt !== 'number' || !Number.isSafeInteger(amt) || amt <= 0) return undefined;
@@ -122,18 +144,33 @@ async function confirmTrc20(rpc: TronRpc, c: Candidate & { txID: string }, signa
  * transactions are skipped, never thrown on.
  */
 export async function* scanTron(rpc: TronRpc, o: TronScanOptions): AsyncGenerator<DetectedTronPayment> {
+  const assertActive = (): void => {
+    if (o.signal.aborted) fail('ABORTED');
+  };
   const page = BigInt(Math.min(Math.max(o.pageSize ?? 50, 1), 100));
   const head = o.toBlock ?? (await getNowBlock(rpc, o.signal)).number;
+  assertActive();
   const trusted = o.trustedTokens === undefined ? undefined : new Set(o.trustedTokens);
   for (let start = o.fromBlock; start <= head; start += page) {
-    if (o.signal.aborted) return fail('ABORTED');
+    assertActive();
     const end = start + page - 1n > head ? head : start + page - 1n;
-    for (const block of await getBlockRange(rpc, start, end, o.signal)) {
+    const blocks = await getBlockRange(rpc, start, end, o.signal);
+    assertActive();
+    for (const block of blocks) {
+      assertActive();
       for (const tx of block.transactions) {
+        // The generator can be suspended at yield while a complete page stays in memory.
+        // A fresh next() after cancellation must never release another buffered payment.
+        assertActive();
         const c = parseCandidate(tx);
         if (c === undefined) continue;
         if (!checkTronAnnouncement({ stealthAddress: c.to, memo: c.memo }, o.viewingSecret, o.spendingPublicKey)) continue;
-        if (c.asset !== 'native' && !(await confirmTrc20(rpc, c, o.signal))) continue;
+        if (c.asset !== 'native') {
+          const confirmed = await confirmTrc20(rpc, c, o.signal);
+          assertActive();
+          if (!confirmed) continue;
+        }
+        assertActive();
         yield {
           stealthAddress: c.to,
           txID: c.txID,
@@ -146,4 +183,5 @@ export async function* scanTron(rpc: TronRpc, o: TronScanOptions): AsyncGenerato
       }
     }
   }
+  assertActive();
 }

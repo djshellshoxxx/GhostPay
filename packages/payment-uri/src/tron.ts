@@ -1,7 +1,7 @@
 import { fail } from './errors.js';
 import { parseTronAddress } from './addresses.js';
 import { parseDecimal, type Decimal } from './decimal.js';
-import { buildQuery, parseQuery, splitUri } from './query.js';
+import { boundBuiltUri, buildQuery, parseQuery, splitUri } from './query.js';
 import { recipientInfo, type RecipientInfo } from './recipient.js';
 import { checkText, hasMixedScript, MAX_LABEL_BYTES, MAX_MESSAGE_BYTES } from './text.js';
 
@@ -79,5 +79,5 @@ export function buildTronUri(p: BuildTronParams): string {
   if (p.token !== undefined) pairs.push(['token', parseTronAddress(p.token)]);
   if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);
   if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
-  return `tron:${parseTronAddress(p.recipient)}?${buildQuery(pairs)}`;
+  return boundBuiltUri(`tron:${parseTronAddress(p.recipient)}?${buildQuery(pairs)}`);
 }

@@ -53,7 +53,7 @@ No HPKE library is added. `OhttpHpke` is an injected interface (KEM/KDF/AEAD, ke
 - `AT-NP-1` (browser egress e2e), `AT-NP-8` (bundle scan), `AT-NP-21` (network-namespace egress denial), `NP-B-3` worker plumbing, light-client/PIR/indexer (other packages): not in this package.
 - `tor-browser` self-check facts are supplied by the caller; nothing here touches `window`.
 - Cross-process isolation proof with a real `tor` control port (M1) not done.
-- Not wired into `apps/*`. Not independently audited.
+- Only the browser subpath (`@ghostpay/net-transport/browser`, `src/browser.ts`) is wired into `apps/web` (`src/lib/scanPrivacy.ts`); the Node-only profiles are not wired into any app. Not independently audited.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory (needs @ghostpay/net-harness built: npm run build in packages/net-harness)

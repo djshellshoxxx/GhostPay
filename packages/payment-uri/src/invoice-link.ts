@@ -7,6 +7,11 @@ export const MAX_INVOICE_LINK_LENGTH = 22_200;
 
 const LINK =
   /^(https|http):\/\/((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?::([1-9][0-9]{0,4}))?((?:\/[A-Za-z0-9._~-]+)*\/?)#gpi=v1\.([A-Za-z0-9_-]+)$/i;
+/**
+ * WHATWG URL "ends in a number": a host whose last label is decimal digits or `0x` plus hex digits is parsed as IPv4
+ * (`0x7f000001`, `0x7f.1`, `1.2.3.0x4` are all IP addresses to a browser), never as a domain name.
+ */
+const IPV4_LAST_LABEL = /(?:^|\.)(?:[0-9]+|0x[0-9a-f]*)$/i;
 
 /** Parsed invoice link. */
 export interface InvoiceLink {
@@ -30,8 +35,9 @@ export interface InvoiceLinkOptions {
 
 /**
  * Strict parser for `https://<host>[:port][/path]#gpi=v1.<base64url>`. Rejects userinfo, query strings, non-ASCII hosts
- * (use punycode), IP literals other than loopback in dev mode, `http` outside dev mode, and anything over
- * {@link MAX_INVOICE_LINK_LENGTH}. The fragment is NOT decoded or authenticated here.
+ * (use punycode), IP literals in every form a browser reads as IPv4 (decimal, octal, hex or mixed) other than a literal
+ * `127.0.0.1` in dev mode, `http` outside dev mode, and anything over {@link MAX_INVOICE_LINK_LENGTH}. The fragment is
+ * NOT decoded or authenticated here.
  *
  * @security The key material lives in the fragment (bearer secret): never log the link.
  */
@@ -47,7 +53,7 @@ export function parseInvoiceLink(link: string, opts: InvoiceLinkOptions = {}): I
   const payload = m[5]!;
   const dev = opts.allowLocalDev === true;
   const local = host === 'localhost' || host === '127.0.0.1';
-  if (/^[0-9.]+$/.test(host) && !(dev && host === '127.0.0.1')) return fail('INVALID_LINK');
+  if (IPV4_LAST_LABEL.test(host) && !(dev && host === '127.0.0.1')) return fail('INVALID_LINK');
   if (local && !dev) return fail('INVALID_LINK');
   if (scheme === 'http' && !(dev && local)) return fail('INVALID_LINK');
   if (port !== undefined && Number(port) > 65535) return fail('INVALID_LINK');

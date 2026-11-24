@@ -1,6 +1,9 @@
-export * from './errors.js';
-export * from './brand.js';
-export * from './mode.js';
-export * from './chain.js';
-export * from './faucet.js';
-export * from './sandbox.js';
+// Deprecated: thin re-export of @ghostpay/sandbox kept for compatibility.
+// Explicit exports below shadow same-named simulator exports so old ux-sandbox names keep their old meaning.
+export * from '@ghostpay/sandbox';
+export {
+  UxMockChain as MockChain,
+  UxSandboxError as SandboxError,
+  type UxClock as Clock,
+  type UxSandboxErrorCode as SandboxErrorCode,
+} from '@ghostpay/sandbox';

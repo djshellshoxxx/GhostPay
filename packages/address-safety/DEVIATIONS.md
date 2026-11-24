@@ -1,6 +1,6 @@
 # Deviations and open points (@ghostpay/address-safety)
 
-1. **Not integrated.** No app or package calls this yet (out of scope).
+1. **Only partly integrated.** `apps/web/src/lib/sweep.ts` and `apps/web/src/lib/displayText.ts` import this package; the other integration points of the original scope are not re-verified.
 2. **Dependency.** The spec says zero runtime dependencies; the task fixed `viem` 2.57.7 (checksum only) and `node:crypto` for `metaAddressFingerprint`. The latter makes the package Node-only; a browser build needs a WebCrypto or `@noble/hashes` variant.
 3. **Result shapes.** Rejections are `{ ok: false, reason }`; `sanitizeDisplayText` success is `{ ok: true, text, replaced, mixedScript }` (extra `ok`/`mixedScript` fields versus the spec). `replaced` counts mixed-script markers inserted.
 4. **Throws for programmer errors.** Malformed addresses passed to the already-typed functions, bad nibble counts (outside 1..20) and invalid meta-address length throw `AddressSafetyError`.

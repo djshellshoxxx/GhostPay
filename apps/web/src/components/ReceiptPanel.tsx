@@ -1,35 +1,64 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
-import { useEffect, useState, type ReactNode } from 'react';
+import { openFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
+import { ContextHelp } from './ContextHelp';
 import { formatUnits } from '../lib/format';
+import { useEffectiveProfile, type BuildProfile } from '../lib/buildProfile';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { makeQr } from '../lib/qr';
-import type { ScanMatch } from '../lib/scanClient';
-import { getSessionPublic, withSessionSecrets } from '../lib/session';
-import { receiptJson, signReceipt, type SignedReceipt } from '../lib/receipts';
+import { LocalizedTypeError, UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
+import type { Translator } from '../i18n/translator';
+import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
+import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+import { captureSessionGuard, getSessionPublic, withSessionSecrets } from '../lib/session';
+import { bindReceiptToInvoice, MAX_RECEIPT_INVOICE_BYTES, receiptBindingForInvoice, receiptInvoiceFragment, receiptJson, signReceipt, type ReceiptInvoiceBinding, type SignedReceipt } from '../lib/receipts';
 
 export interface ReceiptPanelProps {
   readonly match: ScanMatch;
   /** Key captured when this scan started; hidden after the active seller keys change. */
   readonly sellerSignerPublicKey: string;
+  /** Build profile; defaults to the shell/compile-time profile (lean if either is lean). Lean refuses receipts that are not bound to a validated invoice. */
+  readonly profile?: BuildProfile;
 }
 
-function amountLabel(match: ScanMatch): string {
+// openFragment's production KDF has no abort signal. Keep one permit across panels and unmounts until it settles.
+let invoiceValidationInFlight = false;
+
+function amountLabel(match: ScanMatch, t: Translator['t']): string {
   const metadata = match.metadata;
-  if (metadata === undefined) return 'Unavailable';
-  if (metadata.kind === 'native') return `${formatUnits(metadata.netAmount, 18)} ${findChain(match.chainId)?.nativeSymbol ?? 'native'}`;
+  if (metadata === undefined) return t('receipt.amount.unavailable');
+  if (metadata.kind === 'native') return `${formatUnits(metadata.netAmount, 18)} ${findChain(match.chainId)?.nativeSymbol ?? t('receipt.amount.native')}`;
   const token = tokensForChain(match.chainId).find((t) => t.address.toLowerCase() === metadata.token.toLowerCase());
   return token === undefined
-    ? `${metadata.netAmount.toString()} base units of ${metadata.token}`
+    ? t('receipt.amount.base', { amount: metadata.netAmount.toString(), token: metadata.token })
     : `${formatUnits(metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
 /** Creates and displays a local signed attestation from immutable verified scan fields. */
 export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
+  const tr = useI18nOptional() ?? SOURCE_TRANSLATOR;
+  const trRef = useRef(tr);
+  trRef.current = tr;
+  const t: Translator['t'] = (key, values) => trRef.current.t(key, values);
+  const lean = useEffectiveProfile(props.profile) === 'lean';
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setErrorMessage] = useState<DisplayMessage | undefined>(undefined);
+  const setError = (cause: unknown): void => { setErrorMessage(cause === undefined ? undefined : captureUserMessage(cause)); };
+  const [archive, setArchive] = useState<'idle' | 'busy' | 'done'>('idle');
+  const [invoiceInput, setInvoiceInput] = useState('');
+  const [invoicePassphrase, setInvoicePassphrase] = useState('');
+  const [invoiceConsent, setInvoiceConsent] = useState(false);
+  const [signConsent, setSignConsent] = useState(false);
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [receiptBound, setReceiptBound] = useState(false);
+  const [boundInvoice, setBoundInvoice] = useState<{ readonly parsed: ParsedInvoice; readonly binding: ReceiptInvoiceBinding; readonly guard: () => void; readonly identity: string } | undefined>(undefined);
+  const invoiceRevision = useRef(0);
+  const mounted = useRef(true);
+  const generation = useRef(0);
   const match = props.match;
   const txHash = match.announcement.transactionHash;
   const matchIdentity = JSON.stringify([
@@ -40,27 +69,116 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     match.metadata?.kind ?? null,
     match.metadata?.token ?? null,
     match.metadata?.netAmount.toString() ?? null,
+    match.receipt,
+    match.viaRouter,
+    match.announcement.ephemeralPublicKey,
+    match.announcement.metadata,
   ]);
+  const currentIdentity = useRef('');
+  currentIdentity.current = `${matchIdentity}|${props.sellerSignerPublicKey}`;
   useEffect(() => {
     setInvoiceDigest('');
     setReceipt(undefined);
     setShowReceiptQr(false);
     setError(undefined);
+    setArchive('idle');
+    setInvoiceInput('');
+    setInvoicePassphrase('');
+    setInvoiceConsent(false);
+    setSignConsent(false);
+    setBoundInvoice(undefined);
+    setReceiptBound(false);
+    invoiceRevision.current++;
+    generation.current++;
   }, [matchIdentity, props.sellerSignerPublicKey]);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; generation.current++; invoiceRevision.current++; };
+  }, []);
   const signerStillCurrent = getSessionPublic()?.signerPublicKey === props.sellerSignerPublicKey;
   const eligible = match.receipt === 'verified' && match.metadata !== undefined && signerStillCurrent;
-  const chainName = findChain(match.chainId)?.name ?? `Chain ${String(match.chainId)}`;
+  const chainName = findChain(match.chainId)?.name ?? t('receipt.chain.unknown', { id: String(match.chainId) });
+
+  const invalidateInvoice = (): void => {
+    invoiceRevision.current++;
+    setBoundInvoice(undefined);
+    setInvoiceDigest('');
+    setSignConsent(false);
+    setReceipt(undefined);
+    setReceiptBound(false);
+    setShowReceiptQr(false);
+    setError(undefined);
+  };
+
+  const loadInvoice = (readText: () => Promise<string>, size?: number): void => {
+    setError(undefined);
+    if (!eligible || !invoiceConsent) {
+      setError(new UserFacingError({ key: 'receipt.error.consent' }));
+      return;
+    }
+    if (invoiceValidationInFlight) {
+      setError(new UserFacingError({ key: 'receipt.error.busy' }));
+      return;
+    }
+    let guard: () => void;
+    try { guard = captureSessionGuard(); } catch (e) { setError(e ?? new Error()); return; }
+    const revision = ++invoiceRevision.current;
+    const identity = currentIdentity.current;
+    const passphrase = invoicePassphrase;
+    invoiceValidationInFlight = true;
+    setBoundInvoice(undefined);
+    setInvoiceDigest('');
+    setSignConsent(false);
+    setInvoiceBusy(true);
+    setReceipt(undefined);
+    setReceiptBound(false);
+    setShowReceiptQr(false);
+    const current = (): boolean => invoiceRevision.current === revision && currentIdentity.current === identity;
+    void (async () => {
+      if (size !== undefined && size > MAX_RECEIPT_INVOICE_BYTES) throw new UserFacingError({ key: 'receipt.error.invoiceLarge' });
+      const text = await readText();
+      if (!current()) return;
+      guard();
+      const opened = await openFragment(receiptInvoiceFragment(text), passphrase === '' ? {} : { passphrase });
+      if (!current()) return;
+      guard();
+      if (opened.status !== 'ok') throw new UserFacingError({ key: 'receipt.error.passphrase' });
+      const session = getSessionPublic();
+      if (session === undefined) throw new UserFacingError({ key: 'receipt.error.keysUnavailable' });
+      const binding = withSessionSecrets((secrets) => receiptBindingForInvoice(opened.parsed, match, session.signerPublicKey, secrets.keys, Math.floor(Date.now() / 1000)));
+      guard();
+      if (!current()) return;
+      setBoundInvoice({ parsed: opened.parsed, binding, guard, identity });
+      setInvoiceDigest(binding.invoiceDigest);
+    })().catch((e: unknown) => {
+      if (current()) setError(e ?? new Error());
+    }).finally(() => {
+      invoiceValidationInFlight = false;
+      if (mounted.current) {
+        setInvoiceBusy(false);
+        if (current()) setInvoicePassphrase('');
+      }
+    });
+  };
 
   const createReceipt = (): void => {
     setError(undefined);
     try {
-      if (!eligible || txHash === undefined || match.metadata === undefined) throw new Error('This verified match is no longer eligible for a receipt.');
+      if (!eligible || txHash === undefined || match.metadata === undefined) throw new UserFacingError({ key: 'receipt.error.ineligible' });
+      if (lean && boundInvoice === undefined) throw new UserFacingError({ key: 'receipt.lean.refused' });
+      if (boundInvoice !== undefined) {
+        if (!signConsent) throw new UserFacingError({ key: 'receipt.error.signConsent' });
+        if (boundInvoice.identity !== currentIdentity.current) throw new UserFacingError({ key: 'receipt.error.scanChanged' });
+        boundInvoice.guard();
+      }
       const metadata = match.metadata;
       const digest = invoiceDigest.trim().toLowerCase();
       const created = withSessionSecrets((secrets) => {
-        if (getSessionPublic()?.signerPublicKey !== props.sellerSignerPublicKey) throw new Error('Seller keys changed. Scan again before signing a receipt.');
-        return signReceipt({
-          invoiceDigest: digest,
+        const session = getSessionPublic();
+        if (session?.signerPublicKey !== props.sellerSignerPublicKey) throw new UserFacingError({ key: 'receipt.error.keysChanged' });
+        const binding = boundInvoice === undefined ? undefined : receiptBindingForInvoice(boundInvoice.parsed, match, session.signerPublicKey, secrets.keys, Math.floor(Date.now() / 1000));
+        const signed = signReceipt({
+          invoiceDigest: binding?.invoiceDigest ?? digest,
           chainId: match.chainId,
           txHash: txHash.toLowerCase(),
           stealthAddress: match.stealthAddress.toLowerCase(),
@@ -68,12 +186,42 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
           amountMinorUnits: metadata.netAmount.toString(),
           issuedAt: Math.floor(Date.now() / 1000),
         }, secrets.signingKey);
+        if (binding !== undefined) bindReceiptToInvoice(signed, binding);
+        return signed;
       });
       setReceipt(created);
+      setReceiptBound(boundInvoice !== undefined);
       setShowReceiptQr(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'The receipt could not be signed.');
+      setError(e ?? new Error());
     }
+  };
+
+  /** Opt-in encrypted archive of a receipt this seller just issued. The archive is never payment evidence. */
+  const archiveReceipt = (): void => {
+    const session = getSessionPublic();
+    if (receipt === undefined || session === undefined || session.signerPublicKey !== receipt.signerPublicKey) {
+      setError(new UserFacingError({ key: 'receipt.error.archiveKeys' }));
+      return;
+    }
+    const current = ++generation.current;
+    setArchive('busy');
+    setError(undefined);
+    void (async () => {
+      const vault = await createCurrentReconciliationVault(receipt.chainId, checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey));
+      try {
+        await vault.archiveReceipt(receipt);
+      } finally {
+        vault.lock();
+      }
+    })().then(
+      () => { if (generation.current === current) setArchive('done'); },
+      (e: unknown) => {
+        if (generation.current !== current) return;
+        setArchive('idle');
+        setError(e instanceof UserFacingError || e instanceof LocalizedTypeError ? e : new UserFacingError({ key: 'receipt.error.archiveFailed' }));
+      },
+    );
   };
 
   const receiptText = receipt === undefined ? undefined : receiptJson(receipt);
@@ -86,59 +234,89 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
       setError(undefined);
     } catch {
       setShowReceiptQr(false);
-      setError('This receipt is too large for one QR code. Use the JSON copy or download instead.');
+      setError(new UserFacingError({ key: 'receipt.error.qrLarge' }));
     }
   };
 
   return (
-    <section className="receipt-panel" aria-label="Seller-signed receipt">
-      <h4>Seller-signed receipt</h4>
-      <p className="hint">This is a seller-key attestation of the verified scan record. It does not establish seller identity or independently prove a payment. The invoice digest is entered manually and is not matched against invoice contents.</p>
-      {!signerStillCurrent && <Notice kind="warn">Seller keys changed after this scan. Scan again with the current keys before signing.</Notice>}
-      {match.receipt !== 'verified' && <Notice kind="warn">Receipts are available only for verified scan matches.</Notice>}
-      {match.metadata === undefined && <Notice kind="warn">The scan metadata is unavailable, so this match cannot be used for a receipt.</Notice>}
+    <section className="receipt-panel" aria-label={t('receipt.title')}>
+      <h4>{t('receipt.title')}</h4>
+      <p className="hint">{t('receipt.intro')} {boundInvoice === undefined ? (lean ? t('receipt.lean.hint') : t('receipt.manualHint')) : t('receipt.boundHint')}</p>
+      {!signerStillCurrent && <Notice kind="warn">{t('receipt.keysChanged')}</Notice>}
+      {match.receipt !== 'verified' && <Notice kind="warn">{t('receipt.verifiedOnly')}</Notice>}
+      {match.metadata === undefined && <Notice kind="warn">{t('receipt.metadataMissing')}</Notice>}
       {txHash === undefined ? (
         <>
-          <Notice kind="info">The RPC did not provide a transaction hash. A receipt cannot be signed for this match.</Notice>
-          <button type="button" className="btn btn-primary" disabled>Sign receipt</button>
+          <Notice kind="info">{t('receipt.hashMissing')}</Notice>
+          <button type="button" className="btn btn-primary" disabled>{t('receipt.sign')}</button>
         </>
       ) : (
         <>
           <dl className="details receipt-facts">
-            <dt>Network</dt><dd>{chainName} (chain {String(match.chainId)})</dd>
-            <dt>Transaction</dt><dd><Mono>{txHash}</Mono></dd>
-            <dt>Recipient</dt><dd><Mono>{match.stealthAddress}</Mono></dd>
-            <dt>Asset and amount</dt><dd>{amountLabel(match)} ({match.metadata?.netAmount.toString() ?? 'unavailable'} base units)</dd>
+            <dt>{t('receipt.network')}</dt><dd>{t('receipt.chain.named', { name: chainName, id: String(match.chainId) })}</dd>
+            <dt>{t('receipt.transaction')}</dt><dd><Mono>{txHash}</Mono></dd>
+            <dt>{t('receipt.recipient')}</dt><dd><Mono>{match.stealthAddress}</Mono></dd>
+            <dt>{t('receipt.assetAmount')}</dt><dd>{t('receipt.amount.summary', { amount: amountLabel(match, t), units: match.metadata?.netAmount.toString() ?? t('receipt.amount.missing') })}</dd>
           </dl>
-          <Field label="Invoice digest (entered manually)" hint="Paste a 0x-prefixed 32-byte invoice digest. This field is the seller’s assertion; no invoice is opened or checked here.">
-            {(id, describedBy) => <input id={id} aria-describedby={describedBy} className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
+          <h5>{t('receipt.bindHeading')}</h5>
+          <p className="hint">{t('receipt.bindHint')}</p>
+          <Field label={t('receipt.invoiceLink')}>
+            {(id) => <textarea id={id} dir="ltr" rows={3} autoComplete="off" value={invoiceInput} onChange={(e) => { invalidateInvoice(); setInvoiceInput(e.target.value); setInvoicePassphrase(''); }} disabled={!eligible} />}
           </Field>
+          <Field label={t('receipt.passphrase')}>
+            {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { invalidateInvoice(); setInvoicePassphrase(e.target.value); }} disabled={!eligible} />}
+          </Field>
+          <label><input type="checkbox" checked={invoiceConsent} onChange={(e) => { invalidateInvoice(); setInvoiceConsent(e.target.checked); }} disabled={!eligible} /> {t('receipt.openConsent')}</label>
           <div className="actions">
-            <button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined}>Sign receipt</button>
+            <button type="button" className="btn" disabled={!eligible || !invoiceConsent || invoiceBusy || invoiceInput.trim() === ''} onClick={() => { loadInvoice(() => Promise.resolve(invoiceInput)); }}>{t('receipt.validate')}</button>
+            {invoiceBusy && <button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoicePassphrase(''); }}>{t('receipt.cancel')}</button>}
           </div>
-          {error !== undefined && <Notice kind="error">{error}</Notice>}
+          <Field label={t('receipt.invoiceFile')} hint={t('receipt.invoiceFileHint')} help={{ label: t('help.about', { control: t('receipt.invoiceFile') }), text: t('help.receiptInvoiceFile') }}>
+            {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="text/plain,.txt" disabled={!eligible || !invoiceConsent || invoiceBusy} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (file !== undefined) loadInvoice(() => file.text(), file.size); }} />}
+          </Field>
+          {boundInvoice === undefined ? (lean ? null : (
+            <Field label={t('receipt.manualDigest')} hint={t('receipt.manualDigestHint')}>
+              {(id, describedBy) => <input id={id} aria-describedby={describedBy} dir="ltr" className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
+            </Field>
+          )) : (
+            <>
+              <Notice kind="ok">{t('receipt.validated')}</Notice>
+              <dl className="details"><dt>{t('receipt.validatedDigest')}</dt><dd><Mono>{boundInvoice.binding.invoiceDigest}</Mono></dd><dt>{t('receipt.invoiceSigner')}</dt><dd><Mono>{boundInvoice.binding.invoiceSignerPublicKey}</Mono></dd></dl>
+              <label><input type="checkbox" checked={signConsent} onChange={(e) => { setSignConsent(e.target.checked); }} disabled={receipt !== undefined} /> {t('receipt.signConsent')}</label>
+              <p><button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoiceDigest(''); }}>{t('receipt.clearBinding')}</button></p>
+            </>
+          )}
+          <div className="actions">
+            <button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined || invoiceBusy || (boundInvoice !== undefined && !signConsent)}>{t('receipt.sign')}</button>
+          </div>
+          {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
           {receipt !== undefined && (
             <article className="receipt-print">
-              <h5>GhostPay payment receipt</h5>
-              <p className="hint">Attestation signed by the included public key. This signature proves key control only; it is not a seller identity credential or independent payment proof.</p>
+              <h5>{t('receipt.paymentHeading')}</h5>
+              <p className="hint">{t('receipt.attestation')}</p>
               <dl className="details receipt-facts">
-                <dt>Network</dt><dd>{chainName} (chain {String(receipt.chainId)})</dd>
-                <dt>Transaction</dt><dd><Mono>{receipt.txHash}</Mono></dd>
-                <dt>Recipient</dt><dd><Mono>{receipt.stealthAddress}</Mono></dd>
-                <dt>Asset and amount</dt><dd>{amountLabel(match)} ({receipt.amountMinorUnits} base units)</dd>
-                <dt>Invoice digest</dt><dd><Mono>{receipt.invoiceDigest}</Mono> (seller-supplied, not matched)</dd>
-                <dt>Issued</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>
-                <dt>Signer public key</dt><dd><Mono>{receipt.signerPublicKey}</Mono></dd>
+                <dt>{t('receipt.network')}</dt><dd>{t('receipt.chain.named', { name: chainName, id: String(receipt.chainId) })}</dd>
+                <dt>{t('receipt.transaction')}</dt><dd><Mono>{receipt.txHash}</Mono></dd>
+                <dt>{t('receipt.recipient')}</dt><dd><Mono>{receipt.stealthAddress}</Mono></dd>
+                <dt>{t('receipt.assetAmount')}</dt><dd>{t('receipt.amount.summary', { amount: amountLabel(match, t), units: receipt.amountMinorUnits })}</dd>
+                <dt>{t('receipt.digest')}</dt><dd><Mono>{receipt.invoiceDigest}</Mono> {receiptBound ? t('receipt.matched') : t('receipt.unmatched')}</dd>
+                <dt>{t('receipt.issued')}</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>
+                <dt>{t('receipt.signerKey')}</dt><dd><Mono>{receipt.signerPublicKey}</Mono></dd>
               </dl>
-              <Field label="Signed receipt JSON">{(id) => <textarea id={id} className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+              <Field label={t('receipt.json')}>{(id) => <textarea id={id} dir="ltr" className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
               <div className="actions receipt-actions">
-                <CopyButton text={receiptText ?? ''} label="Copy receipt JSON" />
-                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>Download JSON</button>
-                <button type="button" className="btn" onClick={showQr}>Show receipt QR</button>
-                <button type="button" className="btn" onClick={() => { window.print(); }}>Print receipt</button>
+                <CopyButton text={receiptText ?? ''} label={t('receipt.copy')} />
+                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button>
+                <button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button>
+                <button type="button" className="btn" onClick={() => { window.print(); }}>{t('receipt.print')}</button>
+                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle'}>
+                  {archive === 'done' ? t('receipt.archived') : t('receipt.archive')}
+                </button>
               </div>
-              <p className="hint">This QR contains the transaction, recipient, amount and invoice digest. Show it only to the intended recipient; the signature is a seller-key attestation, not independent payment proof.</p>
-              {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption="Signed seller receipt JSON" />}
+              <p className="hint">{t('receipt.archiveHint')}</p>
+              <p className="hint">{t('receipt.qrHint')}</p>
+              <ContextHelp label={t('help.about', { control: t('receipt.showQr') })}>{t('help.receiptQr')}</ContextHelp>
+              {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption={t('receipt.qrCaption')} />}
             </article>
           )}
         </>
@@ -146,3 +324,5 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     </section>
   );
 }
+
+// i18n-use: receipt.error.archiveFailed receipt.error.consent receipt.error.busy receipt.error.invoiceLarge receipt.error.passphrase receipt.error.keysUnavailable receipt.error.ineligible receipt.lean.refused receipt.error.signConsent receipt.error.scanChanged receipt.error.keysChanged receipt.error.archiveKeys receipt.error.qrLarge

@@ -311,4 +311,20 @@ describe('deriveStealthSecret', () => {
     const stranger = generateKeySet(seededRng('stranger-2'));
     expect(() => deriveStealthSecret(goodAnn, stranger)).toThrow(GhostPayCryptoError);
   });
+  it('ignoreViewTag (deep-scan sweep) skips only the tag compare: the derived address must still match', () => {
+    const tag = ((pay.viewTag[0] as number) + 1) & 0xff;
+    const wrongTag = { ...goodAnn, metadata: `0x${tag.toString(16).padStart(2, '0')}` };
+    expect(code(() => deriveStealthSecret(wrongTag, keys))).toBe('VIEW_TAG_MISMATCH');
+    expect(code(() => deriveStealthSecret(wrongTag, keys, { ignoreViewTag: false }))).toBe('VIEW_TAG_MISMATCH');
+    const secret = deriveStealthSecret(wrongTag, keys, { ignoreViewTag: true });
+    // The same key as for the correctly tagged announcement, which is verified to control the announced address.
+    expect(hex(unsafeRevealSecret(secret))).toBe(hex(unsafeRevealSecret(deriveStealthSecret(goodAnn, keys))));
+    const other = deriveStealthPayment(meta, seededRng('other-eph-3'));
+    expect(code(() => deriveStealthSecret({ ...wrongTag, stealthAddress: other.stealthAddress }, keys, { ignoreViewTag: true }))).toBe(
+      'ADDRESS_MISMATCH',
+    );
+    const stranger = generateKeySet(seededRng('stranger-3'));
+    expect(code(() => deriveStealthSecret(wrongTag, stranger, { ignoreViewTag: true }))).toBe('ADDRESS_MISMATCH');
+    expect(code(() => deriveStealthSecret({ ...wrongTag, metadata: '0x' }, keys, { ignoreViewTag: true }))).toBe('INVALID_ANNOUNCEMENT');
+  });
 });

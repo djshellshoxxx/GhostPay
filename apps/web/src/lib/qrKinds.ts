@@ -5,6 +5,9 @@
  * an icon and a distinct border style (WCAG 1.4.1).
  */
 
+import type { MessageKey } from '../i18n/sourceCatalog';
+import type { Translator } from '../i18n/translator';
+
 export type QrKind = 'secret' | 'shareable' | 'bearer' | 'device' | 'proof' | 'caution';
 
 export type QrIconId = 'lock' | 'share' | 'key' | 'devices' | 'check-doc' | 'warning';
@@ -124,6 +127,26 @@ export const QR_KINDS: Readonly<Record<QrKind, QrKindInfo>> = {
 
 export const QR_KIND_ORDER: readonly QrKind[] = ['secret', 'shareable', 'bearer', 'device', 'proof', 'caution'];
 
+/** Render-only copy: kind identity, QR payloads and handling rules never depend on the language. */
+export function localizedQrKind(kind: QrKind, t: Translator['t']): QrKindInfo {
+  const info = QR_KINDS[kind];
+  const key = (field: 'label' | 'explanation' | 'examples' | 'warning'): MessageKey => `qr.kind.${kind}.${field}` as MessageKey;
+  return {
+    ...info,
+    label: t(key('label')),
+    explanation: t(key('explanation')),
+    examples: t(key('examples')),
+    rules: { ...info.rules, warning: info.rules.warning === null ? null : t(key('warning')) },
+  };
+}
+
+// i18n-use: qr.kind.secret.label qr.kind.secret.explanation qr.kind.secret.examples qr.kind.secret.warning
+// i18n-use: qr.kind.shareable.label qr.kind.shareable.explanation qr.kind.shareable.examples
+// i18n-use: qr.kind.bearer.label qr.kind.bearer.explanation qr.kind.bearer.examples qr.kind.bearer.warning
+// i18n-use: qr.kind.device.label qr.kind.device.explanation qr.kind.device.examples
+// i18n-use: qr.kind.proof.label qr.kind.proof.explanation qr.kind.proof.examples
+// i18n-use: qr.kind.caution.label qr.kind.caution.explanation qr.kind.caution.examples qr.kind.caution.warning
+
 /**
  * Colour palette per mode (hex). MUST match apps/web/src/styles/qr.css (a test enforces this) and is
  * what the contrast / colour-blind tests measure. `on` is the text colour used on a filled label chip.
@@ -154,6 +177,7 @@ export const QR_PALETTE_DARK: QrPalette = {
 
 /** CSS class for a kind's frame. */
 export function qrKindClass(kind: QrKind): string {
+  if (!Object.prototype.hasOwnProperty.call(QR_KINDS, kind)) throw new TypeError('unknown QR kind');
   return `qr-kind-${kind}`;
 }
 
@@ -202,12 +226,40 @@ export interface QrPayloadFlags {
 }
 
 /**
- * Chooses the frame kind for a payload. Secret always wins (never downgraded to caution);
- * otherwise testnet/unsigned/unverified data is shown as CAUTION.
+ * Chooses the frame kind for a payload. Secret and bearer-capability warnings always win:
+ * testnet/unsigned/unverified flags must not hide a spending or decryption-key warning.
+ * All other flagged payloads are shown as CAUTION.
  */
 export function kindForPayload(type: QrPayloadType, flags: QrPayloadFlags = {}): QrKind {
+  // Runtime state is not guaranteed to respect the TypeScript union: reject missing and inherited keys.
+  if (!Object.prototype.hasOwnProperty.call(PAYLOAD_KIND, type)) throw new TypeError('unknown QR payload type');
   const base = PAYLOAD_KIND[type];
-  if (base === 'secret') return base;
+  if (base === 'secret' || base === 'bearer') return base;
   if (flags.testnet === true || flags.unsigned === true || flags.unverified === true) return 'caution';
   return base;
+}
+
+/** Longest link (characters) that is printed as a QR on a bill; longer links become dense, unscannable codes on paper. */
+export const MAX_PRINT_QR_LINK_CHARS = 500;
+
+export interface PrintQrPolicy {
+  /** Whether a QR is printed for this link. */
+  readonly includeQr: boolean;
+  /** Frame kind to use when a QR is printed. */
+  readonly kind: QrKind;
+  /** Printed bearer links are readable by anyone who sees the paper. */
+  readonly bearerWarning: boolean;
+}
+
+/**
+ * Print policy for an invoice link on paper. A QR is included only for short links. A link that is not
+ * passphrase protected may carry its own decryption key, so a printed copy is a bearer link.
+ */
+export function printQrPolicy(link: string | undefined, passphraseProtected: boolean): PrintQrPolicy {
+  const hasLink = link !== undefined && link.length > 0;
+  return {
+    includeQr: hasLink && link.length <= MAX_PRINT_QR_LINK_CHARS,
+    kind: kindForPayload(passphraseProtected ? 'invoice-link-passphrase' : 'invoice-link-with-key'),
+    bearerWarning: hasLink && !passphraseProtected,
+  };
 }

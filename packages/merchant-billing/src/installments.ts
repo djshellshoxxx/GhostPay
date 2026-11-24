@@ -1,5 +1,5 @@
 import { BillingError } from './errors.js';
-import { bpsOf, parseAmount, splitEqual } from './money.js';
+import { bpsOf, MAX_AMOUNT, parseAmount, splitEqual } from './money.js';
 
 /** Tolerances, in base units (decimal strings) and bps of total; the larger of each pair applies. */
 export interface Tolerance {
@@ -48,6 +48,11 @@ export interface LedgerSummary {
 
 const ID_RE = /^[A-Za-z0-9._:-]{1,128}$/;
 
+/** Unix-second inputs must retain exact ordering and arithmetic at runtime. */
+function validTime(value: number): boolean {
+  return Number.isSafeInteger(value) && value >= 0;
+}
+
 /**
  * Builds a ledger with a deposit and equal installments.
  *
@@ -56,6 +61,9 @@ const ID_RE = /^[A-Za-z0-9._:-]{1,128}$/;
  * split across `count` installments so the schedule sums to exactly `total`.
  * @param count Number of installments after the deposit (0 only if depositBps is 10000).
  * @param firstDue Due time of the first installment; the deposit is due at `startAt`.
+ * Times are non-negative safe integer Unix seconds. Installment intervals are at
+ * least 3600 seconds; zero is permitted only for a full-upfront ledger. A deposit
+ * cannot be due after the first installment (allocation follows schedule order).
  * @throws {BillingError} `LEDGER`.
  */
 export function createLedger(args: {
@@ -68,11 +76,17 @@ export function createLedger(args: {
   tolerance: Tolerance;
 }): Ledger {
   const { total, depositBps, count } = args;
-  if (total <= 0n) throw new BillingError('LEDGER', 'invalid total');
+  if (typeof total !== 'bigint' || total <= 0n || total > MAX_AMOUNT) throw new BillingError('LEDGER', 'invalid total');
   const deposit = bpsOf(total, depositBps);
   if (!Number.isSafeInteger(count) || count < 0 || count > 120) throw new BillingError('LEDGER', 'invalid count');
   if ((count === 0) !== (deposit === total)) throw new BillingError('LEDGER', 'deposit and count mismatch');
-  if (count > 0 && args.intervalSeconds < 3600) throw new BillingError('LEDGER', 'invalid interval');
+  if (!validTime(args.startAt) || !validTime(args.firstDue)) throw new BillingError('LEDGER', 'invalid due time');
+  if (count > 0 && deposit > 0n && args.firstDue < args.startAt)
+    throw new BillingError('LEDGER', 'deposit must be due before installments');
+  if (!validTime(args.intervalSeconds) || (count > 0 && args.intervalSeconds < 3600))
+    throw new BillingError('LEDGER', 'invalid interval');
+  if (count > 0 && !validTime(args.firstDue + (count - 1) * args.intervalSeconds))
+    throw new BillingError('LEDGER', 'due time overflow');
   const t = args.tolerance;
   const under = max(parseAmount(t.underpayAbs), bpsOf(total, t.underpayBps));
   const over = max(parseAmount(t.overpayAbs), bpsOf(total, t.overpayBps));
@@ -103,7 +117,7 @@ function max(a: bigint, b: bigint): bigint {
  * @throws {BillingError} `LEDGER`.
  */
 export function applyPayment(ledger: Ledger, p: LedgerPayment): { ledger: Ledger; duplicate: boolean } {
-  if (!ID_RE.test(p.id) || p.amount <= 0n || p.amount > (1n << 256n) - 1n)
+  if (typeof p.id !== 'string' || !ID_RE.test(p.id) || typeof p.amount !== 'bigint' || p.amount <= 0n || p.amount > MAX_AMOUNT || !validTime(p.at))
     throw new BillingError('LEDGER', 'invalid payment');
   const prev = ledger.payments.find((x) => x.id === p.id);
   if (prev !== undefined) {
@@ -113,8 +127,9 @@ export function applyPayment(ledger: Ledger, p: LedgerPayment): { ledger: Ledger
   return { ledger: { ...ledger, payments: [...ledger.payments, p] }, duplicate: false };
 }
 
-/** Derives status by allocating payments to installments oldest first. */
+/** Derives status by allocating payments oldest first; `now` is a non-negative safe integer Unix timestamp. */
 export function summarize(ledger: Ledger, now: number): LedgerSummary {
+  if (!validTime(now)) throw new BillingError('LEDGER', 'invalid summary time');
   const paid = ledger.payments.reduce((a, p) => a + p.amount, 0n);
   let pool = paid;
   const installments = ledger.schedule.map((s) => {

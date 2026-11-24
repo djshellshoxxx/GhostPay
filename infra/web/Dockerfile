@@ -8,7 +8,9 @@
 
 FROM node:22-bookworm-slim AS build
 ARG SOURCE_DATE_EPOCH
-ENV SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH} TZ=UTC LC_ALL=C CI=1
+# Pass --build-arg GP_COMMIT=$(git rev-parse HEAD) so build-info.json and index.html match the release build byte for byte.
+ARG GP_COMMIT=
+ENV SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH} GP_COMMIT=${GP_COMMIT} TZ=UTC LC_ALL=C CI=1
 WORKDIR /repo
 COPY package.json package-lock.json tsconfig.base.json ./
 COPY packages ./packages

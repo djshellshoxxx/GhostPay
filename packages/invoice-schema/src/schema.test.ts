@@ -334,6 +334,37 @@ describe('validateInvoice rejects', () => {
         o['expiresAt'] = 1.5;
       },
     ],
+    // G1-01: times past 9999-12-31T23:59:59Z (253402300799) make `new Date(s * 1000).toISOString()` throw or
+    // render a 6-digit year in every consumer; the largest safe integer used to pass.
+    [
+      'expiresAt 2^53-1',
+      'expiresAt',
+      (o) => {
+        o['expiresAt'] = Number.MAX_SAFE_INTEGER;
+      },
+    ],
+    [
+      'expiresAt after year 9999',
+      'expiresAt',
+      (o) => {
+        o['expiresAt'] = 253_402_300_800;
+      },
+    ],
+    [
+      'quote timestamp after year 9999',
+      'quote.timestamp',
+      (o) => {
+        nested(o, 'quote')['timestamp'] = 253_402_300_800;
+        nested(o, 'quote')['expiresAt'] = 253_402_300_800;
+      },
+    ],
+    [
+      'quote expiresAt 2^53-1',
+      'quote.expiresAt',
+      (o) => {
+        nested(o, 'quote')['expiresAt'] = Number.MAX_SAFE_INTEGER;
+      },
+    ],
     [
       'lineItems not array',
       'lineItems',
@@ -532,6 +563,17 @@ describe('validateInvoice accepts', () => {
     );
     expect(inv.lineItems).toHaveLength(MAX_LINE_ITEMS);
   });
+  it('times up to 9999-12-31T23:59:59Z, which every Date consumer can render', () => {
+    const last = 253_402_300_799;
+    const inv = validateInvoice(
+      mutate((o) => {
+        o['expiresAt'] = last;
+        o['quote'] = { ...nested(o, 'quote'), timestamp: last, expiresAt: last };
+      }),
+    );
+    expect([inv.expiresAt, inv.quote.timestamp, inv.quote.expiresAt]).toEqual([last, last, last]);
+    expect(new Date(inv.expiresAt * 1000).toISOString()).toBe('9999-12-31T23:59:59.000Z');
+  });
   it('empty line items and a null-prototype object', () => {
     const o = Object.assign(
       Object.create(null) as Record<string, unknown>,
@@ -558,6 +600,16 @@ describe('validateInvoice accepts', () => {
 });
 
 describe('validatePrivatePart', () => {
+  it('rejects missing line-item slots, including holes among valid items', () => {
+    const item = { description: 'x', quantity: '1', unitMinorUnits: '1' };
+    for (const index of [0, 1, 2]) {
+      const items = new Array<typeof item>(3);
+      for (let i = 0; i < items.length; i++) {
+        if (i !== index) items[i] = item;
+      }
+      expect(() => validatePrivatePart({ lineItems: items })).toThrow(SchemaError);
+    }
+  });
   it('accepts with and without memo, rejects extras', () => {
     expect(validatePrivatePart({ lineItems: [] })).toEqual({ lineItems: [] });
     expect(validatePrivatePart({ lineItems: [], memo: 'hi' })).toEqual({ lineItems: [], memo: 'hi' });
@@ -570,5 +622,50 @@ describe('validatePrivatePart', () => {
 describe('metadata sanity', () => {
   it('OTHER_META differs', () => {
     expect(OTHER_META).not.toBe(base.metaAddress);
+  });
+});
+
+describe('v2 bufferPolicy (spec 13, ADR-0024)', () => {
+  const POLICY = { accepted: true, maxWei: '10000000000000000', minWei: '100000000000000', refund: 'none' } as const;
+  const v2 = sampleInvoice({ bufferPolicy: POLICY });
+
+  it('createInvoice emits v 2 exactly when a bufferPolicy is given; v1 stays unchanged', () => {
+    expect(v2.v).toBe(2);
+    expect(v2.bufferPolicy).toEqual(POLICY);
+    expect(base.v).toBe(1);
+    expect('bufferPolicy' in base).toBe(false);
+    expect(validateInvoice(structuredClone(v2))).toEqual(v2);
+  });
+
+  it('accepts a declined policy with zero bounds', () => {
+    const declined = sampleInvoice({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    expect(declined.v).toBe(2);
+    expect(declined.bufferPolicy?.accepted).toBe(false);
+  });
+
+  const mutate2 = (f: (o: Record<string, unknown>, p: Record<string, unknown>) => void): Record<string, unknown> => {
+    const o = structuredClone(v2) as unknown as Record<string, unknown>;
+    f(o, o['bufferPolicy'] as Record<string, unknown>);
+    return o;
+  };
+
+  it.each([
+    ['v1 carrying a bufferPolicy', mutate2((o) => { o['v'] = 1; }), 'bufferPolicy'],
+    ['v2 without a bufferPolicy', mutate2((o) => { delete o['bufferPolicy']; }), 'v'],
+    ['v3', mutate2((o) => { o['v'] = 3; }), 'v'],
+    ['unknown policy key', mutate2((_o, p) => { p['extra'] = 1; }), 'bufferPolicy'],
+    ['missing refund', mutate2((_o, p) => { delete p['refund']; }), 'bufferPolicy.refund'],
+    ['refund other than none (no silent refunds)', mutate2((_o, p) => { p['refund'] = 'payer'; }), 'bufferPolicy.refund'],
+    ['accepted not boolean', mutate2((_o, p) => { p['accepted'] = 'yes'; }), 'bufferPolicy.accepted'],
+    ['maxWei not decimal', mutate2((_o, p) => { p['maxWei'] = '0x10'; }), 'bufferPolicy.maxWei'],
+    ['maxWei leading zero', mutate2((_o, p) => { p['maxWei'] = '010'; }), 'bufferPolicy.maxWei'],
+    ['maxWei number', mutate2((_o, p) => { p['maxWei'] = 10; }), 'bufferPolicy.maxWei'],
+    ['maxWei above uint256', mutate2((_o, p) => { p['maxWei'] = (1n << 256n).toString(); }), 'bufferPolicy.maxWei'],
+    ['minWei above maxWei', mutate2((_o, p) => { p['minWei'] = '20000000000000000'; }), 'bufferPolicy.minWei'],
+    ['accepted with zero minimum (dust)', mutate2((_o, p) => { p['minWei'] = '0'; }), 'bufferPolicy.minWei'],
+    ['declined with non-zero bounds', mutate2((_o, p) => { p['accepted'] = false; }), 'bufferPolicy.maxWei'],
+    ['accepted on a native invoice', mutate2((o) => { o['token'] = 'native'; }), 'bufferPolicy.accepted'],
+  ])('rejects %s', (_name, value, path) => {
+    expect(pathOf(() => validateInvoice(value))).toBe(path);
   });
 });

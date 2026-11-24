@@ -141,6 +141,8 @@ export interface DecodedRouterPay {
   readonly gross: bigint;
   readonly minNet: bigint;
   readonly deadline: bigint;
+  readonly ephemeralPubKey: Hex;
+  readonly metadata: Hex;
 }
 
 /**
@@ -156,13 +158,13 @@ export function decodeRouterPay(data: Hex): DecodedRouterPay {
   try {
     if (selector === SELECTOR_PLAIN) {
       const d = decodeFunctionData({ abi: ROUTER_ABI, data });
-      const [token, stealth, gross, minNet, deadline] = d.args;
-      return { kind: 'ghostpay', token, stealth, gross, minNet, deadline };
+      const [token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata] = d.args;
+      return { kind: 'ghostpay', token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata };
     }
     if (selector === SELECTOR_POLICY) {
       const d = decodeFunctionData({ abi: POLICY_ROUTER_ABI, data });
-      const [token, stealth, , gross, minNet, deadline] = d.args;
-      return { kind: 'policy', token, stealth, gross, minNet, deadline };
+      const [token, stealth, , gross, minNet, deadline, ephemeralPubKey, metadata] = d.args;
+      return { kind: 'policy', token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata };
     }
   } catch {
     throw new PayerSponsorError('PAYLOAD_MISMATCH', 'calldata does not decode');
@@ -200,6 +202,41 @@ export function decodeAndCheckPayload(target: RouterTarget, routerCalldata: Hex,
     }
   }
 }
+
+/**
+ * Feasibility check (R10-1): refuses `payERC20` calldata that the router is certain to revert,
+ * mirroring `_validate` and `_checkMetadata` of `GhostPayRouter` / `GhostPayPolicyRouter`. A failed
+ * inner call does not revert `handleOps`, so a sponsor must not authorise gas for one.
+ *
+ * Not covered (needs chain state): the router's fee recipient as stealth, the policy-account
+ * address of the policy router, token behaviour (exact balance deltas) and allowance.
+ *
+ * @param router Router address (the stealth may not be the router itself).
+ * @param routerCalldata Calldata to be executed.
+ * @param deadlineFloor Earliest timestamp (seconds) at which the call may still be executed; the
+ *   router deadline must not be before it.
+ * @throws PayerSponsorError `PAYLOAD_MISMATCH` for minNet, ephemeral key, metadata or stealth that
+ *   cannot pass; `BAD_REQUEST` for a deadline before `deadlineFloor`.
+ */
+export function assertRouterPayCanSucceed(router: Address, routerCalldata: Hex, deadlineFloor: bigint): void {
+  const d = decodeRouterPay(routerCalldata);
+  if (isAddressEqual(d.stealth, ZERO_ADDRESS) || isAddressEqual(d.stealth, router)) {
+    throw new PayerSponsorError('PAYLOAD_MISMATCH', 'stealth address is not payable');
+  }
+  const net = d.gross - routerFee(d.gross);
+  if (d.minNet > net) throw new PayerSponsorError('PAYLOAD_MISMATCH', 'minNet above the router net');
+  const key = d.ephemeralPubKey.toLowerCase();
+  if (key.length !== 2 + 2 * 33 || (!key.startsWith('0x02') && !key.startsWith('0x03'))) {
+    throw new PayerSponsorError('PAYLOAD_MISMATCH', 'ephemeral key is not a 33-byte compressed point');
+  }
+  const m = d.metadata.toLowerCase();
+  if (m.length !== 2 + 2 * 57 || m.slice(4) !== buildErc20Metadata(0, d.token, net).toLowerCase().slice(4)) {
+    throw new PayerSponsorError('PAYLOAD_MISMATCH', 'metadata does not name the token and the router net');
+  }
+  if (d.deadline < deadlineFloor) throw new PayerSponsorError('BAD_REQUEST', 'router deadline ends before the sponsorship');
+}
+
+const ZERO_ADDRESS: Address = '0x0000000000000000000000000000000000000000';
 
 /**
  * Checksums an address argument.

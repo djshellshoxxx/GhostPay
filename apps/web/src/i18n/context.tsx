@@ -34,8 +34,7 @@ export interface I18nProviderProps {
 
 const I18nContext = createContext<I18nState | undefined>(undefined);
 
-/** English source translator for isolated UI tests that render a component outside the live app provider. */
-export const SOURCE_TRANSLATOR = createTranslator(SOURCE_LOCALE, [{ locale: SOURCE_LOCALE, messages: SOURCE_CATALOG.messages }]);
+export { SOURCE_TRANSLATOR } from './source';
 
 function browserLanguages(): readonly string[] {
   try {

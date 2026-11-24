@@ -1,20 +1,66 @@
 import { createHash } from 'node:crypto';
 import { MonitorError } from './errors.js';
-import type { FetchLike, ReleaseConfig } from './types.js';
+import type { FetchLike, FetchResponseLike, ReleaseConfig } from './types.js';
 
 const DEFAULT_MAX = 8 * 1024 * 1024;
 
-/** @internal Default fetch: no redirects, 10 s timeout. */
-export const defaultFetch: FetchLike = async (url) => {
+/**
+ * @internal Default fetch: no redirects, 10 s timeout and a hard limit enforced
+ * while reading. Checking size *after* Response.arrayBuffer() would allocate an
+ * arbitrary response before the configured release-artifact cap could apply.
+ */
+export async function defaultFetch(url: string, maxBytes = DEFAULT_MAX): Promise<FetchResponseLike> {
   const r = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10_000) });
-  return { ok: r.ok, status: r.status, arrayBuffer: () => r.arrayBuffer() };
-};
+  return {
+    ok: r.ok,
+    status: r.status,
+    async arrayBuffer(): Promise<ArrayBuffer> {
+      const declared = r.headers.get('content-length');
+      if (declared !== null && /^[0-9]+$/.test(declared) && Number(declared) > maxBytes) {
+        // Refuse before reading, but also stop a body the caller will never consume.
+        try { void r.body?.cancel().catch(() => undefined); } catch { /* Preserve the size failure. */ }
+        throw new MonitorError('FETCH_FAILED', 'too large');
+      }
+      if (r.body === null) return new ArrayBuffer(0);
+      const reader = r.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let size = 0;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          size += value.byteLength;
+          if (size > maxBytes) throw new MonitorError('FETCH_FAILED', 'too large');
+          chunks.push(value);
+        }
+      } catch (error) {
+        // Do not wait for a hostile or stalled stream's cancellation hook.
+        try { void reader.cancel().catch(() => undefined); } catch { /* Preserve the original read error. */ }
+        throw error;
+      } finally {
+        reader.releaseLock();
+      }
+      const bytes = new Uint8Array(size);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      return bytes.buffer;
+    },
+  };
+}
 
 /** @internal Fetches `base/path` and returns the bytes; throws MonitorError FETCH_FAILED. */
 export async function fetchBytes(rel: ReleaseConfig, base: string, path: string): Promise<Uint8Array> {
-  const f = rel.fetch ?? defaultFetch;
   const max = rel.maxBytes ?? DEFAULT_MAX;
-  const url = `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+  // An injected fetch is operator-controlled; the built-in network client must
+  // apply this cap before allocating the complete untrusted response.
+  const f: FetchLike = rel.fetch ?? ((target) => defaultFetch(target, max));
+  // Scan only the suffix; an unanchored /+ followed by $ retries long internal slash runs.
+  let baseEnd = base.length;
+  while (baseEnd > 0 && base[baseEnd - 1] === '/') baseEnd -= 1;
+  const url = `${base.slice(0, baseEnd)}/${path.replace(/^\/+/, '')}`;
   let buf: ArrayBuffer;
   try {
     const res = await f(url);

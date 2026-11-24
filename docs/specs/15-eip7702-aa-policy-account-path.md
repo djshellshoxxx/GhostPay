@@ -1,5 +1,7 @@
 # 15 EIP-7702 / ERC-4337 / ERC-7579 policy-account path
 
+> **Implementation status (2026-11-11, commit 364b1f18):** the numbers ADR-0017..0019 were not used for these decisions: `docs/adr/ADR-0017-solana-stealth.md`, `ADR-0018-erc6538.md` and `ADR-0019-tron.md` record other topics. No ADR with the titles listed in section 1 exists in `docs/adr/`, and no `SweepDelegate` appears in `packages/` or `apps/`. Policy-account decisions are in `docs/adr/ADR-LOG.md` (ADR-0014, ADR-0023) and `ADR-0027`/`ADR-0028`.
+
 Priority P3 (decision + ADRs now, build only after 16) | Effort S for ADRs (2 d), L-XL for any build | Owner: contracts design + docs | Deps: 16, ADR-0014 gate, external audit
 Sources: research s2, s4, DOC-8, DOC-15..DOC-17; CONTRACTS_SPEC s4; ADR-0009, ADR-0014. Statuses from the research (retrieved 2026-10-21): 4337 Final, 7702 Final, 7579 Draft; ERC-7562 rules and bundler behaviour **UNVERIFIED**.
 

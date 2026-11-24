@@ -88,7 +88,9 @@ contract DeployPolicyRouter is DeployBase {
     /// @dev Resolves and validates `ANNOUNCER` (canonical by default) and its optional code hash pin.
     function _announcer() internal view returns (address announcer) {
         string memory raw = _env("ANNOUNCER");
-        announcer = bytes(raw).length == 0 ? CANONICAL_ANNOUNCER : vm.parseAddress(raw);
+        announcer = bytes(raw).length == 0
+            ? CANONICAL_ANNOUNCER
+            : _parseChecksummedAddress("ANNOUNCER", raw);
         if (announcer != CANONICAL_ANNOUNCER && !_flag("ALLOW_CUSTOM_ANNOUNCER")) {
             revert CustomAnnouncerNotAllowed(announcer);
         }
@@ -107,7 +109,7 @@ contract DeployPolicyRouter is DeployBase {
     function _factory() internal view returns (PolicyAccountFactory factory) {
         string memory raw = _env("POLICY_FACTORY");
         if (bytes(raw).length == 0) revert PolicyFactoryNotSet();
-        address f = vm.parseAddress(raw);
+        address f = _parseChecksummedAddress("POLICY_FACTORY", raw);
         if (f == address(0)) revert PolicyFactoryNotSet();
         if (f.code.length == 0) revert PolicyFactoryHasNoCode(f);
         factory = PolicyAccountFactory(f);

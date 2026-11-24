@@ -46,7 +46,10 @@ export type AnnouncementCheck =
   | { readonly matches: false }
   | { readonly matches: true; readonly stealthAddress: Address; readonly tagMatches?: boolean };
 
-/** Deep-scan opt-in. Ordinary callers retain early view-tag rejection. */
+/**
+ * Deep-scan opt-in for {@link checkAnnouncement} and {@link deriveStealthSecret}. Ordinary callers retain view-tag
+ * rejection; with it, the full stealth-address comparison is the only acceptance check.
+ */
 export interface CheckAnnouncementOptions {
   readonly ignoreViewTag?: boolean;
 }
@@ -193,9 +196,13 @@ export function checkAnnouncement(
  * results are rejected. Before returning, the key is mapped back to its public
  * key and address and compared with the announced address; any mismatch,
  * including a wrong view tag, throws. Never sign with a key that was not verified.
+ * `ignoreViewTag` (default false) skips only the view-tag compare, for a payment the
+ * deep scan found despite a payer-published wrong tag; the address comparison and
+ * every other check still apply.
  *
  * @param announcement Public announcement; must be well-formed.
  * @param keys Recipient viewing and spending secrets.
+ * @param options Deep-scan opt-in.
  * @returns Redacting secret scalar for the stealth address.
  * @throws {GhostPayCryptoError} `INVALID_ANNOUNCEMENT`, `VIEW_TAG_MISMATCH`, `ZERO_STEALTH_KEY`, `ADDRESS_MISMATCH`, scalar/point errors.
  * @security Output is a spendable private key: never log, serialize or transmit it; zeroize after use (best effort).
@@ -205,10 +212,11 @@ export function checkAnnouncement(
 export function deriveStealthSecret(
   announcement: PublicAnnouncement,
   keys: Pick<StealthKeySet, 'viewingSecret' | 'spendingSecret'>,
+  options: CheckAnnouncementOptions = {},
 ): SecretScalar {
   const parsed = parseAnnouncement(announcement);
   const { tag, h } = sharedHash(keys.viewingSecret, parsed.ephemeral);
-  if (tag !== parsed.viewTag) fail('VIEW_TAG_MISMATCH');
+  if (options.ignoreViewTag !== true && tag !== parsed.viewTag) fail('VIEW_TAG_MISMATCH');
   const spendBytes = unsafeRevealSecret(keys.spendingSecret);
   const sum = (bytesToNumberBE(spendBytes) + h) % CURVE_ORDER;
   zeroize(spendBytes);

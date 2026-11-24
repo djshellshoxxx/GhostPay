@@ -1,6 +1,6 @@
 # Wiring: @ghostpay/net-transport
 
-Library only; nothing below has been done. Derived from `network-privacy.md` section 5.1. Imports are from `@ghostpay/net-transport` public API only.
+Library only; the browser subpath is now imported by `apps/web/src/lib/scanPrivacy.ts`, but otherwise nothing below has been done. Derived from `network-privacy.md` section 5.1. Imports are from `@ghostpay/net-transport` public API only.
 
 ## 0. Package and build
 
@@ -13,6 +13,8 @@ Library only; nothing below has been done. Derived from `network-privacy.md` sec
 Spec asks for `UrlOptions.allowOnionHttp`. Not needed by this package (it validates onion URLs itself with `validateOnionUrl`), but needed where the existing `validateRpcUrl` is the gate for user-entered URLs: add `allowOnionHttp?: boolean` (default false) accepting `http(s)://<valid v3>.onion` and call `validateOnionUrl` from net-transport at the web/relayer layer instead of copying the checksum code (chain-adapters must not import net-transport; apps do the composition).
 
 ## 2. `apps/web/src/lib/settings.ts`
+
+Status (2026-11-11, commit 364b1f18): not implemented as proposed. The `Settings` interface in `apps/web/src/lib/settings.ts` has no network fields; scan privacy is stored separately under `ghostpay.scanPrivacy.v1` by `apps/web/src/lib/scanPrivacy.ts`, with its own transport kinds (`direct`, `tor-browser`, `local-proxy`).
 
 - Add `network: { rpcProfile, relayerProfile, rpcMode, scanMode, experimental }` to `ghostpay.settings.v1`, additive migration, default `DEFAULT_NETWORK_SETTINGS`.
 - Parse stored JSON with `validateNetworkSettings(raw, { env: 'web', network: { kind: 'evm', chainId }, builds: { onion: import.meta.env.VITE_NET_PROFILE === 'onion', nym: import.meta.env.VITE_NET_PROFILE === 'nym' }, ohttpGatewayConfigured })`; on `NetTransportError` fall back to defaults and show a non-secret warning.
@@ -30,7 +32,7 @@ Spec asks for `UrlOptions.allowOnionHttp`. Not needed by this package (it valida
 
 ## 4. Browser limits
 
-`socks5h`, `tor-socks`, `i2p-outproxy`, `nym-socks5` use `node:net`/`node:tls`: they must not enter the web bundle (NP-B-2). Import them only from a Node entry (relayer, CLI, tests). In the web app import only `createProfile` for `direct`, `tor-browser`, `ohttp`, `nym-mixfetch` through a browser-safe subpath: the owner should add `exports["./browser"]` (a barrel without `socks5.ts`, `httpConnect.ts`, `request.ts`, `proxyUrl.ts`, `profiles.ts` socks branches) before wiring the web app; currently `index.ts` is a single Node-flavoured barrel. `scan-bundle.mjs` should fail the default build if `node:net` or `onion` literals appear (AT-NP-8).
+`socks5h`, `tor-socks`, `i2p-outproxy`, `nym-socks5` use `node:net`/`node:tls`: they must not enter the web bundle (NP-B-2). Import them only from a Node entry (relayer, CLI, tests). In the web app import only `createProfile` for `direct`, `tor-browser`, `ohttp`, `nym-mixfetch` through a browser-safe subpath: the owner should add `exports["./browser"]` (now present in `package.json`, built from `src/browser.ts`; originally specified as a barrel without `socks5.ts`, `httpConnect.ts`, `request.ts`, `proxyUrl.ts`, `profiles.ts` socks branches) before wiring the web app; `index.ts` remains the Node-flavoured barrel. `scan-bundle.mjs` should fail the default build if `node:net` or `onion` literals appear (AT-NP-8).
 
 ## 5. `apps/web/src/lib/scanClient.ts`, `scanner.worker.ts`, `workerFactory.ts`, `relayerClient.ts`, `services.ts`
 

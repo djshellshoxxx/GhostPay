@@ -50,31 +50,64 @@ const pad = (a: string): Hex => `0x${'0'.repeat(24)}${a.slice(2).toLowerCase()}`
 const HASH32 = /^0x[0-9a-fA-F]{64}$/;
 
 /**
- * Collapses duplicate announcements for the same one-time address and ephemeral key (replays by third parties).
+ * The one-time address and ephemeral key of a claim, the pair every third-party replay of an announcement repeats.
  *
- * @remarks Within a group the genuine router announcement is preferred, then the earliest `(block, logIndex)`. The
- * result keeps the order of first appearance. `duplicates` counts what was dropped, so the UI can say so.
+ * @remarks This pair does NOT identify a payment. Anyone who saw it (it is public calldata) can send another payment
+ * to the same address through the router, and each such router announcement is its own transfer. Use it only to
+ * recognise free replays posted directly at the announcer.
+ *
+ * @param claim Match.
+ * @returns Lower-case `address|ephemeralPublicKey`.
+ */
+export function claimPairKey(claim: Pick<ClaimedPayment, 'stealthAddress' | 'announcement'>): string {
+  return `${claim.stealthAddress.toLowerCase()}|${claim.announcement.ephemeralPublicKey.toLowerCase()}`;
+}
+
+/**
+ * Collapses what a third party can produce for free: repeated announcements of one one-time address and ephemeral key
+ * posted directly at the announcer, and the same log seen twice.
+ *
+ * @remarks A router announcement is never dropped in favour of another one. The router moves funds in the same
+ * transaction as it announces, so two router announcements for the same pair are two transfers; keeping only the
+ * earliest let a cheap payment mined first hide the genuine one. Each kept router claim is verified on its own, and
+ * `consumedTransfers` of {@link verifyClaimedPayment} stops one transfer from being credited twice. Within a pair:
+ * with at least one router claim, every distinct router log is kept and all non-router claims are dropped; with none,
+ * the earliest `(block, logIndex)` claim is kept. The first router claim of a pair takes the slot of an earlier
+ * non-router claim; later router claims keep their own position, so the result follows the order of first appearance
+ * (the same rule as the web view's `placeScanMatch`). `duplicates` counts what was dropped, so the UI can say so.
  *
  * @param items Matches.
  * @returns Unique matches plus the number of dropped duplicates.
  */
 export function dedupeClaims<T extends ClaimedPayment>(items: readonly T[]): { readonly items: readonly T[]; readonly duplicates: number } {
-  const best = new Map<string, T>();
-  const order: string[] = [];
-  const better = (a: T, b: T): boolean => {
-    if (a.viaRouter !== b.viaRouter) return a.viaRouter;
-    if (a.announcement.blockNumber !== b.announcement.blockNumber) return a.announcement.blockNumber < b.announcement.blockNumber;
-    return a.announcement.logIndex < b.announcement.logIndex;
-  };
+  const out: T[] = [];
+  // Per pair: the slot of its kept non-router claim (until the first router claim takes it), and whether it has a router claim.
+  const groups = new Map<string, { readonly slot: number; router: boolean }>();
+  // Router logs already kept (`pair|blockHash:logIndex` names one log): the same log seen twice is one item.
+  const routerLogs = new Set<string>();
+  const earlier = (a: T, b: T): boolean =>
+    a.announcement.blockNumber !== b.announcement.blockNumber ? a.announcement.blockNumber < b.announcement.blockNumber : a.announcement.logIndex < b.announcement.logIndex;
   for (const it of items) {
-    const key = `${it.stealthAddress.toLowerCase()}|${it.announcement.ephemeralPublicKey.toLowerCase()}`;
-    const cur = best.get(key);
-    if (cur === undefined) {
-      best.set(key, it);
-      order.push(key);
-    } else if (better(it, cur)) best.set(key, it);
+    const pair = claimPairKey(it);
+    const group = groups.get(pair);
+    if (it.viaRouter) {
+      const log = `${pair}|${it.announcement.blockHash.toLowerCase()}:${String(it.announcement.logIndex)}`;
+      if (routerLogs.has(log)) continue;
+      routerLogs.add(log);
+      if (group === undefined) groups.set(pair, { slot: out.length, router: true });
+      else if (!group.router) {
+        // The first router claim takes the place of the earlier non-router one; later router claims are appended.
+        out[group.slot] = it;
+        group.router = true;
+        continue;
+      }
+      out.push(it);
+    } else if (group === undefined) {
+      groups.set(pair, { slot: out.length, router: false });
+      out.push(it);
+    } else if (!group.router && earlier(it, out[group.slot] as T)) out[group.slot] = it;
   }
-  return { items: order.map((k) => best.get(k) as T), duplicates: items.length - order.length };
+  return { items: out, duplicates: items.length - out.length };
 }
 
 async function readBalanceOf(client: RpcClient, owner: Address, asset: Address | 'native'): Promise<bigint | undefined> {

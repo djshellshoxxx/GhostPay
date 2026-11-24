@@ -23,6 +23,33 @@
       ],
       "@ghostpay/sandbox": [
         "../sandbox/src/index.ts"
+      ],
+      "@ghostpay/core-crypto": [
+        "../core-crypto/src/index.ts"
+      ],
+      "@ghostpay/chain-adapters": [
+        "../chain-adapters/src/index.ts"
+      ],
+      "@ghostpay/btc-silent-payments": [
+        "../btc-silent-payments/src/index.ts"
+      ],
+      "@ghostpay/chain-solana": [
+        "../chain-solana/src/index.ts"
+      ],
+      "@ghostpay/chain-tron": [
+        "../chain-tron/src/index.ts"
+      ],
+      "@ghostpay/qr-exchange": [
+        "../qr-exchange/src/index.ts"
+      ],
+      "@ghostpay/ux-vault": [
+        "../ux-vault/src/index.ts"
+      ],
+      "@ghostpay/merchant-multisig": [
+        "../merchant-multisig/src/index.ts"
+      ],
+      "@ghostpay/ux-vault/portable": [
+        "../ux-vault/src/portable.ts"
       ]
     }
   },

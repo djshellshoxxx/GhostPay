@@ -41,7 +41,7 @@ balance (`THREAT_MODEL` section 1). Boundaries and what crosses them: [architect
 | Relayer misbehaviour towards users | order signed by the stealth key; contract enforces destination, amount, fee, `feeTo` | it can censor, delay or observe (owner, destination, amount, timing) |
 | Fee recipient blacklisted or unable to receive ETH | none in-contract by design (ADR-0013) | every router payment of that asset >= 400 base units reverts until a new router and manifest ship |
 | Oracle failure | `readPrice` checks, heartbeat cap, sequencer guard (`quote.ts`); fiat invoices disabled while `FEEDS` is empty | no verified feeds exist yet |
-| Key theft of a policy account | timelock, caps, destination only; owner can cancel in the window | no recovery; the thief holds the same key; experimental (ADR-0014) |
+| Key theft of a policy account | timelock, caps, destination only; owner can cancel in the window | no recovery; the thief holds the same key; experimental (ADR-0014). The cancel window assumes an honest, live block producer: on OP Stack and Arbitrum chains a malicious or stalled sequencer can shrink it through timestamp latitude, censorship or outage, so prefer longer delays there (Mythril expiry review, 2026-11-18) |
 
 ## 3. Secrets and the scanner worker
 

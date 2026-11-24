@@ -7,7 +7,7 @@ Abuse and availability controls for the GhostPay sweep relayer. Spec: [`docs/rem
 - `resolveClientIp` + `TrustedProxies`: `X-Forwarded-For` honoured only from trusted proxy networks, walked right to left (S3-07).
 - `bucketKey`: canonical IPv4 /32 and IPv6 /64 bucket keys.
 - `TokenBucketLimiter`: monotonic, clamped refill; flood-proof bounded table (haiku L6).
-- `LossBudget`: per-key and global caps on gas the relayer paid without reimbursement (S3-06).
+- `LossBudget`: per-key, per-group and global caps on gas the relayer paid without reimbursement (S3-06). `reserveAll` charges a loss attributed to several sources (destination and client network) to each key and group and to the global cap once; `cleanReserve` keeps part of the global cap for sources with no loss in the current window (L5-02). Keys and groups live in bounded tables that evict only entries from an earlier window; newcomers overflow per `kind` only while a table is full of live entries, and the reservation reports it (L5-04).
 
 Runtime dependencies: none (Node built-ins). Wired into `apps/relayer` (breaker, trusted proxies, /64 buckets, limiter, loss budget); the challenge module is not. Nothing here has run against a real proxy or network.
 

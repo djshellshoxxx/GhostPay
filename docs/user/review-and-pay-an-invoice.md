@@ -2,7 +2,7 @@
 
 An invoice arrives as a link (or QR code) that starts with the app address followed by `#gpi=v1.`. Everything after the `#` stays in your browser and is not sent to the web server.
 
-> Testnet only for now. Nothing is deployed, so the app will refuse to pay until a deployment manifest is present for the chain.
+> Testnet only for now. No deployment manifest ships in this repository. The app refuses payment without accepted signed deployment information and RPC verification; code support is not live qualification.
 
 ## Before you open a link
 
@@ -20,9 +20,9 @@ The Pay page shows, before anything is sent:
 | Destination | A one-time address derived for this payment. You cannot recognise it; that is normal. |
 | Gross, fee, net | Gross is what you pay. The 0.25 % checkout fee is deducted from it; net reaches the seller. Depending on the seller's setting, the fee is added on top or absorbed. See [Fees](fees.md). |
 | Expiry | Expired invoices are blocked. |
-| Quote source and time | Only for fiat-priced invoices. These are currently disabled in practice because no price feed is configured, so you will see a "no feed" message. |
+| Quote source and time | Only for fiat-priced invoices in the full build. ETH/USD and USDC/USD feeds are configured for Sepolia and Base Sepolia; the exact pair, quote freshness and deployment checks must pass. Other pairs can show "no feed", and lean builds use fixed-token invoices. |
 | Signature | "Signature matches key ..." is a consistency check, not seller identity. An *invalid* signature is a hard stop. |
-| Fee recipient and contract addresses | Read from the deployment manifest. The app currently **does not verify the manifest's signature** and does not yet check these addresses against the chain (being fixed; see [Hosting status](../../README.md#hosting)). Compare them with addresses the project publishes through a channel you trust. |
+| Fee recipient and contract addresses | Read from the bundled deployment manifest. The app requires a valid signature from a configured release key and checks deployment data and runtime code against its RPC before payment. Missing or invalid deployment information keeps payment disabled. Compare displayed addresses with a channel you trust; see [deployment verification](../DEPLOYMENT_MANIFEST.md). |
 | "What becomes public" | Payer address, amount, token and time are public on-chain. |
 
 If anything fails to parse, is too large, or looks tampered with, the app shows an error and sends nothing.

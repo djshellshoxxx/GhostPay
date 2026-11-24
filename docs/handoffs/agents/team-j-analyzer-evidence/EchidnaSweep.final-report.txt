@@ -1,0 +1,30 @@
+echidna_used_nonces_marked: passing
+echidna_sweep_nonce_single_use: passing
+echidna_canary_sweep_success: failed!💥  
+  Call sequence:
+    EchidnaSweep.sweep(3,19672713044983408080776060555934320940235968150152220,253487795002661934035723916170000717108541964838543192,0)
+    EchidnaSweep.sweep(0,481188598510605188582445743871118,10888493970690062934343978537804,0)
+    EchidnaSweep.sweep(1,0,0,0)
+    EchidnaSweep.sweep(2,0,0,0)
+    EchidnaSweep.sweep(4,0,0,0)
+
+Traces: 
+
+echidna_token_conservation: passing
+echidna_relayer_never_holds_tokens: passing
+echidna_canary_replay_blocked: failed!💥  
+  Call sequence:
+    EchidnaSweep.sweep(0,0,0,0)
+    EchidnaSweep.replayLast()
+    EchidnaSweep.replayLast()
+    EchidnaSweep.replayLast()
+
+Traces: 
+
+
+
+Unique instructions: 7250
+Unique codehashes: 5
+Corpus size: 5
+Seed: 20261021
+Total calls: 300063

@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@ghostpay/pool-sdk': r('../pool-sdk/src/index.ts'),
       '@ghostpay/pool-prover': r('../pool-prover/src/index.ts'),
+      '@ghostpay/relayer-guard/secrets': r('../relayer-guard/src/secrets.ts'),
       '@ghostpay/relayer-guard': r('../relayer-guard/src/index.ts'),
       '@ghostpay/secret-box': r('../secret-box/src/index.ts'),
       '@ghostpay/core-crypto': r('../core-crypto/src/index.ts'),

@@ -1,0 +1,1750 @@
+{
+  "main_observation": {
+    "source": "native GitHub GET https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main",
+    "sha": "14ded337a10c140d7a9f9a9238ec038587d925bb"
+  },
+  "branch": "codex/ghostpay-hosting-timestamp-main-20261119",
+  "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+  "focused_product": "f4464e57bc6743800c2564ddb71bb5b06f64eb35",
+  "original_product": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+  "historical_evidence_head": "0d5e34add6ddfebc98c59de8a53c4149aac04338",
+  "history": {
+    "main_is_ancestor": true,
+    "feature_base_74e_is_ancestor": false,
+    "cherry_pick_provenance": true,
+    "source_patch_id": "27c8ade98bb3066c6562c40c22038a24350d01bf",
+    "focused_patch_id": "27c8ade98bb3066c6562c40c22038a24350d01bf"
+  },
+  "source_files": [
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "main_blob": "f72bf8517d82f1fb7a34a6a687c403d105cff144",
+      "reviewed_blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+      "focused_blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+      "identical_to_reviewed": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "main_blob": "505a15d5b5ef7c77758029b31ab794ecc0d6168b",
+      "reviewed_blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "focused_blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "identical_to_reviewed": true
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "main_blob": "f838958a645c0c6f8abaa962edc72a72eaaa0c3a",
+      "reviewed_blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+      "focused_blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+      "identical_to_reviewed": true
+    }
+  ],
+  "complete_kit": {
+    "tracked_files": 80,
+    "pre_fix_main_tree": "224c479af720388fa086bc614f1faed49522bd48",
+    "pre_fix_feature_tree": "224c479af720388fa086bc614f1faed49522bd48",
+    "tested_tree": "3295a7030121f51b1286ffc96b3a6480aa319aa7",
+    "focused_tree": "3295a7030121f51b1286ffc96b3a6480aa319aa7",
+    "all_file_modes_blobs_identical": true
+  },
+  "other_kit_inputs": [
+    {
+      "path": "apps/web/public/_headers",
+      "main_blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+      "tested_blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+      "equal": true
+    },
+    {
+      "path": "packages/net-transport/src/onion.ts",
+      "main_blob": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+      "tested_blob": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+      "equal": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "main_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "tested_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hosting-kit.yml",
+      "main_blob": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      "tested_blob": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      "equal": true
+    }
+  ],
+  "root_configuration": {
+    "package_json": {
+      "main_blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+      "tested_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "equal": false,
+      "difference": "Tested feature adds @vitest/coverage-v8 5.1.0 and changes privacy-pools SDK viem override 2.57.13 to2.57.19."
+    },
+    "package_lock": {
+      "main_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+      "tested_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "equal": false,
+      "different_parsed_entries": 109,
+      "differences": [
+        {
+          "path": "",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "apps/relayer",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "apps/web",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "node_modules/@emnapi/core",
+          "main_version": null,
+          "tested_version": "2.0.0-beta.2",
+          "different_fields": [
+            "dependencies",
+            "dev",
+            "integrity",
+            "license",
+            "optional",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@emnapi/runtime",
+          "main_version": null,
+          "tested_version": "2.0.0-beta.2",
+          "different_fields": [
+            "dependencies",
+            "dev",
+            "integrity",
+            "license",
+            "optional",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@emnapi/wasi-threads",
+          "main_version": null,
+          "tested_version": "2.2.0",
+          "different_fields": [
+            "dependencies",
+            "dev",
+            "integrity",
+            "license",
+            "optional",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@napi-rs/wasm-runtime",
+          "main_version": null,
+          "tested_version": "1.2.6",
+          "different_fields": [
+            "dependencies",
+            "dev",
+            "engines",
+            "funding",
+            "integrity",
+            "license",
+            "optional",
+            "peerDependencies",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@oxc-project/types",
+          "main_version": "0.154.0",
+          "tested_version": "0.156.0",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@playwright/test",
+          "main_version": "1.64.1",
+          "tested_version": "1.65.1",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-android-arm-eabi",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-android-arm64",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-darwin-arm64",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-darwin-x64",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-freebsd-x64",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-arm-gnueabihf",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-arm64-gnu",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-arm64-musl",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-ppc64-gnu",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-s390x-gnu",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-x64-gnu",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-linux-x64-musl",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "libc",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-openharmony-arm64",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-wasm32-wasi",
+          "main_version": null,
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "cpu",
+            "dependencies",
+            "dev",
+            "engines",
+            "integrity",
+            "license",
+            "optional",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-win32-arm64-msvc",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@rolldown/binding-win32-x64-msvc",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@testing-library/user-event",
+          "main_version": "14.6.8",
+          "tested_version": "14.6.10",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@tybys/wasm-util",
+          "main_version": null,
+          "tested_version": "0.10.4",
+          "different_fields": [
+            "dependencies",
+            "dev",
+            "integrity",
+            "license",
+            "optional",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitejs/plugin-react",
+          "main_version": "6.1.2",
+          "tested_version": "6.3.0",
+          "different_fields": [
+            "integrity",
+            "peerDependencies",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitest/coverage-v8",
+          "main_version": "5.0.5",
+          "tested_version": "5.1.0",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "peerDependencies",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitest/istanbul-lib-coverage",
+          "main_version": "1.0.2",
+          "tested_version": "2.1.0",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitest/istanbul-lib-report",
+          "main_version": "1.0.2",
+          "tested_version": "2.1.0",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitest/mocker",
+          "main_version": "5.0.5",
+          "tested_version": "5.1.0",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@vitest/spy",
+          "main_version": "5.0.5",
+          "tested_version": "5.1.0",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/@zama-fhe/sdk",
+          "main_version": "3.7.1",
+          "tested_version": "3.7.2",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/magic-string",
+          "main_version": "1.4.3",
+          "tested_version": "1.4.5",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/ox",
+          "main_version": "0.14.59",
+          "tested_version": "0.14.65",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/playwright",
+          "main_version": "1.64.1",
+          "tested_version": "1.65.1",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/playwright-core",
+          "main_version": "1.64.1",
+          "tested_version": "1.65.1",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/postcss",
+          "main_version": "8.5.31",
+          "tested_version": "8.5.33",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/prettier",
+          "main_version": "3.9.10",
+          "tested_version": "3.10.1",
+          "different_fields": [
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/rolldown",
+          "main_version": "1.2.14",
+          "tested_version": "1.2.19",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "optionalDependencies",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/viem",
+          "main_version": "2.57.13",
+          "tested_version": "2.57.19",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "peerDependencies",
+            "peerDependenciesMeta",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/vite",
+          "main_version": "8.3.5",
+          "tested_version": "8.3.8",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "node_modules/vitest",
+          "main_version": "5.0.5",
+          "tested_version": "5.1.0",
+          "different_fields": [
+            "dependencies",
+            "integrity",
+            "peerDependencies",
+            "resolved",
+            "version"
+          ]
+        },
+        {
+          "path": "packages/address-safety",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/amount-blur",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/btc-family",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/btc-payjoin",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/btc-silent-payments",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/chain-adapters",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/chain-evm-extra",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/chain-solana",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/chain-tron",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/cli",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/confidential-amounts",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies",
+            "optionalDependencies"
+          ]
+        },
+        {
+          "path": "packages/core-crypto",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/donation",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/external-pools",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/external-pools-privacypools",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/external-pools-railgun",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/hops",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/hygiene",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/i18n",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/invoice-schema",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/merchant-billing",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/merchant-hooks",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/merchant-ledger",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/merchant-multisig",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/metadata-hardening",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/net-harness",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/net-transport",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ops-monitor",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/payer-sponsor",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/payment-uri",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/pir-two-server",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/plugin-api",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/policy-scheme",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/pool-circuits",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/pool-prover",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/pool-relayer",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/pool-sdk",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/privacy-pipeline",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/privacy-profiles",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/qr-exchange",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/relayer-guard",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/sandbox",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/scan-source",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/sdk",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/secret-box",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/solana-stealth",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/tron-adapter",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/tx-review",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "dependencies",
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-connect",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-core",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-export",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-fees",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-fiat",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-flow",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-guide",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-i18n",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-intake",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-links",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-notify",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-presets",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-privacy",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-receipts",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-sandbox",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-schedule",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        },
+        {
+          "path": "packages/ux-vault",
+          "main_version": "0.1.0",
+          "tested_version": "0.1.0",
+          "different_fields": [
+            "devDependencies"
+          ]
+        }
+      ]
+    },
+    "main_configuration_preserved": true
+  },
+  "kit_lint_typecheck_lock_comparison": {
+    "method": "Resolve dependencies and optionalDependencies upward through each lockfile package tree from the four explicit roots; compare complete parsed records. This is not raw whole-file equivalence, an npm install, runtime tracing, or a new check execution. Optional peers are outside this traversal.",
+    "roots": [
+      "node_modules/typescript",
+      "node_modules/@types/node",
+      "node_modules/eslint",
+      "node_modules/@eslint/js"
+    ],
+    "main_entries": 82,
+    "tested_entries": 82,
+    "entry_sets_equal": true,
+    "unresolved": {
+      "main": [],
+      "tested": []
+    },
+    "equal_records": 82,
+    "records": [
+      {
+        "path": "node_modules/@cacheable/memory",
+        "equal": true,
+        "version": "2.2.0",
+        "canonical_record_sha256": "be478bcc6cf7ed20cf9820d54802fef0cc1524d0385d4dd38dfebe87eb85e2bb"
+      },
+      {
+        "path": "node_modules/@cacheable/utils",
+        "equal": true,
+        "version": "2.5.0",
+        "canonical_record_sha256": "52cb444b77b7e5f9fdd82ec64dad65cfacfd96ecb68b4cc9b08ed08e577b4fa7"
+      },
+      {
+        "path": "node_modules/@eslint-community/eslint-utils",
+        "equal": true,
+        "version": "4.10.1",
+        "canonical_record_sha256": "2de14d50272f572874deeef4f9822cd349fd883d98cd7be64dd3310df5b200c8"
+      },
+      {
+        "path": "node_modules/@eslint-community/eslint-utils/node_modules/eslint-visitor-keys",
+        "equal": true,
+        "version": "3.4.3",
+        "canonical_record_sha256": "939ab040ee58758248e61f6ea167115d6bb1997bee8e22b0519c2a526f8c39e4"
+      },
+      {
+        "path": "node_modules/@eslint-community/regexpp",
+        "equal": true,
+        "version": "4.12.2",
+        "canonical_record_sha256": "495d89a44b4b165ef20565b620d2cefc76a4b3257776e46773ba781c0c6344d0"
+      },
+      {
+        "path": "node_modules/@eslint/config-array",
+        "equal": true,
+        "version": "0.23.6",
+        "canonical_record_sha256": "b203f1d1f5b2e1f5a80a9e0ab7b976088ad297d3d7b2aceeadb8af6b346585f9"
+      },
+      {
+        "path": "node_modules/@eslint/config-helpers",
+        "equal": true,
+        "version": "0.7.0",
+        "canonical_record_sha256": "da5d3eb793c163939b2a4e0e92d8546c0733619363341a8c782bf58e8a330556"
+      },
+      {
+        "path": "node_modules/@eslint/core",
+        "equal": true,
+        "version": "1.2.1",
+        "canonical_record_sha256": "738dd585d6493fe65c8a6e5347c2d7e9fd24e637700d7f19e13c985f2e9e1f0d"
+      },
+      {
+        "path": "node_modules/@eslint/js",
+        "equal": true,
+        "version": "10.0.1",
+        "canonical_record_sha256": "f78f4c0c7a206f647449841418398affbedcb0a81d3a849b3d6d23eacfd3a54a"
+      },
+      {
+        "path": "node_modules/@eslint/object-schema",
+        "equal": true,
+        "version": "3.0.5",
+        "canonical_record_sha256": "8dde756d2f3e25477a919769fa2c10ae4b648c1d688811aefc46310606a41639"
+      },
+      {
+        "path": "node_modules/@eslint/plugin-kit",
+        "equal": true,
+        "version": "0.7.3",
+        "canonical_record_sha256": "521aa401d8d254cb7cc6e78040ff3ffff243db2ff484687c8d7636ab28bb2fd4"
+      },
+      {
+        "path": "node_modules/@humanfs/core",
+        "equal": true,
+        "version": "0.19.2",
+        "canonical_record_sha256": "605a54579774e3805f97ae3ec6847914955ab51ddbed0200a8a05c2e867dcf4e"
+      },
+      {
+        "path": "node_modules/@humanfs/node",
+        "equal": true,
+        "version": "0.16.8",
+        "canonical_record_sha256": "1dc2f8ee9b764b966b3dbaf464df6997a8ae4fbf9c2d55673fb14fa1b139b70b"
+      },
+      {
+        "path": "node_modules/@humanfs/types",
+        "equal": true,
+        "version": "0.15.0",
+        "canonical_record_sha256": "82a21a130581eecca8408ea4adfb3711894498c14d70845c800a625e085829a4"
+      },
+      {
+        "path": "node_modules/@humanwhocodes/module-importer",
+        "equal": true,
+        "version": "1.0.1",
+        "canonical_record_sha256": "88657a7bc7f827880a8c76e792230a7f8137d7354f776534140793c2f135780d"
+      },
+      {
+        "path": "node_modules/@humanwhocodes/retry",
+        "equal": true,
+        "version": "0.4.3",
+        "canonical_record_sha256": "5eaa2b9f64580c3c295b6d0e6e6f9bf1a1e4fc1698ad017eccc5cd8e2fc0b9f3"
+      },
+      {
+        "path": "node_modules/@isaacs/nonrecursive-glob-match",
+        "equal": true,
+        "version": "1.1.0",
+        "canonical_record_sha256": "db186785000511263abaafd3c589d5d8e8ff46c039b3638cd2d7dcb44bdfb109"
+      },
+      {
+        "path": "node_modules/@keyv/bigmap",
+        "equal": true,
+        "version": "1.3.1",
+        "canonical_record_sha256": "a959b44b5cdbaeea6776f7e7f6429b03b274506ddd54b1495fadcf9750dcde6b"
+      },
+      {
+        "path": "node_modules/@keyv/serialize",
+        "equal": true,
+        "version": "1.1.1",
+        "canonical_record_sha256": "33239be10f50fbe4fd47d5e367663e826fe907d6e4b80c5460c397447fd21b57"
+      },
+      {
+        "path": "node_modules/@types/esrecurse",
+        "equal": true,
+        "version": "4.3.1",
+        "canonical_record_sha256": "64e7577b9dce953694dcbe823808b24f824ab3f393ccd1c4be0547ba3ecdefd6"
+      },
+      {
+        "path": "node_modules/@types/estree",
+        "equal": true,
+        "version": "1.0.9",
+        "canonical_record_sha256": "ad22b93d3255f53a735c118b40275267e19d758067468342f9ad892b6a3068ef"
+      },
+      {
+        "path": "node_modules/@types/json-schema",
+        "equal": true,
+        "version": "7.0.15",
+        "canonical_record_sha256": "b4ca0845b70d4d4581e2a631a9f6ce9bd0904301c6b3310b198e734732a1b04d"
+      },
+      {
+        "path": "node_modules/@types/node",
+        "equal": true,
+        "version": "22.20.5",
+        "canonical_record_sha256": "12e34cc729677d56e4e48b8817152f66058f5c4367086cd196a9c6e734399e6d"
+      },
+      {
+        "path": "node_modules/acorn",
+        "equal": true,
+        "version": "8.19.0",
+        "canonical_record_sha256": "69ef64112724f7b44770bf6f49ca4a68f3ae9cd48f44d52ccfb37eccd45956c6"
+      },
+      {
+        "path": "node_modules/acorn-jsx",
+        "equal": true,
+        "version": "5.3.2",
+        "canonical_record_sha256": "b9a16be24047f44d6e01d0655a363a21852be939f2e4b6648827fca26cdcb768"
+      },
+      {
+        "path": "node_modules/ajv",
+        "equal": true,
+        "version": "6.15.0",
+        "canonical_record_sha256": "fddceccdd67a3982ad54b5a0042551583712354249e2b21002dbd30494dd8f1f"
+      },
+      {
+        "path": "node_modules/balanced-match",
+        "equal": true,
+        "version": "4.0.4",
+        "canonical_record_sha256": "57080887d137939e5db7ddd8898500fb0a4ebbd913de50978e12374a9a226f99"
+      },
+      {
+        "path": "node_modules/brace-expansion",
+        "equal": true,
+        "version": "5.0.13",
+        "canonical_record_sha256": "d5c3e43a482419fc05fb222eb657f0e979007f623cccb5ce758a4c8ee1b292f7"
+      },
+      {
+        "path": "node_modules/cacheable",
+        "equal": true,
+        "version": "2.5.0",
+        "canonical_record_sha256": "f2e7164d63297bf3cf03c62a1c79926fe829ed72ff12f9a45f653de34c442f88"
+      },
+      {
+        "path": "node_modules/cross-spawn",
+        "equal": true,
+        "version": "7.0.6",
+        "canonical_record_sha256": "f7a9e0c63321e2412fc9c7f9978a953dfde4f72d43f9af1399ca26d0ce677e00"
+      },
+      {
+        "path": "node_modules/debug",
+        "equal": true,
+        "version": "4.4.3",
+        "canonical_record_sha256": "2d90a4a02719aa555f8b74955974859f56208e8c6f3900a0e5084a7f372f5c26"
+      },
+      {
+        "path": "node_modules/deep-is",
+        "equal": true,
+        "version": "0.1.4",
+        "canonical_record_sha256": "65848ac1cc7f066af9d496142db40271e31dfa3cab97c77fa7db3141815108e7"
+      },
+      {
+        "path": "node_modules/escape-string-regexp",
+        "equal": true,
+        "version": "4.0.0",
+        "canonical_record_sha256": "369557a3b6e1fcc01c29b43f5246b850f75eef2e9f12d91aaa3f060403a26516"
+      },
+      {
+        "path": "node_modules/eslint",
+        "equal": true,
+        "version": "10.15.0",
+        "canonical_record_sha256": "f273553995215088a6982d88fd9e0d33e2b8d379da53445b5dcee80321a42aef"
+      },
+      {
+        "path": "node_modules/eslint-scope",
+        "equal": true,
+        "version": "9.1.2",
+        "canonical_record_sha256": "169d43b662546ebfb8b3a61640336649f12539ca0492d43be58f8214d0cf4961"
+      },
+      {
+        "path": "node_modules/eslint-visitor-keys",
+        "equal": true,
+        "version": "5.0.1",
+        "canonical_record_sha256": "1f815ae460292d9b80646ccd1ff2a4f67901164e2c8ffcae98f1774a48aa29b0"
+      },
+      {
+        "path": "node_modules/espree",
+        "equal": true,
+        "version": "11.2.0",
+        "canonical_record_sha256": "872d2a82036b653b7ef24f45b4140a21699335ed4d7398e8c98f82e6838f2e26"
+      },
+      {
+        "path": "node_modules/esquery",
+        "equal": true,
+        "version": "1.7.0",
+        "canonical_record_sha256": "e217fa32659c714c68348f47d563090a42ecf1e15f7476cf71017ed221d90ce8"
+      },
+      {
+        "path": "node_modules/esrecurse",
+        "equal": true,
+        "version": "4.3.0",
+        "canonical_record_sha256": "1dd35812458a223214b29b9a7d97a86bd265ac49ee92bf1ff2b034b82e44e5c4"
+      },
+      {
+        "path": "node_modules/estraverse",
+        "equal": true,
+        "version": "5.3.0",
+        "canonical_record_sha256": "f12dd92e14950484b86869abe0a6eac290cf97c1083f8c80d96e644ea7425ecd"
+      },
+      {
+        "path": "node_modules/esutils",
+        "equal": true,
+        "version": "2.0.3",
+        "canonical_record_sha256": "ccdfcb59eaea5abcc31fb87ba4daa69b910ae65c3e9b82f54d2e643e58dd734a"
+      },
+      {
+        "path": "node_modules/fast-deep-equal",
+        "equal": true,
+        "version": "3.1.3",
+        "canonical_record_sha256": "21a71a11d6b63d92169908ba793826769248b73c043b54eaf2ae31bf7d82928b"
+      },
+      {
+        "path": "node_modules/fast-json-stable-stringify",
+        "equal": true,
+        "version": "2.1.0",
+        "canonical_record_sha256": "862ae5cb9764ad3ca36fd640b0d32be99d4fc5243d4492cae04588ae03e296cd"
+      },
+      {
+        "path": "node_modules/fast-levenshtein",
+        "equal": true,
+        "version": "2.0.6",
+        "canonical_record_sha256": "f5b0b5a93f4acd775c083852f3dea18468662ea2fe569f2f70cedc10988ae4d3"
+      },
+      {
+        "path": "node_modules/file-entry-cache",
+        "equal": true,
+        "version": "11.1.5",
+        "canonical_record_sha256": "057064b8160887368b814c0d0f14900fb34174070efbc1f97c4ac2c8060e5e4b"
+      },
+      {
+        "path": "node_modules/find-up",
+        "equal": true,
+        "version": "5.0.0",
+        "canonical_record_sha256": "5a4387be5051f12eeea9a6a8bceb45359e5ca6928d2e4bd9bb3a9a9dd45a0ece"
+      },
+      {
+        "path": "node_modules/flat-cache",
+        "equal": true,
+        "version": "6.1.23",
+        "canonical_record_sha256": "6e7e8c8cb3426afb8857908c2a7a6d8ec1c8f50360c3c063fef3aafc5aef3063"
+      },
+      {
+        "path": "node_modules/flatted",
+        "equal": true,
+        "version": "3.4.4",
+        "canonical_record_sha256": "842b7a4047ea67e4a6e65951a1e2648d993e96dbea0c4d3304ba53514d7728f9"
+      },
+      {
+        "path": "node_modules/glob-parent",
+        "equal": true,
+        "version": "6.0.2",
+        "canonical_record_sha256": "5e35960a865cee423b1a19dfdd7c1caa9fb37467c252fa893daa9f13d898e187"
+      },
+      {
+        "path": "node_modules/hashery",
+        "equal": true,
+        "version": "1.5.1",
+        "canonical_record_sha256": "9e379a0e36894ecf0693cb2f0e1e49345f7f0e8be4322db41da387d85ac5cc52"
+      },
+      {
+        "path": "node_modules/hookified",
+        "equal": true,
+        "version": "1.15.1",
+        "canonical_record_sha256": "2c8bd47b58a5173e4b6667c48fd4126d7074f66580bff1e25997f77937b02b7e"
+      },
+      {
+        "path": "node_modules/ignore",
+        "equal": true,
+        "version": "5.3.2",
+        "canonical_record_sha256": "ca27512a11062c93a9a011b12545a23d98ac8d0160f3f0e02574ef14509cc943"
+      },
+      {
+        "path": "node_modules/imurmurhash",
+        "equal": true,
+        "version": "0.1.4",
+        "canonical_record_sha256": "305e639a14a4fd89069beec6ffd1acaf31b924466bfbcce5370e211e68509fa9"
+      },
+      {
+        "path": "node_modules/is-extglob",
+        "equal": true,
+        "version": "2.1.1",
+        "canonical_record_sha256": "d85a664265ed8ca696594cd233729ad63bf01a6b377d0ac813d77aae28cedec8"
+      },
+      {
+        "path": "node_modules/is-glob",
+        "equal": true,
+        "version": "4.0.3",
+        "canonical_record_sha256": "22e32f251030cfe1345666cec1c387c1e6f36b166aa37c907625a6ee771aa4f0"
+      },
+      {
+        "path": "node_modules/isexe",
+        "equal": true,
+        "version": "2.0.0",
+        "canonical_record_sha256": "17a9cd998ec92dc2b9df0102e650390bd4a5667f6bdc4007e85cd4bc96639562"
+      },
+      {
+        "path": "node_modules/json-schema-traverse",
+        "equal": true,
+        "version": "0.4.1",
+        "canonical_record_sha256": "3d8ecf799b573ecf1ffff0af93cd7ddb70263246ac8988fb90bc88196e14c83f"
+      },
+      {
+        "path": "node_modules/json-stable-stringify-without-jsonify",
+        "equal": true,
+        "version": "1.0.1",
+        "canonical_record_sha256": "c09151ab786060cc7c0b93c6f03ec718821b471a75ca80d0999333fd3fd5a843"
+      },
+      {
+        "path": "node_modules/keyv",
+        "equal": true,
+        "version": "5.6.0",
+        "canonical_record_sha256": "97aef49c04d463a132dc39cec6d940314186efabca6f89e46be124fb6c904a01"
+      },
+      {
+        "path": "node_modules/levn",
+        "equal": true,
+        "version": "0.4.1",
+        "canonical_record_sha256": "d26429265458f497a6ecbbd5a1a22cba9d9225608db0e5ffe69fe2dc77dcc8f2"
+      },
+      {
+        "path": "node_modules/locate-path",
+        "equal": true,
+        "version": "6.0.0",
+        "canonical_record_sha256": "c4e9fcc20c6dd31086419779696f62c64214ed5a70598ff8e83132d7f094d1db"
+      },
+      {
+        "path": "node_modules/minimatch",
+        "equal": true,
+        "version": "11.0.8",
+        "canonical_record_sha256": "b99a844224c319a2f4c44454ef4a8b9d0e70c12ca3d79d18ffc202269cb30955"
+      },
+      {
+        "path": "node_modules/ms",
+        "equal": true,
+        "version": "2.1.3",
+        "canonical_record_sha256": "89750f00d86acb145f5d04d5cdaf48d266c2a4bd24247281c9e55d1c8bc175c2"
+      },
+      {
+        "path": "node_modules/natural-compare",
+        "equal": true,
+        "version": "1.4.0",
+        "canonical_record_sha256": "ca95aa0c01145daafe897a15738123c7144ef1397c099b9b9add6f628207bc18"
+      },
+      {
+        "path": "node_modules/optionator",
+        "equal": true,
+        "version": "0.9.4",
+        "canonical_record_sha256": "be44b8d07b1bb9603d0afab65c5607af8425d37b8b276e804443b17bf9a1f077"
+      },
+      {
+        "path": "node_modules/p-limit",
+        "equal": true,
+        "version": "3.1.0",
+        "canonical_record_sha256": "a1a4082654091cb4a34954a5add35d1f9799c24ba8e19214cb92020c84a6a6a3"
+      },
+      {
+        "path": "node_modules/p-locate",
+        "equal": true,
+        "version": "5.0.0",
+        "canonical_record_sha256": "089f66b01811df576781c10220821355434c7d6e60ccdc423f705a26554f1628"
+      },
+      {
+        "path": "node_modules/path-exists",
+        "equal": true,
+        "version": "4.0.0",
+        "canonical_record_sha256": "620acc11abe2d346ffacf2ed38056480c35c293e04161ce253f5701671d56671"
+      },
+      {
+        "path": "node_modules/path-key",
+        "equal": true,
+        "version": "3.1.1",
+        "canonical_record_sha256": "d6b643c90843579ca75a895be79f687429ba2ac981338ab87a7e09d7aaabf37c"
+      },
+      {
+        "path": "node_modules/prelude-ls",
+        "equal": true,
+        "version": "1.2.1",
+        "canonical_record_sha256": "ff55b9a9fab31ee3da8c1926d21afe07b88fb5ff20b1940a930d7057f42977d9"
+      },
+      {
+        "path": "node_modules/punycode",
+        "equal": true,
+        "version": "2.3.1",
+        "canonical_record_sha256": "e831609072310047d0ca4b239741050e2b966d66863dc588263cce2f8478364c"
+      },
+      {
+        "path": "node_modules/qified",
+        "equal": true,
+        "version": "0.10.1",
+        "canonical_record_sha256": "df25efa06d916801e2229f59af3745a23e9d64a8a6b5ac53c64aadd57d528c02"
+      },
+      {
+        "path": "node_modules/qified/node_modules/hookified",
+        "equal": true,
+        "version": "2.2.0",
+        "canonical_record_sha256": "9c8f4ee55ff764df8431431e19d579ef322152dd3b75f0a4d22479d999b08ecf"
+      },
+      {
+        "path": "node_modules/shebang-command",
+        "equal": true,
+        "version": "2.0.0",
+        "canonical_record_sha256": "88b9e7e0fd66a3fd5423d6295bc7cd89848180b796aa7103eef032029b62f3c7"
+      },
+      {
+        "path": "node_modules/shebang-regex",
+        "equal": true,
+        "version": "3.0.0",
+        "canonical_record_sha256": "421bb2b21684a1c37d50907dc085b2b51b99ebd7793de65dd701ac2af5b0ac9c"
+      },
+      {
+        "path": "node_modules/type-check",
+        "equal": true,
+        "version": "0.4.0",
+        "canonical_record_sha256": "4a1011bd6ab465b85cd5f7487b7d7caded4130518b9bb6c86553ac6c970bf814"
+      },
+      {
+        "path": "node_modules/typescript",
+        "equal": true,
+        "version": "5.9.3",
+        "canonical_record_sha256": "f146557a7c6f752ac074efc397e32d8ca6c18f389d22a9beaf54f9e0a2b7f5e7"
+      },
+      {
+        "path": "node_modules/undici-types",
+        "equal": true,
+        "version": "6.21.0",
+        "canonical_record_sha256": "e1b6ab052fa1bdaf3cfb95b0b216e8e0ce6f9689a23dffa909a57b35f71f44f5"
+      },
+      {
+        "path": "node_modules/uri-js",
+        "equal": true,
+        "version": "4.4.1",
+        "canonical_record_sha256": "eab050b1f1431f078c96eb260a5a46d805f98c8a3fb27056632c6f617b9eee37"
+      },
+      {
+        "path": "node_modules/which",
+        "equal": true,
+        "version": "2.0.2",
+        "canonical_record_sha256": "76a02c55a23aa945d94f51091a5ce3ea3540d77cb37b973f45b6d66d0905602e"
+      },
+      {
+        "path": "node_modules/word-wrap",
+        "equal": true,
+        "version": "1.2.5",
+        "canonical_record_sha256": "bc6f45f33289a26f0dbc778abcf10eb1a0ec77210799f9724d1e8d61aec57485"
+      },
+      {
+        "path": "node_modules/yocto-queue",
+        "equal": true,
+        "version": "0.1.0",
+        "canonical_record_sha256": "27262a304f2fcbe1ceac48dc005114b708a546277c1a21c3f457e9df2fa37f9e"
+      }
+    ]
+  },
+  "browser_dependency_difference": {
+    "main": "Playwright/playwright-core/@playwright-test 1.64.1",
+    "tested": "1.65.1",
+    "limit": "Original browser test was skipped by its unchanged opt-in condition. No browser qualification transfers."
+  },
+  "historical_evidence": {
+    "files": [
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md",
+        "original_blob": "91f5d9a9318a8712bebc1d606cb99993a6c99672",
+        "bytes": 4676,
+        "sha256": "322691c27cfb17aff1bc08bf704a620d437836a37fda511eaa66ed88c3bd3736",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/full-kit.log",
+        "original_blob": "4086e6c26f1bf486ee7f54024a1ebad6487e261d",
+        "bytes": 66842,
+        "sha256": "bce3f391c3efd284c3453ad4bfb9959dece492a27ca80aeb6cc09b83aeca4655",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-lint.log",
+        "original_blob": "24219932403f9fa4e024cffbaa59f3d380fa602d",
+        "bytes": 174,
+        "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-typecheck.log",
+        "original_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-green.log",
+        "original_blob": "7633ab5c2a791f8dbb9c8f2411dfe3723c730a50",
+        "bytes": 2568,
+        "sha256": "d8bf082316b7cb1f4216766dc0969bb98ef2e6b81b130ec131f123a9de0b5bcf",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+        "original_blob": "a277546f015ed5bfde2d4e2dcb555844ab23b0e6",
+        "bytes": 4045,
+        "sha256": "56ced81a6119898719c0f097af536f4f47460443d98af54fdc28b1f3754c0ebb",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/unused-time-wrapper.log",
+        "original_blob": "e458d5054554b7086c50f2befafdcc0da169214e",
+        "bytes": 60,
+        "sha256": "3e737f6a9117cec194b02103b357f8668fae9adb86a8a8cd0bf25efab8948548",
+        "byte_identical": true
+      },
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/receipt.json",
+        "original_blob": "daee13f200cc320b6e54b6f9476fa3c736961956",
+        "bytes": 9140,
+        "sha256": "186c0e696aee8869cb2b304e9693c247c6ef0981eb616694f2b28b2ea884d8fd",
+        "byte_identical": true
+      }
+    ],
+    "all_byte_identical": true,
+    "attribution": "Original red/green/full-kit/typecheck/lint results remain pinned to38fe7fda and its environment; they are not relabeled as new executions on f4464e57."
+  },
+  "claim_preservation": {
+    "base_claim_bytes": 51511,
+    "entire_main_claim_file_preserved_as_suffix": true,
+    "added_lines": 21,
+    "removed_lines": 0
+  },
+  "independent_review": {
+    "reviewer": "/root/recovery_completion",
+    "source_pin": "f4464e57bc6743800c2564ddb71bb5b06f64eb35",
+    "verdict": "No source blocker introduced by focused-main reuse.",
+    "verified": [
+      "main ancestry",
+      "no feature74e ancestry",
+      "exact three product blobs",
+      "complete kit tree",
+      "-x provenance",
+      "only additive claim plus three source/test files at product pin",
+      "root manifests differ from original tested feature and no new execution qualification claimed"
+    ]
+  },
+  "new_runtime_tests_executed": false,
+  "qualification_limits": [
+    "Entire root package.json and package-lock.json differ from the original tested feature source.",
+    "No new unit, lint, typecheck, browser, nginx, build, install or full-project qualification is claimed on the focused branch.",
+    "Original native nginx differential was skipped locally; unchanged hosted kit/native gates must qualify the published exact head.",
+    "Only the reviewed three-file patch and documentation are imported; no dependency, workflow, mainnet or release change is included."
+  ],
+  "non_documentation_diff": {
+    "paths": [
+      "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "tools/portable-hosting-kit/test/profiles/static-export.test.mjs"
+    ],
+    "exactly_the_three_reviewed_files": true
+  },
+  "whitespace_checks": {
+    "source_and_documentation_except_raw_logs_exit_code": 0,
+    "cached_full_diff_exit_code": 2,
+    "raw_log_only_findings": [
+      {
+        "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+        "lines": [
+          22,
+          26,
+          65,
+          69
+        ],
+        "reason": "Original Node TAP assertion formatting contains whitespace-only lines. Historical raw evidence remains byte-identical; no source or prose whitespace defect."
+      }
+    ],
+    "limitation": "The full raw-evidence diff does not pass git diff --check; the source/prose check does. No repository whitespace policy is changed."
+  }
+}
