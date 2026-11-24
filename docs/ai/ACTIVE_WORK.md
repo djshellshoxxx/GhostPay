@@ -3164,3 +3164,12 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ### 2026-11-24 bounded deployment diagnostic completion
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
+
+
+---
+
+# GP-BUG — QR intake assembly clock rollback (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator (no separate verifier available); isolated branch `automation/20261124/bug/ux-intake-qr-clock-rollback-r11`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-intake/src/qr.ts`, new `packages/ux-intake/src/qr.clock-rollback.test.ts`, this additive branch-only claim and `docs/handoffs/UX_INTAKE_QR_CLOCK_ROLLBACK_20261124.md`. All 238 open PR changed-file lists at discovery were inspected in bounded batches; no overlap on production or proposed new test path; registry inspected for matching claims. Recheck before integration.
+Observed defect: a backward injected clock (1000 -> 999) retains the old incomplete assembly, either mixing old parts or rejecting a new session. Acceptance: test-first two failing rollback cases, discard stale parts on backwards clock, preserve exact TTL boundary, normal progress, duplicate and conflict behavior. No QR format, crypto, payment, dependencies, deployment or release changes. Generation 20 integration lease released, not acquired. Source-hash-matched isolated V8 probes only; full checkout DNS unavailable. Native hosted CI and independent review required before merge.
