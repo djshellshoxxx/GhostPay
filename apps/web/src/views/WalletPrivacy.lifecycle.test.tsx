@@ -221,10 +221,11 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => expect(readAttempts()).toMatchObject([{ status: 'unknown', account: MOCK_ACCOUNT }]));
     act(() => { wallet.emit('accountsChanged'); });
-    const setItem = Storage.prototype.setItem;
+    const writeSession = sessionStorage.setItem.bind(sessionStorage);
+    const writeLocal = localStorage.setItem.bind(localStorage);
     const failed = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
       if (this === sessionStorage && key === ATTEMPT_JOURNAL_KEY) throw new Error('fixture quota');
-      setItem.call(this, key, value);
+      (this === sessionStorage ? writeSession : writeLocal)(key, value);
     });
     const hash = `0x${'7'.repeat(64)}`;
     await act(async () => { release(hash); await held; });
