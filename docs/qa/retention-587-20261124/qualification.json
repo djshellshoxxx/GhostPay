@@ -1,0 +1,136 @@
+{
+  "observed_at_utc": "2026-11-24T09:27:22.225172+00:00",
+  "parent": "19a11f90db0bcf84c94a0b883a310e103ce8878a",
+  "tested_implementation": "b7d58ea2c9cc70af0219203ef7bfef77d6a8d03e",
+  "donor": "cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362",
+  "script_blob": "9f6732a60662664617c623a3dca9c5644ed20c90",
+  "browser": {
+    "format": "ghostpay-static-hosting-browser/1",
+    "archiveSha256": "0d1187139d607d64c3ff3fd0d0e2a9870a608ece029d7c2de85e552a36d0fd29",
+    "browser": {
+      "name": "chromium",
+      "version": "156.0.8078.4"
+    },
+    "cases": [
+      {
+        "basePath": "/",
+        "origin": "http://127.0.0.1:38917",
+        "checks": [
+          "render",
+          "CSP/headers",
+          "WebCrypto",
+          "storage separation",
+          "Tor preference persistence",
+          "no hash fallback",
+          "local key generation"
+        ],
+        "requestCount": 15,
+        "requests": [
+          {
+            "path": "/",
+            "method": "GET",
+            "type": "document"
+          },
+          {
+            "path": "/assets/index-B0MTm5As.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/assets/rolldown-runtime-XKyaHtl9.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/assets/style-1qcfXE3B.css",
+            "method": "GET",
+            "type": "stylesheet"
+          },
+          {
+            "path": "/assets/index-B0MTm5As.js",
+            "method": "GET",
+            "type": "fetch"
+          }
+        ],
+        "externalRequestAttempts": 0
+      },
+      {
+        "basePath": "/mirror/ghostpay/",
+        "origin": "http://127.0.0.1:38399",
+        "checks": [
+          "render",
+          "CSP/headers",
+          "WebCrypto",
+          "storage separation",
+          "Tor preference persistence",
+          "no hash fallback",
+          "local key generation"
+        ],
+        "requestCount": 15,
+        "requests": [
+          {
+            "path": "/mirror/ghostpay/",
+            "method": "GET",
+            "type": "document"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/index-B0MTm5As.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/rolldown-runtime-XKyaHtl9.js",
+            "method": "GET",
+            "type": "script"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/style-1qcfXE3B.css",
+            "method": "GET",
+            "type": "stylesheet"
+          },
+          {
+            "path": "/mirror/ghostpay/assets/index-B0MTm5As.js",
+            "method": "GET",
+            "type": "fetch"
+          }
+        ],
+        "externalRequestAttempts": 0
+      }
+    ],
+    "limits": [
+      "Ordinary Chromium on loopback, not Tor Browser or live onion acceptance.",
+      "No external wallet, public RPC, chain payment or real funds.",
+      "Observed HTTP(S) requests and WebSocket attempts are checked; browser/extension traffic is outside this fixture."
+    ],
+    "status": "passed"
+  },
+  "hosting_tests": {
+    "passed": 55,
+    "failed": 0,
+    "skipped": 1,
+    "skip_reason": "Docker Compose unavailable"
+  },
+  "logs": {
+    "retention-587-vault-build.log": {
+      "sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b",
+      "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-vault@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+    },
+    "retention-587-hosting-tests.log": {
+      "sha256": "f5c0edf72b8d1ca1e43c8bf78adc34d334537a7dd503df4d4104d4f898e82d5a",
+      "output": "\u2714 static Tor recipe preserves artifact bytes, generates no backend and removes host ports in its final override (197.078024ms)\n\u2714 hash mismatch refuses export and leaves original input untouched (58.726005ms)\n\u2714 expected hash is mandatory and must be a primitive lowercase SHA-256 (78.359897ms)\n\u2714 an artifact without its response-header policy is refused before export (171.746546ms)\n\u2714 existing output and symlink destinations are preserved (74.434841ms)\n\u2714 the recipe accepts only a regular archive and validated onion configuration (23.641269ms)\n\u2714 subpaths require explicit acceptance and keep files under the requested prefix (104.643908ms)\n\u2714 source-pinned image checks bytes before extraction and excludes identity material from its build context (102.417501ms)\n\u2714 runtime reports require supported stable Tor, PoW and GPL puzzles (174.838379ms)\n\u2714 startup scripts parse as POSIX shell and reject unsupported arguments before running Tor (10.407826ms)\n\ufe63 combined Compose model has only web and Tor, no published ports, and a private web network (2.344687ms) # Docker Compose unavailable; no image build or live Tor acceptance is implied\n\u2714 system mode: fragment with v3 service, loopback target and DoS defenses (3.962013ms)\n\u2714 no profile ever enables single-hop / non-anonymous mode or a client/control port (1.910554ms)\n\u2714 ipv6 loopback and unix-socket listeners map to tor target syntax (1.251074ms)\n\u2714 dedicated mode: complete torrc with SocksPort 0, ControlPort 0 and its own DataDirectory (0.767077ms)\n\u2714 container mode: web:8080 target, digest-pinned Dockerfile, compose override on site_internal + egress (1.152669ms)\n\u2714 container mode accepts an operator digest and refuses an unpinned image (4.829712ms)\n\u2714 powDefense: disable (with warning), custom rates, and tor's burst >= rate rule (1.123414ms)\n\u2714 wrong transport and malformed host configs are refused (2.045721ms)\n\u2714 direct Tor adapter calls validate the onion checksum and advertised port (1.710206ms)\n\u2714 HiddenServiceDir must be absolute, normalized and injection-free (0.807983ms)\n\u2714 identity directories may not overlap site, export or archive roots (0.898929ms)\n\u2714 Tor management ports are refused as targets; other stacks' ports only warn (0.67486ms)\n\u2714 network-namespace topology rules (0.494094ms)\n\u2714 system mode warns when HiddenServiceDir is outside the AppArmor-allowed /var/lib/tor (0.284753ms)\n\u2714 generator is deterministic and pure (creates nothing on disk) (0.8689ms)\n\u2714 review fix: unix targets may not be tor's own control/SOCKS sockets or live in tor state directories (1.252659ms)\n\u2714 accepts a clearnet config and round-trips deterministically (4.429764ms)\n\u2714 validates real and generated v3 onion addresses, rejects bad checksums (2.864272ms)\n\u2714 onion origins are canonical before URL normalization and use the generated port 80 (1.968624ms)\n\u2714 i2p origins: plain http b32 only (b33 and https unsupported by the generated profiles) (0.517044ms)\n\u2714 rejects plain-http clearnet, paths, credentials and onion hosts on clearnet (0.749999ms)\n\u2714 listeners must stay on loopback or a unix socket (1.247801ms)\n\u2714 base paths (3.217852ms)\n\u2714 secrets and application trust settings are refused with a specific reason (1.407429ms)\n\u2714 onionLocation only for clearnet and must be a valid onion (1.147779ms)\n\u2714 defaults are valid for every transport (0.576546ms)\n\u2714 GhostPay's real apps/web/public/_headers parses and satisfies the required headers (10.940247ms)\n\u2714 the kit default header file parses and satisfies the required headers (0.899231ms)\n\u2714 Cloudflare documented example: every matching rule contributes; repeated headers join with \", \" (0.483962ms)\n\u2714 detach removes headers set by earlier (more pervasive) rules; detach runs before the same rule sets (0.666195ms)\n\u2714 splat matching: greedy, any characters including \"/\", anchored, at most one (0.38019ms)\n\u2714 unsupported or malformed _headers input fails closed with E_HEADERS (1.929867ms)\n\u2714 checkRequiredHeaders reports missing headers, CSP directives and a wrong nosniff value (0.734261ms)\n\u2714 transport headers: HSTS only for clearnet https, Onion-Location only when configured (1.367459ms)\n\u2714 direct header helpers only advertise canonical, checksum-valid HTTP onion origins (0.700405ms)\n\u2714 kitResponseHeaders: Cache-Control default, transport headers never override site rules (0.768161ms)\n\u2714 profiles also require the security headers on \"/\" (error responses for invalid or outside requests) (2.638593ms)\n\u2714 R2-A: header names are restricted to [A-Za-z0-9-]+ (a quote could break nginx tokenization) (0.980594ms)\n\u2714 R2-D: CSP and nosniff cannot be detached, and are required on scriptable types, every path and \"/\" (1.092065ms)\n\u2714 R2-C: CSP values must actually restrict (1.626093ms)\n\u2714 R2-E: \"$\" in a header value is reported (E_UNSUPPORTED) before any profile is generated (0.687417ms)\n\u2714 the demo site _headers passes the strengthened checks (2.009338ms)\n\u2714 R3: effective script sources may only be self, explicit hosts and hashes (4.644339ms)\n\u2714 R3: Referrer-Policy must be one of the non-leaking values (0.99721ms)\n\u2714 R3: a later rule cannot append a non-nosniff value to X-Content-Type-Options (0.501802ms)\n\u2139 tests 56\n\u2139 suites 0\n\u2139 pass 55\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 1\n\u2139 todo 0\n\u2139 duration_ms 1233.469224\n"
+    },
+    "retention-587-lean-build.log": {
+      "sha256": "6d591803b871b1186e414b87bbd83ecafd31f94b164bf655205f56c625ea2ec9",
+      "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/web@1.0.0-beta.1 build\n> tsc -p tsconfig.json --noEmit && vite build\n\nvite v8.3.8 building client environment for production...\ntransforming...\n\n./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime\n[plugin rolldown:vite-resolve] Module \"node:http\" has been externalized for browser compatibility, imported by \"/workspace/scratch/efb8df2579c9/gp-retention-587/packages/pir-two-server/dist/http.js\". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\n\u2713 904 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/build-info.json                          0.15 kB \u2502 gzip:   0.14 kB\ndist/index.html                               3.36 kB \u2502 gzip:   1.44 kB\ndist/privacy.html                             8.02 kB \u2502 gzip:   3.28 kB\ndist/help.html                               16.85 kB \u2502 gzip:   5.82 kB\ndist/assets/scanner.worker-CAQQ64R_.js       62.18 kB\ndist/assets/style-1qcfXE3B.css               12.51 kB \u2502 gzip:   3.57 kB\ndist/assets/rolldown-runtime-XKyaHtl9.js      0.72 kB \u2502 gzip:   0.42 kB\ndist/assets/jsQR-DMfxOdIb.js                129.98 kB \u2502 gzip:  47.51 kB\ndist/assets/es-CwJ8sQL5.js                  297.62 kB \u2502 gzip:  82.71 kB\ndist/assets/ja-CLaL2kcO.js                  347.00 kB \u2502 gzip:  87.58 kB\ndist/assets/ar-CEvUQv55.js                  354.52 kB \u2502 gzip:  88.31 kB\ndist/assets/index-B0MTm5As.js             1,530.66 kB \u2502 gzip: 464.75 kB\n\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 1200 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0m../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.\n\n\u2713 built in 2.52s\n\n> @ghostpay/web@1.0.0-beta.1 postbuild\n> node scripts/apply-csp.mjs && node scripts/scan-bundle.mjs\n\napply-csp: broad connect-src (GHOSTPAY_CONNECT_ORIGINS not set)\nBundle scan passed: 17 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.\n"
+    },
+    "retention-587-static-browser.log": {
+      "sha256": "b1f7405c45183c90c1b9f19f65fa7a4535982ce61370cc96e088eac22d11c3cc",
+      "output": "Static browser acceptance passed: 2 origins; archive SHA-256 0d1187139d607d64c3ff3fd0d0e2a9870a608ece029d7c2de85e552a36d0fd29\n"
+    }
+  },
+  "limits": [
+    "No local Docker image/runtime qualification",
+    "No live onion routing or Tor Browser claim",
+    "Hosted exact-head qualification remains required"
+  ]
+}

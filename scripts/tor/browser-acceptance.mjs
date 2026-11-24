@@ -10,6 +10,11 @@ import { runPreview } from '../../tools/portable-hosting-kit/src/cli.mjs';
 const [archive, reportPath, ...extra] = process.argv.slice(2);
 assert(archive && reportPath && isAbsolute(archive) && isAbsolute(reportPath) && !extra.length,
   'Usage: node scripts/tor/browser-acceptance.mjs /absolute/site.zip /absolute/new-report.json');
+// Assert the message the English source catalog actually supplies to Settings; never let a stale literal mask a save failure.
+const locale = JSON.parse(await readFile(new URL('../../apps/web/locales/en.json', import.meta.url), 'utf8'));
+const scanPrivacySavedMessage = locale.messages?.['settings.scanPrivacy.saved'];
+assert.equal(typeof scanPrivacySavedMessage, 'string', 'missing English scan-privacy save confirmation');
+assert(scanPrivacySavedMessage.length > 0, 'empty English scan-privacy save confirmation');
 const archiveSha256 = createHash('sha256').update(await readFile(archive)).digest('hex');
 const servers = [];
 let browser;
@@ -78,7 +83,7 @@ try {
     assert.equal(await transport.inputValue(), 'direct');
     await transport.selectOption('tor-browser');
     await page.getByRole('button', { name: 'Save scan privacy', exact: true }).click();
-    await page.getByText('Scan privacy settings saved. They apply to the next scan.', { exact: true }).waitFor();
+    await page.getByText(scanPrivacySavedMessage, { exact: true }).waitFor();
     await page.reload({ waitUntil: 'networkidle' });
     await nav.getByRole('button', { name: 'Settings', exact: true }).click();
     assert.equal(await page.getByLabel('Scan transport', { exact: true }).inputValue(), 'tor-browser');
