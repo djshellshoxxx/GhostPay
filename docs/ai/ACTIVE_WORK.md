@@ -1,3 +1,11 @@
+# GP-BUG — Solana Pay reference count regression extension (2026-11-24 UTC)
+
+Cycle: 20261124T0237Z; sequential coordinator continuing its existing isolated PR #507, branch `automation/20261123T1041Z/bug/solana-reference-snapshot`. Exact prior qualified head `f8e40f9d773333c123ed93db2a256b4b2ee75dde`, main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. No independent subagent or approval. Preserve prior commits and claims.
+
+Owned paths: additive claim here; existing `packages/payment-uri/src/solana.reference-snapshot.test.ts`; additive handoff `docs/handoffs/SOLANA_REFERENCE_SNAPSHOT_20261123.md`. Production source unchanged. The original five tests only exercised the up-front array length cap, not the in-loop bound with an inconsistent iterator. Node 22 source-body reproduction showed the old two-pass builder serializing nine distinct valid-length keys after checking eight. Add deterministic changing-iterator and overlong-iterator cases plus exact-eight acceptance; verify typed rejection and parse round-trip, no funds/network. Existing parent CI is green; new head needs fresh CI. No shared integration, deployment, or changes to other PRs; generation 13 released observed, not acquired. The same lane is deliberately continued instead of opening a competing PR.
+
+---
+
 # GP-BUG — Solana Pay references must be validated once (2026-11-23)
 
 - Cycle and worker: `20261123T1041Z`; one sequential GitHub-connected engineering coordinator, no independent native subagent/verifier.
