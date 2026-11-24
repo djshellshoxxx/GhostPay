@@ -220,7 +220,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
   const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
-  const [previousBroadcast, setPreviousBroadcast] = useState<{ readonly hash: string; readonly kind: 'approval' | 'payment' } | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
@@ -443,15 +442,35 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setWallets(undefined);
     setStatus('');
     setError(undefined);
-    // Keep completed/uncertain submission evidence and its receipt context. Only unsubmitted preparation is reset.
-    if (result === undefined && broadcast === undefined) {
-      if (approvalHash !== undefined) setPreviousBroadcast({ hash: approvalHash, kind: 'approval' });
-      setBuilt(undefined);
-      setBuiltFor(undefined);
-      setBuiltForContext(undefined);
-      setApproval(undefined);
-      setGranted(undefined);
-      setApprovalHash(undefined);
+    // Recovery evidence stays in the account-scoped attempt journal, including a hash returned after revocation.
+    setResult(undefined);
+    setResultForContext(undefined);
+    setBroadcast(undefined);
+    setPaymentMayHaveBeenSent(false);
+    setBuilt(undefined);
+    setBuiltFor(undefined);
+    setBuiltForContext(undefined);
+    setApproval(undefined);
+    setGranted(undefined);
+    setApprovalHash(undefined);
+    setBufferQuote(undefined);
+    setUseBuffer(false);
+    setPermitDeclined(false);
+    receiptImportRevision.current++;
+    receiptBusyRef.current = false;
+    setReceiptBusy(false);
+    setReceiptConsent(false);
+    setReceiptTrustedKey('');
+    setBoundReceipt(undefined);
+    setReceiptError(undefined);
+    if (parsed?.encrypted === true || parsed?.passphraseProtected === true) {
+      setParsedResult(undefined);
+      setCtx(undefined);
+      setInvoicePassphrase('');
+      if (window.location.hash === fragment) clearFragment(window.location, window.history);
+      app.setFragment(undefined);
+      setPhase('input');
+    } else {
       setPhase(latest.current.parsed === undefined ? 'input' : 'ready');
     }
   });
@@ -979,7 +998,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-            else setPreviousBroadcast({ hash, kind: 'approval' });
           });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
@@ -992,11 +1010,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
         addressReuse.observeSubmission(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(invoice)) });
-        if (!isCurrent()) {
-          setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
-          announce({ key: 'pay.announce.previous' });
-          return;
-        }
+        if (!isCurrent()) return;
         setResult(res);
         setResultForContext(ctx);
         setPhase('done');
@@ -1009,15 +1023,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         if (e instanceof PostBroadcastError && stage === 'payment') {
           addressReuse.observeSubmission(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(invoice)) });
         }
-        if (!isCurrent()) {
-          if (e instanceof PostBroadcastError) {
-            setPreviousBroadcast({ hash: e.hash, kind: stage });
-            announce({ key: 'pay.announce.previous' });
-          } else if (approvalBroadcastHash !== undefined) {
-            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
-          }
-          return;
-        }
+        if (!isCurrent()) return;
         setStatus('');
         if (e instanceof PostBroadcastError) {
           // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
@@ -1060,17 +1066,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
           sessionGuard();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
-        }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
+        });
         if (!isCurrent()) return;
         setGranted(undefined);
         setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
         announce({ key: 'pay.announce.revoked' });
       } catch (e) {
-        if (!isCurrent()) {
-          if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
-          return;
-        }
+        if (!isCurrent()) return;
         setError(captureUserMessage(e));
       } finally {
         if (isCurrent()) {
@@ -1118,11 +1121,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts wallet={wallet} />
         {signerPanel}
-        {previousBroadcast !== undefined && (
-          <Notice kind="warn" title={t('pay.previous.title')}>
-            {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-          </Notice>
-        )}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
         {needsPassphrase && (
@@ -1188,11 +1186,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <WalletAttempts wallet={wallet} />
       {signerPanel}
       {signerBlocked && <Notice kind="error">{t('pay.signer.policyBlocked')}</Notice>}
-      {previousBroadcast !== undefined && (
-        <Notice kind="warn" title={t('pay.previous.title')}>
-          {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-        </Notice>
-      )}
 
       <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
         {displayMessage(review.trust.message, t)}

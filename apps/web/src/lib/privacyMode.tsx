@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { SessionPresentationBoundary } from '../components/SessionPresentationBoundary';
 import { subscribeAppLock } from './appLock';
 import { subscribeSession } from './session';
 
@@ -115,5 +116,5 @@ export function PrivacyProvider(props: { readonly enabled: boolean; readonly sco
     };
   }, []);
   const value = useMemo<PrivacyState>(() => ({ enabled: props.enabled, masked: props.enabled && !revealed, reveal, hide: revokePrivacyReveal }), [props.enabled, revealed, reveal]);
-  return <PrivacyContext.Provider value={value}>{props.children}</PrivacyContext.Provider>;
+  return <PrivacyContext.Provider value={value}><SessionPresentationBoundary>{props.children}</SessionPresentationBoundary></PrivacyContext.Provider>;
 }

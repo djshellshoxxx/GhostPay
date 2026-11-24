@@ -8,25 +8,38 @@ import type { WalletSession } from '../lib/wallet';
 
 /** Tab-local bookkeeping only; no outcome is inferred from elapsed time or a hash. */
 export function WalletAttempts(props: { readonly wallet?: Pick<WalletSession, 'account' | 'chainId'> | undefined }): ReactNode {
+  const wallet = props.wallet;
+  return <AttemptList key={wallet === undefined ? 'disconnected' : `${String(wallet.chainId)}:${wallet.account.toLowerCase()}`} wallet={wallet} />;
+}
+
+function AttemptList({ wallet }: { readonly wallet: Pick<WalletSession, 'account' | 'chainId'> | undefined }): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const [attempts, setAttempts] = useState<readonly WalletAttempt[]>([]);
+  const [hasAttempts, setHasAttempts] = useState(false);
+  const [visible, setVisible] = useState<readonly WalletAttempt[]>([]);
   const [error, setError] = useState<DisplayMessage | undefined>();
   useEffect(() => {
     const refresh = (): void => {
-      try { setAttempts(readAttempts()); setError(undefined); } catch (e) { setError(captureUserMessage(e)); }
+      try {
+        const attempts = readAttempts();
+        setHasAttempts(attempts.length > 0);
+        setVisible(wallet === undefined ? [] : attempts.filter((attempt) =>
+          attempt.chainId === wallet.chainId && attempt.account === wallet.account.toLowerCase()));
+        setError(undefined);
+      } catch (e) {
+        setVisible([]);
+        setError(captureUserMessage(e));
+      }
     };
     refresh();
     window.addEventListener(ATTEMPT_JOURNAL_EVENT, refresh);
     return () => { window.removeEventListener(ATTEMPT_JOURNAL_EVENT, refresh); };
-  }, []);
-  if (attempts.length === 0 && error === undefined) return null;
-  const wallet = props.wallet;
-  const visible = wallet === undefined ? [] : attempts.filter((attempt) => attempt.chainId === wallet.chainId && attempt.account === wallet.account.toLowerCase());
+  }, [wallet]);
+  if (!hasAttempts && error === undefined) return null;
   return <section className="panel" aria-label={t('walletAttempts.aria')}>
     <h3>{t('walletAttempts.heading')}</h3>
     <p className="hint">{t('walletAttempts.hint')}</p>
-    {attempts.length > 0 && <Notice kind="warn">{t('walletAttempts.privateWarning')}</Notice>}
+    {hasAttempts && <Notice kind="warn">{t('walletAttempts.privateWarning')}</Notice>}
     {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
     {wallet === undefined || visible.length === 0 ? <p>{t('walletAttempts.connectToReveal')}</p> :
     <PrivateHistory unlocked scope={wallet}>

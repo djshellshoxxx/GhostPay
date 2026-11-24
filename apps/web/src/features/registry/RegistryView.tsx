@@ -120,6 +120,8 @@ export function RegistryView(): ReactNode {
     lookupVersion.current++;
     setWallet(undefined);
     setWallets(undefined);
+    setWho('');
+    setScanEpoch((revision) => revision + 1);
     setReviewed(undefined);
     setReviewAction(undefined);
     setPub(undefined);
@@ -247,12 +249,11 @@ export function RegistryView(): ReactNode {
         app.announce(displayMessage({ key: 'registry.announceSubmitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' } } }, tRef.current));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
-        if (!mounted.current) return;
+        try { guard(); } catch { return; }
         if (returnedHash !== undefined) {
           setPub({ kind: 'warn', text: { key: 'registry.walletReturned', values: { hash: returnedHash } } });
           return;
         }
-        try { guard(); } catch { return; }
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         busyRef.current = false;

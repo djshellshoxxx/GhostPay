@@ -25,6 +25,7 @@ import {
   type ReconciliationVault,
   type VaultRecord,
 } from '../lib/reconciliationVault';
+import { subscribeAppLock } from '../lib/appLock';
 import { getSessionPublic, subscribeSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { formatUnits } from '../lib/format';
@@ -240,9 +241,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setPreview(undefined);
     setBackup('');
     setQuery('');
+    setError(undefined);
   };
   useEffect(() => {
     mounted.current = true;
+    const stopLock = subscribeAppLock(reset);
     const unsubscribe = subscribeSession(() => {
       if (mounted.current) reset();
     });
@@ -252,6 +255,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       vault.current?.lock();
       vault.current = undefined;
       unsubscribe();
+      stopLock();
     };
   }, []);
   useEffect(() => {
