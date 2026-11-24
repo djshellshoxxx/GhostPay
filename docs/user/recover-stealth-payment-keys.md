@@ -9,7 +9,7 @@
 
 1. Scan with your seller keys, then open **Payment details** on the row for the address you want to recover. Compare the displayed network and one-time address with your records.
 2. Choose the public record for a shareable key and announcement, or choose **Download encrypted keypair** for spending authority. For a secret export, reauthenticate with the current seller's encrypted vault or matching keystore backup. Set and repeat a passphrase for the encrypted file.
-3. Keep the downloaded file and its passphrase separately. Use the panel to select the exact saved file and verify it locally. If the browser blocks the download, retry the encrypted file while the panel is open. After cancellation, a lock or a seller change, start again under the intended seller.
+3. Keep the downloaded file and its passphrase separately. Use the panel to select the exact saved file and verify it locally. If the browser blocks or interrupts the download, use **Retry this download** while the panel is open to save the same encrypted file again. After cancellation, a lock or a seller change, start again under the intended seller.
 4. For a wallet that accepts a raw EVM private key, choose **Prepare the private key download**, read the plaintext warning and confirm **Download the private key**. The downloaded text identifies the network, address and single private key. Anyone who obtains it can spend future deposits at that address.
 
 Export checks account code at the selected scan RPC. The provider sees the payment address. Recovery from the saved file is offline and needs neither that provider nor a GhostPay account. The reference-tool instructions below let you verify the address and public key before deliberately revealing the spending key.

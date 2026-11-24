@@ -2321,7 +2321,7 @@
     "stealthExport.details.public.done": "Public record generated; download initiated. This file contains no private keys.",
     "stealthExport.details.rpcPrivacy": "Secret exports check this payment address for contract code through the RPC used by this scan. That provider can associate the address, the request time and your connecting IP. No private key is sent. Export only if you accept this disclosure.",
     "stealthExport.details.encrypted.heading": "Encrypted keypair",
-    "stealthExport.details.encrypted.hint": "The one-time private key of this payment, encrypted with a new passphrase (ghostpay-stealth-keypair-v1). It can be opened in any browser with GhostPay or with the reference recovery script.",
+    "stealthExport.details.encrypted.hint": "The one-time private key is encrypted with your new passphrase. The network, address, public key and announcement details remain readable in the file. You can recover the key offline with the reference script.",
     "stealthExport.details.encrypted.download": "Download encrypted keypair",
     "stealthExport.details.encrypted.done": "Encrypted keypair generated; download initiated. Keep and verify the saved file.",
     "stealthExport.details.raw.heading": "Raw private key",

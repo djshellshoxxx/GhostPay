@@ -82,7 +82,7 @@ export function StealthExportVerification(props: {
       <p role="status" aria-live="polite" data-testid="stealth-export-backup-state">
         {visibleVerified ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t(props.downloadStarted ? 'stealthExport.verify.downloadStarted' : 'stealthExport.verify.generated')}
       </p>
-      {!props.downloadStarted && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
+      {!visibleVerified && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
       <p className="hint">{t('stealthExport.verify.scope')}</p>
       <div className="check">
         <input id={retainedId} type="checkbox" checked={visibleRetained} onChange={(event) => { cancel(); setRetained(event.target.checked); }} />
@@ -105,7 +105,6 @@ export function StealthExportVerification(props: {
       </form>
       {busy && <p role="status">{t('stealthExport.open.working')}</p>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
-
     </section>
   );
 }

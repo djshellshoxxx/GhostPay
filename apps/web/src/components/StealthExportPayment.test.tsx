@@ -109,6 +109,13 @@ describe('Payment details (spec 18 flow 1)', () => {
     }
     expect(screen.getByText('Encrypted keypair generated; download initiated. Keep and verify the saved file.')).toBeTruthy();
     expect(passwordValues().every((v) => v === '')).toBe(true);
+
+    // Browsers can interrupt a download after accepting the click. Retry the same ciphertext.
+    await user.click(screen.getByRole('button', { name: 'Retry this download' }));
+    expect(downloads.files).toHaveLength(2);
+    expect((await downloads.files[0]!.blob.text()) === (await downloads.files[1]!.blob.text())).toBe(true);
+    expect(exportModule.exportEncryptedPayment).toHaveBeenCalledTimes(1);
+    expect(rpc.calls).toHaveLength(1);
   });
 
   it('refuses a mismatched new passphrase and a weak one before any work', async () => {
