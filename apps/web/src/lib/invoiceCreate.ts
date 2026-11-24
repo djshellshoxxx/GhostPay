@@ -1,6 +1,8 @@
 import { findChain, findToken, tokensForChain } from '@ghostpay/chain-adapters';
 import {
   FRAGMENT_PREFIX,
+  MAX_LINE_ITEMS,
+  SchemaError,
   createInvoice,
   encodeFragment,
   signInvoice,
@@ -38,6 +40,8 @@ export interface InvoiceForm {
   readonly quoteTtlMinutes: number;
   readonly maxSlippageBps: number;
   readonly memo: string;
+  /** Omit descriptive fields from the signed payload after calculating totals. */
+  readonly minimalMetadata?: boolean;
   readonly encrypt: boolean;
   /** Protect the whole invoice with a secret shared out of band. */
   readonly passphrase?: string;
@@ -110,11 +114,17 @@ export async function buildInvoiceLink(
   if (chain === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.unknownChain' });
   if (!/^[A-Z]{3}$/.test(form.currency)) throw new UserFacingError({ key: 'error.invoiceCreate.currencyMustBeAThreeLetterISOCodeSuchAs' });
   const fd = fiatDecimals(form.currency);
-  const items: LineItem[] = form.lineItems.map((li, i) => {
+  const minimal = form.minimalMetadata === true;
+  if (form.lineItems.length > MAX_LINE_ITEMS) throw new SchemaError('lineItems');
+  // A fixed-token invoice can be issued without a fiat breakdown. Only the untouched default row is optional.
+  const first = form.lineItems[0];
+  const emptyRow = minimal && form.amountMode === 'fixed_token' && form.lineItems.length === 1
+    && first?.description === '' && first.quantity === '1' && first.unitPrice === '';
+  const items: LineItem[] = (emptyRow ? [] : form.lineItems).map((li, i) => {
     const unit = parseUnits(li.unitPrice, fd);
     if (unit === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.linePrice', values: { line: String(i + 1), digits: String(fd) } });
     if (!/^[1-9][0-9]{0,8}$/.test(li.quantity)) throw new UserFacingError({ key: 'error.invoiceCreate.lineQuantity', values: { line: String(i + 1) } });
-    return { description: li.description.normalize('NFC'), quantity: li.quantity, unitMinorUnits: unit.toString() };
+    return { description: minimal ? '' : li.description.normalize('NFC'), quantity: li.quantity, unitMinorUnits: unit.toString() };
   });
   const rateBps = percentToBps(form.taxRatePercent);
   const totals = computeTotals(items, rateBps);
@@ -134,7 +144,7 @@ export async function buildInvoiceLink(
   if (!Number.isInteger(form.quoteTtlMinutes) || form.quoteTtlMinutes < 1 || form.quoteTtlMinutes > 1440) throw new UserFacingError({ key: 'error.invoiceCreate.quoteValidityMustBeBetween1And1440Minutes' });
   if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError({ key: 'error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints' });
   // The schema accepts only NFC text. Normalize here, as for line descriptions, so pasted decomposed text is not refused.
-  const memo = form.memo.normalize('NFC').trim();
+  const memo = minimal ? '' : form.memo.normalize('NFC').trim();
   const invoice = createInvoice(
     {
       chainId: form.chainId,
@@ -149,7 +159,7 @@ export async function buildInvoiceLink(
         maxSlippageBps: form.maxSlippageBps,
       },
       expiresAt: nowSeconds + expirySeconds,
-      lineItems: items,
+      lineItems: minimal ? [] : items,
       tax: { rateBps, minorUnits: totals.tax.toString() },
       feePolicy: form.feePolicy,
       ...(memo === '' ? {} : { memo }),

@@ -1,3 +1,4 @@
+import { InvoiceMetadataChoice, DownloadInvoiceLink } from '../components/InvoiceSharing';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
@@ -61,6 +62,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [expiryHours, setExpiryHours] = useState(24);
   const [quoteMinutes, setQuoteMinutes] = useState(15);
   const [slippage, setSlippage] = useState(50);
+  const [minimalMetadata, setMinimalMetadata] = useState(false);
   const [memo, setMemo] = useState('');
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
@@ -171,6 +173,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       quoteTtlMinutes: quoteMinutes,
       maxSlippageBps: slippage,
       memo,
+      minimalMetadata,
       encrypt,
       ...(protectWithPassphrase ? { passphrase } : {}),
       ...(bufferPolicy === undefined ? {} : { bufferPolicy }),
@@ -282,9 +285,17 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
 
         <fieldset>
           <legend>{t('create.items.legend')}</legend>
+          <InvoiceMetadataChoice minimal={minimalMetadata} onChange={(minimal) => {
+            submissionRun.current++;
+            registrationRun.current++;
+            setCreated(undefined);
+            setRegistration(undefined);
+            setError(undefined);
+            setMinimalMetadata(minimal);
+          }} />
           {items.map((it, i) => (
             <div className="row" key={i}>
-              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
+              {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>}
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
@@ -326,7 +337,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>}
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
             <label htmlFor="enc">{t('create.encrypt')}</label>
@@ -378,6 +389,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          <DownloadInvoiceLink link={visibleCreated.link} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}

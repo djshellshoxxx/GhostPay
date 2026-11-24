@@ -40,6 +40,12 @@ Status values: **done** (code and tests exist and pass), **done (this branch)** 
 | Publishing | Settings > Pages source, `github-pages` environment | | owner |
 | Testnet manifest, release keys, testnet deployment | `apps/web/deployments/`, `vars.GHOSTPAY_RELEASE_PUBKEYS` | | owner |
 
+## v1.1 Beta invoice metadata minimization
+
+Issue #287 requires itemized and privacy-minimal invoices to work with existing Pages readers. The minimal form signs the usual v1/v2 payment fields with an empty `lineItems` array and no `memo`. Link, QR, text download and bill use the issued invoice. Verification uses the existing canonical serialization, envelope, signature and signer-pinning checks.
+
+Qualification covers both invoice issuers, cleartext and both encrypted envelopes, valid and modified files, changing the choice during signing, and the full and lean Pages browser profiles. The focused regression suites are `invoiceCreate.minimal.test.ts`, `MerchantTemplateIssuer.test.tsx`, `CreateInvoice.ordering.test.tsx` and `invoice-minimization.spec.ts`. Integration and independent review are pending.
+
 ## Excluded from this release (code kept, not built into the Pages site)
 
 Relayer service and gas sponsorship (`apps/relayer`; the web client keeps an optional user-configured relayer field), ERC-4337, policy accounts and scheme 2 (AUD24-01 stays open, ABI unchanged), Bitcoin Silent Payments, Solana, TRON, other networks, merchant billing and server-side jobs, federation and analytics, desktop and mobile apps.
