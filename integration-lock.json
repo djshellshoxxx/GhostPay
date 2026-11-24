@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-keen-volta-8ctx9x",
   "token": "dad0acf1-0ef8-4375-a4b0-a1f4151763a0",
   "generation": 20,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-24T14:34:12.000Z",
   "heartbeat_at": "2026-11-24T14:34:12.000Z",
   "expires_at": "2026-11-24T15:04:12.000Z",
-  "transport": "git-push-nonforce"
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-24T14:34:45.000Z"
 }
