@@ -809,3 +809,7 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned changes on this branch: `apps/web/package.json`, `apps/web/src/validateDeploymentsScript.test.ts`, and the B03 handoff in `docs/handoffs/PAGES_MANIFEST_COMMAND_20261123.md`.
 - Recover the already-authored narrow donor `9669766c21f57c28f201586a116517af341706e0`. Broad PR #212, head `4894d0d8d94333dffa8ae3937a4d8314f27c686f`, has an equivalent implementation. Preserve its source and ownership. The C1 candidate #504 at `cdf1510116d84855ef6e579f80e0e05a0fb1a5f1` does not contain the command.
 - Acceptance: the documented workspace command runs the existing build-time validator. Synthetic fixtures cover valid, unsigned, keyless and wrongly signed manifests. Verify the command and focused test, then affected web typecheck, lint, Pages artifact build and repository checks. Real deployment evidence and release signing remain owner dependencies.
+
+### B03 workspace map repair
+
+Codex owns the generated `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md` update on local branch `codex/pr-531-workspace-map-repair`, based on PR #531 at `855c5ce0778d2f59e1fe8016d64e3b39ab3c4850`. Acceptance requires the repository map check to pass and the workspace validator to accept a test-signed manifest and reject an unsigned one.

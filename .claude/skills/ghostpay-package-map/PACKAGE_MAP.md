@@ -73,7 +73,7 @@
 | `ux-schedule` | GhostPay usability: schedule (pure logic, no UI, no network). | - | - | - |
 | `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli | - |
 | `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, relayer-guard | - | start, ops, smoke:container |
-| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, test:e2e, e2e:devnet |
+| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, validate:deployments, test:e2e, e2e:devnet |
 
 ## Foundry projects (no package.json; run `forge` inside the directory)
 
