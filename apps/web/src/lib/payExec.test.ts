@@ -59,7 +59,7 @@ function chainSeeing(wallet: MockWallet, extra: (m: string, p: readonly unknown[
       const s = wallet.sent;
       return s === undefined ? null : { hash: params[0], from: s['from'], to: s['to'], input: s['data'], value: s['value'], chainId: '0x14a34' };
     }
-    if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+    if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     throw new Error(`unexpected ${method}`);
   });
 }
@@ -126,6 +126,84 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     expect(receipt).toMatchObject({ kind: 'ghostpay-local-receipt', status: 'included', chainId: 84532, gross: '500000000000000000', createdAt: '2026-01-01T00:00:00.000Z' });
     expect(JSON.stringify(receipt)).not.toMatch(/secret|private/i);
   });
+
+  it('rejects another transaction receipt after broadcast while preserving the submitted hash and preventing resend', async () => {
+    const journal = stubAttemptJournal();
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, (m) => (m === 'eth_getTransactionReceipt'
+      ? { transactionHash: `0x${'8'.repeat(64)}`, status: '0x1', blockNumber: '0x64', to: FAKE_ROUTER }
+      : undefined));
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const hash = `0x${'9'.repeat(64)}`;
+    const p = sendPayment(session, ctx, built, rt, noStatus);
+    await expect(p).rejects.toThrow(PostBroadcastError);
+    await expect(p).rejects.toMatchObject({ hash, outcome: { phase: 'verification-incomplete', hash }, cause: { field: 'hash' } });
+    expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'payment', status: 'submitted', hash }]);
+    expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionByHash')).toHaveLength(1);
+    expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionReceipt')).toHaveLength(1);
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it.each(['0x2', '0xf', '0xffffffffffffffff'])(
+    'keeps an unsupported receipt status %s unconfirmed and prevents another wallet send', async (status) => {
+      const journal = stubAttemptJournal();
+      const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+      const rpc = chainSeeing(wallet, (method, params) => (method === 'eth_getTransactionReceipt'
+        ? { transactionHash: params[0], status, blockNumber: '0x64', to: FAKE_ROUTER }
+        : undefined));
+      const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+      const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+      const hash = `0x${'9'.repeat(64)}`;
+      const payment = sendPayment(session, ctx, built, rt, noStatus);
+      await expect(payment).rejects.toThrow(PostBroadcastError);
+      await expect(payment).rejects.toMatchObject({
+        hash,
+        outcome: { phase: 'verification-incomplete', hash },
+        cause: { translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' } },
+      });
+      expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'payment', status: 'submitted', hash }]);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionByHash')).toHaveLength(1);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionReceipt')).toHaveLength(1);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+      await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    },
+  );
+
+  it.each(['hash', 'input', 'fallback data'] as const)(
+    'keeps JSON-array transaction %s unconfirmed after broadcast and prevents another send', async (field) => {
+      const journal = stubAttemptJournal();
+      const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+      const rpc = chainSeeing(wallet, (method, params) => {
+        if (method !== 'eth_getTransactionByHash') return undefined;
+        const sent = wallet.sent;
+        if (sent === undefined) return null;
+        const transaction = { hash: params[0], from: sent['from'], to: sent['to'], input: sent['data'], value: sent['value'], chainId: '0x14a34' };
+        const malformed = field === 'hash' ? { hash: [params[0]] }
+          : field === 'input' ? { input: [sent['data']] } : { input: undefined, data: [sent['data']] };
+        return { ...transaction, ...malformed };
+      });
+      const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+      const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+      const hash = `0x${'9'.repeat(64)}`;
+      const payment = sendPayment(session, ctx, built, rt, noStatus);
+      await expect(payment).rejects.toThrow(PostBroadcastError);
+      await expect(payment).rejects.toMatchObject({
+        hash,
+        outcome: { phase: 'verification-incomplete', hash },
+        cause: { translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' } },
+      });
+      expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'payment', status: 'submitted', hash }]);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionByHash')).toHaveLength(1);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionReceipt')).toHaveLength(0);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+      await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    },
+  );
 
   it('refuses when the invoice authority changes during the final wallet recheck', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
@@ -230,9 +308,23 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/rejected the request/);
   });
 
+  it.each(['0x0', '0x1'])('keeps a receipt with status %s unconfirmed when the transaction cannot be read back', async (status) => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, (method, params) => {
+      if (method === 'eth_getTransactionByHash') return null;
+      if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status, blockNumber: '0x12', to: FAKE_ROUTER };
+      return undefined;
+    });
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const result = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(result.verification).toBe('unverified');
+    expect(buildReceipt(ctx, built, result, new Date()).status).toBe('unconfirmed');
+  });
+
   it('records a reverted receipt', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
-    const rpc = chainSeeing(wallet, (m) => (m === 'eth_getTransactionReceipt' ? { status: '0x0', blockNumber: '0x1', to: FAKE_ROUTER } : undefined));
+    const rpc = chainSeeing(wallet, (m, params) => (m === 'eth_getTransactionReceipt' ? { transactionHash: params[0], status: '0x0', blockNumber: '0x1', to: FAKE_ROUTER } : undefined));
     const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
     const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
     const res = await sendPayment(session, ctx, built, rt, noStatus);
@@ -711,11 +803,11 @@ describe('submitTx compares a transaction that only became visible after it was 
   it('an approval whose transaction appears only after mining is compared too', async () => {
     const { ctx, session, wallet } = await setup({}, new MockWallet({ mutateTx: (tx) => ({ ...tx, to: '0x9999999999999999999999999999999999999999' }) }));
     let lookupsSoFar = 0;
-    const rpc = chainSeeing(wallet, (m) => {
+    const rpc = chainSeeing(wallet, (m, params) => {
       if (m === 'eth_call') return `0x${'0'.repeat(64)}`;
       if (m === 'eth_getTransactionByHash' && ++lookupsSoFar <= 6) return null;
       // A receipt without `to`, as some nodes return it, so only the transaction comparison can catch the redirect.
-      if (m === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: null };
+      if (m === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: null };
       return undefined;
     });
     const rt = { rpc, nowSeconds: () => NOW, sleep };

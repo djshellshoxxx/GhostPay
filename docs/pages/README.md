@@ -219,3 +219,16 @@ Record them in a dated file under `docs/handoffs/`. Local anvil results do not c
 - `connect-src 'self' https: wss:` is broad on purpose, because users choose their own RPCs.
 - GitHub (and anyone who controls the repository or its Actions) controls the code you run. Compare served files with `SHA256SUMS` from the workflow run.
 - ADR-0015 (hosting gating) and [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md) record which hosting gates are met and which still need the owner.
+
+### Working through a connection loss
+
+| Operation | What happens in the Pages beta |
+| --- | --- |
+| Create a fixed-token invoice | An already loaded tab can sign the invoice and generate its link and QR with the seller keys loaded and the normal backup gate satisfied. |
+| Read an invoice | An already loaded tab can open the original link or pasted fragment and check its signature locally. A valid signature attests to the invoice contents. Payment status still requires chain evidence. |
+| Keep unfinished edits | Select **Keep an encrypted draft in this tab** and wait for **Latest edits saved in this tab**. After reloading the app, load the same seller keys, open **Create invoice**, and select **Resume encrypted draft**. Enter any invoice passphrase again. A successful creation clears the saved copy if the form has not changed since submission. |
+| Open or reload Pages offline | The beta has no installed offline copy. Loading the application again may need a connection to the static host. A failed navigation leaves a committed encrypted draft in the same tab’s session storage, subject to browser storage policy. |
+| Verify, scan or settle | Live chain operations need the configured RPC. If verification fails, review the error and retry the check once connectivity returns. A wallet hash or a reconnection alone does not establish inclusion or finality. |
+| Interrupted wallet handoff | Review the wallet attempt journal in **Pay** in the same tab after reloading. A request whose result was lost remains unknown. A returned hash is retained for checking. Reconnection never resubmits a payment. |
+
+Draft storage is opt-in, tab-scoped and encrypted with a key derived from the loaded seller’s viewing key. It stores editable invoice fields and protection choices. Seller keys, invoice passphrases and generated links stay out of the draft. Without an opted-in draft, reloading discards the form. A draft is not a backup of the seller keys. Closing the tab or clearing site data can remove it.

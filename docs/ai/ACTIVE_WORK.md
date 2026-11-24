@@ -881,6 +881,39 @@ Finding: existing tie-break allows a preferred or faster chain up to 1% more cos
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
 
+## Offline and interrupted Pages sessions
+
+Worker: Codex on `codex/offline-interrupted-invoice`, from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Create form draft fields, a tab-local encrypted draft component, the offline notice, payment review retry and unverified receipt status for local exports, related web catalog entries, and focused browser tests. The Create link clipboard, wallet disclosure, scanner and vault/idle-lock work remain with their existing owners. Verify local creation and review, consent-bound draft recovery, interrupted wallet requests and reconnection without replay. Preserve release gates.
+
+## Interrupted payer verification on Pages
+
+Worker: Codex on `fix/pages-offline-session` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own payment result presentation and exported receipt classification in Pay and payExec, their regression fixtures, and browser coverage for interrupted receipt verification. Coordinate with `codex/offline-interrupted-invoice`, which owns draft recovery, the offline notice and review retry. Reuse existing receipt-correlation work from #298/#302 where applicable. Verify unknown outcomes through disconnect, reconnect and same-tab reload, including zero wallet replay. Keep existing release gates.
+
+
+## Resumed offline/interrupted payment completion — 2026-11-24
+
+- Worker: `/root/local_handoffs`, delegated by `/root`; isolated branch `finish/offline-completion-20261124`.
+- Starting child #590: `f01c69d277c39c76fd3077103c43cc38f7f9c736`. Current parent #591: `49862e2d3b4832f1f52714f5bc1bc551af2fe54f`. Main observed by the coordinator: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+- Scope: reconcile the current parent without losing child receipt/transaction correlation; finish deterministic source and browser qualification of offline and interrupted sessions. Preserve both donor histories and their source ownership. This isolated completion lane is explicitly assigned by the coordinator; no donor branch is modified.
+- Owned paths: conflict resolution in `apps/web/src/lib/payExec.ts` and this additive registry; only confirmed in-scope regression fixes in `apps/web/src/lib/payExec*.test.ts`, `wallet*.test.ts`, `apps/web/src/views/Pay.test.tsx`, and `apps/web/e2e/flows.spec.ts`/`flowMocks.ts`; new source-pinned `docs/handoffs/OFFLINE_COMPLETION_RESUMED_20261124.md`. Parent draft, connectivity and catalog changes are preserved.
+- Acceptance: wrong, mismatched or unavailable receipts cannot become confirmed; a returned transaction hash survives a later wait failure; reconnect and reload never replay a wallet submission; opted-in same-tab encrypted draft recovery retains text only for the same seller keys; invoice passphrases remain excluded and must be entered again. Run targeted tests, typed lint/build and applicable synthetic browser scenarios, with exact commands and unrun checks recorded.
+- Boundaries: no real wallets/funds, network payments, dependencies, deployment/release gates, external messages, remote pushes or merges. The parent owns publication, live-head reconciliation, independent review and hosted integration gates.
+
+
+### Offline completion generated-map follow-up
+
+The current #591 parent adds the existing `@ghostpay/ux-core` workspace to web dependencies but did not regenerate `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`. The existing CI command `node --test scripts/agent/*.test.mjs` fails on that stale generated map at combined source `49981b6df`. This lane additionally owns only regeneration of that documentation through `node scripts/agent/package-map.mjs`, with unchanged manifests and unchanged CI tests. Acceptance: the exact existing map tests pass and the generated delta reflects only the inherited web/ux-core dependency relation.
+
+
+### Offline completion browser-selector follow-up
+
+The first full-profile native Chromium run passed eight scenarios and failed the encrypted-draft case before input: `getByLabel('Memo')` ambiguously selects both the memo textbox and the optional memo-encryption checkbox. This lane additionally owns the focused locator correction in `apps/web/e2e/offline-session.spec.ts`. Use the memo textbox role and its existing complete accessible name; preserve every ciphertext, wrong-seller, reload, passphrase-exclusion and explicit-recovery assertion. Re-run the original full and lean browser scenarios without changing production UI or test gates.
+
+
+### Offline completion current-main reconciliation — 2026-11-24
+
+Worker: `/root/local_handoffs`, delegated by `/root`, on `finish/offline-completion-20261124`. Qualified offline application/test source: `e7d21d040404171cad18af382a05352241c8aa7f`, documented at `0b89ef649dae652da9aefce1eff6de1e96911921`. Fetched main: `706188000c38b3dde5a3a362370a530870aa7587` (advanced beyond requested `2d83de0b7f5bba0fafc0c25d19d1fcb382edf719`). Own only reconciliation of this registry and an additive section in the existing offline completion handoff. Preserve both parents' nonblank ownership-line multiplicities; preserve all offline-owned application/test blobs exactly and import main's already merged package changes verbatim. No new production edits or remote mutation. Prior offline tests remain source-pinned; no new combined integration pass is asserted without execution.
+
 ## Package fix consolidation, 2026-11-24 UTC
 
 Worker `codex-fe9aff486805` owns integration on `integration/ghostpay-package-fixes-20261124`, based on `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Preserve the six original PR heads and their records. Integration covers language negotiation (#506), payment button labels (#513), the NFC message size limit (#518), billing CSV end-of-file handling (#519), locale separators (#521), and strict CSV row width (#524). Verify each original source and test blob, run the five affected workspace suites and their build, lint and type checks, then submit the combined tree to the existing CI and review gates.

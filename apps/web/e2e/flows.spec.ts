@@ -18,7 +18,7 @@ test.afterEach(async ({ page }, info) => {
 });
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
-import { RPC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type SentTx } from './flowMocks';
+import { CORS, RPC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type SentTx } from './flowMocks';
 
 interface WalletControls {
   holdSend: boolean;
@@ -137,6 +137,38 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(BigInt(state.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
   });
 
+  for (const hashReturned of [false, true]) {
+    test(`interrupts a wallet request ${hashReturned ? 'after' : 'before'} its hash returns without confirming or resending`, async ({ page, context }) => {
+      const state: { sent?: SentTx; sendCalls?: number } = {};
+      await mockNetwork(context, state);
+      await injectWallet(page, state);
+      await configureRpc(page);
+      await page.goto('/');
+      await generateKeys(page);
+      const link = await createInvoice(page);
+      await openFresh(page, link);
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+      await page.getByRole('button', { name: 'Prepare payment' }).click();
+      await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true; });
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => state.sendCalls).toBe(1);
+      await context.setOffline(true);
+      await context.route(`${RPC}/**`, route => route.abort('internetdisconnected'));
+      if (hashReturned) {
+        await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.releaseSend(); });
+        await expect(page.getByRole('heading', { name: 'Payment sent, verifying' })).toBeVisible();
+      }
+      const journal = page.getByRole('region', { name: 'Wallet attempt journal' });
+      await expect(journal).toContainText(hashReturned ? `0x${'9'.repeat(64)}` : 'Outcome unknown');
+      await context.setOffline(false);
+      await openFresh(page, link);
+      await expect(journal).toContainText(hashReturned ? `0x${'9'.repeat(64)}` : 'Outcome unknown');
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+      expect(state.sendCalls).toBe(1);
+    });
+  }
+
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
@@ -192,6 +224,56 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await clear.click();
     await expect.poll(journal).toHaveLength(0);
     expect(state.sendCalls).toBe(1); // Clearing itself never starts another wallet request.
+  });
+
+  test('a stale receipt delivered on reconnect cannot settle the payment or change its journal hash', async ({ page, context }) => {
+    const state: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const link = await createInvoice(page);
+    await openFresh(page, link);
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+    await page.getByRole('button', { name: 'Prepare payment' }).click();
+
+    // Pause after the transaction matches the wallet preview, at the separate receipt read.
+    const receiptRead = page.waitForRequest(req => req.url().startsWith(RPC) &&
+      req.method() === 'POST' && (req.postDataJSON() as { method?: string } | null)?.method === 'eth_getTransactionReceipt');
+    let releaseReceipt!: () => void;
+    const released = new Promise<void>(resolve => { releaseReceipt = resolve; });
+    const wrongHash = `0x${'8'.repeat(64)}`;
+    await context.route(`${RPC}/**`, async route => {
+      const req = route.request();
+      if (req.method() !== 'POST') return route.fallback();
+      const body = req.postDataJSON() as { method: string; id: number };
+      if (body.method !== 'eth_getTransactionReceipt') return route.fallback();
+      await released;
+      await route.fulfill({ json: { jsonrpc: '2.0', id: body.id, result: {
+        transactionHash: wrongHash, status: '0x1', blockNumber: '0x1f5', to: FAKE_ROUTER,
+      } }, headers: CORS });
+    });
+    const journal = page.getByRole('region', { name: 'Wallet attempt journal' });
+    const submittedHash = `0x${'9'.repeat(64)}`;
+    try {
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await receiptRead;
+      await context.setOffline(true);
+      await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(false);
+      await expect(journal).toContainText(submittedHash);
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+      await context.setOffline(false);
+    } finally { releaseReceipt(); }
+    await expect(page.getByRole('alert')).toContainText(/differs from the preview.*hash/i);
+    await expect(page.getByRole('button', { name: 'Download local receipt' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+    await page.reload();
+    await page.getByRole('navigation').getByRole('button', { name: 'Pay', exact: true }).click();
+    await expect(journal).toContainText(submittedHash);
+    await expect(journal).not.toContainText(wrongHash);
+    expect(state.sendCalls).toBe(1);
   });
 
   test('refuses a changed wallet account during the final authority recheck before send', async ({ page, context }) => {

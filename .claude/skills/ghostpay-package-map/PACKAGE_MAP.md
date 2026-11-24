@@ -56,7 +56,7 @@
 | `tron-adapter` | Proof of concept: TRON (TRX + TRC-20) stealth payments and ChainAdapter for GhostPay, reusing ERC-5564 scheme-1 secp256k1 derivation (ADR-0019). Not audited. Nile testnet only. | core-crypto | apps/web | vectors |
 | `tx-review` | Pre-sign transaction and typed-data decoder with allowlist review (closed intents, reason codes). | chain-adapters | apps/web | - |
 | `ux-connect` | GhostPay usability: connect (pure logic, no UI, no network). | - | - | - |
-| `ux-core` | GhostPay usability: core (pure logic, no UI, no network). | - | - | - |
+| `ux-core` | GhostPay usability: core (pure logic, no UI, no network). | - | apps/web | - |
 | `ux-export` | GhostPay usability: export (pure logic, no UI, no network). | - | - | - |
 | `ux-fees` | GhostPay usability: fees (pure logic, no UI, no network). | - | - | - |
 | `ux-fiat` | GhostPay usability: fiat (pure logic, no UI, no network). | - | - | - |
@@ -73,7 +73,7 @@
 | `ux-schedule` | GhostPay usability: schedule (pure logic, no UI, no network). | - | - | - |
 | `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli | - |
 | `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, relayer-guard | - | start, ops, smoke:container |
-| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, test:e2e, e2e:devnet |
+| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-core, ux-vault | - | dev, postbuild, preview, test:e2e, e2e:devnet |
 
 ## Foundry projects (no package.json; run `forge` inside the directory)
 
