@@ -1,3 +1,12 @@
+# GP-BUG — Merchant decimal uint256 round-trip (2026-11-24 UTC)
+
+Worker: sequential ChatGPT bug-only coordinator; no independent verifier available. Branch: `automation/20261124/bug/merchant-decimal-uint256-roundtrip`, exact base `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+Owned paths: `packages/merchant-billing/src/money.ts`, new `packages/merchant-billing/src/money.uint256-roundtrip.test.ts`, this additive claim, new `docs/handoffs/MERCHANT_DECIMAL_UINT256_20261124.md`.
+Evidence: hash-matched full money.ts and errors.ts compiled with TypeScript 5.8.3 and run on Node 22.16.0: 21/26 checks passed; five valid round trips fail (42-digit integer and uint256 maximum at decimals 0/6/18/36). Root cause: decimal integer regex capped at 41 digits, while parseAmount enforces the actual uint256 bound. Acceptance: regression first; allow up to 78 integer digits, keep overflow, precision and malformed input rejection; no contract, network, funds, dependencies, release or deployment changes.
+Ownership: open-PR inventory inspected for money paths, including new #555; #414 disappeared from the live list and returned 404. No collision observed. Recheck before merge. PR #390 head b655bc273a6704c9c140287b8adcdf4085b91882: 36 successful, three skipped checks; Snyk success, no reviews, dirty merge state; owner untouched. Integration lease generation 13 released at 48330313f2cea71f28b8198b73929a0061bbe5ff; not acquired. Draft only pending exact-head CI and independent review.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
