@@ -1956,3 +1956,17 @@ No runtime, dependency, workflow, policy, privacy-default, Settings or crypto ch
 branch update, merge, deployment, release or real-funds operation. The lock is released generation 5;
 this isolated work does not claim integration ownership. Conditional pending-copy scheduling
 concerns remain separately identified; no real-browser exploit is inferred from a mocked interleaving.
+
+## Issue #286 — Create Invoice Copy link
+
+Worker: Codex, branch `feat/create-invoice-link-clipboard-286`, based on PR #297 at
+`04910f65dc0268e41519c4b1a44e83264272f0bf`. Compared main
+`8ddb344973e80b8e1eda6821e970ee6a2b808b29` and PR #293
+`6c648770f5647ca7993cc108ef9e5ede9b46b4c9`. The two draft PRs own the helper,
+shared button and corrected unit tests. No open PR changes the invoice link's copy handler.
+
+Owned scope: the CopyButton invocation in apps/web/src/views/CreateInvoice.tsx, the
+corresponding safety preference in views/Settings.tsx and lib/settings{,.test}.ts,
+the preference's web locale strings and apps/web/e2e/invoice-link-clipboard.spec.ts.
+Acceptance: fresh and legacy settings default off. Through the real button and a fake
+clock, an unchanged link clears at the selected delay, and a later clipboard value survives.
