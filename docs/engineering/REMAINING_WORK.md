@@ -5,9 +5,8 @@ Pages beta release. "Future" = not a current release requirement.
 
 ## Release requirements
 
-1. **Merge PR #500 (M1)** after exact-head hosted CI is green. Lock protocol: acquire, merge, release (see
-   FEATURE_INTEGRATION_LOG).
-2. **M3 P1-LATE (this session):** the seller invoice card must show late/ambiguous candidates, pending-not-final payments
+1. ~~Merge PR #500 (M1)~~ Done: `c8e131c1` (2026-11-24).
+2. **P1-LATE (stack #533→#546→#575, another agent; this session reviews and qualifies it):** the seller invoice card must show late/ambiguous candidates, pending-not-final payments
    and reorg-invalidated links instead of "No linked observation"; deliberate "accept late payment" with re-check under
    CAS. Plan: ESSENTIAL_FEATURE_MATRIX §P1-LATE.
 3. **P0-KEYS (peer session, `claude/nifty-bohr-5ra2ap`):** independent payment-key export/restore extracted from #372;

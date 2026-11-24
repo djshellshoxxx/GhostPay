@@ -31,3 +31,18 @@ Append-only. Each entry: what merged, the exact source, the evidence, and the lo
 - Follow-ups (low, see [SECURITY_FINDINGS.md](SECURITY_FINDINGS.md)): RCPT-L1 vacuous proxy test case
   (`verify.accessor-boundary.test.ts:44-50`), RCPT-L2 accessors read twice in `verify.ts:139-177`.
 - Post-merge CI on `8ddb3449`: pending at time of writing (see [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md)).
+
+## 2026-11-24 — P0-JRNL durable wallet-attempt journal → `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`
+
+- PR #500, exact head `9a67daf281ae04511bd843cd62623610c15aad16`. That head is the branch with main `03695a7b` merged in; the only
+  conflict was `docs/ai/ACTIVE_WORK.md`, and both sides' entries are kept. Merged with a merge commit, so the original commits are kept.
+- Contents: #427 `e9404bad` → #440 `2b73dec3` → #441 `3c21b021` → #443 `4e1fa095` (fast-forwarded), the M1 commits of this
+  session, commits by another agent on the owner's account (`b9141125`, `b29ef7bc`, `3776d9bc`, `25005c51`, `a23a9f99`), and #545
+  (`d1e167f1`, REV-L2: Pay checks the committed IndexedDB journal before permit, approval and payment prompts).
+- Evidence on the exact head:
+  - Hosted: 42 of 42 checks success or skipped (CI run 45411913721, Pages 45411913724, Beta acceptance 45411913754, Hosting kit
+    45411913691, CLI 45411913714, CodeQL 45411899452).
+  - Local (`npm ci`, `build:libs`, `forge build --offline`): typecheck 0, lint 0; `REQUIRE_ANVIL=1 npm test` 3289 passed /
+    1 skipped / 0 failed, coverage 93 / 89.34 / 94.47 / 96.78, nocov 3/3; anvil devnet browser journey 3/3.
+- Lock: generation 19 (`chatgpt-f80482f352bc-all-branch-review`) had been released at 14:09Z. Generation 20 was acquired by
+  `claude-keen-volta-8ctx9x` at `332fb6f6` and released at `4fe06565` after the merge. Every lock push was a non-force fast-forward.

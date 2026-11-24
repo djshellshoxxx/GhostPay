@@ -24,11 +24,11 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 
 | Rank | ID | Feature | Class | Est. % | Fund-safety impact |
 |---|---|---|---|---|---|
-| 1 | P0-JRNL | Payment attempt durability, cross-tab duplicate prevention, outcome recovery | PARTIAL → in progress (M1) | 45 → see progress | Double payment of one invoice from a 2nd tab or after a crash; lost tracking after reload |
-| 2 | P0-HASH | Wallet-attempt first-hash integrity (#427→#443) | COMPLETE on branch, BLOCKED (lock) | 95 | Replacement hash could overwrite the first submitted hash |
+| 1 | P0-JRNL | Payment attempt durability, cross-tab duplicate prevention, outcome recovery | COMPLETE (merged `c8e131c1`, PR #500) | 95 (open: REV-I5/I6, QA-I1, GP-PAGES-01) | Double payment of one invoice from a 2nd tab or after a crash; lost tracking after reload |
+| 2 | P0-HASH | Wallet-attempt first-hash integrity (#427→#443) | COMPLETE (merged via #500, `c8e131c1`) | 100 | Replacement hash could overwrite the first submitted hash |
 | 3 | P0-KEYS | Independent payment-key export/restore (#240/#269/#361 → #372) | BLOCKED | 75 | Funds unrecoverable without the original browser session |
-| 4 | P0-RCPT | Receipt envelope fail-closed fixes (#449→#450→#452) | COMPLETE on branch, unreviewed | 90 | Malformed RPC envelope accepted as settlement evidence |
-| 5 | P1-LATE | Late payment (broadcast before expiry, confirmed after) shown as paid/late, not lost | PARTIAL | 40 | Seller treats a paid invoice as unpaid; payer pays twice |
+| 4 | P0-RCPT | Receipt envelope fail-closed fixes (#449→#450→#452) | COMPLETE (merged `8ddb3449`) | 100 (follow-ups RCPT-L1/L2) | Malformed RPC envelope accepted as settlement evidence |
+| 5 | P1-LATE | Late payment (broadcast before expiry, confirmed after) shown as paid/late, not lost | PARTIAL; candidate stack #533→#546→#575 (other agent) | 40 → pending review | Seller treats a paid invoice as unpaid; payer pays twice |
 | 6 | P1-REFUND | Refund authority/execution | MISSING by design (see below) | n/a | — |
 | 7 | F04 | Merchant dashboard | PARTIAL | 20 | Indirect (accounting) |
 | 8 | F05 | Receipt assurance | PARTIAL | 25 | Indirect (dispute evidence) |
