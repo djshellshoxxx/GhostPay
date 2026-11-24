@@ -40,6 +40,20 @@ Ownership reconciliation: current integration PR #307 does not change TRON adapt
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
 
 ---
+## GP-BUG-02 receipt and bill print integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-receipt-print-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Integrate #316 at `e0c583be2514b44af7f3b15619fb8160358f1470` without changing its branch. Preserve both ACTIVE_WORK logs.
+- Scope: original print hook, bill/receipt UI and styles, tests, and the integration note. Acceptance: selected bill or receipt renders alone in both Pages browser profiles, controls and sensitive output remain hidden, screen rendering remains intact. Run the original regression coverage and exact-head web, CI and Pages checks.
+- Coordination: #504 overlaps ReceiptPanel.tsx and app.css. Its archive behavior must survive eventual composition. Recovery #372 already contains #316. No new change to their source, reserved features, releases or deploys.
+
+## GP-BUG-02 second receipt browser qualification
+
+- Worker: Codex. Branch `test/receipt-print-action-532` stacks on #532 at `51c04326ff9258861621b94ce2ab06f44bba8301`. Observed main at `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: `apps/web/e2e/print-targets.spec.ts`, the verified-payment fixture in `apps/web/e2e/flowMocks.ts`, and this entry.
+- Acceptance: with two signed receipts and an unselected bill mounted, click the second receipt's Print receipt button. Its transaction must be visible in print media while the first receipt and bill are hidden in both full and lean Pages profiles.
+- Follow-up QA by Codex on #548, from `92b36b3fb7f9d26650b026fc77329112f0251f77`. Extend this qualification with repeatable print selection, cancellation and target replacement sequences, and inspect actual Chromium PDFs. Scope includes the print-target hook tests, print CSS and browser regression when an output defect is reproduced.
+
 # Receipt print isolation continuation — 2026-11-20
 
 Worker: ChatGPT lead `/root`, with independent `print_isolation_review` worker.
@@ -833,17 +847,3 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
-
-## GP-BUG-02 receipt and bill print integration — 2026-11-23
-
-- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-receipt-print-integration-20261123`.
-- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Integrate #316 at `e0c583be2514b44af7f3b15619fb8160358f1470` without changing its branch. Preserve both ACTIVE_WORK logs.
-- Scope: original print hook, bill/receipt UI and styles, tests, and the integration note. Acceptance: selected bill or receipt renders alone in both Pages browser profiles, controls and sensitive output remain hidden, screen rendering remains intact. Run the original regression coverage and exact-head web, CI and Pages checks.
-- Coordination: #504 overlaps ReceiptPanel.tsx and app.css. Its archive behavior must survive eventual composition. Recovery #372 already contains #316. No new change to their source, reserved features, releases or deploys.
-
-## GP-BUG-02 second receipt browser qualification
-
-- Worker: Codex. Branch `test/receipt-print-action-532` stacks on #532 at `51c04326ff9258861621b94ce2ab06f44bba8301`. Observed main at `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
-- Owned paths: `apps/web/e2e/print-targets.spec.ts`, the verified-payment fixture in `apps/web/e2e/flowMocks.ts`, and this entry.
-- Acceptance: with two signed receipts and an unselected bill mounted, click the second receipt's Print receipt button. Its transaction must be visible in print media while the first receipt and bill are hidden in both full and lean Pages profiles.
-- Follow-up QA by Codex on #548, from `92b36b3fb7f9d26650b026fc77329112f0251f77`. Extend this qualification with repeatable print selection, cancellation and target replacement sequences, and inspect actual Chromium PDFs. Scope includes the print-target hook tests, print CSS and browser regression when an output defect is reproduced.
