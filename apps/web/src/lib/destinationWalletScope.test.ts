@@ -1,6 +1,11 @@
-// @vitest-environment jsdom
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { watchDestinationWallet } from './destinationWalletScope';
+
+beforeEach(() => {
+  vi.stubGlobal('window', new EventTarget());
+  vi.stubGlobal('document', Object.assign(new EventTarget(), { hidden: false }));
+});
+afterEach(() => { vi.unstubAllGlobals(); });
 
 describe('wallet scope for destination review', () => {
   it.each(['request-only', 'unreliable listeners'])('compares during the connected visit for a %s wallet and expires it on blur', (kind) => {
