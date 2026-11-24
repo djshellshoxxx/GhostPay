@@ -64,7 +64,8 @@ describe('signed invoice sharing', () => {
       const pins = { pinnedSigners: [original.invoice.signer] };
       expect((await parseFragment(tampered, pins)).trust).toBe('invalid-signature');
       await expect(parseFragment(tampered, { ...pins, requirePinnedSigner: true })).rejects.toBeInstanceOf(InvalidSignatureError);
-      const { lineItems: _items, ...withoutRequiredArray } = original.invoice;
+      const withoutRequiredArray: Record<string, unknown> = { ...original.invoice };
+      delete withoutRequiredArray['lineItems'];
       await expect(parseFragment(wrap(canonicalize({ ...envelope, inv: withoutRequiredArray })))).rejects.toBeInstanceOf(SchemaError);
       await expect(parseFragment(wrap(' ' + canonical))).rejects.toBeInstanceOf(NonCanonicalError);
     });
@@ -74,7 +75,8 @@ describe('signed invoice sharing', () => {
     const terms = { ...form, amountMode: 'fiat_quote' as const, bufferPolicy: { accepted: true, minWei: '1', maxWei: '10', refund: 'none' as const } };
     const normal = await buildInvoiceLink(terms, base, NOW);
     const minimal = await buildInvoiceLink({ ...terms, minimalMetadata: true }, base, NOW);
-    const { memo: _memo, ...required } = normal.invoice;
+    const required: Record<string, unknown> = { ...normal.invoice };
+    delete required['memo'];
     expect(minimal.invoice.nonce).not.toBe(normal.invoice.nonce);
     expect(minimal.invoice).toEqual({ ...required, lineItems: [], nonce: minimal.invoice.nonce });
     expect((await parseFragment(minimal.fragment)).verification.signatureValid).toBe(true);
@@ -84,6 +86,7 @@ describe('signed invoice sharing', () => {
     const empty = { description: '', quantity: '1', unitPrice: '' };
     const build = (lineItems: typeof empty[]) => buildInvoiceLink({ ...form, minimalMetadata: true, lineItems }, base, NOW);
     expect((await build([empty])).invoice.fiat.minorUnits).toBe('0');
+    expect((await build([{ ...empty, description: 'Discarded draft name' }])).invoice.fiat.minorUnits).toBe('0');
     expect((await build([{ ...empty, unitPrice: '7.50' }])).invoice.fiat.minorUnits).toBe('788');
     await expect(build([{ ...empty, unitPrice: 'x' }])).rejects.toThrow();
     await expect(build([{ ...empty, quantity: '0', unitPrice: '7.50' }])).rejects.toThrow();

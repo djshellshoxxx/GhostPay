@@ -116,10 +116,10 @@ export async function buildInvoiceLink(
   const fd = fiatDecimals(form.currency);
   const minimal = form.minimalMetadata === true;
   if (form.lineItems.length > MAX_LINE_ITEMS) throw new SchemaError('lineItems');
-  // A fixed-token invoice can be issued without a fiat breakdown. Only the untouched default row is optional.
+  // A fixed-token invoice can be issued without a fiat breakdown. An empty price on the single default-quantity row means no fiat amount.
   const first = form.lineItems[0];
   const emptyRow = minimal && form.amountMode === 'fixed_token' && form.lineItems.length === 1
-    && first?.description === '' && first.quantity === '1' && first.unitPrice === '';
+    && first?.quantity === '1' && first.unitPrice === '';
   const items: LineItem[] = (emptyRow ? [] : form.lineItems).map((li, i) => {
     const unit = parseUnits(li.unitPrice, fd);
     if (unit === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.linePrice', values: { line: String(i + 1), digits: String(fd) } });

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
+import { qrMatrix, qrSvgPath } from '@ghostpay/qr-exchange';
 import { parseFragment } from '@ghostpay/invoice-schema';
 import { createInvoice, generateKeys, openFresh } from './helpers';
 
@@ -41,6 +42,11 @@ test('export and reopen both formats with their signed metadata choice', async (
   expect(minimal.invoice).not.toHaveProperty('memo');
   expect(minimal.invoice.amountPolicy).toEqual(normal.invoice.amountPolicy);
   expect(minimal.invoice.fiat).toEqual(normal.invoice.fiat);
+
+  const qrDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download SVG', exact: true }).click();
+  const svg = await readFile(await (await qrDownload).path(), 'utf8');
+  expect(svg).toContain(`d="${qrSvgPath(qrMatrix(minimalFile))}"`);
 
   await openFresh(page, normalFile);
   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
