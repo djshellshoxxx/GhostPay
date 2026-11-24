@@ -1,0 +1,14 @@
+# R56 — exact code recovery of a dormant canonical-JSON donor
+
+Source review at 2026-11-23 UTC, pinned to current main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+
+## Donor and represented source
+
+* Dormant historical branch `recover/ghostpay-canonical-json-descriptors-20261121-r10`: `fbcf69223a524b8e3d74fb093dfc71d8b91bdc27`. The **nontruncated** direct main comparison returns 8 ahead / 145 behind and just four changed paths: `packages/invoice-schema/src/json.ts`, `packages/invoice-schema/src/json.test.ts`, `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/JSON_CANONICAL_ARRAY_20261119.md`. No other changed app/test path appears.
+* Existing owner/implementer [PR #270](https://github.com/djshellshoxxx/GhostPay/pull/270), exact head `73545f63112910d46002718354ab5e99f8652e1f`, is open and **draft**, stacked on `codex/ghostpay-feature-consolidation-20261119`. Its `json.ts` Git blob is **exactly** `8ed01592d487c356a72d51e240e5cc63fb470a3a`; its `json.test.ts` blob is **exactly** `813286cc5317177fffcd5e7eac0a1907a45e5f9e`. Both blobs **exactly equal those two paths in the historical donor**. Not a filename-only or test-title-only match.
+* Original [PR #265](https://github.com/djshellshoxxx/GhostPay/pull/265), head `c591b54078febcf24cba01b29bc173b2fac1f9cb`, owns a narrower predecessor: `json.ts` blob `8b2481cb117334b779ec6c77a0a8dac22bce27dc`, `json.test.ts` blob `37a29eb627a76d9531bd0bbd549167481720af9d`. Its array guard uses `value.map()` after checking own keys. PR #270/donor replaces this with `Object.getOwnPropertyDescriptors` and checks every own numeric property without invoking inherited map/getters, with broader accessor/Proxy, frozen/sealed and mutation tests. Do not reimport #265's narrower implementation over #270.
+* Baseline current-main `json.ts` blob `b7a34bb5176ec72daf0026a59991863421bdb341` still uses `value.map(...).join(',')`; main test blob `dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36` lacks the dormant donor's targeted canonical array regression suite. **The improvement is unique relative to main, represented by open PR #270, not yet integrated.**
+
+## Disposition and implications
+
+Finalize only this **historical donor's structural source disposition** as `retained-in-unmerged-recovery-PR270-pending-gates` with exact donor SHA, parent PR #270 and exact parent head. All unique executable donor source/test blobs are already in PR #270; historical documentation/claims are preserved, not blindly merged. `mainIntegrated=false`, `behavioralEquivalenceNotClaimed=true`. Do not imply PR #270 is merged or release-qualified. Prior hosted CI on its original exact head was successful but is not current-main CI/browser/security approval. PR #270 is draft and stacked; dependency and independent-review gates remain. A later PR #270 HEAD change invalidates this source pin until re-reviewed. No application source was edited in R56.

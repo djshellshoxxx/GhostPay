@@ -802,3 +802,52 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# R41 GhostPay semantic donor-disposition backfill — 2026-11-22 14:00Z
+
+Worker: scheduled branch-consolidation engineering. Isolated branch: `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`; immutable base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: append-only `docs/ai/ACTIVE_WORK.md`; new `docs/consolidation/20261122-r41/*` files only. No active production/runtime/scanner source ownership and no permission to take over dedicated BUG-only, recovery, or F04/F10 work. Preserve the generation-11 coordinator integration lock and do not merge into main.
+Acceptance: re-read GitHub refs and open PRs with full pagination; source-pin and finalize newly verified ancestor, byte-identical, superseded, or audit/docs-only branch histories; preserve every unresolved and newly discovered ref; do not confuse non-code disposition with adopted functionality. Investigate any high-risk discrepancies, publish an isolated reviewable PR and durable exact-head handoff. Only hosted CI if available; local Git/Node unavailable due container DNS restriction. No deploy/release/real funds.
+
+
+---
+
+# R42 — autonomous immutable donor backfill and owner-safe QR/CI recovery (2026-11-22T15:06:47.598Z)
+
+Worker: continuation of GhostPay branch-consolidation worker from R41; branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, pre-change head `2ca570c9f8517406d549aee0ae7d74966aec0d06`, base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: additive `docs/consolidation/20261122-r42/*`, this append-only claim, and PR #471 coordination metadata. No application source claimed. Scope: preserve full 540-branch/232-open-PR identities, backfill immutable SHA ancestry and blob equivalence, inspect stranded QR guard PR #290 and blocked exact-head CI without modifying any other worker's claimed source. Acceptance: source-pinned ledger with unresolved counts, main and PR exact heads, unique-donor dependency preservation, no merges/deployments. Integration lock generation 11 belongs to another coordinator; independent review/CI required.
+
+
+---
+
+# R43 — GhostPay historical safety donor semantic backfill (2026-11-22T16:16:10.460Z)
+
+Worker: existing scheduled branch-consolidation engineer, continuing own PR #471 on branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, starting exact head `01e1b4cd69f7b073883e40b5f74dc869fea81a1e`; main baseline `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: this append-only claim, new `docs/consolidation/20261122-r43/*`, and additive PR #471 ledger/handoff metadata only. No source files, scanner #466, bug-only, recovery #372, merchant F04 or recurring F10 ownership. Do not acquire generation-11 integration lock. Acceptance: reconcile full branch/PR/ref census, classify only confirmed immutable-SHA ancestors and complete noncode diffs, inspect recovery/safety donor code semantically against main, preserve unresolved source code, report exact-head CI and review barriers; no main merge, deployment or release.
+
+---
+
+# R70 GhostPay consolidation — complete Git-tree comparison tool (2026-11-23T17:20:23.120Z)
+
+- Worker: existing hourly GhostPay consolidation worker continuing PR #471; no duplicate worker or automation.
+- Isolated target: `audit/ghostpay-r41-semantic-backfill-20261122-1400Z` / draft PR #471. Exact previous head: `1923472e0343a842efbe9edbb86e4590e88b7571`.
+- Newly owned paths: `scripts/consolidation/compare-git-trees.mjs`, `scripts/tests/compare-git-trees.test.mjs`, `docs/consolidation/20261123-r70/**`. No app/payment paths changed.
+- Purpose: recover source evidence from previously capped (300-file) GitHub commit compares using complete recursive Git-tree blobs, preserving gitlink identity and refusing truncated/malformed trees. This tool never claims semantic/patch equivalence or integration.
+- Acceptance: deterministic Node built-in tests covering 701 changed paths, identical/added/removed/gitlinks, malformed/truncated trees, and path duplication. Five local Node 22 tests passed; current exact-head hosted CI must still run and be reviewed.
+- Ownership: no overlaps detected for new script/test files; existing BUG-only, P0-A/B, C1, PR274/515 and all other owner paths remain untouched. Lock generation12 released, no lock acquired; protected main not authorized.
+
+
+---
+
+# R72 — structural source-hunk supersession proof (2026-11-23)
+
+Worker: existing GhostPay branch-consolidation automation; branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, pre-edit HEAD `d5cde7ce2f659f42a126b55142516e4425d17dfb`, protected main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned new paths: `scripts/consolidation/compare-donor-pr-patches.mjs`, `scripts/tests/compare-donor-pr-patches.test.mjs`, `docs/consolidation/20261123-r72/`. Scoped provenance proof of removed dependabot `199ab7ef` vs owner PR #492 `592b9941`; do not edit PR #492 or payment code.
+Acceptance: fail-closed exact hunk containment and GitHub file metadata checks, regression tests, owner-PR remaining unmerged represented explicitly, versioned source-pinned ledger/handoff, exact-head CI; no main merge/deploy/funds/release.
+No ownership of any BUG-only, refund, recovery, key-export, C1 or #492 files; generation-12 integration lock remains released and is not acquired.
+
+
+---
+
+# R73 — donor evidence reliability and dependency recovery (2026-11-23)
+Existing draft #471 only; R72 owned comparator/test paths and new R73 ledger. Regression-first reject context-free hunks before source containment can be reported. No edits to #493, main, or payment code. Preserve the deleted dependency donor and qualify its successor with the owner; no independent approval asserted.

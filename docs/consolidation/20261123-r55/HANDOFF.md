@@ -1,0 +1,35 @@
+# GhostPay R55 — source-pinned consolidation handoff
+
+Checked **2026-11-23T04:12:40.457Z UTC** for the exhaustive, pre-publication census. Main remains `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Isolated owned branch `audit/ghostpay-r41-semantic-backfill-20261122-1400Z`, draft PR #471; snapshot source head before ledger publication `cdd9e86f4209472c5d9650506deb3d8bf3a4fed8`. Ledger committed at `0fc3c4ecc17a566c673645b233378d0af5236fac`; source-lineage file at `dea0fa07af24fba4a4aa5dfe08cd193af6bed177`. Fetch this PR's final SHA after reading this file. Do **not** treat an old source SHA as current.
+
+## Complete live census and historical obligations
+
+* All live branches through pages **100/100/100/100/100/59/0 = 559**; independently matched complete Git `matching-refs/heads/` results (**559/559**, zero mismatches).
+* All open PRs **100/100/51/0 = 251**; **95 stacked**. Complete exact head/base, fork identity, lease and ownership overlays are in [SEMANTIC_DISPOSITIONS.json](SEMANTIC_DISPOSITIONS.json).
+* **310 finalized live branch dispositions**, **249 unresolved live branches**. **Two formerly live, unresolved Dependabot refs were deleted externally**, each confirmed HTTP 404 and absent in independent refs, with closed/unmerged PRs #207 and #210. Their complete identities and last-known immutable SHAs are held in `retiredHistories`. Therefore **global unresolved = 251** (249 live + 2 retired unresolved). Do not mistake branch deletion for code integration.
+* Three newly discovered live branches: owner-held BUG-only #494 `automation/20261123/bug/ux-flow-origin-port-length-r12`, plus new Dependabot `dependabot/github_actions/actions-8158e918cd` and `dependabot/npm_and_yarn/npm-minor-patch-f6308e442e`.
+* Two advanced live branch heads: this owned PR #471, and Dependabot `dependabot/npm_and_yarn/npm-major-1ddf9439d6`. No previously finalized donor was allowed to change HEAD without renewed immutable source evidence.
+* No new history was conclusively finalized. Ancestor `claude/gifted-planck-115x2k` is one commit behind unresolved descendant `codex/ghostpay-security-audit-20261030`, but neither is established integrated or behaviorally redundant to modern main. [DONOR_LINEAGE.md](DONOR_LINEAGE.md) preserves the exact evidence.
+
+## Code/test work executed
+
+* Test-first `eabe1f073c814068dd4b896030283b19be99ed68` and fix `88c2dc5ac80564ab0c4845740556af1bfee2d8e5`: allow a newly observed docs-only/audit branch to be finalized **only when** a source-pinned proof exists, while maintaining correct transition accounting.
+* Test-first `9832fe71b09127af13ea1a46e357f8d2eddd740a` and fix `cdd9e86f4209472c5d9650506deb3d8bf3a4fed8`: detect verified deleted refs as historical tombstones; enforce explicit HTTP 404 plus independent-census absence, continuity and exact prior state; count deleted but unresolved histories in a global unresolved total.
+* The earlier R54 exact-source [CI 45104317020](https://github.com/djshellshoxxx/GhostPay/actions/runs/45104317020) completed **24/24 successful jobs** at `6e5899740b270715211094d0109e5f4fb0c56cbf`. This does **not** qualify R55 modifications. CI at `88c2dc5` and `cdd9e86` was canceled after newer commits. [R55 ledger run 45110457221](https://github.com/djshellshoxxx/GhostPay/actions/runs/45110457221) was queued at inspection. Exact final-head CI, independent review, native TypeScript/lint/browser/security checks and Node regression execution have **not** been declared passed for R55.
+* Native checkout of the public GitHub URL was attempted in the execution container and failed DNS resolution (`Could not resolve host: github.com`). GitHub connection was used for real source commits and immutable references. No locally executed Node or browser test claim is made.
+
+## Integration and precise successor actions
+
+The isolated Git ref `refs/heads/automation/ghostpay-integration-lock` still points at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`; its JSON is held by `994a0d214fb9-root-r3`, generation 11. Expiry of its timestamp does **not** authorize replacement. Main branch protection detail returned 403. Do not merge, force-push or modify other owners' code under that hold.
+
+**Next execution:** (1) Fetch final PR #471 HEAD and inspect its native CI failure logs, if any. (2) Run `node --test scripts/tests/consolidation-ledger.test.mjs` and `node scripts/consolidation/validate-ledger.mjs docs/consolidation/20261123-r55/SEMANTIC_DISPOSITIONS.json docs/consolidation/20261123-r54/SEMANTIC_DISPOSITIONS.json` on an environment with checkout/network access, or qualify through exact-head hosted CI. (3) Re-census all branches/PRs and preserve tombstones across checkpoints; check deleted Dependabot dependencies against main source before closing their obligations. (4) Continue original capped-donor source/test analysis, prioritize unowned, nonduplicated fund-recovery and payment-safety code. Coordinate any implementation owned by BUG-only, security, F03 or #372/#468 workers. (5) Merge only after genuine independent approval, exact-head security/browser/CI gates and legitimate lock release.
+
+**This run: no production application-code commits, protected-main merges, deployment, release, real-funds operations, branch deletion, force-push, key exposure or security bypass.** Consolidation is not complete; preserve the automation.
+
+## R55 source-proof supplement — 2026-11-23T04:15:14Z UTC
+
+A complete three-way recursive Git-tree comparison of the historical `audit/f03-browser-qualification-20261120` donor (`9a0e268034ee2321c5e333c35a3aa1825b1c8f63`), still-draft PR #310 (`dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec`) and main (`eb59d93cffed7848c4aac37d0e9650b87239c6da`) returned `truncated=false` for all trees. The donor has **zero donor-only application/test paths**. Every one of 13 differing shared app/test blob SHAs is identical between PR #310 and main; older donor variants are superseded. All other shared app/test blobs match the PR #310 parent exactly; 22 donor-only paths are documentation/evidence. [Source proof](F03_SOURCE_EQUIVALENCE.md).
+
+The source/test donor was therefore **structurally finalized only** as `retained-in-unmerged-recovery-PR310-pending-gates` with explicit parent SHA, source-proof path, `mainIntegrated=false`, and `behavioralEquivalenceNotClaimed=true`. This is **not** F03 release completion or protected-main integration. Ledger supplement commit `f7bd2cee9216fca8aa61b3e2bb7b8d27f46936d2` records this separately from the earlier census. Revised totals: **559 live branches; 311 finalized / 248 unresolved live; plus two deleted-unmerged and still-unresolved historic refs = 250 global unresolved**. PR #310 must retain independent CI/browser/security qualification and owner review. If it advances, recheck the donor before continuing to rely on this disposition.
+
+This append-only supplement does not change the census time, branch identities, or the R55 code/test commitments. Final exact-head hosted CI for this documentation update is not yet claimed passed; no independent approval, protected-main merge, app-code commit, deployment or real-funds test occurred.
