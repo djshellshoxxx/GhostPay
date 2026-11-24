@@ -1,3 +1,7 @@
+## Stopped-scan single-payment export acceptance
+
+Worker: Codex. Branch `codex/stopped-scan-payment-export-acceptance`, based on #539 at `caef97781b407b105c8dce177c76dd515462e94e`. Owned paths are this additive claim and `apps/web/e2e/stopped-scan-payment-export.spec.ts`. The #539 coordinator owns the runtime extraction from #372. Use the existing synthetic RPC fixtures and normal browser controls to discover a payment, cancel the running scan, reauthenticate, download the encrypted single-payment keypair and independently derive the selected address without logging private key material. Keep the parent and donor branches untouched.
+
 # M2 P0-KEYS — independent payment-key export/recovery onto main (2026-11-23)
 
 Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr) with a core-implementation subagent; independent security/QA review subagents before PR is marked ready.
