@@ -811,3 +811,9 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Verify real projection, selection, analytics and export, client routing and lock/invalidation, workspace typecheck/lint, lean bundle/privacy checks and browser behavior. Live generation 12 lock was released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; recheck ownership, rules and exact-head review before integration.
 
 The preview reads the existing seller- and chain-scoped vault, including its stored reorg invalidations and backup/restore path in Scan and receive. It performs no RPC, offers no finality or invoice-attribution claim, and exports minimized invoice metadata only. Verify explicit canonical event binding and refresh before adding pending/confirmed amounts or promoting F04 as complete. Original donor branches remain independent.
+
+## F04 dashboard refresh focus
+
+- Worker: Codex dashboard focus. Branch: `fix/f04-dashboard-refresh-focus`, based on #535 at `e16bd876c3bd9aa6f075dd5ae27711d9836eb890`. Main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Own the refresh focus behavior in `apps/web/src/views/MerchantDashboard.tsx`, the corresponding browser case in `apps/web/e2e/merchant-dashboard.spec.ts`, and this entry. Target the dashboard owner's preview branch.
+- Acceptance: a cross-tab encrypted invoice registration refreshes the results while the Network picker retains keyboard focus. Explicit refresh continues to focus the progress status and then the overview. Dashboard promotion stays gated by #535.
