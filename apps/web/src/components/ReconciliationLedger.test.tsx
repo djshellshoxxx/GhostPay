@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ScanMatch } from '../lib/scanClient';
 import { recordFromVerifiedMatch, RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
+import { notifyAppLock } from '../lib/appLock';
 import { clearSession, generateSession } from '../lib/session';
 import { checkpointKeyId } from '../lib/scanClient';
 import { ReconciliationVault, type ReconciliationVaultStore } from '../lib/reconciliationVault';
@@ -444,6 +445,29 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
     expect(await screen.findByText(/This reconciliation vault is read-only/)).toBeTruthy();
   });
+  it.each(['manual', 'idle'] as const)('drops decrypted rows and rejects a pending refresh on %s app lock', async (reason) => {
+    await vault.save(recordFromVerifiedMatch(match(), keyId));
+    const oldState = await vault.readState();
+    const encrypted = [...data.entries()];
+    const user = userEvent.setup();
+    render(panel({ matches: [] }));
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    await screen.findByText(TX);
+    let release!: (value: typeof oldState) => void;
+    const delayed = new Promise<typeof oldState>((resolve) => { release = resolve; });
+    const read = vi.spyOn(vault, 'readState').mockReturnValueOnce(delayed);
+    fireEvent(window, new Event('focus'));
+    expect(read).toHaveBeenCalledOnce();
+    act(() => { notifyAppLock(reason); });
+    expect(screen.queryByText(TX)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' })).toBeTruthy();
+    await act(async () => { release(oldState); await delayed; });
+    expect(document.body.textContent).not.toContain(TX);
+    expect([...data.entries()]).toEqual(encrypted);
+    await vault.unlock(new Uint8Array(32).fill(7));
+    expect((await vault.readState()).records).toEqual(oldState.records);
+  });
+
   it('does not let a delayed action read overwrite a newer reorg refresh', async () => {
     await vault.save(recordFromVerifiedMatch(match(), keyId));
     const stale = await vault.readState();

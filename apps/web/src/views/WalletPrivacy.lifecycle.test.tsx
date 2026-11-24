@@ -187,7 +187,8 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     });
     await vi.waitFor(() => {
       expect(readAttempts()).toMatchObject([{ status: outcome === 'known hash' ? 'submitted' : 'unknown', kind: 'payment', account: MOCK_ACCOUNT }]);
-      expect(document.body.textContent).toContain(outcome === 'known hash' ? hash : 'A previous wallet request may already have been submitted');
+      expect(document.body.textContent).not.toContain(hash);
+      expect(document.body.textContent).toContain('A previous wallet request may already have been submitted');
     });
     expect(active.reads).toEqual(readsBefore);
     expect(active.grant.signal.aborted).toBe(true);
@@ -234,7 +235,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     });
     if (outcome === 'known hash') {
       expect(readAttempts()[0]?.hash).toBe(hash);
-      expect(document.body.textContent).toContain(hash);
+      expect(document.body.textContent).not.toContain(hash);
     } else {
       expect(readAttempts()[0]?.hash).toBeUndefined();
       expect(document.body.textContent).toContain('A previous wallet request may already have been submitted');
