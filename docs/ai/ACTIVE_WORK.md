@@ -1,3 +1,11 @@
+# M4-DORM371 — land #371 dormant F04/F05/F10 base on main (2026-11-24)
+
+Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr). Branch `claude/nifty-bohr-5ra2ap-dormant-371`, base main `03695a7b`.
+Source: PR #371 head `1de6e0247e0f76afe6f1615b43e55007ece25d9b`, merged unchanged. Owned paths: the merge itself, this claim, `docs/engineering/milestones/M4-DORM371.md`.
+Acceptance: future modules unreachable from full/lean bundles; isolation, package-map, future suites, web typecheck/lint/build/test green; hosted CI green on exact head; merge only under the integration lock. Evidence: `docs/engineering/milestones/M4-DORM371.md`.
+
+---
+
 # F04 source-preserving current-main consolidation — 2026-11-20 Pacific
 
 - Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
