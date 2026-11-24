@@ -25,7 +25,7 @@ import { ClipboardPrivacySync } from './components/ClipboardPrivacySync';
 import { PrivacyQuickHide } from './components/PrivacyQuickHide';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SensitiveContent } from './components/SensitiveContent';
-import { PrivacyProvider } from './lib/privacyMode';
+import { PrivacyProvider, revokePrivacyReveal } from './lib/privacyMode';
 import { notifyAppLock, subscribeAppLock } from './lib/appLock';
 import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
@@ -193,6 +193,9 @@ export function AppShell(props: AppShellProps): ReactNode {
     return () => { window.removeEventListener('storage', onStorage); unsubscribeLock(); };
   }, []);
   useEffect(() => { rpcCache.current.clear(); }, [networkRevision]);
+  useEffect(() => services.vault.subscribeAccess(() => {
+    if (!services.vault.unlocked) revokePrivacyReveal();
+  }), [services.vault]);
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
   // Hash changes arriving later are handled by the listener below.

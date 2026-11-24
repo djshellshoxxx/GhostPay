@@ -30,7 +30,7 @@ function InlineConfirmation(props: ConfirmProps): ReactNode {
   const label = useId();
   useLayoutEffect(() => { if (pending) cancel.current?.focus(); }, [pending]);
   useLayoutEffect(() => () => {
-    if (group.current?.contains(document.activeElement)) focusPrivacyControl();
+    if (group.current?.contains(document.activeElement) || trigger.current === document.activeElement) focusPrivacyControl();
   }, []);
   const dismiss = (): void => { setPending(false); trigger.current?.focus(); };
   return <>

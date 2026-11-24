@@ -3,7 +3,7 @@ import { findChain, manifestDigest, tokensForChain, type RpcClient } from '@ghos
 import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
@@ -831,7 +831,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
   const [label, setLabel] = useState<Readonly<Record<string, string>>>({});
   const [err, setErr] = useState<ScanText | undefined>(undefined);
-  const unlocked = services.vault.unlocked;
+  const unlocked = useSyncExternalStore(services.vault.subscribeAccess, () => services.vault.unlocked);
   const matches = props.matches;
 
   useEffect(() => {
@@ -879,7 +879,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                 {m.receipt === 'pending' && ` - ${t('scan.match.pending')}`}
               </p>
               <p>{t('scan.match.address')} <Mono>{m.stealthAddress}</Mono></p>
-              {tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
+              {unlocked && tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
               {unlocked && (
                 <div className="row">
                   <div className="field">
@@ -946,7 +946,8 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
   const [err, setErr] = useState<ScanText | undefined>(undefined);
   const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
-  const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
+  const vaultUnlocked = useSyncExternalStore(services.vault.subscribeAccess, () => services.vault.unlocked);
+  const unlocked = vaultUnlocked && authorizedSellerKeyId === props.sellerKeyId;
 
   // Session revisions invalidate tag access even when the replacement has the same public keys.
   // Keep this component mounted within a chain so a pending unlock can report its guarded failure.
@@ -1030,7 +1031,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
             {t('scan.tags.unlock')}
           </button>
         ) : (
-          <button type="button" className="btn" onClick={() => { services.vault.lock(); revokePrivacyReveal(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
+          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
             {t('scan.tags.lock')}
           </button>
         )}

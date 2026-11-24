@@ -123,6 +123,16 @@ function storedPayload(raw: unknown): TagPayload {
 }
 
 export class TagVault {
+  private readonly accessListeners = new Set<() => void>();
+  public readonly subscribeAccess = (listener: () => void): (() => void) => {
+    this.accessListeners.add(listener);
+    return () => { this.accessListeners.delete(listener); };
+  };
+
+  private notifyAccess(): void {
+    for (const listener of this.accessListeners) listener();
+  }
+
   private aes: CryptoKey | undefined;
   private hmac: CryptoKey | undefined;
   /** Throws once the seller keys that unlocked the vault are wiped or replaced. */
@@ -200,17 +210,20 @@ export class TagVault {
       this.aes = aes;
       this.hmac = hmac;
       this.sessionUnchanged = sessionUnchanged;
+      this.notifyAccess();
     } finally {
       viewingKey.fill(0);
     }
   }
 
   public lock(): void {
+    const hadKeys = this.aes !== undefined;
     this.revision++;
     this.aes = undefined;
     this.hmac = undefined;
     this.profileSalt = undefined;
     this.sessionUnchanged = undefined;
+    if (hadKeys) this.notifyAccess();
   }
 
   private keys(): { aes: CryptoKey; hmac: CryptoKey } {
