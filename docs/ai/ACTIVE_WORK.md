@@ -850,3 +850,10 @@ Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exac
 
 Worker: Codex, branch `codex/287-local-destination-reuse`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
 Scope: destination-history helper/tests, checkout final review, seller sweep destination and successful submission, warning catalog entries, focused browser coverage and v1.1 evidence. The invoice's reusable meta-address is not a payment destination. Compare actual destinations locally within the current account and chain. Verify same and different invoices, address normalization, deliberate sweeps, account changes, reload, storage failure and nonblocking review. Keep payment journals, signing, release and custody gates with their existing owners.
+
+## PR #586 typed notice completion — 2026-11-24
+
+- Worker: `/root/local_handoffs`; coordinator: `/root`. Isolated branch: `finish/destination-reuse-type-20261124`; source parent: `f024ce3e0eab91df40bfd5a75aee2a56d9158e5a` (PR #586), tree `b86ab0da102ab4f7b366acdd23847d8c016958d3`.
+- Owned source: only the `FinalPreview` notice prop annotation in `apps/web/src/views/Pay.tsx`; additive ownership and `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`. Acceptance: reproduce hosted TS2322 locally, admit the existing `wallet-changed` notice already supported by the receiving component, prove emitted JavaScript unchanged, and run available focused checks with existing dependencies only.
+- Coordination: #584 (`17c5a2ee3828d0132cfdf21e4c966ca7550d07f2`) and #586 are siblings of `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Their journal-backed and separate session-storage histories are alternative mechanisms; neither is adopted as the other's successor. Active wallet/account/privacy owners retain their listeners, authority, signing and transaction semantics. No other branch, test assertion, storage mechanism, catalog or runtime body is edited by this lane.
+- Boundaries: no dependency installation, main integration, remote writes, deployment, browser/real-wallet acceptance claim or release-gate change. This narrow repair does not resolve the address-reuse architecture choice or close #287.
