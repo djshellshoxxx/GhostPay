@@ -16,6 +16,7 @@ test.afterEach(async ({ page }, info) => {
 
 test('wallet disclosure requires each decision, cancels before wallet exposure, and quick hide revokes the exact transaction preview', async ({ page, context }) => {
   const state: { sent?: SentTx; sendCalls?: number } = {};
+  await page.clock.install();
   await mockNetwork(context, state);
   await injectWallet(page, state);
   await configureRpc(page);
@@ -77,7 +78,6 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   expect(state.sent).toEqual(reviewed.params[0]);
   const hash = `0x${'9'.repeat(64)}`;
   await expect(page.getByText(hash, { exact: true }).first()).toBeVisible();
-  await page.clock.install();
   // Renew the display grant under the controlled clock before opening the receipt confirmation.
   await page.getByRole('banner').getByRole('button', { name: 'Hide sensitive details', exact: true }).click();
   await reveal(page).click();

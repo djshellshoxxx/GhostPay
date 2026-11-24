@@ -1,17 +1,23 @@
 import { expect, type Page } from '@playwright/test';
 
-/** Check user-facing and hidden surfaces separately, including non-serialized form values. */
+/** Assert absence without attaching document contents or private values to failure output. */
 export async function expectMaskedDocument(page: Page, values: readonly string[]): Promise<void> {
   await expect(page).toHaveTitle('GhostPay');
+  const needles = values.map((value) => value.toLowerCase());
+  expect(needles).not.toContain('');
   const tree = (await page.locator('body').ariaSnapshot()).toLowerCase();
-  const surfaces = await page.evaluate(() => [
-    document.documentElement.outerHTML,
-    document.body.textContent ?? '',
-    ...Array.from(document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select'), (control) => control.value),
-  ].join('\n').toLowerCase());
-  for (const value of values) {
-    expect(value.length).toBeGreaterThan(0);
-    expect(tree).not.toContain(value.toLowerCase());
-    expect(surfaces).not.toContain(value.toLowerCase());
-  }
+  expect(needles.findIndex((needle) => tree.includes(needle)), 'private fixture index in accessibility tree').toBe(-1);
+  const leaked = await page.evaluate((secrets) => {
+    const fields = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select');
+    const surfaces = {
+      markup: document.documentElement.outerHTML,
+      text: document.body.textContent ?? '',
+      fields: Array.from(fields, (field) => field.value).join('\n'),
+    };
+    return Object.entries(surfaces).flatMap(([surface, text]) => {
+      const index = secrets.findIndex((value) => text.toLowerCase().includes(value));
+      return index === -1 ? [] : [{ surface, index }];
+    });
+  }, needles);
+  expect(leaked, 'private fixtures in the live document').toEqual([]);
 }

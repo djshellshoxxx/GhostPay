@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } from '../src/test/fakeManifest';
 import { expectMaskedDocument } from './assertMaskedDocument';
 import { createInvoice, generateKeys, openFresh } from './helpers';
 import { configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState } from './flowMocks';
@@ -137,3 +138,54 @@ test('saved transaction history needs unlock and separate reveal, with no new lo
   await reveal(page).click();
   await expect(balance).toBeVisible();
 });
+
+test('Home and About mask manifest addresses while keeping the fee schedule readable', async ({ page, context }) => {
+  await mockNetwork(context, {});
+  await page.goto('/');
+  const addresses = [FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER];
+  await expect(page.getByText(FAKE_FEE_RECIPIENT, { exact: true }).first()).toBeVisible();
+  await privacyControl(page).check();
+  await expectMaskedDocument(page, addresses);
+  const fees = page.locator('.fee-disclosure').first();
+  await expect(fees).toContainText('0.25');
+  await reveal(page).click();
+  await expect(page.getByText(FAKE_FEE_RECIPIENT, { exact: true }).first()).toBeVisible();
+  await page.locator('nav button[data-view="about"]').click();
+  await expectMaskedDocument(page, addresses);
+  await expect(fees).toContainText('0.25');
+  await reveal(page).click();
+  await expect(page.getByText(FAKE_ROUTER, { exact: true }).first()).toBeVisible();
+});
+
+for (const chain of ['btc', 'solana', 'tron']) {
+  test(`local ${chain} wallet creation, lock and replacement each need fresh consent`, async ({ page }) => {
+    await page.goto('/');
+    const nav = page.locator(`nav button[data-view="${chain}"]`);
+    if (process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] === 'lean') {
+      await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+      await expect(nav).toHaveCount(0);
+      return;
+    }
+    await privacyControl(page).check();
+    await nav.click();
+    const create = page.getByRole('button', { name: 'Create new test wallet', exact: true });
+    const lock = page.getByRole('button', { name: 'Lock and forget keys', exact: true });
+    const address = page.locator('.panel').filter({ has: lock }).locator('p > code').first();
+    const previous: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      await reveal(page).click();
+      await create.click();
+      await expect(reveal(page)).toBeVisible();
+      await expect(lock).toHaveCount(0);
+      await reveal(page).click();
+      await expect(address).toBeVisible();
+      const current = await address.innerText();
+      expect(previous.includes(current)).toBe(false);
+      await expectMaskedDocument(page, previous);
+      previous.push(current);
+      await lock.click();
+      await expect(reveal(page)).toBeVisible();
+      await expectMaskedDocument(page, previous);
+    }
+  });
+}
