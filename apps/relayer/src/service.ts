@@ -522,6 +522,7 @@ export class RelayerService {
       fee,
       feeTo: rt.cfg.feeTo,
       expiresAt,
+      ...(conversion.priceRoundId === undefined ? {} : { priceRoundId: conversion.priceRoundId }),
     });
     return { fee: fee.toString(), feeTo: rt.cfg.feeTo, expiresAt, quoteToken };
   }
@@ -553,7 +554,7 @@ export class RelayerService {
       feeTo: s.feeTo,
     });
     const nowSec = Math.floor(this.now() / 1000);
-    if (quote === null) throw new RelayerError(400, 'invalid_quote');
+    if (quote === null || ((rt.cfg.nativeUsdFeed !== undefined) !== (quote.priceRoundId !== undefined))) throw new RelayerError(400, 'invalid_quote');
     if (quote.expiresAt <= nowSec) throw new RelayerError(410, 'quote_expired');
     if (s.fee < quote.fee) throw new RelayerError(422, 'fee_below_quote');
     if (s.fee > (s.amount * FEE_SCHEDULE.SPONSOR_CAP_BPS) / FEE_SCHEDULE.BPS)

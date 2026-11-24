@@ -1,3 +1,10 @@
+# Spec 03 fiat price feeds
+
+Worker: Codex on `codex/spec-03-fiat-price-feeds`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Scope: chain-adapter registry and quote checks, web fiat review/authorization, relayer feed configuration and quote claims, corresponding deterministic tests, spec 03 and ADR-0012.
+Acceptance: only qualified feeds may price payments, quotes bind the selected pair, round, time and exact token amount through the final wallet check, and fiat estimates are identified in the review. Use synthetic fixtures, preserve the fixed-token Pages profile and require fork evidence before enabling a feed.
+The F13 offline exchange quote and ux-fiat package PRs #566 and #568 are independent. No production pins or deployment.
+
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
 Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.

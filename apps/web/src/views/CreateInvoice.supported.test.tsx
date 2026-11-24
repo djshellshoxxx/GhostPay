@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import * as adapters from '@ghostpay/chain-adapters';
 import { isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { parseFragment } from '@ghostpay/invoice-schema';
 import { act, fireEvent, render, screen } from '@testing-library/react';
@@ -23,6 +24,8 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); });
 
 function mount(supportedOnly?: boolean) {
+  // Exercise a future qualified test feed without changing the real registry.
+  vi.spyOn(adapters, 'isQuoteAvailable').mockImplementation((chainId, base, quote) => adapters.findFeed(chainId, base, quote) !== undefined);
   const session = generateWaivedSession();
   const announce = vi.fn();
   const app: AppState = {
@@ -50,9 +53,9 @@ async function parsedLink() {
 }
 
 describe('supported invoice creation', () => {
-  it('creates a signed v1 fixed-token invoice even on the actual feed-enabled chain', async () => {
-    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(true);
-    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(true);
+  it('creates a signed v1 fixed-token invoice even on the fixture-qualified chain', async () => {
+    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(false);
+    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(false);
     const { user } = mount(true);
     expect(screen.getByLabelText<HTMLSelectElement>('Chain').value).toBe('11155111');
     expect(screen.queryByRole('option', { name: /Fiat price/ })).toBeNull();
@@ -65,7 +68,7 @@ describe('supported invoice creation', () => {
     expect(parsed.verification.signatureValid).toBe(true);
   });
 
-  it('preserves default full-profile signed fiat creation with the configured feed', async () => {
+  it('preserves default full-profile signed fiat creation with a qualified fixture', async () => {
     const { user } = mount();
     const fiat = screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ });
     expect(fiat.disabled).toBe(false);

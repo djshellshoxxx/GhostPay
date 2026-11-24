@@ -6,7 +6,9 @@ import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { canonicalManifestJson, loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { keccak256, toBytes } from 'viem/utils';
-import { describe, expect, it } from 'vitest';
+import * as adapters from '@ghostpay/chain-adapters';
+import { qualifiedFeed } from './feedFixture.testutil.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
@@ -60,7 +62,10 @@ const SIGNED = (chainId: number, sweep: string = SWEEP_CONTRACT, signer: Uint8Ar
 };
 
 describe('parseConfig', () => {
+  afterEach(() => { vi.restoreAllMocks(); });
   it('selects registry feed pricing explicitly without a fixed-price fallback', () => {
+    expect(() => parse(good({ chains: [chain({ nativeUsdPrice: undefined, nativeUsdFeed: { maxAgeSeconds: 300 } })] }))).toThrow(/no qualified/);
+    vi.spyOn(adapters, 'findQualifiedFeed').mockReturnValue(qualifiedFeed);
     const c = parse(good({ chains: [chain({ nativeUsdPrice: undefined, nativeUsdFeed: { maxAgeSeconds: 300 } })] }));
     expect(c.chains[0]?.nativeUsdMicro).toBeUndefined();
     expect(c.chains[0]?.nativeUsdFeed).toMatchObject({ maxAgeSeconds: 300, feed: { base: 'ETH', quote: 'USD', decimals: 8 } });
@@ -290,8 +295,13 @@ describe('parseConfig', () => {
       expect(() => parse(main, { readManifest: (id) => MANIFEST(id) })).toThrow(/ALLOW_MAINNET/);
       expect(() => parse(main, { env: { ALLOW_MAINNET: 'true' }, readManifest: (id) => MANIFEST(id) })).toThrow(/ALLOW_MAINNET/);
     });
+    it('refuses fixed mainnet pricing even with a signed manifest and ALLOW_MAINNET', () => {
+      expect(() => parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) })).toThrow(/mainnet pricing requires a qualified feed/);
+    });
     it('starts with a signed manifest and ALLOW_MAINNET=1, taking the contract from the manifest', () => {
-      const c = parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
+      vi.spyOn(adapters, 'findQualifiedFeed').mockReturnValue({ ...qualifiedFeed, chainId: 1 });
+      const feedMode = good({ chains: [chain({ chainId: 1, sweepRelayer: undefined, tokens: custom, nativeUsdPrice: undefined, nativeUsdFeed: { maxAgeSeconds: 300 } })] });
+      const c = parse(feedMode, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
       expect(c.chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
       expect(c.chains[0]?.manifest?.router.toLowerCase()).toBe(DEST.toLowerCase());
     });
@@ -308,7 +318,7 @@ describe('parseConfig', () => {
       const conflict = good({ chains: [chain({ chainId: 1, sweepRelayer: DEST, tokens: custom })] });
       expect(() => parse(conflict, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) })).toThrow(/differs from the deployment manifest/);
       const same = good({ chains: [chain({ chainId: 1, tokens: custom })] });
-      expect(parse(same, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.chainId).toBe(1);
+      expect(() => parse(same, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) })).toThrow(/mainnet pricing requires a qualified feed/);
     });
     it('testnet manifests fail closed without a matching structured release signature', () => {
       const raw = good({ chains: [chain({ sweepRelayer: undefined })] });

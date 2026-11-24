@@ -5,13 +5,13 @@ import type { Address } from 'viem';
 import { getAddress } from 'viem';
 import {
   findChain,
-  findFeed,
+  findQualifiedFeed,
   findToken,
   loadDeployment,
   requireEnabledChain,
   verifyObjectManifestSignature,
   type DeploymentManifest,
-  type FeedConfig,
+  type QualifiedFeed,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { TrustedProxies } from '@ghostpay/relayer-guard';
@@ -35,7 +35,7 @@ export interface ChainRuntimeConfig {
   readonly tokens: readonly AllowedToken[];
   readonly nativeUsdMicro?: bigint;
   /** Explicit registry-feed mode; absence retains the configured fixed-price mode. Never used as a fallback. */
-  readonly nativeUsdFeed?: { readonly feed: FeedConfig & { readonly decimals: number }; readonly maxAgeSeconds: number };
+  readonly nativeUsdFeed?: { readonly feed: QualifiedFeed; readonly maxAgeSeconds: number };
   readonly gasUnits: { readonly sweep: bigint; readonly sweepWithPermit: bigint };
   readonly maxGasLimit: bigint;
   readonly maxGasPriceWei: bigint;
@@ -310,10 +310,12 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   let nativeUsdFeed: ChainRuntimeConfig['nativeUsdFeed'];
   if (c['nativeUsdFeed'] !== undefined) {
     const selection = objectAt(c['nativeUsdFeed'], `${path}.nativeUsdFeed`, ['maxAgeSeconds']);
-    const feed = known === undefined ? undefined : findFeed(chainId, known.nativeSymbol, 'USD');
-    if (feed?.decimals === undefined) return bad(`${path}.nativeUsdFeed`, 'no sourced native/USD feed in the configured registry');
-    nativeUsdFeed = { feed: { ...feed, decimals: feed.decimals }, maxAgeSeconds: numberOr(selection, 'maxAgeSeconds', `${path}.nativeUsdFeed`, 0, 1, 604_800) };
+    const maxAgeSeconds = numberOr(selection, 'maxAgeSeconds', `${path}.nativeUsdFeed`, 0, 1, 604_800);
+    const feed = known === undefined ? undefined : findQualifiedFeed(chainId, known.nativeSymbol, 'USD');
+    if (!feed) return bad(`${path}.nativeUsdFeed`, 'no qualified native/USD feed in the configured registry');
+    nativeUsdFeed = { feed, maxAgeSeconds };
   } else {
+    if (known?.testnet === false) return bad(`${path}.nativeUsdPrice`, 'mainnet pricing requires a qualified feed');
     try { nativeUsdMicro = parseUsdMicro(typeof c['nativeUsdPrice'] === 'string' ? c['nativeUsdPrice'] : ''); }
     catch { return bad(`${path}.nativeUsdPrice`, 'must be a positive decimal string with <= 6 fractional digits'); }
   }

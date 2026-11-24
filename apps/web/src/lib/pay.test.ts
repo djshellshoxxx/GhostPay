@@ -1,6 +1,6 @@
+import { fixtureFeed, priceRpc } from '../test/fiatFeed';
 import {
   ChainAdapterError,
-  chainlinkAggregatorAbi,
   eip712DomainSeparator,
   erc20Abi,
   erc20MetadataAbi,
@@ -8,7 +8,6 @@ import {
   type Address,
   type BuiltPayment,
   type Hex,
-  type FeedConfig,
 } from '@ghostpay/chain-adapters';
 import { createInvoice, signInvoice, parseFragment, encodeFragment } from '@ghostpay/invoice-schema';
 import { decodeFunctionData, encodeFunctionResult, parseAbi } from 'viem/utils';
@@ -214,37 +213,23 @@ describe('createPayContext and amounts', () => {
     // OP Sepolia has no registered feed (Base Sepolia gained ETH/USD and USDC/USD from the saved Chainlink evidence).
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote', chainId: 11155420, token: '0x5fd84259d66cd46123540766be93dfe6d43130d7' });
     const review = reviewInvoice(parsed, NOW, LOADED(11155420));
-    await expect(createPayContext(review, undefined, { nowSeconds: NOW })).rejects.toThrow(/Configure an RPC/);
+    await expect(createPayContext(review, undefined, { nowSeconds: NOW })).rejects.toMatchObject({ code: 'QUOTE_DISABLED' });
     await expect(createPayContext(review, mockRpc(11155420, () => '0x'), { nowSeconds: NOW })).rejects.toThrow(/No price feed is configured/);
   });
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)' };
-    const rpc = mockRpc(84532, (method, params) => {
-      expect(method).toBe('eth_call');
-      const data = (params[0] as { data: string }).data;
-      if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });
-      return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 100_000_000n, BigInt(NOW), BigInt(NOW), 1n] });
-    });
-    const c = await createPayContext(review, rpc, { nowSeconds: NOW, findFeedFn: () => feed });
+    const c = await createPayContext(review, priceRpc(), { nowSeconds: NOW, findFeedFn: () => fixtureFeed });
     expect(c.quotedTokenAmount).toBe(100_000_000n); // 100.00 USD at 1.00 USD per USDC, 6 decimals
     expect(c.request.grossAmount).toBe(100_000_000n);
   });
   it('requires a live feed to agree with configured registry decimals', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    let actualDecimals = 18;
-    const rpc = mockRpc(84532, (method, params) => {
-      expect(method).toBe('eth_call');
-      const data = (params[0] as { data: string }).data;
-      if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: actualDecimals });
-      return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 10n ** BigInt(actualDecimals), BigInt(NOW), BigInt(NOW), 1n] });
-    });
-    // The actual Base Sepolia USDC/USD entry pins 8 decimals. No injected feed overrides this check.
-    await expect(createPayContext(review, rpc, { nowSeconds: NOW })).rejects.toThrow(/configured decimals/);
-    actualDecimals = 8;
-    await expect(createPayContext(review, rpc, { nowSeconds: NOW })).resolves.toMatchObject({ quotedTokenAmount: 100_000_000n });
+    const deps = { nowSeconds: NOW, findFeedFn: () => fixtureFeed };
+    await expect(createPayContext(review, priceRpc(NOW, 18), deps)).rejects.toThrow(/configured decimals/);
+    await expect(createPayContext(review, priceRpc(), deps)).resolves.toMatchObject({ quotedTokenAmount: 100_000_000n });
+
   });
   it('offline client refuses every network call', async () => {
     const c = offlineClient(1);

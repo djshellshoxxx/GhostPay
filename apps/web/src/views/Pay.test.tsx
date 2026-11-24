@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+import * as adapters from '@ghostpay/chain-adapters';
+import { fixtureFeed, priceRpc } from '../test/fiatFeed';
 import { SIGNING_DOMAIN, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment, type Invoice } from '@ghostpay/invoice-schema';
 import { keccak_256 } from '@noble/hashes/sha3.js';
 import { bytesToHex, concatBytes, utf8ToBytes } from '@noble/hashes/utils.js';
@@ -453,6 +455,19 @@ describe('Pay: invoice reading and review', () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), nowMs: () => (NOW + 48 * 3600) * 1000 }));
     expect(await screen.findByText('This invoice has expired.')).toBeTruthy();
+  });
+
+  it('separates the seller fiat total, estimated conversion and actual feed round before payment', async () => {
+    const lookup = vi.spyOn(adapters, 'findQualifiedFeed').mockReturnValue(fixtureFeed);
+    try {
+      const { fragment } = await makeParsed({ amountMode: 'fiat_quote' });
+      withRpcSetting();
+      openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(priceRpc())) }));
+      expect(await screen.findByText('Estimated conversion to cryptocurrency')).toBeTruthy();
+      expect(screen.getByText('Seller-stated fiat total').nextElementSibling?.textContent).toBe('USD 100.00');
+      expect(screen.getByText(/Chainlink feed .*round 7/).textContent).toContain('100 USDC before fees');
+      expect(screen.queryByRole('heading', { name: /payment included/i })).toBeNull();
+    } finally { lookup.mockRestore(); }
   });
 
   it('shows the no-feed message for fiat-priced invoices', async () => {

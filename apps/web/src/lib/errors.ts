@@ -74,6 +74,7 @@ export function captureUserMessage(error: unknown): DisplayMessage {
       ? { invoiceMessage: key, field: error.path }
       : { key };
   }
+  if (error instanceof ChainAdapterError && error.code === 'QUOTE_FAILED') return { key: 'pay.feedUnavailable' };
   if (error instanceof ChainAdapterError) return { key: 'error.chain', values: { code: error.code } };
   if (error instanceof GhostPayCryptoError) return { key: 'error.crypto', values: { code: error.code } };
   return { key: 'error.unknown' };

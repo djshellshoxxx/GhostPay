@@ -41,11 +41,18 @@ export interface FeedConfig {
    * age (callers pass an explicit `maxAgeSeconds`) and does not prove the feed is updating.
    */
   readonly heartbeatSec?: number;
+  /** Set only after a pinned fork acceptance and independent source review for this pair. */
+  readonly qualification?: {
+    readonly blockNumber: number;
+    readonly blockHash: Hex;
+    readonly reference: { readonly address: Address; readonly decimals: number; readonly maxAgeSec: number };
+    readonly sequencerFeed?: Address;
+  };
 }
 
 /**
  * Chainlink feed registry (testnets only). An entry exists only when its proxy address, `decimals` and `heartbeat`
- * were read from saved Chainlink reference data (SOURCES-2026-11-04.md); everything else, mainnets included, stays
+ * were read from saved Chainlink reference data (SOURCES-2026-11-04.md). Listings need fork qualification for use; everything else, mainnets included, stays
  * absent so pricing fails closed. `heartbeatSec` is source metadata, not a freshness guarantee: `readPrice` still
  * enforces an explicit `maxAgeSeconds` on every read.
  */
@@ -98,10 +105,10 @@ export const FEEDS: readonly FeedConfig[] = Object.freeze([
  * @param chainId Chain id.
  * @param base Base asset symbol (native symbol or token symbol).
  * @param quote Quote currency.
- * @returns True when {@link findFeed} would return a feed.
+ * @returns True when {@link findQualifiedFeed} would return a feed.
  */
 export function isQuoteAvailable(chainId: number, base: string, quote: string): boolean {
-  return findFeed(chainId, base, quote) !== undefined;
+  return findQualifiedFeed(chainId, base, quote) !== undefined;
 }
 
 /**
@@ -116,6 +123,15 @@ export function findFeed(chainId: number, base: string, quote: string): FeedConf
   return FEEDS.find((f) => f.chainId === chainId && f.base === base && f.quote === quote);
 }
 
+export type QualifiedFeed = FeedConfig & Required<Pick<FeedConfig, 'qualification' | 'decimals' | 'heartbeatSec'>>;
+
+/** Sourced metadata can be inspected independently of checkout authorization. */
+export function findQualifiedFeed(chainId: number, base: string, quote: string): QualifiedFeed | undefined {
+  const feed = findFeed(chainId, base, quote);
+  if (!feed || !feed.qualification || feed.decimals === undefined || !feed.heartbeatSec) return undefined;
+  return { ...feed, qualification: feed.qualification, decimals: feed.decimals, heartbeatSec: feed.heartbeatSec };
+}
+
 /**
  * Whether ANY verified feed exists for a chain. UIs use it to hide fiat-priced invoices where they cannot be paid.
  *
@@ -123,7 +139,7 @@ export function findFeed(chainId: number, base: string, quote: string): FeedConf
  * @returns True when `FEEDS` has at least one entry for the chain.
  */
 export function hasFeedsForChain(chainId: number): boolean {
-  return FEEDS.some((f) => f.chainId === chainId);
+  return FEEDS.some((f) => f.chainId === chainId && isQuoteAvailable(chainId, f.base, f.quote));
 }
 
 /** Options for {@link readPrice}. */
@@ -161,6 +177,8 @@ export interface Price {
   readonly decimals: number;
   readonly updatedAt: bigint;
   readonly roundId: bigint;
+  /** Exclusive time limit from the independent reference observation, when configured. */
+  readonly referenceExpiresAt?: bigint;
 }
 
 /**
@@ -226,9 +244,10 @@ export async function readPrice(reader: AggregatorReader, feed: string, opts: Pr
     if (typeof v !== 'bigint') return fail('QUOTE_FAILED', 'malformed round data');
   }
   if (r.answer <= 0n || r.answer > (1n << 255n) - 1n) return fail('QUOTE_FAILED', 'non-positive or oversized answer');
-  if (r.roundId <= 0n || r.roundId > MAX_UINT256) return fail('QUOTE_FAILED', 'roundId');
+  if (r.roundId <= 0n || r.roundId >= 1n << 80n) return fail('QUOTE_FAILED', 'roundId');
+  if (r.answeredInRound >= 1n << 80n) return fail('QUOTE_FAILED', 'answeredInRound');
   if (r.answeredInRound < r.roundId) return fail('QUOTE_FAILED', 'answer from an earlier round');
-  if (r.updatedAt <= 0n) return fail('QUOTE_FAILED', 'round not updated');
+  if (r.updatedAt <= 0n || r.updatedAt > MAX_UINT256) return fail('QUOTE_FAILED', 'round not updated');
   if (r.updatedAt > opts.now + skew) return fail('QUOTE_FAILED', 'updatedAt in the future');
   if (opts.now > r.updatedAt && opts.now - r.updatedAt > opts.maxAgeSeconds) return fail('QUOTE_FAILED', 'stale price');
   const price = { answer: r.answer, decimals, updatedAt: r.updatedAt, roundId: r.roundId };
@@ -247,8 +266,36 @@ export async function readPrice(reader: AggregatorReader, feed: string, opts: Pr
     const lower = primaryScaled < referenceScaled ? primaryScaled : referenceScaled;
     const difference = primaryScaled >= referenceScaled ? primaryScaled - referenceScaled : referenceScaled - primaryScaled;
     if (difference * 100n > lower) return fail('QUOTE_FAILED', 'reference price deviation');
+    return { ...price, referenceExpiresAt: other.updatedAt + reference.maxAgeSeconds + 1n };
   }
   return price;
+}
+
+/** Read the exact qualified pair. The heartbeat limits feed age independently of the seller's offer.
+ * A caller's stricter age cap may shorten this window. The returned expiry is exclusive.
+ */
+export async function readQualifiedPrice(reader: AggregatorReader, feed: QualifiedFeed, now: bigint, ageCap?: bigint) {
+  const reference = feed.qualification.reference;
+  const sequencerFeed = feed.qualification.sequencerFeed;
+  if (reference.address.toLowerCase() === sequencerFeed?.toLowerCase()) return fail('QUOTE_FAILED', 'reference cannot be the sequencer feed');
+  if ([10, 42161, 8453, 11155420, 421614, 84532].includes(feed.chainId) && !sequencerFeed) {
+    return fail('QUOTE_FAILED', 'sequencer feed required');
+  }
+  if (!Number.isSafeInteger(feed.heartbeatSec) || feed.heartbeatSec < 1 || feed.heartbeatSec > 604800) {
+    return fail('QUOTE_FAILED', 'invalid heartbeat');
+  }
+  // Round up 110% of the published heartbeat. Do not infer a further grace period.
+  const heartbeatLimit = BigInt(Math.min(604800, Math.ceil(feed.heartbeatSec * 11 / 10)));
+  const maxAgeSeconds = ageCap !== undefined && ageCap < heartbeatLimit ? ageCap : heartbeatLimit;
+  const price = await readPrice(reader, feed.address, {
+    now, maxAgeSeconds, maxFutureSkewSeconds: 0n, expectedDecimals: feed.decimals,
+    ...(sequencerFeed === undefined ? {} : { sequencerFeed }),
+    reference: { reader, feed: reference.address, expectedDecimals: reference.decimals, maxAgeSeconds: BigInt(reference.maxAgeSec) },
+    enforceUsdPeg: feed.base === 'USDC' && feed.quote === 'USD',
+  });
+  const primaryExpiry = price.updatedAt + maxAgeSeconds + 1n;
+  const expiresAt = price.referenceExpiresAt !== undefined && price.referenceExpiresAt < primaryExpiry ? price.referenceExpiresAt : primaryExpiry;
+  return { ...price, expiresAt };
 }
 
 /** Who bears the rounding. */
@@ -276,6 +323,8 @@ export function fiatToTokenAmount(p: {
   readonly side: RoundingSide;
 }): bigint {
   if (p.fiatCurrency !== p.priceQuoteCurrency) return fail('QUOTE_FAILED', 'currency mismatch');
+  if (typeof p.fiatMinorUnits !== 'bigint' || p.fiatMinorUnits > MAX_UINT256) return fail('QUOTE_FAILED', 'fiat amount out of range');
+  if (p.side !== 'payer' && p.side !== 'seller') return fail('QUOTE_FAILED', 'rounding side');
   if (p.fiatMinorUnits <= 0n) return fail('QUOTE_FAILED', 'fiat amount must be positive');
   for (const d of [p.fiatDecimals, p.tokenDecimals]) {
     if (!Number.isInteger(d) || d < 0 || d > 36) return fail('QUOTE_FAILED', 'decimals');

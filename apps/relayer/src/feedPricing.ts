@@ -1,4 +1,4 @@
-import { readPrice, type AggregatorReader, type FeedConfig, type Price, type RoundData } from '@ghostpay/chain-adapters';
+import { readQualifiedPrice, type AggregatorReader, type QualifiedFeed, type Price, type RoundData } from '@ghostpay/chain-adapters';
 import type { AlertSink } from './alerts.js';
 import { RelayerError } from './errors.js';
 import type { Metrics } from './metrics.js';
@@ -6,7 +6,7 @@ import { FixedStablePriceSource, type AllowedToken, type TokenPriceSource } from
 
 export interface NativeFeedSource {
   readonly reader: AggregatorReader;
-  readonly feed: FeedConfig & { readonly decimals: number };
+  readonly feed: QualifiedFeed;
   readonly maxAgeSeconds: number;
 }
 /** Explicit feed or legacy fixed mode. A failed configured feed never falls back to an operator constant. */
@@ -23,7 +23,7 @@ export class ConfiguredPriceSource implements TokenPriceSource {
   public async nativeToTokenUnits(chainId: number, token: AllowedToken, nativeWei: bigint): Promise<bigint> {
     return (await this.quoteNativeToTokenUnits(chainId, token, nativeWei)).amount;
   }
-  public async quoteNativeToTokenUnits(chainId: number, token: AllowedToken, nativeWei: bigint): Promise<{ amount: bigint; validUntil?: number }> {
+  public async quoteNativeToTokenUnits(chainId: number, token: AllowedToken, nativeWei: bigint): Promise<{ amount: bigint; validUntil?: number; priceRoundId?: bigint }> {
     const source = this.feeds.get(chainId);
     if (source === undefined) return { amount: await this.fixed.nativeToTokenUnits(chainId, token, nativeWei) };
     let pending = this.pending.get(chainId);
@@ -37,7 +37,7 @@ export class ConfiguredPriceSource implements TokenPriceSource {
     const denominator = 10n ** (18n + BigInt(price.decimals));
     const amount = (numerator + denominator - 1n) / denominator;
     if (amount >= 1n << 256n) throw new RelayerError(503, 'price_unavailable');
-    return { amount, validUntil };
+    return { amount, validUntil, priceRoundId: price.roundId };
   }
   private stale(chainId: number): never {
     this.metrics.inc('relayer_price_stale_total', { chain_id: chainId }); this.alerts.send({ kind: 'price_stale', chainId });
@@ -46,12 +46,13 @@ export class ConfiguredPriceSource implements TokenPriceSource {
   private async read(chainId: number, source: NativeFeedSource): Promise<{ price: Price; validUntil: number }> {
     const now = BigInt(Math.floor(this.now() / 1000)); let observed: RoundData | undefined;
     const reader: AggregatorReader = { decimals: (feed) => source.reader.decimals(feed), latestRoundData: async (feed) => {
-      observed = await source.reader.latestRoundData(feed); return observed;
+      const round = await source.reader.latestRoundData(feed);
+      if (feed.toLowerCase() === source.feed.address.toLowerCase()) observed = round;
+      return round;
     } };
-    let price: Price;
+    let price: Awaited<ReturnType<typeof readQualifiedPrice>>;
     try {
-      price = await readPrice(reader, source.feed.address, { now, maxAgeSeconds: BigInt(source.maxAgeSeconds),
-        expectedDecimals: source.feed.decimals, maxFutureSkewSeconds: 0n });
+      price = await readQualifiedPrice(reader, source.feed, now, BigInt(source.maxAgeSeconds));
     } catch {
       if (typeof observed?.updatedAt === 'bigint' && observed.updatedAt > 0n && observed.updatedAt <= now && now - observed.updatedAt > BigInt(source.maxAgeSeconds)) {
         this.seen.set(chainId, Number(observed.updatedAt)); return this.stale(chainId);
@@ -59,7 +60,7 @@ export class ConfiguredPriceSource implements TokenPriceSource {
       throw new RelayerError(503, 'price_unavailable');
     }
     this.seen.set(chainId, Number(price.updatedAt));
-    const validUntil = Number(price.updatedAt) + source.maxAgeSeconds;
+    const validUntil = Math.min(Number(price.expiresAt), Number(price.updatedAt) + source.maxAgeSeconds);
     if (!Number.isSafeInteger(validUntil) || validUntil <= Math.floor(this.now() / 1000)) return this.stale(chainId);
     return { price, validUntil };
   }

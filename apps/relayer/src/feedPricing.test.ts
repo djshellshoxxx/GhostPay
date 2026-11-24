@@ -1,5 +1,6 @@
+import { qualifiedFeed } from './feedFixture.testutil.js';
 import { describe, expect, it, vi } from 'vitest';
-import { findFeed, type AggregatorReader, type RoundData } from '@ghostpay/chain-adapters';
+import { type AggregatorReader, type RoundData } from '@ghostpay/chain-adapters';
 import { ConfiguredPriceSource } from './feedPricing.js';
 import { Metrics } from './metrics.js';
 import type { AlertEvent } from './alerts.js';
@@ -8,7 +9,7 @@ import { USDC } from './harness.testutil.js';
 const token = { address: USDC, symbol: 'USDC', decimals: 6, permit: true, usdStable: true } as const;
 const round = (over: Partial<RoundData> = {}): RoundData => ({ roundId: 1n, answer: 300_000_000_000n, startedAt: 900n, updatedAt: 990n, answeredInRound: 1n, ...over });
 function setup(over: Partial<RoundData> = {}) {
-  const feed = findFeed(11155111, 'ETH', 'USD')!; const events: AlertEvent[] = []; const metrics = new Metrics(); const clock = { ms: 1_000_000 };
+  const feed = qualifiedFeed; const events: AlertEvent[] = []; const metrics = new Metrics(); const clock = { ms: 1_000_000 };
   const reader = { decimals: vi.fn(() => Promise.resolve(8)), latestRoundData: vi.fn(() => Promise.resolve(round(over))) } satisfies AggregatorReader;
   const source = new ConfiguredPriceSource(new Map([[1, 2_000_000_000n]]), new Map([[11155111,
     { reader, feed: { ...feed, decimals: 8 }, maxAgeSeconds: 30 }]]), { send: (event) => { events.push(event); } }, metrics, () => clock.ms);
@@ -16,7 +17,7 @@ function setup(over: Partial<RoundData> = {}) {
 }
 describe('explicit native/USD feed pricing', () => {
   it('uses exact native/USD conversion, rounds up and carries the source validity deadline', async () => {
-    const s = setup(); expect(await s.source.quoteNativeToTokenUnits(11155111, token, 1n)).toEqual({ amount: 1n, validUntil: 1020 });
+    const s = setup(); expect(await s.source.quoteNativeToTokenUnits(11155111, token, 1n)).toEqual({ amount: 1n, validUntil: 1020, priceRoundId: 1n });
     expect(await s.source.nativeToTokenUnits(11155111, token, 10n ** 18n)).toBe(3_000_000_000n);
     expect(s.metrics.render()).toContain('relayer_price_age_seconds{chain_id="11155111"} 10');
     s.clock.ms += 5000; expect(s.metrics.render()).toContain('relayer_price_age_seconds{chain_id="11155111"} 15');
@@ -50,6 +51,6 @@ describe('explicit native/USD feed pricing', () => {
   });
   it('coalesces only in-flight feed reads, then refreshes on the next conversion', async () => {
     const s = setup(); await Promise.all([s.source.nativeToTokenUnits(11155111, token, 1n), s.source.nativeToTokenUnits(11155111, token, 2n)]);
-    expect(s.reader.latestRoundData).toHaveBeenCalledTimes(1); await s.source.nativeToTokenUnits(11155111, token, 1n); expect(s.reader.latestRoundData).toHaveBeenCalledTimes(2);
+    expect(s.reader.latestRoundData).toHaveBeenCalledTimes(2); await s.source.nativeToTokenUnits(11155111, token, 1n); expect(s.reader.latestRoundData).toHaveBeenCalledTimes(4);
   });
 });
