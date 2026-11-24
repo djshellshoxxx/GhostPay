@@ -197,7 +197,7 @@ describe('S3-01: deployment check', () => {
     expect(JSON.stringify(bad)).not.toContain(detail);
     expect(deploymentProblem(bad)).not.toContain(detail);
 
-    const providerText = 'synthetic-private-provider-detail';
+    const providerText = 'https://secret@rpc.example/leak';
     for (const failure of [
       Object.assign(new Error(providerText), { name: 'ChainAdapterError' }),
       new Error(providerText),
