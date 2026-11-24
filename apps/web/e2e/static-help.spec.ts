@@ -13,7 +13,9 @@ for (const guide of [
     await expect(page).toHaveTitle(guide.title);
     await expect(page.getByRole('heading', { level: 1, name: guide.heading, exact: true })).toBeVisible();
     expect(await page.locator('.brand img').evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    expect(await page.locator('link[rel="stylesheet"]').evaluate((link) => (link as HTMLLinkElement).sheet !== null)).toBe(true);
+    const stylesheets = page.locator('link[rel="stylesheet"]');
+    await expect(stylesheets).toHaveCount(2);
+    expect(await stylesheets.evaluateAll((links) => links.every((link) => (link as HTMLLinkElement).sheet !== null))).toBe(true);
 
     for (const viewport of [{ width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
       await page.setViewportSize(viewport);

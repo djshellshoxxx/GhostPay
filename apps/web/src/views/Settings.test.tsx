@@ -159,6 +159,7 @@ describe('Settings', () => {
 
 
 it('previews nonsecret settings before explicit application and leaves URLs and signer trust untouched', async () => {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ theme: 'system' }));
   const user = await open();
   await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://rpc.example');
   await user.click(screen.getByRole('button', { name: 'Save settings' }));

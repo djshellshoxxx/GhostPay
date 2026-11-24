@@ -1,0 +1,38 @@
+/* Circuit Drift Labs Pages palette, shared with the script-free guides. */
+:root {
+  color-scheme: dark;
+  --bg: light-dark(#f7f8fa, #050912);
+  --surface: light-dark(#fff, #09111f);
+  --text: light-dark(#14171c, #f4f9ff);
+  --muted: light-dark(#4a5260, #a8c3da);
+  --border: light-dark(#667685, #12708c);
+  --accent: light-dark(#005e75, #00e5ff);
+  --accent-text: light-dark(#fff, #001218);
+  --danger: light-dark(#a4161a, #ff7b8c);
+  --ok: light-dark(#1b6b35, #5dffb2);
+  --warn-bg: light-dark(#fff4d6, #2a2106);
+  --warn-border: light-dark(#805300, #ffcf5e);
+  --error-bg: light-dark(#fde8e8, #2c0b14);
+  --info-bg: light-dark(#e4f3f8, #07192b);
+  --ok-bg: light-dark(#e4f5ea, #062a1e);
+  --focus: light-dark(#005e75, #fff);
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: var(--sans);
+}
+:root[data-theme='system'] { color-scheme: light dark; }
+:root[data-theme='light'] { color-scheme: light; }
+
+@media screen {
+  .site-header { border-block-end: 1px solid var(--border); }
+  .site-header h1, main h2, .brand {
+    font-family: var(--sans);
+    font-weight: 650;
+    letter-spacing: .045em;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  a, legend { color: var(--accent); }
+  input[type='checkbox'], input[type='radio'] { accent-color: var(--accent); }
+}
+@media print { :root { color-scheme: light; } }

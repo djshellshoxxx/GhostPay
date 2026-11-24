@@ -9,7 +9,7 @@ const CHAINS = [84532, 11155111];
 const PIN_A = `02${'ab'.repeat(32)}`;
 const PIN_B = '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
 const PIN_C = `03${'ab'.repeat(32)}`;
-const PREFS = { delayMinSec: 120, delayMaxSec: 900, lockTimeoutMin: 15, theme: 'system', autoClearFragment: true };
+const PREFS = { delayMinSec: 120, delayMaxSec: 900, lockTimeoutMin: 15, theme: 'dark', autoClearFragment: true };
 const source: Settings = {
   ...DEFAULT_SETTINGS, theme: 'dark', delayMinSec: 0,
   rpcUrls: { '84532': 'https://base.example/v3/KEY', '11155111': 'wss://sep.example/', '1': 'https://unlisted.example/' },
@@ -84,7 +84,7 @@ describe('settings exchange: parse', () => {
 });
 
 describe('settings exchange: preview and apply', () => {
-  const target: Settings = { ...DEFAULT_SETTINGS, rpcUrls: { '84532': 'https://old.example/', '1': 'https://keep.example/' }, pinnedSigners: [PIN_B, PIN_C] };
+  const target: Settings = { ...DEFAULT_SETTINGS, theme: 'system', rpcUrls: { '84532': 'https://old.example/', '1': 'https://keep.example/' }, pinnedSigners: [PIN_B, PIN_C] };
 
   it('shows current vs incoming per section, with unchanged marking', () => {
     const preview = all(source).preview(target);

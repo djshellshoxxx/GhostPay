@@ -59,7 +59,7 @@ describe('taxonomy', () => {
 
 const MODES: readonly (readonly [string, QrPalette, string, string])[] = [
   ['light', QR_PALETTE_LIGHT, '#f7f8fa', '#ffffff'],
-  ['dark', QR_PALETTE_DARK, '#0f1218', '#181c24'],
+  ['dark', QR_PALETTE_DARK, '#050912', '#09111f'],
 ];
 
 describe('palette', () => {
