@@ -813,3 +813,14 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+## Issue #286 — merge and fuzz the Create Invoice copy action
+
+Worker: Codex on `integrate/invoice-clipboard-286`, from main
+`e0cb4681e453af77bb10be45ba61b4d19579f41b`. Main-targeted integration of
+#293 (6c648770), #297 (04910f65), and #549 (21b1d68c). Own only the clipboard
+helper and its CopyButton integration, invoice-link preference and translations,
+their tests, and this claim. Preserve the owners' existing branch histories.
+Exercise the real button with a mock clipboard, fake time, and seeded copy and
+completion orderings, including an in-flight same-link recopy at the old deadline.
+Verify default-off, unchanged-link clearing, and preservation of newer clipboard text.
