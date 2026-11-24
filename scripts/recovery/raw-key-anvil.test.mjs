@@ -1,13 +1,13 @@
 // node --test scripts/recovery/raw-key-anvil.test.mjs
-// K04 interop proof (spec 18): the raw one-time private key from the reference vector's
-// ghostpay-stealth-private-key.txt is used by an independently implemented EVM wallet tool (Foundry `cast`) on a
-// local anvil chain bound to 127.0.0.1. Only the public TEST-ONLY vector key and anvil's unlocked dev account are used;
-// no real network or funds. Skips when anvil/cast are missing unless REQUIRE_ANVIL=1, where it fails instead.
+// Spec 18 spending proofs for a raw test vector and a fresh encrypted single-payment export.
+// The second signer comes from the standalone recovery script's output. Both use Foundry cast
+// on a dedicated loopback Anvil chain with synthetic accounts. Build @ghostpay/ux-vault first.
+// Skips when anvil/cast are missing unless REQUIRE_ANVIL=1, where it fails instead.
 // Binaries: ANVIL_BIN / CAST_BIN when set (used as given), otherwise PATH, otherwise ~/.foundry/bin.
 import assert from 'node:assert/strict';
 import { execFile, spawn, spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { homedir } from 'node:os';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -44,7 +44,7 @@ async function cast(args) {
 function startAnvil() {
   return new Promise((ok, reject) => {
     // Port 0: the OS picks a free port, so parallel runs never collide.
-    const proc = spawn(ANVIL, ['--host', '127.0.0.1', '--port', '0'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = spawn(ANVIL, ['--host', '127.0.0.1', '--port', '0', '--chain-id', String(V.chainId)], { stdio: ['ignore', 'pipe', 'pipe'] });
     let buf = '';
     const timer = setTimeout(() => {
       proc.kill('SIGKILL');
@@ -82,42 +82,106 @@ function rawVector() {
   return { address, key };
 }
 
+async function confirmSpend(address, key) {
+  const derived = await cast(['wallet', 'address', '--private-key', key]);
+  assert.equal(derived, address, 'cast derives a different address from the payment key');
+
+  const node = await startAnvil();
+  try {
+    const rpc = ['--rpc-url', node.url];
+    assert.equal(Number(await cast(['chain-id', ...rpc])), V.chainId);
+    const [funder] = JSON.parse(await cast(['rpc', 'eth_accounts', ...rpc]));
+    assert.match(funder, /^0x[0-9a-fA-F]{40}$/);
+    const balance = async (who) => BigInt(await cast(['balance', who, ...rpc]));
+    assert.equal(await balance(address), 0n);
+
+    const fundWei = 10n ** 18n;
+    const fund = JSON.parse(await cast(['send', '--json', '--unlocked', '--from', funder, address, '--value', fundWei.toString(), ...rpc]));
+    assert.equal(fund.status, '0x1');
+    assert.equal(await balance(address), fundWei);
+
+    const funderBefore = await balance(funder);
+    const backWei = 4n * 10n ** 17n;
+    const spend = JSON.parse(await cast(['send', '--json', '--private-key', key, funder, '--value', backWei.toString(), ...rpc]));
+    assert.equal(spend.status, '0x1', 'transfer signed with the payment key was not successful');
+    assert.equal(spend.from.toLowerCase(), address.toLowerCase());
+    assert.equal(spend.to.toLowerCase(), funder.toLowerCase());
+    const fee = BigInt(spend.gasUsed) * BigInt(spend.effectiveGasPrice);
+    assert.ok(fee > 0n);
+    assert.equal(await balance(address), fundWei - backWei - fee);
+    assert.equal(await balance(funder), funderBefore + backWei);
+    assert.equal(BigInt(await cast(['nonce', address, ...rpc])), 1n);
+  } finally {
+    node.proc.kill('SIGKILL');
+  }
+}
+
+// Construct a new encrypted export for a different payment from the plaintext control.
+// Drop the seller and one-time secrets before starting the independent recovery process.
+async function writeEncryptedPayment(path, announcement) {
+  const { createStealthExportApi } = await import('@ghostpay/ux-vault/portable');
+  const api = createStealthExportApi();
+  const keys = {
+    spendingSecret: Buffer.from(V.seller.spendingPrivateKey.slice(2), 'hex'),
+    viewingSecret: Buffer.from(V.seller.viewingPrivateKey.slice(2), 'hex'),
+  };
+  let payment;
+  try {
+    payment = api.buildVerifiedPayment({
+      chainId: V.chainId,
+      announcement: { ...announcement, schemeId: BigInt(announcement.schemeId), blockNumber: BigInt(announcement.blockNumber) },
+      keys,
+      exportedAt: new Date('2026-11-18T12:34:56Z'),
+    });
+    const encrypted = await api.encryptPaymentKeys([payment], { scope: 'single', passphrase: V.passphrase });
+    writeFileSync(path, encrypted, { mode: 0o600 });
+  } finally {
+    payment?.secret.fill(0);
+    keys.spendingSecret.fill(0);
+    keys.viewingSecret.fill(0);
+  }
+}
+
 if (required && !available) {
-  test('K04 raw key interop with Foundry cast on anvil', () => {
+  test('K04 spending proofs require Foundry cast and anvil', () => {
     assert.fail(`REQUIRE_ANVIL=1 but anvil=${String(ANVIL !== undefined)} cast=${String(CAST !== undefined)}`);
   });
 } else {
   test('K04 raw key interop with Foundry cast on anvil', { skip, timeout: 180_000 }, async () => {
     const { address, key } = rawVector();
-    const derived = await cast(['wallet', 'address', '--private-key', key]);
-    assert.equal(derived, address, 'cast derives a different address from the raw key');
+    await confirmSpend(address, key);
+  });
 
-    const node = await startAnvil();
+  test('a fresh encrypted payment backup recovers a signer that spends on its recorded chain', { skip, timeout: 180_000 }, async () => {
+    const { announcement } = V.announcements.find(({ id }) => id === 'a2');
+    const directory = mkdtempSync(join(tmpdir(), 'gp-encrypted-spend-'));
     try {
-      const rpc = ['--rpc-url', node.url];
-      const [funder] = JSON.parse(await cast(['rpc', 'eth_accounts', ...rpc]));
-      assert.match(funder, /^0x[0-9a-fA-F]{40}$/);
-      const balance = async (who) => BigInt(await cast(['balance', who, ...rpc]));
-      assert.equal(await balance(address), 0n);
-
-      const fundWei = 10n ** 18n;
-      const fund = JSON.parse(await cast(['send', '--json', '--unlocked', '--from', funder, address, '--value', fundWei.toString(), ...rpc]));
-      assert.equal(fund.status, '0x1');
-      assert.equal(await balance(address), fundWei);
-
-      const funderBefore = await balance(funder);
-      const backWei = 4n * 10n ** 17n;
-      const spend = JSON.parse(await cast(['send', '--json', '--private-key', key, funder, '--value', backWei.toString(), ...rpc]));
-      assert.equal(spend.status, '0x1', 'transfer signed with the raw key was not successful');
-      assert.equal(spend.from.toLowerCase(), address.toLowerCase());
-      assert.equal(spend.to.toLowerCase(), funder.toLowerCase());
-      const fee = BigInt(spend.gasUsed) * BigInt(spend.effectiveGasPrice);
-      assert.ok(fee > 0n);
-      assert.equal(await balance(address), fundWei - backWei - fee);
-      assert.equal(await balance(funder), funderBefore + backWei);
-      assert.equal(BigInt(await cast(['nonce', address, ...rpc])), 1n);
+      const path = join(directory, 'ghostpay-stealth-keypair.json');
+      await writeEncryptedPayment(path, announcement);
+      const decoded = spawnSync(process.execPath, [
+        join(here, 'stealth-export-recover.mjs'), path, '--expected-chain', String(V.chainId), '--reveal-private-keys',
+      ], { cwd: directory, env: {}, input: V.passphrase, timeout: 60_000 });
+      try {
+        assert.equal(decoded.status, 0, 'standalone recovery failed');
+        let recovered;
+        try {
+          recovered = JSON.parse(decoded.stdout.toString());
+        } catch {
+          throw new Error('standalone recovery returned invalid JSON');
+        }
+        const { payments, chainId } = recovered;
+        assert.equal(chainId, V.chainId);
+        assert.equal(payments.length, 1);
+        const [payment] = payments;
+        assert.equal(payment.stealthAddress.toLowerCase(), announcement.stealthAddress.toLowerCase());
+        assert.ok(/^0x[0-9a-f]{64}$/.test(payment.privateKey), 'recovery did not return a payment key');
+        await confirmSpend(payment.stealthAddress, payment.privateKey);
+      } finally {
+        decoded.stdout?.fill(0);
+        decoded.stderr?.fill(0);
+      }
     } finally {
-      node.proc.kill('SIGKILL');
+      rmSync(directory, { recursive: true, force: true });
     }
   });
 }
