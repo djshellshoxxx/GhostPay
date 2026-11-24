@@ -1,0 +1,147 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-24T20:07:33Z (run-start observation; refs refreshed during cycle)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorOverlay": "d08eab2718362fe5621e55507922c84610e526b0:docs/consolidation/autonomous-20261121/semantic-overlay-20261124T2002Z.json",
+  "summary": {
+    "branches": 708,
+    "openPrs": 242,
+    "stacked": 143,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      8
+    ],
+    "prPages": [
+      100,
+      100,
+      42
+    ],
+    "independentRefMatches": 708,
+    "provisionalFinalized": 515,
+    "provisionalUnresolved": 193,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 3
+  },
+  "summaryCorrection": "Prior overlay has 708 rows and 242 PR records; its inherited branchCount=705/openPrCount=239 aliases are stale; use actual row counts and the 708/242 summary. Finalized means provisional semantic disposition, not all historical obligations integrated.",
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "oldSha": "3d1d778eed370f80d91a4017bf64fae5d4aaa534",
+      "sha": "d08eab2718362fe5621e55507922c84610e526b0",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "newlyDiscovered": [],
+  "retired": [],
+  "newlyFinal": [
+    {
+      "branch": "codex/recover-minimal-invoice-qualification-20261124",
+      "sha": "2d612e37f3f71b785129f447c14731cbef9143c7",
+      "pr": 603,
+      "disposition": "incremental-test-repair-redundant-to-active-owner-evidence-retained",
+      "proof": {
+        "parent": "b82be893d3d360064222fafcce8cef2033cd23a5",
+        "parentTree": "798efdc92804c04896578640aa529181a5f955eb",
+        "donorTree": "269f7c845b18063a929dbf90e0bdfbf185f6f442",
+        "ownerPr": 600,
+        "ownerHead": "c8f892f2aaa4423450689a4d7f91dff24230ed8b",
+        "ownerTree": "c4041462f1b38576e3a7ecd7b8624d60e2e3c5ea",
+        "donorTest": "6ceec1f74c3992f0b96cb74e8e35d1d295e509e6",
+        "ownerTest": "d04084036106ed67f00c12fc98ba6948b34809f6",
+        "comparison": "All three complete trees untruncated. Both children share exact #585 parent; each changes only the ordering test, registry and its own handoff. Single differing test line 78: anchored /^Link$/ vs default exact string 'Link'; normalized files byte-identical. No product difference. #603 closed duplicate explicitly, #600 open with 29 successful and 3 skipped check runs. Original #603 full/lean browser proof retained only at pinned source; owner #585/#600 integration and review remain outstanding.",
+        "evidenceBlob": "0c3d78195adfa3e9f676ff37810dca52aec63901"
+      }
+    },
+    {
+      "branch": "qualification/pr504-main-package-rollup-20261124",
+      "sha": "c09d15a3ee2b887f320a130197fb3acba1b4566e",
+      "disposition": "redundant-composition-both-parents-main-registry-note-retained",
+      "proof": {
+        "tree": "b547cdcf6162ad02c8a141fb0f166797d498f0e6",
+        "parents": [
+          "1a7447d58c08363209b6b9b67e9a6afad07d87f3",
+          "2d83de0b7f5bba0fafc0c25d19d1fcb382edf719"
+        ],
+        "parentAheadAgainstMain": [
+          0,
+          0
+        ],
+        "nonRegistryDeltaExactMain": 18,
+        "registryBlob": "039fe7a178e1adf3cf3477a4d04a18ac3647e69a",
+        "registryAbsentNonblankLines": 2,
+        "registryMissing": "C1 main reconciliation heading and qualification-ref ownership note only; retain original registry and exact history as evidence, not an additional production merge."
+      }
+    },
+    {
+      "branch": "qualification/20261124/pages-599",
+      "sha": "8e0bbe97b84817472b1322a95bbc58cf77d7cd57",
+      "disposition": "incremental-documentation-qualification-reference-owner-integration-pending",
+      "proof": {
+        "parent": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8",
+        "tree": "69832c60b3460677cab9d3589a6558a0c9f5a58f",
+        "ownerPr": 599,
+        "ownerHeadUnchanged": true,
+        "nonDocDelta": 0,
+        "docs": [
+          "docs/ai/ACTIVE_WORK.md",
+          "docs/handoffs/PAGES_599_BROWSER_QUALIFICATION_20261124.md",
+          "docs/qa/pages-599-20261124/qualification.json"
+        ],
+        "handoffBlob": "5f99a374f30d9dfacc3c367f824e48adeb903c3f",
+        "qaBlob": "ae9cc8735ac90c9b6e7c361f1810647b3ccf0481",
+        "qualification": "Recorded 16/16 original Pages/Anvil cases; no new browser run in this cycle. Preserve #599 and #575 -> #546 -> #533 dependency order; no separate code PR."
+      }
+    }
+  ],
+  "testEvidence": {
+    "pr384": "Existing canonical detached commit bd431c5672c238cc35bb9755f2b759a9569cc753 from latest overlay already preserves #614 ancestry, full registry and donor test; do not recreate or promote an alternate.",
+    "mainFormatterBlob": "cda0c3c5e159106e8ef9af6946574cfc2c3ab671",
+    "mainTestBlob": "1b7cdec6f697671f9e722f3b1e73bd29cfb38923",
+    "donorTestBlob": "f322d4937435a705381431bba9ebdc6fe82456cb",
+    "recoveredTestBlob": "5c28a06fb7517e1f95076191c018bc406fef5e46",
+    "isolatedReplay": {
+      "node": "22.16.0",
+      "typescript": "5.8.3",
+      "command": "git hash-object format.ts; tsc --strict --target ES2022 --module commonjs --outDir out format.ts; node replay.cjs",
+      "passed": 40,
+      "failed": 0,
+      "originalDonorAssertions": 23,
+      "additional": 17,
+      "coverage": "noncoercion of malformed runtime objects; all eight signed zero-decimal currencies and six default-two currencies, including KWD/BHD/OMR/TND/CLF",
+      "scope": "direct Node assertions against strict-compiled hash-matched source; not actual Vitest, full checkout, lint, browser or hosted CI."
+    },
+    "note": "A detached main-only tree d055361e5549c40f6d358d7b6724207ba8217915 produced identical recovered test blob and exact donor handoff; not a branch/commit candidate; canonical prior overlay's detached commit supersedes it. No ref change to #384."
+  },
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0
+    },
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "cloudDevelopment": {
+      "run": 45472765175,
+      "job": 138724967919,
+      "reason": "Quota exceeded. Check your plan and billing details.",
+      "scope": "separate scheduled API-funded develop job; integrate passed; publish skipped; no retry or credential change"
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    }
+  },
+  "remaining": "No fresh main merge or branch promotion. #614 independent approval outstanding; #616/#617 prepared trees require fresh qualification after #614. #384 canonical candidate pending coordination and hosted gates. 193 unresolved live histories provisional; historical transition/evidence obligations remain. DNS blocks repository clone. No new automation, deployments, branch deletions, force pushes or review bypasses."
+}
