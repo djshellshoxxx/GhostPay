@@ -1,0 +1,498 @@
+{
+  "observed_at": "2026-11-24T08:36:06Z",
+  "reviewer": "resume_package_qualification",
+  "runtime": {
+    "node": "24.22.3",
+    "vitest": "5.0.5",
+    "coverage_v8": "5.0.5",
+    "typescript": "5.9.3",
+    "eslint": "10.15.0",
+    "typescript_eslint": "8.73.0",
+    "fast_check": "4.10.2"
+  },
+  "qualification": [
+    {
+      "pr": 565,
+      "head": "68a4e9596062b2144ca5d9da3ff817b73644e2e1",
+      "package": "@ghostpay/ux-schedule",
+      "source_blob": "ffaf6827ff814f40303a5127490caba98ea4c554",
+      "tests": 137,
+      "test_files": 6,
+      "coverage": {
+        "statements": 99.54,
+        "branches": 97.95,
+        "functions": 100,
+        "lines": 100
+      },
+      "commands": [
+        {
+          "command": "npm test --workspace=@ghostpay/ux-schedule -- --maxWorkers=2",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 test\n> vitest run --coverage --maxWorkers=2\n\n\n RUN  v5.0.5 /workspace/scratch/efb8df2579c9/gp-qualify-565/packages/ux-schedule\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  137 passed (137)\n   Start at  00:34:18\n   Duration  956ms (transform 44%, import 23%, worker 19%, tests 14%)\n\n    Isolate  6 workers spawned · ~165ms startup each (spawn + environment, per file)\n             at least ~331ms faster with isolate: false — reuses workers across files instead of one per file\n\n % Coverage report from v8\n---------------|---------|----------|---------|---------|-------------------\nFile           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n---------------|---------|----------|---------|---------|-------------------\nAll files      |   99.54 |    97.95 |     100 |     100 |                   \n recurrence.ts |   98.73 |    96.89 |     100 |     100 | 146,151,177,252   \n scheduled.ts  |     100 |    98.38 |     100 |     100 | 190               \n time.ts       |     100 |    95.65 |     100 |     100 | 59                \n validate.ts   |     100 |    98.03 |     100 |     100 | 60                \n---------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.54% ( 434/436 )\nBranches     : 97.95% ( 336/343 )\nFunctions    : 100% ( 61/61 )\nLines        : 100% ( 333/333 )\n================================================================================\n"
+        },
+        {
+          "command": "npm run typecheck --workspace=@ghostpay/ux-schedule",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+        },
+        {
+          "command": "npm run build --workspace=@ghostpay/ux-schedule",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+        },
+        {
+          "command": "npm run lint --workspace=@ghostpay/ux-schedule",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-schedule@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n"
+        }
+      ],
+      "hosted": {
+        "run_id": 45326703602,
+        "status": "completed",
+        "conclusion": "success",
+        "jobs": [
+          {
+            "id": 138217927227,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138217927670,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017384,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017424,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017433,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017484,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017490,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017511,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017519,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017535,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017583,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017596,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017700,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017722,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017729,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017745,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017755,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017792,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017795,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017831,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235017875,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138235018020,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138293856526,
+            "name": "contracts",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138298887510,
+            "name": "typescript",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "other_workflows": [
+          {
+            "id": 45326703648,
+            "name": "CLI operator qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 552,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703648/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703648/logs",
+            "workflow_id": 412675588
+          },
+          {
+            "id": 45326703601,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 677,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703601/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703601/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 45326703607,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 786,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703607/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703607/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 45326703605,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 672,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703605/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45326703605/logs",
+            "workflow_id": 392799214
+          }
+        ]
+      },
+      "independent_review": {
+        "result": "no blocking findings",
+        "scope": "Minimal timestamp repair and regression tests; typed templates and imported templates retain existing validation; no scheduling activation."
+      },
+      "state": {
+        "draft": true,
+        "merged": false,
+        "submitted_github_reviews": 0
+      }
+    },
+    {
+      "pr": 568,
+      "head": "c6817a2e46a684cc29450fc0bc18d48fc6e9f500",
+      "package": "@ghostpay/ux-fiat",
+      "source_blob": "7670b0aaf3dd9d12b9781025395731e9a94bf116",
+      "tests": 54,
+      "test_files": 2,
+      "coverage": {
+        "statements": 100,
+        "branches": 99.31,
+        "functions": 100,
+        "lines": 100
+      },
+      "commands": [
+        {
+          "command": "npm test --workspace=@ghostpay/ux-fiat -- --maxWorkers=2",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-fiat@0.1.0 test\n> vitest run --coverage --maxWorkers=2\n\n\n RUN  v5.0.5 /workspace/scratch/efb8df2579c9/gp-qualify-568/packages/ux-fiat\n      Coverage enabled with v8\n\n\n Test Files  2 passed (2)\n      Tests  54 passed (54)\n   Start at  00:34:18\n   Duration  558ms (transform 49%, import 22%, tests 15%, worker 14%)\n\n % Coverage report from v8\n------------|---------|----------|---------|---------|-------------------\nFile        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n------------|---------|----------|---------|---------|-------------------\nAll files   |     100 |    99.31 |     100 |     100 |                   \n decimal.ts |     100 |    96.92 |     100 |     100 | 76,94             \n------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 100% ( 282/282 )\nBranches     : 99.31% ( 292/294 )\nFunctions    : 100% ( 27/27 )\nLines        : 100% ( 217/217 )\n================================================================================\n"
+        },
+        {
+          "command": "npm run typecheck --workspace=@ghostpay/ux-fiat",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-fiat@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+        },
+        {
+          "command": "npm run build --workspace=@ghostpay/ux-fiat",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-fiat@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+        },
+        {
+          "command": "npm run lint --workspace=@ghostpay/ux-fiat",
+          "exit_code": 0,
+          "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/ux-fiat@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n"
+        }
+      ],
+      "hosted": {
+        "run_id": 45333644284,
+        "status": "queued",
+        "conclusion": null,
+        "jobs": [
+          {
+            "id": 138240472202,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138240472916,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034783,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034802,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034807,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034820,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034855,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034859,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034881,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034896,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034899,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034902,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034911,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034915,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034929,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034973,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267034996,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267035004,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267035014,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267035041,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267035116,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138267035202,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 138301262060,
+            "name": "contracts",
+            "status": "queued",
+            "conclusion": null
+          },
+          {
+            "id": 138309650791,
+            "name": "typescript",
+            "status": "queued",
+            "conclusion": null
+          }
+        ],
+        "other_workflows": [
+          {
+            "id": 45333644259,
+            "name": "CLI operator qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 555,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644259/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644259/logs",
+            "workflow_id": 412675588
+          },
+          {
+            "id": 45333644263,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 790,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644263/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644263/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 45333644226,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 681,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644226/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644226/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 45333644197,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 676,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644197/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45333644197/logs",
+            "workflow_id": 392799214
+          }
+        ]
+      },
+      "independent_review": {
+        "result": "no blocking findings",
+        "scope": "Existing checkAmount applied after signed rounding preserves valid exact arithmetic and reports existing overflow errors; no fee or payment behavior changes."
+      },
+      "state": {
+        "draft": true,
+        "merged": false,
+        "submitted_github_reviews": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Package-level native runs on exact heads, not a local whole-repository build/test run.",
+    "Node 24.22.3 satisfies repository >=22 engine but is not a claim of local Node 22 execution.",
+    "Dependencies reused when installed versions matched; pinned ESLint and typescript-eslint installed separately. No clean full-repository npm ci claimed.",
+    "Independent AI source review is not a formal GitHub approval.",
+    "No changes to production source, original PR branches, main, integration lock or deployment."
+  ]
+}
