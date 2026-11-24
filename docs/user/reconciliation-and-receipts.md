@@ -55,6 +55,16 @@ The vault deduplicates receipt signatures and keeps at most 500 receipts and 500
 chain. The archive offers individual deletion, deletion of all archived receipts, and a plaintext receipt export after
 confirmation. That export reveals payment details; keep it out of shared locations unless you intend to share them.
 
+## Review local invoice and receipt timestamps
+
+In **Scan and receive**, unlock the reconciliation vault for the seller and chain you want to review. If privacy mode is on, reveal the history. Choose **Local invoice registration times** or **Local payment receipt archive times**.
+
+1. Select **Any age**, **At least 30 days** or **At least 90 days**. Each category remembers its own choice on this device. A timestamp exactly at the selected age is eligible.
+2. Check the permission for this unlocked vault and select **Preview**. The count covers only that category and uses the time of the preview.
+3. Confirm to remove the listed number of timestamps, or select **Cancel cleanup**. If another tab changed the vault, review a fresh preview. Reloading or locking the vault withdraws consent.
+
+Cleanup keeps the invoice registration, the signed receipt and its original issue date, transaction references, and payment recovery information. Existing backup files keep their contents. Opening a reconciliation backup created after registration-time removal requires a reader supporting format 4. After receipt archive-time removal it requires format 5. Your seller wallet uses its existing format and passphrase.
+
 ## Storage, backup and deletion
 
 Reconciliation data is stored in this browser's IndexedDB and encrypted using a key derived from the seller's viewing key.
