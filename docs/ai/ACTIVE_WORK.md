@@ -1,3 +1,12 @@
+# F08 — offline customer review of a signed merchant profile
+
+- Worker: Codex. Branch: `feature/f08-offline-merchant-profile-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. F08 specification: `50ea73dcf3d4e9593da780ffb34bdfce60a90a15`.
+- Scope: browser-local import of an existing v1 public profile and comparison with an independently supplied full signer key. The full-build preview is opt-in. The lean client and existing payment and pin paths keep their own behavior.
+- Owned paths: `apps/web/src/features/future/ghostid/`, a conditional mount in `apps/web/src/components/MerchantProfilePanel.tsx`, additive locale and security classification keys, focused browser coverage, and the F08 handoff.
+- Acceptance: authentic profile and matching key, distinct key conflict, no comparison from a prefix, rejection of changed, expired, oversized or malformed files, safe replacement of an in-flight selection, and offline operation without modifying stored pins. Verify the feature gate in the default full and lean builds.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
