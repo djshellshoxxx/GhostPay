@@ -15,6 +15,8 @@ const MAX_ATTEMPTS = 128;
 const MAX_BYTES = 100_000;
 /** Bound on user-linked replacement hashes per record. */
 export const MAX_REPLACEMENTS = 8;
+/** Longest wait for the cross-tab journal lock before refusing a new wallet request. */
+export const LOCK_WAIT_MS = 20_000;
 const HASH = /^0x[0-9a-f]{64}$/;
 export interface AttemptStorage {
   getItem(key: string): string | null;
@@ -89,7 +91,20 @@ export function browserAttemptLocks(): AttemptLockManager {
     throw new UserFacingError({ key: 'error.duplicateAttemptJournal.locksUnavailable' });
   }
   const manager = locks;
-  return { request: async <T>(name: string, callback: () => Promise<T>): Promise<T> => await manager.request(name, { mode: 'exclusive' }, callback) };
+  return {
+    request: async <T>(name: string, callback: () => Promise<T>): Promise<T> => {
+      // Another tab may hold the lock across a wallet prompt (policy actions). Waiting is safe because nothing has been
+      // sent yet, but never indefinitely: refuse with the typed journal error instead (JRNL-L1).
+      let signal: AbortSignal | undefined;
+      try { signal = AbortSignal.timeout(LOCK_WAIT_MS); } catch { signal = undefined; }
+      try {
+        return await manager.request(name, signal === undefined ? { mode: 'exclusive' } : { mode: 'exclusive', signal }, callback);
+      } catch (e) {
+        if (signal?.aborted === true) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+        throw e;
+      }
+    },
+  };
 }
 
 // Synchronous operation only. Restored before returning control to the browser.
@@ -122,6 +137,8 @@ function validAttempt(v: unknown): v is WalletAttempt {
 }
 function parseRaw(raw: string | null): readonly WalletAttempt[] {
   if (raw === null) return [];
+  // A non-conforming Storage can return anything; only a string is a journal (QA-3).
+  if (typeof raw !== 'string') return fail();
   if (raw.length > MAX_BYTES || new TextEncoder().encode(raw).byteLength > MAX_BYTES) return fail();
   let data: unknown;
   try { data = parseStrictJson(raw); } catch { return fail(); }
@@ -148,9 +165,20 @@ function mergeRecords(existing: readonly WalletAttempt[], incoming: readonly Wal
     if (JSON.stringify(current) === JSON.stringify(record)) continue;
     if (!sameAction(current, record) || (current.txDigest !== undefined && record.txDigest !== undefined && current.txDigest !== record.txDigest)) return fail();
     if (current.status === 'submitted' && record.status === 'unknown') continue;
-    if (current.status === 'submitted' && record.status === 'submitted' && current.hash === record.hash &&
-        (record.nonce === undefined || record.nonce === current.nonce) &&
-        (record.replacements ?? []).every((hash) => current.replacements?.includes(hash) === true)) continue;
+    if (current.status === 'submitted' && record.status === 'submitted' && current.hash === record.hash) {
+      // Same submission seen by two stores: keep the union of what each observed. A different nonce is a conflict.
+      if (current.nonce !== undefined && record.nonce !== undefined && current.nonce !== record.nonce) return fail();
+      const nonce = current.nonce ?? record.nonce;
+      const replacements = [...new Set([...(current.replacements ?? []), ...(record.replacements ?? [])])];
+      const combined: WalletAttempt = {
+        ...current,
+        ...(nonce === undefined ? {} : { nonce }),
+        ...(replacements.length === 0 ? {} : { replacements }),
+      };
+      if (!validAttempt(combined)) return fail();
+      merged[index] = combined;
+      continue;
+    }
     if (current.status === 'unknown' && record.status === 'unknown') continue;
     if (current.status === 'unknown' && record.status === 'submitted') { merged[index] = record; continue; }
     return fail();
@@ -203,7 +231,11 @@ async function updateBrowserJournal<T>(
   try {
     updated = await updateJournalSnapshot((saved) => {
       if (saved !== undefined && typeof saved !== 'string') return fail();
-      let raw = JSON.stringify(mergeRecords(parseRaw(saved ?? local), parseRaw(old)));
+      // Union, never replacement: a record only this browser's localStorage mirror holds (written by an older build or
+      // committed before this snapshot existed) still blocks its action and keeps its hash (QA-4). A record cleared in
+      // another process within the mirror's propagation delay can reappear; that only blocks a send until cleared again.
+      const committed = saved === undefined ? parseRaw(local) : mergeRecords(parseRaw(saved), parseRaw(local));
+      let raw = JSON.stringify(mergeRecords(committed, parseRaw(old)));
       const staged: AttemptStorage = {
         getItem: () => raw,
         setItem: (_key, value) => { raw = value; },
@@ -301,6 +333,17 @@ export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptS
   if (!confirmed) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt' });
   const store = requiredStorage(storage);
   write(readAttempts(store).filter((a) => a.id !== key && a.key !== key), store);
+}
+/**
+ * Removes the `unknown` record of an attempt whose wallet request was never started (its final authority check failed
+ * after the record was committed). Only that exact record, only while it is still `unknown`; anything else is kept.
+ */
+export function removeUnsentAttempt(attempt: WalletAttempt, storage?: AttemptStorage): void {
+  const store = requiredStorage(storage);
+  const records = readAttempts(store);
+  const current = records.find((a) => a.id === attempt.id);
+  if (current === undefined || current.status !== 'unknown' || !sameAction(current, attempt)) return;
+  write(records.filter((a) => a !== current), store);
 }
 /** {@link clearAttempt} on the durable store, inside the journal lock. */
 export function clearAttemptLocked(key: string, confirmed: boolean, access?: JournalAccess): Promise<void> {

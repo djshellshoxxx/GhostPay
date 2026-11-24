@@ -1,6 +1,6 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { attemptTxDigest, beginAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
+import { attemptTxDigest, beginAttempt, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import type { MessageKey } from '../i18n/catalog';
@@ -268,6 +268,8 @@ export interface TxRequest {
 }
 
 const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
+/** Longest wait for recording a returned hash before handing it to the caller anyway. */
+const FINISH_WAIT_MS = 10_000;
 
 export interface WalletAttemptOptions {
   readonly kind: AttemptInput['kind'];
@@ -393,18 +395,37 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       ...(options?.lockManager === undefined ? {} : { lockManager: options.lockManager }),
       ...(options?.journalLockHeld === true ? { lockHeld: true } : {}),
     };
-    const box: { started?: StartedRequest } = {};
+    const box: { started?: StartedRequest; abandoned?: boolean; unsent?: WalletAttempt } = {};
+    const refuseIfAbandoned = (): void => {
+      // A lock manager that settles before running its callback must never start a request this call already refused (QA-1).
+      if (box.abandoned === true) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+    };
     if (input === undefined) box.started = invoke(undefined);
     else {
       try {
         // Keep the provider promise out of the journal lock so a wallet prompt never holds the lock.
         await withAttemptJournal((store) => {
+          refuseIfAbandoned();
           authority.assert();
           options?.beforeAttemptStart?.(input.key, store);
           return beginAttempt(input, store);
-        }, access, (attempt) => { box.started = invoke(attempt); });
+        }, access, (attempt) => {
+          refuseIfAbandoned();
+          // invoke() throws only from its authority check, before the provider is called: the committed record is unsent.
+          try { box.started = invoke(attempt); } catch (e) { box.unsent = attempt; throw e; }
+        });
       } catch (e) {
-        if (box.started === undefined) throw e;
+        if (box.started !== undefined) { /* The provider was invoked: a failing lock wrapper cannot erase the request. */ }
+        else {
+          box.abandoned = true;
+          const unsent = box.unsent;
+          if (unsent !== undefined) {
+            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5). If removal
+            // fails the record stays: refusing a retry is the safe direction.
+            try { await withAttemptJournal((store) => { removeUnsentAttempt(unsent, store); }, access); } catch { /* kept */ }
+          }
+          throw e;
+        }
       }
     }
     const started = box.started;
@@ -420,9 +441,17 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     const normalized = hash.toLowerCase() as Hex;
     const attempt = started.attempt;
     if (attempt !== undefined) {
+      // The hash is recorded under the lock, which another tab may hold across a wallet prompt (policy actions). Never
+      // keep a returned hash from the caller meanwhile: after a bounded wait surface it as a broadcast whose follow-up
+      // failed, and let the queued write still record it when the lock frees (JRNL-L1).
+      const finishing = withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, access);
+      finishing.catch(() => undefined);
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const waited = new Promise<'timeout'>((resolve) => { timer = setTimeout(() => { resolve('timeout'); }, FINISH_WAIT_MS); });
       try {
-        await withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, access);
+        if (await Promise.race([finishing.then(() => 'recorded' as const), waited]) === 'timeout') throw new WalletBroadcastError(normalized);
       } catch { throw new WalletBroadcastError(normalized); }
+      finally { clearTimeout(timer); }
     }
     return normalized;
   } finally { authority.dispose(); }

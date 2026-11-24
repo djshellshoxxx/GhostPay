@@ -2,6 +2,7 @@
 const DATABASE = 'ghostpay-wallet-attempt-journal';
 const STORE = 'journal';
 const SNAPSHOT = 'snapshot';
+const OPEN_TIMEOUT_MS = 10_000;
 
 function openJournal(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -14,7 +15,10 @@ function openJournal(): Promise<IDBDatabase> {
     request.onupgradeneeded = () => { request.result.createObjectStore(STORE); };
     request.onblocked = refuse;
     request.onerror = refuse;
+    // An open that never answers must not hold the cross-tab journal lock forever (QA-6).
+    const timer = setTimeout(refuse, OPEN_TIMEOUT_MS);
     request.onsuccess = () => {
+      clearTimeout(timer);
       if (failed) request.result.close();
       else resolve(request.result);
     };
