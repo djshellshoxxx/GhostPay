@@ -1,4 +1,5 @@
 import { encodeFragment } from '@ghostpay/invoice-schema';
+import fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 import { sampleSigned } from '../../invoice-schema/src/fixtures.testutil.js';
 import { MAX_SCAN_TEXT_LEN } from './camera.js';
@@ -51,5 +52,28 @@ describe('decodeQrImage platform multi-result selection', () => {
     const s = detectorEnv(['', 'y'.repeat(MAX_SCAN_TEXT_LEN + 1)]);
     expect(await decodeQrImage(source, { env: s.env })).toBeNull();
     expect(s.close).toHaveBeenCalledOnce();
+  });
+
+  it('selects the first usable text in generated native result lists and releases the bitmap', async () => {
+    const atLimit = '🎫'.padEnd(MAX_SCAN_TEXT_LEN, 'x');
+    const unusable = fc.constantFrom('', atLimit + 'x', atLimit + atLimit);
+    const usable = fc.oneof(
+      fc.string({ unit: 'binary', minLength: 1, maxLength: 64 }),
+      fc.constantFrom(' ', '\0', 'e\u0301', 'x'.repeat(MAX_SCAN_TEXT_LEN - 1), atLimit,
+        await invoiceLink('first'), await invoiceLink('second')),
+    );
+    const prefix = fc.array(unusable, { maxLength: 64, size: 'max' });
+    const suffix = fc.array(fc.oneof(unusable, usable), { maxLength: 64, size: 'max' });
+
+    await fc.assert(
+      fc.asyncProperty(prefix, fc.option(usable), suffix, async (before, first, after) => {
+        // A nonempty, all-unusable list returns null. An empty list takes the jsQR path.
+        const values = first === null ? [...before, ''] : [...before, first, ...after];
+        const s = detectorEnv(values);
+        expect(await decodeQrImage(source, { env: s.env })).toBe(first);
+        expect(s.close).toHaveBeenCalledOnce();
+      }),
+      { seed: Number(process.env.FUZZ_SEED ?? 508), numRuns: Number(process.env.FUZZ_RUNS ?? 512) },
+    );
   });
 });

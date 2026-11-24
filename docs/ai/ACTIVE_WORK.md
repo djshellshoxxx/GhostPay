@@ -3,6 +3,7 @@
 Worker: Codex, branch `codex/qualify-508-invoice-link`, based on #508 at `1cf9ec458bdd193f186499ac30ac3f7b207cfe0c`. Main at preflight: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
 Scope on this child branch: this entry and `packages/qr-exchange/src/readers.platform-candidates.test.ts`. The R14 owner retains the decoder and parent branch.
 Acceptance: mock one detection list with empty text before a signed invoice link, then a list with two usable links. Assert the exact returned link in each case and run the qr-exchange package suite.
+Follow-up on #547 at `4befc6434635f28ce9fd11822e819d5367f727d7`: Codex owns fuzz coverage in the same test file on this qualification branch. Check ordering, text-length boundaries, all-unusable lists and bitmap cleanup against generated detector results.
 
 # GP-BUG R14 — Select a usable platform QR candidate (2026-11-23)
 
