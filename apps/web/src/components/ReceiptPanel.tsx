@@ -8,6 +8,7 @@ import { formatUnits } from '../lib/format';
 import { useEffectiveProfile, type BuildProfile } from '../lib/buildProfile';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { makeQr } from '../lib/qr';
+import { usePrintTarget } from '../lib/usePrintTarget';
 import { LocalizedTypeError, UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import type { Translator } from '../i18n/translator';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
@@ -43,6 +44,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   trRef.current = tr;
   const t: Translator['t'] = (key, values) => trRef.current.t(key, values);
   const lean = useEffectiveProfile(props.profile) === 'lean';
+  const { printRef, print } = usePrintTarget();
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
@@ -310,7 +312,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
           </div>
           {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
           {receipt !== undefined && (
-            <article className="receipt-print">
+            <article ref={printRef} className="receipt-print">
               <h5>{t('receipt.paymentHeading')}</h5>
               <p className="hint">{t('receipt.attestation')}</p>
               <dl className="details receipt-facts">
@@ -327,7 +329,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <CopyButton text={receiptText ?? ''} label={t('receipt.copy')} />
                 <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button>
                 <button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button>
-                <button type="button" className="btn" onClick={() => { window.print(); }}>{t('receipt.print')}</button>
+                <button type="button" className="btn" onClick={() => { print(); }}>{t('receipt.print')}</button>
                 <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
                   {archive === 'done' ? t('receipt.archived') : t('receipt.archive')}
                 </button>

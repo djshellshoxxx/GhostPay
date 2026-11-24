@@ -126,6 +126,12 @@ describe('reconcile', () => {
     const r = reconcile([inv('a', '1000')], [pay('p1', '1000', { invoiceId: 'a' })], { now: T0 });
     expect(r.invoices[0]).toMatchObject({ status: 'paid', paidMinor: '1000', deltaMinor: '0', paymentIds: ['p1'] });
   });
+  it('a tolerance at least the amount due never turns zero payments into paid (review G, D-2)', () => {
+    const o = { now: T0, tolerance: { absoluteMinor: 100n } };
+    expect(status(reconcile([inv('a', '50')], [], o), 'a')).toBe('unmatched');
+    expect(status(reconcile([inv('a', '50')], [pay('p', '1', { invoiceId: 'a' })], o), 'a')).toBe('paid');
+    expect(status(reconcile([inv('b', '10000')], [], { now: T0, tolerance: { bps: 10_000 } }), 'b')).toBe('unmatched');
+  });
   it('tolerance abs and bps', () => {
     const o = { now: T0, tolerance: { absoluteMinor: 5n } };
     expect(status(reconcile([inv('a', '1000')], [pay('p', '996', { invoiceId: 'a' })], o), 'a')).toBe('paid');
