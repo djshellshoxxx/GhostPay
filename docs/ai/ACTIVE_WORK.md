@@ -809,3 +809,8 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Owned paths on this branch: seller reconciliation matcher, encrypted vault, Scan and invoice registry/create UI, narrowly scoped web locale keys and regression tests, and `docs/handoffs/LATE_PAYMENT_20261123.md`.
 - Continue the M3 source analysis from `6b6a030c598b0beeb3d38846e753a8b2249e96d6` without modifying the M1 wallet-attempt paths or its owner's branch. No shared integration under this claim.
 - Acceptance: canonical timing and existing transfer finality; durable visible provisional, accepted and invalidated evidence; explicit local seller decision; replacement warning; regression and affected Pages qualification on the resulting commit.
+
+## Accepted late payment after a reorg
+
+Worker: Codex on `test/seller-accepted-late-reorg`, stacked on PR #533 at `90e3fff019d14d8df4c610daf2080a32140686de`.
+Own the late-payment case in `apps/web/e2e/core-journey.spec.ts` and this claim. Exercise the existing seller scanner and encrypted ledger through a confirming-block replacement, rescan, and page reload. Check the same invoice loses its paid status and the same payment retains its original seller decision.

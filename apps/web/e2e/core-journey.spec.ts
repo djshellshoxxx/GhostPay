@@ -757,11 +757,14 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
 });
 
 
-test('a mined deadline revert stays unpaid, and a compatible late transfer requires a final scan and seller acceptance', async ({ browser }) => {
+test('a mined deadline revert stays unpaid, and an accepted late payment shows its invalidation and original decision after a reorg and reload', async ({ browser }) => {
+  test.setTimeout(120_000);
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
+    await saveVault(s);
     const link = await createShortInvoice(s, 1, true);
     const { invoice } = await parseFragment(new URL(link).hash);
+    const digest = `0x${bytesToHex(calculateInvoiceDigest(invoice))}`;
     const payer = await openPayer(open, sim);
     await reviewToFinalCheck(payer.page, sim, link);
     sim.mineAt = 119;
@@ -786,7 +789,9 @@ test('a mined deadline revert stays unpaid, and a compatible late transfer requi
     await scan(s, { fromStart: true });
     const ledger = s.locator('.reconciliation-ledger');
     await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
-    const registration = ledger.locator('li.card').filter({ has: s.getByRole('button', { name: 'Remove registration', exact: true }) });
+    const registration = ledger.locator('li.card').filter({
+      has: s.getByRole('button', { name: 'Remove registration', exact: true }), hasText: digest,
+    });
     await expect(registration).toContainText('Pending transfer evidence.');
     await expect(ledger.getByRole('button', { name: 'Accept late payment for this invoice' })).toHaveCount(0);
 
@@ -796,14 +801,38 @@ test('a mined deadline revert stays unpaid, and a compatible late transfer requi
     await expect(registration).not.toContainText('No linked observation.');
     await ledger.getByRole('button', { name: 'Accept late payment for this invoice' }).click();
     await expect(registration).toContainText('Verified late payment accepted by seller.');
+    const amountPaid = registration.getByText('Linked total equals the expected net amount.', { exact: true });
+    await expect(amountPaid).toBeVisible();
+    const observation = ledger.locator('li.card').filter({ hasText: late.hash });
+    const decision = observation.getByText(/^Seller accepted this late payment at \d{4}-\d{2}-\d{2}T/);
+    await expect(decision).toBeVisible();
+    const originalDecision = await decision.innerText();
     await ledger.getByRole('button', { name: 'Lock reconciliation vault' }).click();
     await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
     await expect(registration).toContainText('Verified late payment accepted by seller.');
-    sim.fork = 120;
+    sim.fork = late.block;
+    expect(sim.blockHash(late.block)).not.toBe(late.blockHash);
     await s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true }).check();
     await scan(s);
-    await expect(registration).toContainText('Reorg invalidated earlier payment evidence.');
-    await expect(registration).not.toContainText('Verified late payment accepted by seller.');
-    await expect(ledger.getByText(/Seller accepted this late payment at/)).toBeVisible();
+    const expectInvalidated = async (): Promise<void> => {
+      await expect(registration).toContainText('Reorg invalidated earlier payment evidence.');
+      await expect(registration).not.toContainText('Verified late payment accepted by seller.');
+      await expect(registration).not.toContainText('Linked to a verified observation.');
+      await expect(amountPaid).toHaveCount(0);
+      await expect(observation).toContainText('Invalidated after a reorg; do not rely on this observation.');
+      await expect(observation).toContainText(digest);
+      await expect(decision).toHaveText(originalDecision);
+    };
+    await expectInvalidated();
+
+    await s.reload();
+    await nav(s).getByRole('button', { name: 'Seller keys' }).click();
+    await keysView(s).getByLabel('Vault passphrase', { exact: true }).fill(VAULT_PASS);
+    await keysView(s).getByRole('button', { name: 'Unlock saved vault' }).click();
+    await kdfExpect(keysView(s).getByText('Encrypted vault unlocked. Seller keys are back in memory.')).toBeVisible();
+    await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
+    await s.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
+    await expectInvalidated();
   });
 });
