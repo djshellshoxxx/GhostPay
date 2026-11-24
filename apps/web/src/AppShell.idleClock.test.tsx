@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { parseFragment } from '@ghostpay/invoice-schema';
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
+import fc from 'fast-check';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { AppLean } from './AppLean';
@@ -58,10 +59,10 @@ function ObserveSettings(): null {
   return null;
 }
 
-function armed(recoverable = true, profile: 'full' | 'lean' = 'lean', observeSettings = false) {
+function armed(recoverable = true, profile: 'full' | 'lean' = 'lean', observeSettings = false, lockTimeoutMin = 1) {
   if (recoverable) importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
   else generateSession();
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin }));
   const reasons: string[] = [];
   unsubscribe = subscribeAppLock((reason) => { reasons.push(reason); });
   const services = makeServices();
@@ -443,42 +444,93 @@ describe.each(['full', 'lean'] as const)('GP-PAGES-04: %s session generation and
 });
 
 describe('GP-PAGES-04: first invoice signature after sleep', () => {
-  async function activateAfterSleep(elapsedMs: number): Promise<void> {
+  async function readyToSign(): Promise<HTMLButtonElement> {
     armed(false);
     const passphrase = 'violet cedar orbit meadow lantern';
     await act(async () => {
       const backup = await exportKeystore(passphrase, { N: 1 << 14 });
       await verifyDownloadedBackup(backup, passphrase);
     });
-    expect(getSessionBackup()?.verified).toBe(true);
+    return fillInvoice();
+  }
 
+  function fillInvoice(): HTMLButtonElement {
+    expect(getSessionBackup()?.verified).toBe(true);
     fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
     fireEvent.change(screen.getByLabelText('Token amount'), { target: { value: '0.5' } });
     fireEvent.change(screen.getByLabelText('Item 1 description'), { target: { value: 'Test item' } });
     fireEvent.change(screen.getByLabelText('Item 1 unit price'), { target: { value: '1.00' } });
-    const submit = screen.getByRole('button', { name: 'Create invoice link' });
     signerCalled.mockClear();
-    // Only wall time advances. A click-only activation can reach the form before a queued wake event or timer.
-    wall += elapsedMs;
+    return screen.getByRole<HTMLButtonElement>('button', { name: 'Create invoice link' });
+  }
+
+  async function activate(submit: HTMLButtonElement): Promise<void> {
+    // A click-only activation can reach the form before a queued wake event or timer.
     await act(async () => {
       fireEvent.click(submit);
       await Promise.resolve();
     });
   }
 
-  it('requires the seller to unlock and never calls the signer past the deadline', async () => {
-    await activateAfterSleep(60_001);
+  function expectLocked(): void {
     expect(signerCalled).not.toHaveBeenCalled();
     expect(hasSession()).toBe(false);
     expect(screen.getByText(/Seller keys were wiped from memory.*Load them again/)).toBeTruthy();
     expect(screen.queryByLabelText('Link')).toBeNull();
-  });
+  }
 
-  it('signs once one millisecond below the deadline', async () => {
-    await activateAfterSleep(59_999);
+  async function expectSigned(): Promise<void> {
     expect(signerCalled).toHaveBeenCalledOnce();
     expect(hasSession()).toBe(true);
     const link = screen.getByLabelText<HTMLTextAreaElement>('Link').value;
     expect((await parseFragment(new URL(link).hash)).verification.signatureValid).toBe(true);
+  }
+
+  it('requires the seller to unlock and never calls the signer past the deadline', async () => {
+    const submit = await readyToSign();
+    wall += 60_001;
+    await activate(submit);
+    expectLocked();
+  });
+
+  it('signs once one millisecond below the deadline', async () => {
+    const submit = await readyToSign();
+    wall += 59_999;
+    await activate(submit);
+    await expectSigned();
+  });
+
+  const schedules = fc.sample(fc.record({
+    minutes: fc.oneof(fc.constantFrom(1, 15, 240), fc.integer({ min: 1, max: 240 })),
+    profile: fc.constantFrom(...['full', 'lean'] as const),
+    beforePercent: fc.integer({ min: 0, max: 99 }),
+    beforeEvent: fc.constantFrom(...['focus', 'pageshow', 'keydown', 'pointerdown'] as const),
+    advancing: fc.constantFrom('wall', 'monotonic', 'both'),
+    offset: fc.oneof(fc.constantFrom(-1, 0, 1), fc.integer({ min: -250, max: 250 })),
+    rollback: fc.boolean(),
+    wakeEvents: fc.array(fc.constantFrom(...['resume', 'visibilitychange', 'pageshow', 'focus', 'keydown', 'pointerdown'] as const), { maxLength: 3 }),
+  }), { seed: 544, numRuns: 64 });
+
+  it.each(schedules)('checks the first signature for generated wake schedule %#', async (schedule) => {
+    // The imported fixture includes the independent signing key and starts with verified external custody.
+    armed(true, schedule.profile, false, schedule.minutes);
+    const submit = fillInvoice();
+    const deadlineMs = schedule.minutes * 60_000;
+    const beforeMs = Math.floor(deadlineMs * schedule.beforePercent / 100);
+    wall += beforeMs;
+    monotonic += beforeMs;
+    await resume(schedule.beforeEvent);
+
+    // Input renews the deadline. A lifecycle notification only observes the elapsed interval.
+    const input = schedule.beforeEvent === 'keydown' || schedule.beforeEvent === 'pointerdown';
+    const remainingMs = input ? deadlineMs : deadlineMs - beforeMs;
+    const elapsedMs = schedule.rollback ? -1 : remainingMs + schedule.offset;
+    if (schedule.advancing !== 'monotonic') wall += elapsedMs;
+    if (schedule.advancing !== 'wall') monotonic += elapsedMs;
+    for (const event of schedule.wakeEvents) await resume(event);
+    await activate(submit);
+
+    if (elapsedMs < 0 || elapsedMs >= remainingMs) expectLocked();
+    else await expectSigned();
   });
 });
