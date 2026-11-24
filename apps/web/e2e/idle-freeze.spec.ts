@@ -10,7 +10,8 @@ const test = base.extend<{ nativePage: Page }>({
   nativePage: async ({ playwright, launchOptions }, use) => {
     const server = await playwright.chromium.launchServer({
       ...launchOptions,
-      args: [...launchOptions.args ?? [], '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'],
+      host: '127.0.0.1',
+      args: [...(launchOptions.args ?? []), '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'],
     });
     try {
       const profile = server.process().spawnargs.find((arg) => arg.startsWith('--user-data-dir='));
@@ -71,7 +72,7 @@ for (const { frozenMs, delayedCheck } of [
     expect(await tracker.evaluate((state) => performance.now() - state.monotonic)).toBe(0);
 
     const create = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice', exact: true });
-    const locked = page.getByText('Session locked after inactivity', { exact: true });
+    const locked = page.getByRole('note').filter({ hasText: 'Session locked after inactivity' });
     if (delayedCheck) {
       // Chromium resumed the hidden tab before expiry. Withhold callbacks and input past the
       // deadline, then deliver the overdue periodic check while the tab is still in the background.
