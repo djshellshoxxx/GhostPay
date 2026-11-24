@@ -1,0 +1,166 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-24T21:02:38Z (cycle start; live refs subsequently read)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "5ba9bb50d4ec341f7de6f2d1312cdb29f90cf874:docs/consolidation/autonomous-20261121/semantic-delta-20261124T2007Z.json",
+  "priorOverlay": "d08eab2718362fe5621e55507922c84610e526b0:docs/consolidation/autonomous-20261121/semantic-overlay-20261124T2002Z.json",
+  "summary": {
+    "branches": 709,
+    "openPrs": 243,
+    "stacked": 144,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      9
+    ],
+    "prPages": [
+      100,
+      100,
+      43
+    ],
+    "independentRefMatches": 709,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 193,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 1
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "oldSha": "df800e93cce8c41c5121e63c6eea6e2250bfa887",
+      "sha": "5ba9bb50d4ec341f7de6f2d1312cdb29f90cf874",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "retired": [],
+  "newlyDiscovered": [
+    {
+      "branch": "automation/20261124T2037Z/qa/disclosure-signer-pin-gate",
+      "sha": "c484f833560aef8e8c798a71228d92e10fe5a877",
+      "pr": 630,
+      "parent": "f941ac01fd9464fc881266dcc2d2e1e530d5f15b",
+      "aheadAgainstParent": 3,
+      "behindAgainstParent": 0,
+      "aheadAgainstMain": 529,
+      "behindAgainstMain": 827,
+      "mergeBaseMain": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "disposition": "unresolved-active-wallet-owner",
+      "incrementalPaths": [
+        [
+          "apps/web/src/views/Pay.signer.test.tsx",
+          "373d6b8691beb1f1c6ac099b2ce656f5c156d21e"
+        ],
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "f07e521cb060e601337213635ca055d474438de9"
+        ],
+        [
+          "docs/handoffs/WALLET_DISCLOSURE_SIGNER_PIN_GATE_20261124.md",
+          "d9b50a2ca97f9f50dc4287f9f7236562b9b3a4ff"
+        ]
+      ],
+      "note": "Exact owner-parent compare, not the truncated broad main comparison. Existing #606/#589 owner retains this task."
+    }
+  ],
+  "newlyFinal": [
+    {
+      "branch": "automation/20261122-r11/audit/mythril-evidence-summary",
+      "sha": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "pr": 468,
+      "disposition": "incremental-audit-tool-and-tests-exact-main-evidence-pending",
+      "proof": {
+        "ahead": 4,
+        "behind": 884,
+        "mergeBase": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "mainTree": "34c33cc2fc639c0f084269f7744ab31df111451a",
+        "mainTreeEntries": 5138,
+        "mainTreeTruncated": false,
+        "exactBlobs": [
+          [
+            "scripts/audit/mythril-evidence.mjs",
+            "32834b760e90d53b43515bf8935b81a9e2cb9762"
+          ],
+          [
+            "scripts/tests/mythril-evidence.test.mjs",
+            "ce1ae5f4da22f84080b369bc57c8cf7dea384193"
+          ]
+        ],
+        "missingHandoff": [
+          "docs/handoffs/MYTHRIL_EVIDENCE_R11_20261122.md",
+          "939ba93c7fe0643184907f749b1a5b4da091d323"
+        ],
+        "registry": "Original claims and handoff remain at pinned donor; separate evidence/ancestry reconciliation not waived. No need to reimplement source or tests."
+      }
+    }
+  ],
+  "testEvidence": {
+    "scope": "Copied actual two source files from exact main pin; git hash-object matched both original blobs; Node 22.16.0 node --test scripts/tests/mythril-evidence.test.mjs passed 5/5, zero skips or failures. Includes CLI exit codes, clean and findings reports, redaction, malformed/missing/oversized evidence rejection.",
+    "limits": "Not Mythril analyzer rerun, contract clearance, full repository CI, or independent review. Target identities are runner-ordered, not independently authenticated by the summary. Same-count substitution is not proven rejected. Existing analyzer findings and gates remain unresolved as applicable."
+  },
+  "unresolvedReview": [
+    {
+      "pr": 217,
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "ahead": 1,
+      "behind": 1076,
+      "mergeBase": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "disposition": "unique-deployment-safeguard-retain-existing-owner-and-policy-scope",
+      "proof": "All seven changed paths differ from main; exact main DeployPolicy.s.sol ba2e6861fe48f99b1659d54b7f1596f46b6365f1 and pre-deploy-check.sh 0e85d5d4694ed10ec7d670fd09e493891146f5f1 lack donor's FEE_TOKEN_FREEZE_ACK guard. Original PR covers missing/mismatched acknowledgement and zero-fee cases. This is a deployment-script safeguard, not a contract fix or guarantee against token freeze. Do not change deployment or fee policy without owner coordination and native qualification."
+    },
+    {
+      "pr": 219,
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "disposition": "unresolved-btc-spentness-owner-overlap",
+      "proof": "25 changed paths, all differ from current main or absent; donor scan.spends.test.ts absent at main path. Compare active successor stack before recovering; no supersession claim."
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "disposition": "unresolved-historical-mixed-relayer-sweep-rpc",
+      "proof": "12 changed paths differ from main; no blanket restore; review browser-safe subset separately."
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "disposition": "unresolved-historical-mixed-relayer-sweep-rpc",
+      "proof": "15 changed paths, one exact current audit document, remaining source/test paths differ or absent; shared 12 paths with gifted-planck donor exact; preserve relayer-only work outside Pages beta."
+    }
+  ],
+  "checks": {
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "scheduledResearch": {
+      "run": 45485137780,
+      "conclusion": "success"
+    },
+    "scheduledCloudFailure": {
+      "run": 45472765175,
+      "conclusion": "failure",
+      "scope": "prior API quota failure; not main CI"
+    },
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0,
+      "syntheticMerge": "b7db76e1d04b5fe686c173c2ce63d72de54f8620"
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "branchProtectionRead": "403",
+    "rulesets": []
+  },
+  "remaining": "#614 exact-head independent approval outstanding; preserve first coordination. #616/#617 detached reconciliation trees and #384 canonical recovery remain pending. Local git ls-remote again fails DNS; no full checkout/CI. No main merge, source ref modification, deployment, branch deletion, or force push."
+}
