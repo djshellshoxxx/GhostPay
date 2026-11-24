@@ -1,3 +1,11 @@
+# F11 — Offline GhostTeams invitation review (2026-11-23)
+
+Worker: Codex. Branch: `feature/f11-ghostteams-invitation-review`. Base: `e0cb4681e453af77bb10be45ba61b4d19579f41b`. Design reference: `future/f11-ghostteams` at `22891e01c2abffe0ced2384c7ad429f08805534f`.
+
+Owned paths: `apps/web/src/features/ghostteams/` and this additive claim. First slice: strictly decode a bounded canonical invitation, compare against independently supplied team/member/issuer/epoch context, and bind all capability fields to a dedicated signature domain through a caller-supplied trusted verifier. Prove the valid case, signed-field substitutions and malformed inputs with synthetic fixtures. Keep the module outside the Pages composition roots. Acceptance, persistence, encryption and signing-provider integration are later slices.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
