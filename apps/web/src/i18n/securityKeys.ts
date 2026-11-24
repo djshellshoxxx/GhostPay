@@ -4,6 +4,22 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  interruptedSession: [
+    'app.offline',
+    'pay.offlineCheck',
+    'pay.retryCheck',
+    'create.draft.keep',
+    'create.draft.hint',
+    'create.draft.resume',
+    'create.draft.available',
+    'create.draft.opening',
+    'create.draft.saving',
+    'create.draft.saved',
+    'create.draft.remove',
+    'create.draft.saveFailed',
+    'create.draft.openFailed',
+    'create.draft.removeFailed',
+  ],
   bitcoinOracleSources: [
     'btc.oracle.modeLabel',
     'btc.oracle.none',

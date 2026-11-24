@@ -1,3 +1,6 @@
+import { emptyItem } from '../lib/invoiceDraft';
+import { useInvoiceDraft } from '../lib/useInvoiceDraft';
+import { subscribeAppLock } from '../lib/appLock';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
@@ -25,13 +28,16 @@ function fiatQuoteAvailable(chainId: number, token: string, currency: string): b
   return symbol !== undefined && isQuoteAvailable(chainId, symbol, currency.trim().toUpperCase());
 }
 
-const EMPTY_ITEM: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
 
 const MAX_UINT256 = 2n ** 256n - 1n;
 /** Native coins on supported chains use 18 decimals. */
 const NATIVE_DECIMALS = 18;
 /** The payer safety cap as rendered in the buffer hint and cap error, derived so the copy cannot drift from what pay.ts enforces. */
 const BUFFER_CAP_VALUES = { capWei: MAX_BUFFER_WEI.toString(), capNative: formatUnits(MAX_BUFFER_WEI, NATIVE_DECIMALS) } as const;
+const draftMessages = {
+  saving: 'create.draft.saving', saved: 'create.draft.saved',
+  saveFailed: 'create.draft.saveFailed', openFailed: 'create.draft.openFailed', removeFailed: 'create.draft.removeFailed',
+} as const;
 type BufferMode = 'off' | 'declined' | 'range';
 
 /** Canonical positive decimal wei: ASCII digits only, no sign, padding, exponent or leading zero; at most 2^256-1. */
@@ -46,27 +52,21 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 }
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const { session } = useApp();
+  const [lock, setLock] = useState(0);
+  useEffect(() => subscribeAppLock(() => setLock(n => n + 1)), []);
+  return <InvoiceEditor key={`${session?.metaAddress ?? ''}|${session?.signerPublicKey ?? ''}|${lock}`} supportedOnly={supportedOnly} />;
+}
+
+function InvoiceEditor({ supportedOnly }: { readonly supportedOnly: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const services = useServices();
-  const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
-  const [token, setToken] = useState('native');
-  const [currency, setCurrency] = useState('USD');
-  const [items, setItems] = useState<LineItemInput[]>([{ ...EMPTY_ITEM }]);
-  const [taxRate, setTaxRate] = useState('0');
-  const [feePolicy, setFeePolicy] = useState<'payer_pays' | 'seller_pays'>('seller_pays');
-  const [amountMode, setAmountMode] = useState<'fiat_quote' | 'fixed_token'>('fixed_token');
-  const [tokenAmount, setTokenAmount] = useState('');
-  const [expiryHours, setExpiryHours] = useState(24);
-  const [quoteMinutes, setQuoteMinutes] = useState(15);
-  const [slippage, setSlippage] = useState(50);
-  const [memo, setMemo] = useState('');
-  const [bufferMode, setBufferMode] = useState<BufferMode>('off');
-  const [bufferMin, setBufferMin] = useState('');
-  const [bufferMax, setBufferMax] = useState('');
-  const [encrypt, setEncrypt] = useState(false);
-  const [protectWithPassphrase, setProtectWithPassphrase] = useState(false);
+  const editor = useInvoiceDraft(app.session, services.chains[0]?.chainId ?? 84532);
+  const { draft, change } = editor;
+  const { chainId, token, currency, items, taxRate, feePolicy, amountMode, tokenAmount, expiryHours,
+    quoteMinutes, slippage, memo, bufferMode, bufferMin, bufferMax, encrypt, protectWithPassphrase } = draft;
   // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);
   const [passphrase, setPassphrase] = useState(suggested);
@@ -100,6 +100,14 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       </section>
     );
   }
+
+  if (editor.status === 'available') return <section aria-labelledby="inv-h">
+    <h2 id="inv-h">{t('create.title')}</h2>
+    <p>{t('create.draft.available')}</p>
+    <button type="button" className="btn" onClick={editor.resume}>{t('create.draft.resume')}</button>{' '}
+    <button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button>
+  </section>;
+  if (editor.status === 'opening') return <p role="status">{t('create.draft.opening')}</p>;
 
   const choices = tokenChoices(chainId);
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
@@ -188,6 +196,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           return;
         }
         setCreated(c);
+        editor.finish(draft);
         registerCreated(c.invoice);
         setPassphrase('');
         setPassphraseAgain('');
@@ -204,12 +213,19 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   };
 
   const setItem = (i: number, patch: Partial<LineItemInput>): void => {
-    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
+    change({ items: items.map((it, idx) => idx === i ? { ...it, ...patch } : it) });
   };
 
   return (
     <section aria-labelledby="inv-h">
       <h2 id="inv-h">{t('create.title')}</h2>
+      <div className="panel">
+        <p>{t('create.draft.hint')}</p>
+        {editor.status === 'off'
+          ? <button type="button" className="btn" onClick={editor.save}>{t('create.draft.keep')}</button>
+          : <button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button>}
+        {editor.status !== 'off' && <p role="status">{t(draftMessages[editor.status])}</p>}
+      </div>
       <form onSubmit={onSubmit} className="stack" noValidate>
         <fieldset>
           <legend>{t('create.where.legend')}</legend>
@@ -219,8 +235,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
                 id={id}
                 value={chainId}
                 onChange={(e) => {
-                  setChainId(Number(e.target.value));
-                  setToken('native');
+                  change({ chainId: Number(e.target.value), token: 'native' });
                 }}
               >
                 {services.chains.map((c) => (
@@ -237,7 +252,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           )}
           <Field label={t('create.token')}>
             {(id) => (
-              <select id={id} value={token} onChange={(e) => { setToken(e.target.value); }}>
+              <select id={id} value={token} onChange={(e) => { change({ token: e.target.value }); }}>
                 {choices.map((c) => (
                   <option key={c.value} value={c.value}>
                     {c.label}
@@ -252,7 +267,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <legend>{t('create.amount.legend')}</legend>
           <Field label={t('create.pricing')}>
             {(id) => (
-              <select id={id} value={effectiveAmountMode} onChange={(e) => { setAmountMode(!supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
+              <select id={id} value={effectiveAmountMode} onChange={(e) => { change({ amountMode: !supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token' }); }}>
                 <option value="fixed_token">{t('create.pricing.fixed')}</option>
                 {!supportedOnly && <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
                   {FIAT_QUOTE_AVAILABLE ? t('create.pricing.fiat') : t('create.pricing.fiatUnavailable')}
@@ -262,17 +277,17 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           </Field>
           {effectiveAmountMode === 'fixed_token' ? (
             <Field label={t('create.tokenAmount')} hint={t('create.tokenAmount.hint')}>
-              {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { setTokenAmount(e.target.value); }} />}
+              {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { change({ tokenAmount: e.target.value }); }} />}
             </Field>
           ) : (
             <Notice kind="info">
               {t('create.fiatNotice')}
             </Notice>
           )}
-          <Field label={t('create.currency')}>{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { setCurrency(e.target.value); }} />}</Field>
+          <Field label={t('create.currency')}>{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { change({ currency: e.target.value }); }} />}</Field>
           <Field label={t('create.feePolicy')}>
             {(id) => (
-              <select id={id} value={feePolicy} onChange={(e) => { setFeePolicy(e.target.value as 'payer_pays' | 'seller_pays'); }}>
+              <select id={id} value={feePolicy} onChange={(e) => { change({ feePolicy: e.target.value as 'payer_pays' | 'seller_pays' }); }}>
                 <option value="seller_pays">{t('create.feePolicy.seller')}</option>
                 <option value="payer_pays">{t('create.feePolicy.payer')}</option>
               </select>
@@ -288,28 +303,28 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
-                <button type="button" className="btn" onClick={() => { setItems((p) => p.filter((_, idx) => idx !== i)); }}>
+                <button type="button" className="btn" onClick={() => { change({ items: items.filter((_, idx) => idx !== i) }); }}>
                   {t('create.item.remove', { n: String(i + 1) })}
                 </button>
               )}
             </div>
           ))}
-          <button type="button" className="btn" onClick={() => { setItems((p) => [...p, { ...EMPTY_ITEM }]); }} disabled={items.length >= 50}>
+          <button type="button" className="btn" onClick={() => { change({ items: [...items, { ...emptyItem }] }); }} disabled={items.length >= 50}>
             {t('create.item.add')}
           </button>
-          <Field label={t('create.taxRate')}>{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { setTaxRate(e.target.value); }} />}</Field>
+          <Field label={t('create.taxRate')}>{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { change({ taxRate: e.target.value }); }} />}</Field>
         </fieldset>
 
         <fieldset>
           <legend>{t('create.validity.legend')}</legend>
-          <Field label={t('create.expiryHours')}>{(id) => <input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { setExpiryHours(Number(e.target.value)); }} />}</Field>
-          <Field label={t('create.quoteMinutes')}>{(id) => <input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { setQuoteMinutes(Number(e.target.value)); }} />}</Field>
-          <Field label={t('create.slippage')}>{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { setSlippage(Number(e.target.value)); }} />}</Field>
+          <Field label={t('create.expiryHours')}>{(id) => <input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { change({ expiryHours: Number(e.target.value) }); }} />}</Field>
+          <Field label={t('create.quoteMinutes')}>{(id) => <input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { change({ quoteMinutes: Number(e.target.value) }); }} />}</Field>
+          <Field label={t('create.slippage')}>{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { change({ slippage: Number(e.target.value) }); }} />}</Field>
           {!supportedOnly && (
             <>
               <Field label={t('create.buffer.label')} hint={t('create.buffer.hint', BUFFER_CAP_VALUES)}>
                 {(id, d) => (
-                  <select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { setBufferMode(e.target.value as BufferMode); }}>
+                  <select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { change({ bufferMode: e.target.value as BufferMode }); }}>
                     <option value="off">{t('create.buffer.off')}</option>
                     <option value="declined" disabled={!bufferChoicesAvailable}>{t('create.buffer.declined')}</option>
                     <option value="range" disabled={!bufferChoicesAvailable}>{t('create.buffer.range')}</option>
@@ -319,21 +334,21 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
               {!bufferChoicesAvailable && <Notice kind="info">{t('create.buffer.nativeHint')}</Notice>}
               {effectiveBufferMode === 'range' && (
                 <>
-                  <Field label={t('create.buffer.min')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMin} onChange={(e) => { setBufferMin(e.target.value); }} />}</Field>
-                  <Field label={t('create.buffer.max')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMax} onChange={(e) => { setBufferMax(e.target.value); }} />}</Field>
+                  <Field label={t('create.buffer.min')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMin} onChange={(e) => { change({ bufferMin: e.target.value }); }} />}</Field>
+                  <Field label={t('create.buffer.max')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMax} onChange={(e) => { change({ bufferMax: e.target.value }); }} />}</Field>
                 </>
               )}
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { change({ memo: e.target.value }); }} />}</Field>
           <div className="check">
-            <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
+            <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { change({ encrypt: e.target.checked }); }} />
             <label htmlFor="enc">{t('create.encrypt')}</label>
           </div>
           <p className="hint">{t('create.encrypt.hint')}</p>
           <div className="check">
-            <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
+            <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { change({ protectWithPassphrase: e.target.checked }); }} />
             <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
           </div>
           {protectWithPassphrase && (

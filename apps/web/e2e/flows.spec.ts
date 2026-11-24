@@ -137,6 +137,38 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(BigInt(state.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
   });
 
+  for (const hashReturned of [false, true]) {
+    test(`interrupts a wallet request ${hashReturned ? 'after' : 'before'} its hash returns without confirming or resending`, async ({ page, context }) => {
+      const state: { sent?: SentTx; sendCalls?: number } = {};
+      await mockNetwork(context, state);
+      await injectWallet(page, state);
+      await configureRpc(page);
+      await page.goto('/');
+      await generateKeys(page);
+      const link = await createInvoice(page);
+      await openFresh(page, link);
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+      await page.getByRole('button', { name: 'Prepare payment' }).click();
+      await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true; });
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => state.sendCalls).toBe(1);
+      await context.setOffline(true);
+      await context.route(`${RPC}/**`, route => route.abort('internetdisconnected'));
+      if (hashReturned) {
+        await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.releaseSend(); });
+        await expect(page.getByRole('heading', { name: 'Payment sent, verifying' })).toBeVisible();
+      }
+      const journal = page.getByRole('region', { name: 'Wallet attempt journal' });
+      await expect(journal).toContainText(hashReturned ? `0x${'9'.repeat(64)}` : 'Outcome unknown');
+      await context.setOffline(false);
+      await openFresh(page, link);
+      await expect(journal).toContainText(hashReturned ? `0x${'9'.repeat(64)}` : 'Outcome unknown');
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+      expect(state.sendCalls).toBe(1);
+    });
+  }
+
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
