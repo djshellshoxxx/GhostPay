@@ -1,3 +1,13 @@
+# Issue #286 global masking of the active document
+
+Worker: Codex. Branch: `fix/286-global-mask-document`. Base: #373 at
+`b660b2d8f3f84ddf72f684d13913f643f33f2eee`. Main inspected at
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`. Reuse the #372/#373
+privacy and custody stack. Own the shared presentation boundary, its consumers'
+regressions, the masking browser journeys, and masking qualification notes.
+Acceptance covers temporary explicit reveal, hidden DOM and form values, accessibility,
+titles, navigation, reload, wallet changes, dialogs and vault locking in both Pages profiles.
+
 # Native Firefox/WebKit qualification — 2026-11-21 UTC
 
 Follow-up ownership: `5ceb6203640a-root` also owns the exact saved-message assertion in `scripts/tor/browser-acceptance.mjs` on this isolated branch. Hosted jobs `136771948240` and `136774369027` failed on obsolete Settings copy. See [bounded fixture repair](claims/TOR_SAVE_MESSAGE_FIXTURE_20261121_5CEB.md); all other browser assertions and application behavior remain unchanged.
