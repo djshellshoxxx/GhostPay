@@ -8,7 +8,7 @@ Move data between computer and phone with QR codes. Pre-audit, not audited, no r
 - `startCamera(video, navigator.mediaDevices, {signal, deviceId?, secureContext?})` (call only from a user gesture) and `scanFromVideo(video, onText, {signal})`. `listVideoInputs` / `activeDeviceId` return device ids only (never labels). Errors: `CAMERA_DENIED`, `CAMERA_NOT_FOUND`, `CAMERA_IN_USE`, `CAMERA_INSECURE`, `CAMERA_UNAVAILABLE`.
 - `decodeQrImage(file, {signal})`: local decode of a picked image (raster only, <= 10 MiB, <= 40 MP, downscaled to 1600 px; BarcodeDetector then jsQR). The pixel cap applies after the browser decodes the image.
 - Settings exchange: v1 `exportSettingsExchange` / `parseSettingsExchange` (5 preferences) and v2 `exportDeviceSettingsExchange` / `parseDeviceSettingsExchange` (optional preferences, RPC maps, relayer, pinned signers; <= 2900 bytes; injected URL validators plus a package minimum). Public seller pairing: `exportSellerPairing` / `parseSellerPairing`; public meta-address: `parsePublicMetaQr`.
-- Readers: platform `BarcodeDetector` when it supports `qr_code`, else canvas + jsQR 1.4.0 (loaded on demand). Both sit behind `FrameReader` / `QrFrameDecoder`.
+- Readers: platform `BarcodeDetector` when it supports `qr_code`, else canvas + jsQR 1.4.0 (loaded on demand). For multiple native detections, the camera and image readers take the first nonempty text within the 4096-character limit. The camera keeps using the native reader on empty frames and switches to jsQR for the rest of that scan if the native reader throws.
 - `qrMatrix(text, 'L'|'M')` and `qrSvgPath(matrix)`: local generation with `qrcode-generator` (same library and byte mode as `apps/web/src/lib/qr.ts`).
 
 ## Chunk format
@@ -40,7 +40,7 @@ Defaults stay at version <= 14 (L) so a phone can read it off a laptop screen. T
 
 ## jsQR evaluation
 
-Pinned `jsqr@1.4.0`: Apache-2.0 (package.json and LICENSE), no dependencies, no install scripts, published 2021-04-24, tarball integrity matches the lockfile. Read `dist/jsQR.js` (10k lines, webpack UMD): pure computation on `Uint8ClampedArray`, no `eval`/`Function`/network/DOM. Unmaintained since 2021: weaker than native detectors on blurry or small codes; it is only the fallback. Update path: swap `loadJsQrDecoder` implementation behind `QrFrameDecoder`.
+Pinned `jsqr@1.4.0`: Apache-2.0 (package.json and LICENSE), no dependencies, no install scripts, published 2021-04-24, tarball integrity matches the lockfile. Read `dist/jsQR.js` (10k lines, webpack UMD): pure computation on `Uint8ClampedArray`, no `eval`/`Function`/network/DOM. The software reader loads a [local static ESM copy](src/vendor/README.md) with the incorrect version-23 alignment center corrected from 74 to 78 and bounded neighboring valid-dimension retries after an invalid locator estimate. Deterministic provenance tests verify the complete factory body and license against the original pinned package. The dependency manifest and lockfile are unchanged. Unmaintained since 2021: weaker than native detectors on blurry or small codes; it is only the fallback. Update path: swap `loadJsQrDecoder` implementation behind `QrFrameDecoder`.
 
 ## Using it from the web app
 

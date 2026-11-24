@@ -82,6 +82,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'btc.persistence.forgetConfirm',
       'btc.persistence.forgetYes',
 
+      'ghostId.review.authentic', 'ghostId.review.origins', 'ghostId.review.conflict', 'ghostId.review.match',
       'merchantProfile.load.title',
       'merchantProfile.load.url',
       'merchantProfile.load.privacy',
