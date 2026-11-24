@@ -106,6 +106,10 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
   });
 }
 
+function readJournalMirror(page: Page): Promise<unknown[]> {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);
+}
+
 async function connectCheckout(page: Page, url: string): Promise<void> {
   await configureRpc(page);
   await openFresh(page, url);
@@ -182,14 +186,12 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect.poll(async () => (await refused(page).count()) + (await refused(tab).count())).toBe(1);
     await expect.poll(() => (first.sendCalls ?? 0) + (second.sendCalls ?? 0)).toBe(1);
     const [winner, free, freeState] = first.sendCalls === 1 ? [page, tab, second] as const : [tab, page, first] as const;
-    const journal = (target: Page): Promise<unknown[]> => target.evaluate(() =>
-      JSON.parse(localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);
-    await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown', kind: 'payment' }]);
+    await expect.poll(() => readJournalMirror(free)).toMatchObject([{ status: 'unknown', kind: 'payment' }]);
     await expect(free.getByRole('region', { name: 'Wallet attempt journal' })).toContainText('Outcome unknown');
 
     await prepare(free, otherInvoice);
     await send(free).click();
-    await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
+    await expect.poll(() => readJournalMirror(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
     expect(freeState.sendCalls).toBe(1);
     expect(await winner.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
     await winner.close(); // Simulate losing the original wallet response.
@@ -197,7 +199,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await send(free).click();
     await expect(refused(free)).toBeVisible();
     expect(freeState.sendCalls).toBe(1);
-    await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
+    await expect.poll(() => readJournalMirror(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
   });
 
   for (const path of ['permit', 'approval', 'already allowed'] as const) {
@@ -214,6 +216,20 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       const tab = await context.newPage();
       await injectWallet(tab, second);
       await Promise.all([prepare(page, invoice), connectCheckout(tab, invoice)]);
+
+      // Model another browser process: B sees its own journal writes immediately, but not A's later mirror update.
+      await tab.evaluate(() => {
+        const key = 'ghostpay.wallet-attempts.v1';
+        const { getItem, setItem } = Storage.prototype;
+        let cached = localStorage.getItem(key);
+        Storage.prototype.getItem = function (name) {
+          return this === localStorage && name === key ? cached : getItem.call(this, name);
+        };
+        Storage.prototype.setItem = function (name, value) {
+          setItem.call(this, name, value);
+          if (this === localStorage && name === key) cached = value;
+        };
+      });
 
       // Tab A's held wallet request commits a real, unresolved payment to IndexedDB.
       await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true; });
@@ -233,7 +249,6 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       expect(JSON.parse(snapshot)).toMatchObject([{ kind: 'payment', status: 'unknown' }]);
 
       second.usdcCheckout = path;
-      // On the approval path, lag the mirror after preparation, immediately before Send.
       const prepareButton = tab.getByRole('button', { name: 'Prepare payment' });
       if (path !== 'permit') await prepareButton.click();
       const action = path === 'permit' ? prepareButton : tab.getByRole('button', {
@@ -241,7 +256,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
         exact: true,
       });
       await expect(action).toBeVisible();
-      await tab.evaluate(() => localStorage.setItem('ghostpay.wallet-attempts.v1', '[]'));
+      expect(await readJournalMirror(page)).toMatchObject([{ kind: 'payment', status: 'unknown' }]);
+      expect(await readJournalMirror(tab)).toEqual([]);
       await action.click();
       await expect(tab.getByRole('alert').filter({ hasText: 'previous wallet attempt' })).toBeVisible();
       expect(second.permitCalls ?? 0).toBe(0);
