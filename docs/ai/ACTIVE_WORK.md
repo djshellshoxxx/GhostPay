@@ -808,3 +808,4 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Worker: Codex, branch `codex/pages-follow-browser-language`, base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
 - Owned paths: `apps/web/src/i18n/context.tsx`, `apps/web/src/i18n/LanguagePicker.test.tsx`, and this entry.
 - Acceptance: with Automatic selected, a browser language change updates the on-screen language and document direction without reloading. A manual selection or an explicit embedding language list keeps precedence. Returning to Automatic uses the current browser preference.
+- Fuzz follow-up on PR #551 at `664f8c448a6efb715396ae616e8509024de54d9a`: same Codex worker and remote branch. Also owns `apps/web/src/i18n/LanguagePicker.fuzz.test.tsx`. Exercise browser language lists and fallback, manual choice, and out-of-order catalog success/failure through the picker. Keep fixes in the existing provider.
