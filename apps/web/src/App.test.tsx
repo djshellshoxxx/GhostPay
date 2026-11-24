@@ -160,7 +160,7 @@ describe('App shell', () => {
       expect(services.vault.unlocked).toBe(false);
       expect(isSessionSuspended()).toBe(true);
       expect(getSessionPublic()).toEqual(seller);
-      const signer = vi.fn();
+      const signer = vi.fn<() => void>();
       expect(() => withSessionSecrets(signer)).toThrow(/session is locked/i);
       expect(signer).not.toHaveBeenCalled();
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Create invoice' }).disabled).toBe(true);

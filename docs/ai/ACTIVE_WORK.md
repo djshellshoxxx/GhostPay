@@ -3194,3 +3194,13 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Worker `Codex`, branch `test/ghostpay-first-sign-after-sleep`, based on PR #365 at `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`.
 - Acceptance coverage in `apps/web/src/AppShell.idleClock.test.tsx` and `apps/web/e2e/idle-session.spec.ts`. Use a verified synthetic seller backup and the existing one-minute clock fixtures. The first invoice activation with timers suspended must require unlock past the deadline and sign once immediately below it.
 - Follow-up QA on #544 starts at `d4e950dc92f9a0fdd62e7887eb63bfd6b0c04420`. Codex owns seeded timeout and wake-event tests in the same two files. Check signer count, signature validity, and unlock state across the deadline with queued timers paused.
+
+## GP-PAGES-02 interrupted-worker recovery qualification — 2026-11-24
+
+- Worker: `/root/resume_recovery_verification`; coordinator: `/root`.
+- Branch: `resume/recovery-native-20261124`, based on PR #577 head `2363943571de84bfd5da0b3f167699f34eb53ce7`.
+- Owned paths: the signer mock declaration in `apps/web/src/App.test.tsx`, this additive claim, and `docs/handoffs/RECOVERY_SIGNER_NATIVE_QUALIFICATION_20261124.md`.
+- Scope: repair the two `@typescript-eslint/no-unsafe-return` failures recorded by hosted job `138272360991` without changing assertions, session behavior, backup formats, or other workers' source. Resume the stopped worker's qualification with the repository's actual React 19 runtime and synthetic keys.
+- Acceptance: reproduce the focused lint failure on the saved head, give the signer spy a concrete void return type, pass focused lint and the existing encrypted-recovery/idle-lock regression tests, and submit the exact diff and evidence to the coordinator for independent review.
+- State at claim: the original head's full/lean browser jobs and Pages/Anvil journey passed; core CI remains incomplete and its lint job failed. No new passing result or shared-branch integration is claimed here.
+- Completion: the one-line typing repair passed focused lint, all 76 native recovery/idle/seller tests, full web TypeScript/build/postbuild scanning, and an independent source review. The test emits identical JavaScript before and after the type annotation. See `docs/handoffs/RECOVERY_SIGNER_NATIVE_QUALIFICATION_20261124.md` for exact source identities, commands, original setup failures, hosted evidence, and remaining integration gates. This bounded worker claim is released to the coordinator for publication; prior recovery and idle-lock claims are preserved.
