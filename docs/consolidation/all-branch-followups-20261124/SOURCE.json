@@ -1,0 +1,64 @@
+{
+  "local_source": "70df75359a807bf833da82f43229452d6ab59976",
+  "remote_source": "0a7b903780b66135a9505230c96d4ab45b2959a2",
+  "tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+  "base": "851e86ce8b6fed659e499e69d1c174b86b646e4c",
+  "parent_sha": "851e86ce8b6fed659e499e69d1c174b86b646e4c",
+  "additional_parent_shas": [],
+  "tree_identity_verified": true,
+  "remote_commit_tree_and_parents_readback_verified": true,
+  "remote_commit_fetched": true,
+  "diagnostic_source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+  "diagnostic_final": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+  "format": "ghostpay-final-followup-source/2",
+  "application_stage": {
+    "local_source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+    "remote_source": "c6efee6e9e0505d4bcb8b81bf5b02e4ab3331c48",
+    "tree": "8add357748674afb128926a797982badb54bac6b",
+    "base": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+    "additional_parent_shas": [
+      "74121278a08eaf4eddd85651a4518ef657aeeb16",
+      "73f521bad57c24e44fe5c69fbdeecd1d2da2fec1",
+      "0d3d804b3f53ad8b463117824ca1fd1b3332d798",
+      "923e1edfb9ac34f8b6855d8ac8516cd835070afd",
+      "28bba11cdaebc13edc4d100761ee00750c3f396f"
+    ],
+    "tree_identity_verified": true,
+    "remote_commit_tree_and_six_parents_readback_verified": true,
+    "remote_commit_fetched": true
+  },
+  "compatibility_stage": {
+    "local_source": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+    "remote_source": "851e86ce8b6fed659e499e69d1c174b86b646e4c",
+    "tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+    "base": "c6efee6e9e0505d4bcb8b81bf5b02e4ab3331c48",
+    "main_parent": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "additional_parent_shas": [
+      "c6efee6e9e0505d4bcb8b81bf5b02e4ab3331c48",
+      "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+      "20733b6a8ebc6a2598d5baff2eed62d58a0a7675"
+    ],
+    "tree_identity_verified": true,
+    "remote_commit_tree_and_parents_readback_verified": true,
+    "remote_commit_fetched": true,
+    "original_main": "706188000c38b3dde5a3a362370a530870aa7587",
+    "report_scope": "A later documentation/evidence-only commit; fresh exact-head hosted checks required before promotion.",
+    "selective_tooling_donors": {
+      "358": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "468": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a"
+    },
+    "selective_tooling_limit": "Only the reviewed five source/test files and explicit caller-contract documentation were recovered; these broad donor heads are not added as merge parents.",
+    "lockfile_sha256": "beadafcce959f301fb812ae96e62ffc8f07440a9f0d8cbaaa9e8b05d36f59660"
+  },
+  "original_main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "current_main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+  "lockfile_sha256": "beadafcce959f301fb812ae96e62ffc8f07440a9f0d8cbaaa9e8b05d36f59660",
+  "report_scope": "A later documentation/evidence-only commit; fresh exact-head hosted checks required before promotion.",
+  "selective_tooling_donors": {
+    "358": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+    "468": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a"
+  },
+  "selective_tooling_limit": "Only the reviewed five source/test files and explicit caller-contract documentation were recovered; these broad donor heads are not added as merge parents.",
+  "diagnostic_donor": "3107b816144b4a6fe43f197fbdc323b5d8d80628",
+  "diagnostic_selection": "Three exact helper/test postimages only; no whole #570/#619 parent, no production caller activation."
+}

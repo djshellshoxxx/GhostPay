@@ -10,6 +10,7 @@ import {
   sessionHasExternalCopy,
   sessionVaultRecord,
   verifyVaultForCurrentSession,
+  verifyCredentialForCurrentSession,
   type SessionPublic,
 } from './session';
 import { decryptKeystore, validateKeystoreEnvelope, type KeystoreOptions } from './keystore';
@@ -277,6 +278,43 @@ export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaul
   return unchanged;
 }
 
+/** A credential for the loaded keys: the passphrase of their encrypted vault, or a keystore backup file of them with its passphrase. */
+export type SecretExportCredential =
+  | { readonly kind: 'vault'; readonly passphrase: string }
+  | { readonly kind: 'keystore'; readonly text: string; readonly passphrase: string };
+
+/**
+ * Re-authentication for spec 18 secret exports (formats section 7): proves that the user holds a credential for exactly
+ * the loaded keys and resolves to a guard for them; it never resolves without one. `vault`: the record the keys are tied
+ * to (also after it was deleted from storage, L1-02), or else the saved vault naming their meta-address, must accept the
+ * passphrase and hold the keys. Without such a vault, or when storage cannot be read, the export is refused: having no
+ * vault is never success. `keystore`: the backup file must decrypt and hold the keys. Records nothing (no custody,
+ * backup or vault state changes). Rejects when `signal` aborts or the keys change meanwhile.
+ */
+export async function requireSecretExportAuthorization(credential: SecretExportCredential, signal?: AbortSignal, store: KeyVaultStore = activeStore()): Promise<() => void> {
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theSecretExportWasCancelled' }); };
+  assertOpen();
+  const unchanged = captureSessionGuard();
+  if (credential.passphrase === '') throw new UserFacingError({ key: credential.kind === 'vault' ? 'error.keyVault.secretExportNeedsVaultPassphrase' : 'error.keyVault.secretExportNeedsKeystorePassphrase' });
+  let record: string | undefined;
+  if (credential.kind === 'keystore') {
+    record = credential.text;
+  } else {
+    record = sessionVaultRecord();
+    if (record === undefined) {
+      const loaded = getSessionPublic();
+      const stored = await store.get().catch(() => undefined);
+      assertOpen();
+      unchanged();
+      if (stored !== undefined && vaultMetaAddress(stored) === loaded?.metaAddress) record = stored;
+    }
+    if (record === undefined) throw new UserFacingError({ key: 'error.keyVault.secretExportNeedsAVaultOrKeystore' });
+  }
+  const guard = await verifyCredentialForCurrentSession(record, credential.passphrase, credential.kind, signal);
+  unchanged();
+  return guard;
+}
+
 /** Saves the loaded keys as the browser vault; keys already tied to a vault need that vault's passphrase first (L1-02). */
 export async function saveEncryptedVault(passphrase: string, options: KeystoreOptions = {}, store: KeyVaultStore = activeStore(), vaultPassphrase = ''): Promise<void> {
   const unchanged = captureSessionGuard();
@@ -379,3 +417,5 @@ export async function deleteEncryptedVault(expected: string, store: KeyVaultStor
 // i18n-use: error.keyVault.theSavedEncryptedVaultChangedSinceYouAskedToDelete error.keyVault.encryptedBrowserStorageIsUnavailable error.keyVault.couldNotOpenEncryptedBrowserStorage error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab error.keyVault.couldNotReadEncryptedBrowserStorage error.keyVault.theSavedEncryptedVaultRecordIsInvalid error.keyVault.sellerKeysChangedDuringThisActionTryAgain error.keyVault.couldNotDeleteEncryptedBrowserStorage error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving error.keyVault.theEncryptedVaultWasSavedForTheSellerKeysThat error.keyVault.theseSellerKeysAreTiedToAnEncryptedVaultIn error.keyVault.theKeystoreImportWasClosed error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking error.keyVault.noEncryptedSellerVaultIsSavedInThisBrowser error.keyVault.thisVaultHoldsTheSellerKeysLoadedNowEnterIts
 
 // i18n-use: error.keyVault.saveFailed
+
+// i18n-use: error.keyVault.secretExportNeedsVaultPassphrase error.keyVault.secretExportNeedsKeystorePassphrase error.keyVault.secretExportNeedsAVaultOrKeystore

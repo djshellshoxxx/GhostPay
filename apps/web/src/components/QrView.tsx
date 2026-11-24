@@ -22,9 +22,10 @@ export function QrView(props: { readonly text: string; readonly caption: string;
   }, [props.text]);
   if (!result.ok) return <Notice kind="info" title={t('qrView.none')}>{displayMessage(result.message, t)}</Notice>;
   const n = qrViewSize(result.m);
+  // Preserve module geometry at responsive widths; snapping fractional modules can make a valid QR unreadable.
   return (
     <figure className="qr">
-      <svg viewBox={`0 0 ${String(n)} ${String(n)}`} role="img" aria-label={props.caption} shapeRendering="crispEdges" className="qr-svg">
+      <svg viewBox={`0 0 ${String(n)} ${String(n)}`} role="img" aria-label={props.caption} shapeRendering="geometricPrecision" className="qr-svg">
         <title>{props.caption}</title>
         <rect width={n} height={n} className="qr-bg" />
         <path d={qrPath(result.m)} className="qr-fg" />

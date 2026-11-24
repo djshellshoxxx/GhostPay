@@ -79,6 +79,8 @@ describe('validateManifest', () => {
     rejects(mut((m) => (m['solcVersion'] = 5)), /solc/);
     rejects(mut((m) => (m['date'] = 'yesterday')), /date/);
     rejects(mut((m) => (m['date'] = '2026-13-45T99:99:99Z')), /date/);
+    rejects(mut((m) => (m['date'] = '2026-02-30T00:00:00Z')), /date/); // CHAIN-ADAPTERS-10: calendar-impossible day
+    rejects(mut((m) => (m['date'] = '2026-04-31T00:00:00Z')), /date/);
     rejects(mut((m) => (m['signature'] = 'nothex')), /signature/);
     rejects(mut((m) => (m['signature'] = 5)), /signature/);
   });
@@ -91,7 +93,9 @@ describe('loadDeployment', () => {
   it('rejects bad JSON, oversize, __proto__ keys and non-strings', () => {
     expect(() => loadDeployment('{nope', CHAIN)).toThrow(/json/);
     expect(() => loadDeployment(' '.repeat(MAX_MANIFEST_BYTES + 1), CHAIN)).toThrow(/size/);
-    expect(() => loadDeployment(JSON.stringify(manifestJson()).replace('{', '{"__proto__":{"a":1},'), CHAIN)).toThrow(ChainAdapterError);
+    // Insert one adversarial member into the known top-level object; this is fixture construction, not escaping.
+    const prototypeKeyFixture = '{"__proto__":{"a":1},' + JSON.stringify(manifestJson()).slice(1);
+    expect(() => loadDeployment(prototypeKeyFixture, CHAIN)).toThrow(ChainAdapterError);
     expect(() => loadDeployment(5 as unknown as string, CHAIN)).toThrow(/size/);
   });
 });

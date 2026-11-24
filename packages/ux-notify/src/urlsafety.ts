@@ -41,6 +41,8 @@ export function hasSensitiveQuery(search: string): boolean {
     const val = safeDecode(rawVal);
     if (SENSITIVE_SUBSTRINGS.some((s) => key.includes(s))) return true;
     if (/^[A-Za-z0-9+/_=-]{32,}$/.test(val)) return true;
+    // Compact JWS values are opaque too, but their dot separators break the base64url test.
+    if (val.length >= 32 && /^[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{2,}\.[A-Za-z0-9_-]{8,}$/.test(val)) return true;
   }
   return false;
 }

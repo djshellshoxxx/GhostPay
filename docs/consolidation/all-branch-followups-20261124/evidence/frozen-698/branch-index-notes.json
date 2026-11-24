@@ -1,0 +1,358 @@
+{
+  "341": {
+    "disposition": "selective_recovery_residual_held",
+    "selected": "Enabled-EVM-testnet DestLedger policy and its original browser-chain regression recovered in 57655929; pure ledger only, without adding a web caller.",
+    "gap": "Broader #307-derived Sweep journal/advisory and F03/Tor changes remain unselected. Their persistence, approval and browser-flow contracts need composition; print/QR are separately selected, and this does not block the recovered pure ledger fix.",
+    "evidence": ["docs/handoffs/NARROW_RESIDUAL_RECOVERY_20261124.md"]
+  },
+  "410": {
+    "disposition": "selective_recovery_residual_held",
+    "selected": "Literal-true printQrPolicy guard and original regression recovered in 375a93e6, preserving QR primitive guards; 817756ad reconciles the existing fixture type without removing cases.",
+    "gap": "The broad #307-derived Sweep/privacy/transport parent remains unselected. No additional QR print-policy implementation is missing from the selected composition.",
+    "evidence": ["docs/handoffs/NARROW_RESIDUAL_RECOVERY_20261124.md"]
+  },
+  "220": {
+    "disposition": "selective_recovery_residual_held",
+    "selected": "Merchant-ledger counted-payment/tolerance source and original regression recovered in 3276c605; zero-due and positive-payment tolerance behavior retained.",
+    "gap": "Unrelated contract/workflow/ux-flow changes were excluded. The old whole rpc.ts would remove retained finite-retry guards, so the donor head is not an eligible wholesale replacement.",
+    "evidence": ["docs/handoffs/NARROW_RESIDUAL_RECOVERY_20261124.md"]
+  },
+  "605": {
+    "disposition": "selected_local_followup",
+    "selected": "Original head retained in canonical QR composition: bounded valid-dimension candidate retry and seven dense-image regressions combined with #581 ESM decoder, renderer, license and provenance work.",
+    "gap": "No residual implementation identified in this selected unit. Fresh combined native/browser and hosted acceptance remain required; local unit/build success is not native acceptance.",
+    "evidence": ["docs/handoffs/QR_CONTINUATION_COMPOSITION_20261124.md"]
+  },
+  "581": {
+    "disposition": "selected_local_followup",
+    "selected": "Original head retained. One canonical ESM decoder, responsive QrView, emitted license and interoperability/native-selection tests preserved, with #605 bounded retry and provenance reconciliation.",
+    "gap": "Fresh combined native/browser and hosted acceptance remain required. The competing CJS decoder copy was not retained.",
+    "evidence": ["docs/handoffs/QR_CONTINUATION_COMPOSITION_20261124.md"]
+  },
+  "614": {
+    "disposition": "covered_selected_source",
+    "selected": "Fiat/countdown/POS work is retained through #615; the #581 QR continuation is now in the canonical #581/#605 composition. Only four historical unmatched code paths differ: added parseUnits guard/tests and the reconciled QR retry/provenance pair.",
+    "gap": "No separate missing runtime unit established by this continuation. Original #614 head is not an ancestor of either selected target; selected source still requires final combined hosted/native gates.",
+    "evidence": ["docs/handoffs/QR_CONTINUATION_COMPOSITION_20261124.md", "docs/handoffs/WEB_RESIDUALS_RECOVERY_20261124.md", "branch-current-code-comparisons.json"]
+  },
+  "608": {
+    "disposition": "selected_local_followup",
+    "selected": "Original #608/#548/#532 ancestry retained. ReceiptPanel's four print hunks and removal of seven legacy CSS lines preserve current archive ownership and selected QR geometry/policies.",
+    "gap": "No source blocker remains in this selected print unit. Fresh full/lean native print acceptance is required; historical donor print/PDF evidence is separate from this combined head.",
+    "evidence": ["docs/handoffs/RECEIPT_PRINT_RECOVERY_20261124.md"]
+  },
+  "563": {
+    "disposition": "selected_local_followup",
+    "selected": "Original donor ancestry and bounded offline public-profile viewer selected. Compile-time flag stays default off, full-build opt-in remains explicit, and lean excludes the viewer. Three additive hosted native scenarios are enforced.",
+    "gap": "Fresh default-full, opt-in-full and lean native acceptance remains required. Persona creation/rotation, encrypted identity, P05/P06 and catalog attestation are outside this unit and are not claimed complete.",
+    "evidence": ["docs/handoffs/F08_OFFLINE_PROFILE_RECOVERY_20261124.md"]
+  },
+  "572": {
+    "disposition": "selected_local_followup",
+    "selected": "Original donor ancestry selected: individual payment-key export, credential proof, retained-file verification, portable codec and standalone recovery CLI/tests. Current Scan/session/keyVault ownership and KDF cleanup preserved; strict REQUIRE_ANVIL=1 recovery command is additive.",
+    "gap": "Fresh full/lean export browser specs and native Anvil spending tests remain mandatory. Local Anvil/Cast were unavailable; no spending case executed. Broader seller-backup/master/archive UI and suspended-session recovery are not activated.",
+    "evidence": ["docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "583": {
+    "disposition": "held_visual_failures",
+    "selected": "Inherited C1 package history is already selected. Missing presentation work is the navy/cyan palette, responsive CSS/static assets, dark default and seven browser cases; it is not imported.",
+    "gap": "Three exact-donor failures remain: zoom/worker.js is outside the typed-lint project; five viewport cases fail badAssets for appearance.css/help.css/favicon.svg; forced-colors Home has serious contrast failures. Native zoom/theme cases passed. Cached 304 is only an unproven asset-failure hypothesis; assertions are retained.",
+    "evidence": ["docs/handoffs/RESPONSIVE_PALETTE_ELIGIBILITY_20261124.md"]
+  },
+  "246": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Relayer padding is a two-sided web/server protocol change; bulk RouterEvidenceBatch/selectEvidenceTargets/fetchRouterEvidence changes the verification API. Current individual export is canonical via #572, but the remaining network authority, recovery UI and server transitions are not reconciled as a whole.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "249": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Consent/profile selection, saved settings, private-scan scheduling, padded source requests and CSP propagation must agree with #251 action-scoped authorization. Selected narrow cleanup/diagnostics do not implement that coupled transport authority.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "240": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Current #572 supplies the canonical individual export/verification/codec/CLI unit. Historical master/archive UI, replacement consent and session-backup state still need reconciliation with current SellerKeys operation ownership and the #573/#596 recovery lifecycle; the whole Spec18 head is not selected.",
+    "evidence": ["mixed-scope-deeper-review.md", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "218": {
+    "disposition": "partial_coverage_residual_held",
+    "selected": "requirePinnedSigner, invalid-signature rejection and typed errors already have current executable equivalents; invoice-envelope differences are explanatory comments.",
+    "gap": "Remaining hosted relayer/limiter/CLI work changes server admission. The client_queue_full client handling depends on a class the current server does not emit, so that client hunk is not a standalone current fix.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "262": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Merchant-clock/canonical-array fixes and canonical individual payment export are covered. Remaining networkAuthority, InvoiceSignerVerification and BTC spentness/rollback evidence need consistent headers/scans/UI/sweep consumers; importing only a disclosure/preflight hunk would overstate current scan authority.",
+    "evidence": ["mixed-scope-deeper-review.md", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "251": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "networkAuthorization.ts and its dispatcher/services/UI integration remain absent. Action/category/endpoint binding, persisted profile snapshots, cancellation/expiry and opaque RPC capabilities are one authority contract; the unknown-preference-field helper alone cannot implement it.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "264": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Remaining authority/recovery/BTC integration and Solana protocol/domain/cluster exports are not reconciled. The donor TRON skeleton deliberately refuses build() until announcement memo binding exists; that is a changed capability contract, not a transparent current bug fix.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "260": {
+    "disposition": "selective_recovery_residual_held",
+    "gap": "Canonical individual export is selected through #572. Historical wider backup/verification/beforeunload flows still need integration with current controller-owned SellerKeys operations, generation counters and own-completion acknowledgement; replacing the old view wholesale loses those controls.",
+    "evidence": ["mixed-scope-deeper-review.md", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "211": {
+    "disposition": "partial_coverage_residual_held",
+    "selected": "Policy-scheme derive/limits/eip712/router/client behavior is already covered. Current pay/send bind method, account, owner, policy, R and metadata; token confirmation additionally checks seller keys.",
+    "gap": "Donor token confirmation would regress to policy-hash-only checks. Remaining Solana/TRON wire-format, adapter/CLI and backup UX changes require their matching consumers; no whole-head equivalence is claimed.",
+    "evidence": ["mixed-scope-deeper-review.md"]
+  },
+  "471": {
+    "disposition": "held_tooling",
+    "gap": "Six comparator/ledger-validator files use historical schema and retired-ref semantics. Their behavior must be reconciled with the current #380 ledger; these tools are not missing payment/runtime functionality.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "436": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Localized saved-scan assertion is a continuation of the unselected #372 privacy runtime and #363 Tor harness. The test needs that runtime/harness contract and is not an independent production repair.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "244": {
+    "disposition": "held_runtime_contract",
+    "gap": "Private BTC spentness overlaps #254/#382 worker/oracle/scanner state. Provider labeling, header freshness, consent, serialization and stale-session cancellation still need one canonical combined contract.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "254": {
+    "disposition": "held_runtime_contract",
+    "gap": "Alternative BTC spentness overlaps #244/#382 worker/oracle/scanner/consent state. Canonical worker/session behavior and preserved regressions are unresolved; historical failed donor checks are not fresh combined-head results.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "225": {
+    "disposition": "held_tooling",
+    "gap": "Mythril checker depends on #217 compiler/source/report identity and complete analysis coverage. A source-matched native contract-analysis qualification is still needed; this is separate tooling, not completed contract remediation.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "248": {
+    "disposition": "held_runtime_contract",
+    "gap": "Private checkpoint v5 changes current v4 schema, privateScanStore/privateScanLifecycle, vault reconciliation and session cache. Migration and #251 authorization/cancellation must be reconciled before selecting the feature.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "209": {
+    "disposition": "held_tooling",
+    "selected": "Scanner/frame-guard intent is partly covered by stronger current code.",
+    "gap": "Remaining CSP/hosting/release workflows and manifests require reconciliation with current release artifacts and guards; differing blobs do not establish missing app behavior.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "570": {
+    "disposition": "held_runtime_contract",
+    "gap": "Download/diagnostic/error/notification privacy spans 49 paths and intersects clipboard/masking grants. It must preserve intentionally exported bytes and current #572 verification authority while composing #580/#613; this composition is not qualified.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "584": {
+    "disposition": "held_runtime_contract",
+    "gap": "Destination notices depend on duplicate-attempt journal and payment-handoff scope. #610 local reuse and #595 durable preflight must agree on accepted/unknown attempts and cross-tab state; donor checks do not establish that combined contract.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "349": {
+    "disposition": "held_runtime_dependency",
+    "gap": "Strict-JSON correction targets sweepAttemptJournal.ts, absent from selected source. It needs the unselected #307 Sweep journal/advisory and its storage/approval lifecycle; it adds no current standalone repair.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "573": {
+    "disposition": "held_runtime_contract",
+    "selected": "The separate #572 individual payment export and portable codec are selected.",
+    "gap": "Seller recovery still couples verified-backup leave warnings, locked-vault typed deletion, same-meta/different-signer refusal and clean-profile address proof. It must preserve current operation ownership and qualify that complete recovery lifecycle.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "595": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Status-fixture continuation depends on #545 durable preflight storage/status/migration/withdrawal journal. Unknown-state behavior and cross-tab locks must remain consistent with #541/#584; fixture typing is not a standalone runtime fix.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "606": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Native disclosure fixture depends on #589 request-preview/dispatch binding and the broad #372 privacy runtime. Focus restoration and request authority need the parent implementation; current combined native acceptance is absent.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "592": {
+    "disposition": "held_provider_contract",
+    "gap": "Web checkout/deadlines and hosted relayer feed pricing are mixed. Chain/pair/feed provenance, sequencer/reference checks and provider qualification remain unresolved before selected UI recovery or hosted activation.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "549": {
+    "disposition": "held_runtime_dependency",
+    "gap": "Create Invoice copy-delay depends on clipboard helper/settings state. Its focused caller must compose #553/#580 preferences, Off/30/60 behavior and newer-copy protection; the broad inherited parent is not needed merely for the caller.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "579": {
+    "disposition": "held_provider_contract",
+    "gap": "Dashboard totals depend on #564 browsing and #535/#543 preview/refresh. Verified revenue remains unavailable until an independent evidence adapter/release qualification exists; #618 only repairs its dependent test fixture.",
+    "evidence": ["held-branch-eligibility.json", "branch-refresh-698.json"]
+  },
+  "460": {
+    "disposition": "held_provider_contract",
+    "gap": "Future analytics projection explicitly reports coverage not-evaluated. The F04 UI/evidence provider and overlapping #579 totals are not qualified as production analytics.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "580": {
+    "disposition": "held_runtime_contract",
+    "gap": "Shared copy/lock/backup/chain-view changes must compose clipboard preference, revocation and native-write ordering with current #572 export verification. Local donor tests/review do not supply current combined native acceptance.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "562": {
+    "disposition": "held_provider_contract",
+    "gap": "Offline authenticated-owner/CAS fixtures leave production encrypted records P05, owner authorization P06 and Pages activation incomplete. Selected F08 public-profile verification cannot supply those authority contracts.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/F08_OFFLINE_PROFILE_RECOVERY_20261124.md"]
+  },
+  "610": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Type repair depends on #586 local reuse scope/notices in CreateInvoice/Pay/Sweep and #584 journal advisory. Runtime boundary, unknown-attempt state and combined browser qualification remain unresolved.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "604": {
+    "disposition": "held_runtime_contract",
+    "gap": "Interrupted receipts/unknown outcomes and encrypted invoice drafts change identity restoration and wallet dispatch. These must compose #595 durable preflight and current CreateInvoice/Pay ownership before acceptance.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "602": {
+    "disposition": "held_provider_contract",
+    "gap": "Recurring M4 qualifies a durable-CAS vault/lifecycle/model only for fresh paused zero-cursor plans. Production executor/provider/authorization are separate unfinished contracts; the prototype does not establish active recurring execution.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "612": {
+    "disposition": "held_runtime_dependency",
+    "gap": "Public refusal notice depends on #598 encrypted cleanup, wallet snapshot/session presentation and grant revocation. Those runtime authority modules are absent from the selected composition, so the notice cannot be transplanted alone.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "303": {
+    "disposition": "partial_coverage_residual_held",
+    "selected": "#301 amount-parser runtime contract is selected, together with the preserved countdown/expiry guards.",
+    "gap": "Hundreds of remaining files belong to the historical privacy/scan/recovery parent, not another missing parser. Their broader authority and lifecycle contracts remain unselected.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/WEB_RESIDUALS_RECOVERY_20261124.md"]
+  },
+  "386": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Continue-button assertions after signer revocation depend on #381 Firefox/details controls and the broad privacy runtime. Retain with that missing control-state contract; no independent production repair is established.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "597": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Only mobile workflow, Playwright configuration and E2E fixtures differ. They require #588's native engine/profile qualification and current fixture adaptation; no runtime delta is present.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "255": {
+    "disposition": "held_tooling",
+    "gap": "Contract/Mythril closure changes deployment policy, compiler/toolchain identity and analysis scripts. Native source-matched analysis and deployment-contract qualification are still needed; no contract activation is implied.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "363": {
+    "disposition": "held_tooling",
+    "gap": "Tor hosting-kit identity, startup, deployment policy and egress behavior need hosting qualification. Pages source recovery does not establish a working deployed Tor transport; #436's harness assertion depends on that lane.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "613": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Firefox reflow continuation depends on #569 global masking/visibility grants and broad privacy source. Presentation grants, focus, clipboard/export interactions and native engine evidence remain a coupled qualification obligation.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "382": {
+    "disposition": "held_runtime_contract",
+    "gap": "BTC stop/new-wallet/worker-result behavior overlaps #244/#254 and broad #372 state. Worker ownership, cancellation and accepted-result lifecycle must be reconciled without restoring older privacy/export/workflow files wholesale.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "356": {
+    "disposition": "held_qualification_dependency",
+    "gap": "RelayerURL expectation repair targets #353 partial-import fixtures. Draft/validation runtime belongs to the unselected parent; this test-only continuation has no independent current runtime change.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "600": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Role-query typing depends on #585 minimal invoice sharing. Privacy-minimized schema/export envelopes must preserve selected #567 templates and HTTP(S) SDK/localhost link compatibility before acceptance.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "609": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Tor fixture repair depends on #587 timestamp/receipt/invoice retention. Portable-format, vault authority and retention lifecycle must be reconciled with current individual export; the fixture alone supplies no runtime behavior.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "596": {
+    "disposition": "held_qualification_dependency",
+    "gap": "#577 sole-signer/#544 idle runtime is coupled across session/AppShell/vault. Sole-copy preservation, sleep suspension and current authority still need reconciliation with #582 and selected #572 export behavior.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "599": {
+    "disposition": "held_runtime_contract",
+    "gap": "Seller-linked reconciliation spans scanClient/CreateInvoice/Scan and portable amounts. Imported-history ambiguity/reorg exclusion and capped read-only authority must compose current ledger behavior; two fixture changes alone do not establish that runtime integration.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "346": {
+    "disposition": "held_qualification_dependency",
+    "selected": "Current #572 provides a separately qualified individual export/portable-format/CLI unit.",
+    "gap": "These older recovery E2E cases depend on #243 checkpoint and wider Spec18 portable state. Their recovery fixtures must be reconciled with canonical #572 and unselected #573 before importing the broad inherited stack.",
+    "evidence": ["held-branch-eligibility.json", "docs/handoffs/INDIVIDUAL_EXPORT_RECOVERY_20261124.md"]
+  },
+  "582": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Native freeze/first-sign-after-sleep tests require #365/#544 idle/sweep authority continued by #596. Clock/suspension/sole-copy semantics must be selected with their runtime; qualification fixtures alone cannot supply them.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "541": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Two-tab E2E depends on #533 policy-lock/wallet-attempt runtime and #595 durable preflight. The donor's passing checks do not resolve the unselected cross-tab attempt/authority contract.",
+    "evidence": ["held-branch-eligibility.json"]
+  },
+  "566": {
+    "disposition": "held_dormant_qualification",
+    "gap": "The two-file offline quote-terms validator is absent and has no active consumer. It validates locally projected amounts/currency/time, not a quote provider. Current composed web qualification has not included this separate module; no source defect or ownership prohibition is asserted.",
+    "evidence": ["7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a:apps/web/src/features/fiat-conversion/quote-terms.ts"]
+  },
+  "559": {
+    "disposition": "held_provider_contract",
+    "gap": "Internal history-coverage classifier requires trusted chain/profile/revision completeness attestation. Current DestLedger has chain-filtered rows but no such provider/entry-point/Pages consumer; an empty list is insufficient evidence. Composed package/Pages qualification is also outstanding.",
+    "evidence": ["0419d3609caeba7857fefdd9f19f884adeff5646:docs/handoffs/P08_A04_LOCAL_HISTORY_COVERAGE.md"]
+  },
+  "556": {
+    "disposition": "held_provider_contract",
+    "gap": "Only a test fixture supplies authenticated catalog commitments. Production F08 catalog-attestation format, fingerprint rules and adapter remain absent; the selected public-profile signature does not attest catalog terms. Current full/lean consumer qualification is not supplied by the fixture.",
+    "evidence": ["08faa16e1a03fe8c87f97f02257363750b52c920:docs/handoffs/F02_MERCHANT_PROOF_PROVIDER.md"]
+  },
+  "558": {
+    "disposition": "held_dormant_qualification",
+    "gap": "Read-only inventory has type-only references to six exports and no production entry point. identity-sign/device-auth/service-authorize remain empty; this cannot supply F11 authorization. Complete composed web/typecheck/full-lean qualification for this separate metadata module remains outstanding; no source defect is asserted.",
+    "evidence": ["d242926030fea856e7a368639c059e472e9e9c6b:docs/handoffs/P06_ROLE_INVENTORY_20261123.md"]
+  },
+  "384": {
+    "disposition": "covered_selected_source",
+    "selected": "Current format.ts preserves the complete donor fiat/minor-unit and parseUnits executable behavior, with additional countdown and Unix timestamp guards. ParseUnits source and existing regressions were selected through #301 and C1/#615.",
+    "gap": "No additional runtime fix is missing. Historical test enumeration differs and is preserved on the donor; no whole-head or byte-identical test claim is made.",
+    "evidence": ["docs/handoffs/WEB_RESIDUALS_RECOVERY_20261124.md", "CURRENT_SOURCE_COMPARISONS.json"]
+  },
+  "405": {
+    "disposition": "covered_selected_source",
+    "selected": "Current format.ts preserves the donor Unix timestamp guard and parseUnits runtime contract. Executable differences are only the additional countdown guard; current format.test.ts retains the Unix guard suite with a typed fixture refinement.",
+    "gap": "No additional runtime fix is missing. Distinct historical parser-test enumeration remains on the donor; no whole-head or full test identity is implied.",
+    "evidence": ["docs/handoffs/WEB_RESIDUALS_RECOVERY_20261124.md", "CURRENT_SOURCE_COMPARISONS.json"]
+  },
+  "250": {
+    "disposition": "covered_selected_source",
+    "selected": "Deployment production source is exact; current RPC retains donor behavior and adds ambient-credential/referrer/cache defaults with tests. The extra quote-boundary assertion intent is already covered by maintained quote.guards.test.ts.",
+    "gap": "No missing runtime fix is established. The historical two-assertion quote case was deliberately omitted as duplicate guard coverage; the original donor remains intact.",
+    "evidence": ["docs/handoffs/PACKAGE_CLOCK_DECIMAL_RECOVERY_20261124.md", "CURRENT_SOURCE_COMPARISONS.json"]
+  },
+  "271": {
+    "disposition": "covered_selected_source",
+    "selected": "Deployment production source is exact; current RPC retains donor behavior and adds ambient-credential/referrer/cache defaults with tests. The extra quote-boundary assertion intent is already covered by maintained quote.guards.test.ts.",
+    "gap": "No missing runtime fix is established. The historical two-assertion quote case was deliberately omitted as duplicate guard coverage; the original donor remains intact.",
+    "evidence": ["docs/handoffs/PACKAGE_CLOCK_DECIMAL_RECOVERY_20261124.md", "CURRENT_SOURCE_COMPARISONS.json"]
+  },
+  "617": {
+    "disposition": "covered_selected_source",
+    "selected": "All 13 non-documentation delta paths relative to #616 exactly match published core 87bee. Local bda2af retains 11 exactly and strengthens only qrKinds.ts/test with the recovered literal-true print policy.",
+    "gap": "No independent missing runtime change. Distinct donor qualification remains historical evidence; neither whole donor-head ancestry nor final current hosted acceptance is implied.",
+    "evidence": ["branch-617-comparison.json", "CURRENT_SOURCE_COMPARISONS.json"]
+  },
+  "618": {
+    "disposition": "held_qualification_dependency",
+    "gap": "Relative to #579, only two rejection expressions in merchant-dashboard-totals.spec.ts and additive documentation change. That dashboard fixture/feature is absent; retain the correction with #579/#564/#543/#535. It adds no standalone current runtime fix and does not complete the evidence provider.",
+    "evidence": ["branch-refresh-698.json"]
+  }
+}

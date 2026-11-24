@@ -84,6 +84,45 @@ export function assertAddressFree(params: readonly unknown[], forbidden: readonl
   }
 }
 
+/**
+ * Fail-closed correlation of an untrusted eth_getLogs answer with its address-free request.
+ * Do not promote a log into payment/sweep evidence unless the emitter, block,
+ * block hash and event index are present and consistent. Duplicated event IDs
+ * count once; inconsistent duplicates are discarded rather than choosing a winner.
+ * This remains provider evidence, not independent chain finality verification.
+ */
+function boundTransferLogs(raw: readonly unknown[], token: Address, from: bigint, to: bigint): TransferLog[] {
+  const byEvent = new Map<string, TransferLog | null>();
+  for (const entry of raw) {
+    if (typeof entry !== 'object' || entry === null) continue;
+    const value = entry as Record<string, unknown>;
+    if (typeof value['address'] !== 'string' || value['address'].toLowerCase() !== token) continue;
+    const height = parseQty(value['blockNumber']);
+    if (height === undefined || height < from || height > to) continue;
+    const index = parseQty(value['logIndex']);
+    const blockHash = value['blockHash'];
+    if (index === undefined || !isHash32(blockHash)) continue;
+    const parsed = parseTransferLogs([entry])[0];
+    if (parsed === undefined) continue;
+    const id = `${blockHash.toLowerCase()}:${index.toString()}`;
+    if (!byEvent.has(id)) {
+      byEvent.set(id, parsed);
+      continue;
+    }
+    const earlier = byEvent.get(id);
+    if (
+      earlier !== null &&
+      earlier !== undefined &&
+      (earlier.transactionHash !== parsed.transactionHash ||
+        earlier.blockNumber !== parsed.blockNumber ||
+        earlier.from !== parsed.from ||
+        earlier.to !== parsed.to ||
+        earlier.value !== parsed.value)
+    ) byEvent.set(id, null);
+  }
+  return [...byEvent.values()].filter((event): event is TransferLog => event !== null);
+}
+
 async function transferLogs(
   rpc: VerifyRpc,
   token: Address,
@@ -97,7 +136,7 @@ async function transferLogs(
   assertAddressFree(params, protectedAddrs);
   const res = await rpc.request('eth_getLogs', params);
   if (!Array.isArray(res)) return fail('RPC_MALFORMED', 'eth_getLogs result is not an array');
-  return parseTransferLogs(res);
+  return boundTransferLogs(res, token, from, to);
 }
 
 function requireBig(n: bigint, positive: boolean): void {
