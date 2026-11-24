@@ -29,3 +29,5 @@ npm exec -w @ghostpay/web -- vitest run src/lib/keyRoleInventory.test.ts --maxWo
 ```
 
 Host CI, whole-web typecheck and complete full/lean application qualification remain open. Production role domains, handle lifetimes, isolated handles and invalidation remain the decisions and work listed in later P06 slices. This inventory alone cannot supply F11 owner authentication.
+
+Reviewer /root/review inspected the exact source SHA, checked the function definitions and call sites, and reran 8/8 cases including the 200 generated unknown-role strings. The reviewer confirmed that the implementation has only type-level imports and returns source metadata. The three reserved roles have no entries in this particular inventory.
