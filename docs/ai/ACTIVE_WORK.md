@@ -1,3 +1,10 @@
+# F02 GhostStore catalog and cart review
+
+Worker: Codex, branch `feature/f02-ghoststore-catalog-cart`, based on main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Specification: `future/f02-ghoststore` at `4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c`. Its recorded claim covers documentation. No GhostStore implementation or open F02 PR was found at discovery.
+Owned paths: `apps/web/src/features/future/ghoststore/`, this additive claim, and the F02 catalog/cart handoff.
+Acceptance: decode a bounded static catalog, bind a cart to its canonical revision, and compute exact product subtotals for one explicitly selected chain and asset. Reject stale catalogs, duplicate selections, mixed settlement units, and out-of-range quantities or totals. Exercise the offline review entry point on synthetic data. Merchant authentication, wallets, fulfillment, and release activation are outside this milestone.
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
