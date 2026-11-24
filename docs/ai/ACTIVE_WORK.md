@@ -157,6 +157,11 @@ Owned paths: `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src
 Observed defect: injected `ChainVerifier.lookup` resolving `{ status: 'found', facts: { confirmed: 'yes', amountBase: '1500000' } }` can produce a `chain_confirmed` verdict despite a nonboolean confirmation field; a missing/null `facts` object may throw instead of degrading to `unavailable`. Root cause: runtime callback result is assumed to satisfy its static TypeScript type; `!f.confirmed` is a truthiness check.
 Acceptance: test-first regressions for malformed found facts (nonboolean confirmed, null/missing facts), preserve exact valid true/false confirmation and matching behavior; minimal guard returning `unavailable` for malformed evidence; run available source-equivalent runtime checks and hosted exact-head package/CI; no new dependencies, network, funds, release, deployment or interfaces. Do not claim repository Vitest without checkout.
 Ownership: all 207 open PR changed-file lists from snapshot through #448 inspected; no claim on these specific source/new test paths. PR #390 checked separately: head `b655bc273a6704c9c140287b8adcdf4085b91882`, 5 completed successful workflow groups, 0 GitHub reviews; no edits to owner branch. Generation-11 integration lock remains externally held by `994a0d214fb9-root-r3`; leave draft and unmerged until legitimate ownership transfer and independent review.
+# GP-BUG-20261121 — reject malformed pasted invoice fragment boundaries
+
+Worker: ChatGPT bug-only bounded fix, 2026-11-21. Branch: `fix/ghostpay-pasted-invoice-fragment-boundary-20261121`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/fragment.ts`, `apps/web/src/lib/fragment.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim, and `docs/handoffs/PASTED_FRAGMENT_BOUNDARY_20261121.md`.
+Reproduction: the current `extractFragment` returns `#gpi=v1.abc#other` and `#gpi=v1.abc?tracking=1` instead of refusing malformed invoice text. It also accepts an arbitrary prefix (`garbage#gpi=v1.abc`). The QR path already uses stricter validation. Acceptance: accept bare invoice fragment and valid pasted https invoice URL with optional URL query before fragment; reject trailing fragment syntax, untrusted prefixes and malformed links; preserve existing valid behavior; test-first RED then focused GREEN. No new features, dependencies, protocols or deployment changes. Do not touch shared integration lock or merge pending exact-head CI, independent review and ownership qualification.
 
 ---
 
@@ -946,6 +951,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
 
+## Pages automatic language changes on an open page
+
+- Worker: Codex, branch `codex/pages-follow-browser-language`, base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: `apps/web/src/i18n/context.tsx`, `apps/web/src/i18n/LanguagePicker.test.tsx`, and this entry.
+- Acceptance: with Automatic selected, a browser language change updates the on-screen language and document direction without reloading. A manual selection or an explicit embedding language list keeps precedence. Returning to Automatic uses the current browser preference.
+- Fuzz follow-up on PR #551 at `664f8c448a6efb715396ae616e8509024de54d9a`: same Codex worker and remote branch. Also owns `apps/web/src/i18n/LanguagePicker.fuzz.test.tsx`. Exercise browser language lists and fallback, manual choice, and out-of-order catalog success/failure through the picker. Keep fixes in the existing provider.
+
 ---
 
 # GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
@@ -1114,3 +1126,33 @@ merchant-billing suite with coverage, build, typecheck, and lint using checkout-
 workspace dependencies. Record actual results and environment limits. The root
 coordinator owns independent review, combined qualification, and promotion; this
 worker performs no remote mutation or merge.
+# All-branch residual: live Automatic browser language — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` owns the integration-only composition of PR #551,
+source head `0dd3bcd33f843e89980baf1ea98372fb58521f01`, into
+`integration/all-branch-review-20261124` at local `f7f0367bdf680a4a45884908ebca98e78d3f9723`
+(main `706188000c38b3dde5a3a362370a530870aa7587`). Source paths are
+`apps/web/src/i18n/context.tsx`, `LanguagePicker.test.tsx`, and
+`LanguagePicker.fuzz.test.tsx`. The original owner branch remains unchanged.
+The browser-language event subscription and readable-primary-language fallback
+are absent from main and C1 #504. Preserve manual language choices, embedding
+overrides, catalog cancellation/order, document direction and persistence.
+Retain donor tests; run the full existing web localization suites, web typecheck,
+lint, and both build profiles. Require independent source review and applicable
+hosted qualification before main integration. This extends the existing claim;
+it does not claim a new native-browser pass in this restricted environment.
+
+# All-branch residual: pasted invoice boundaries — 2026-11-24
+
+Worker `chatgpt-f80482f352bc` owns integration of PR #389, source head
+`b5045aec476833a5c87f1d733521dcd76e1843d1`, on the existing all-branch review
+branch after `405418c5a0a53d0a5216d748a9c11ac638091180`. Owned source and test
+paths: `apps/web/src/lib/fragment.ts` and `fragment.test.ts`. Preserve every
+existing fragment-clearing behavior and donor assertion. Reconcile the donor's
+HTTPS-only pasted-link check with current SDK `LinkOptions` and `checkBase`,
+which explicitly support clean HTTP and HTTPS invoice links: accept either URL
+scheme while checking the actual complete invoice hash and refusing embedded
+whitespace. Pay's QR importer retains its separate HTTPS/deployment restriction.
+Add positive HTTP compatibility tests and run the fragment, Pay and localization
+regressions, web typecheck/lint and both production builds. Independent source
+review and hosted qualification remain required. Do not change donor refs.
