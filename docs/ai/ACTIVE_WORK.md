@@ -802,3 +802,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
+
+Worker: single automated BUG-ONLY coordinator, sequential source inspection, test and repair. No independent verifier available in this run.
+Branch: `automation/20261123-r16/bug/ux-fees-neartie-savings`; source base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packages/ux-fees/src/cheapest.tie-savings.test.ts`; new `docs/handoffs/UX_FEES_NEARTIE_SAVINGS_R16_20261123.md`.
+Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
+Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
+Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
