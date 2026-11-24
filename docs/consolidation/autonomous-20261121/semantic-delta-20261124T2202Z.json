@@ -1,0 +1,138 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-24T22:02:49Z (cycle start; live reads followed)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "5d7cbb15a46bf5418c436694f8c7c0f316a35fe0:docs/consolidation/autonomous-20261121/semantic-delta-20261124T2102Z.json",
+  "priorOverlay": "d08eab2718362fe5621e55507922c84610e526b0:docs/consolidation/autonomous-20261121/semantic-overlay-20261124T2002Z.json",
+  "summary": {
+    "branches": 710,
+    "openPrs": 244,
+    "stacked": 144,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      10
+    ],
+    "prPages": [
+      100,
+      100,
+      44
+    ],
+    "independentRefMatches": 710,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 194,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 0
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "sha": "5d7cbb15a46bf5418c436694f8c7c0f316a35fe0",
+      "prior": "5ba9bb50d4ec341f7de6f2d1312cdb29f90cf874",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "retired": [],
+  "newlyDiscovered": [
+    {
+      "branch": "automation/20261124T2125Z/bug/schedule-negative-handled",
+      "sha": "bc8fa946c387274ebefdcfa9516b820bd6887477",
+      "prior": null,
+      "disposition": "unresolved-active-BUG-only-owner",
+      "pr": 631
+    }
+  ],
+  "newlyFinal": [],
+  "unresolvedReview": [
+    {
+      "pr": 219,
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "disposition": "unique-behavior-not-main-active-successor-stack-no-standalone-merge",
+      "proof": {
+        "mainTree": "34c33cc2fc639c0f084269f7744ab31df111451a",
+        "mainEntries": 5138,
+        "donorTree": "5267aae58b29f47409616b6acfc570ad576c6d64",
+        "donorEntries": 4419,
+        "donorChangedPaths": 25,
+        "mainExactMatches": 0,
+        "missingInMain": "apps/web/src/features/btc/scan.spends.test.ts",
+        "treesTruncated": false,
+        "successors": [
+          {
+            "pr": 244,
+            "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+            "tree": "af61e24cb588fbf082915deac110c10cca008e70",
+            "ahead": 26,
+            "behind": 0,
+            "exactOriginalPaths": 7
+          },
+          {
+            "pr": 254,
+            "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+            "tree": "b57e3a1b5c48b329e38fa99bb0846fe6d6f0f228",
+            "ahead": 59,
+            "behind": 0,
+            "exactOriginalPaths": 8
+          },
+          {
+            "pr": 382,
+            "head": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+            "tree": "e1f2b199f6ae15cb9371e57078a6e9abcd312b13",
+            "ahead": 768,
+            "behind": 0,
+            "exactOriginalPaths": 7,
+            "parentPr": 372,
+            "parentHead": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d"
+          }
+        ],
+        "mainSource": "apps/web/src/features/btc/scan.ts blob 225c60b88048668f544c3ef2550a5e667298f58b lines 182-186 unconditionally calls client.isUnspent for each candidate; main worker protocol does not carry providerSpentCheck. English copy identifies provider as spent-status source, but does not explicitly state the matched outpoint disclosure in btc.verification.limit.spent or btc.scan.singleProvider.",
+        "successorSource": "#382 scan.ts 4f9128f1665873c12447e85d4cc0295cc8930abc: explicit providerSpentCheck and local/provider/unknown; worker client e5d414c4499e4646b4c8d4c073e0e2221fa4c8f9 checks consent/status and worker protocol 52fb26c62a85c44ddafac2c1e549a29b143a1a61 gates outspend. BtcView 1ecf7a6b7df6ed52ed5e7008e2847515f08bd21f guards sweep with current evidence. All 3 original tests retained in #244/#254/#382; #244 has 12 cases, #254/#382 have 3 in this file, so preserve and map the nine additional #244 cases across the successor suites before disposition. #382 and #244 diverged; no claim #382 incorporates all #244 tests or all stronger behavior."
+      },
+      "checks": {
+        "p244": "7/7 workflow groups successful at historical head",
+        "p254": "CI 44492546757 failed web unit job 135493084241 and aggregate typescript; six other workflows successful",
+        "p382": "Tor 44888411159 failed browser acceptance, four others successful",
+        "p372": "Tor 44879664025 failed browser acceptance and Contract analysis 44879663933 Mythril failed; six others successful"
+      },
+      "next": "Coordinate existing #372/#382 recovery owner and #244/#254 owners. Map each additional #244 assertion to current successor suite or recover it without overriding newer guards. Recompose on live current main only when #614-first coordination allows; fresh exact-head full native and security qualification required. Do not mark #219 or its successors integrated, do not run real-funds or external-provider tests."
+    },
+    {
+      "pr": 631,
+      "sha": "bc8fa946c387274ebefdcfa9516b820bd6887477",
+      "disposition": "active-BUG-only-owner-no-interference",
+      "checks": "CI 45491672059 failed web unit job 138791440733 and aggregate typescript; five other observed groups successful. No diagnosis or repair claimed."
+    }
+  ],
+  "checks": {
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "scheduledResearch": 45485137780,
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "branchProtectionRead": "403",
+    "rulesets": []
+  },
+  "testEvidence": {
+    "executed": 0,
+    "reason": "git ls-remote fails DNS; full checkout unavailable. Source/tree/ancestry comparison only; no newly executed native tests."
+  },
+  "remaining": "#614 independent approval, #616/#617 prepared reconciliations, #384 recovery, #217 deployment policy coordination, and BTC successor ownership/qualification remain open. No main merge, application code change, deployment, force push or deletion."
+}
