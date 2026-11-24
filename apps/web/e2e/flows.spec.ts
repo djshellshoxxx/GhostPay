@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { build } from 'vite';
+import type * as PolicyFixture from './policy-action.fixture';
 import { invoiceDigest as calculateInvoiceDigest, parseFragment } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import {
@@ -102,6 +105,15 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
   });
 }
 
+async function prepareInvoice(target: Page, url: string): Promise<void> {
+  await configureRpc(target);
+  await openFresh(target, url);
+  await target.getByRole('button', { name: 'Continue' }).click();
+  await target.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+  await target.getByRole('button', { name: 'Prepare payment' }).click();
+  await expect(target.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
+}
+
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
   test('pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it', async ({
     page,
@@ -152,15 +164,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await injectWallet(page, first);
     await injectWallet(tab, second);
 
-    const prepare = async (target: Page, url: string): Promise<void> => {
-      await configureRpc(target);
-      await openFresh(target, url);
-      await target.getByRole('button', { name: 'Continue' }).click();
-      await target.getByRole('button', { name: /Connect E2E Wallet/ }).click();
-      await target.getByRole('button', { name: 'Prepare payment' }).click();
-      await expect(target.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
-    };
-    await Promise.all([prepare(page, invoice), prepare(tab, invoice)]);
+    await Promise.all([prepareInvoice(page, invoice), prepareInvoice(tab, invoice)]);
     const hold = (target: Page): Promise<boolean> => target.evaluate(() => {
       (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true;
       return typeof navigator.locks?.request === 'function';
@@ -178,17 +182,66 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown', kind: 'payment' }]);
     await expect(free.getByRole('region', { name: 'Wallet attempt journal' })).toContainText('Outcome unknown');
 
-    await prepare(free, otherInvoice);
+    await prepareInvoice(free, otherInvoice);
     await send(free).click();
     await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
     expect(freeState.sendCalls).toBe(1);
     expect(await winner.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
     await winner.close(); // Simulate losing the original wallet response.
-    await prepare(free, invoice);
+    await prepareInvoice(free, invoice);
     await send(free).click();
     await expect(refused(free)).toBeVisible();
     expect(freeState.sendCalls).toBe(1);
     await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
+  });
+
+  test('refuses a duplicate policy action while an unrelated invoice reaches its wallet before the policy prompt is answered', async ({ page, context }) => {
+    // The Pages checkout runs from the normal build. Serve the policy sender only to these two test pages.
+    const bundle = await build({
+      configFile: false, logLevel: 'silent',
+      build: { write: false, lib: {
+        entry: fileURLToPath(new URL('./policy-action.fixture.ts', import.meta.url)),
+        formats: ['iife'], name: 'policyFixture',
+      } },
+    });
+    const output = Array.isArray(bundle) ? bundle[0] : bundle;
+    if (!output || !('output' in output) || output.output[0]?.type !== 'chunk') throw new Error('Missing policy fixture bundle');
+    const body = output.output[0].code;
+    const policy: { sent?: SentTx; sendCalls?: number } = {};
+    const invoice: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, invoice);
+    await context.route('**/__e2e-policy.js', (route) => route.fulfill({ contentType: 'application/javascript', body }));
+    const tab = await context.newPage();
+    await injectWallet(page, policy);
+    await injectWallet(tab, invoice);
+    await page.goto('/');
+    await generateKeys(page);
+    await prepareInvoice(tab, await createInvoice(page));
+    for (const target of [page, tab]) await target.addScriptTag({ url: '/__e2e-policy.js' });
+
+    type TestWindow = typeof window & { __e2eWallet: WalletControls; policyFixture: typeof PolicyFixture };
+    await page.evaluate(() => { (window as TestWindow).__e2eWallet.holdSend = true; });
+    const pending = () => page.evaluate(() => (window as TestWindow).__e2eWallet.pending);
+    const policySend = (target: Page) => target.evaluate(() => (window as TestWindow).policyFixture.send());
+    const original = policySend(page);
+    try {
+      await expect.poll(pending).toBe(true);
+      expect(policy.sent?.data).toBe('0x1234');
+      await tab.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => invoice.sendCalls ?? 0, { message: 'Unrelated invoice reached the mock wallet' }).toBe(1);
+      expect(invoice.sent?.to.toLowerCase()).toBe(FAKE_ROUTER.toLowerCase());
+      expect(BigInt(invoice.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
+      expect(await pending()).toBe(true);
+
+      let duplicateOutcome: string | undefined;
+      void policySend(tab).then((hash) => { duplicateOutcome = hash; }, (error: Error) => { duplicateOutcome = error.message; });
+      await expect.poll(() => duplicateOutcome, { message: 'Duplicate refused while policy prompt is still open' }).toMatch(/earlier policy action/i);
+      expect(await pending()).toBe(true);
+      expect([policy.sendCalls, invoice.sendCalls]).toEqual([1, 1]);
+    } finally {
+      await page.evaluate(() => { (window as TestWindow).__e2eWallet.releaseSend(); });
+      await expect(original).resolves.toBe(`0x${'9'.repeat(64)}`);
+    }
   });
 
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
