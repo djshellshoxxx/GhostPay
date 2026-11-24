@@ -1,3 +1,9 @@
+# Dashboard qualification — IndexedDB fixture rejection (2026-11-24 UTC)
+
+Worker: single sequential coordinator, cycle 20261124T1037Z. Isolated branch `automation/20261124T1037Z/bug/dashboard-idb-rejection`, parent #579 exact head `6366767fb632ab3a01603497b49f12714ab796bb`; main observed `706188000c38b3dde5a3a362370a530870aa7587`. Owned paths: only `apps/web/e2e/merchant-dashboard-totals.spec.ts`, this additive claim and a dedicated handoff. Preserve parent #579, #564, #543, #535 and all production behavior. #579's hosted lint job 138272495233 rejects two nullable IndexedDB error reasons. Acceptance: use Error objects with original browser failure as cause, preserve rejection and database-close behavior and every dashboard assertion. No production edit, no gate weakening, no shared branch update. Fresh exact-head CI and independent verification required; local git network DNS failed. Integration lock observed released generation 17; not acquired.
+
+---
+
 # R35 — reject throwing chain-lookup accessors (2026-11-22)
 
 Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
