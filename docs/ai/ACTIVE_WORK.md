@@ -830,3 +830,21 @@ Verify default-off, unchanged-link clearing, and preservation of newer clipboard
 Worker: Codex, branch `feat/remaining-sensitive-clipboard-286`. Base: PR #553 at `068fbc36b80311c107dfd3619d631fca794fac58`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the shared copy button, confirmed backup copy and associated lock hooks, shared clipboard helper, Settings copy, tests and clipboard documentation on this branch. #553 retains Create Invoice ownership. Reconcile relevant clipboard behavior from broad donor #372 without importing its second preference or other beta features.
 
 Acceptance: every programmatic copy uses #553's saved Off/30/60-second preference and helper. Only matching readable text may be cleared. Cover denied and missing APIs, newer/repeated copies, component unmount, preference revocation and pending native writes with controlled clocks and synthetic clipboards. Preserve backup reveal, auto-hide, confirmation and local recovery. Release qualification requires independent review and testing on an integrated candidate.
+
+## Finish #580 clipboard regression typing — 2026-11-24
+
+Worker: `/root` in the near-finished branch completion task. Isolated branch:
+`finish/clipboard-580-20261124`, based on #580 exact head
+`b634e816a403ac6b07a6685bac575ca683a17cb5`. Main observed at
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+
+Owned paths: the mock return types in `apps/web/src/lib/clipboardPrivacy.test.ts`,
+this additive ownership record, and a dedicated completion handoff. The original
+#580 source remains in history. The #553 branch and all production clipboard code
+are unchanged. Any continuation of #580 requires its observed head to match.
+
+Acceptance: reproduce the two `no-misused-promises` failures from hosted job
+138271835214, retain the actual promise signatures in the mock fixture, pass typed
+lint and the existing five helper/component suites without changing assertions,
+and obtain independent review. Refresh exact heads before publication. Hosted
+qualification remains a separate gate; no release or deployment is included.

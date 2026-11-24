@@ -1,9 +1,9 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { cancelClipboardCleanup, copyClipboardText, type ClipboardPort } from './clipboardPrivacy';
 
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
-function fakeClipboard(initial = ''): { port: ClipboardPort; value: () => string; overwrite: (next: string) => void; write: ReturnType<typeof vi.fn>; read: ReturnType<typeof vi.fn> } {
+function fakeClipboard(initial = ''): { port: ClipboardPort; value: () => string; overwrite: (next: string) => void; write: Mock<ClipboardPort['writeText']>; read: Mock<ClipboardPort['readText']> } {
   let value = initial;
   const read = vi.fn(() => Promise.resolve(value));
   const write = vi.fn((next: string) => { value = next; return Promise.resolve(); });
