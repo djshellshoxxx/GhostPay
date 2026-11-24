@@ -824,3 +824,9 @@ their tests, and this claim. Preserve the owners' existing branch histories.
 Exercise the real button with a mock clipboard, fake time, and seeded copy and
 completion orderings, including an in-flight same-link recopy at the old deadline.
 Verify default-off, unchanged-link clearing, and preservation of newer clipboard text.
+
+## Issue 286 remaining clipboard actions
+
+Worker: Codex, branch `feat/remaining-sensitive-clipboard-286`. Base: PR #553 at `068fbc36b80311c107dfd3619d631fca794fac58`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the shared copy button, confirmed backup copy and associated lock hooks, shared clipboard helper, Settings copy, tests and clipboard documentation on this branch. #553 retains Create Invoice ownership. Reconcile relevant clipboard behavior from broad donor #372 without importing its second preference or other beta features.
+
+Acceptance: every programmatic copy uses #553's saved Off/30/60-second preference and helper. Only matching readable text may be cleared. Cover denied and missing APIs, newer/repeated copies, component unmount, preference revocation and pending native writes with controlled clocks and synthetic clipboards. Preserve backup reveal, auto-hide, confirmation and local recovery. Release qualification requires independent review and testing on an integrated candidate.
