@@ -636,3 +636,7 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## P08-A04 local history coverage
+
+Worker `/root/store` on `feature/p08-local-history-coverage`, based on `future/p08-linkability-analysis` at `80bc065fa666b31445ad6a1078e0d751dcfe4259`. The original P08 specification claim owns documentation. This branch owns only `packages/hygiene/src/future/linkability/historyCoverage{,.test}.ts`, this additive claim and the P08-A04 handoff. Acceptance classifies a trusted, complete local snapshot of an exact chain, profile and history revision as empty or populated, while missing, partial, imported, stale or differently scoped evidence stays unknown. The test uses synthetic in-memory data. It does not change ledger persistence, the public package surface, Pages composition or transaction authorization.
