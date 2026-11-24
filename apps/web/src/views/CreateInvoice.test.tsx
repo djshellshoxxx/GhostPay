@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { openFragment, parseFragment } from '@ghostpay/invoice-schema';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
 import { captureSessionGuard, clearSession, generateSession, importSession, markKeystoreDownloaded } from '../lib/session';
+import { notifyAppLock } from '../lib/appLock';
 import { generateWaivedSession } from '../test/keys';
 import { makeServices, renderApp } from '../test/render';
 
@@ -62,6 +63,13 @@ describe('Create invoice fiat gating (per chain and token)', () => {
 });
 
 describe('Create invoice', () => {
+  it.each(['manual', 'idle'] as const)('drops the draft memo on %s lock even when keys remain loaded', async (reason) => {
+    generateWaivedSession();
+    await open();
+    fireEvent.change(screen.getByLabelText(/Memo/), { target: { value: 'Seller A private draft' } });
+    act(() => { notifyAppLock(reason); });
+    expect(screen.getByLabelText<HTMLTextAreaElement>(/Memo/).value).toBe('');
+  });
   it('asks for keys first', async () => {
     const user = await open();
     expect(screen.getByText('You need seller keys first.')).toBeTruthy();

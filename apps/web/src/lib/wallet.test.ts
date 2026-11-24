@@ -65,6 +65,15 @@ describe('discoverWallets (EIP-6963)', () => {
 });
 
 describe('connectWallet', () => {
+  it('refuses a discovered wallet without lifecycle monitoring before requesting accounts', async () => {
+    const win = new FakeWindow();
+    const wallet = new MockWallet();
+    win.ethereum = { request: wallet.request.bind(wallet) };
+    const [found] = await discoverWallets(win, 1);
+    if (found === undefined) throw new Error('Expected injected wallet');
+    await expect(connectWallet(found, 84532)).rejects.toThrow(/monitor/i);
+    expect(wallet.calls).toHaveLength(0);
+  });
   it('connects when everything is consistent', async () => {
     const w = new MockWallet();
     const s = await connectWallet(info(w), 84532);

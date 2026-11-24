@@ -242,6 +242,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
     await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByText(hash, { exact: true })).toBeTruthy();
+    expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toContain(hash);
     const [attempt] = readAttempts();
     if (attempt === undefined) throw new Error('Expected recovery record');
     act(() => { clearAttempt(attempt.id, true); });

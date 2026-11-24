@@ -3,7 +3,7 @@ import { approveWalletDisclosure, createInvoice, generateKeys, openFresh } from 
 import { configureRpc, mockNetwork, type SentTx } from './flowMocks';
 import { injectWallet, type WalletControls } from './walletFixture';
 
-for (const switchAt of ['open disclosure', 'away from checkout'] as const) {
+for (const switchAt of ['open disclosure', 'away from checkout', 'direct reload'] as const) {
   test(`changing wallet ${switchAt} discards the decrypted invoice across navigation and reload`, async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
@@ -13,8 +13,14 @@ for (const switchAt of ['open disclosure', 'away from checkout'] as const) {
     await generateKeys(page);
     const memo = 'Account A private service reference';
     const link = await createInvoice(page, { encrypt: true, memo });
+    await page.evaluate(() => {
+      const key = 'ghostpay.settings.v1';
+      const settings = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, unknown>;
+      localStorage.setItem(key, JSON.stringify({ ...settings, autoClearFragment: false }));
+    });
     await openFresh(page, link);
     await expect(page.getByText(memo)).toBeVisible();
+    expect(new URL(page.url()).hash).toBe(new URL(link).hash);
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
     await approveWalletDisclosure(page, 'eth_requestAccounts');
@@ -24,10 +30,12 @@ for (const switchAt of ['open disclosure', 'away from checkout'] as const) {
       await page.getByRole('button', { name: 'Prepare payment' }).click();
       await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(page.getByRole('dialog')).toBeVisible();
+    } else if (switchAt === 'direct reload') {
+      await page.reload();
     } else {
       await nav.getByRole('button', { name: 'Home', exact: true }).click();
     }
-    await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount(); });
+    if (switchAt !== 'direct reload') await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount(); });
     await expect(page.getByRole('dialog')).toHaveCount(0);
     const assertPrivate = async (): Promise<void> => {
       await expect(page.locator('body')).not.toContainText(memo);

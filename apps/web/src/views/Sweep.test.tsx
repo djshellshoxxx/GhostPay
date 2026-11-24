@@ -212,7 +212,10 @@ describe('Sweep', () => {
       expect(sink.calls).toContain('eth_sendRawTransaction');
       act(() => { notifyAppLock('idle'); });
       await act(async () => { release(); await held; });
-      expect(await screen.findByText('Submitted')).toBeTruthy();
+      expect(screen.queryByText('Submitted')).toBeNull();
+      expect(screen.queryByDisplayValue(DEST)).toBeNull();
+      if (sink.raw === undefined) throw new Error('Expected a submitted raw transaction');
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(keccak256(sink.raw as `0x${string}`));
       expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);
       expect(window.localStorage.getItem(sweepLib.DEST_LEDGER_KEY)).toBeNull();
     } finally {
