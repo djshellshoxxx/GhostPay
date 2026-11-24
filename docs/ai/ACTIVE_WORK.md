@@ -3187,3 +3187,4 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 
 - Worker `Codex`, branch `test/ghostpay-first-sign-after-sleep`, based on PR #365 at `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`.
 - Acceptance coverage in `apps/web/src/AppShell.idleClock.test.tsx` and `apps/web/e2e/idle-session.spec.ts`. Use a verified synthetic seller backup and the existing one-minute clock fixtures. The first invoice activation with timers suspended must require unlock past the deadline and sign once immediately below it.
+- Follow-up QA on #544 starts at `d4e950dc92f9a0fdd62e7887eb63bfd6b0c04420`. Codex owns seeded timeout and wake-event tests in the same two files. Check signer count, signature validity, and unlock state across the deadline with queued timers paused.
