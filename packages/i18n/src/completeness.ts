@@ -40,7 +40,11 @@ const HTML_LIKE = /<\s*\/?\s*[A-Za-z!]/;
 export function checkCatalogs(catalogs: Readonly<Record<string, Catalog>>, base: string): CompletenessReport {
   const baseTag = parseLocale(base).tag;
   const canon = new Map<string, Catalog>();
-  for (const [l, c] of Object.entries(catalogs)) canon.set(parseLocale(l).tag, c);
+  for (const [l, c] of Object.entries(catalogs)) {
+    const locale = parseLocale(l).tag;
+    if (canon.has(locale)) throw new I18nError('bad_locale', 'duplicate locale after canonicalisation');
+    canon.set(locale, c);
+  }
   const baseCat = canon.get(baseTag);
   if (baseCat === undefined) throw new I18nError('bad_catalog', 'base locale has no catalog');
   const baseKeys = Object.keys(baseCat).sort();

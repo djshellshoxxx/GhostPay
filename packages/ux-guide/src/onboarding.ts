@@ -213,6 +213,7 @@ export function reduce(state: OnboardingState, event: OnboardingEvent): ReduceRe
     }
     case 'PHRASE_REVIEWED':
       if (state.step !== 'backup') return fail(state, 'wrong_step');
+      if (!state.reviewRequired) return fail(state, 'invalid_event');
       return ok(state, { reviewRequired: false, quizPositions: [], quizAttempts: 0 }, at);
     case 'PROFILE_CHOSEN':
       if (state.step !== 'profile') return fail(state, 'wrong_step');

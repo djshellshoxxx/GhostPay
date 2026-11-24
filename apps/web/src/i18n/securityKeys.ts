@@ -4,6 +4,7 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  browserCapabilityLimits: ['app.checks.limits'],
   bitcoinOracleSources: [
     'btc.oracle.modeLabel',
     'btc.oracle.none',
@@ -1322,6 +1323,13 @@ export const SECURITY_KEY_GROUPS = {
     'btc.headers.uncheckedNone',
   ],
   policyConsentFeesAndRecovery: [
+    'policy.pay.committedAssetNotWithdrawable',
+    'policy.create.withdrawableAny',
+    'policy.create.withdrawableOnly',
+    'policy.pay.coverageUnknownTitle',
+    'policy.pay.coverageUnknown',
+    'policy.pay.coverageChecked',
+    'policy.pay.tokenNotWithdrawable',
     'policy.title',
     'policy.warning.title',
     'policy.intro',
@@ -1375,6 +1383,8 @@ export const SECURITY_KEY_GROUPS = {
     'receipt.lean.refused',
     'policy.network.none',
     'policy.create.imported',
+    // A restored-record identity/status claim is security-sensitive; keep source English until native review.
+    'policy.create.alreadySaved',
     'policy.create.badMeta',
     'policy.create.badDestinations',
     'policy.create.delayLabel',
@@ -1814,6 +1824,16 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
+  'app.checks.title',
+  'app.checks.running',
+  'app.checks.ready',
+  'app.checks.attention',
+  'app.checks.secure',
+  'app.checks.digest',
+  'app.checks.storage',
+  'app.checks.pass',
+  'app.checks.warn',
+  'app.checks.fail',
   'sellerKeys.verify.heading',
   'sellerKeys.verify.file',
   'sellerKeys.verify.passphrase',

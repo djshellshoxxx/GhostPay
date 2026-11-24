@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "الفحوص الذاتية للمتصفح",
+    "app.checks.running": "جارٍ فحص قدرات المتصفح المحلية…",
+    "app.checks.ready": "اجتازت جميع فحوص قدرات المتصفح",
+    "app.checks.attention": "تحقق من قدرات المتصفح",
+    "app.checks.secure": "سياق متصفح آمن",
+    "app.checks.digest": "اختبار SHA-256 بنتيجة معروفة عبر WebCrypto",
+    "app.checks.storage": "اختبار مؤقت للكتابة والقراءة من تخزين المتصفح",
+    "app.checks.pass": "اجتاز",
+    "app.checks.warn": "غير متاح",
+    "app.checks.fail": "فشل",
+    "app.checks.limits": "هذه الفحوص ليست تحققًا مستقلاً من سلامة شيفرة التطبيق أو أصالة المحفظة أو RPC أو سلامة المدفوعات أو تسويتها على السلسلة أو استرداد المفاتيح. لا تُرسل أي طلبات شبكة.",
     "settings.title": "الإعدادات",
     "settings.notice.plaintext": "تُحفظ الإعدادات في هذا المتصفح كنص عادي، بما في ذلك عناوين RPC. لا تضع عنوانًا يحتوي على سرّ لا تحفظه كنص عادي. لا يتم حفظ أي مفتاح أبدًا.",
     "settings.rpc.legend": "نقاط اتصال RPC",
@@ -567,6 +578,7 @@
     "policy.create.heading": "إنشاء عنوان وصفي للسياسة",
     "policy.create.needSession": "حمّل مفاتيح البائع أو أنشئها أولًا («مفاتيح البائع»).",
     "policy.create.imported": "تم التحقّق من سجل السياسة وتحميله.",
+    "policy.create.alreadySaved": "سجل السياسة محمّل بالفعل.",
     "policy.create.otherKeys": "تم التحقّق من السجل، لكنه يخص مفاتيح بائع أخرى غير المحمّلة الآن. لن يجد المسح مدفوعاته.",
     "policy.create.rejected": "رُفض السجل: {reason}.",
     "policy.create.badMeta": "أدخل العنوان الوصفي للسياسة (st:eth:gp2:0x...).",
@@ -2257,6 +2269,13 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "policy.create.withdrawableAny": "This policy has no limits: it can withdraw any token and the native coin.",
+    "policy.create.withdrawableOnly": "This policy can withdraw only: {tokens}. A payment in any other token or coin stays locked in the account forever, and payers cannot see your limits in the meta-address: tell them which assets to use.",
+    "policy.pay.coverageUnknownTitle": "This app cannot check that the payee can withdraw this asset",
+    "policy.pay.coverageUnknown": "A policy meta-address carries only a hash of the payee's policy, not its per-token limits. If the policy has limits and none for this asset, the payment stays locked in the policy account forever and nobody can recover it. Pay only in an asset the payee has confirmed over a channel you trust.",
+    "policy.pay.coverageChecked": "Checked against the payee's policy record loaded in this tab: the policy can withdraw this asset.",
+    "policy.pay.tokenNotWithdrawable": "Blocked: the payee's policy record loaded in this tab has per-token limits and none for this asset, so the policy account could never withdraw it. Nothing was sent.",
+    "policy.pay.committedAssetNotWithdrawable": "Blocked: a loaded record matches the payee's policy commitment and its immutable limits do not cover this asset. The policy account cannot withdraw it. Nothing was sent."
   }
 }

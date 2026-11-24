@@ -39,7 +39,7 @@ describe('computeFiatView untrusted quote property boundaries', () => {
       });
       expect(computeFiatView({ ...input, quote: malformed })).toEqual({
         state: 'invalid',
-        error: { code: 'bad-rate-format', message: 'quote could not be read' },
+        error: { code: 'bad-rate-format', message: 'quote fields could not be read' },
       });
     },
   );
@@ -53,7 +53,7 @@ describe('computeFiatView untrusted quote property boundaries', () => {
     });
     expect(computeFiatView({ ...input, quote: malformed })).toEqual({
       state: 'invalid',
-      error: { code: 'bad-rate-format', message: 'quote could not be read' },
+      error: { code: 'bad-rate-format', message: 'quote fields could not be read' },
     });
   });
 

@@ -1,0 +1,503 @@
+{
+  "baseline_main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "composition_commit": "9d8edf06da09dcb287a14b2aad26c439e9d7b7a5",
+  "count": 124,
+  "heads": [
+    {
+      "branch": "audit/ghostpay-r22-privacy-option-guards-20261121",
+      "sha": "e8afa1d2297b792cc00e40df94c2f3406d93d638"
+    },
+    {
+      "branch": "audit/ghostpay-r68-jitter-expiry-qualification-20261123",
+      "sha": "f2b262c2afe5d51c258e466d9be1d22798817135"
+    },
+    {
+      "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+      "sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb"
+    },
+    {
+      "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552"
+    },
+    {
+      "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce"
+    },
+    {
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64"
+    },
+    {
+      "branch": "automation/20261120/bug/policy-review-revocation-r1",
+      "sha": "ccc8c3521511e2a2b9b66ef11f12723d87ce5f44"
+    },
+    {
+      "branch": "automation/20261120T0243Z/worker/format-units-validation",
+      "sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7"
+    },
+    {
+      "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+    },
+    {
+      "branch": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98"
+    },
+    {
+      "branch": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544"
+    },
+    {
+      "branch": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c"
+    },
+    {
+      "branch": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462"
+    },
+    {
+      "branch": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462"
+    },
+    {
+      "branch": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "sha": "71632fa389ae93824b2f42d265278a9bd0f6de59"
+    },
+    {
+      "branch": "automation/20261120T2036Z/bug/btc-preview-network",
+      "sha": "692cac58b1c345137264936e60bee7b1e2eed8b2"
+    },
+    {
+      "branch": "automation/20261121/bug/deeplink-explicit-port-r10",
+      "sha": "ea2719992e44909b72c74a9d661bdfa7fa0aab68"
+    },
+    {
+      "branch": "automation/20261121/bug/display-text-expansion-bound-r1",
+      "sha": "b655bc273a6704c9c140287b8adcdf4085b91882"
+    },
+    {
+      "branch": "automation/20261121/bug/fiat-overlapping-separator-r4",
+      "sha": "de3d45ff59547ab5becee2d90904a76ba74d2ec8"
+    },
+    {
+      "branch": "automation/20261121/bug/large-amount-noise-bound-r1",
+      "sha": "699c8db24451a5ff6c034b1f247c48e6cc0bdd45"
+    },
+    {
+      "branch": "automation/20261121/bug/netstate-stale-summary-r7",
+      "sha": "93095a796a52ee664279439a5334042b97fe9c9a"
+    },
+    {
+      "branch": "automation/20261121/bug/onboarding-review-gate-r1",
+      "sha": "3ec919bace3e497fe58126396787b2b1b93938cc"
+    },
+    {
+      "branch": "automation/20261121/bug/payagain-evm-address-case-r6",
+      "sha": "a5d062d3e2ecf281cd616805e94cad11c206e37b"
+    },
+    {
+      "branch": "automation/20261121/bug/pos-runtime-guard-r14",
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b"
+    },
+    {
+      "branch": "automation/20261121/bug/receipt-evm-truncated-tail-r11",
+      "sha": "61d7fc56c98edaa7f377c7d227492ad7354e24d8"
+    },
+    {
+      "branch": "automation/20261121/bug/summary-period-runtime-guard-r5",
+      "sha": "8d3dd35c6d7e3ccfe91f2697312897812a140381"
+    },
+    {
+      "branch": "automation/20261121/bug/undo-maxpending-bound-r2",
+      "sha": "24caac5117f7dd19d7cf8b9cacae6c29f84956d0"
+    },
+    {
+      "branch": "automation/20261121/bug/ux-connect-pending-kind-r12",
+      "sha": "ffdf6adc34dcd187583b426fec0fade767488d92"
+    },
+    {
+      "branch": "automation/20261121/bug/ux-fees-urgency-validation-r9",
+      "sha": "55106dad616d548b9beb174c7f5735d1b5821a22"
+    },
+    {
+      "branch": "automation/20261121/bug/ux-links-max-lifetime-guard",
+      "sha": "b2c7e800516030b2910071c93b9afc652550ab8e"
+    },
+    {
+      "branch": "automation/20261121/bug/ux-schedule-weekly-maxyear-r8",
+      "sha": "0e6b5491bbb37c699bf22e70edd610ef32152c90"
+    },
+    {
+      "branch": "automation/20261121T0033Z/bug/router-duplicate-warning",
+      "sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+    },
+    {
+      "branch": "automation/20261121T0440Z/bug/payment-uri-utf16-failclosed",
+      "sha": "2844ec6c22fe179987585679a934e10033ff3384"
+    },
+    {
+      "branch": "automation/20261121T0638Z/bug/payment-uri-runtime-types",
+      "sha": "3d57d9881033f60786fecb3a71562af445441a3e"
+    },
+    {
+      "branch": "automation/20261121T0842Z/bug/payment-uri-query-boundaries",
+      "sha": "31b943bbc5bc3c3fdd3d1aec0d3fb5fa3d35c8a2"
+    },
+    {
+      "branch": "automation/20261121T2033Z/integration/display-text-boundaries",
+      "sha": "f846464db3cb2f12c221d0c2f56e3aa3702d4fcb"
+    },
+    {
+      "branch": "automation/20261122-r11/bug/hygiene-bufferdust-runtime-types",
+      "sha": "9bc3013e36bd0d245b54cbc5367d225ea4e6668d"
+    },
+    {
+      "branch": "automation/20261122-r11/bug/ux-vault-base64url-padbits",
+      "sha": "9aeed83b73916d0b51c192dbea04cfdc601f94a9"
+    },
+    {
+      "branch": "automation/20261122-r12/bug/guide-sparse-checklist",
+      "sha": "ffd187c7721d8e2b4aa1de647ef2bc5c07aa81f5"
+    },
+    {
+      "branch": "automation/20261122-r12/bug/ux-receipts-canonical-sparse",
+      "sha": "366c912ee6b7b6b017dd1f04b934f9f52ba656fa"
+    },
+    {
+      "branch": "automation/20261122-r36-consolidation/bug/no-cache-response",
+      "sha": "dd8f82d9ed3ae5f2c0c342de833a6b419a0d3a54"
+    },
+    {
+      "branch": "automation/20261122-r36/bug/ux-fiat-runtime-separators",
+      "sha": "66545f23707aeabb70e6a41601beb64998fe4d90"
+    },
+    {
+      "branch": "automation/20261122-r37/bug/ux-fees-asset-symbol-collision",
+      "sha": "a3ac91c8f38b99c25749ba1a87ba308c9f1f5a2e"
+    },
+    {
+      "branch": "automation/20261122-r4/bug/ux-schedule-invalid-utf16",
+      "sha": "3104e010863a93e2d88911515542f858301f6112"
+    },
+    {
+      "branch": "automation/20261122-r6/bug/ux-guide-detect-exact-settings",
+      "sha": "1f674b9b3432887d3c721cdb8be5370023feef7d"
+    },
+    {
+      "branch": "automation/20261122-r7/bug/ux-intake-address-runtime-types",
+      "sha": "2eb885054210d958e41bf559a4c10cc3ea790cd5"
+    },
+    {
+      "branch": "automation/20261122-r8/bug/ux-presets-missing-blob",
+      "sha": "0d5fb9c93e9f7b46725c1cf1cab01cb8975b2691"
+    },
+    {
+      "branch": "automation/20261122/bug/notify-snapshot-seq-r9",
+      "sha": "a234ea9487805d102bd6e6bb045fea5c95962557"
+    },
+    {
+      "branch": "automation/20261122/bug/search-tag-normalization-r1",
+      "sha": "6cce62fe107b76280074e9be161add3ba65b1a28"
+    },
+    {
+      "branch": "automation/20261122/bug/store-onlykeys-plain-r1",
+      "sha": "31c0d0aebad7be2d2eb6ffad246e6c1f688ef1df"
+    },
+    {
+      "branch": "automation/20261122/bug/ux-export-parse-nonstring-r10",
+      "sha": "860c7f4d09b6a9ef06a17089b2187d8aa7253007"
+    },
+    {
+      "branch": "automation/20261122/bug/ux-fiat-parse-rounding-r12",
+      "sha": "3be7dcdc98105f805315954ef6175f428430faf7"
+    },
+    {
+      "branch": "automation/20261122/bug/ux-links-book-sparse-entries-r13",
+      "sha": "9a0b976fe5348705cb617bb65b21e59b16614d67"
+    },
+    {
+      "branch": "automation/20261122/bug/ux-notify-manifest-purpose-whitespace",
+      "sha": "c7a9f9148ceea15b89090b533f31054a77f17765"
+    },
+    {
+      "branch": "automation/20261122/bug/ux-schedule-cancel-single-clock-11",
+      "sha": "782a5bce33a6fa981eb1d6f80f77e90665cad301"
+    },
+    {
+      "branch": "automation/20261122/bug/wcsession-request-clock-r11",
+      "sha": "051b722a34d5f0488af65cd486da3b0492ffc6a1"
+    },
+    {
+      "branch": "automation/20261122T0035Z/bug/settings-exchange-stale-basis",
+      "sha": "11b71fc9b0c66007e1d8c8700a53cfeb226d840d"
+    },
+    {
+      "branch": "automation/20261122T0123Z/bug/meta-fingerprint-surrogate",
+      "sha": "37864653893467c3cb28ec6eb653639319cb7ab6"
+    },
+    {
+      "branch": "automation/20261122T0218Z/bug/notify-label-surrogate-cut-r11",
+      "sha": "88ab4b971e1492492230dd091c53991254e2cafc"
+    },
+    {
+      "branch": "automation/20261122T0239Z/bug/settings-exchange-incoming-snapshot",
+      "sha": "6af1a4bc3cd8b33cd3e3e85a645ba43e7e456eef"
+    },
+    {
+      "branch": "automation/20261122T0326Z/bug/ux-privacy-empty-guardians-threshold",
+      "sha": "9e72c9820ed457f18c2635e17da629216eedbbdf"
+    },
+    {
+      "branch": "automation/20261122T0522Z/bug/ux-export-header-once-r3",
+      "sha": "315941d854200b8c59b4ffb5565392a8662f9a3d"
+    },
+    {
+      "branch": "automation/20261122T0641Z/bug/qr-classify-surrogate-input",
+      "sha": "17c638125ff66bde25fbd21fb434bc741b649032"
+    },
+    {
+      "branch": "automation/20261122T1036Z/bug/opstack-serialization-boundary",
+      "sha": "149300330d59642e1e97b76231ac1bea3200a973"
+    },
+    {
+      "branch": "automation/20261122T1426Z/bug/ux-flow-b64url-runtime-types",
+      "sha": "eca2a97b02860ea0e251d69c719af1455aff8067"
+    },
+    {
+      "branch": "automation/20261122T1440Z/bug/qr-svg-matrix-snapshot",
+      "sha": "f05504b5bcd62aa59c715f7c43934ca88107187a"
+    },
+    {
+      "branch": "automation/20261122T1640Z/bug/qr-snapshot-lint",
+      "sha": "6aba5e7c2fee75ac2e75b9689414f3e6e2d7280f"
+    },
+    {
+      "branch": "automation/20261122T1818Z/bug/amount-blur-crowd-overflow-r11",
+      "sha": "f702d2628673954983eb57814633475b8ae96df5"
+    },
+    {
+      "branch": "automation/20261122T1834Z/bug/palette-action-snapshot",
+      "sha": "ebac41d9eaee5439a84e5330c0974d0c59ca13c2"
+    },
+    {
+      "branch": "automation/20261122T2038Z/bug/policy-sparse-records",
+      "sha": "e5705abded6761c2b53cde2343210372e2264ef7"
+    },
+    {
+      "branch": "automation/20261122T2123Z/bug/export-pre-epoch-date-guard",
+      "sha": "4ebce7eeafd28029ebd0b6a9a3ec295279f8a653"
+    },
+    {
+      "branch": "automation/20261122T2232Z/bug/policy-sparse-test-typecheck",
+      "sha": "fe1c59a3d5aa25dbdcdf30db38ec869566fa0f5f"
+    },
+    {
+      "branch": "automation/20261123-r11/bug/ux-flow-embed-option-record",
+      "sha": "1e91fc43196c39498f392ef21d59bb80b7b83629"
+    },
+    {
+      "branch": "automation/20261123-r12/bug/qr-camera-attach-cleanup",
+      "sha": "93d719f98751852366a74a464f6f0dc39d4dcecc"
+    },
+    {
+      "branch": "automation/20261123/bug/export-column-holes-r11",
+      "sha": "cf642259db1e9cfe63937dd2728d4d2336fa7bb0"
+    },
+    {
+      "branch": "automation/20261123/bug/intake-invoice-default-port-r11",
+      "sha": "a8b10c12db402b6ab2dd2f41bd605327056d287d"
+    },
+    {
+      "branch": "automation/20261123/bug/notify-jws-query-cache-r12",
+      "sha": "1fc6f89f171b7c51eb6e84ccbc59800f19a4352e"
+    },
+    {
+      "branch": "automation/20261123/bug/ux-flow-origin-port-length-r12",
+      "sha": "f5008152754937d2c78f98b13ff35363f9e4d765"
+    },
+    {
+      "branch": "automation/20261123T0021Z/bug/hwsigner-bigint-boundary",
+      "sha": "e8dd09862face30c57e6123c01bcda3f6d2eec2c"
+    },
+    {
+      "branch": "automation/20261123T0032Z/bug/theme-css-snapshot",
+      "sha": "6d46d500da8171fe560090739c3ef9f1d3af94a7"
+    },
+    {
+      "branch": "automation/20261123T0237Z/bug/fiat-rate-quote-snapshot",
+      "sha": "8dd2dee49994f872aa9788206afa5878a2b49258"
+    },
+    {
+      "branch": "automation/20261123T0441Z/bug/eip3770-registry-guard",
+      "sha": "920a9ffe366dedc727d5e33b57c455cbcccde6af"
+    },
+    {
+      "branch": "automation/20261123T0635Z/bug/eip681-amount-snapshot",
+      "sha": "72c4b7aa0f111bcbdb53ace5424ab9fc544d04f7"
+    },
+    {
+      "branch": "automation/20261123T0742Z/bug/ux-links-sparse-tip-presets-r11",
+      "sha": "651d669371379c6a11eb8d56d700b96294da3074"
+    },
+    {
+      "branch": "automation/20261123T0840Z/bug/bitcoin-uri-input-snapshot",
+      "sha": "02aba52ad3d38991cc58a7d6869836cd70a0cbb5"
+    },
+    {
+      "branch": "automation/20261123T1239Z/bug/c1-context-help-focus",
+      "sha": "e205b107b57794fd96a8302d54d2df3cb273e9e9"
+    },
+    {
+      "branch": "automation/20261123T1440Z/bug/c1-rpc-input-subgrid",
+      "sha": "ad921a34a81037943e05ee48c39370261da21baa"
+    },
+    {
+      "branch": "automation/20261123T1637Z/bug/c1-sweep-simulation-fixture",
+      "sha": "fbd450936b2495026ff88a2eae08bfee02e92db6"
+    },
+    {
+      "branch": "automation/20261123T2018Z/bug/merchant-ledger-duplicate-invoice-export",
+      "sha": "907838ef75bbd0b08b4e23f3bbea9ac9b08403d4"
+    },
+    {
+      "branch": "automation/20261124T0524Z/bug/ux-fiat-conversion-output-bound",
+      "sha": "c9ebbdd41368f65cab27c909a146dc7d0960553d"
+    },
+    {
+      "branch": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "sha": "08d2111a5fd3b71a148fc8648481200e680faf53"
+    },
+    {
+      "branch": "chatgpt/ghostpay-browser-selfchecks-20261121",
+      "sha": "1edc524e69554e4a45017858c7e3e25c46dae419"
+    },
+    {
+      "branch": "chatgpt/ghostpay-csv-leading-whitespace-20261121",
+      "sha": "d283116dfcf3baa2e0ffc6dbf2d5657830849315"
+    },
+    {
+      "branch": "chatgpt/ghostpay-ledger-exponent-guard-20261121-0313",
+      "sha": "0d1193014e3a28f529afcba7787fcaea9bdac280"
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6"
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-layout-reflow-20261121-r1",
+      "sha": "63d5a0d0d1b08db14cbd52bd720736f4ceb4612e"
+    },
+    {
+      "branch": "finish/fee-quote-completion-20261124",
+      "sha": "02d9b7149ad715a7c2c9229f5297f0aa0834c415"
+    },
+    {
+      "branch": "finish/merchant-ledger-completion-20261124",
+      "sha": "78193fca9477c297a62937e4cdd032fdb15772c4"
+    },
+    {
+      "branch": "fix/countdown-394-main",
+      "sha": "96d20f778e3f92fa26144c9f97525eae4b3290a1"
+    },
+    {
+      "branch": "fix/ghostpay-browser-selfchecks-lint-r16-20261121",
+      "sha": "087ecf7e17f702d3b09bee4d67fef5e9ca2f6cbb"
+    },
+    {
+      "branch": "fix/ghostpay-browser-selfchecks-optionals-r13-20261121",
+      "sha": "3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565"
+    },
+    {
+      "branch": "fix/ghostpay-embed-popup-legacy-test-20261120-r1",
+      "sha": "0750012546aeb4336b4340fe16751f8d83804acd"
+    },
+    {
+      "branch": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4"
+    },
+    {
+      "branch": "fix/ghostpay-policy-pendingedit-lint-20261121-r1",
+      "sha": "23f55bfea1068a5791b8e8e29409e4a13d0b28a3"
+    },
+    {
+      "branch": "fix/ghostpay-policy-record-seller-identity-20261121",
+      "sha": "e871eccc1238b7145cd1d0a667afb393c373cf83"
+    },
+    {
+      "branch": "fix/ghostpay-policy-recovery-followup-20261121-r1",
+      "sha": "67542c09ba180eec95004fb9b7a6d52d1a8dd809"
+    },
+    {
+      "branch": "fix/ghostpay-policy-security-translation-parity-20261121-r1",
+      "sha": "18d0442a156106abe2309f8a6e82358aab37961a"
+    },
+    {
+      "branch": "fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "sha": "482d36ad436f4b27b2d86ff9a2c22daf150000ad"
+    },
+    {
+      "branch": "fix/ghostpay-qr-capacity-unicode-surrogate-20261121",
+      "sha": "cd1ddb7d6efd7d4ab0004e324c6e902a67704eed"
+    },
+    {
+      "branch": "fix/ghostpay-sweep-privacy-ci-expected-note-r23-20261121",
+      "sha": "ec3c7d9bf304fd9e837eaf7da9bbc0cf3fdb3ce3"
+    },
+    {
+      "branch": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "sha": "b86a3e6affe8b71c6f13d16783accad446271ba4"
+    },
+    {
+      "branch": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "sha": "06fd87c3e90000118ffa94048529db36f0a67d41"
+    },
+    {
+      "branch": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "sha": "81598d93dd82cc440526c866d42b55be0657895b"
+    },
+    {
+      "branch": "fix/ghostpay-webhook-signer-timestamp-width-20261121",
+      "sha": "7b1d10fdd9558ce92a0a7ac9d8d86c73727c5eef"
+    },
+    {
+      "branch": "fix/pos-terminal-reliability-20261124",
+      "sha": "4ae333d3ffa85eb14c074a543bdc084370dd1e49"
+    },
+    {
+      "branch": "nodata/determined-allen-x5n560",
+      "sha": "1a7447d58c08363209b6b9b67e9a6afad07d87f3"
+    },
+    {
+      "branch": "qualification/merchant-ledger-522-current-main",
+      "sha": "3ae56a5e0b3df9ce57e9bbf2a44c82b56e432033"
+    },
+    {
+      "branch": "recover/ghostpay-policy-asset-coverage-20261121-5ceb",
+      "sha": "821700d172dc638e1c06f35a03ca5f0c215fd46d"
+    },
+    {
+      "branch": "recover/ghostpay-policy-validation-20261121-5ceb",
+      "sha": "2e0aff8490086a54fadd52c2fa4d802605b7920e"
+    },
+    {
+      "branch": "repair/ghostpay-276-artifact-races-20261119",
+      "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+    },
+    {
+      "branch": "repair/ghostpay-tron-main-20261121-5ceb",
+      "sha": "500ece7a7c99b566ecaad5a8dd0d54fd0022395a"
+    },
+    {
+      "branch": "resume/ghostpay-i18n-completeness-20261124",
+      "sha": "7d6d48eff443b604f384835c207adcfbe014b624"
+    },
+    {
+      "branch": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "sha": "95e60ce4948b7430865dafbd1ad01434310a75f7"
+    },
+    {
+      "branch": "test/ghostpay-policy-review-races-20261121-r1",
+      "sha": "d981b19ff34c400251c2c398643a337a4205b06c"
+    }
+  ]
+}

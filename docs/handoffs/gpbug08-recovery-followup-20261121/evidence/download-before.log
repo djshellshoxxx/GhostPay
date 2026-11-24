@@ -1,0 +1,27 @@
+
+ RUN  v5.0.5 /workspace/scratch/d4505675e06a/GhostPay-policy-recovery/apps/web
+
+ ❯ src/features/policy/PolicyCreate.recordDownloads.test.tsx (2 tests | 1 failed) 437ms
+   ❯ policy record downloads preserve the complete seller identity (2)
+     × keeps separate recovery files when only the viewing key differs 301ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/policy/PolicyCreate.recordDownloads.test.tsx > policy record downloads preserve the complete seller identity > keeps separate recovery files when only the viewing key differs
+AssertionError: expected 'ghostpay-policy-d3821bc0-034f355bdcb7…' not to be 'ghostpay-policy-d3821bc0-034f355bdcb7…' // Object.is equality
+ ❯ src/features/policy/PolicyCreate.recordDownloads.test.tsx:68:30
+     66|
+     67|     expect(filenames).toHaveLength(3);
+     68|     expect(filenames[0]).not.toBe(filenames[1]);
+       |                              ^
+     69|     expect(filenames[2]).toBe(filenames[0]);
+     70|     for (const filename of filenames) expect(filename).toMatch(/^ghost…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  20:50:05
+   Duration  4.90s (transform 51%, import 26%, environment 13%, tests 9%)
+

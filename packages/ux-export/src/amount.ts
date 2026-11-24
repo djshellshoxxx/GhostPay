@@ -25,7 +25,11 @@ export function formatUnits(value: bigint, decimals: number, trim = false): stri
   const digits = abs.toString().padStart(decimals + 1, '0');
   const int = digits.slice(0, digits.length - decimals);
   let frac = digits.slice(digits.length - decimals);
-  if (trim) frac = frac.replace(/0+$/, '');
+  if (trim) {
+    let fractionEnd = frac.length;
+    while (fractionEnd > 0 && frac[fractionEnd - 1] === '0') fractionEnd -= 1;
+    frac = frac.slice(0, fractionEnd);
+  }
   const body = frac === '' ? int : `${int}.${frac}`;
   return neg ? `-${body}` : body;
 }
@@ -41,6 +45,7 @@ const UNSIGNED = /^(0|[1-9][0-9]*)(?:\.([0-9]+))?$/;
  */
 export function parseUnits(text: string, decimals: number): bigint {
   assertDecimals(decimals);
+  if (typeof text !== 'string') throw new ExportError('INVALID_AMOUNT', 'amount is not a plain decimal number');
   if (text.length > 120) throw new ExportError('INVALID_AMOUNT', 'amount too long');
   const m = UNSIGNED.exec(text);
   if (!m) throw new ExportError('INVALID_AMOUNT', 'amount is not a plain decimal number');

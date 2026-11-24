@@ -178,6 +178,7 @@ export function parseStrictJson(text: string): JsonValue {
  * Deterministic canonical JSON: sorted keys, no whitespace, integers only.
  *
  * @remarks Keys sorted by UTF-16 code unit order (all schema keys are ASCII).
+ * Arrays must be dense data arrays with no extra own keys or accessor elements.
  * Strings use `JSON.stringify` escaping; callers must have validated them as
  * well-formed NFC. Numbers must be non-negative safe integers; floats, NaN,
  * negatives, `undefined`, functions, bigint and non-plain objects throw.
@@ -196,7 +197,26 @@ export function canonicalize(value: unknown): string {
   }
   if (typeof value === 'boolean') return value ? 'true' : 'false';
   if (value === null) return 'null';
-  if (Array.isArray(value)) return `[${value.map((v: unknown) => canonicalize(v)).join(',')}]`;
+  if (Array.isArray(value)) {
+    // Capture data properties before recursion; input accessors, map overrides and Proxy
+    // get/has traps must not change which array elements are represented in signed JSON.
+    const descriptors: Record<string, PropertyDescriptor> = Object.getOwnPropertyDescriptors(value);
+    const length: unknown = descriptors['length']?.value;
+    if (typeof length !== 'number' || !Number.isSafeInteger(length) || length < 0 ||
+        Reflect.ownKeys(descriptors).length !== length + 1) {
+      throw new JsonParseError();
+    }
+    const values: unknown[] = [];
+    for (let index = 0; index < length; index++) {
+      const key = String(index);
+      if (!Object.hasOwn(descriptors, key)) throw new JsonParseError();
+      const descriptor = descriptors[key] as PropertyDescriptor;
+      if (!Object.hasOwn(descriptor, 'value')) throw new JsonParseError();
+      const item: unknown = descriptor.value;
+      values.push(item);
+    }
+    return `[${values.map((item) => canonicalize(item)).join(',')}]`;
+  }
   if (typeof value === 'object') {
     const proto: unknown = Object.getPrototypeOf(value);
     if (proto !== null && proto !== Object.prototype) throw new JsonParseError();
