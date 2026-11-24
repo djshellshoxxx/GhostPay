@@ -1,0 +1,23 @@
+{
+  "outcome": "passed",
+  "browser": "156.0.8078.4",
+  "executablePath": "/workspace/scratch/efb8df2579c9/mobile-browser-runtime/chrome-headless-shell-linux64/chrome-headless-shell",
+  "moduleDirectory": "/workspace/scratch/68c82b9dbbbb/GhostPay-followup/packages/ux-presets/dist/",
+  "moduleSha256": {
+    "/seal.js": "4ff2968d6f4cd1598ddee379caeccf3735c9158c9e5284c92dae682fd4e8cf19",
+    "/types.js": "f7738f8f8f47c9c0d2343d6f655b5e42ca474e76f9528e10e07b02e50a5c08a4"
+  },
+  "checks": [
+    "secure browser context and native WebCrypto",
+    "native nonextractable key retains identity",
+    "raw 32-byte key imports as nonextractable",
+    "native seal uses a fresh IV",
+    "native encryption round trip",
+    "native slot-bound authentication",
+    "imported seal uses a fresh IV",
+    "imported encryption round trip",
+    "imported slot-bound authentication",
+    "invalid raw key length retains typed error",
+    "ordinary metadata object is rejected"
+  ]
+}

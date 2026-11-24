@@ -1,0 +1,162 @@
+{
+  "initialSource": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+  "correctedProductSource": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+  "correctedTree": "e1b5f2f04e4fe2d5cbb88f5c1463d48112fcd377",
+  "node": "24.22.3",
+  "npm": "11.19.1",
+  "chromium": "156.0.8078.4",
+  "commands": [
+    {
+      "command": "npm ci --offline --ignore-scripts --no-audit --no-fund",
+      "result": "passed; 722 packages/22 seconds",
+      "logs": [
+        "npm-ci.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb"
+    },
+    {
+      "command": "npm run build -w @ghostpay/invoice-schema -w @ghostpay/payment-uri -w @ghostpay/merchant-billing -w @ghostpay/ux-notify -w @ghostpay/ux-intake -w @ghostpay/ux-vault -w @ghostpay/ux-presets",
+      "result": "passed at 807ff094; corrected presets rebuilt at f02d8afd",
+      "logs": [
+        "library-builds.log.gz",
+        "corrected-presets-build.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+      "correctedSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm run typecheck -w @ghostpay/invoice-schema -w @ghostpay/payment-uri -w @ghostpay/merchant-billing -w @ghostpay/ux-notify -w @ghostpay/ux-intake -w @ghostpay/ux-vault -w @ghostpay/ux-presets -w @ghostpay/web",
+      "result": "passed; corrected invoice-schema/presets rerun and passed",
+      "logs": [
+        "initial-typecheck.log.gz",
+        "corrected-typecheck.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+      "correctedSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm run lint -w @ghostpay/invoice-schema -w @ghostpay/payment-uri -w @ghostpay/merchant-billing -w @ghostpay/ux-notify -w @ghostpay/ux-intake -w @ghostpay/ux-vault -w @ghostpay/ux-presets -w @ghostpay/web",
+      "result": "initially three imported violations; all other workspaces passed; both corrected workspaces rerun and passed",
+      "logs": [
+        "initial-lint-failures.log.gz",
+        "corrected-lint.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+      "correctedSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm test -w @ghostpay/invoice-schema -- --maxWorkers=1",
+      "result": "passed; 744 tests/13 files; original coverage gate",
+      "logs": [
+        "invoice-schema-coverage.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm test -w @ghostpay/payment-uri -w @ghostpay/merchant-billing -w @ghostpay/ux-notify -w @ghostpay/ux-intake -w @ghostpay/ux-vault -w @ghostpay/ux-presets -- --maxWorkers=1",
+      "result": "passed; 1162 tests/66 files; original coverage gates",
+      "logs": [
+        "package-coverage-six.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm exec -w @ghostpay/web -- vitest run src/validateDeploymentsScript.test.ts src/lib/manifest.test.ts --maxWorkers=1",
+      "result": "passed; 22 tests/2 files; focused run without coverage",
+      "logs": [
+        "web-focused.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb"
+    },
+    {
+      "command": "npm run validate:deployments -w @ghostpay/web",
+      "result": "passed; deployments/:ok",
+      "logs": [
+        "validate-deployments.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb"
+    },
+    {
+      "command": "npm run build -w @ghostpay/web",
+      "result": "passed at corrected source; full profile and postbuild bundle scan 19 files",
+      "logs": [
+        "web-build-final.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+      "correctedSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "node scripts/agent/package-map.mjs --check",
+      "result": "passed; PACKAGE_MAP.md is current",
+      "logs": [],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "node --test scripts/agent/workspaces.test.mjs",
+      "result": "passed; 12 tests",
+      "logs": [
+        "workspace-graph-tests.log.gz"
+      ],
+      "primarySourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb"
+    },
+    {
+      "command": "node scripts/agent/affected.mjs --base d6b56d7f062bb3de1aa7392fb2c7882b47a0ee13 --json",
+      "result": "8 direct workspaces,21 affected,none unmapped",
+      "logs": [
+        "affected-workspaces.json"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "GHOSTPAY_CHROMIUM=<installed chrome-headless-shell> node docs/qa/followup-composition-20261124/cryptokey-chromium-acceptance.mjs",
+      "result": "passed before/after; 11 real-browser checks per run",
+      "logs": [
+        "cryptokey-chromium-before.json",
+        "cryptokey-chromium-final.json"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm run ci:scan-secrets",
+      "result": "passed",
+      "logs": [
+        "scan-secrets.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm run ci:check-actions",
+      "result": "passed; 111 references",
+      "logs": [
+        "check-actions.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "npm run ci:check-tx-origin",
+      "result": "passed; 39 Solidity files",
+      "logs": [
+        "check-tx-origin.log.gz"
+      ],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    },
+    {
+      "command": "git diff --check d6b56d7f062bb3de1aa7392fb2c7882b47a0ee13 HEAD",
+      "result": "passed after imported Solana trailing-space normalization",
+      "logs": [],
+      "primarySourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385"
+    }
+  ],
+  "initialCoverageAttempt": {
+    "source": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+    "exitCode": 130,
+    "reason": "Stopped before final result to qualify one corrected source after concrete lint failures; no pass claimed.",
+    "log": "initial-coverage-interrupted.log.gz"
+  },
+  "notExecuted": [
+    "full web coverage suite",
+    "complete21-workspace transitive test/type/lint suite",
+    "Firefox/WebKit/mobile-device acceptance",
+    "hosted CI or deployment"
+  ]
+}

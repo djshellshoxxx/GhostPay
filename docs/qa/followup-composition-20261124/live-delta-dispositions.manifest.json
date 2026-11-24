@@ -1,0 +1,43 @@
+{
+  "schema": "ghostpay-live-delta-archive/1",
+  "sourceSchema": "ghostpay-live-delta-dispositions/1",
+  "sourceGeneratedAt": "2026-11-24T10:05:32.626263+00:00",
+  "file": "live-delta-dispositions.json.gz",
+  "uncompressedBytes": 1974141,
+  "uncompressedSha256": "4faaa7209e0af1ecda46185064b29cc4e92db94543e59348a69d60f089aa32cb",
+  "compressedBytes": 186160,
+  "compressedSha256": "128c7790f0ad42e7b5efabcc0b704b517b57d5edc01503b94060a3b980642178",
+  "gzip": {
+    "mtime": 0,
+    "filename": "",
+    "compressionLevel": 9
+  },
+  "census": {
+    "originalRefs": 686,
+    "newRefs": 9,
+    "replacedHeads": 2,
+    "latestRefs": 695,
+    "main": "706188000c38b3dde5a3a362370a530870aa7587"
+  },
+  "qualifiedProduct": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+  "qualificationScope": "Archival evidence only. No application source changes or qualification reruns.",
+  "coordinatorDispositionOverrides": [
+    {
+      "source": "100de4006569ee1f65736adce8d111446dfafa59",
+      "pr": 511,
+      "paths": [
+        "packages/ux-fiat/src/view.ts",
+        "packages/ux-fiat/src/view.quote-accessor.test.ts"
+      ],
+      "disposition": "Behaviorally superseded by first/second composition quote snapshot/parser handling; excluded. Six original assertions expect incompatible error text. The archived preservation-only conclusion is not merge approval."
+    },
+    {
+      "prs": [
+        605,
+        581,
+        614
+      ],
+      "disposition": "Parallel QR alternatives and their owner/runtime obligations remain unresolved; no QR source is admitted by this evidence commit."
+    }
+  ]
+}

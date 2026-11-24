@@ -1,0 +1,92 @@
+{
+  "productSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+  "suites": [
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "testsPassed": 744,
+      "filesPassed": 13,
+      "coveragePercent": {
+        "statements": 98.13,
+        "branches": 97.8,
+        "functions": 100.0,
+        "lines": 99.27
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/payment-uri",
+      "testsPassed": 274,
+      "filesPassed": 14,
+      "coveragePercent": {
+        "statements": 97.63,
+        "branches": 97.23,
+        "functions": 100.0,
+        "lines": 99.13
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/merchant-billing",
+      "testsPassed": 290,
+      "filesPassed": 12,
+      "coveragePercent": {
+        "statements": 99.69,
+        "branches": 99.66,
+        "functions": 100.0,
+        "lines": 99.8
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/ux-notify",
+      "testsPassed": 119,
+      "filesPassed": 11,
+      "coveragePercent": {
+        "statements": 99.81,
+        "branches": 99.16,
+        "functions": 98.88,
+        "lines": 99.77
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/ux-intake",
+      "testsPassed": 106,
+      "filesPassed": 11,
+      "coveragePercent": {
+        "statements": 99.68,
+        "branches": 99.06,
+        "functions": 100.0,
+        "lines": 99.79
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "testsPassed": 306,
+      "filesPassed": 11,
+      "coveragePercent": {
+        "statements": 96.38,
+        "branches": 93.37,
+        "functions": 99.68,
+        "lines": 98.67
+      },
+      "outcome": "passed"
+    },
+    {
+      "workspace": "@ghostpay/ux-presets",
+      "testsPassed": 67,
+      "filesPassed": 7,
+      "coveragePercent": {
+        "statements": 98.83,
+        "branches": 98.19,
+        "functions": 98.46,
+        "lines": 100.0
+      },
+      "outcome": "passed"
+    }
+  ],
+  "totalPackageTestsPassed": 1906,
+  "totalPackageFilesPassed": 79,
+  "thresholdsUnchanged": true
+}

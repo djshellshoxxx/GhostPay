@@ -1,0 +1,176 @@
+{
+  "base": "d6b56d7f062bb3de1aa7392fb2c7882b47a0ee13",
+  "productSourceCommit": "f02d8afd8660e59447f253f4fdea807a0e2cd385",
+  "tree": "e1b5f2f04e4fe2d5cbb88f5c1463d48112fcd377",
+  "donors": [
+    {
+      "pr": "531",
+      "head": "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0",
+      "ancestor": true,
+      "paths": [
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        "apps/web/package.json",
+        "apps/web/src/validateDeploymentsScript.test.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "557",
+      "head": "5f280cab9c252cf57a68e2c2d156c07b36d2b018",
+      "ancestor": true,
+      "paths": [
+        "packages/merchant-billing/src/money.ts",
+        "packages/merchant-billing/src/money.uint256-roundtrip.test.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "516",
+      "head": "c86d5a32e02efbee14d935548c821b27e287f507",
+      "ancestor": true,
+      "paths": [
+        "packages/ux-notify/src/reminder-bridge.accessor.test.ts",
+        "packages/ux-notify/src/reminder-bridge.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "536",
+      "head": "1f3d230be9f5ab67e5314c5084dc1f4b5e141472",
+      "ancestor": true,
+      "paths": [
+        "packages/ux-intake/src/text.japanese-script.test.ts",
+        "packages/ux-intake/src/text.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "538",
+      "head": "41ddd0f21986d3ec65d43ead73fafda39a4a2f4d",
+      "ancestor": true,
+      "paths": [
+        "packages/ux-vault/src/confusables.group-kind.test.ts",
+        "packages/ux-vault/src/confusables.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "507",
+      "head": "7e618aef8e9c84055f445b4959a339e7ad470cbf",
+      "ancestor": true,
+      "paths": [
+        "packages/payment-uri/src/solana.reference-snapshot.test.ts",
+        "packages/payment-uri/src/solana.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "593",
+      "head": "97cb98591a2a2e95c8d9a701d0eb60e4e2bc7a4b",
+      "ancestor": true,
+      "paths": [
+        "packages/payment-uri/src/tron.input-snapshot.test.ts",
+        "packages/payment-uri/src/tron.ts"
+      ],
+      "differingPaths": [
+        "packages/payment-uri/src/tron.ts"
+      ],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "tron-child",
+      "head": "9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce",
+      "ancestor": true,
+      "paths": [
+        "packages/payment-uri/src/tron.input-snapshot.test.ts",
+        "packages/payment-uri/src/tron.network-option.test.ts",
+        "packages/payment-uri/src/tron.ts"
+      ],
+      "differingPaths": [],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "509",
+      "head": "59b5bbfc6f6dc3cc83d24c1fccbe87b15cd72d0c",
+      "ancestor": true,
+      "paths": [
+        "packages/ux-presets/src/seal.cryptokey-boundary.test.ts",
+        "packages/ux-presets/src/seal.ts"
+      ],
+      "differingPaths": [
+        "packages/ux-presets/src/seal.ts"
+      ],
+      "missingOwnershipLines": {}
+    },
+    {
+      "pr": "567",
+      "head": "f0171888c95b48005a6809aedf1e625bf86dfe83",
+      "ancestor": true,
+      "paths": [
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/invoice-schema/src/json.ts"
+      ],
+      "differingPaths": [
+        "packages/invoice-schema/src/json.test.ts"
+      ],
+      "missingOwnershipLines": {}
+    }
+  ],
+  "changedPaths": [
+    ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+    "apps/web/package.json",
+    "apps/web/src/validateDeploymentsScript.test.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/MERCHANT_DECIMAL_UINT256_20261124.md",
+    "docs/handoffs/PAGES_MANIFEST_COMMAND_20261123.md",
+    "docs/handoffs/SOLANA_REFERENCE_SNAPSHOT_20261123.md",
+    "docs/handoffs/TRON_URI_INPUT_SNAPSHOT_20261124.md",
+    "docs/handoffs/UX_INTAKE_JAPANESE_SCRIPT_20261124.md",
+    "docs/handoffs/UX_NOTIFY_REMINDER_ACCESSOR_R11_20261123.md",
+    "docs/handoffs/UX_PRESETS_CRYPTOKEY_AUTHENTICITY_R11_20261123.md",
+    "docs/handoffs/UX_VAULT_DUPLICATE_GROUP_KIND_20261124.md",
+    "packages/invoice-schema/src/json.test.ts",
+    "packages/invoice-schema/src/json.ts",
+    "packages/merchant-billing/src/money.ts",
+    "packages/merchant-billing/src/money.uint256-roundtrip.test.ts",
+    "packages/payment-uri/src/solana.reference-snapshot.test.ts",
+    "packages/payment-uri/src/solana.ts",
+    "packages/payment-uri/src/tron.input-snapshot.test.ts",
+    "packages/payment-uri/src/tron.network-option.test.ts",
+    "packages/payment-uri/src/tron.ts",
+    "packages/ux-intake/src/text.japanese-script.test.ts",
+    "packages/ux-intake/src/text.ts",
+    "packages/ux-notify/src/reminder-bridge.accessor.test.ts",
+    "packages/ux-notify/src/reminder-bridge.ts",
+    "packages/ux-presets/src/seal.cryptokey-boundary.test.ts",
+    "packages/ux-presets/src/seal.ts",
+    "packages/ux-vault/src/confusables.group-kind.test.ts",
+    "packages/ux-vault/src/confusables.ts"
+  ],
+  "unattributedNonDocumentationPaths": [],
+  "missingBaseOwnershipLines": {},
+  "canonicalJsonBlobs": {
+    "packages/invoice-schema/src/json.ts": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+    "packages/invoice-schema/src/json.test.ts": "2ffdfe70a8814762b14721ac640fc82cab0b9e54"
+  },
+  "lockfileUnchanged": true,
+  "initialProductSourceCommit": "807ff0940c0387cbf1c70ee29331cc44e6c9dacb",
+  "authorizedQualificationRepairs": {
+    "packages/invoice-schema/src/json.test.ts": {
+      "before": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+      "after": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+      "reason": "Two intentional sparse-array deletions expressed with Reflect.deleteProperty; assertions unchanged."
+    },
+    "packages/ux-presets/src/seal.ts": {
+      "before": "c42a35c9131e41d262df21c56b8053bd144574eb",
+      "after": "b986c4b0013ace77c82e061cd20224f574bfb392",
+      "reason": "Retain native getter descriptor and invoke its getter with the same material receiver; resolves unbound-method gate."
+    }
+  }
+}

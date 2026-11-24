@@ -8,7 +8,7 @@ const SCRIPT_TESTS: readonly (readonly [string, RegExp])[] = [
   ['Arabic', /^\p{Script=Arabic}$/u],
   ['Devanagari', /^\p{Script=Devanagari}$/u],
   ['Thai', /^\p{Script=Thai}$/u],
-  ['CJK', /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Bopomofo}]$/u],
+  ['CJK', /^[\p{Script=Han}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}\p{Script=Hangul}\p{Script=Bopomofo}]$/u],
 ];
 
 /**
