@@ -1,0 +1,111 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-24T19:02:39Z",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorOverlay": "3d1d778eed370f80d91a4017bf64fae5d4aaa534:docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1702Z.json",
+  "summary": {
+    "branches": 708,
+    "openPrs": 242,
+    "stacked": 143,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      8
+    ],
+    "prPages": [
+      100,
+      100,
+      42
+    ],
+    "independentRefMatches": 708,
+    "provisionalFinalized": 512,
+    "provisionalUnresolved": 196,
+    "mainAncestryLowerBound": 372
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "oldSha": "fd00ed50d9f773ec65254486c392f83d9b3bd64d",
+      "sha": "3d1d778eed370f80d91a4017bf64fae5d4aaa534",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "newlyDiscovered": [
+    {
+      "branch": "automation/20261124-recovery-573/qa/beforeunload-fixture",
+      "sha": "4b1ed14ccfac12b5574b8817873ce299ecb86ddf",
+      "pr": 629,
+      "ahead": 9,
+      "behind": 871,
+      "disposition": "unresolved-active-recovery-owner"
+    },
+    {
+      "branch": "automation/20261124T1821Z/bug/ux-export-leading-bom",
+      "sha": "0fe0f06f1f7cd1dde2c4dc849702f0ab4cd509cd",
+      "pr": 628,
+      "ahead": 4,
+      "behind": 0,
+      "disposition": "unresolved-active-bug-owner"
+    },
+    {
+      "branch": "automation/20261124/bug/i18n-accessible-name-surrogate-r11",
+      "sha": "005ca59c5b2cbe2c7cce9b3e326f2438dff57f3f",
+      "pr": 627,
+      "ahead": 4,
+      "behind": 0,
+      "disposition": "unresolved-active-bug-owner"
+    }
+  ],
+  "retired": [],
+  "newlyFinal": [
+    {
+      "pr": 409,
+      "branch": "automation/20261121/bug/cache-control-no-cache-r3",
+      "sha": "8d55b4e39be48a0410c16d4a4c0acaa57da55b9b",
+      "disposition": "runtime-and-regression-redundant-evidence-pending",
+      "proof": "Main 9170969f4a31a4da87d346f3cbe61d5b72a500ae differs from donor only by comment; main test 8812f71336914461f44482a82ea247aa3f94217f covers same behavior plus cases."
+    },
+    {
+      "pr": 419,
+      "branch": "automation/20261121T1835Z/bug/display-surrogate-cut",
+      "sha": "62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3",
+      "disposition": "superseded-by-stronger-current-main-evidence-pending",
+      "proof": "Main 97d29e845f256ed4d35dd407624e837f22cbb1c9 preserves pair clipping and rendered cap. Do not restore over-cap assertion."
+    },
+    {
+      "pr": 405,
+      "branch": "automation/20261121T1238Z/bug/unix-timestamp-runtime-guard",
+      "sha": "11117b9fff062d859c9db123ff62641cc0479192",
+      "disposition": "incremental-runtime-and-regression-equivalent-evidence-pending",
+      "proof": "Main format.ts cda0c3c5e159106e8ef9af6946574cfc2c3ab671 has identical guard; main format.test.ts 1b7cdec6f697671f9e722f3b1e73bd29cfb38923 retains three-case describe with equivalent intermediate unknown variable."
+    },
+    {
+      "pr": 416,
+      "branch": "automation/20261121T1636Z/bug/countdown-invalid-runtime",
+      "sha": "5d3e21617a8a368c5694739319856d083a6c3881",
+      "disposition": "incremental-runtime-and-regression-equivalent-evidence-pending",
+      "proof": "Same main formatter has identical countdown guard; exact donor countdown test blob 31e1830abbb99af0d1aba21c64a334eb39255c7b; timestamp lint change retained."
+    }
+  ],
+  "remaining": "PR384 unique regression intent for KWD minor-unit convention, boxed String and precision boundary cases pending; PR405/416 classifications incremental only. Historical evidence and ancestry remain pending. Main and #614 gates unchanged; no independent approval; 616/617 detached trees remain unpromoted. No local native tests or merge this cycle. Existing owner scopes preserved.",
+  "previousEvidence": "https://github.com/djshellshoxxx/GhostPay/pull/380#issuecomment-7140144271",
+  "checks": {
+    "main": [
+      45415639617,
+      45415639485,
+      45415637708,
+      45423093766
+    ],
+    "p614": "c03598fe5923ddee8f9276c794b3197c501b2004",
+    "p614Success": 8,
+    "p614Skipped": 13,
+    "p614Reviews": 0,
+    "lock": "4fe0656517a03cb7a39d4e248187c76ffaa3238a generation 20 released"
+  },
+  "limits": "All unchanged rows and PR records inherited from prior overlay, three added PRs identified above; final count provisional live row classification, not global historical obligations. No new approvals. Compare counts current-main pinned."
+}
