@@ -23,6 +23,8 @@ export interface WalletInfo {
   readonly rdns?: string;
   /** True when a second announcement reused this uuid with a different name or rdns (impersonation attempt, S3-22). */
   readonly conflict?: boolean;
+  /** Wallets discovered in the browser must report account, chain and disconnect events. */
+  readonly requireLifecycleEvents?: boolean;
   readonly kind: 'eip6963' | 'injected';
   readonly provider: Eip1193Provider;
 }
@@ -92,6 +94,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
         id: `6963:${uuid}`,
         name,
         kind: 'eip6963',
+        requireLifecycleEvents: true,
         provider,
         ...(typeof icon === 'string' && icon.length <= MAX_ICON && ICON_RE.test(icon) ? { icon } : {}),
         ...(rdns === undefined ? {} : { rdns }),
@@ -115,7 +118,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
   if (list.length === 0) {
     try {
       const injected = win.ethereum;
-      if (isProvider(injected)) list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', provider: injected });
+      if (isProvider(injected)) list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', requireLifecycleEvents: true, provider: injected });
     } catch { /* A hostile injected getter is not an available wallet. */ }
   }
   return list;
@@ -255,7 +258,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
       // Permission grants may announce the initial account/network; both are verified below. Only the requested
       // network switch is allowed after that point, and its final chain and account are re-read before returning.
       if (event === 'disconnect' || (accountResolved && !(event === 'chainChanged' && switching))) changed = true;
-    });
+    }, wallet.requireLifecycleEvents);
     check();
     if (disclosure !== undefined) approval = await reviewConnection(provider, disclosure, prepareWalletConnection(expectedChainId).disclosure, check, signal);
     check();
@@ -302,7 +305,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
 export type WalletLifecycleEvent = 'accountsChanged' | 'chainChanged' | 'disconnect';
 
 /** Bounded, disposable EIP-1193 subscription. Retained callbacks become inert before provider cleanup runs. */
-export function observeWalletLifecycle(provider: Eip1193Provider, changed: (event: WalletLifecycleEvent) => void): () => void {
+export function observeWalletLifecycle(provider: Eip1193Provider, changed: (event: WalletLifecycleEvent) => void, required = false): () => void {
   let active = true;
   const bound: { readonly event: WalletLifecycleEvent; readonly listener: () => void }[] = [];
   let remove: Eip1193Provider['removeListener'];
@@ -315,7 +318,7 @@ export function observeWalletLifecycle(provider: Eip1193Provider, changed: (even
   try {
     const add = provider.on;
     remove = provider.removeListener;
-    if (add === undefined && remove === undefined) return dispose;
+    if (!required && add === undefined && remove === undefined) return dispose;
     if (typeof add !== 'function' || typeof remove !== 'function') throw new Error('monitor-unavailable');
     for (const event of ['accountsChanged', 'chainChanged', 'disconnect'] as const) {
       const listener = (): void => { if (active) changed(event); };
@@ -359,7 +362,7 @@ export function observeConnectedWallet(session: WalletSession, changed: () => vo
   listeners.add(changed);
   recheckListeners.set(session, listeners);
   try {
-    const stop = observeWalletLifecycle(session.wallet.provider, changed);
+    const stop = observeWalletLifecycle(session.wallet.provider, changed, session.wallet.requireLifecycleEvents);
     return () => { listeners.delete(changed); stop(); };
   } catch (error) {
     listeners.delete(changed);

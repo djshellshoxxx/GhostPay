@@ -953,10 +953,11 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
   const app = useApp();
   const services = useServices();
   const [refreshGeneration, force] = useState(0);
-  const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
+  const [loadedList, setList] = useState<{ readonly access: number; readonly rows: readonly TagPayload[] } | undefined>();
   const [err, setErr] = useState<ScanText | undefined>(undefined);
   const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
   const access = useSyncExternalStore(services.vault.subscribeAccess, services.vault.getAccessRevision);
+  const list = loadedList?.access === access ? loadedList.rows : undefined;
   const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
 
   // Session revisions invalidate tag access even when the replacement has the same public keys.
@@ -985,7 +986,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
       (next) => {
         if (!live || services.vault.getAccessRevision() !== access) return;
         try { sessionGuard(); } catch { return; }
-        setList(next);
+        setList({ access, rows: next });
       },
       (e: unknown) => {
         if (!live || services.vault.getAccessRevision() !== access) return;

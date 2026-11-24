@@ -899,6 +899,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     connectWallet(w, chainId, guard, AbortSignal.any([privacyScope.signal, currentNetworkSignal()]), { disclosure }).then(
       (s) => {
         try { guard(); } catch { return; }
+        // A hard reload ends the wallet session without running React unmount cleanup.
+        if ((parsed?.encrypted === true || parsed?.passphraseProtected === true) && window.location.hash === fragment) {
+          clearFragment(window.location, window.history);
+        }
         addressReuse.bind(s);
         setWallet(s);
         setStatus('');

@@ -1,3 +1,4 @@
+import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
@@ -35,6 +36,11 @@ const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
 };
 
 export function Sweep(): ReactNode {
+  const generation = usePresentationGeneration();
+  return <SweepPanel key={generation} />;
+}
+
+function SweepPanel(): ReactNode {
   const app = useApp();
   const services = useServices();
   const i18n = useI18nOptional();
@@ -65,6 +71,14 @@ export function Sweep(): ReactNode {
   const [hash, setHash] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'error'>('checking');
   const [vaultPass, setVaultPass] = useState('');
+  const vaultInput = useRef<HTMLInputElement | null>(null);
+  const bindVaultInput = useCallback((field: HTMLInputElement | null): void => {
+    if (field === null && vaultInput.current !== null) {
+      vaultInput.current.value = '';
+      vaultInput.current.removeAttribute('value');
+    }
+    vaultInput.current = field;
+  }, []);
   const [vaultPhase, setVaultPhase] = useState<'idle' | 'authorizing' | 'action'>('idle');
   // Keys tied to a vault keep needing its passphrase even after the saved record is deleted or unreadable (L1-02).
   const vaultStepUp = useSyncExternalStore(subscribeSessionBackup, getSessionBackup)?.vaultStepUp === true;
@@ -559,7 +573,7 @@ export function Sweep(): ReactNode {
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
+            {(id, d) => <input ref={bindVaultInput} id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
         {destWarning !== undefined && <Notice kind="warn">{t(destWarning === 'used' ? 'sweep.destination.used' : 'sweep.destination.knownWallet')}</Notice>}

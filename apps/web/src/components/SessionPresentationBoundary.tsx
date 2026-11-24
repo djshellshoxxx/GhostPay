@@ -1,8 +1,15 @@
-import { useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppContext, type AppState } from '../state';
 import { subscribeAppLock } from '../lib/appLock';
 import { clearFragment, readInvoiceFragment } from '../lib/fragment';
 import { subscribeSession } from '../lib/session';
+
+const GenerationContext = createContext(0);
+
+/** Remount route-local decrypted forms when the presentation authority changes. */
+export function usePresentationGeneration(): number {
+  return useContext(GenerationContext);
+}
 
 /** Revoke shell-owned transient values even while the route that produced them is unmounted. */
 export function SessionPresentationBoundary({ children }: { readonly children: ReactNode }): ReactNode {
@@ -41,5 +48,5 @@ export function SessionPresentationBoundary({ children }: { readonly children: R
     } satisfies Pick<AppState, 'setMatches' | 'selectForSweep' | 'setFragment' | 'announce'>;
   }, [generation]);
   const scoped = useMemo(() => app === undefined ? undefined : { ...app, ...writers }, [app, writers]);
-  return <AppContext.Provider value={scoped}>{children}</AppContext.Provider>;
+  return <GenerationContext.Provider value={generation}><AppContext.Provider value={scoped}>{children}</AppContext.Provider></GenerationContext.Provider>;
 }

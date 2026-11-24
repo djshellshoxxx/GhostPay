@@ -76,6 +76,12 @@ function write(records: readonly WalletAttempt[], storage: AttemptStorage): void
   unwritten.delete(storage);
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
 }
+/** Retry the original owner's retained outcome after a transient storage failure. */
+export function retryUnwrittenAttempts(account: string, chainId: number): void {
+  if (unwrittenAttemptsFor(account, chainId).length === 0) return;
+  const store = requiredStorage();
+  write(readAttempts(store), store);
+}
 /** No expiry or automatic eviction: a wallet may have broadcast even when its response was lost. */
 export function beginAttempt(input: AttemptInput, storage?: AttemptStorage): WalletAttempt {
   const store = requiredStorage(storage);
