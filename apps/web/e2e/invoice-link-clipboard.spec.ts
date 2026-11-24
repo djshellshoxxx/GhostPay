@@ -62,3 +62,24 @@ test('Copy link preserves text copied before the saved delay expires', async ({ 
   expect(state.reads).toBeGreaterThan(0);
   expect(state.writes).toBe(2);
 });
+
+test('copying the same invoice link again gets a full delay after the write completes', async ({ page }) => {
+  await chooseDelay(page, 30);
+  const { clipboard, link } = await copyInvoiceLink(page);
+  await page.clock.fastForward(29_999);
+  await page.evaluate(() => {
+    const write = navigator.clipboard.writeText.bind(navigator.clipboard);
+    navigator.clipboard.writeText = async (text: string) => {
+      await write(text);
+      if (text !== '') await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
+    };
+  });
+  await page.getByRole('button', { name: 'Copied', exact: true }).click();
+  await page.clock.fastForward(1);
+  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 2 });
+  await page.clock.fastForward(1_999); // The second write is acknowledged here.
+  await page.clock.fastForward(29_999);
+  expect(await clipboard.jsonValue()).toEqual({ text: link, reads: 0, writes: 2 });
+  await page.clock.fastForward(1);
+  expect(await clipboard.evaluate((state) => state.text)).toBe('');
+});
