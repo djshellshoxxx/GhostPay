@@ -809,3 +809,7 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## F02 offline merchant proof provider qualification
+
+Worker `/root/store` on `qualification/f02-merchant-catalog-auth-provider`, based on PR #550 at `974fe2ce363e6d7644e3d4f080a98d6f37b68e35`. The existing catalog/cart directory belongs to #550. This branch owns the new GhostStore provider qualification under `apps/web/src/test/`, `docs/handoffs/F02_MERCHANT_PROOF_PROVIDER.md`, and this additive claim. Acceptance exercises the existing catalog review with a synthetic provider, independently pinned issuer, changed delivery terms, exact subtotal, expiration, and unrelated issuer controls. F08 real provider and format approval remain with their owner. No product files or Pages entry points are in scope.
