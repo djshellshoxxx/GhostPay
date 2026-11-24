@@ -171,7 +171,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
 
     const refused = (target: Page) => target.getByRole('alert').filter({ hasText: 'previous wallet attempt' });
     await expect.poll(async () => (await refused(page).count()) + (await refused(tab).count())).toBe(1);
-    expect((first.sendCalls ?? 0) + (second.sendCalls ?? 0)).toBe(1);
+    await expect.poll(() => (first.sendCalls ?? 0) + (second.sendCalls ?? 0)).toBe(1);
     const [winner, free, freeState] = first.sendCalls === 1 ? [page, tab, second] as const : [tab, page, first] as const;
     const journal = (target: Page): Promise<unknown[]> => target.evaluate(() =>
       JSON.parse(localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);

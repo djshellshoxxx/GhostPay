@@ -427,7 +427,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce + 1);
     expect(await anvil.balance(stealth)).toBe(preview.net);
@@ -795,7 +795,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(1);
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
       expect(await anvil.balance(payment.stealth)).toBe(0n);
@@ -981,7 +981,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(0);
       expect(payer.wallet.hashes).toHaveLength(0);
       // Unpaid on chain: the payer sent nothing, and the seller's scan of the whole chain finds no payment for its keys.
