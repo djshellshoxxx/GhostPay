@@ -1,0 +1,135 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-24T23:03:21Z (cycle start; live reads followed)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "5649537c2a19580444ffdcd47c9ee701b7655369:docs/consolidation/autonomous-20261121/semantic-delta-20261124T2202Z.json",
+  "summary": {
+    "branches": 711,
+    "openPrs": 245,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      11
+    ],
+    "prPages": [
+      100,
+      100,
+      45
+    ],
+    "independentRefMatches": 711,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 195,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 0
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "sha": "5649537c2a19580444ffdcd47c9ee701b7655369",
+      "prior": "5d7cbb15a46bf5418c436694f8c7c0f316a35fe0",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "retired": [],
+  "newlyDiscovered": [
+    {
+      "branch": "automation/20261124T2237Z/qa/disclosure-firefox-reflow",
+      "sha": "0036fe1656579e0e9551bb9ae07cc63d802fb667",
+      "pr": 632,
+      "disposition": "unresolved-active-wallet-qualification-owner"
+    }
+  ],
+  "newlyFinal": [],
+  "unresolvedReview": [
+    {
+      "pr": 219,
+      "disposition": "active-successor-stack-no-standalone-merge",
+      "proof": {
+        "donorPr": 244,
+        "donorHead": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "donorTestBlob": "79f0e788e102fd63cc64c2ea6fc3a9d5066c2b2d",
+        "successorPr": 382,
+        "successorHead": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+        "successorSourceBlob": "4f9128f1665873c12447e85d4cc0295cc8930abc",
+        "successorHeaderBlob": "4aa79bb2064e1854f663a485856ff79508839600",
+        "successorTests": {
+          "scan.spends.test.ts": "c6ff7e51eb6290b45226991335fdbf814a6a0659",
+          "scan.spentness-completion.test.ts": "f79b1fdabd40576e76ce22d59ad7a2a9ff1f72d1",
+          "scan.localSpends.test.ts": "3b0dc696b7e55c7cccede1c2ac5bf55e59aadc2a",
+          "scan.resume.test.ts": "23ca11c83f95f8ad9e3da116d45a18706225a613",
+          "scanWorker.resultCompatibility.test.ts": "6f13d0088df7be488e591ade4ee3782434e17ef7"
+        },
+        "assertionMapping": [
+          {
+            "donorCase": "retains a coverage-tip hash on a resumed-at-tip result so an unseen suffix fork invalidates it",
+            "sourceEvidence": "scan.ts lines 237-257 retains latestState and per-output checked-through anchors; headers.ts 463-483 cuts invalidated range and marks unknown",
+            "testEvidence": "spentness-completion has an analogous empty already-spent result; it checks unknown after fork and canonical restoration, not the donor's still-unspent discovery and exact cut height",
+            "remaining": "Preserve donor scenario with current per-output model; require retained discovery, unknown status and exact rollback to old tip minus one."
+          },
+          {
+            "donorCase": "does not extend historical coverage to an output first discovered while revalidating another match",
+            "sourceEvidence": "scan.ts lines 195-216 re-reads recovery heights, then resumes from reconciled state; 244-253 requires a confirmed per-output checked-through anchor for every found candidate",
+            "testEvidence": "No exact multi-output historical omission scenario identified in five inspected successor test files; worker paging compatibility is narrower.",
+            "remaining": "Retain donor's two-output fixture and assertions: both candidate identities returned, historical unwatched output not certified, unknown and unsweepable; no provider query without consent."
+          },
+          {
+            "donorCase": "retains a saved spent mark while revalidating its block for another unspent match at the tip",
+            "sourceEvidence": "scan.ts lines 160-163 and 195 seeds localSpent from stored matches; 212-231 adds updated state spends and filters candidates; no source-level loss identified",
+            "testEvidence": "Existing encrypted reload and same-block spend tests are related but do not directly assert mixed two-output revalidation with stored spent mark and count.",
+            "remaining": "Retain original mixed-output fixture adapted to per-output coverage; only unspent output offered, spentCount one, local evidence and zero per-outpoint requests."
+          }
+        ],
+        "qualification": "Source inspection only. Three direct donor scenario obligations remain; no assertion-level equivalence or runtime pass claimed. Existing #372/#382 owners retain all code and test paths."
+      }
+    },
+    {
+      "pr": 632,
+      "sha": "0036fe1656579e0e9551bb9ae07cc63d802fb667",
+      "disposition": "active-wallet-qualification-owner-no-interference",
+      "checks": {
+        "passed": [
+          45502837248,
+          45502837225,
+          45502837290
+        ],
+        "failed": [
+          45502837296,
+          45502837292
+        ]
+      },
+      "notes": "Native browser qualification and CI fail; do not bypass or rerun unrelated gates. No diagnosis claimed."
+    }
+  ],
+  "checks": {
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "scheduledResearch": 45485137780,
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "snyk": "success",
+      "reviews": 0
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    }
+  },
+  "testEvidence": {
+    "executed": 0,
+    "reason": "git ls-remote exit 128: Could not resolve host github.com. Source/fixture comparison via connector only."
+  },
+  "remaining": "#614 independent approval first; #616/#617 prepared reconciliations; #384, #217, and BTC successor obligations. No product changes, main merge, deployment, force push, or branch deletion."
+}
