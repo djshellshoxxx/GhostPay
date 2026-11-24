@@ -24,3 +24,15 @@ Read main AGENTS.md, docs/ai/WORKFLOW.md, HANDOFF template, ACTIVE_WORK, SECURIT
 
 ## Resume
 Check this draft's exact-head hosted CI and native regression results, repair any demonstrated failure in place, then independent verification. Recheck #507 pending Core CI and coordinate its integration only with current lock ownership, exact-head gates and verified no deployment. Continue active ledger #380 without competing writes; prioritize known recovery and security blockers and rotate to unclaimed scopes. No automation changes.
+
+## Resumed native qualification — 2026-11-24
+
+The owner requested resumption of the interrupted workers. A separate native worker checked out exact source `da598d85f51aa8b5d0bd4852a3dcfaf91912b352` and rebuilt the package dependencies from that checkout. Original source remained clean.
+
+- `npm test -w @ghostpay/payment-uri -- --maxWorkers=2`: 209 tests passed across five files, no skips, with the original coverage thresholds.
+- Coverage: statements 97.52% (551/565), branches 97.09% (535/551), functions 100% (48/48), lines 99.09% (439/443).
+- Package typecheck, typed lint, build and the repository secret scan all passed.
+- A bounded native comparison against original main `f76904301cff0b24d65ea4e31cbf37d470db4d95`, with only the regression test file added, produced one expected failure and two passing controls. The actual parser, validators and dependencies were used.
+- Independent source review found no blocking issue in the existing correction. This is AI-assisted engineering verification, not a submitted GitHub approval or external audit.
+
+These results resolve the earlier unavailable-native-runtime qualification gap for the tested source. They do not qualify the entire application or activate a payment network. Recheck hosted checks, current main and integration requirements before merging. This appended record changes documentation only.
