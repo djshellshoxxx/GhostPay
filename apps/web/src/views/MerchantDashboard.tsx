@@ -92,6 +92,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const revision = useRef(0);
   const exportRevision = useRef(0);
   const focusAfterRead = useRef(false);
+  const results = useRef<HTMLDivElement>(null);
   const readStatus = useRef<HTMLParagraphElement>(null);
   const overview = useRef<HTMLHeadingElement>(null);
   const retry = useRef<HTMLButtonElement>(null);
@@ -114,7 +115,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
 
   const load = useCallback((refresh = false): void => {
     if (getSessionPublic() !== session) return;
-    if (refresh && overview.current?.closest('.merchant-dashboard')?.contains(document.activeElement)) {
+    if (refresh && results.current?.contains(document.activeElement)) {
       focusAfterRead.current = true;
     }
     active.current?.abort();
@@ -277,7 +278,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       provenance: state === 'ambiguous' ? undefined : record.provenance,
     }));
 
-  return <>
+  return <div ref={results}>
     <p>{t('dashboard.coverage')}</p>
     <p>{t('dashboard.readAt', { time: date.format(data.loadedAt) })}</p>
     {data.readOnly && <p>{t('dashboard.readOnly')}</p>}
@@ -384,7 +385,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       </div>}
       {exportError && <p role="alert">{t('dashboard.exportError')}</p>}
     </section>}
-  </>;
+  </div>;
 }
 
 // i18n-use: dashboard.loading dashboard.stale dashboard.error dashboard.locked dashboard.retry dashboard.open dashboard.state.open dashboard.state.expired dashboard.state.late dashboard.state.ambiguous dashboard.state.reorged dashboard.state.historical dashboard.state.imported dashboard.byExpiry dashboard.byInclusion dashboard.expectedAmount dashboard.observedAmount dashboard.expires dashboard.included
