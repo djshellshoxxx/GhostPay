@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState, type ReactNode } from 'react';
+import { privateRootErrorHandlers } from '../lib/renderErrors';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorBoundary } from './ErrorBoundary';
 
@@ -27,7 +28,8 @@ describe('ErrorBoundary (G1-01)', () => {
   });
 
   it('shows a fixed error panel instead of unmounting the app, and never the error text', () => {
-    const { container } = render(<><h1>App header</h1><ErrorBoundary onBack={noop}><View explode /></ErrorBoundary></>);
+    const { container } = render(<><h1>App header</h1><ErrorBoundary onBack={noop}><View explode /></ErrorBoundary></>, privateRootErrorHandlers);
+    expect(console.error).toHaveBeenCalledExactlyOnceWith('GhostPay could not render this view.');
     expect(screen.getByRole('heading', { name: 'App header' })).toBeTruthy();
     expect(screen.getByRole('alert').textContent).toMatch(/This page stopped after an unexpected error/);
     expect(screen.getByRole('alert').textContent).toMatch(/a transaction may already have been sent/);

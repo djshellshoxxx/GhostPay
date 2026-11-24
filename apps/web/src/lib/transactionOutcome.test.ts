@@ -33,15 +33,16 @@ describe('transaction outcomes retain meaning and exact references across locale
     const captured = captureUserMessage(source);
     vi.spyOn(languages, 'isReviewed').mockImplementation((locale) => locale === 'es');
     const reviewed = createTranslator('es', [{ locale: 'es', messages: {
-      'transaction.postBroadcast': 'Enviado {hash}; {detail} No repetir.',
+      'transaction.postBroadcast': 'Enviado; {detail} No repetir.',
       'transaction.submissionMismatch': 'Diferencia: {field}.',
       'transaction.field.data': 'datos de llamada',
     } }, EN]);
     expect(displayMessage(captured)).toContain('differs from the preview (call data)');
-    expect(displayMessage(captured, reviewed.t)).toBe(`Enviado ${HASH}; Diferencia: datos de llamada. No repetir.`);
+    expect(displayMessage(captured, reviewed.t)).toBe('Enviado; Diferencia: datos de llamada. No repetir.');
     expect(source.message).toContain('already sent this transaction');
     expect(source.outcome).toMatchObject({ phase: 'verification-incomplete', hash: HASH });
     expect(JSON.stringify(captured)).not.toContain('credential');
+    expect(JSON.stringify(captured)).not.toContain(HASH);
   });
 
   it('retains explicit wallet rejection code after a confirmed approval without discarding the approval reference', () => {
@@ -58,7 +59,8 @@ describe('transaction outcomes retain meaning and exact references across locale
       const result = referencedBroadcastOutcome(phase, reference);
       expect(result).toMatchObject({ phase, reference });
       expect(result.hash).toBeUndefined();
-      expect(displayMessage(result.message)).toContain(reference);
+      if (phase === 'pending-confirmation') expect(displayMessage(result.message)).toContain(reference);
+      else expect(JSON.stringify(result.message)).not.toContain(reference);
       expect(displayMessage(result.message)).not.toMatch(/nothing was sent|confirmed successfully/i);
     }
   });
@@ -84,10 +86,10 @@ describe('transaction outcomes retain meaning and exact references across locale
     expect(displayMessage(result.message)).not.toContain('Nothing was sent');
     vi.spyOn(languages, 'isReviewed').mockImplementation((locale) => locale === 'es');
     const translated = createTranslator('es', [{ locale: 'es', messages: {
-      'transaction.approved.paymentNotSent': 'Aprobación{reference}; pago no enviado. {detail}',
+      'transaction.approved.paymentNotSent': 'Aprobación; pago no enviado. {detail}',
       'transaction.detail.invoiceExpired': 'Factura caducada.',
     } }, EN]);
-    expect(displayMessage(result.message, translated.t)).toBe(`Aprobación (${HASH}); pago no enviado. Factura caducada.`);
+    expect(displayMessage(result.message, translated.t)).toBe('Aprobación; pago no enviado. Factura caducada.');
   });
 
   it('preserves sanitized RPC codes after a real wallet handoff and drops provider text', async () => {

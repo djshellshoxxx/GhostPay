@@ -192,7 +192,7 @@ describe('policy payment sending (session guard and reviewed transaction)', () =
       if (args.method === 'eth_sendTransaction') clearSession();
       return r;
     };
-    await expect(t.run()).rejects.toThrow(/Seller keys changed during this action\. Try again\. The approval \(0x9+\) was already mined and the router allowance remains/);
+    await expect(t.run()).rejects.toThrow(/Seller keys changed during this action\. Try again\. The approval was already mined and the router allowance remains/);
     expect(t.walletSends()).toBe(1);
     expect(t.hashes).toHaveLength(1);
   });
@@ -363,6 +363,6 @@ describe('policy payment sending (attempt journal lookup)', () => {
   });
   it('shows the same text as the policy.pay.alreadyPaid catalog message', () => {
     const hash = `0x${'ab'.repeat(32)}`;
-    expect(SOURCE_TRANSLATOR.t('policy.pay.alreadyPaid', { hash })).toBe(new PolicyAlreadyPaidError(hash).message);
+    expect(SOURCE_TRANSLATOR.t('policy.pay.alreadyPaid')).toBe(new PolicyAlreadyPaidError(hash).message);
   });
 });

@@ -645,7 +645,7 @@ describe('submitTx', () => {
     const hash = `0x${'9'.repeat(64)}`;
     expect(error).toBeInstanceOf(PostBroadcastError);
     expect(error).toMatchObject({ hash, outcome: { phase: 'verification-incomplete', hash, code: 'RPC_FAILURE' } });
-    expect(userMessage(error)).toContain(hash);
+    expect(userMessage(error)).not.toContain(hash);
     expect(userMessage(error)).toContain('RPC_FAILURE');
     expect(userMessage(error)).not.toMatch(/private endpoint|nothing was sent/i);
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);

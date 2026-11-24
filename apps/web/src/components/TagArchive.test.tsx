@@ -76,7 +76,7 @@ describe('TagArchive blocked download cleanup', () => {
     await waitFor(() => { expect(click).toHaveBeenCalledOnce(); });
     expect(blobs).toHaveLength(1);
     // The rejected click must not strand the encrypted export in the page or in a live object URL.
-    expect(document.querySelector('a[download="ghostpay-tags-blocked.gpa"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:x');
     // Nor may it be reported as a download: the archive notice and the backup checklist both say it failed.
     expect((await screen.findByRole('alert')).textContent).toMatch(/Something went wrong/);

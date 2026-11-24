@@ -46,8 +46,8 @@ function localized(view: ReactNode): ReactNode {
       'btc.headers.verified': 'Cabeceras comprobadas: {height}, {hash}.',
       'chainView.broadcast.attempted': 'Enviando transacción {reference}…',
       'chainView.broadcast.pending': 'Acuse de recibo para {reference}; falta confirmar.',
-      'chainView.broadcast.unknown': 'Resultado desconocido para {reference}; comprobar antes de repetir.',
-      'chainView.broadcast.mismatch': 'Referencia diferente; comprobar {reference}.',
+      'chainView.broadcast.unknown': 'Resultado desconocido; comprobar antes de repetir.',
+      'chainView.broadcast.mismatch': 'Referencia diferente.',
     },
   } : en)}><LocaleControl />{view}</I18nProvider>;
 }
@@ -139,13 +139,13 @@ describe.each(FIXTURES)('$name outcomes use the current locale without repeating
     const reference = await sign(f, user);
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toContain('may have been sent'); });
-    expect(screen.getByRole('alert').textContent).toContain(reference);
+    expect(screen.getByRole('alert').textContent).not.toContain(reference);
     expect(screen.getByRole('alert').textContent).not.toMatch(/nothing was sent/i);
     expect(document.body.textContent).not.toContain(PRIVATE_DIAGNOSTIC);
     const sent = [...chain.broadcasts];
     const calls = [...chain.calls];
     await user.click(screen.getByRole('button', { name: 'Test Spanish' }));
-    expect(await screen.findByText(`Resultado desconocido para ${reference}; comprobar antes de repetir.`)).toBeTruthy();
+    expect(await screen.findByText('Resultado desconocido; comprobar antes de repetir.')).toBeTruthy();
     expect(document.querySelector('[data-transaction-phase="broadcast-unknown"]')).toBeTruthy();
     expect(screen.queryByText(en.messages['btc.signed.notSent'])).toBeNull();
     expect(screen.queryByText(en.messages['tron.signed.notSent'])).toBeNull();
@@ -195,14 +195,17 @@ describe.each(FIXTURES)('$name outcomes use the current locale without repeating
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await waitFor(() => { expect(release).toBeTypeOf('function'); });
     await user.clear(screen.getByLabelText('Destination address'));
-    expect(screen.getByRole('alert').textContent).toContain(first);
+    expect(screen.getByRole('alert').textContent).not.toContain(first);
     expect(screen.getByRole('alert').textContent).toContain('may have been sent');
     await act(async () => { release?.(); await Promise.resolve(); });
     const destination = f.prefix === 'btc' ? bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(4))])
       : f.prefix === 'sol' ? base58.encode(new Uint8Array(32).fill(10)) : tronAddressFromHex(`41${'0a'.repeat(20)}`);
     const second = await sign(f, user, destination);
     expect(second).not.toBe(first);
-    expect(screen.getByRole('alert').textContent).toContain(first);
+    expect(screen.queryByText(first, { exact: true })).toBeNull();
+    await user.click(screen.getByText('Transaction reference', { selector: 'summary' }));
+    expect(await screen.findByText(first, { exact: true })).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).not.toContain(first);
     expect(screen.getByRole('alert').textContent).not.toContain(second);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: /Broadcast to/ }).disabled).toBe(false);
     expect(screen.getByText(en.messages[f.prefix === 'tron' ? 'tron.signed.notSent' : 'btc.signed.notSent'])).toBeTruthy();
@@ -223,7 +226,7 @@ describe.each(FIXTURES)('$name outcomes use the current locale without repeating
     const reference = await sign(f, user);
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toContain('different transaction reference'); });
-    expect(screen.getByRole('alert').textContent).toContain(reference);
+    expect(screen.getByRole('alert').textContent).not.toContain(reference);
     expect(screen.getByRole('alert').textContent).not.toContain(WRONG_REFERENCE);
     expect(document.querySelector('[data-transaction-phase="verification-incomplete"]')).toBeTruthy();
     expect(screen.queryByText(/The server accepted transaction/)).toBeNull();

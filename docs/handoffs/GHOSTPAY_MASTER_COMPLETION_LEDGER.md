@@ -1,5 +1,8 @@
 # GhostPay authoritative completion ledger
 
+**Issue #286, exports and notifications.** The Pages candidate on `codex/286-private-export-surfaces` has regression coverage for export metadata, lock-screen copy, errors and logs. Recovery verification uses the downloaded keystore. Integrated browser checks and independent review are pending. The other four privacy requirements retain their own release gates. [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570)
+
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for

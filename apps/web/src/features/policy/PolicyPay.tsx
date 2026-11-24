@@ -80,7 +80,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         setReviewed(undefined);
         setLocked(true);
       }
-      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e) });
+      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid') : userMessage(e) });
     } finally {
       setBusy(false);
     }

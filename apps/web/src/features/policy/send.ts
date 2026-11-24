@@ -130,7 +130,7 @@ export async function sendPolicyPayment(
   const paymentCheck = mined === undefined ? check : (): void => {
     try { check(); } catch (e) {
       if (!(e instanceof UserFacingError)) throw e;
-      throw new UserFacingError(`${e.message.replaceAll(' Nothing was sent.', '')} The approval (${mined}) was already mined and the router allowance remains; no payment was sent. Revoke the allowance in your wallet if you will not pay.`);
+      throw new UserFacingError(`${e.message.replaceAll(' Nothing was sent.', '')} The approval was already mined and the router allowance remains; no payment was sent. Revoke the allowance in your wallet if you will not pay.`);
     }
   };
   paymentCheck();
@@ -151,7 +151,7 @@ function markSent(guard: PolicySendGuard, prepared: PreparedPolicyPayment): void
 /** A payment with this scope already returned a hash in this tab; `hash` is that transaction. */
 export class PolicyAlreadyPaidError extends UserFacingError {
   public constructor(public readonly hash: string) {
-    super(`You already sent this exact payment (same payee, token and amount) from this tab: transaction ${hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval.`);
+    super({ key: 'policy.pay.alreadyPaid' });
     this.name = 'PolicyAlreadyPaidError';
   }
 }

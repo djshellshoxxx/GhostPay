@@ -183,7 +183,7 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
   });
 });
 
-const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab: transaction 0x9{64}\. Check it in your wallet or a block explorer\. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval\./;
+const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab\. Check it in your wallet or a block explorer\. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval\./;
 const journal = () => screen.getByRole('region', { name: 'Wallet attempt journal' });
 
 describe('policy pay: a verified repeat stays blocked until cleared (by design)', () => {
