@@ -238,7 +238,8 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
   invoice total until a clean rescan. A verified replacement block permanently invalidates the old inclusion.
   A lower agreed chain tip also withholds credit for a payment that lost confirmation depth, even behind a
   still-canonical checkpoint. Its original decision survives and a resumed scan can restore credit once final again.
-  Other verified partials continue to count. An interrupted reconciliation write leaves the prior snapshot and
+  A vault at its invalidation-capacity limit can still withdraw credit and retain a decision. It remains read-only
+  for new and revived payments. Other verified partials continue to count. An interrupted reconciliation write leaves the prior snapshot and
   checkpoint intact. Contradictory deliveries of one inclusion withhold its credit and require a clean page.
 - A direct router call by another wallet can be eligible. Unsupported bare transfers and forged or unsupported
   announcements have no automatic invoice attribution through this scanner. Completing a scan or waiting for a

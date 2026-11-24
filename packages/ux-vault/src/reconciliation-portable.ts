@@ -955,7 +955,7 @@ class ReconciliationVault {
     let retryHeight: bigint | undefined;
     await this.change((document) => {
       retryHeight = undefined; // A concurrent write may have resolved the observation before this attempt.
-      if (document.saturated || (document.invoices.length === 0 && document.records.length === 0)) return document;
+      if (document.invoices.length === 0 && document.records.length === 0) return document;
       const records = new Map(document.records.map((record) => [record.id, record]));
       const tombstones = new Set(document.tombstones);
       let changed = false;
@@ -998,7 +998,7 @@ class ReconciliationVault {
             records.set(other.id, { ...other, evidenceStatus: 'unverified-at-scan' });
             changed = true;
           }
-          if (prior?.evidenceStatus !== 'unverified-at-scan') {
+          if ((!document.saturated || prior !== undefined) && prior?.evidenceStatus !== 'unverified-at-scan') {
             records.set(record.id, { ...(prior ?? record), evidenceStatus: 'unverified-at-scan', provenance: 'live-scan' });
             index(record);
             changed = true;
@@ -1017,6 +1017,8 @@ class ReconciliationVault {
           if (prior.evidenceStatus === record.evidenceStatus && prior.blockTimestamp === record.blockTimestamp)
             continue;
         }
+        // Read-only vaults can lose credit, but cannot acquire or revive a payment.
+        if (document.saturated) continue;
         records.set(record.id, {
           ...record,
           recordedAt: prior?.recordedAt ?? record.recordedAt,
@@ -1047,7 +1049,7 @@ class ReconciliationVault {
       return changed ? {
         ...document, records: [...records.values()],
         tombstones: [...tombstones].slice(0, MAX_RECONCILIATION_RECORDS),
-        saturated: tombstones.size > MAX_RECONCILIATION_RECORDS,
+        saturated: document.saturated || tombstones.size > MAX_RECONCILIATION_RECORDS,
       } : document;
     }, actionGuard, true);
     if (retryHeight !== undefined) page?.retryFrom?.(retryHeight);

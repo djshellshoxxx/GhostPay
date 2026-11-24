@@ -715,6 +715,35 @@ describe('late payments in the encrypted reconciliation vault', () => {
     expect(await vault.read()).toMatchObject([{ lateAcceptedAt: decisionTime }]);
   });
 
+  it('withdraws confirmed credit in a saturated vault without admitting new observations', async () => {
+    const store = new Store();
+    let vault = await unlocked(store);
+    const invoice = synthetic(1);
+    const payment = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.registerInvoice(invoice);
+    await vault.observeInvoicePayments([payment]);
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+    const state = await vault.readState();
+    store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(await vault.exportEncrypted(),
+      doc({ invoices: state.invoices, records: state.records, saturated: true })));
+    const height = BigInt(payment.blockNumber);
+    const replacementHash = `0x${'f'.repeat(64)}`;
+    const replacement = rec(2, { blockNumber: payment.blockNumber, blockHash: replacementHash,
+      blockTimestamp: String(invoice.expiresAt + 1) });
+    await vault.observeInvoicePayments([replacement], undefined, {
+      from: height, through: height, canonicalHash: () => Promise.resolve(replacementHash),
+    });
+    vault.lock();
+    vault = await unlocked(store);
+    const after = await vault.readState();
+    expect(after.readOnly).toBe(true);
+    expect(after.records).toMatchObject([{ id: payment.id, invoiceDigest: invoice.invoiceDigest,
+      lateAcceptedAt: decisionTime, evidenceStatus: 'invalidated-after-reorg' }]);
+    expect(summarizeInvoicePayments(invoice, after.records, scope).kind).toBe('unlinked');
+    await vault.observeInvoicePayments([payment, replacement]);
+    expect(await vault.read()).toEqual(after.records);
+  });
+
   it('quarantines both copies when an accepted transaction returns at another inclusion', async () => {
     const vault = await unlocked();
     const invoice = registrationFromInvoice(testInvoice(), 1);
