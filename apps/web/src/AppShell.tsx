@@ -5,6 +5,7 @@ import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -147,7 +148,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       locked = true;
       services.vault.lock();
       // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
-      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
+      // Solana and TRON views wipe their own keys.
       notifyAppLock('idle');
       if (!hasSession()) {
         setLive({ key: 'app.idle.tagsLocked' });
@@ -244,6 +245,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       setView,
       settings,
       updateSettings: (s) => {
+        if (s.invoiceLinkClipboardDelaySec !== settings.invoiceLinkClipboardDelaySec) cancelClipboardCleanup();
         setSettings(s);
         return saveSettings(s);
       },

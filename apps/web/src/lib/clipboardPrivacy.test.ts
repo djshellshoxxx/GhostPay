@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { copyClipboardText, type ClipboardPort } from './clipboardPrivacy';
+import { cancelClipboardCleanup, copyClipboardText, type ClipboardPort } from './clipboardPrivacy';
 
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
@@ -109,4 +109,68 @@ describe('opt-in clipboard cleanup', () => {
     await vi.advanceTimersByTimeAsync(30_000);
     expect(writeDenied.writeText.mock.calls).toEqual([['private'], ['']]);
   });
+});
+
+it('preserves a different string that UTF-8 replacement would encode identically', async () => {
+  vi.useFakeTimers();
+  const c = fakeClipboard();
+  await copyClipboardText('\ud800', c.port, 30_000);
+  c.overwrite('\ufffd');
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(c.value()).toBe('\ufffd');
+  expect(c.write).toHaveBeenCalledOnce();
+});
+
+it.each([
+  { types: [['text/plain']], clears: true },
+  { types: [['text/plain', 'text/html']], clears: false },
+  { types: [['image/png']], clears: false },
+  { types: [['text/plain'], ['text/plain']], clears: false },
+  { types: [], clears: false },
+])('checks available item formats before clearing $types', async ({ types, clears }) => {
+  vi.useFakeTimers();
+  const c = fakeClipboard();
+  const port = { ...c.port, read: () => Promise.resolve(types.map((formats) => ({ types: formats }))) };
+  await copyClipboardText('same text', port, 30_000);
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(c.value()).toBe(clears ? '' : 'same text');
+});
+
+it('leaves a copy intact when the browser refuses to expose its available formats', async () => {
+  vi.useFakeTimers();
+  const c = fakeClipboard();
+  await copyClipboardText('data', { ...c.port, read: () => Promise.reject(new Error('denied')) }, 30_000);
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(c.write).toHaveBeenCalledExactlyOnceWith('data');
+});
+
+it('revoking the preference stops an in-flight comparison even if later copies enable cleanup again', async () => {
+  vi.useFakeTimers();
+  const c = fakeClipboard();
+  let finishRead!: (snapshot: string) => void;
+  c.read.mockImplementationOnce(() => new Promise<string>((resolve) => { finishRead = resolve; }));
+  await copyClipboardText('first', c.port, 30_000);
+  await vi.advanceTimersByTimeAsync(30_000);
+  cancelClipboardCleanup();
+  finishRead('first');
+  await vi.advanceTimersByTimeAsync(0);
+  expect(c.value()).toBe('first');
+  expect(c.read).toHaveBeenCalledOnce();
+  await copyClipboardText('second', c.port, 60_000);
+  await vi.advanceTimersByTimeAsync(60_000);
+  expect(c.value()).toBe('');
+});
+
+it('a write settling after preference revocation cannot rearm its timer', async () => {
+  vi.useFakeTimers();
+  const c = fakeClipboard();
+  let finishWrite!: () => void;
+  c.write.mockImplementationOnce(() => new Promise<void>((resolve) => { finishWrite = resolve; }));
+  const copied = copyClipboardText('pending', c.port, 30_000);
+  cancelClipboardCleanup();
+  finishWrite();
+  await copied;
+  await vi.advanceTimersByTimeAsync(300_000);
+  expect(c.read).not.toHaveBeenCalled();
+  expect(c.write).toHaveBeenCalledExactlyOnceWith('pending');
 });

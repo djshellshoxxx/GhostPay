@@ -28,11 +28,11 @@ function clipboard() {
   return { state, readText, writeText };
 }
 
-const click = (name: string) => fireEvent.click(screen.getByRole('button', { name, exact: true }));
+const click = (name: string) => fireEvent.click(screen.getByRole('button', { name }));
 async function copyBackup() {
   click('Show backup seed');
   click('Copy seed');
-  await act(async () => { click('Copy anyway'); });
+  await act(async () => { click('Copy anyway'); await Promise.resolve(); });
 }
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { cleanup(); vi.clearAllTimers(); vi.useRealTimers(); });
@@ -40,7 +40,7 @@ afterEach(() => { cleanup(); vi.clearAllTimers(); vi.useRealTimers(); });
 it.each([0, 30, 60] as const)('applies the saved %i-second delay to a shared button across unmount', async (seconds) => {
   const { state, readText, writeText } = clipboard();
   const panel = fixture(seconds);
-  await act(async () => { click('Copy address'); });
+  await act(async () => { click('Copy address'); await Promise.resolve(); });
   panel.unmount();
   const until = seconds * 1000 || 300_000;
   await vi.advanceTimersByTimeAsync(until - 1);
@@ -68,7 +68,7 @@ it('gives an identical recopy through another component its own deadline', async
   fixture(30);
   await copyBackup();
   await vi.advanceTimersByTimeAsync(29_999);
-  await act(async () => { click('Copy address'); });
+  await act(async () => { click('Copy address'); await Promise.resolve(); });
   click('Hide seed');
   await vi.advanceTimersByTimeAsync(1);
   expect(state.text).toBe(value);
@@ -104,4 +104,40 @@ it.each(['copy', 'read', 'clear', 'missing'] as const)('handles backup clipboard
   await vi.advanceTimersByTimeAsync(60_000);
   expect(state.text).toBe(copied ? value : '');
   expect(writeText.mock.calls.filter(([text]) => text === '')).toHaveLength(failure === 'clear' ? 1 : 0);
+});
+
+it.each(['mounted', 'unmounted'] as const)('guards a %s backup queued behind an already-dispatched clear', async (lifetime) => {
+  const { state, writeText } = clipboard();
+  const panel = fixture(30);
+  await act(async () => { click('Copy address'); await Promise.resolve(); });
+  let finishClear!: () => void;
+  writeText.mockImplementationOnce(() => new Promise<void>((resolve) => {
+    finishClear = () => { state.text = ''; resolve(); };
+  }));
+  await vi.advanceTimersByTimeAsync(30_000);
+  await copyBackup();
+  expect(writeText.mock.calls).toEqual([[value], ['']]);
+  if (lifetime === 'unmounted') panel.unmount();
+  await act(async () => { finishClear(); await Promise.resolve(); });
+  expect(state.text).toBe(lifetime === 'mounted' ? value : '');
+  expect(writeText.mock.calls.length).toBe(lifetime === 'mounted' ? 3 : 2);
+});
+
+it('starts the cleanup delay when a dispatched backup write settles after unmount', async () => {
+  const { state, readText, writeText } = clipboard();
+  let finishWrite!: () => void;
+  writeText.mockImplementationOnce((next) => new Promise<void>((resolve) => {
+    finishWrite = () => { state.text = next; resolve(); };
+  }));
+  const panel = fixture(30);
+  await copyBackup();
+  panel.unmount();
+  await vi.advanceTimersByTimeAsync(30_001);
+  expect(writeText).toHaveBeenCalledOnce();
+  await act(async () => { finishWrite(); await Promise.resolve(); });
+  await vi.advanceTimersByTimeAsync(29_999);
+  expect(state.text).toBe(value);
+  expect(readText).not.toHaveBeenCalled();
+  await vi.advanceTimersByTimeAsync(1);
+  expect(state.text).toBe('');
 });

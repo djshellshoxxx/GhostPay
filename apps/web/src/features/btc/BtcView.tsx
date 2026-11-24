@@ -4,7 +4,7 @@ import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
-import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
+import { SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
 import { IdbReconciliationVaultStore, type ReconciliationVaultStore } from '../../lib/reconciliationVault';
 import { BtcScanVault } from './scanStore';
@@ -532,8 +532,6 @@ export function BtcView(
 
   const lock = (): void => {
     setConfirmForget(false);
-    // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
-    clearCopiedBackup();
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;

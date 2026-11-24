@@ -71,7 +71,7 @@ describe('TronView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup keys' })).toBeNull();
   });
 
-  it('copies the key backup only after a warning, and Lock empties the clipboard again', async () => {
+  it('copies the key backup only after a warning, and Lock leaves the confirmed copy alone by default', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
@@ -84,8 +84,7 @@ describe('TronView', () => {
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
     expect(writeText).toHaveBeenCalledExactlyOnceWith(backup);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(writeText).toHaveBeenCalledOnce();
   });
 
   it('imports the same keys that a backup describes', async () => {

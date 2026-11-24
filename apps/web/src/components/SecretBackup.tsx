@@ -2,74 +2,12 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
 import { subscribeAppLock } from '../lib/appLock';
+import { copyClipboardText } from '../lib/clipboardPrivacy';
+import { useClipboardDelayMs } from '../state';
 import { Mono, Notice } from './Common';
 
 /** A shown backup hides itself after this many milliseconds (the texts say "a minute"), and as soon as the tab is hidden. */
 export const BACKUP_VISIBLE_MS = 60_000;
-
-/** Numbers the copies made by {@link SecretBackup}. */
-let copies = 0;
-/** The latest copy that may still be on the clipboard (0: none). Only a clear that worked unmarks it. */
-let onClipboard = 0;
-/** The copy whose clear is still pending (0: none), so that a second Hide or Lock meanwhile does not write again. */
-let clearing = 0;
-/** A clear the browser refused waits for the next click or key press ({@link retryAtActivation}). */
-let retrying = false;
-
-/**
- * While a refused clear waits, the next click or key press in the page tries again: it is user activation, so the
- * browser allows the write. Capture phase, before the page's own handlers, so a click that copies is not emptied
- * right after it copied.
- */
-function retryAtActivation(on: boolean): void {
-  retrying = on;
-  for (const type of ['click', 'keydown'] as const) {
-    if (on) window.addEventListener(type, clearCopiedBackup, true);
-    else window.removeEventListener(type, clearCopiedBackup, true);
-  }
-}
-
-/**
- * Best-effort: empties the clipboard if a wallet backup was copied there since the last clear that worked. Call it
- * inside a click handler (Hide, Lock): browsers allow clipboard writes only during user activation, some only in a
- * focused page. When the browser refuses (the app lock runs on a timer), the backup stays marked: the next click or
- * key press in this page tries again, and so does the next Hide or Lock. Copies the system already made (clipboard
- * history, sync to other devices) are out of reach.
- */
-export function clearCopiedBackup(): void {
-  const copy = onClipboard;
-  if (copy === 0) {
-    retryAtActivation(false);
-    return;
-  }
-  if (clearing === copy) return;
-  clearing = copy;
-  const settle = (cleared: boolean): void => {
-    if (clearing === copy) clearing = 0;
-    // A copy started in the meantime is not this clear's to unmark or schedule a retry for.
-    // Nor may an older successful clear cancel the retry of a newer refused clear.
-    if (onClipboard === copy) {
-      if (cleared) onClipboard = 0;
-      retryAtActivation(!cleared);
-    } else if (onClipboard === 0) retryAtActivation(false);
-  };
-  void (async () => {
-    try {
-      // The call itself runs synchronously in this activation; only settlement is awaited.
-      await navigator.clipboard.writeText('');
-      settle(true);
-    } catch {
-      // A throwing or unavailable API does not prove a previously copied backup was cleared.
-      settle(false);
-    }
-  })();
-}
-
-// The app lock empties a copied backup too, also after the view that showed it was left: that view, and its own
-// lock, are gone by then. Without user activation the browser usually refuses, and the next click or key press retries.
-subscribeAppLock(() => {
-  clearCopiedBackup();
-});
 
 /** Every text {@link SecretBackup} shows. Build it with {@link localizedBackupText}. */
 export interface SecretBackupText {
@@ -117,12 +55,12 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
 /**
  * A wallet backup (seed or keys) that is not in the page until asked for. It is shown on request, again as often as
  * needed while the wallet is loaded, and hides itself after {@link BACKUP_VISIBLE_MS} or as soon as the page is hidden.
- * Copying takes a second, warned click. Hiding, automatic hiding, the app lock and unmounting attempt to clear
- * a copied backup; the browser may refuse, and clipboard history or synced copies are outside this component.
+ * Copying takes a second, warned click. The shared clipboard timer follows the saved preference even after unmount.
  * @param props.reveal Produces the backup text; called only when the user asks to see it.
  */
 export function SecretBackup(props: { readonly reveal: () => string; readonly text: SecretBackupText }): ReactNode {
   const { text } = props;
+  const delay = useClipboardDelayMs();
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [shown, setShown] = useState<string | undefined>(undefined);
   const [copy, setCopy] = useState<'idle' | 'confirm' | 'copied' | 'failed'>('idle');
@@ -139,12 +77,8 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     setShown(undefined);
     setCopy('idle');
     setCopyPending(false);
-    clearCopiedBackup();
   }, []);
 
-  // Leaving the view forgets the wallet like Lock does, so it attempts clipboard cleanup too: leaving takes a click,
-  // which the browser counts as user activation. Not when a refused clear already waits for the next click or key
-  // press: this unmounts without one then (the app lock), and that click runs the clear anyway.
   useEffect(
     () => {
       mounted.current = true;
@@ -153,7 +87,6 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
         generation.current += 1;
         copyRequest.current += 1;
         pending.current = false;
-        if (!retrying) clearCopiedBackup();
       };
     },
     [],
@@ -181,29 +114,11 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     const revealGeneration = generation.current;
     const request = ++copyRequest.current;
     const current = (): boolean => mounted.current && generation.current === revealGeneration && copyRequest.current === request;
-    const earlier = onClipboard;
-    const earlierNeedsClear = retrying || (earlier !== 0 && clearing === earlier);
-    const mine = ++copies;
-    // Marked before the write, so a Hide or Lock clicked while it is pending still clears it.
-    onClipboard = mine;
-    // This fresh explicit copy owns its cleanup; a retry requested for an older copy must not empty it.
-    retryAtActivation(false);
     void (async () => {
       try {
-        await navigator.clipboard.writeText(value);
+        await copyClipboardText(value, navigator.clipboard, delay, current);
         if (current()) setCopy('copied');
-        else if (copies === mine && (onClipboard === mine || onClipboard === 0)) {
-          // Hide/Lock may have completed its clear before this write settled. Retry cleanup of
-          // our late write, but never claim or clear a newer copy made by another reveal/view.
-          onClipboard = mine;
-          clearCopiedBackup();
-        }
       } catch {
-        // Nothing was copied: an earlier copy that may still be on the clipboard stays marked.
-        if (onClipboard === mine) {
-          onClipboard = earlier;
-          retryAtActivation(earlier !== 0 && earlierNeedsClear);
-        }
         if (current()) setCopy('failed');
       } finally {
         if (current()) {

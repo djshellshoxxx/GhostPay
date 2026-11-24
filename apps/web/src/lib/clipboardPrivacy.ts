@@ -1,10 +1,10 @@
-/**
- * Clipboard cleanup is optional and best-effort. Browser permissions can deny reading or clearing, and clipboard
- * read+write is not an atomic compare-and-swap against other applications. Never clear a value we observed changing.
- * A new successful app copy invalidates earlier timers, including when copying the same value twice.
- */
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex } from '@noble/hashes/utils.js';
+
+/** Browser read and write are separate operations. Check the text immediately before requesting a clear. */
 export interface ClipboardPort {
   readText(): Promise<string>;
+  read?(): Promise<ReadonlyArray<Pick<ClipboardItem, 'types'>>>;
   writeText(text: string): Promise<void>;
 }
 
@@ -13,14 +13,49 @@ let nextCopy = 0;
 let latestSuccessfulCopy = 0;
 const pendingWrites = new Set<number>();
 let deferredCleanup: (() => Promise<void>) | undefined;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let revision = 0;
+let pendingClear: Promise<void> | undefined;
 
-/** Track the native write from the click, since its value can become visible before its promise settles. */
-export async function copyClipboardText(value: string, clipboard: ClipboardPort, clearAfterMs = 0): Promise<void> {
+/** A saved preference change also revokes pending reads and timers from copies that have yet to settle. */
+export function cancelClipboardCleanup(): void {
+  ++revision;
+  clearTimeout(timer);
+  timer = undefined;
+  deferredCleanup = undefined;
+}
+
+/** Hash exact UTF-16 code units, including lone surrogates, without retaining recovery text in a timer. */
+function fingerprint(text: string): string {
+  const units = new Uint16Array(text.length);
+  for (let i = 0; i < text.length; i++) units[i] = text.charCodeAt(i);
+  try {
+    return bytesToHex(sha256(new Uint8Array(units.buffer)));
+  } finally {
+    units.fill(0);
+  }
+}
+
+export async function copyClipboardText(
+  value: string, clipboard: ClipboardPort, clearAfterMs = 0, current: () => boolean = () => true,
+): Promise<void> {
   const generation = ++nextCopy;
+  const copyRevision = revision;
   pendingWrites.add(generation);
   try {
+    // A native clear cannot be withdrawn. Let it finish before dispatching the newer copy.
+    if (pendingClear) {
+      await pendingClear.catch(() => undefined);
+      if (generation !== nextCopy || !current()) throw new Error('Copy is no longer current.');
+    }
     await clipboard.writeText(value);
-    recordClipboardCopy(generation, value, clipboard, clearAfterMs);
+    if (generation < latestSuccessfulCopy) return;
+    latestSuccessfulCopy = generation;
+    clearTimeout(timer);
+    timer = undefined;
+    deferredCleanup = undefined;
+    if (copyRevision !== revision || !value || !Number.isSafeInteger(clearAfterMs) || clearAfterMs < 1_000 || clearAfterMs > MAX_CLIPBOARD_CLEAR_MS) return;
+    scheduleCleanup(generation, copyRevision, clipboard, clearAfterMs, value.length, fingerprint(value));
   } finally {
     pendingWrites.delete(generation);
     const retry = deferredCleanup;
@@ -29,19 +64,10 @@ export async function copyClipboardText(value: string, clipboard: ClipboardPort,
   }
 }
 
-/**
- * Called after an actual, successful user-initiated clipboard write.
- * Delays under one second, nonintegers and values over five minutes disable automatic cleanup.
- * This does not promise sensitive strings have been zeroized from JavaScript memory or OS clipboard history.
- */
-function recordClipboardCopy(generation: number, value: string, clipboard: ClipboardPort, clearAfterMs: number): void {
-  if (generation < latestSuccessfulCopy) return;
-  latestSuccessfulCopy = generation;
-  deferredCleanup = undefined;
-  if (!Number.isSafeInteger(clearAfterMs) || clearAfterMs < 1_000 || clearAfterMs > MAX_CLIPBOARD_CLEAR_MS) return;
-
+function scheduleCleanup(generation: number, copyRevision: number, clipboard: ClipboardPort, delay: number, length: number, digest: string): void {
+  const matches = (text: string): boolean => text.length === length && fingerprint(text) === digest;
   function canClear(): boolean {
-    if (generation !== latestSuccessfulCopy) return false;
+    if (copyRevision !== revision || generation !== latestSuccessfulCopy) return false;
     for (const pending of pendingWrites) {
       if (pending > generation) {
         // A success supersedes this timer. A rejection retries it and rechecks the actual text.
@@ -54,13 +80,22 @@ function recordClipboardCopy(generation: number, value: string, clipboard: Clipb
 
   async function clearIfUnchanged(): Promise<void> {
     try {
-      if (!canClear() || await clipboard.readText() !== value || !canClear()) return;
-      // A read may have resolved with a stale snapshot. Recheck before the non-atomic clipboard write.
-      if (await clipboard.readText() !== value || !canClear()) return;
-      await clipboard.writeText('');
+      if (!canClear() || !matches(await clipboard.readText()) || !canClear()) return;
+      // A replacement may have the same plain text plus an image or HTML representation.
+      if (clipboard.read) {
+        const items = await clipboard.read();
+        const types = items[0]?.types;
+        if (items.length !== 1 || types?.length !== 1 || types[0] !== 'text/plain' || !canClear()) return;
+      }
+      if (!matches(await clipboard.readText()) || !canClear()) return;
+      const clear = clipboard.writeText('');
+      pendingClear = clear;
+      try { await clear; }
+      finally { if (pendingClear === clear) pendingClear = undefined; }
     } catch {
-      // If the browser denies reading or clearing, leave the clipboard alone.
+      // Denied or unavailable clipboard access leaves the user's copy alone.
     }
   }
-  setTimeout(() => { void clearIfUnchanged(); }, clearAfterMs);
+
+  timer = setTimeout(() => { timer = undefined; void clearIfUnchanged(); }, delay);
 }
