@@ -431,18 +431,17 @@ describe('lock manager faults', () => {
     expect(shared.raw()).toBeNull();
   });
 
-  // QA-1 (hardening): a non-conforming lock manager that rejects first and runs the callback later still starts a
-  // wallet request after sendViaWallet already reported failure, and leaves an `unknown` record. navigator.locks never
-  // runs a callback after rejecting, so this needs an injected manager. Flip to `it` once start() refuses after settle.
-  it('never starts a wallet request when the callback runs after the lock request already rejected', async () => {
+  it.each(['rejects', 'fulfills'] as const)('never starts a wallet request if the lock request %s before its callback', async (settlement) => {
     const { s, log, shared } = await setup();
+    // Native Web Locks wait for the callback. An injected adapter may settle too early.
     const lockManager: AttemptLockManager = {
       request: <T>(_name: string, callback: () => Promise<T>): Promise<T> => {
         setTimeout(() => { void callback().catch(() => undefined); }, 0);
-        return Promise.reject(new Error('lock aborted'));
+        return settlement === 'rejects' ? Promise.reject(new Error('lock aborted')) : Promise.resolve(undefined as T);
       },
     };
-    await expect(sendViaWallet(s, txOf(1), undefined, { ...pay(1), storage: shared.tab(), lockManager })).rejects.toThrow('lock aborted');
+    const message = settlement === 'rejects' ? 'lock aborted' : JOURNAL_ERROR;
+    await expect(sendViaWallet(s, txOf(1), undefined, { ...pay(1), storage: shared.tab(), lockManager })).rejects.toThrow(message);
     await macrotask();
     await macrotask();
     expect(sends(log)).toBe(0);
