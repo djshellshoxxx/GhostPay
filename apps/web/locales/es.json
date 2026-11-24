@@ -1894,6 +1894,8 @@
     "dashboard.overview": "Resumen de la red",
     "dashboard.counts": "Facturas registradas: {invoices}. Observaciones de pagos guardadas: {payments}.",
     "dashboard.expectedTotal": "Total esperado de las facturas: {amount} unidades atómicas",
+    "dashboard.scanTotal": "Total histórico de los escaneos: {amount} unidades atómicas",
+    "dashboard.revenueUnavailable": "Los ingresos verificados no están disponibles. Los totales de los escaneos pueden incluir pagos sin una factura vinculada.",
     "dashboard.browse": "Explorar registros",
     "dashboard.clearFilters": "Borrar filtros",
     "dashboard.noInvoices": "No hay facturas registradas en esta bóveda para esta red.",

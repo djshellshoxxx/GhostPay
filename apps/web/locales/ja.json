@@ -1894,6 +1894,8 @@
     "dashboard.overview": "ネットワークの概要",
     "dashboard.counts": "登録済み請求書: {invoices} 件。保存済みの支払い観測: {payments} 件。",
     "dashboard.expectedTotal": "請求予定額の合計: {amount} 最小単位",
+    "dashboard.scanTotal": "過去のスキャン合計: {amount} 最小単位",
+    "dashboard.revenueUnavailable": "検証済みの売上額は確認できません。スキャン合計には請求書に紐付いていない支払いが含まれる場合があります。",
     "dashboard.browse": "記録を閲覧",
     "dashboard.clearFilters": "絞り込みを解除",
     "dashboard.noInvoices": "このネットワークの請求書はこの保管庫に登録されていません。",

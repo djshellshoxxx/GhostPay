@@ -1894,6 +1894,8 @@
     "dashboard.overview": "نظرة عامة على الشبكة",
     "dashboard.counts": "الفواتير المسجلة: {invoices}. عمليات الدفع المرصودة المحفوظة: {payments}.",
     "dashboard.expectedTotal": "إجمالي المبالغ المتوقعة للفواتير: {amount} من أصغر وحدات العملة",
+    "dashboard.scanTotal": "إجمالي عمليات المسح السابقة: {amount} وحدة ذرية",
+    "dashboard.revenueUnavailable": "الإيرادات المتحقق منها غير متاحة. قد تشمل إجماليات المسح دفعات غير مرتبطة بفاتورة.",
     "dashboard.browse": "تصفّح السجلات",
     "dashboard.clearFilters": "مسح عوامل التصفية",
     "dashboard.noInvoices": "لا توجد فواتير مسجّلة في هذه الخزنة لهذه الشبكة.",

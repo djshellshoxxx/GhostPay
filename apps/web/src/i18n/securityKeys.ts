@@ -16,6 +16,8 @@ export const SECURITY_KEY_GROUPS = {
     'dashboard.backup',
     'dashboard.counts',
     'dashboard.expectedTotal',
+    'dashboard.scanTotal',
+    'dashboard.revenueUnavailable',
     'dashboard.state.open',
     'dashboard.state.expired',
     'dashboard.state.late',

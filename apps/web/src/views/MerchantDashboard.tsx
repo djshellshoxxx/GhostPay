@@ -290,10 +290,15 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       <button className="btn" type="button" onClick={() => { load('refresh'); }}>{t('dashboard.refresh')}</button>
       <button className="btn" type="button" onClick={() => { app.setView('scan'); }}>{t('dashboard.backup')}</button>
     </div>
-    <h3 ref={overview} tabIndex={-1}>{t('dashboard.overview')}</h3>
-    <p>{t('dashboard.counts', { invoices: data.projection.rows.length, payments: data.payments.length })}</p>
-    {summaries.groups.length > 0 && <ul>{summaries.groups.map((group) =>
-      <li key={group.assetId}><bdi>{group.assetId}</bdi>{' '}{t('dashboard.expectedTotal', { amount: group.expectedAtomic })}</li>)}</ul>}
+    <section aria-labelledby="dashboard-overview">
+      <h3 id="dashboard-overview" ref={overview} tabIndex={-1}>{t('dashboard.overview')}</h3>
+      <p>{t('dashboard.counts', { invoices: data.projection.rows.length, payments: data.payments.length })}</p>
+      {summaries.groups.length > 0 && <ul>{summaries.groups.map((group) =>
+        <li key={group.assetId}><bdi>{group.assetId}</bdi>{' '}{t('dashboard.expectedTotal', { amount: group.expectedAtomic })}</li>)}</ul>}
+      {data.historicalTotals.length > 0 && <ul>{data.historicalTotals.map((group) =>
+        <li key={group.assetId}><bdi>{group.assetId}</bdi>{' '}{t('dashboard.scanTotal', { amount: group.observedAtomic })}</li>)}</ul>}
+      <p>{t('dashboard.revenueUnavailable')}</p>
+    </section>
     <fieldset>
       <legend>{t('dashboard.browse')}</legend>
       <div className="dashboard-fields">

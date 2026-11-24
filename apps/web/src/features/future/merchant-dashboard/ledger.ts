@@ -23,7 +23,11 @@ export async function readMerchantDashboard(
   chain: number,
   seller: string,
   context: DashboardContext,
-): Promise<{ readonly projection: DashboardProjection; readonly payments: readonly LedgerObservation[] }> {
+): Promise<{
+  readonly projection: DashboardProjection;
+  readonly payments: readonly LedgerObservation[];
+  readonly historicalTotals: readonly { readonly assetId: string; readonly observedAtomic: string }[];
+}> {
   const { profileRef, revision } = context.current();
   const chainId = 'eip155:' + chain;
   const invoices = state.invoices.filter((invoice) => invoice.chainId === chain).map((invoice) => ({
@@ -42,7 +46,8 @@ export async function readMerchantDashboard(
     if (existing === undefined) {
       observations.set(identity, { record, state: kind, invoiceRefs: [...invoiceRefs] });
     } else if (existing.record.id !== record.id || existing.record.amountMinorUnits !== record.amountMinorUnits ||
-               existing.record.asset !== record.asset || existing.record.blockTimestamp !== record.blockTimestamp ||
+               existing.record.asset !== record.asset || existing.record.blockNumber !== record.blockNumber ||
+               existing.record.blockTimestamp !== record.blockTimestamp ||
                existing.record.invoiceDigest !== record.invoiceDigest || existing.state !== kind) {
       observations.set(identity, { record: existing.record, state: 'ambiguous', invoiceRefs: [...invoiceRefs] });
     }
@@ -50,8 +55,13 @@ export async function readMerchantDashboard(
   const claims: DashboardObservation[] = [];
   const invalidated = new Set<string>();
   const registered = new Set(invoices.map(({ invoiceRef }) => invoiceRef));
+  const historicalAmounts = new Map<string, bigint>();
   for (const [identity, entry] of observations) {
     const { record } = entry;
+    if (entry.state === 'historical') {
+      const asset = assetId(record.asset);
+      historicalAmounts.set(asset, (historicalAmounts.get(asset) ?? 0n) + BigInt(record.amountMinorUnits));
+    }
     const observedAt = observationTime(record);
     if (entry.state === 'ambiguous' || observedAt === undefined || record.logIndex > 0xffff_ffff) continue;
     if (entry.state === 'reorged') invalidated.add(identity);
@@ -70,7 +80,10 @@ export async function readMerchantDashboard(
   const projection = await buildDashboardProjection({
     schema: 'ghostpay.dashboard-input/1', profileRef, revision, invoices, observations: claims,
   }, provider, context);
-  return { projection, payments: [...observations.values()] };
+  const historicalTotals = [...historicalAmounts]
+    .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+    .map(([assetId, total]) => ({ assetId, observedAtomic: total.toString() }));
+  return { projection, payments: [...observations.values()], historicalTotals };
 }
 
 export function invoiceState(row: DashboardRow, observations: readonly LedgerObservation[], now: number): InvoiceState {
@@ -93,7 +106,7 @@ export function utcRange(from: string, through: string): readonly [number, numbe
     return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
       ? ms / 1000 : NaN;
   };
-  const start = from === '' ? 0 : parse(from);
+  const start = from === '' ? -Infinity : parse(from);
   const end = through === '' ? Infinity : parse(through) + 86_400;
   return start < end ? [start, end] : undefined;
 }

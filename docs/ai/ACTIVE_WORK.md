@@ -826,3 +826,9 @@ The preview reads the existing seller- and chain-scoped vault, including its sto
 - Own the dashboard's record filter group, empty states, clear action, related styles, four dashboard locale catalogs, and focused component/browser assertions. Preserve the parent refresh behavior and preview release gates.
 - Acceptance: distinguish an empty network-scoped invoice or payment list from a filtered-out list. Clear search, status and dates together by keyboard, reset pagination and invalidate any export preview while retaining network, list, sort and format. Fit narrow and wide screens.
 - Arabic browser QA found that the preview's dashboard messages were missing from the existing i18n classification. Include the dashboard entries in `apps/web/src/i18n/securityKeys.ts` and its classification test. Localize browsing controls and scoped empty states, and keep consent, monetary data and evidence qualifications on the reviewed-text path.
+
+## Merchant dashboard overview totals qualification
+
+- Worker: Codex overview. Branch `feat/f04-dashboard-totals-qualification`, based on #564 at `37a714cfedec93749083d5cf5b46fa8adcd9bfa1`. Main at discovery: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+- Own the network overview's per-asset historical scan amounts, evidence exclusions, overview wording and long-value wrapping, plus focused regressions. Stack on #564. #535 owns preview integration, #543 owns refresh focus, and #564 owns browsing controls.
+- Acceptance: exact atomic amounts across refreshes, duplicate observations counted once, imported, ambiguous and reorg-invalidated evidence excluded from scan sums, network/date scope and accessible mobile layout verified with synthetic records. Keep current revenue unavailable pending the independent evidence adapter and release qualification in #535.

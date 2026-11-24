@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { RegisteredInvoice } from '../../../lib/reconciliationMatch';
 import type { ReconciliationState, VaultRecord } from '../../../lib/reconciliationVault';
@@ -68,9 +69,52 @@ describe('dashboard over the encrypted ledger', () => {
     }
   });
 
+  it('rebuilds exact historical totals per asset from unique in-scope observations on each read', async () => {
+    const token = '0x' + '1'.repeat(40);
+    const maximum = ((1n << 256n) - 1n).toString();
+    const first = { ...payment, amountMinorUnits: maximum };
+    const extra = { ...payment, logIndex: 1, amountMinorUnits: '2' };
+    const conflict = { ...payment, logIndex: 2 };
+    const erc20 = { ...payment, logIndex: 3, asset: token, amountMinorUnits: '19' };
+    const rows = [
+      first, { ...first }, extra, erc20, conflict, { ...conflict, blockNumber: '2' },
+      { ...payment, logIndex: 4, provenance: 'imported-history' as const },
+      { ...payment, logIndex: 5, evidenceStatus: 'invalidated-after-reorg' as const },
+      { ...payment, logIndex: 6, chainId: 10 }, { ...payment, logIndex: 7, sellerKeyId: 'f'.repeat(64) },
+    ];
+    const expected = [
+      { assetId: 'erc20:' + token, observedAtomic: '19' },
+      { assetId: 'native', observedAtomic: ((1n << 256n) + 1n).toString() },
+    ];
+    for (const records of [rows, [...rows].reverse()]) {
+      const result = await load(records);
+      expect(result.historicalTotals).toEqual(expected);
+      expect(result.payments.find(({ record }) => record.logIndex === 2)?.state).toBe('ambiguous');
+      expect(result.projection.totals[0]).toMatchObject({ expectedAtomic: amount, finalAtomic: '0', pendingAtomic: '0' });
+    }
+    const invalidated = rows.map((row) => row.logIndex === 0 ? { ...row, evidenceStatus: 'invalidated-after-reorg' as const } : row);
+    expect((await load(invalidated)).historicalTotals).toEqual([expected[0], { assetId: 'native', observedAtomic: '2' }]);
+    expect((await load([])).historicalTotals).toEqual([]);
+  });
+
+  it('preserves exact sums when a refresh repeats or reorders scan records', async () => {
+    const maximum = (1n << 256n) - 1n;
+    await fc.assert(fc.asyncProperty(fc.array(fc.bigInt({ min: 1n, max: maximum }), { minLength: 1, maxLength: 24 }), async (amounts) => {
+      const records = amounts.map((value, logIndex) => ({ ...payment, logIndex, amountMinorUnits: value.toString() }));
+      const total = amounts.reduce((sum, value) => sum + value, 0n).toString();
+      for (const snapshot of [records, [...records, ...records].reverse()]) {
+        const result = await load(snapshot);
+        expect(result.historicalTotals).toEqual([{ assetId: 'native', observedAtomic: total }]);
+        expect(result.payments).toHaveLength(records.length);
+      }
+    }), { seed: 564, numRuns: 48 });
+  });
+
   it('validates chronological UTC date ranges and includes the full end date', () => {
     expect(utcRange('2024-02-29', '2024-02-29')).toEqual([1_709_164_800, 1_709_251_200]);
     expect(utcRange('10000-01-01', '10000-01-01')).toEqual([253_402_300_800, 253_402_387_200]);
+    expect(utcRange('', '1969-12-31')).toEqual([-Infinity, 0]);
+    expect(utcRange('1969-12-31', '1969-12-31')).toEqual([-86_400, 0]);
     expect(utcRange('2026-02-29', '')).toBeUndefined();
     expect(utcRange('2026-08-02', '2026-08-01')).toBeUndefined();
   });

@@ -1894,6 +1894,8 @@
     "dashboard.overview": "Network overview",
     "dashboard.counts": "Registered invoices: {invoices}. Saved payment observations: {payments}.",
     "dashboard.expectedTotal": "Expected invoice total: {amount} atomic units",
+    "dashboard.scanTotal": "Historical scan total: {amount} atomic units",
+    "dashboard.revenueUnavailable": "Verified revenue is unavailable. Scan totals can include payments without an invoice link.",
     "dashboard.browse": "Browse records",
     "dashboard.clearFilters": "Clear filters",
     "dashboard.noInvoices": "No invoices are registered in this vault for this network.",
