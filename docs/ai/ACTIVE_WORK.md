@@ -1,3 +1,14 @@
+# REV-L2 — checkout with a stale payment-attempt mirror
+
+Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
+`ad67862f63590fe38410d21b88ebf0e05329da47`. Main checked at
+`8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Scope on this child is
+`apps/web/src/views/Pay.tsx` and the existing checkout browser test and fixtures
+(`apps/web/e2e/{flows.spec,flowMocks,helpers}.ts`). A pending payment in
+IndexedDB must prevent permit, approval and payment wallet requests from a
+second tab with a stale mirror. A distinct invoice must reach its wallet.
+#500 owns journal integration and #528 owns policy-action lock lifetime.
+
 # GhostPay cross-tab recovery qualification
 
 - Coordinator branch: codex/ghostpay-cross-tab-qualification. main: 8ddb344973e80b8e1eda6821e970ee6a2b808b29; #500: d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea; #528: cfe735754fa486768e02802ffe9734c94bb47f75, direct child of #500. Their main merge base is eb59d93cffed7848c4aac37d0e9650b87239c6da.

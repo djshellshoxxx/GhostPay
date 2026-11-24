@@ -30,7 +30,7 @@ import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { TransactionOutcomeError, approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
-import { browserAttemptLocks, DUPLICATE_ATTEMPT_MESSAGE, readAttempts } from '../lib/duplicateAttemptJournal';
+import { DUPLICATE_ATTEMPT_MESSAGE, readAttempts, withAttemptJournal, type AttemptStorage } from '../lib/duplicateAttemptJournal';
 import type { MessageKey } from '../i18n/catalog';
 import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -108,14 +108,14 @@ interface InvoiceQrPreview {
 
 const SUPPORTED_INVOICE_ERROR: MessageDescriptor = { key: 'pay.error.supportedInvoice' };
 
-function paymentAttemptRecorded(invoice: ParsedInvoice['invoice']): boolean {
+function paymentAttemptRecorded(invoice: ParsedInvoice['invoice'], storage?: AttemptStorage): boolean {
   const key = paymentAttemptKey(invoice.chainId, bytesToHex(invoiceDigest(invoice)));
-  return readAttempts().some((attempt) => attempt.key === key);
+  return readAttempts(storage).some((attempt) => attempt.key === key);
 }
 
-function assertNoPaymentAttempt(invoice: ParsedInvoice['invoice']): void {
-  browserAttemptLocks();
-  if (paymentAttemptRecorded(invoice)) throw new UserFacingError({ key: DUPLICATE_ATTEMPT_MESSAGE });
+async function assertNoPaymentAttempt(invoice: ParsedInvoice['invoice']): Promise<void> {
+  const recorded = await withAttemptJournal((storage) => paymentAttemptRecorded(invoice, storage));
+  if (recorded) throw new UserFacingError({ key: DUPLICATE_ATTEMPT_MESSAGE });
 }
 
 /** Refusal reasons whose own text says "Nothing was sent"; restated without that claim after an earlier request. */
@@ -760,7 +760,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           plan = await planApproval(ctx, wallet, tk.address, rt);
           guard();
         }
-        if (permit) assertNoPaymentAttempt(invoice);
+        if (permit) {
+          await assertNoPaymentAttempt(invoice);
+          guard();
+        }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, scopedStatus, guard);
         guard();
         setApproval(plan);
@@ -816,7 +819,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         };
         preSignGuard();
         if (approval?.required === true && actualAllowance === undefined) {
-          assertNoPaymentAttempt(invoice);
+          await assertNoPaymentAttempt(invoice);
+          preSignGuard();
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);

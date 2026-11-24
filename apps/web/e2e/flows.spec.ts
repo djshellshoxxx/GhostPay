@@ -18,7 +18,7 @@ test.afterEach(async ({ page }, info) => {
 });
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
-import { RPC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type SentTx } from './flowMocks';
+import { RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
 
 interface WalletControls {
   holdSend: boolean;
@@ -30,14 +30,15 @@ interface WalletControls {
 }
 
 /** An EIP-6963 wallet injected before any page script runs. */
-async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: number }): Promise<void> {
+async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: number; permitCalls?: number }): Promise<void> {
   await page.exposeFunction('__recordTx', (tx: SentTx) => {
     state.sent = tx;
     state.sendCalls = (state.sendCalls ?? 0) + 1;
   });
+  await page.exposeFunction('__recordPermit', () => { state.permitCalls = (state.permitCalls ?? 0) + 1; });
   await page.addInitScript(() => {
     let account = '0x5555555555555555555555555555555555555555';
-    const w = window as unknown as { __mutate?: boolean; __recordTx: (tx: unknown) => Promise<void>; __e2eWallet: WalletControls };
+    const w = window as unknown as { __mutate?: boolean; __recordTx: (tx: unknown) => Promise<void>; __recordPermit: () => Promise<void>; __e2eWallet: WalletControls };
     const listeners = new Map<string, Set<() => void>>();
     let resolveSend: (() => void) | undefined;
     const controls: WalletControls = {
@@ -75,6 +76,9 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
               controls.changeAccount();
             }
             return '84532';
+          case 'eth_signTypedData_v4':
+            await w.__recordPermit();
+            throw new Error('Mock wallet declined the permit');
           case 'eth_sendTransaction': {
             const tx = { ...(params?.[0] as Record<string, string>) };
             if (w.__mutate === true) tx['data'] = `${tx['data']?.slice(0, -2) ?? ''}ff`;
@@ -100,6 +104,19 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
       );
     });
   });
+}
+
+async function connectCheckout(page: Page, url: string): Promise<void> {
+  await configureRpc(page);
+  await openFresh(page, url);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+}
+
+async function prepare(page: Page, url: string): Promise<void> {
+  await connectCheckout(page, url);
+  await page.getByRole('button', { name: 'Prepare payment' }).click();
+  await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
 }
 
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
@@ -152,14 +169,6 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await injectWallet(page, first);
     await injectWallet(tab, second);
 
-    const prepare = async (target: Page, url: string): Promise<void> => {
-      await configureRpc(target);
-      await openFresh(target, url);
-      await target.getByRole('button', { name: 'Continue' }).click();
-      await target.getByRole('button', { name: /Connect E2E Wallet/ }).click();
-      await target.getByRole('button', { name: 'Prepare payment' }).click();
-      await expect(target.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
-    };
     await Promise.all([prepare(page, invoice), prepare(tab, invoice)]);
     const hold = (target: Page): Promise<boolean> => target.evaluate(() => {
       (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true;
@@ -190,6 +199,63 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(freeState.sendCalls).toBe(1);
     await expect.poll(() => journal(free)).toMatchObject([{ status: 'unknown' }, { status: 'submitted' }]);
   });
+
+  for (const path of ['permit', 'approval', 'already allowed'] as const) {
+    test(`stale checkout mirror blocks the pending invoice (${path}) and allows a different invoice`, async ({ page, context }) => {
+      const second: MockNetworkState & { sendCalls?: number; permitCalls?: number } = { usdcCheckout: 'already allowed' };
+      await mockNetwork(context, second);
+      await injectWallet(page, {});
+      await page.goto('/');
+      await generateKeys(page);
+      const invoice = await createInvoice(page, { tokenAddress: TEST_USDC });
+      await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
+      const other = await createInvoice(page, { tokenAddress: TEST_USDC, description: 'Different payable invoice' });
+      expect(other).not.toBe(invoice);
+      const tab = await context.newPage();
+      await injectWallet(tab, second);
+      await Promise.all([prepare(page, invoice), connectCheckout(tab, invoice)]);
+
+      // Tab A's held wallet request commits a real, unresolved payment to IndexedDB.
+      await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true; });
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
+      const snapshot = await tab.evaluate(() => new Promise<string>((resolve, reject) => {
+        const open = indexedDB.open('ghostpay-wallet-attempt-journal', 1);
+        open.onerror = () => reject(new Error('Cannot open the test journal'));
+        open.onsuccess = () => {
+          const db = open.result;
+          const read = db.transaction('journal').objectStore('journal').get('snapshot');
+          read.onsuccess = () => resolve(String(read.result));
+          read.onerror = () => reject(new Error('Cannot read the test journal'));
+          db.close();
+        };
+      }));
+      expect(JSON.parse(snapshot)).toMatchObject([{ kind: 'payment', status: 'unknown' }]);
+
+      second.usdcCheckout = path;
+      // On the approval path, lag the mirror after preparation, immediately before Send.
+      const prepareButton = tab.getByRole('button', { name: 'Prepare payment' });
+      if (path !== 'permit') await prepareButton.click();
+      const action = path === 'permit' ? prepareButton : tab.getByRole('button', {
+        name: path === 'approval' ? 'Approve exactly, then send payment in my wallet' : 'Send payment in my wallet',
+        exact: true,
+      });
+      await expect(action).toBeVisible();
+      await tab.evaluate(() => localStorage.setItem('ghostpay.wallet-attempts.v1', '[]'));
+      await action.click();
+      await expect(tab.getByRole('alert').filter({ hasText: 'previous wallet attempt' })).toBeVisible();
+      expect(second.permitCalls ?? 0).toBe(0);
+      expect(second.sendCalls ?? 0).toBe(0);
+
+      second.usdcCheckout = 'already allowed';
+      await prepare(tab, other);
+      await tab.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => second.sendCalls).toBe(1);
+      expect(second.sent?.to.toLowerCase()).toBe(FAKE_ROUTER);
+      await expect(tab.getByRole('heading', { name: 'Submitted' })).toBeVisible();
+      expect(await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
+    });
+  }
 
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
