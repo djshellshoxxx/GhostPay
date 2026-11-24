@@ -1,0 +1,128 @@
+{
+  "observed_at": "2026-11-24T09:10:00Z",
+  "reviewer": "resume_package_qualification",
+  "head": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8",
+  "base": "5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727",
+  "pr": 599,
+  "tracked_source_clean_before_and_after_run": true,
+  "source_blobs": {
+    "pages_devnet": "a4fde9a716f6831e2b43047af8efe0e11510347c",
+    "invoice_vault_fixture": "d4d1eb99506c4e497ab77fb1bc8e07a4a9678fd3"
+  },
+  "local_pages": {
+    "runner": "BROWSER_DEVNET_MODE=pages BROWSER_DEVNET_KEEP=1 BROWSER_DEVNET_PORT=8546 BROWSER_DEVNET_PAGES_PORT=4175 bash scripts/beta/browser-devnet.sh",
+    "runner_unmodified": true,
+    "exit_code": 0,
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "retries": 0,
+    "reported_duration": "1.9m",
+    "cancellation_case_seconds": 43.9,
+    "runner_log_sha256": "665f3407d2fdb8c042921b4b83bda1cdd3bc23433d16bddd50939497a2e33e2f",
+    "runner_log": "== anvil on http://127.0.0.1:8546\n== deploy (script/devnet/DeployDevnet.s.sol, isolated forge out/cache/broadcast)\n== switch the local chain to Base Sepolia id (84532) and stub the OP fee oracle\n== sign the devnet manifest with the public Playwright test key\ndevnet manifest signed for chain 84532: /tmp/ghostpay-browser-devnet.DdR0jZ/deployments (router 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)\n== playwright (GitHub Pages artifact on http://localhost:4175/GhostPay/ against http://127.0.0.1:8546)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] manifests: testnet chains 84532\n[WebServer] == build apps/web (lean profile, relative base) at 0c7f680d0791668a68c3a92d7d4ba44087dcf2b8\n[WebServer] == assemble Pages site\n[WebServer] == verify site\n[WebServer] Pages site verified: 16 files; DEVELOPMENT BUILD (not release evidence): TESTNET: payments enabled only on the listed testnet chains\n[WebServer] build-pages: OK -> /tmp/ghostpay-browser-devnet.DdR0jZ/pages/site (evidence in /tmp/ghostpay-browser-devnet.DdR0jZ/pages/evidence)\n[WebServer] serve-pages: /tmp/ghostpay-browser-devnet.DdR0jZ/pages/site at http://127.0.0.1:4175/GhostPay/ (no security headers, like GitHub Pages)\n\nRunning 16 tests using 1 worker\n\n(node:370) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  \u2713   1 e2e/pages-devnet.spec.ts:147:1 \u203a Pages RPC proxy preserves upstream HTTP failure status (452ms)\n  \u2713   2 e2e/pages-devnet.spec.ts:226:3 \u203a GitHub Pages artifact on a real devnet \u203a a. the artifact loads under /GhostPay/: served bytes = SHA256SUMS, lean navigation only, enforced meta CSP, build-info commit = git HEAD (848ms)\n  \u2713   3 e2e/pages-devnet.spec.ts:291:3 \u203a GitHub Pages artifact on a real devnet \u203a b. seller: keys, encrypted keystore download, vault passphrase, signed registered invoice whose link lives under /GhostPay/ and opens on Pay (5.9s)\n  \u2713   4 e2e/pages-devnet.spec.ts:368:3 \u203a GitHub Pages artifact on a real devnet \u203a c. buyer: connect the test wallet, review, explicit confirm, native ETH payment pending -> included, duplicate blocked after reload (5.1s)\n  \u2713   5 e2e/pages-devnet.spec.ts:438:3 \u203a GitHub Pages artifact on a real devnet \u203a c2. ERC-20 on this devnet: the lean build offers only the canonical Base Sepolia USDC/EURC, which DeployDevnet does not deploy, and no gas-buffer control (finding, not faked) (304ms)\n  \u2713   6 e2e/pages-devnet.spec.ts:458:3 \u203a GitHub Pages artifact on a real devnet \u203a d. seller: scan finds the payment (pending, then final), receipt bound to the invoice, ledger entry, direct sweep on chain, second sweep refused (4.3s)\n  \u2713   7 e2e/pages-devnet.spec.ts:555:3 \u203a GitHub Pages artifact on a real devnet \u203a e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk (5.4s)\n  \u2713   8 e2e/pages-devnet.spec.ts:630:3 \u203a GitHub Pages artifact on a real devnet \u203a f. restore in a brand-new profile: damaged and wrong-passphrase backups refused, then the downloaded backup restores the keys; rescan shows the payment once, already swept (4.8s)\npages devnet: 211 requests across the journey (7 distinct /GhostPay/ paths, 166 RPC calls); no foreign origin; nothing outside /GhostPay/\npages devnet: 2 real anvil transactions asserted on chain: 0xceeb78c2354cbfa16637074759c7845942bc2ee2885af9738e1c457c31be9e06, 0xad898828a9eea8d5c6306a5ef9f0811a5e831f142b101ef1d2daa8eb1811f5fd\n  \u2713   9 e2e/pages-devnet.spec.ts:725:3 \u203a GitHub Pages artifact on a real devnet \u203a a (whole journey). every request of every page and worker went only to the site under /GhostPay/ or the routed devnet RPC (103ms)\n  \u2713  10 e2e/pages-devnet.spec.ts:753:3 \u203a GitHub Pages artifact: refusals \u203a a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry (43.9s)\n  \u2713  11 e2e/pages-devnet.spec.ts:823:3 \u203a GitHub Pages artifact: refusals \u203a the Home release check stays inside /GhostPay/ and shows the served entry script hash (270ms)\n  \u2713  12 e2e/pages-devnet.spec.ts:841:3 \u203a GitHub Pages artifact: refusals \u203a g. a tampered invoice fragment (amount changed after signing) is refused on the Pay view; nothing reaches the wallet (1.4s)\n  \u2713  13 e2e/pages-devnet.spec.ts:868:3 \u203a GitHub Pages artifact: refusals \u203a g. Settings refuses invalid RPC endpoints (plain http, embedded credentials, not a URL) without changing the saved RPC or contacting them (1.3s)\n  \u2713  14 e2e/pages-devnet.spec.ts:910:3 \u203a GitHub Pages artifact: refusals \u203a g. RPC unavailable: payment preparation and scanning show an error, the app keeps working and nothing is marked paid or sent (3.5s)\n  \u2713  15 e2e/pages-devnet.spec.ts:969:3 \u203a GitHub Pages artifact: refusals \u203a g. wallet rejection: the user rejects in the wallet, the app says so and the invoice stays unpaid on chain (2.8s)\n  \u2713  16 e2e/pages-devnet.spec.ts:1011:3 \u203a GitHub Pages artifact: refusals \u203a g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain (3.4s)\n\n  16 passed (1.9m)\nbrowser-devnet: PASS (pages)\nbrowser-devnet: kept /tmp/ghostpay-browser-devnet.DdR0jZ\n",
+    "artifact_evidence": {
+      "format": "ghostpay-pages-site/1",
+      "commit": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8",
+      "profile": "lean",
+      "base": "relative (./)",
+      "paymentsEnabledChainIds": [
+        84532
+      ],
+      "status": "DEVELOPMENT BUILD (not release evidence): TESTNET: payments enabled only on the listed testnet chains",
+      "release": false,
+      "origin": "http://localhost:4175",
+      "sharedOrigin": false,
+      "manifestsSha256": "fa24fd7b4ad3aacaefd63d20bef3398156925a5b3d1d1b2c5f639094d9665b29",
+      "lockfileSha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+      "sha256sumsSha256": "22eb8b77c1e641f09096abd76c4f27cbceb9bd1e5192cd23a03a60ba4bf8fd41",
+      "files": 16,
+      "limits": "GitHub Pages cannot send HTTP headers: only the meta CSP applies (no frame-ancestors, nosniff, COOP, Permissions-Policy). Not an audited or production host."
+    }
+  },
+  "runtime": {
+    "node": "24.22.3",
+    "playwright": "1.64.1",
+    "chromium_headless_shell": "156.0.8078.4",
+    "foundry": "1.8.5",
+    "foundry_commit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f",
+    "solc": "0.8.28+commit.7893614a",
+    "eslint": "10.15.0",
+    "typescript_eslint": "8.73.0"
+  },
+  "dependency_reuse": {
+    "donor_source": "d2cb576b2bb210d045a32827d8133e8ecee56418",
+    "package_tree_at_donor_and_tested_head": "d1cc0fea8b921adece47a197235f01a0a7f09c83",
+    "package_json_and_lockfile_equal": true,
+    "copied_built_package_outputs": 65,
+    "separate_clean_npm_ci_claimed": false
+  },
+  "review": {
+    "outcome": "no blocking findings",
+    "code_reused_without_changes": true,
+    "native_suite_result_reported_by_pr_author": {
+      "passed": 72,
+      "independent_rerun_by_this_worker": false
+    }
+  },
+  "historical_cancellation_diagnosis": {
+    "source": "d2cb576b2bb210d045a32827d8133e8ecee56418",
+    "full_run": {
+      "passed": 15,
+      "failed": 1,
+      "reason": "60-second pending-result assertion timed out; original hash and Waiting for inclusion retained, preceding real cancellation assertions passed"
+    },
+    "unchanged_focused_replay": {
+      "passed": 1,
+      "exit_code": 0,
+      "case_seconds": 46.5,
+      "pending_assertion_ms": 40859,
+      "trace_sha256": "8bf24a9689fdcf088d03a98d767f84b0bb3840a7651266c5fe09f741613c134a",
+      "report_sha256": "455f765639011f219ec4a2c441f6cfba34f777f26a044d727cbbcd4247b27e19"
+    },
+    "conclusion": "not a reproducible expectation mismatch; transient execution delay consistent with evidence; precise scheduler cause unproven; no code, timeout or assertion change"
+  },
+  "hosted_workflows": [
+    {
+      "id": 45360469327,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    },
+    {
+      "id": 45360469409,
+      "name": "CI",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    },
+    {
+      "id": 45360469316,
+      "name": "CLI operator qualification",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    },
+    {
+      "id": 45360469302,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    },
+    {
+      "id": 45360469438,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    }
+  ],
+  "limits": [
+    "Local lean Pages artifact and real local Anvil qualification, not a hosted CI pass or release deployment.",
+    "The child adds evidence only; source and tests are identical to the exact published PR head.",
+    "Earlier d2cb576 results are historical and are not attributed to PR #599.",
+    "No shared merge, original-branch push, deployment, remote blockchain transaction or real funds."
+  ]
+}

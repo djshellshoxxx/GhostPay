@@ -1,3 +1,11 @@
+# Exact-head Pages qualification for #599 — 2026-11-24 UTC
+
+Worker: `resume_package_qualification`, assigned by the current recovery coordinator. Isolated child: `qualification/20261124/pages-599`; base and tested source: published #599 at `0c7f680d0791668a68c3a92d7d4ba44087dcf2b8`. The overlapping local recovery assertion repair is superseded by #599's existing implementation and is not republished.
+Owned paths: this additive claim, `docs/handoffs/PAGES_599_BROWSER_QUALIFICATION_20261124.md`, and `docs/qa/pages-599-20261124/qualification.json`. All existing source and tests remain unchanged.
+Acceptance completed: the original Pages/Anvil runner rebuilt and verified a fresh artifact on this exact head, then passed all 16 cases in one run with no retries or skips. The recovery and original-hash cancellation protections both passed. Preserve the actual source-pinned build and run evidence plus the earlier cancellation timing investigation; distinguish local qualification from queued hosted checks and preserve the #575/#546/#533 ancestry.
+
+---
+
 # Resumed seller browser qualification — 2026-11-24 UTC
 
 Worker: root. Branch: `resume/seller-reconciliation-20261124`. Parent: PR #575 at `5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727`. Main observed: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
