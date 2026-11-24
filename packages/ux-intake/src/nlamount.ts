@@ -89,7 +89,8 @@ const LOCALES: Readonly<Record<string, Seps>> = {
 export function separatorsForLocale(tag: string): { decimal: string; groups: string } | null {
   if (!/^[a-zA-Z]{2,3}(?:[-_][a-zA-Z0-9]{2,8})*$/.test(tag)) return null;
   const t = tag.toLowerCase().replace('_', '-');
-  return LOCALES[t] ?? LOCALES[t.split('-')[0] as string] ?? null;
+  const seps = LOCALES[t] ?? LOCALES[t.split('-')[0] as string];
+  return seps === undefined ? null : { ...seps };
 }
 
 const ONES: Readonly<Record<string, number>> = {

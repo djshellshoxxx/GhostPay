@@ -98,9 +98,9 @@ export function createDecoderReader(grabber: FrameGrabber, decoder: QrFrameDecod
   };
 }
 
-/** jsQR 1.4.0 (Apache-2.0, pure computation) loaded on demand so bundlers can split it out. */
+/** Locally corrected jsQR 1.4.0 (Apache-2.0, pure computation); vendor provenance is checked in tests. */
 export async function loadJsQrDecoder(): Promise<QrFrameDecoder> {
-  const mod = await import('jsqr');
+  const mod = await import('./vendor/jsqr-1.4.0.mjs');
   const jsQR = mod.default;
   return {
     decode(frame) {
