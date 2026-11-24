@@ -444,7 +444,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       // The hash is recorded under the lock, which another tab may hold across a wallet prompt (policy actions). Never
       // keep a returned hash from the caller meanwhile: after a bounded wait surface it as a broadcast whose follow-up
       // failed, and let the queued write still record it when the lock frees (JRNL-L1).
-      const finishing = withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, access);
+      const finishing = withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, { ...access, unboundedWait: true });
       finishing.catch(() => undefined);
       let timer: ReturnType<typeof setTimeout> | undefined;
       const waited = new Promise<'timeout'>((resolve) => { timer = setTimeout(() => { resolve('timeout'); }, FINISH_WAIT_MS); });

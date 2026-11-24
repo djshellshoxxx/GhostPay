@@ -1068,6 +1068,8 @@ describe('bounded waits (JRNL-L1, QA-6)', () => {
     const sending = sendViaWallet(s, txOf(1), undefined, pay(1));
     sending.catch(() => undefined);
     await vi.waitFor(() => { expect(sends(log)).toBe(1); });
+    // From now on every bounded lock wait expires at once: recording the hash must not be one of them (Worker F, finding 1).
+    vi.spyOn(AbortSignal, 'timeout').mockImplementation(() => AbortSignal.abort());
     // Another tab takes the journal lock across its own wallet prompt.
     let releaseLock = (): void => undefined;
     const other = navigator.locks.request(ATTEMPT_JOURNAL_LOCK, () => new Promise<void>((resolve) => { releaseLock = resolve; }));

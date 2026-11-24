@@ -37,6 +37,11 @@ export interface JournalAccess {
   readonly lockManager?: AttemptLockManager;
   /** Only callers already holding the journal lock. */
   readonly lockHeld?: boolean;
+  /**
+   * Wait for `navigator.locks` without the {@link LOCK_WAIT_MS} limit. Only for recording a hash the wallet already
+   * returned: that write must never be abandoned, however long another tab holds the lock.
+   */
+  readonly unboundedWait?: boolean;
   /** Legacy store to migrate when `storage` is omitted; defaults to `window.sessionStorage`, `null` skips migration. */
   readonly legacyStorage?: LegacyAttemptStorage | null;
 }
@@ -83,7 +88,7 @@ function legacyAttemptStorage(): LegacyAttemptStorage | undefined {
 }
 
 /** `navigator.locks` as an exclusive {@link AttemptLockManager}; refuses (typed) where the Web Locks API is missing. */
-export function browserAttemptLocks(): AttemptLockManager {
+export function browserAttemptLocks(bounded = true): AttemptLockManager {
   let found: unknown;
   try { found = typeof navigator === 'undefined' ? undefined : navigator.locks; } catch { found = undefined; }
   const locks = found as LockManager | null | undefined;
@@ -96,7 +101,7 @@ export function browserAttemptLocks(): AttemptLockManager {
       // Another tab may hold the lock across a wallet prompt (policy actions). Waiting is safe because nothing has been
       // sent yet, but never indefinitely: refuse with the typed journal error instead (JRNL-L1).
       let signal: AbortSignal | undefined;
-      try { signal = AbortSignal.timeout(LOCK_WAIT_MS); } catch { signal = undefined; }
+      if (bounded) { try { signal = AbortSignal.timeout(LOCK_WAIT_MS); } catch { signal = undefined; } }
       try {
         return await manager.request(name, signal === undefined ? { mode: 'exclusive' } : { mode: 'exclusive', signal }, callback);
       } catch (e) {
@@ -287,7 +292,7 @@ export async function withAttemptJournal<T>(
     committed?.(result);
     return result;
   };
-  return access.lockHeld === true ? run() : (access.lockManager ?? browserAttemptLocks()).request(ATTEMPT_JOURNAL_LOCK, run);
+  return access.lockHeld === true ? run() : (access.lockManager ?? browserAttemptLocks(access.unboundedWait !== true)).request(ATTEMPT_JOURNAL_LOCK, run);
 }
 
 /** Reconcile this tab with the committed journal and migrate any session-scoped records. */
