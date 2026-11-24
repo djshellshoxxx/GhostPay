@@ -1,3 +1,98 @@
+# GP-BUG — Template clock rollback breaks persistence (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator, round 11; no independent verifier available. Isolated branch `automation/20261124/bug/template-clock-rollback-r11`; base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Owned paths: `packages/ux-schedule/src/template.ts`, new `packages/ux-schedule/src/template.clock-rollback.test.ts`, additive claim here and `docs/handoffs/UX_SCHEDULE_TEMPLATE_CLOCK_20261124.md`. Existing `template.test.ts` is owned by #224/#238/#262/#264/#278/#372 and will not be edited. Current open PR census (314 PRs, all changed-file lists checked for template/schedule paths) found no owner of the production/new test path. Recheck before integration.
+Observed failure: create at 1000 ms, edit at 900 ms returns success with updatedAtMs 900; parseTemplates of that record returns bad_time. Isolated exact-blob Node 22/TS 5.8 baseline 11/14 assertions passed. Acceptance: regression first, preserve monotone edit timestamps across clock corrections, keep normal forward updates, patch validation, strict import validation and broken-clock errors; no scheduler behavior, transactions, dependencies, deployment or release changes. Integration lease generation 15 released, not acquired. Independent review and full exact-head hosted CI required; local full checkout DNS unavailable.
+
+---
+
+# Scan-source consolidation candidate — 2026-11-24 UTC
+
+Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.
+
+---
+
+# 20261123T2235Z — range scan record-isolation integration regression
+
+Worker: one sequential coordinator/test author; no native independent verifier. Branch `automation/20261123T2235Z/test/scan-range-record-isolation` based on #523 exact head `36cf79d0ce4a31f79a5799af2f8f5e30bd244029`; main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: new `packages/scan-source/src/range.announcement-boundary.test.ts`, this additive claim, and new `docs/handoffs/SCAN_RANGE_RECORD_ISOLATION_20261123.md`. No production edits. #520/#523 own validator source/test; #222/#249/#238/#262/#264/#278/#372 own range source and existing range tests. Do not edit those paths or their branches.
+
+Acceptance: demonstrate that a malformed individual record does not interrupt a multi-window range scan, that valid records before and after it remain in deterministic order with precise skipped accounting and unchanged coverage, and that a real backend rejection remains a rejection. Use synthetic testnet fixtures only, no network or real funds. Exact-head hosted CI and independent review required. Lock generation 12 released, not acquired. No shared integration or deployment.
+
+---
+
+# Scan-source proxy fixture lint follow-up — 2026-11-23T20:41Z
+
+Cycle 20261123T2041Z; one sequential coordinator (no independent worker). Isolated child `automation/20261123T2041Z/bug/scan-proxy-test-lint` of PR #520 at `74164baa0c0781955383794d5243f5ed25e46ae4`, main observed `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: `packages/scan-source/src/validate.test.ts`, this additive claim, and new `docs/handoffs/SCAN_PROXY_FIXTURE_LINT_20261123.md`. No production edits; preserve #520's original head and all regression assertions.
+Acceptance: resolve hosted lint job 137928103881 at line 31 (unsafe Reflect.get return) by typing the proxy result as unknown; retain throwing metadata and revoked proxy scenarios; requalify exact-head lint and all applicable CI. No gate changes, deployment, real funds or shared integration. Lock observed released generation 12, not acquired. Independent review outstanding. Recent PRs #522/#521/#519/#518/#516, C1 #504, #517, #380/#471 and dependency updates #493/#492 checked for test-path overlap; none found.
+
+---
+
+# R-Scan-20261123 — fail closed on unreadable untrusted announcement records
+
+Worker: sequential GhostPay engineering coordinator (one execution; no independent native workers or reviewer available).
+Cycle: `20261123T1840Z`. Isolated branch: `automation/20261123T1840Z/bug/scan-announcement-getters`. Exact base main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: this additive claim, `packages/scan-source/src/validate.ts`, additive tests in `packages/scan-source/src/validate.test.ts`, and `docs/handoffs/SCAN_ANNOUNCEMENT_ACCESSOR_BOUNDARY_20261123.md`.
+Dependencies: none; do not edit or merge C1 #504 or its children #510→#512→#517. Repository integration lock `automation/ghostpay-integration-lock` last read released generation 12; no lock acquired and no authority to integrate main.
+Finding: exported `parseAnnouncement(raw: unknown)` promises never to throw on hostile records, but reads nine record properties directly. An input accessor or revoked Proxy throws, aborting the scan instead of dropping that malformed record. Reproduction must be a failing regression before repair.
+Acceptance: getter/trap and revoked-Proxy cases return `undefined` without throwing; all raw fields, including optional transactionHash, are read no more than once; normal records, malformed optional hashes, canonical IDs and count/drop semantics remain unchanged. No crypto, backend, contract, deployment, dependency or real-funds edits. Hosted exact-head typecheck, lint, unit/browser gates and independent verification required before merge; do not interpret standalone checks as full qualification.
+# BUG-ONLY R13 — reject duplicate Accept-Language q parameters (2026-11-23)
+
+Worker: one ChatGPT coordinator, sequential source review and regression-first implementation; no independent verifier available. Branch: `automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13`; base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/i18n/src/negotiate.ts`, new `packages/i18n/src/negotiate.duplicate-q.test.ts`, this additive claim, and new `docs/handoffs/I18N_DUPLICATE_LANGUAGE_Q_R13_20261123.md`.
+Observed defect: `parseAcceptLanguage('en;q=0;q=1,fr;q=0.5')` incorrectly permits `en` because successive valid `q` parameters overwrite one another. Multiple qweights on one language range are malformed; accepting the last value can revive a q=0-excluded language. Acceptance: reject an entry with duplicate qweights, retain all normal single-q, q=0, quality ordering, header/entry caps and invalid-entry handling. No new features, dependencies, UI, network, contracts, fund interaction, release, or deployment.
+Ownership: inspected live open PR inventory including broad source PRs #278/#262/#264/#307/#372 and #504, and targeted i18n/security PRs #368/#249/#211/#218/#219/#222/#310/#224; none modified selected files. Not a claim of exhaustive 260-PR path review. Reinspect before integration. PR #390 exact head `b655bc273a6704c9c140287b8adcdf4085b91882` succeeded 5 workflows; no independent review; head dirty against current main; owner untouched. Integration lock `automation/ghostpay-integration-lock` generation 12 released; no lock ownership acquired. Require exact-head CI, appropriate browser checks, independent review and legitimate integration authorization before merge.
+# BUG-ONLY R11 — merchant payment button invalid runtime labels (2026-11-23)
+
+Worker: single ChatGPT repair coordinator, no independent reviewer. Isolated branch: `automation/20261123-r11/bug/merchant-button-invalid-label`, exact main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`; source blob `packages/merchant-hooks/src/button.ts` = `386adf476b05b9010b3e757ff960489107d80258`.
+Owned paths: this additive registry entry; `packages/merchant-hooks/src/button.ts`; new `packages/merchant-hooks/src/button.runtime-label.test.ts`; new `docs/handoffs/MERCHANT_BUTTON_RUNTIME_LABEL_R11_20261123.md`. Do not edit pre-existing shared `hooks.test.ts` (PRs #398/#504) or another branch.
+Observed bug: `buildPaymentButton` documents `HooksError('bad-label')` for untrusted invalid labels but a nonstring runtime label reaches `label.replace` and throws native TypeError. Exact main source Git blob reconstructed locally with matching `git hash-object`; a Node.js 22/TypeScript 5.8.3 isolated execution with link dependencies doubled returned TypeError for null, undefined, number, boolean and array (5 failed expected-error assertions; valid/escape/cap/empty/bad-link 5 passed). No real requests, wallet or payment interaction.
+Acceptance: commit a failing dedicated Vitest regression first, then one type guard producing existing `HooksError('bad-label')` while preserving malformed-link precedence and valid text escaping, Unicode cap and whitespace/control handling; execute source-matched directed and neighboring checks; hosted exact-head CI and applicable Pages browser gate required before promotion. No new dependencies, redesign, features, refactors, contracts, network attack, deployment or release.
+Ownership: complete 267-PR changed-file inventory (open snapshot #512 down to #51, pages 1–3) checked for the two paths: no collision; adjacent existing `hooks.test.ts` owned by #398 and #504 and left untouched. Recheck heads before integration. Integration metadata branch `automation/ghostpay-integration-lock`, generation 12 status `released`; not acquired. PR #390 separately rechecked: exact head `b655bc273a6704c9c140287b8adcdf4085b91882`, all five workflow groups successful, no submitted independent reviews, `mergeable=false`; owner branch unchanged.
+# GP-BUG — Isolate natural-language amount locale descriptors (2026-11-23)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential author and verifier; independent review pending.
+Branch: `automation/20261123T1924Z/bug/nl-amount-locale-snapshot`; base main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-intake/src/nlamount.ts`, new `packages/ux-intake/src/nlamount.locale-snapshot.test.ts`, this additive claim, new `docs/handoffs/NL_AMOUNT_LOCALE_SNAPSHOT_20261123.md`. Existing nlamount.test.ts is owned by broad PRs and is untouched.
+Observed: the public mutable return of separatorsForLocale is the actual static table record shared by multiple locales. A caller editing one result changes subsequent English/English-US/Japanese lookups; isolated source-derived V8 reproduction passed 3/6 checks before and 6/6 with a detached result. This breaks deterministic locale interpretation of subsequent amount text. No transactions or funds used.
+Acceptance: commit regression first; return a detached descriptor while preserving exact and fallback tags and unknown-tag behavior. Tests must cover parsing after a caller mutates a previous descriptor. No new feature, dependency, policy or payment behavior changes. Local full checkout unavailable (DNS); report isolated execution separately from exact-head hosted CI.
+Ownership: 275 open PR changed-file inventories through #520 checked, no selected source or dedicated test path collisions; existing registry has no nlamount claim. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f, not acquired. No main integration, deployment, release or edits to other branches.
+# GP-BUG — strict CSV parser accepts ragged records (2026-11-23)
+
+Worker: sequential ChatGPT BUG-ONLY coordinator, no independent verifier. Branch: `automation/20261123T2123Z/bug/ux-export-ragged-parser`; exact base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/ux-export/src/parser.ts`, new `packages/ux-export/src/parser.rectangular.test.ts`, additive claim here, and new `docs/handoffs/UX_EXPORT_RAGGED_PARSER_20261123.md`.
+Finding: exported parseCsv documents rejection of ragged rows but returns them unchecked; only parseLedgerCsv independently calls assertRectangular. Exact baseline parser/text/errors blobs locally matched and Node 22 isolated reproduction failed four ragged-row assertions (8/12 passing). No financial behavior or actual account data involved.
+Acceptance: commit failing tests before fix; call existing assertRectangular on complete parsed records before return, preserving existing syntax/limit error precedence, empty input, valid quoted/empty fields, and typed row-index errors. No new dependencies or refactor. All 278 open PR changed-file inventories in snapshot through #523 inspected, no collision on parser paths; main and newest PR heads rechecked before branch creation. Existing claims retained. PR #390 exact head b655bc273a6704c9c140287b8adcdf4085b91882, 36 successful/3 skipped checks, zero submitted reviews, nonmergeable, owner untouched. Integration lease generation 12 released at 082e754f44944ebb4be283f89176b966bf8f7b4f; no ownership acquired. Draft only pending independent review and exact-head CI. No deploy or release.
+
+---
+
+# R35 — reject throwing chain-lookup accessors (2026-11-22)
+
+Worker: one sequential ChatGPT engineering coordinator/reviewer (no native subagents or independent verifier). Branch: `automation/20261122T0838Z/bug/receipt-accessor-failclosed`, based on PR #450 exact head `5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d`; original parent untouched. Main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: additive claim here, `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, and `docs/handoffs/UX_RECEIPT_ACCESSOR_BOUNDARY_R35.md`.
+Finding: PR #450 rejects malformed lookup values but reads `res.status`, `res.facts` and evidence getters outside the lookup exception handler. A resolved malicious or broken adapter object with a throwing property/get trap can make `verifyReceipt` reject instead of returning the existing `unavailable` result. The exported ChainVerifier is a local injected adapter; no external exploit is claimed.
+Acceptance: deterministic regression-first cases for throwing status/facts/confirmed/amount/sender/recipient accessors and proxy property traps; all degrade to `unavailable`/`self_consistent_unverified`, while valid found and not-found behavior is unchanged. Use a bounded exception isolation around post-lookup facts processing; no network, custody, contract, protocol or dependency changes. Run bounded executable reproduction and hosted exact-head CI, preserve unrun tests honestly, require independent reviewer and integration lock before merging.
+Ownership: deliberate child of active PR #450, which itself stacks on #449. Do not edit either parent branch. Other broad owner claims remain active. Integration metadata lock generation 11 belongs to another coordinator; expiry is not takeover authority. No main/shared-branch merge, release or deployment.
+
+---
+
+# R34 — malformed receipt chain-lookup boundary (2026-11-22)
+
+Worker: GhostPay consolidation R34, sequential author/test reviewer (not independent approval).
+Branch: `automation/20261122-r34/bug/ux-receipts-lookup-boundary`; exact parent: PR #449 `ff8c800a495f1cc4d2df704d321b3d22e6f67a78`; PR target: `automation/20261122-r5/bug/ux-receipts-invalid-chain-facts` (stacked). Parent fixes invalid `facts.confirmed`; this child handles separate malformed *top-level* adapter responses and nonstring optional evidence, without replacing the parent fix.
+Owned paths on this isolated child: `packages/ux-receipts/src/verify.ts` (additive guards after parent's existing checks), `packages/ux-receipts/src/verify.lookup-boundary.test.ts` (new), `docs/handoffs/UX_RECEIPT_LOOKUP_BOUNDARY_R34.md` (new), and this additive ownership note. Notify parent owner; preserve existing claims. Do not edit parent's branch, drop commits, merge into main or deploy.
+Acceptance: regression tests fail on parent for resolved null/nonobject lookup and malformed sender/recipient facts; invalid evidence must return `unavailable`, `self_consistent_unverified`, `chain_unavailable`; preserve true/false confirmations, not-found, matching and mismatch cases. Run exact-head hosted CI; require external review, settled parent, and release lock transfer before any merge. Exclude relayer, contracts, production deployments and real funds.
+Integration lock: held, generation 11, owner `994a0d214fb9-root-r3` (rechecked 2026-11-22). Never self-transfer.
+
+---
+
+# GP-BUG — Receipt verifier must not trust malformed chain confirmation evidence (2026-11-22)
+
+Worker: ChatGPT BUG-ONLY coordinator, sequential reproduction/implementation, no independent verifier available.
+Branch: `automation/20261122-r5/bug/ux-receipts-invalid-chain-facts`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.invalid-facts.test.ts`, additive claim in this file, new `docs/handoffs/UX_RECEIPT_CHAIN_FACTS_20261122.md`. Do not modify `receipt.test.ts` or other branches.
+Observed defect: injected `ChainVerifier.lookup` resolving `{ status: 'found', facts: { confirmed: 'yes', amountBase: '1500000' } }` can produce a `chain_confirmed` verdict despite a nonboolean confirmation field; a missing/null `facts` object may throw instead of degrading to `unavailable`. Root cause: runtime callback result is assumed to satisfy its static TypeScript type; `!f.confirmed` is a truthiness check.
+Acceptance: test-first regressions for malformed found facts (nonboolean confirmed, null/missing facts), preserve exact valid true/false confirmation and matching behavior; minimal guard returning `unavailable` for malformed evidence; run available source-equivalent runtime checks and hosted exact-head package/CI; no new dependencies, network, funds, release, deployment or interfaces. Do not claim repository Vitest without checkout.
+Ownership: all 207 open PR changed-file lists from snapshot through #448 inspected; no claim on these specific source/new test paths. PR #390 checked separately: head `b655bc273a6704c9c140287b8adcdf4085b91882`, 5 completed successful workflow groups, 0 GitHub reviews; no edits to owner branch. Generation-11 integration lock remains externally held by `994a0d214fb9-root-r3`; leave draft and unmerged until legitimate ownership transfer and independent review.
 # POS static-parity expiry boundary CI repair — 2026-11-21 R16
 
 Worker: GhostPay consolidation continuation, source-based sequential implementation; no independent reviewer.
@@ -793,6 +888,42 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
 
+---
+
+# GP-BUG R16 — nonnegative near-tie fee savings (2026-11-23)
+
+Worker: single automated BUG-ONLY coordinator, sequential source inspection, test and repair. No independent verifier available in this run.
+Branch: `automation/20261123-r16/bug/ux-fees-neartie-savings`; source base main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packages/ux-fees/src/cheapest.tie-savings.test.ts`; new `docs/handoffs/UX_FEES_NEARTIE_SAVINGS_R16_20261123.md`.
+Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
+Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
+Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+## Package fix consolidation, 2026-11-24 UTC
+
+Worker `codex-fe9aff486805` owns integration on `integration/ghostpay-package-fixes-20261124`, based on `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Preserve the six original PR heads and their records. Integration covers language negotiation (#506), payment button labels (#513), the NFC message size limit (#518), billing CSV end-of-file handling (#519), locale separators (#521), and strict CSV row width (#524). Verify each original source and test blob, run the five affected workspace suites and their build, lint and type checks, then submit the combined tree to the existing CI and review gates.
+# GP-BUG R11 — NDEF encoder NaN maxBytes bypass (2026-11-23)
+Worker: autonomous BUG-ONLY repair round, single coordinator; no independent reviewer claimed.
+Branch: `automation/20261123T1719Z/bug/nfc-nan-limit-r11`; exact starting main `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-hooks/src/nfc.ts`, new `packages/merchant-hooks/src/nfc.nan-max.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim, and new `docs/handoffs/NFC_NAN_MAX_BYTES_R11_20261123.md`. Existing `hooks.test.ts`, package metadata, and other workers' branches are excluded.
+Observed source bug: `encodeNdefUri` computes `Math.min(NaN, 8192)` as NaN; `total > max` then returns false for NDEF messages larger than the documented hard 8192-byte cap. Valid HTTPS `#gpi=v1.` links can be longer than 8192. The flaw was reproduced in an isolated Node 22 source-line-equivalent probe, without NFC hardware, funds, network traffic or browser claims.
+Acceptance: regression-first rejection of a large valid payment link with NaN `maxBytes`; preserve exact 8192-byte boundary, 8193 refusal, custom finite caps and ordinary round trips. Smallest typed `too-large` guard, GitHub hosted CI exact-head, independent review, ownership and integration gates. No dependencies, contracts, payment behavior, release, deployment or merge without held legitimate integration authority.
+Ownership preflight: live open PR count 272 (2026-11-23); relevant #513 owns `button.ts`, #406 `pos.ts`; broad #278/#264/#262 do not modify `nfc.ts`. Other PR file inventories remain incompletely checked; do not merge until exhaustive collision audit.
+Integration metadata lock: generation 12 previously released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no acquisition claimed.
+# GP-BUG R11 — quoted empty final CSV record silently dropped (2026-11-23)
+
+Worker: single sequential BUG-ONLY engineering coordinator; no independent verifier engaged.
+Branch: `automation/20261123-r11/bug/merchant-csv-empty-quoted-eof`; immutable main base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned paths: `packages/merchant-billing/src/csv.ts`, new `packages/merchant-billing/src/csv.quoted-empty-eof.test.ts`, this additive registry entry, and `docs/handoffs/MERCHANT_CSV_QUOTED_EMPTY_EOF_R11_20261123.md`. Existing `csv.test.ts` is owned by broad integration PRs and remains untouched.
+Defect: exact Git blob `3c9b5c50c69881188d2aadd386a68f77a3cbce37` drops an explicit empty quoted final one-column record: `parseCsv('name\\n""')` incorrectly returns `[['name']]`, while the same record followed by newline throws the documented `CSV blank line`. A standalone Node 22 local source-matched copy verified the hash and both behaviors; not repository Vitest.
+Acceptance: commit failing Vitest regression before fix, make a minimal EOF bookkeeping correction, preserve valid empty fields in multicolumn CSV, quoted nonempty fields, terminal CRLF/LF and all existing limits; run isolated source-matched regression and hosted exact-head CI. No new features, dependencies, payment/fund interactions, deployment or release. No native browser qualification is claimed unless applicable evidence exists.
+Ownership preflight: 273 open PRs visible in three REST pages (100/100/73); targeted changed-file inspections including #278/#264/#262/#238/#372/#224/#504/#324/#371/#397 and other relevant PRs show no direct ownership of `csv.ts` or the new test. This is a focused preflight, not a complete changed-file census; recheck before integration.
+Integration metadata ref `082e754f44944ebb4be283f89176b966bf8f7b4f`, generation 12, status `released`, was not acquired. PR #390: exact head `b655bc273a6704c9c140287b8adcdf4085b91882`, 36 successful / 3 skipped checks, five workflows success, zero independent reviews, nonmergeable. Other worker branches untouched. Keep new PR draft until independent review, full CI, ownership clearance and legitimate held lock.
+
+
+## POS #576 current-main integration qualification, 2026-11-24 UTC
+
+Worker `/root/branch_inventory` owns only additive registry resolution and isolated qualification on `finish/pos-576-main-20261124`, coordinated by `/root`. Local starting commit `518a812731ee5281cf80cd08eee4b31216464bc1` has tree `f46350ea01dd29b3186ae080498cf35894b99728`, identical to published main `706188000c38b3dde5a3a362370a530870aa7587`. Integrate original #576 head `a2c9bdf08549d53f27a1e57bd868f8c37c789ec0` with ancestors #411 `482d36ad436f4b27b2d86ff9a2c22daf150000ad` and #406 `506604288e31c195c852fa2e8896e131da34bc3b`; preserve all three original branches and all reviewed POS source/test blobs. Owned authored path: `docs/ai/ACTIVE_WORK.md` only. Acceptance: retain both complete registry additions and all main package fixes including payment-button labels and NFC bounds, preserve donor ancestry, pass native merchant-hooks tests and POS reducer parity, pass all five original POS browser scenarios with one worker using exact routed example assets, and pass whitespace/committed-secret checks. No full web build or behavioral edits are planned. Root independently verifies provenance and controls review/publication; no ownership of other workers' source, branches, shared metadata, or release settings is claimed.
 ## POS terminal reliability and parity
 
 Worker: Codex, branch `fix/pos-terminal-reliability-20261124`, based on #411 at `482d36ad436f4b27b2d86ff9a2c22daf150000ad` (includes #406). Main at preflight: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.

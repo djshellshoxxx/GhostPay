@@ -71,6 +71,7 @@ export function parseAcceptLanguage(header: string): string[] {
     const [tagPart, ...params] = raw.trim().split(';');
     const tag = (tagPart ?? '').trim();
     if (!isValidLocale(tag)) continue;
+    if (params.length > 1) continue; // only one qweight is allowed per language range
     let q = 1;
     let okParams = true;
     for (const prm of params) {
