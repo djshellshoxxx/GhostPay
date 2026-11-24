@@ -1,0 +1,46 @@
+[
+  {
+    "pr": 377,
+    "branch": "repair/ghostpay-cookie-dependency-20261121-5ceb",
+    "donor": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+    "selected_commit": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+    "qualified_source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+    "paths": ["package.json", "package-lock.json", "scripts/tests/dependency-tooling.test.mjs"],
+    "scope": "Scoped Sentry5.30 cookie0.7.2 override, one changed lock record and ordinary consumer compatibility case; original donor ancestry retained.",
+    "qualification": "Private exact-lock root+confidential-contracts workspace install334 packages; tooling6/router30 passed; typecheck and native-solc36-file compile passed. Production lock audit0; full audit15 low and exit1 retained. No full-repository install claim.",
+    "evidence": ["docs/handoffs/COOKIE_DEPENDENCY_20261121.md", "../cookie-377-independent-review/REVIEW.md"]
+  },
+  {
+    "pr": 358,
+    "branch": "audit/ghostpay-complete-claim-reconciliation-20261120",
+    "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+    "selected_commit": "7851c5063282255117709296ddde7dcef148444c",
+    "qualified_source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+    "paths": ["scripts/coordination/reconcile-claims.mjs", "scripts/coordination/reconcile-claims.test.mjs", "scripts/tests/reconcile-claims.test.mjs"],
+    "scope": "Three exact donor read-only comparator/test files and documented canonical input contract selected. Whole historical head is not merged.",
+    "qualification": "Canonical13 passed; same13 rerun via CI entry within37 distinct reconciliation/summary/runner cases, not counted twice. Current snapshot schema is deliberately rejected; no invented adapter or live-census replay.",
+    "evidence": ["docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md", "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md"]
+  },
+  {
+    "pr": 468,
+    "branch": "automation/20261122-r11/audit/mythril-evidence-summary",
+    "donor": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+    "selected_commit": "7851c5063282255117709296ddde7dcef148444c",
+    "qualified_source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+    "paths": ["scripts/audit/mythril-evidence.mjs", "scripts/tests/mythril-evidence.test.mjs"],
+    "scope": "Two exact donor offline report-summary/test files selected. Current target order matches; whole historical head is not merged and analyzer gates are unchanged.",
+    "qualification": "Five summary plus19 existing offline runner cases pass within37 distinct tooling cases. Labels remain positional; completeness is shape/count and zero reported issues is not analyzer success, identity or security clearance.",
+    "evidence": ["docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md", "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md"]
+  },
+  {
+    "pr": 578,
+    "branch": "audit/pages-tor-rpc-compat-20261124",
+    "donor": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+    "selected_commit": "d995764543041b0d971db2759be9b2f3f9afc9a7",
+    "qualified_source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+    "paths": ["apps/web/e2e/https-rpc-compatibility.spec.ts", "docs/pages/tor-rpc-compatibility.md"],
+    "scope": "Original loopback-TLS invoice/preference/selected-RPC browser spec and historical transport note selected with original donor ancestry. Synthetic RPC, no Tor-routing claim.",
+    "qualification": "Full web typecheck/lint and70 tests in7 files pass. Full/lean collection lists1 spec each; no local execution. Historical exact donor passes both native profiles; fresh combined native execution remains mandatory.",
+    "evidence": ["docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md", "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json"]
+  }
+]

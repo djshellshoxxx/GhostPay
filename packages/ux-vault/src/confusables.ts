@@ -225,11 +225,14 @@ export function findDuplicateGroups(book: AddressBook): DuplicateGroup[] {
   bucket('duplicate-label', (c) => c.label.toLowerCase());
   bucket('confusable-label', (c) => labelSkeleton(c.label));
   // Drop lookalike groups that are really exact duplicates only, and confusable groups identical to label groups.
-  const exactSets = groups
-    .filter((g) => g.kind === 'exact-address' || g.kind === 'duplicate-label')
-    .map((g) => g.contactIds.join(','));
+  const exactSets = new Set(
+    groups
+      .filter((g) => g.kind === 'exact-address' || g.kind === 'duplicate-label')
+      .map((g) => `${g.kind}:${g.contactIds.join(',')}`),
+  );
   return groups.filter((g) => {
     if (g.kind !== 'lookalike-address' && g.kind !== 'confusable-label') return true;
-    return !exactSets.includes(g.contactIds.join(','));
+    const exactKind = g.kind === 'lookalike-address' ? 'exact-address' : 'duplicate-label';
+    return !exactSets.has(`${exactKind}:${g.contactIds.join(',')}`);
   });
 }

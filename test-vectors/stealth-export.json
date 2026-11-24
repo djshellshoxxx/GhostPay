@@ -1,0 +1,230 @@
+{
+  "description": "GhostPay spec 18 stealth key export vectors (ghostpay-stealth-public-v1, -keypair-v1, -master-v1). TEST-ONLY keys, passphrase, salts, IVs and scrypt cost N=2^14. Generated with node:crypto, @noble/curves, @noble/hashes and viem only.",
+  "provenance": {
+    "generator": "test-vectors/generate-stealth-export.mjs",
+    "source": "test-vectors/scheme1.json scheme1-001",
+    "node": "v22.23.5"
+  },
+  "generatedAt": "2026-11-18",
+  "chainId": 11155111,
+  "exportedAt": "2026-11-18T00:00:00Z",
+  "passphrase": "quasar-tangelo-wombat-ferry-oboe-kiln",
+  "kdf": {
+    "name": "scrypt",
+    "N": 16384,
+    "r": 8,
+    "p": 1,
+    "dkLen": 32
+  },
+  "seller": {
+    "spendingPrivateKey": "0x1111111111111111111111111111111111111111111111111111111111111111",
+    "viewingPrivateKey": "0x2222222222222222222222222222222222222222222222222222222222222222",
+    "spendingPublicKey": "0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "viewingPublicKey": "0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+    "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27"
+  },
+  "announcements": [
+    {
+      "id": "a1",
+      "note": "scheme1-001 announcement (exact scheme1.json vector)",
+      "ephemeralPrivateKey": "0x3333333333333333333333333333333333333333333333333333333333333333",
+      "announcement": {
+        "schemeId": "1",
+        "stealthAddress": "0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9",
+        "ephemeralPublicKey": "0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1",
+        "metadata": "0x20eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001",
+        "blockHash": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "blockNumber": "6000001",
+        "logIndex": 3,
+        "transactionHash": "0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"
+      },
+      "expected": {
+        "stealthAddress": "0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9",
+        "publicKey": "0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb",
+        "privateKey": "0x32074def70f9689560d0eb1b86aa895b735ed5852c9ce187ff0dcd968e8a19d3",
+        "announcedViewTag": "0x20",
+        "derivedViewTag": "0x20",
+        "tagMatches": true
+      }
+    },
+    {
+      "id": "a2",
+      "note": "second payment to the scheme1-001 seller",
+      "ephemeralPrivateKey": "0x4444444444444444444444444444444444444444444444444444444444444444",
+      "announcement": {
+        "schemeId": "1",
+        "stealthAddress": "0xF1CFAeA0d1F71D3c1F65582E7BF4f8bfeAC70602",
+        "ephemeralPublicKey": "0x032c0b7cf95324a07d05398b240174dc0c2be444d96b159aa6c7f7b1e668680991",
+        "metadata": "0x91eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001",
+        "blockHash": "0xa2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+        "blockNumber": "6000002",
+        "logIndex": 0,
+        "transactionHash": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+      },
+      "expected": {
+        "stealthAddress": "0xF1CFAeA0d1F71D3c1F65582E7BF4f8bfeAC70602",
+        "publicKey": "0x03db1a2e717a0c9104ef6d1c95033d0598af67c3a8392d96af034f3f33d2fddc8d",
+        "privateKey": "0xa242512945269f1d1c08a81889d4edf6e2a0fbc92a6da8ad0a3849fe118c24e2",
+        "announcedViewTag": "0x91",
+        "derivedViewTag": "0x91",
+        "tagMatches": true
+      }
+    },
+    {
+      "id": "a3",
+      "note": "third payment, deliberately omitted from the archive (recoverable from the master backup only)",
+      "ephemeralPrivateKey": "0x5555555555555555555555555555555555555555555555555555555555555555",
+      "announcement": {
+        "schemeId": "1",
+        "stealthAddress": "0xaD1F3Ca94F827f16D0A75d49690d3D72C4B61885",
+        "ephemeralPublicKey": "0x029ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b",
+        "metadata": "0xe0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001",
+        "blockHash": "0xa3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3",
+        "blockNumber": "6000003",
+        "logIndex": 7,
+        "transactionHash": "0xb3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"
+      },
+      "expected": {
+        "stealthAddress": "0xaD1F3Ca94F827f16D0A75d49690d3D72C4B61885",
+        "publicKey": "0x02d660ee2ea6235bcaa3ce3fe0cdf484cf02360579ecd7f17b9f404524edd9d390",
+        "privateKey": "0xf1505ced32b5e030997ab821de3f20a7cba1cb7cb3070b4f1e62325023fca6bf",
+        "announcedViewTag": "0xe0",
+        "derivedViewTag": "0xe0",
+        "tagMatches": true
+      }
+    },
+    {
+      "id": "a4",
+      "note": "deep-scan payment: announced view tag differs from the derived tag; no transaction hash",
+      "ephemeralPrivateKey": "0x6666666666666666666666666666666666666666666666666666666666666666",
+      "announcement": {
+        "schemeId": "1",
+        "stealthAddress": "0x1e17476Ee80C0dDB4E1cfe2FeB421CA07Fd1B34c",
+        "ephemeralPublicKey": "0x035ab4689e400a4a160cf01cd44730845a54768df8547dcdf073d964f109f18c30",
+        "metadata": "0x9deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001",
+        "blockHash": "0xa4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4",
+        "blockNumber": "6000004",
+        "logIndex": 1
+      },
+      "expected": {
+        "stealthAddress": "0x1e17476Ee80C0dDB4E1cfe2FeB421CA07Fd1B34c",
+        "publicKey": "0x028597ad904d72c680668c23900eacda476a94e0e9fdd15582a5d84947a4d67500",
+        "privateKey": "0x73a2b1b7208ef2d90134aac32060ef8f78f4478f01a6bc43795d0cc005112cda",
+        "announcedViewTag": "0x9d",
+        "derivedViewTag": "0x62",
+        "tagMatches": false
+      }
+    }
+  ],
+  "files": {
+    "public": {
+      "announcement": "a1",
+      "text": "{\n  \"format\": \"ghostpay-stealth-public-v1\",\n  \"version\": 1,\n  \"schemeId\": 1,\n  \"chainId\": 11155111,\n  \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n  \"publicKey\": {\n    \"encoding\": \"secp256k1-compressed\",\n    \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n  },\n  \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n  \"viewTag\": \"0x20\",\n  \"announcement\": {\n    \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n    \"blockNumber\": \"6000001\",\n    \"logIndex\": 3,\n    \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n  },\n  \"exportedAt\": \"2026-11-18T00:00:00Z\"\n}"
+    },
+    "single": {
+      "scope": "single",
+      "announcements": [
+        "a1"
+      ],
+      "salt": "0x01010101010101010101010101010101",
+      "iv": "0x020202020202020202020202",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8546b19e1234d2e240971c6debc97d8c493de0b2bb8a268281535aefa929d0d45d8c2354e4f07fdfa96ef8b281354480033a1f36bd7da8511c7b7407c2fef6fb24435b3cbe759b6cedcb090c6503e061517c83a1\"\n}"
+    },
+    "archive": {
+      "scope": "selected",
+      "announcements": [
+        "a4",
+        "a1",
+        "a2"
+      ],
+      "omitted": [
+        "a3"
+      ],
+      "salt": "0x000102030405060708090a0b0c0d0e0f",
+      "iv": "0xf0f1f2f3f4f5f6f7f8f9fafb",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"selected\",\n  \"chainId\": 11155111,\n  \"count\": 3,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0x1e17476Ee80C0dDB4E1cfe2FeB421CA07Fd1B34c\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x028597ad904d72c680668c23900eacda476a94e0e9fdd15582a5d84947a4d67500\"\n      },\n      \"ephemeralPublicKey\": \"0x035ab4689e400a4a160cf01cd44730845a54768df8547dcdf073d964f109f18c30\",\n      \"viewTag\": \"0x9d\",\n      \"announcement\": {\n        \"blockHash\": \"0xa4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4\",\n        \"blockNumber\": \"6000004\",\n        \"logIndex\": 1\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    },\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    },\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xF1CFAeA0d1F71D3c1F65582E7BF4f8bfeAC70602\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x03db1a2e717a0c9104ef6d1c95033d0598af67c3a8392d96af034f3f33d2fddc8d\"\n      },\n      \"ephemeralPublicKey\": \"0x032c0b7cf95324a07d05398b240174dc0c2be444d96b159aa6c7f7b1e668680991\",\n      \"viewTag\": \"0x91\",\n      \"announcement\": {\n        \"blockHash\": \"0xa2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2\",\n        \"blockNumber\": \"6000002\",\n        \"logIndex\": 0,\n        \"transactionHash\": \"0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x000102030405060708090a0b0c0d0e0f\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0xf0f1f2f3f4f5f6f7f8f9fafb\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x048458d0466c1dee7fcb4a58b1d8d719cab2d0bf8707a69b1bd951518a21d26d370696fbe1cadbc8b7a20ede59129506abfe7a94996b88d3c32731df9c98ad165bd6a4d8030d9bc13f76912662c57288461d320d0cb4d840ad8aca4c6a4c5f37cdb6e1cf796fdaad3c8393c049387d5fb8bc24c6bc8e45b17cd948fc9249a1abbd2e6687666a1c8f504dff4043c7460b38cba34ce347c567798f915022ec55336752f1b20a14b6793a467978bae1a8ce8538c92145ee334aa3b856a1bad82b5c2e9061c1ee564a83b0b7683effbb80c964ab16a744db35199fd1ad849b4bc208583736fa33271af7a3bebd72c5d88dd6\"\n}"
+    },
+    "master": {
+      "salt": "0x03030303030303030303030303030303",
+      "iv": "0x040404040404040404040404",
+      "text": "{\n  \"format\": \"ghostpay-stealth-master-v1\",\n  \"version\": 1,\n  \"schemeId\": 1,\n  \"derivation\": \"eip5564-scheme1-adr0001\",\n  \"metaAddress\": \"st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"spendingPublicKey\": \"0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\n  \"viewingPublicKey\": \"0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"exportedAt\": \"2026-11-18T00:00:00Z\",\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x03030303030303030303030303030303\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x040404040404040404040404\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x3b46bb0ca9cbbf006b874be3e6cb2ab5b313b35792a572d7730abf30b7512cf27024710690cd7dddea0ba27f92765956445ae127b5be8b0f831c187f73ca82e6dbe4e47e732d68dd3385795beacf67251a1a9f66b6f7897b03c56a1562629eacbbc056cfc3a0d4bbadf7681e3c3db4282d432d625c61744e3e4e534ec81300f039599929a39c8967a2e5a6254d2a024cd2466ec2b811dc0efe22df338036191e059b60cbf6c46a58e8afcb10b9bf8f61acf987a44f4e\"\n}"
+    },
+    "rawPrivateKey": {
+      "announcement": "a1",
+      "text": "GhostPay one-time payment private key\nThis is a single EVM private key, not a seed phrase or recovery phrase.\nIt controls only the address below, including any future deposits to it.\nAnyone who has this key can spend funds at this address.\n\nChain ID: 11155111\nAddress: 0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\nPrivate key: 0x32074def70f9689560d0eb1b86aa895b735ed5852c9ce187ff0dcd968e8a19d3\n"
+    }
+  },
+  "invalid": [
+    {
+      "id": "keypair-bad-001",
+      "note": "wrong passphrase",
+      "format": "keypair",
+      "passphrase": "quasar-tangelo-wombat-ferry-oboe-kilns",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8546b19e1234d2e240971c6debc97d8c493de0b2bb8a268281535aefa929d0d45d8c2354e4f07fdfa96ef8b281354480033a1f36bd7da8511c7b7407c2fef6fb24435b3cbe759b6cedcb090c6503e061517c83a1\"\n}",
+      "error": "wrongPassphraseOrModified"
+    },
+    {
+      "id": "keypair-bad-002",
+      "note": "authentic file whose body key belongs to another payment",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8514b19a173587b51f941939e4c62384183ab3e6b38e7c82db5355eafc748d8709de2200b1f22884a56efabd86314dd9506c1835e12af50e4f722007c0fdfbfa25435b3c1e2790390e30332e3ef80feb30581f68\"\n}",
+      "error": "keyDoesNotMatch"
+    },
+    {
+      "id": "keypair-bad-003",
+      "note": "authentic file with body scalar 0",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8545b39e153086b716901c3be2cf75854c3be0e6bbdf7483d35b5cbef821d9d10f8b2051b1a47ad7ac6cabbbd2604588046c4936e92efc581a73210f93ffffaf27435b3c8230efcd3babffe41a379836f40edfc6\"\n}",
+      "error": "invalidFile"
+    },
+    {
+      "id": "keypair-bad-004",
+      "note": "authentic file with body scalar n (secp256k1 order)",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8513e5c84366d0e140c64a6db49923d31a6db6b0ed8922d5850d0ae8ae778f875ad97100e4f02982aa3dfdbfda31458b563e1f62eb2ba9504927210c95fbfeab26435b3c880051ca346c2ebf7ad4ef84f6f0036b\"\n}",
+      "error": "invalidFile"
+    },
+    {
+      "id": "keypair-bad-005",
+      "note": "authentic file with a non-canonical body (uppercase hex, same length)",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8546b19e1234f2c260971c4debc97d8c493de092bbaa0682a1535acf8929d0d47d8c2354c4d07fdfa96ed8b2a1154480031a3f369d5d88511c7b5407e2fef6db24435b3c0aab8abaf4ecad589c68df2a71e42c63\"\n}",
+      "error": "invalidFile"
+    },
+    {
+      "id": "keypair-bad-006",
+      "note": "authentic file whose body holds two keys for count 1",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8546b19e1234d2e240971c6debc97d8c493de0b2bb8a268281535aefa929d0d45d8c2354e4f07fdfa96ef8b281354480033a1f36bd7da8511c7b7407c2fef6fb24432a6304f85106e32e558315aa13bdb41c6bfea9e2746047086850519a416a3bda9abb3d7ba542682b552bcdb9d37ffa4728063e3f0dbef029d7de26861bfcdd96cf0e36774055668396cca6ff353ec8e4ff37bc17d20f6d\"\n}",
+      "error": "invalidFile"
+    },
+    {
+      "id": "keypair-bad-007",
+      "note": "keypair header and body sealed under the master AAD domain",
+      "format": "keypair",
+      "text": "{\n  \"format\": \"ghostpay-stealth-keypair-v1\",\n  \"version\": 1,\n  \"scope\": \"single\",\n  \"chainId\": 11155111,\n  \"count\": 1,\n  \"payments\": [\n    {\n      \"format\": \"ghostpay-stealth-public-v1\",\n      \"version\": 1,\n      \"schemeId\": 1,\n      \"chainId\": 11155111,\n      \"stealthAddress\": \"0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9\",\n      \"publicKey\": {\n        \"encoding\": \"secp256k1-compressed\",\n        \"value\": \"0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb\"\n      },\n      \"ephemeralPublicKey\": \"0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1\",\n      \"viewTag\": \"0x20\",\n      \"announcement\": {\n        \"blockHash\": \"0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\n        \"blockNumber\": \"6000001\",\n        \"logIndex\": 3,\n        \"transactionHash\": \"0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1\"\n      },\n      \"exportedAt\": \"2026-11-18T00:00:00Z\"\n    }\n  ],\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x01010101010101010101010101010101\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x020202020202020202020202\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x63886373b46fc96fd8cf72264f5180d47e9a8546b19e1234d2e240971c6debc97d8c493de0b2bb8a268281535aefa929d0d45d8c2354e4f07fdfa96ef8b281354480033a1f36bd7da8511c7b7407c2fef6fb24435b3cede3abbc67a120dbce1787f53699d455\"\n}",
+      "error": "wrongPassphraseOrModified"
+    },
+    {
+      "id": "master-bad-001",
+      "note": "authentic master backup whose body also carries a signingKey",
+      "format": "master",
+      "text": "{\n  \"format\": \"ghostpay-stealth-master-v1\",\n  \"version\": 1,\n  \"schemeId\": 1,\n  \"derivation\": \"eip5564-scheme1-adr0001\",\n  \"metaAddress\": \"st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"spendingPublicKey\": \"0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\n  \"viewingPublicKey\": \"0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"exportedAt\": \"2026-11-18T00:00:00Z\",\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x03030303030303030303030303030303\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x040404040404040404040404\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x3b46bb15abcbb20762ab65ffbdd332a7fb5cb55194a374d1750cb936b1572af47622770096cb7bdbec0da47994705f50425ce721b3b88d09851a1e7975cc84e0dde2e278752b6edb35837f5decc961231c099168e7f1857010c56a1562629eacbbc056cfc0a3d7b8aef46b1d3f3eb72b2e402e615f62774d3d4d504dcb1003f33a5a9a2aa09f8a64a1e6a5264e29014fd1456dc1bb12df0dfd21dc3083351a1d069863c8f69523d4a1ea8e83eb8ef273e0b74d116cea7a918398ace7272de190f56feb7add50c63fcd5ab67c64d97b305c34115c21bb3ed11c94859e985779af6ad781b13521d10f72f609ac6aeb3c34815376e820fbc8180d4875002d5555dca60614850d372c32\"\n}",
+      "error": "invalidFile"
+    },
+    {
+      "id": "master-bad-002",
+      "note": "authentic master backup with spending and viewing keys swapped in the body",
+      "format": "master",
+      "text": "{\n  \"format\": \"ghostpay-stealth-master-v1\",\n  \"version\": 1,\n  \"schemeId\": 1,\n  \"derivation\": \"eip5564-scheme1-adr0001\",\n  \"metaAddress\": \"st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"spendingPublicKey\": \"0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\n  \"viewingPublicKey\": \"0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"exportedAt\": \"2026-11-18T00:00:00Z\",\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x03030303030303030303030303030303\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x040404040404040404040404\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x3b46bb0ca9cbbf006b874be3e6cb2ab5b313b05491a671d47009bc33b4522ff17327720593ce7edee908a17c91755a554759e224b6bd880c801f1b7c70c981e5d8e7e77d702e6bde30867a58e9cc642619199f66b6f7897b03c56a1562629eacbbc056cfc0a3d7b8aef46b1d3f3eb72b2e402e615f62774d3d4d504dcb1003f33a5a9a2aa09f8a64a1e6a5264e29014fd1456dc1bb12df0dfd21dc3083351a1d069863c8f6c4d514e953ad0a1ec5570c1198a93b51b5\"\n}",
+      "error": "masterKeysDoNotMatch"
+    },
+    {
+      "id": "master-bad-003",
+      "note": "master header and body sealed under the keypair AAD domain",
+      "format": "master",
+      "text": "{\n  \"format\": \"ghostpay-stealth-master-v1\",\n  \"version\": 1,\n  \"schemeId\": 1,\n  \"derivation\": \"eip5564-scheme1-adr0001\",\n  \"metaAddress\": \"st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"spendingPublicKey\": \"0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\n  \"viewingPublicKey\": \"0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27\",\n  \"exportedAt\": \"2026-11-18T00:00:00Z\",\n  \"kdf\": {\n    \"name\": \"scrypt\",\n    \"N\": 16384,\n    \"r\": 8,\n    \"p\": 1,\n    \"dkLen\": 32,\n    \"salt\": \"0x03030303030303030303030303030303\"\n  },\n  \"cipher\": {\n    \"name\": \"AES-256-GCM\",\n    \"iv\": \"0x040404040404040404040404\",\n    \"tagLength\": 128\n  },\n  \"ciphertext\": \"0x3b46bb0ca9cbbf006b874be3e6cb2ab5b313b35792a572d7730abf30b7512cf27024710690cd7dddea0ba27f92765956445ae127b5be8b0f831c187f73ca82e6dbe4e47e732d68dd3385795beacf67251a1a9f66b6f7897b03c56a1562629eacbbc056cfc3a0d4bbadf7681e3c3db4282d432d625c61744e3e4e534ec81300f039599929a39c8967a2e5a6254d2a024cd2466ec2b811dc0efe22df338036191e059b60cbf6c4e74f198d13f6d2d29c5f316a174ae728\"\n}",
+      "error": "wrongPassphraseOrModified"
+    }
+  ]
+}

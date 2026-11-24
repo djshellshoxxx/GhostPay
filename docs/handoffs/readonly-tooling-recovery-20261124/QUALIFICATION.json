@@ -1,0 +1,331 @@
+{
+  "format": "ghostpay-readonly-tooling-recovery/1",
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+  "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+  "branch": "integration/readonly-tooling-recovery-20261124",
+  "claim": "632a6904ed60196c89cc7f5000a77b83eaf6d499",
+  "recoveries": [
+    {
+      "pr": 358,
+      "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "commit": "c3d15bec3492366cfb99a3127f1b236d031e48b0",
+      "contract": "Original canonical input retained; current refresh/2 requires explicit normalization with full PR provenance before meaningful live use."
+    },
+    {
+      "pr": 468,
+      "donor": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "commit": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "contract": "Original parser/exit/output contract retained. Positional labels and zero reported issues are not identity, analyzer success or clearance."
+    }
+  ],
+  "environment": {
+    "node": "v24.22.3",
+    "git": "git version 2.56.1",
+    "dependency_installation": false,
+    "analyzer_execution": false
+  },
+  "results": [
+    {
+      "name": "canonical-claims",
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "scripts/coordination/reconcile-claims.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/portable-keystore-cleanup",
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 2.262,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/canonical-claims.log",
+      "sha256": "9d3da48c5ee21ebe3d3f5cbe90343de75fd97c69f194ac68ac4e2797b4af7f55",
+      "summary": [
+        "\u2139 tests 13",
+        "\u2139 pass 13",
+        "\u2139 fail 0",
+        "\u2139 skipped 0"
+      ],
+      "archive_member": "canonical-claims.log"
+    },
+    {
+      "name": "ci-discovered-tools-and-existing-runner",
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "scripts/tests/reconcile-claims.test.mjs",
+        "scripts/tests/mythril-evidence.test.mjs",
+        "scripts/tests/mythril-runner.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/portable-keystore-cleanup",
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 17.149,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/ci-discovered-tools-and-existing-runner.log",
+      "sha256": "ac8a6d48a19a31abe70770c87593904390a9d91dc443da66542183ca7c018550",
+      "summary": [
+        "\u2139 tests 37",
+        "\u2139 pass 37",
+        "\u2139 fail 0",
+        "\u2139 skipped 0"
+      ],
+      "archive_member": "ci-discovered-tools-and-existing-runner.log"
+    },
+    {
+      "name": "current-input-and-runner-contract",
+      "command": [
+        "node",
+        "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/contract-check.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.097,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/current-input-and-runner-contract.log",
+      "sha256": "4611bb3e7d9fad1b118ae73d798fa9565661e345e1830bdba0509e1b67a4dcc5",
+      "archive_member": "current-input-and-runner-contract.log"
+    },
+    {
+      "name": "diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "90415efdbc9af2db3537148f4702e8f8f5791815"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.011,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/diff-whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "diff-whitespace.log"
+    },
+    {
+      "name": "syntax-scripts-coordination-reconcile-claims.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/coordination/reconcile-claims.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.089,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-coordination-reconcile-claims.mjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "syntax-scripts-coordination-reconcile-claims.mjs.log"
+    },
+    {
+      "name": "syntax-scripts-coordination-reconcile-claims.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/coordination/reconcile-claims.test.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.063,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-coordination-reconcile-claims.test.mjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "syntax-scripts-coordination-reconcile-claims.test.mjs.log"
+    },
+    {
+      "name": "syntax-scripts-tests-reconcile-claims.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/tests/reconcile-claims.test.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.071,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-tests-reconcile-claims.test.mjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "syntax-scripts-tests-reconcile-claims.test.mjs.log"
+    },
+    {
+      "name": "syntax-scripts-audit-mythril-evidence.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/audit/mythril-evidence.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.084,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-audit-mythril-evidence.mjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "syntax-scripts-audit-mythril-evidence.mjs.log"
+    },
+    {
+      "name": "syntax-scripts-tests-mythril-evidence.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/tests/mythril-evidence.test.mjs"
+      ],
+      "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+      "exit_code": 0,
+      "seconds": 0.061,
+      "log": "/workspace/scratch/f80482f352bc/readonly-tooling-qualification/syntax-scripts-tests-mythril-evidence.test.mjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_member": "syntax-scripts-tests-mythril-evidence.test.mjs.log"
+    }
+  ],
+  "counting": {
+    "claims_canonical_passed": 13,
+    "discovered_combined_passed": 37,
+    "discovered_breakdown": {
+      "same_claims_cases": 13,
+      "mythril_evidence_cases": 5,
+      "preexisting_offline_runner_cases": 19
+    },
+    "distinct_cases_passed": 37,
+    "failed": 0,
+    "skipped": 0,
+    "do_not_add_canonical_rerun_again": true
+  },
+  "preservation": {
+    "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+    "source": "90415efdbc9af2db3537148f4702e8f8f5791815",
+    "tree": "dbe3c892f9206942d2a5362bf0fd68902ffc448c",
+    "claim_commit": "632a6904ed60196c89cc7f5000a77b83eaf6d499",
+    "all_preexisting_entries_except_additive_claim_preserved": true,
+    "preexisting_entry_count": 4402,
+    "preexisting_test_spec_count": 985,
+    "existing_claim_exact_prefix_preserved": true,
+    "exact_donor_files": [
+      {
+        "path": "scripts/coordination/reconcile-claims.mjs",
+        "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+        "entry": "100644 blob 2f644028be422170922728d93b0640bcc512f0bd",
+        "exact_mode_type_blob": true
+      },
+      {
+        "path": "scripts/coordination/reconcile-claims.test.mjs",
+        "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+        "entry": "100644 blob a52b00eb5a997870bbf25700005cd120f6b111bc",
+        "exact_mode_type_blob": true
+      },
+      {
+        "path": "scripts/tests/reconcile-claims.test.mjs",
+        "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+        "entry": "100644 blob 478e1aef52c3ebd788a3c08d8766a3c5aa1f818f",
+        "exact_mode_type_blob": true
+      },
+      {
+        "path": "scripts/audit/mythril-evidence.mjs",
+        "donor": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+        "entry": "100644 blob 32834b760e90d53b43515bf8935b81a9e2cb9762",
+        "exact_mode_type_blob": true
+      },
+      {
+        "path": "scripts/tests/mythril-evidence.test.mjs",
+        "donor": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+        "entry": "100644 blob ce1ae5f4da22f84080b369bc57c8cf7dea384193",
+        "exact_mode_type_blob": true
+      }
+    ],
+    "changed_paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md",
+      "scripts/audit/mythril-evidence.mjs",
+      "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+      "scripts/coordination/reconcile-claims.mjs",
+      "scripts/coordination/reconcile-claims.test.mjs",
+      "scripts/tests/mythril-evidence.test.mjs",
+      "scripts/tests/reconcile-claims.test.mjs"
+    ],
+    "preserved_completed_branch": "20d12d860bed893d1c29215ea4f4131bdc75a5d7",
+    "existing_evidence_packager_and_selection_unchanged": [
+      {
+        "path": "/workspace/scratch/f80482f352bc/followup-evidence-selection.json",
+        "sha256": "7222952df81b3a613077fb9631313f5c84c1f0f82b6c8542206f935e02acc569",
+        "unchanged_since_inventory": true
+      },
+      {
+        "path": "/workspace/scratch/f80482f352bc/package-followup-evidence.py",
+        "sha256": "3dec63f93c17f3e88dfad2260c02d11335b5fae6ba1421b977b85eaaaa7a8234",
+        "unchanged_since_inventory": true
+      }
+    ],
+    "current_apps_packages_and_workflows_unchanged": true,
+    "no_original_donor_head_merge": "Only the listed exact source/test blobs are recovered; whole old branches and historical reports remain excluded."
+  },
+  "artifact": {
+    "file": "run-logs.tar.gz",
+    "bytes": 2630,
+    "sha256": "c9610137fc3dbc48273066c4c8185c5000a6f5092be4bdadc8c21962620d9225",
+    "members": [
+      {
+        "name": "canonical-claims.log",
+        "bytes": 1317,
+        "sha256": "9d3da48c5ee21ebe3d3f5cbe90343de75fd97c69f194ac68ac4e2797b4af7f55"
+      },
+      {
+        "name": "ci-discovered-tools-and-existing-runner.log",
+        "bytes": 3550,
+        "sha256": "ac8a6d48a19a31abe70770c87593904390a9d91dc443da66542183ca7c018550"
+      },
+      {
+        "name": "current-input-and-runner-contract.log",
+        "bytes": 600,
+        "sha256": "4611bb3e7d9fad1b118ae73d798fa9565661e345e1830bdba0509e1b67a4dcc5"
+      },
+      {
+        "name": "diff-whitespace.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "syntax-scripts-coordination-reconcile-claims.mjs.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "syntax-scripts-coordination-reconcile-claims.test.mjs.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "syntax-scripts-tests-reconcile-claims.test.mjs.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "syntax-scripts-audit-mythril-evidence.mjs.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "syntax-scripts-tests-mythril-evidence.test.mjs.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "contract-check.mjs",
+        "bytes": 1232,
+        "sha256": "c761a40b68f15d0f40e0bf3044921f0d6e9ec073651b9a982e906eed6597f4ed"
+      }
+    ],
+    "readback_verified": true
+  },
+  "limitations": [
+    "Current 698-ref refresh and final-ref snapshot reject the canonical-input validator; no adapter or full current-census run was performed.",
+    "All Git writes made by canonical test fixtures are confined to their temporary synthetic repositories; the comparator itself only reads Git objects.",
+    "Existing runner compatibility tests substitute an ordinary offline myth executable; no real analyzer, contract execution, native browser or clearance result is claimed.",
+    "Local Node is 24.22.3. Required Node 22 hosted qualification remains a distinct gate.",
+    "Only five exact donor source/test files are recovered; whole donor branches and stale historical reports are excluded.",
+    "No application, package, workflow, dependency, root/followup/main, remote, or existing evidence-packager changes."
+  ],
+  "all_requested_local_gates_passed": true
+}

@@ -49,8 +49,8 @@ export async function mockNetwork(
     logs?: unknown[];
     /** Canonical header time in seconds, fixed for the staged payment rather than scan wall-clock time. */
     blockTimestamp?: number;
-    /** Optional canonical tx/receipt fixture, used only by the verified-ERC20 scan scenario. */
-    evidence?: { txHash: string; transaction: unknown; receipt: unknown };
+    /** Canonical transactions and receipts for staged verified ERC-20 payments, keyed by transaction hash. */
+    evidence?: Map<string, { transaction: unknown; receipt: unknown }>;
   },
 ): Promise<{ requests: string[] }> {
   const requests: string[] = [];
@@ -115,7 +115,7 @@ export async function mockNetwork(
       }
       case 'eth_getTransactionByHash':
         if (state.evidence !== undefined) {
-          return reply(String(body.params[0]).toLowerCase() === state.evidence.txHash.toLowerCase() ? state.evidence.transaction : null);
+          return reply(state.evidence.get(String(body.params[0]).toLowerCase())?.transaction ?? null);
         }
         return reply(
           state.sent === undefined
@@ -131,7 +131,7 @@ export async function mockNetwork(
         );
       case 'eth_getTransactionReceipt':
         if (state.evidence !== undefined) {
-          return reply(String(body.params[0]).toLowerCase() === state.evidence.txHash.toLowerCase() ? state.evidence.receipt : null);
+          return reply(state.evidence.get(String(body.params[0]).toLowerCase())?.receipt ?? null);
         }
         return reply(
           state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
@@ -175,11 +175,11 @@ export async function configureRpc(page: Page): Promise<void> {
 export type MockNetworkState = Parameters<typeof mockNetwork>[1];
 
 /**
- * Stages one router-verified ERC-20 payment to `metaAddress` (block 120) in the mock network: the announcement,
+ * Adds one router-verified ERC-20 payment to `metaAddress` in the mock network: the announcement,
  * its Transfer log and full canonical evidence, derived from public data only (same shape as Scan.test.tsx).
  */
-export function stageVerifiedErc20Payment(state: MockNetworkState, metaAddress: string): { mine: ReturnType<typeof makeLog>; parsed: { readonly token: Address; readonly netAmount: bigint }; txHash: string } {
-  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+export function stageVerifiedErc20Payment(state: MockNetworkState, metaAddress: string, block = 120): { mine: ReturnType<typeof makeLog>; parsed: { readonly token: Address; readonly netAmount: bigint }; txHash: string } {
+  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress, block, index: 1, caller: FAKE_ROUTER });
   const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
   const topicAddress = (a: string): string => `0x${a.slice(2).toLowerCase().padStart(64, '0')}`;
   const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], mine.log.data as Hex);
@@ -197,9 +197,8 @@ export function stageVerifiedErc20Payment(state: MockNetworkState, metaAddress: 
     logIndex: '0x0',
   };
   const common = { to: FAKE_ROUTER, from: payer, blockHash: mine.log.blockHash, blockNumber: mine.log.blockNumber };
-  state.logs = [mine.log, transfer];
-  state.evidence = {
-    txHash,
+  (state.logs ??= []).push(mine.log, transfer);
+  (state.evidence ??= new Map()).set(txHash.toLowerCase(), {
     transaction: {
       ...common,
       hash: txHash,
@@ -207,6 +206,6 @@ export function stageVerifiedErc20Payment(state: MockNetworkState, metaAddress: 
       input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }),
     },
     receipt: { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, mine.log] },
-  };
+  });
   return { mine, parsed, txHash };
 }

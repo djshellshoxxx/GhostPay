@@ -1,0 +1,560 @@
+{
+  "format": "ghostpay-scoped-cookie-recovery-qualification/1",
+  "created_utc": "2026-11-24T13:06:19.635447+00:00",
+  "worker": "/root/historical_review",
+  "branch": "integration/scoped-cookie-recovery-20261124",
+  "worktree": "/workspace/scratch/f80482f352bc/native-idb-ci",
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "donor": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+  "claim": "6e28590a9dc96a6aece3372dc84306ff1e25246e",
+  "qualified_source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+  "qualified_tree": "445c977595f679857506f3eacee8825b2a563613",
+  "source_verdict": "eligible narrowly scoped donor recovery; no source compatibility blocker found",
+  "preservation": {
+    "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+    "tree": "445c977595f679857506f3eacee8825b2a563613",
+    "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+    "donor": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+    "claim": "6e28590a9dc96a6aece3372dc84306ff1e25246e",
+    "source_checks": [
+      {
+        "path": "package.json",
+        "donor_preimage_equals_base": true,
+        "final_equals_donor": true,
+        "source_blob": "d4f914357d93f4b23f6a9ace8c456ac9fded77fb"
+      },
+      {
+        "path": "package-lock.json",
+        "donor_preimage_equals_base": true,
+        "final_equals_donor": true,
+        "source_blob": "601ae674b61c086e19ba34ed2a231a22dfdebced"
+      },
+      {
+        "path": "scripts/tests/dependency-tooling.test.mjs",
+        "donor_preimage_equals_base": true,
+        "final_equals_donor": true,
+        "source_blob": "da4c6c71117b5546e7acc664d1b62106bfa6e9fa"
+      }
+    ],
+    "lock_record_count": 815,
+    "changed_records": [
+      "node_modules/cookie"
+    ],
+    "unchanged_record_count": 814,
+    "nondev_nonlink_records": 223,
+    "nondev_nonlink_records_unchanged": true,
+    "root_lock_metadata_unchanged": true,
+    "original_test_bytes_are_unchanged_prefix": true,
+    "original_handoff_exact": true,
+    "changed_paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/COOKIE_DEPENDENCY_20261121.md",
+      "package-lock.json",
+      "package.json",
+      "scripts/tests/dependency-tooling.test.mjs"
+    ],
+    "existing_f08_branch": "b6c3c73d767df56e4119ff7b3918044f21d996ef",
+    "upstream_advisory": {
+      "url": "https://github.com/jshttp/cookie/security/advisories/GHSA-pxg6-pf52-xh8x",
+      "checked_utc": "2026-11-24",
+      "affected_range": "<0.7.0",
+      "first_fixed": "0.7.0",
+      "scope": "known serialization-validation advisory; existing Sentry consumer uses parsing; no reproduction executed"
+    },
+    "nondev_nonlink_records_excluding_root": 222
+  },
+  "installation": {
+    "kind": "private exact-lock confidential-contracts workspace-only npm ci, not a full-repository installation",
+    "result": {
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "ci",
+        "--workspace",
+        "@ghostpay/confidential-contracts",
+        "--include-workspace-root",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--prefer-offline",
+        "--cache",
+        "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache"
+      ],
+      "cwd": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "npm_config_maxsockets": "2"
+      },
+      "started_utc": "2026-11-24T12:56:10.984883+00:00",
+      "duration_seconds": 7.127,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/workspace-clean-install.log",
+      "log_sha256": "8cbffc968c3229cd7d60c1b0cfdb7ac6afaeed2b78851e3069cdbde890a880b6",
+      "manifest_and_lock_unchanged": true,
+      "changed_snapshot_paths": []
+    },
+    "qualified_resolution_layout": {
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "root_module_link": {
+        "checkout_path": "/workspace/scratch/f80482f352bc/native-idb-ci/node_modules",
+        "private_target": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules"
+      },
+      "previous_owned_links_retained_at": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/previous-module-links",
+      "nested_module_links": [
+        {
+          "checkout_path": "/workspace/scratch/f80482f352bc/native-idb-ci/packages/confidential-contracts/node_modules",
+          "private_target": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules"
+        }
+      ],
+      "workspace_links": [
+        {
+          "module_path": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@ghostpay/confidential-contracts",
+          "source_checkout_target": "/workspace/scratch/f80482f352bc/native-idb-ci/packages/confidential-contracts"
+        }
+      ],
+      "installed_lock_records": 335,
+      "installed_nonlink_records": 334,
+      "installed_records_match_candidate_lock_version_resolution_integrity": true,
+      "installed_hidden_lock_sha256": "2aea0abbcecd435f81533ecf17ee574345652cc77e7d8e9aa72ed6c926f68cbd",
+      "node_resolution_flags": []
+    },
+    "actual_resolution": {
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "rows": [
+        {
+          "consumer": "root",
+          "package": "cookie",
+          "version": "0.7.2",
+          "path": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json",
+          "realpath": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json"
+        },
+        {
+          "consumer": "sentry-node",
+          "package": "cookie",
+          "version": "0.7.2",
+          "path": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json",
+          "realpath": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json"
+        },
+        {
+          "consumer": "sentry-utils",
+          "package": "cookie",
+          "version": "0.7.2",
+          "path": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json",
+          "realpath": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/package.json"
+        },
+        {
+          "consumer": "hardhat",
+          "package": "@sentry/node",
+          "version": "5.30.0",
+          "path": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/node/package.json",
+          "realpath": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/node/package.json"
+        }
+      ],
+      "node": "v24.22.3",
+      "execArgv": [
+        "--input-type=module"
+      ]
+    },
+    "canonical_npm_tree": {
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "ls",
+        "cookie",
+        "@sentry/node",
+        "--all",
+        "--workspace",
+        "@ghostpay/confidential-contracts",
+        "--include-workspace-root",
+        "--json"
+      ],
+      "cwd": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v",
+      "started_utc": "2026-11-24T13:01:49.295051+00:00",
+      "duration_seconds": 0.888,
+      "exit_code": 0,
+      "all_problems": [],
+      "stdout": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stdout",
+      "stdout_sha256": "d416eab5140a7d86f26d7afd8178e5f209087a2f758bab7642571268b41de7e2",
+      "stderr": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/canonical-install-cookie-tree.stderr",
+      "stderr_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+      "scope": "Canonical private workspace-only npm-ci installation with its generated workspace link. Link restored to the source checkout immediately after metadata inspection; runtime test files and all installed package contents unchanged.",
+      "runtime_workspace_link_restored": "/workspace/scratch/f80482f352bc/native-idb-ci/packages/confidential-contracts",
+      "checkout_symlink_diagnostic_not_counted_as_clean": "Earlier npm ls from source checkout returns extraneous link diagnostics; its raw result is preserved. A private-stage lookup while the workspace link targeted the external checkout returned exit 1 and is also preserved."
+    },
+    "post_qualification_layout": {
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "created_utc": "2026-11-24T13:05:52.407786+00:00",
+      "purpose": "Match repository directory ignore rule without changing any package or resolved module. Prior whole-directory links used during qualification remain documented in original layout receipt.",
+      "changes": [
+        {
+          "path": "/workspace/scratch/f80482f352bc/native-idb-ci/node_modules",
+          "layout": "real ignored directory containing links to private installation entries",
+          "private_target": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules",
+          "entry_links": 229
+        },
+        {
+          "path": "/workspace/scratch/f80482f352bc/native-idb-ci/packages/confidential-contracts/node_modules",
+          "layout": "real ignored directory containing links to private installation entries",
+          "private_target": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules",
+          "entry_links": 5
+        }
+      ],
+      "before_resolved_modules": {
+        "root:cookie": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/index.js",
+        "root:@sentry/node": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/node/dist/index.js",
+        "root:@sentry/utils": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/utils/dist/index.js",
+        "root:mocha": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/mocha/index.js",
+        "root:solc": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/solc/index.js",
+        "root:hardhat": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/hardhat/internal/lib/hardhat-lib.js",
+        "root:typescript": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/typescript/lib/typescript.js",
+        "contract:hardhat": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/hardhat/internal/lib/hardhat-lib.js",
+        "contract:@fhevm/hardhat-plugin": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@fhevm/hardhat-plugin/_cjs/index.js",
+        "contract:@nomicfoundation/hardhat-ethers": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@nomicfoundation/hardhat-ethers/internal/index.js",
+        "contract:@nomicfoundation/hardhat-chai-matchers": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules/@nomicfoundation/hardhat-chai-matchers/index.js",
+        "contract:chai": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules/chai/index.js"
+      },
+      "after_resolved_modules": {
+        "root:cookie": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/cookie/index.js",
+        "root:@sentry/node": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/node/dist/index.js",
+        "root:@sentry/utils": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@sentry/utils/dist/index.js",
+        "root:mocha": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/mocha/index.js",
+        "root:solc": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/solc/index.js",
+        "root:hardhat": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/hardhat/internal/lib/hardhat-lib.js",
+        "root:typescript": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/typescript/lib/typescript.js",
+        "contract:hardhat": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/hardhat/internal/lib/hardhat-lib.js",
+        "contract:@fhevm/hardhat-plugin": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@fhevm/hardhat-plugin/_cjs/index.js",
+        "contract:@nomicfoundation/hardhat-ethers": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/node_modules/@nomicfoundation/hardhat-ethers/internal/index.js",
+        "contract:@nomicfoundation/hardhat-chai-matchers": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules/@nomicfoundation/hardhat-chai-matchers/index.js",
+        "contract:chai": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/packages/confidential-contracts/node_modules/chai/index.js"
+      },
+      "all_resolved_modules_identical": true,
+      "workspace_link_target": "/workspace/scratch/f80482f352bc/native-idb-ci/packages/confidential-contracts",
+      "git_status_after": ""
+    },
+    "shared_cookie_remains": "0.4.2; no shared installation or cache modified"
+  },
+  "tests": {
+    "dependency_tooling": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "router": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "total_disjoint_cases": 36,
+    "contract_typecheck": "passed",
+    "native_compilation": {
+      "files": 36,
+      "target": "cancun",
+      "version": "0.8.28+commit.7893614a.Linux.g++",
+      "path": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28",
+      "sha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25"
+    }
+  },
+  "compatibility_gates": [
+    {
+      "gate": "dependency-tooling",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "run",
+        "test:dependency-tooling"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "HARDHAT_DISABLE_TELEMETRY_PROMPT": "true",
+        "GHOSTPAY_SOLC_PATH": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+      },
+      "started_utc": "2026-11-24T12:59:00.934899+00:00",
+      "duration_seconds": 1.844,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/dependency-tooling.log",
+      "sha256": "d0a00baf49123248f63fb70270020320c985858d9cf38397814791e42b410fd4"
+    },
+    {
+      "gate": "contract-typecheck",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/confidential-contracts"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "HARDHAT_DISABLE_TELEMETRY_PROMPT": "true",
+        "GHOSTPAY_SOLC_PATH": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+      },
+      "started_utc": "2026-11-24T12:59:02.778992+00:00",
+      "duration_seconds": 2.188,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-typecheck.log",
+      "sha256": "fc1dfa9791352eac1ebb3e412857fcb71e818f8b4b92866bf7e06206f6281833"
+    },
+    {
+      "gate": "contract-compile",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "run",
+        "compile",
+        "--workspace",
+        "@ghostpay/confidential-contracts"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "HARDHAT_DISABLE_TELEMETRY_PROMPT": "true",
+        "GHOSTPAY_SOLC_PATH": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+      },
+      "started_utc": "2026-11-24T12:59:04.967913+00:00",
+      "duration_seconds": 4.815,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-compile.log",
+      "sha256": "8ca1ded4c6096f6aea2eff43f7b6f4e64625a5b601cc90029822590ee7103d4a"
+    },
+    {
+      "gate": "contract-router",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "test",
+        "--workspace",
+        "@ghostpay/confidential-contracts",
+        "--",
+        "test/router.test.ts"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "HARDHAT_DISABLE_TELEMETRY_PROMPT": "true",
+        "GHOSTPAY_SOLC_PATH": "/workspace/scratch/efb8df2579c9/gp-foundry-tools/solc-0.8.28"
+      },
+      "started_utc": "2026-11-24T12:59:09.784274+00:00",
+      "duration_seconds": 7.448,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/contract-router.log",
+      "sha256": "9bb28d5744790542c326a96e38bad0e26c154270d50ac2e0b63c5198142ee248"
+    }
+  ],
+  "security_and_resolution_gates": [
+    {
+      "gate": "resolved-cookie-tree",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "ls",
+        "cookie",
+        "@sentry/node",
+        "--all",
+        "--workspace",
+        "@ghostpay/confidential-contracts",
+        "--include-workspace-root",
+        "--json"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "started_utc": "2026-11-24T12:59:59.988056+00:00",
+      "duration_seconds": 0.956,
+      "exit_code": 0,
+      "stdout": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stdout",
+      "stdout_sha256": "d0217d41ef830bd65ee48ad9727608e447ce14a66afa35e0b3f4b7e7ce13db13",
+      "stderr": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/resolved-cookie-tree.stderr",
+      "stderr_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    },
+    {
+      "gate": "production-audit",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "audit",
+        "--package-lock-only",
+        "--omit=dev",
+        "--audit-level=high",
+        "--json"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "started_utc": "2026-11-24T13:00:00.945092+00:00",
+      "duration_seconds": 5.282,
+      "exit_code": 0,
+      "stdout": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stdout",
+      "stdout_sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70",
+      "stderr": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/production-audit.stderr",
+      "stderr_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+      "vulnerability_counts": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "vulnerability_names": [],
+      "audit_error": null
+    },
+    {
+      "gate": "full-audit",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "audit",
+        "--package-lock-only",
+        "--json"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "started_utc": "2026-11-24T13:00:06.227435+00:00",
+      "duration_seconds": 14.033,
+      "exit_code": 1,
+      "stdout": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stdout",
+      "stdout_sha256": "7fed664d8c3c3a9a94eba43b185baf8aee5585ea0452ff13f0a44f6f119e39de",
+      "stderr": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/full-audit.stderr",
+      "stderr_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829",
+      "vulnerability_counts": {
+        "info": 0,
+        "low": 15,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 15
+      },
+      "vulnerability_names": [
+        "@ethersproject/abi",
+        "@ethersproject/abstract-provider",
+        "@ethersproject/abstract-signer",
+        "@ethersproject/hash",
+        "@ethersproject/signing-key",
+        "@ethersproject/transactions",
+        "@fhevm/hardhat-plugin",
+        "@nomicfoundation/hardhat-chai-matchers",
+        "@nomicfoundation/hardhat-ethers",
+        "@nomicfoundation/hardhat-network-helpers",
+        "elliptic",
+        "ethereum-cryptography",
+        "ethereumjs-util",
+        "hardhat",
+        "secp256k1"
+      ],
+      "audit_error": null
+    },
+    {
+      "gate": "secret-scan",
+      "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+      "command": [
+        "npm",
+        "run",
+        "ci:scan-secrets"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "environment": {
+        "npm_config_cache": "/tmp/ghostpay-cookie-377-5a2038d6-uh9fv90v/npm-cache",
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "started_utc": "2026-11-24T13:00:20.260672+00:00",
+      "duration_seconds": 0.298,
+      "exit_code": 0,
+      "stdout": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/secret-scan.stdout",
+      "stdout_sha256": "88b5a5d40e3ed95ed85087e4657b21299290a1ee3f08a8bcc6778ec976d97332",
+      "stderr": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/secret-scan.stderr",
+      "stderr_sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    }
+  ],
+  "diagnostic_limits": [
+    "Checkout npm ls reports extraneous entries for the external node_modules link; this was not counted as a clean logical-tree result.",
+    "The private install lookup with a workspace link retargeted externally returned exit 1. Canonical private-install npm ls with its generated workspace link then passed with the expected overridden chain; the runtime source link was immediately restored. All raw outputs are retained.",
+    "The full audit is not clean: exit 1 with 15 low Elliptic-derived nodes. Production lock audit has zero findings.",
+    "No full-repository npm ci, full application/browser suite, native Anvil suite, or full FHE fuzz run is claimed.",
+    "Fresh exact-final-head hosted repository installation and all applicable required CI/security gates remain with coordinator before promotion."
+  ],
+  "environment_limits": [
+    "Original F08 branch and original donor ref preserved.",
+    "No Node module-resolution flags, dependency source edits, global cache changes, root checkout changes or remote writes.",
+    "Private install uses /tmp to avoid exhausting the workspace filesystem; its manifests/lock and all 334 package archives were verified."
+  ],
+  "independent_source_review": {
+    "reviewer": "/root/ui_data_review",
+    "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+    "tree": "445c977595f679857506f3eacee8825b2a563613",
+    "verdict": "no source blocker; independent read-only source/resolution/receipt checks, no duplicate tests"
+  },
+  "final_candidate": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+  "final_tree": "0d8dcafce3010af1d358bc3599606c60da51709e",
+  "post_qualification_delta": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/COOKIE_DEPENDENCY_20261121.md"
+  ],
+  "post_qualification_product_unchanged": true,
+  "final_worktree_clean": true,
+  "evidence_archive": {
+    "source": "5a2038d6f5fd0e01f663a09d9dcaa75742754c07",
+    "archive": "/workspace/scratch/f80482f352bc/cookie-recovery-qualification/cookie-recovery-evidence.tar.gz",
+    "sha256": "3a9ee6c67a2e78c842ba7d38ca2f926d55e7221c908c483023cb1806d36048d8",
+    "bytes": 88959,
+    "files": [
+      "actual-cookie-resolution.json",
+      "archive-retrieval.json",
+      "canonical-install-cookie-tree.json",
+      "canonical-install-cookie-tree.stderr",
+      "canonical-install-cookie-tree.stdout",
+      "compatibility-gates.json",
+      "contract-compile.log",
+      "contract-router.log",
+      "contract-typecheck.log",
+      "cookie-0.7.2.tgz",
+      "dependency-tooling.log",
+      "full-audit.stderr",
+      "full-audit.stdout",
+      "post-qualification-module-layout.json",
+      "private-install-resolution-layout.json",
+      "private-install-setup.json",
+      "private-stage-cookie-tree.json",
+      "private-stage-cookie-tree.stderr",
+      "private-stage-cookie-tree.stdout",
+      "production-audit.stderr",
+      "production-audit.stdout",
+      "qualification-source.json",
+      "resolution-and-security-gates.json",
+      "resolved-cookie-tree.stderr",
+      "resolved-cookie-tree.stdout",
+      "secret-scan.stderr",
+      "secret-scan.stdout",
+      "source-preservation.json",
+      "workspace-clean-install.json",
+      "workspace-clean-install.log",
+      "workspace-install-dry-run.json",
+      "workspace-install-dry-run.log",
+      "workspace-install-platform-assessment.json",
+      "workspace-install-size-assessment.json"
+    ]
+  },
+  "independent_review_artifacts": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/REVIEW.md",
+      "sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/cookie-377-independent-review/SOURCE_EVIDENCE.json",
+      "sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d"
+    }
+  ]
+}

@@ -111,15 +111,17 @@ export function Settings(): ReactNode {
           <legend>{t('settings.rpc.legend')}</legend>
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
-            <div key={c.chainId} className="row">
+            <div key={c.chainId} className="rpc-row">
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
                 {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
-              <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-              <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
+              <div className="rpc-test-row">
+                <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
+                <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
+              </div>
             </div>
           ))}
         </fieldset>

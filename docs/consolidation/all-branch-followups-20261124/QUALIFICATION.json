@@ -1,0 +1,388 @@
+{
+  "format": "ghostpay-composed-followup-qualification/1",
+  "final_local_source": "70df75359a807bf833da82f43229452d6ab59976",
+  "equivalent_remote_source": "0a7b903780b66135a9505230c96d4ab45b2959a2",
+  "final_tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+  "hosted_status_at_publication": "required; not yet claimed passed",
+  "application_stage": {
+    "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+    "tree": "8add357748674afb128926a797982badb54bac6b",
+    "results": {
+      "build-vault": {
+        "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "tree": "8add357748674afb128926a797982badb54bac6b",
+        "results": [
+          {
+            "gate": "vault-build",
+            "command": [
+              "npm",
+              "run",
+              "build",
+              "-w",
+              "@ghostpay/ux-vault"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 2.589,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/vault-build.log",
+            "sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b",
+            "summaries": []
+          }
+        ]
+      },
+      "checks": {
+        "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "tree": "8add357748674afb128926a797982badb54bac6b",
+        "results": [
+          {
+            "gate": "web-typecheck",
+            "command": [
+              "npm",
+              "run",
+              "typecheck",
+              "-w",
+              "@ghostpay/web"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 20.348,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-typecheck.log",
+            "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+            "summaries": []
+          },
+          {
+            "gate": "web-lint",
+            "command": [
+              "npm",
+              "run",
+              "lint",
+              "-w",
+              "@ghostpay/web"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {
+              "NODE_OPTIONS": "--max-old-space-size=2048"
+            },
+            "exit_code": 0,
+            "seconds": 46.515,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-lint.log",
+            "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+            "summaries": []
+          },
+          {
+            "gate": "full-build",
+            "command": [
+              "npm",
+              "run",
+              "build",
+              "-w",
+              "@ghostpay/web"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {
+              "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+              "VITE_GHOSTID_OFFLINE_REVIEW": "0"
+            },
+            "exit_code": 0,
+            "seconds": 22.435,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/full-build.log",
+            "sha256": "aa512b5f4669471ef2dbad3d0b2e4516a272f9e203135cb8520d4ae3d0648ed9",
+            "summaries": []
+          },
+          {
+            "gate": "opt-in-full-build",
+            "command": [
+              "npm",
+              "run",
+              "build",
+              "-w",
+              "@ghostpay/web"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {
+              "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+              "VITE_GHOSTID_OFFLINE_REVIEW": "1"
+            },
+            "exit_code": 0,
+            "seconds": 20.152,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/opt-in-full-build.log",
+            "sha256": "34412a5fc4557b51972e168affdfe5d6fdc30b61ef19ca0deaf79e38648ed531",
+            "summaries": []
+          },
+          {
+            "gate": "lean-build",
+            "command": [
+              "npm",
+              "run",
+              "build",
+              "-w",
+              "@ghostpay/web"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {
+              "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+              "VITE_GHOSTID_OFFLINE_REVIEW": "1"
+            },
+            "exit_code": 0,
+            "seconds": 21.039,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/lean-build.log",
+            "sha256": "fe259ff3d6e8e692db255ba07958922c17c1881e94082d924cfb0d2401603b6b",
+            "summaries": []
+          },
+          {
+            "gate": "workflow-and-pages",
+            "command": [
+              "node",
+              "--test",
+              "--test-concurrency=1",
+              "scripts/pages/serve-pages.test.mjs",
+              "scripts/pages/smoke-render-errors.test.mjs",
+              "scripts/pages/smoke-url.test.mjs",
+              "scripts/pages/smoke-walk.test.mjs",
+              "scripts/pages/verify-pages-artifact.test.mjs",
+              "scripts/pages/verify-pages-site.test.mjs",
+              "scripts/tests/workflows.test.mjs",
+              "scripts/tests/ghostpay-codex-cloud-gate.test.mjs",
+              "scripts/tests/ghostpay-automation-hardening.test.mjs",
+              "scripts/tests/workflow-files.test.mjs",
+              "apps/web/scripts/localBuildProfile.test.mjs"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 6.323,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/workflow-and-pages.log",
+            "sha256": "5fb77378363f21c0e62ef54db639ab4024db84904c6d14da1176afbca6fd0afd",
+            "summaries": [
+              "\u2139 tests 173",
+              "\u2139 pass 173",
+              "\u2139 fail 0",
+              "\u2139 skipped 0"
+            ]
+          },
+          {
+            "gate": "i18n-validate",
+            "command": [
+              "node",
+              "scripts/i18n/check.mjs"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 0.428,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/i18n-validate.log",
+            "sha256": "71487cd3e08488f660306cf0c93b986baf60ed59a2d4b6dcec874b5bf7724482",
+            "summaries": []
+          },
+          {
+            "gate": "i18n-extract",
+            "command": [
+              "node",
+              "scripts/i18n/extract.mjs"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 0.203,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/i18n-extract.log",
+            "sha256": "a0c719c8dbd3b095b3f2463d562113ec82e2b3cd215c05cb0cfbb8739cc421df",
+            "summaries": []
+          },
+          {
+            "gate": "secrets",
+            "command": [
+              "bash",
+              "scripts/scan-secrets.sh"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 0.141,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/secrets.log",
+            "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+            "summaries": []
+          },
+          {
+            "gate": "actions",
+            "command": [
+              "bash",
+              "scripts/check-actions-pinned.sh"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 0.152,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/actions.log",
+            "sha256": "1c76b6edc75d44dd7954440b2f7653a3693ebfd7f137619df92dd66e1a51b515",
+            "summaries": []
+          },
+          {
+            "gate": "tx-origin",
+            "command": [
+              "bash",
+              "scripts/check-tx-origin.sh"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 0.107,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/tx-origin.log",
+            "sha256": "9d95acfba60449e36d81229c0ba5dbd3bd203e219648a67840da7ff16797dd25",
+            "summaries": []
+          }
+        ]
+      },
+      "pages": {
+        "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "tree": "8add357748674afb128926a797982badb54bac6b",
+        "results": [
+          {
+            "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+            "gate": "normal-clean-tree-pages-build",
+            "command": [
+              "bash",
+              "scripts/pages/build-pages.sh",
+              "/workspace/scratch/f80482f352bc/selected-final-qualification/pages-normal"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+            "exit_code": 0,
+            "seconds": 23.753,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/pages-normal.log",
+            "sha256": "6e88df43b8ebc8ddb1992283febccb680004558b1f17d3fd3da48cd53221fc00",
+            "build_info": {
+              "app": "ghostpay-web",
+              "version": "0.1.0",
+              "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+              "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            },
+            "tree": "8add357748674afb128926a797982badb54bac6b",
+            "pages_evidence": {
+              "format": "ghostpay-pages-site/1",
+              "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+              "profile": "lean",
+              "base": "relative (./)",
+              "paymentsEnabledChainIds": [],
+              "status": "DEMO: payments disabled on every chain (no deployment manifest)",
+              "release": true,
+              "origin": null,
+              "sharedOrigin": true,
+              "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+              "lockfileSha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+              "sha256sumsSha256": "f1749082f9140e7efa3e2b139326dadc6a4403379f00323a35a2a797302da74e",
+              "files": 16,
+              "limits": "GitHub Pages cannot send HTTP headers: only the meta CSP applies (no frame-ancestors, nosniff, COOP, Permissions-Policy). The origin is shared with every other Pages site of the account (GP-PAGES-01). Not an audited or production host."
+            }
+          }
+        ]
+      },
+      "web": {
+        "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "tree": "8add357748674afb128926a797982badb54bac6b",
+        "results": [
+          {
+            "gate": "web-coverage",
+            "command": [
+              "../../node_modules/.bin/vitest",
+              "run",
+              "--coverage",
+              "--maxWorkers=1"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups/apps/web",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 1492.878,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-coverage.log",
+            "sha256": "d61b39fefcb97a7d3b7096a1feaee2b76bddbd6ea1a351786eb6a8c8064ff1a1",
+            "summaries": [
+              "Test Files  235 passed | 2 skipped (237)",
+              "Tests  3046 passed | 13 skipped (3059)",
+              "All files          |   92.99 |    89.38 |   94.53 |   96.79 |"
+            ]
+          },
+          {
+            "gate": "web-nocov",
+            "command": [
+              "../../node_modules/.bin/vitest",
+              "run",
+              "--config",
+              "vitest.nocov.config.ts",
+              "--maxWorkers=1"
+            ],
+            "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups/apps/web",
+            "environment": {},
+            "exit_code": 0,
+            "seconds": 27.139,
+            "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-nocov.log",
+            "sha256": "ba389aa16e1b9b10ea2ccb16a92fce1f9bc64fa00fd971216aea12ddd8cd791f",
+            "summaries": [
+              "Test Files  3 passed (3)",
+              "Tests  3 passed (3)"
+            ]
+          }
+        ]
+      }
+    },
+    "distinct_web_passes": 3049,
+    "existing_web_skips": 13,
+    "coverage_percent": {
+      "statements": 92.99,
+      "branches": 89.38,
+      "functions": 94.53,
+      "lines": 96.79
+    },
+    "distinct_pages_workflow_profile_node_passes": 173,
+    "source_equivalent_package_passes": 917,
+    "package_equivalence_evidence": "evidence/application-package-equivalence.json",
+    "lossless_logs": "evidence/application/followup-evidence.tar.gz",
+    "limits": [
+      "These runs are pinned to the application composition, not relabeled as executions at the final extended commit.",
+      "Package qualification was inherited by complete package/dependency/config identity at bda2af; the final scoped development dependency change is separately qualified.",
+      "Focused author runs and the earlier broad web suite are not added again to the full web count."
+    ]
+  },
+  "compatibility_supplement": "COMPATIBILITY_QUALIFICATION.json",
+  "required_hosted_obligations": [
+    "All existing ordinary workflow families and security checks on exact published head",
+    "Full and lean browser suites including receipt print, individual export and HTTPS/RPC compatibility",
+    "Full-profile cross-tab IndexedDB native harness",
+    "Nine-view Pages artifact native smoke",
+    "ghostid-native (default-full)",
+    "ghostid-native (opt-in-full)",
+    "ghostid-native (lean-with-flag)",
+    "Existing rest-0 Node suite plus REQUIRE_ANVIL=1 recovery suite executing both native spending cases",
+    "Fresh candidate-lock install, cookie compatibility and existing contract gates"
+  ],
+  "core_promotion": "CORE_PROMOTION.json",
+  "prohibited_inferences": [
+    "No historical donor native pass is a fresh final-head result.",
+    "No native collection-only outcome is an executed pass.",
+    "No standalone formatter output authenticates analyzer execution or clears findings.",
+    "No no-manifest Pages artifact enables real payments."
+  ],
+  "diagnostic_helper": {
+    "qualified_source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+    "final_unit": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "files": 4,
+    "typecheck": "passed",
+    "lint": "passed",
+    "source_entries": "Three exact donor postimages",
+    "receipt": "../../handoffs/deployment-diagnostic-recovery-20261124/QUALIFICATION.json",
+    "limits": [
+      "Retained utility currently has no production caller; live manifest readback unchanged.",
+      "Existing web dependency install retained cookie0.4.2; no whole-lock or cookie-override qualification claim.",
+      "These focused cases overlap earlier application tests and are not added to that total."
+    ]
+  },
+  "independent_final_source_approval": {
+    "source": "70df75359a807bf833da82f43229452d6ab59976",
+    "tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+    "review": "SOURCE_REVIEW.json",
+    "verdict": "approved; no source-preservation blockers",
+    "runtime_reruns_by_reviewer": false
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "main_before": "706188000c38b3dde5a3a362370a530870aa7587",
+  "pr": 611,
+  "head": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+  "merge": {
+    "sha": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "tree": "74e78d0aad767455fdc26311ec9750cff7c2cba5",
+  "merged_at": "2026-11-24T12:57:38Z",
+  "all_required_checks_passed": true,
+  "check_runs": {
+    "passed": 37,
+    "expected_skips": 3
+  },
+  "snyk": "success",
+  "lease_acquired": {
+    "sha": "ebb9996ff5007b7677b659e8b1667b13943a464f",
+    "state": {
+      "format": "ghostpay-integration-lock/1",
+      "status": "held",
+      "owner": "chatgpt-f80482f352bc-all-branch-review",
+      "token": "36c9831e-b7a4-45ea-81b2-e3f71fe89067",
+      "generation": 18,
+      "base_sha": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+      "acquired_at": "2026-11-24T12:56:13.635Z",
+      "heartbeat_at": "2026-11-24T12:56:13.635Z",
+      "expires_at": "2026-11-24T13:16:13.635Z",
+      "transport": "github-connector-expected-head-nonforce"
+    }
+  },
+  "lease_released": {
+    "sha": "c69bca412c25647388d36eb64f18c592f3a9b67e",
+    "tree": "051c5391d9c7f4163c6bde5ffeec4c5eb87b88cf",
+    "state": {
+      "format": "ghostpay-integration-lock/1",
+      "status": "released",
+      "owner": "chatgpt-f80482f352bc-all-branch-review",
+      "token": "36c9831e-b7a4-45ea-81b2-e3f71fe89067",
+      "generation": 18,
+      "base_sha": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+      "acquired_at": "2026-11-24T12:56:13.635Z",
+      "heartbeat_at": "2026-11-24T12:56:13.635Z",
+      "expires_at": "2026-11-24T13:16:13.635Z",
+      "transport": "github-connector-expected-head-nonforce",
+      "released_at": "2026-11-24T12:58:12.000Z"
+    }
+  },
+  "remote_tree_and_parents_verified": true,
+  "release_verified": true
+}

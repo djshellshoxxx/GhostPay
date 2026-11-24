@@ -241,10 +241,19 @@ export function summarize(state: NetState, nowMs: number): NetSummary {
   if (state.configuredChains.length === 0) return mk('no-rpc', 'NO_RPC');
   if (rpcDown.length > 0) return mk('rpc-down', 'RPC_UNREACHABLE');
   const states = state.configuredChains.map((c) => state.rpc[c] ?? EMPTY);
-  if (states.some((e) => effective(e, nowMs, cfg) === 'degraded')) return mk('rpc-degraded', undefined);
+  const reachabilities = states.map((e) => effective(e, nowMs, cfg));
+  if (reachabilities.includes('degraded')) return mk('rpc-degraded', undefined);
   if (relayer === 'unreachable') return mk('relayer-down', 'RELAYER_UNREACHABLE');
-  if (states.some((e) => e.clockSkewSec !== undefined && Math.abs(e.clockSkewSec) > cfg.skewWarnSec))
+  if (
+    states.some(
+      (e, i) =>
+        reachabilities[i] !== 'stale' &&
+        e.clockSkewSec !== undefined &&
+        Math.abs(e.clockSkewSec) > cfg.skewWarnSec,
+    )
+  )
     return mk('clock-skew', 'CLOCK_SKEW');
+  if (reachabilities.includes('stale') || relayer === 'stale') return mk('unknown', undefined);
   if (states.every((e) => e.reachability === 'unknown') && relayer !== 'reachable')
     return mk('unknown', undefined);
   return mk('ok', undefined);

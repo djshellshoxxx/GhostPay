@@ -1,0 +1,452 @@
+{
+  "format": "ghostpay-individual-export-recovery-qualification/1",
+  "date": "2026-11-24",
+  "branch": "integration/individual-export-recovery-20261124",
+  "worktree": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+  "base": "0b60dba235710f12847532dd9d0f74f12f7298c6",
+  "donor": "28bba11cdaebc13edc4d100761ee00750c3f396f",
+  "claim": "744e2dea",
+  "merge": "05d818e7fc85bfc9a2e5ccaf0cfa874ee0df2110",
+  "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+  "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+  "checks": [
+    {
+      "name": "vault-build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 2.733,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/vault-build.log",
+      "sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b",
+      "archive_member": "vault-build.log"
+    },
+    {
+      "name": "vault-coverage",
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@ghostpay/ux-vault",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 230.733,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/vault-coverage.log",
+      "sha256": "b92c4f4a079801c493c9b24246034d370992a7cb89e135ec122b82a74f35532a",
+      "archive_member": "vault-coverage.log"
+    },
+    {
+      "name": "vault-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 5.539,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/vault-typecheck.log",
+      "sha256": "b215f4f7db398e227678c56070f5e85f30ddda3e797b009cd23467290ae0aab1",
+      "archive_member": "vault-typecheck.log"
+    },
+    {
+      "name": "vault-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 6.76,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/vault-lint.log",
+      "sha256": "f198c9726220c2240cc9e82f6e847a72fd95b1d7d1fe7444b5b4b2e6c972a219",
+      "archive_member": "vault-lint.log"
+    },
+    {
+      "name": "recovery-node",
+      "command": [
+        "node",
+        "--test",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 8.109,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/recovery-node.log",
+      "sha256": "3ae61ff32252ba8acd2d9c567de8559b576d54bd6a15590a66f36fb24b284e65",
+      "archive_member": "recovery-node.log"
+    },
+    {
+      "name": "recovery-native",
+      "command": [
+        "node",
+        "--test",
+        "scripts/recovery/raw-key-anvil.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "REQUIRE_ANVIL": "1"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 1,
+      "seconds": 0.172,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/recovery-native.log",
+      "sha256": "a9c30f1d3c51f942445ff6fcba1434c34e8cf32cc92b44d639c16dfb12d48136",
+      "archive_member": "recovery-native.log"
+    },
+    {
+      "name": "i18n",
+      "command": [
+        "node",
+        "scripts/i18n/check.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 0.605,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/i18n.log",
+      "sha256": "7a7a890e6c25f9f6d96d9a1bebc15076d9a5abc20ce7d89683fec15c41b4804f",
+      "archive_member": "i18n.log"
+    },
+    {
+      "name": "workflow-guards",
+      "command": [
+        "node",
+        "--test",
+        "scripts/tests/workflows.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 1.282,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/workflow-guards.log",
+      "sha256": "0b66bd66ece29a2ba63afe9ec69713b732e0675be90826089e4b2460ac0d5cfb",
+      "archive_member": "workflow-guards.log"
+    },
+    {
+      "name": "web-consumers",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "src/App.test.tsx",
+        "src/AppLean.test.tsx",
+        "src/AppShell.i18n.test.tsx",
+        "src/AppShell.idleClock.test.tsx",
+        "src/components/StealthExportPayment.test.tsx",
+        "src/lib/appLock.test.ts",
+        "src/lib/keyVault.idb.test.ts",
+        "src/lib/keyVault.secretExport.test.ts",
+        "src/lib/keyVault.test.ts",
+        "src/lib/keystore.test.ts",
+        "src/lib/paymentKeyExport.interop.test.ts",
+        "src/lib/paymentKeyExport.test.ts",
+        "src/lib/session.test.ts",
+        "src/privacyInvariants.test.ts",
+        "src/views/Scan.autoRescan.test.tsx",
+        "src/views/Scan.i18n.test.tsx",
+        "src/views/Scan.privacy.test.tsx",
+        "src/views/Scan.tags.scope.test.tsx",
+        "src/views/Scan.test.tsx",
+        "src/views/ScanPrivacy.i18n.test.tsx",
+        "src/views/SellerKeys.completion.test.tsx",
+        "src/views/SellerKeys.i18n.test.tsx",
+        "src/views/SellerKeys.lock.test.tsx",
+        "src/views/SellerKeys.operation.test.tsx",
+        "src/views/SellerKeys.recovery.test.tsx",
+        "src/views/SellerKeys.storage.test.tsx",
+        "src/views/SellerKeys.test.tsx"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics/apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 112.247,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/web-consumers.log",
+      "sha256": "4a090a10993c603bb5b8e7eeec62dbbf23d7a966cc13c49e88417680cd02c3c0",
+      "archive_member": "web-consumers.log"
+    },
+    {
+      "name": "web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 20.277,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/web-typecheck.log",
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "archive_member": "web-typecheck.log"
+    },
+    {
+      "name": "web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 39.882,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/web-lint.log",
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "archive_member": "web-lint.log"
+    },
+    {
+      "name": "build-full",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 22.822,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/build-full.log",
+      "sha256": "f4fae69d034db51e2e9d18bd2aa559c69a9a1642756376aae28faf6de2aed2e1",
+      "archive_member": "build-full.log"
+    },
+    {
+      "name": "build-lean",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "exit_code": 0,
+      "seconds": 22.551,
+      "log": "/workspace/scratch/f80482f352bc/individual-export-qualification/build-lean.log",
+      "sha256": "2fdbefe5d39047ab26406de366f2fb19f88f842889e6ef25396b10e8bf07cdc2",
+      "archive_member": "build-lean.log"
+    }
+  ],
+  "environment": {
+    "base": "0b60dba235710f12847532dd9d0f74f12f7298c6",
+    "reused_worktree_source": "71884c053814c20286e6c612a674219770efafa5",
+    "dependency_installation": "reused existing external dependency symlinks; no install or lock change",
+    "own_workspace_links": 68,
+    "copied_dist_packages": [
+      "pir-two-server"
+    ],
+    "rebuilt_package_planned": "ux-vault",
+    "node": "v24.22.3",
+    "npm": "11.19.1"
+  },
+  "preservation": {
+    "base": "0b60dba235710f12847532dd9d0f74f12f7298c6",
+    "donor": "28bba11cdaebc13edc4d100761ee00750c3f396f",
+    "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+    "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+    "donor_paths": 38,
+    "new_donor_files": 23,
+    "byte_identical_new_donor_files": 22,
+    "only_new_file_difference": "two-line lifecycle comment in StealthExportCommon.tsx",
+    "base_and_donor_ancestors": true,
+    "preexisting_test_spec_files_unchanged": 973,
+    "protected_paths_unchanged": [
+      "packages/ux-vault/src/keystore-portable.ts",
+      "packages/ux-vault/src/keystore-portable-memory.test.ts",
+      "apps/web/src/views/Scan.tags.scope.test.tsx",
+      "apps/web/src/components/ReceiptPanel.tsx",
+      "apps/web/src/components/PrintableBill.tsx",
+      "apps/web/src/lib/usePrintTarget.ts",
+      "apps/web/src/lib/qrKinds.ts",
+      "apps/web/src/components/QrView.tsx",
+      "apps/web/src/styles/app.css",
+      "apps/web/src/styles/print.css",
+      "apps/web/src/styles/qr.css",
+      "package.json",
+      "package-lock.json"
+    ],
+    "entire_qr_exchange_package_unchanged": true,
+    "scan_Tags_implementation_unchanged": true,
+    "locales": [
+      {
+        "language": "ar",
+        "added_messages": 86,
+        "existing_values_preserved": true,
+        "donor_values_preserved": true
+      },
+      {
+        "language": "en",
+        "added_messages": 86,
+        "existing_values_preserved": true,
+        "donor_values_preserved": true
+      },
+      {
+        "language": "es",
+        "added_messages": 86,
+        "existing_values_preserved": true,
+        "donor_values_preserved": true
+      },
+      {
+        "language": "ja",
+        "added_messages": 86,
+        "existing_values_preserved": true,
+        "donor_values_preserved": true
+      }
+    ],
+    "ci": "exact base workflow plus one required recovery invocation in rest-0; original Node invocation unchanged",
+    "native_recovery_files_identical_to_original_560": true,
+    "whitespace_check": true
+  },
+  "test_results": {
+    "ux_vault": {
+      "files": 14,
+      "passed": 375,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percent": {
+        "statements": 97.01,
+        "branches": 94.28,
+        "functions": 99.5,
+        "lines": 98.89
+      }
+    },
+    "web_consumers": {
+      "files": 27,
+      "passed": 311,
+      "failed": 0,
+      "skipped": 0,
+      "full_web_coverage": false
+    },
+    "recovery_node": {
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0
+    },
+    "workflow_guards": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "i18n": {
+      "catalogs": 4,
+      "messages_each": 2358,
+      "errors": 0,
+      "warnings": 498
+    },
+    "build_scans": {
+      "full_files": 19,
+      "lean_files": 17
+    }
+  },
+  "native_spending": {
+    "local": "required prerequisite failed: anvil=false cast=false",
+    "exit_code": 1,
+    "prerequisite_tests_failed": 1,
+    "spending_cases_executed": 0,
+    "historical_donor_job": "https://github.com/djshellshoxxx/GhostPay/actions/runs/45335656982/job/138296957367",
+    "historical_donor_spending_cases_passed": 2,
+    "fresh_hosted_result": "pending"
+  },
+  "native_browser": {
+    "local_run": "not performed; coordinator retained the already established native-launch environment restriction",
+    "fresh_hosted_full_and_lean": "required and pending",
+    "specs": [
+      "individual-stealth-export.spec.ts",
+      "stopped-scan-payment-export.spec.ts"
+    ]
+  },
+  "source_reviews": [
+    {
+      "reviewer": "/root/ui_data_review/react_pages_review",
+      "source": "079a153aadd2c3f2ac8e87a9dab2daf8f0fc00de",
+      "tree": "b7c3a7784d20f5e538caaf9e6bcb7bf0f445f565",
+      "verdict": "approve",
+      "scope": "source preservation and final CI/documentation delta; no runtime claim"
+    }
+  ],
+  "artifact": {
+    "file": "run-logs.tar.gz",
+    "sha256": "b5c3086e05630da9e6f4d971404389e5a5c5d61fa2ce1cbccc30f6bb0c0bea4a",
+    "bytes": 8010
+  },
+  "limits": [
+    "No installation, toolchain substitution, capability workaround, root checkout edit or remote write.",
+    "Native spending prerequisite failure is retained verbatim; no spending execution or fresh browser acceptance is claimed.",
+    "New combined-head full web coverage and exact-head hosted qualification remain with coordinator.",
+    "Catalog warnings are retained untranslated-equality diagnostics; no translation completeness claim.",
+    "The separate #583 palette family remains excluded with its three concrete failures documented."
+  ]
+}

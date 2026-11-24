@@ -1,11 +1,11 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type RefCallback } from 'react';
 import { flushSync } from 'react-dom';
 import type { Invoice } from '@ghostpay/invoice-schema';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { payeeFingerprint, safeText } from '../lib/displayText';
 import { formatFiat, formatUnix } from '../lib/format';
 import { printQrPolicy } from '../lib/qrKinds';
-import '../styles/print.css';
+import { usePrintTarget } from '../lib/usePrintTarget';
 import { Mono } from './Common';
 import { QrFrame } from './QrFrame';
 
@@ -28,7 +28,7 @@ export interface PrintableBillProps {
  * Invoice print layout. Hidden on screen; the print stylesheet shows only this sheet.
  * A printed link is a bearer link unless it is passphrase protected, so the sheet says so.
  */
-export function PrintableBill(props: PrintableBillProps): ReactNode {
+export function PrintableBill(props: PrintableBillProps & { readonly printRef?: RefCallback<HTMLElement> }): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const inv = props.invoice;
@@ -37,7 +37,7 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
   const subtotal = inv.lineItems.reduce((sum, li) => sum + BigInt(li.quantity) * BigInt(li.unitMinorUnits), 0n);
   const hasLink = props.link !== undefined && props.link.length > 0;
   return (
-    <article className="bill-sheet" data-testid="printable-bill" aria-label={t('bill.aria')}>
+    <article ref={props.printRef} className="bill-sheet" data-testid="printable-bill" aria-label={t('bill.aria')}>
       <h2>{t('bill.title')}</h2>
       <dl className="details">
         <dt>{t('bill.reference')}</dt>
@@ -116,12 +116,7 @@ export function PrintBillButton(props: PrintableBillProps): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [printing, setPrinting] = useState(false);
-  useEffect(() => {
-    if (!printing) return;
-    const done = (): void => { setPrinting(false); };
-    window.addEventListener('afterprint', done);
-    return () => { window.removeEventListener('afterprint', done); };
-  }, [printing]);
+  const { printRef, print } = usePrintTarget();
   return (
     <>
       <button
@@ -129,12 +124,12 @@ export function PrintBillButton(props: PrintableBillProps): ReactNode {
         className="btn"
         onClick={() => {
           flushSync(() => { setPrinting(true); });
-          window.print();
+          print(() => { setPrinting(false); });
         }}
       >
         {t('bill.print')}
       </button>
-      {printing && <PrintableBill {...props} />}
+      {printing && <PrintableBill {...props} printRef={printRef} />}
     </>
   );
 }
