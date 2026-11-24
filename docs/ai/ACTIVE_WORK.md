@@ -42,6 +42,14 @@ Observed source defect: `decodeQrImage` considers only `found[0]?.rawValue` from
 Acceptance: regression FIRST for multi-result native scan (bad first/valid second, valid-first ordering), preserve existing single valid/invalid result and empty-result jsQR behavior, perform the smallest selection fix. Test exact-head hosted CI; separate native-browser/independent review required. Never claim full local Vitest without native checkout.
 Ownership preflight: live open PR listing and changed-file checks including #238/#246/#248–254/#261/#262/#264/#270/#278/#294/#302/#307/#310/#365/#372/#390/#504 and relevant recent bug PRs show no direct `readers.ts` claim in examined sets; complete 262-open-PR file audit remains a merge gate. Existing #294/#302/#307 own `assembler.ts`; do not touch. Main integration lease `automation/ghostpay-integration-lock` generation 12 is released, not held by this worker. No lock acquisition or main merge.
 No new features, UI, dep, contracts, funds, real-world traffic, release or deployment.
+# GP-BUG — QR camera stream cleanup on attachment failure (2026-11-23)
+
+Worker: GhostPay BUG-ONLY automation coordinator (single sequential source/runtime verifier; no independent reviewer available).
+Branch: `automation/20261123-r12/bug/qr-camera-attach-cleanup`; exact live main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+Owned files: `packages/qr-exchange/src/camera.ts`, new `packages/qr-exchange/src/camera.attach-boundary.test.ts`, this additive registry claim, and new `docs/handoffs/QR_CAMERA_ATTACH_BOUNDARY_20261123.md`. Existing `camera.test.ts` and other workers' branches remain untouched.
+Observed defect: after getUserMedia resolves a track-bearing stream, a throwing `video.srcObject` setter is outside the try/catch cleanup boundary; `startCamera` rejects with the platform error and leaves tracks running. Source-body-matched Node/V8 reproduction on main blob `d849dfa89a64837e9ede9eca2c03fa3064cafcf5` observed one attachment failure, zero stops and zero play calls. Ordinary attachment and playback succeeded.
+Acceptance: commit a failing dedicated regression before source repair; stop only the acquired stream on failed attachment and return existing `CAMERA_UNAVAILABLE`, without touching another stream, normal acquisition/play behavior, scanner, protocols or devices. Verify source-body-matched red/green and neighboring failure/abort cases; exact-head hosted CI and independent review still required; keep PR draft, no merge without legitimate integration lock and all checks.
+Ownership: fetched live main, AGENTS/workflow/handoff/registry, PR #390 status/reviews/workflows; inspected changed file lists for all 257 open PRs through #502 across three pages, with no active PR owning the selected camera source or new test path. Integration metadata generation 12 is released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; no implied merge authority.
 
 ---
 
