@@ -15,7 +15,11 @@ for (const switchAt of ['open disclosure', 'away from checkout', 'direct reload'
     const link = await createInvoice(page, { encrypt: true, memo });
     await openFresh(page, link);
     await expect(page.getByText(memo)).toBeVisible();
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.settings.v1') ?? '{}').autoClearFragment)).toBe(false);
+    const clearsFragment = await page.evaluate(() => {
+      const settings = JSON.parse(localStorage.getItem('ghostpay.settings.v1') ?? '{}') as { readonly autoClearFragment?: boolean };
+      return settings.autoClearFragment;
+    });
+    expect(clearsFragment).toBe(false);
     expect(new URL(page.url()).hash).toBe(new URL(link).hash);
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
