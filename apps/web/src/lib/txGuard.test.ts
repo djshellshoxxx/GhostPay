@@ -69,6 +69,25 @@ describe('simulateCall', () => {
     await expect(simulateCall(mockRpc(84532, () => `0x${'0'.repeat(64)}`), call, true)).rejects.toThrow(/returned false/);
   });
 
+  it('treats malformed ERC-20 bool return values as unavailable, not a successful simulation', async () => {
+    // A legacy ERC-20 may return nothing, while a canonical ABI bool is exactly 32 bytes: 0 or 1.
+    // Never treat a malformed/short word or an encoded number other than 1 as success.
+    for (const answer of [
+      '0x00', // short false-looking byte is not a canonical ABI bool
+      '0x01', // short true-looking byte is not a canonical ABI bool
+      '0x1234',
+      `0x${'0'.repeat(63)}2`,
+      `0x${'f'.repeat(64)}`,
+    ]) {
+      expect(await simulateCall(mockRpc(84532, () => answer), call, true)).toBe('unavailable');
+    }
+    expect(await simulateCall(mockRpc(84532, () => `0x${'0'.repeat(63)}1`), call, true)).toBe('ok');
+    expect(await simulateCall(mockRpc(84532, () => '0x'), call, true)).toBe('ok'); // legacy no-return
+    await expect(simulateCall(mockRpc(84532, () => `0x${'0'.repeat(64)}`), call, true)).rejects.toThrow(/returned false/);
+    // Untyped eth_call results retain their existing generic success behavior.
+    expect(await simulateCall(mockRpc(84532, () => '0x1234'), call)).toBe('ok');
+  });
+
   describe('L2-F1: through the verified RPC client, which drops the node text and keeps only a revert flag', () => {
     /** A node-like JSON-RPC endpoint behind the production client; `error` answers every call but eth_chainId. */
     const nodeClient = (error: unknown, seen: unknown[] = []) =>

@@ -1,4 +1,4 @@
-import { err, ok, type Result, type RoundingMode } from './types.js';
+import { err, ok, ROUNDING_MODES, type Result, type RoundingMode } from './types.js';
 
 /** Max absolute magnitude of any base-unit amount (uint256-sized, 78 digits). */
 export const MAX_AMOUNT_DIGITS = 78;
@@ -86,6 +86,7 @@ export function parseUnsignedDecimal(
  */
 export function parseUnits(s: string, decimals: number, mode?: RoundingMode): Result<bigint> {
   if (!isSmallInt(decimals, MAX_ASSET_DECIMALS)) return err('bad-decimals', 'bad decimals');
+  if (mode !== undefined && !ROUNDING_MODES.includes(mode)) return err('bad-rounding', 'unknown rounding mode');
   const p = parseUnsignedDecimal(s, MAX_AMOUNT_DIGITS, mode ? 4 * MAX_AMOUNT_DIGITS : decimals);
   if (!p.ok) return p;
   const { num, scale } = p.value;

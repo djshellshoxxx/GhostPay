@@ -6,7 +6,7 @@ import {
   MAX_FIAT_DECIMALS,
   pow10,
 } from './decimal.js';
-import { err, ok, ROUNDING_MODES, type ParsedRate, type Result, type RoundingMode } from './types.js';
+import { err, ROUNDING_MODES, type ParsedRate, type Result, type RoundingMode } from './types.js';
 
 function checkMode(mode: unknown): mode is RoundingMode {
   return typeof mode === 'string' && (ROUNDING_MODES as readonly string[]).includes(mode);
@@ -32,7 +32,7 @@ export function toFiatMinor(
   if (rate.num <= 0n) return err('rate-zero', 'rate must be positive');
   const n = amountBase * rate.num * pow10(fiatDecimals);
   const d = pow10(rate.scale + assetDecimals);
-  return ok(divRound(n, d, mode));
+  return checkAmount(divRound(n, d, mode));
 }
 
 /**

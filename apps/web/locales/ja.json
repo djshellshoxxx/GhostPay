@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "ブラウザーの自己チェック",
+    "app.checks.running": "ローカルのブラウザー機能を確認中…",
+    "app.checks.ready": "ブラウザー機能のチェックはすべて成功しました",
+    "app.checks.attention": "ブラウザー機能を確認してください",
+    "app.checks.secure": "安全なブラウザーコンテキスト",
+    "app.checks.digest": "WebCrypto SHA-256 の既知結果テスト",
+    "app.checks.storage": "一時的なブラウザーストレージの書き込み・読み取りテスト",
+    "app.checks.pass": "成功",
+    "app.checks.warn": "利用不可",
+    "app.checks.fail": "失敗",
+    "app.checks.limits": "これらのチェックは、アプリのコードの完全性、ウォレットや RPC の真正性、決済の安全性、ブロックチェーン上の確定、鍵の復旧を独立して検証するものではありません。ネットワーク通信は行いません。",
     "settings.title": "設定",
     "settings.notice.plaintext": "設定はこのブラウザーに平文で保存されます（RPC URL を含む）。平文で保存したくない秘密情報を含む URL は入力しないでください。鍵が保存されることはありません。",
     "settings.rpc.legend": "RPC エンドポイント",
@@ -567,6 +578,7 @@
     "policy.create.heading": "ポリシーメタアドレスを作成",
     "policy.create.needSession": "まず販売者の鍵を読み込むか生成してください（「販売者の鍵」）。",
     "policy.create.imported": "ポリシー記録を検証して読み込みました。",
+    "policy.create.alreadySaved": "ポリシー記録はすでに読み込まれています。",
     "policy.create.otherKeys": "記録は検証できましたが、現在読み込まれているものとは別の販売者の鍵に属しています。スキャンでは、その支払いは見つかりません。",
     "policy.create.rejected": "記録を拒否しました：{reason}。",
     "policy.create.badMeta": "ポリシーメタアドレス（st:eth:gp2:0x...）を入力してください。",
@@ -2257,6 +2269,13 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "policy.create.withdrawableAny": "This policy has no limits: it can withdraw any token and the native coin.",
+    "policy.create.withdrawableOnly": "This policy can withdraw only: {tokens}. A payment in any other token or coin stays locked in the account forever, and payers cannot see your limits in the meta-address: tell them which assets to use.",
+    "policy.pay.coverageUnknownTitle": "This app cannot check that the payee can withdraw this asset",
+    "policy.pay.coverageUnknown": "A policy meta-address carries only a hash of the payee's policy, not its per-token limits. If the policy has limits and none for this asset, the payment stays locked in the policy account forever and nobody can recover it. Pay only in an asset the payee has confirmed over a channel you trust.",
+    "policy.pay.coverageChecked": "Checked against the payee's policy record loaded in this tab: the policy can withdraw this asset.",
+    "policy.pay.tokenNotWithdrawable": "Blocked: the payee's policy record loaded in this tab has per-token limits and none for this asset, so the policy account could never withdraw it. Nothing was sent.",
+    "policy.pay.committedAssetNotWithdrawable": "Blocked: a loaded record matches the payee's policy commitment and its immutable limits do not cover this asset. The policy account cannot withdraw it. Nothing was sent."
   }
 }

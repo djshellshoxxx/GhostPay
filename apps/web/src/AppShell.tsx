@@ -18,6 +18,7 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { BrowserChecks } from './components/BrowserChecks';
 import { notifyAppLock } from './lib/appLock';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
@@ -309,6 +310,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       </main>
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
       <footer className="site-footer">
+        <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
           <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>

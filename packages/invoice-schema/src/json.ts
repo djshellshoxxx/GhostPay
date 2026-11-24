@@ -178,7 +178,7 @@ export function parseStrictJson(text: string): JsonValue {
  * Deterministic canonical JSON: sorted keys, no whitespace, integers only.
  *
  * @remarks Keys sorted by UTF-16 code unit order (all schema keys are ASCII).
- * Strings use `JSON.stringify` escaping; callers must have validated them as
+ * Arrays must be dense and contain no extra own keys.\n * Strings use `JSON.stringify` escaping; callers must have validated them as
  * well-formed NFC. Numbers must be non-negative safe integers; floats, NaN,
  * negatives, `undefined`, functions, bigint and non-plain objects throw.
  *
@@ -196,7 +196,16 @@ export function canonicalize(value: unknown): string {
   }
   if (typeof value === 'boolean') return value ? 'true' : 'false';
   if (value === null) return 'null';
-  if (Array.isArray(value)) return `[${value.map((v: unknown) => canonicalize(v)).join(',')}]`;
+  if (Array.isArray(value)) {
+    // Array.map skips holes: without this check a sparse array could silently lose
+    // elements or produce invalid JSON. Reject non-index own properties as well.
+    const keys = Reflect.ownKeys(value);
+    if (keys.length !== value.length + 1 ||
+        keys.some((key, i) => key !== (i === value.length ? 'length' : String(i)))) {
+      throw new JsonParseError();
+    }
+    return `[${value.map((v: unknown) => canonicalize(v)).join(',')}]`;
+  }
   if (typeof value === 'object') {
     const proto: unknown = Object.getPrototypeOf(value);
     if (proto !== null && proto !== Object.prototype) throw new JsonParseError();

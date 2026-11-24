@@ -23,10 +23,10 @@ function changeResponse(chain: ReturnType<typeof mockTron>, path: string, change
 describe('TRON untrusted-node and wallet boundaries', () => {
   it('refuses an omitted genesis and case-insensitive mainnet identity', async () => {
     // The strict range parser rejects the missing height before the view's genesis identity check.
-    await expect(checkNetwork(reply({ block: [] }))).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    await expect(checkNetwork(reply({ block: [] }), 'local')).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
     const chain = mockTron(walletA());
     chain.genesis = MAINNET_GENESIS.toUpperCase();
-    await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).rejects.toThrow(/mainnet/);
+    await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn), 'local')).rejects.toThrow(/mainnet/);
   });
 
   it('pins the genesis block ids published in tronprotocol/tips tip-474 and keeps them distinct', async () => {
@@ -35,10 +35,10 @@ describe('TRON untrusted-node and wallet boundaries', () => {
     expect(SHASTA_GENESIS).toBe('0000000000000000de1aa88295e1fcf982742f773e0419c5a9c134c994a9059e');
     expect(new Set([MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS]).size).toBe(3);
     // A Nile or Shasta node is not mistaken for mainnet.
-    for (const g of [NILE_GENESIS, SHASTA_GENESIS]) {
+    for (const [selected, g] of [['nile', NILE_GENESIS], ['shasta', SHASTA_GENESIS]] as const) {
       const chain = mockTron(walletA());
       chain.genesis = g;
-      await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).resolves.toBeUndefined();
+      await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn), selected)).resolves.toBeUndefined();
     }
   });
 

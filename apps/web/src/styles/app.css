@@ -192,6 +192,22 @@ legend { padding: 0 6px; font-weight: 600; }
 .row { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; margin-bottom: 8px; }
 @media (min-width: 40rem) { .row { grid-template-columns: 2fr 1fr 1fr auto; } }
 
+/* RPC URLs need full-sized columns, not the shared four-cell form grid. */
+.rpc-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 16px; margin-bottom: 16px; }
+.rpc-row > .field { min-width: 0; }
+.rpc-test-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; min-width: 0; }
+.rpc-test-row > .hint { margin: 0; flex: 1 1 12rem; min-width: 0; }
+@media (min-width: 40rem) {
+  .rpc-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Share label, input and helper rows so a wrapped label cannot offset the RPC inputs. */
+  .rpc-row > .field {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+  }
+  .rpc-test-row { grid-column: 1 / -1; }
+}
+
 .field label { display: block; font-weight: 600; margin-bottom: 4px; }
 .field input:not([type='checkbox']):not([type='radio']), .field select, .field textarea, input[type='file'] {
   width: 100%;
@@ -261,6 +277,17 @@ th, td { text-align: start; vertical-align: top; padding: 8px 12px; border-top: 
 .status { min-height: 1.5em; color: var(--muted); }
 
 .site-footer { color: var(--muted); font-size: 0.9rem; padding-bottom: 24px; }
+/* Local-only health checks live in the shared footer, on all mobile and desktop routes. */
+.browser-checks { margin-block: 8px 16px; min-width: 0; max-width: 100%; }
+.browser-checks summary { overflow-wrap: anywhere; }
+.browser-checks-list { list-style: none; display: grid; gap: 8px; padding: 0; margin: 8px 0; }
+.browser-checks-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; min-width: 0; }
+.browser-checks-list strong { font-weight: 600; }
+.browser-checks-list strong[data-result='fail'] { color: var(--danger); }
+.browser-checks-list strong[data-result='warn'] { color: var(--warn-border); }
+.browser-checks-list strong[data-result='pass'] { color: var(--ok); }
+.browser-checks-limits { max-width: 60ch; overflow-wrap: anywhere; font-weight: 400; }
+
 .footer-links { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 8px 0; padding: 0; }
 .footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
 
