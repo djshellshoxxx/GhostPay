@@ -7,7 +7,8 @@ PRs [#421](https://github.com/djshellshoxxx/GhostPay/pull/421),
 [#423](https://github.com/djshellshoxxx/GhostPay/pull/423),
 [#425](https://github.com/djshellshoxxx/GhostPay/pull/425), and
 [#462](https://github.com/djshellshoxxx/GhostPay/pull/462), retaining their ancestry.
-It targets main `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Its initial integration base was main `f76904301cff0b24d65ea4e31cbf37d470db4d95`;
+the later reconciliation is recorded below.
 
 Qualified application/test source: `3ff40d8fd020aa68aa965f6481a966a8eba1a064`;
 tree `af7c10dfa8c7dc628a365812aa880c7a9a3bc2b4`. This documentation-only successor
@@ -103,3 +104,19 @@ inspect its exact-head CI, recheck donor/main heads and integration ownership,
 and merge only after applicable gates pass. This worker did not push, merge a
 shared branch, deploy, release, or use live funds. No browser or whole-repository
 test result is claimed from this package-only run.
+
+## Current-main reconciliation
+
+After publication as [PR #601](https://github.com/djshellshoxxx/GhostPay/pull/601),
+main advanced to `706188000c38b3dde5a3a362370a530870aa7587` through the package
+fix rollups #561 and #565. The candidate now retains that commit and published fee
+head `5afc147554040612df7eda49cef61155f3c9ada7` as parents. The only conflict was
+the additive ownership registry; every nonblank line from both parents, including
+multiplicity, was retained. All six qualified fee source/test files are
+byte-identical to the published fee tree. The new main production/test files are
+retained unchanged. No fee behavior changed during reconciliation.
+
+The earlier package verification applies to those unchanged fee blobs; it is not
+a claim that the complete reconciled repository was retested. Fresh exact-head
+hosted CI remains required before integration. No shared integration lock was
+acquired and no shared branch was merged by this reconciliation.
