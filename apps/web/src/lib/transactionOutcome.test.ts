@@ -4,6 +4,7 @@ import * as languages from '../i18n/languages';
 import { SECURITY_KEYS } from '../i18n/securityKeys';
 import { createTranslator } from '../i18n/translator';
 import { MockWallet } from '../test/mockWallet';
+import { createTestLocks } from '../test/locks';
 import { fakeManifest } from '../test/fakeManifest';
 import { NOW, makeParsed } from '../test/invoiceFixtures';
 import { UserFacingError, captureUserMessage, displayMessage } from './errors';
@@ -126,7 +127,7 @@ describe('transaction outcomes retain meaning and exact references across locale
       },
     };
     const error: unknown = await submitTx(session, { to: TO, data: '0x', value: 1n }, { rpc: undefined, nowSeconds: () => NOW }, () => undefined,
-      undefined, () => { throw new Error('notification failed'); }, { kind: 'transaction', storage }).catch((e: unknown) => e);
+      undefined, () => { throw new Error('notification failed'); }, { kind: 'transaction', storage, lockManager: createTestLocks() }).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(PostBroadcastError);
     expect(error).toMatchObject({ hash: HASH, outcome: { hash: HASH, phase: 'verification-incomplete' } });
     expect(displayMessage(captureUserMessage(error))).not.toMatch(/nothing was sent|notification failed/i);

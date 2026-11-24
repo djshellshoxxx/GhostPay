@@ -1,3 +1,4 @@
+import { stubJournalWindow } from '../test/locks';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
@@ -11,15 +12,7 @@ import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSes
 
 beforeEach(() => {
   // Current wallet guards require a per-test tab journal; exercise them rather than bypassing absent browser storage.
-  const records = new Map<string, string>();
-  vi.stubGlobal('window', {
-    sessionStorage: {
-      getItem: (key: string) => records.get(key) ?? null,
-      setItem: (key: string, value: string) => { records.set(key, value); },
-      removeItem: (key: string) => { records.delete(key); },
-    },
-    dispatchEvent: () => true,
-  });
+  stubJournalWindow(vi.stubGlobal);
 });
 
 afterEach(() => {

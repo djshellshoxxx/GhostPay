@@ -253,7 +253,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts />
+      <WalletAttempts getRpc={app.getRpc} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>

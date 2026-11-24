@@ -9,6 +9,7 @@ import { SOURCE_TRANSLATOR } from '../../i18n/context';
 import { captureSessionVersionGuard, clearSession } from '../../lib/session';
 import { connectWallet, walletAttemptKey, type TxRequest } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
+import { stubJournalWindow } from '../../test/locks';
 import { DEPLOYMENT, ROUTER, SEPOLIA, account, fakeChain, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
 import { PolicyAlreadyPaidError, policyPaymentScope, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
@@ -353,7 +354,7 @@ describe('policy payment sending (attempt journal lookup)', () => {
     const otherKey = walletAttemptKey(t.session, t.prepared.built.tx, { kind: 'payment', scope: `0x${'cd'.repeat(32)}` });
     const earlier = beginAttempt({ key: otherKey, chainId: SEPOLIA, account: t.session.account, kind: 'payment' }, storage);
     finishAttempt(earlier, `0x${'ef'.repeat(32)}`, storage);
-    vi.stubGlobal('window', { sessionStorage: storage, dispatchEvent: vi.fn() });
+    stubJournalWindow(vi.stubGlobal, storage);
     await t.run();
     expect(t.walletSends()).toBe(1);
   });
@@ -363,13 +364,13 @@ describe('policy payment sending (attempt journal lookup)', () => {
     const storage = { getItem: (key: string) => key === 'ghostpay.wallet-attempts.v1' ? raw : null, setItem: (_key: string, value: string) => { raw = value; } };
     const key = walletAttemptKey(t.session, t.prepared.built.tx, { kind: 'payment', scope: policyPaymentScope(t.session, t.prepared, DEPLOYMENT) });
     finishAttempt(beginAttempt({ key, chainId: SEPOLIA, account: t.session.account, kind: 'payment' }, storage), `0x${'ef'.repeat(32)}`, storage);
-    vi.stubGlobal('window', { sessionStorage: storage, dispatchEvent: vi.fn() });
+    stubJournalWindow(vi.stubGlobal, storage);
     await expect(t.run()).rejects.toBeInstanceOf(PolicyAlreadyPaidError);
     expect(t.walletSends()).toBe(0);
   });
   it('fails closed before any RPC read when the attempt journal cannot be read (ERC-20)', async () => {
     const t = await setup();
-    vi.stubGlobal('window', { sessionStorage: { getItem: () => { throw new Error('blocked'); }, setItem: () => undefined } });
+    stubJournalWindow(vi.stubGlobal, { getItem: () => { throw new Error('blocked'); }, setItem: () => undefined });
     await expect(t.run()).rejects.toThrow('The wallet attempt journal is unavailable or invalid. No new wallet request was started.');
     expect(t.reads.allowance).toBe(0);
     expect(t.walletSends()).toBe(0);
