@@ -2,6 +2,7 @@ import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type O
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
+import { BroadcastReference } from '../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
@@ -947,9 +948,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts />
         {previousBroadcast !== undefined && (
-          <Notice kind="warn" title={t('pay.previous.title')}>
-            {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-          </Notice>
+          <>
+            <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
+            <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
+          </>
         )}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
@@ -1014,9 +1016,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts />
       {previousBroadcast !== undefined && (
-        <Notice kind="warn" title={t('pay.previous.title')}>
-          {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-        </Notice>
+        <>
+          <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
+          <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
+        </>
       )}
 
       <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
@@ -1267,7 +1270,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
-        <div className="panel" aria-live="polite">
+        <div className="panel">
           <h3>{broadcastKind === 'approval' ? t('pay.sent.approvalTitle') : t('pay.sent.paymentTitle')}</h3>
           <p>{rich('pay.sent.body', { kind: broadcastKind, hash: broadcast }, monoTag('hash'))}</p>
           <div className="actions">
@@ -1277,7 +1280,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
-        <div className="panel" aria-live="polite">
+        <div className="panel">
           <h3>{t('pay.done.heading')}</h3>
           <p>{rich('pay.done.hash', { hash: result.hash }, monoTag('hash'))}</p>
           <p>

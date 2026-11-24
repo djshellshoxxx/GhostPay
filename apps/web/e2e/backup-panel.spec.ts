@@ -49,7 +49,11 @@ test.describe('combined backup panel', () => {
     const archive = page.waitForEvent('download', { timeout: 60_000 });
     await tags.getByRole('button', { name: 'Download encrypted tag archive' }).click();
     expect((await archive).suggestedFilename()).toBe('export.gpa');
-    await expect(tags.getByRole('status').first()).toContainText('Downloaded');
+    await expect(tags.getByRole('status').first()).toHaveText('Downloaded');
+    await expect(tags.getByText(/Archive downloaded:.*SHA-256/)).toBeVisible();
+    for (const announcement of await page.locator('[role="status"], [aria-live="polite"], [aria-live="assertive"]').allTextContents()) {
+      expect(announcement).not.toMatch(/SHA-256|[0-9a-f]{64}/i);
+    }
     await expect(tags.getByRole('status').first()).not.toContainText('Done');
   });
 });

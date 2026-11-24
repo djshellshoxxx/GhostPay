@@ -892,7 +892,7 @@
     "pay.cancel": "إلغاء",
     "pay.copyHash": "نسخ التجزئة",
     "pay.previous.title": "ربما أُرسلت معاملة الفاتورة السابقة",
-    "pay.previous.body": "تحقق من محفظتك قبل الدفع مرة أخرى. تجزئة المعاملة هي {#hash}{hash}{/hash}. كانت {kind, select, approval {موافقة} other {دفعة}} للفاتورة التي كانت مفتوحة قبل تغيير الرابط.",
+    "pay.previous.body": "تحقق من محفظتك قبل الدفع مرة أخرى. كانت {kind, select, approval {موافقة} other {دفعة}} للفاتورة التي كانت مفتوحة قبل تغيير الرابط.",
     "pay.rejected.title": "تم رفض الفاتورة",
     "pay.rejected.controlsUnavailable": "تظل أدوات الدفع غير متاحة.",
     "pay.rejected.nothingSent": "لم يُعرض أو يُرسل أي شيء.",

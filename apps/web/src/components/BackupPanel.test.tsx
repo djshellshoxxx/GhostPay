@@ -42,7 +42,7 @@ async function open(services = makeServices()): Promise<User> {
   return user;
 }
 
-const status = (item: string): string => within(screen.getByTestId(item)).getAllByRole('status')[0]?.textContent ?? '';
+const status = (item: string): string => within(screen.getByTestId(item)).getAllByRole('status')[0]?.parentElement?.textContent ?? '';
 const tagStatus = (): string => status('backup-item-tags');
 const ARCHIVED = /^Downloaded: Last tag archive downloaded .*Tags in it: 0, /;
 

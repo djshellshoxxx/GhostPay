@@ -892,7 +892,7 @@
     "pay.cancel": "Cancelar",
     "pay.copyHash": "Copiar el hash",
     "pay.previous.title": "Puede que se haya enviado la transacción de la factura anterior",
-    "pay.previous.body": "Revisa tu billetera antes de volver a pagar. El hash de la transacción es {#hash}{hash}{/hash}. Era {kind, select, approval {una aprobación} other {un pago}} de la factura que estaba abierta antes de cambiar de enlace.",
+    "pay.previous.body": "Revisa tu billetera antes de volver a pagar. Era {kind, select, approval {una aprobación} other {un pago}} de la factura que estaba abierta antes de cambiar de enlace.",
     "pay.rejected.title": "Factura rechazada",
     "pay.rejected.controlsUnavailable": "Los controles de pago siguen sin estar disponibles.",
     "pay.rejected.nothingSent": "No se mostró ni se envió nada.",

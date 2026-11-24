@@ -892,7 +892,7 @@
     "pay.cancel": "キャンセル",
     "pay.copyHash": "ハッシュをコピー",
     "pay.previous.title": "前の請求書の取引が送信された可能性があります",
-    "pay.previous.body": "再度支払う前にウォレットを確認してください。取引ハッシュは {#hash}{hash}{/hash} です。これはリンクを切り替える前に開いていた請求書の{kind, select, approval {承認} other {支払い}}です。",
+    "pay.previous.body": "再度支払う前にウォレットを確認してください。これはリンクを切り替える前に開いていた請求書の{kind, select, approval {承認} other {支払い}}です。",
     "pay.rejected.title": "請求書は拒否されました",
     "pay.rejected.controlsUnavailable": "支払い操作は引き続き利用できません。",
     "pay.rejected.nothingSent": "何も表示も送信もされていません。",

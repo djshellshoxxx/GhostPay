@@ -81,7 +81,7 @@ describe('TagArchive blocked download cleanup', () => {
     // Nor may it be reported as a download: the archive notice and the backup checklist both say it failed.
     expect((await screen.findByRole('alert')).textContent).toMatch(/Something went wrong/);
     expect(screen.queryByText(/Archive downloaded/)).toBeNull();
-    expect(within(screen.getByTestId('backup-item-tags')).getAllByRole('status')[0]?.textContent).toMatch(/^Failed: The latest tag archive attempt failed and produced no file/);
+    expect(within(screen.getByTestId('backup-item-tags')).getAllByRole('status')[0]?.parentElement?.textContent).toMatch(/^Failed: The latest tag archive attempt failed and produced no file/);
   }, 120_000);
 });
 

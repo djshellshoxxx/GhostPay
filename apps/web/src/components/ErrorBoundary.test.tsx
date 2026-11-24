@@ -28,7 +28,7 @@ describe('ErrorBoundary (G1-01)', () => {
   });
 
   it('shows a fixed error panel instead of unmounting the app, and never the error text', () => {
-    const { container } = render(<><h1>App header</h1><ErrorBoundary onBack={noop}><View explode /></ErrorBoundary></>, privateRootErrorHandlers);
+    const { container } = render(<><h1>App header</h1><ErrorBoundary onBack={noop}><View explode /></ErrorBoundary></>, { onCaughtError: privateRootErrorHandlers.onCaughtError });
     expect(console.error).toHaveBeenCalledExactlyOnceWith('GhostPay could not render this view.');
     expect(screen.getByRole('heading', { name: 'App header' })).toBeTruthy();
     expect(screen.getByRole('alert').textContent).toMatch(/This page stopped after an unexpected error/);

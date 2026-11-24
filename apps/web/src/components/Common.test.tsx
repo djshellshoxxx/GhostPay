@@ -205,7 +205,7 @@ it('keeps private export bytes intact and out of download metadata', async () =>
   vi.useRealTimers();
   const reader = new FileReader();
   const read = new Promise<string>((resolve, reject) => {
-    reader.onload = () => { resolve(String(reader.result)); };
+    reader.onload = () => { if (typeof reader.result === 'string') resolve(reader.result); else reject(new Error('expected text')); };
     reader.onerror = () => { reject(new Error('read failed')); };
   });
   reader.readAsText(blob);

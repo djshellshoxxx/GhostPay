@@ -33,6 +33,9 @@ test('create invoice -> open link -> review screen (no manifest shipped, so paym
   const link = await createInvoice(page, { memo: 'Thanks for your business', chainLabel: 'Ethereum Sepolia' });
   await expect(page.getByRole('img', { name: 'QR code containing the invoice link' })).toBeVisible();
   await expect(page.getByText('Bearer link')).toBeVisible();
+  const invoiceLink = page.getByRole('textbox', { name: 'Link', exact: true });
+  await expect(invoiceLink).toHaveValue(link);
+  expect(await invoiceLink.evaluate((element) => element.closest('[aria-live="polite"], [aria-live="assertive"], [role="status"], [role="alert"]') !== null)).toBe(false);
 
   await openFresh(page, link);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();

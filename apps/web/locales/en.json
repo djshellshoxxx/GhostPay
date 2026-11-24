@@ -892,7 +892,7 @@
     "pay.cancel": "Cancel",
     "pay.copyHash": "Copy hash",
     "pay.previous.title": "Previous invoice transaction may have been submitted",
-    "pay.previous.body": "Check your wallet before paying again. The transaction hash is {#hash}{hash}{/hash}. This was a {kind, select, approval {approval} other {payment}} for the invoice that was open before you changed links.",
+    "pay.previous.body": "Check your wallet before paying again. {kind, select, approval {This approval} other {This payment}} was for the invoice that was open before you changed links.",
     "pay.rejected.title": "Invoice rejected",
     "pay.rejected.controlsUnavailable": "Payment controls remain unavailable.",
     "pay.rejected.nothingSent": "Nothing was shown or sent.",
