@@ -130,7 +130,9 @@ export class TagVault {
   };
 
   private notifyAccess(): void {
-    for (const listener of this.accessListeners) listener();
+    for (const listener of [...this.accessListeners]) {
+      try { listener(); } catch { /* One subscriber must not prevent the others observing a lock. */ }
+    }
   }
 
   private aes: CryptoKey | undefined;
