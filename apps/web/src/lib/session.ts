@@ -50,7 +50,7 @@ interface Custody {
   /**
    * A copy outside this browser profile. `verified`: the keys were imported (a keystore, or hex with its signing key), or a
    * downloaded keystore was opened again with its passphrase and holds exactly these keys. `unverified`: a keystore was
-   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it lifts the backup gate, not the wipe.
+   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it grants neither verification nor permission to wipe.
    */
   readonly external: 'none' | 'unverified' | 'verified';
   /**
@@ -68,7 +68,7 @@ interface Custody {
 
 /** React-facing summary of the custody state; it holds no ciphertext. */
 export interface SessionBackup {
-  /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock wipes them only if `signerOnly` (L1-01). */
+  /** A copy of the loaded keys exists outside this tab's memory. A download alone is still unverified. */
   readonly backedUp: boolean;
   /**
    * That copy is proven: imported keys, a vault record whose passphrase the user chose or proved, or a downloaded keystore
@@ -78,7 +78,7 @@ export interface SessionBackup {
   readonly verified: boolean;
   /**
    * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy: payments stay sweepable with
-   * the typed hex, so the idle lock may wipe the keys; nothing can be signed with that signing key afterwards (C-R10).
+   * the typed hex, but the idle lock must preserve the generated invoice signer until the full set is recoverable.
    */
   readonly signerOnly: boolean;
   /** The seller typed the waiver: invoicing and sharing are allowed, the keys are still not backed up. */
@@ -255,7 +255,7 @@ export interface ImportedHex {
   /**
    * Optional: when omitted a fresh invoice-signing key is generated (it is a separate key by design, ADR-0002). That key
    * exists only in this tab, so the keys count as unsaved until a keystore download or a vault save (C-R6); since the hex
-   * loads the spending and viewing keys again, only the signing key is reported missing, and the idle lock wipes them (C-R10).
+   * loads the spending and viewing keys again, only the signing key is reported missing until the complete set has a backup.
    */
   readonly signingKeyHex?: string;
 }

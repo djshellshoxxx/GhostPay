@@ -108,7 +108,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
       'backupGate.waiverLabel', 'backupGate.waiverPhrase', 'backupGate.waive',
       'about.feeNote', 'sweep.relayerFee', 'btc.review.approve', 'btc.sweep.destinationHint',
-      'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.signerLost',
+      'sellerKeys.deleteSoleCopy', 'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.keptSigner',
       'policy.create.keepBody', 'policy.account.withdrawal', 'policy.account.cancel',
       'sweep.attempt.unknownDirect', 'sweep.note.pendingDirect', 'settings.outside.title',
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',

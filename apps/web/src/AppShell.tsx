@@ -4,7 +4,7 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -83,7 +83,7 @@ export function AppShell(props: AppShellProps): ReactNode {
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
   // Minutes of the idle lock that last wiped seller keys, and whether an unsaved signing key went with them (C-R10), for a
   // visible notice; cleared once keys are loaded again.
-  const [idleWiped, setIdleWiped] = useState<{ readonly minutes: number; readonly signerLost: boolean } | undefined>(undefined);
+  const [idleWipedAfterMinutes, setIdleWipedAfterMinutes] = useState<number>();
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
@@ -123,13 +123,10 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
   useEffect(() => subscribeSession(() => {
     services.vault.lock();
-    if (hasSession()) setIdleWiped(undefined);
+    if (hasSession()) setIdleWipedAfterMinutes(undefined);
   }), [services]);
 
-  // Idle lock (L1-01). Local tags always lock. Seller keys are wiped only when a copy survives the wipe (imported keys, a
-  // downloaded keystore, or their vault still saved here); keys that exist nowhere else stay loaded under the backup
-  // banner, because wiping them would lose every payment sent to their meta-address. Hex keys imported without their
-  // signing key are wiped too: the hex loads them again, and the notice says that the signing key generated here is gone (C-R10).
+  // Lock local tags on idle. Wipe the seller session only when all three private keys are recoverable.
   useEffect(() => {
     const minutes = settings.lockTimeoutMin;
     const timeoutMs = minutes * 60_000;
@@ -156,14 +153,16 @@ export function AppShell(props: AppShellProps): ReactNode {
       const unchanged = captureSessionVersionGuard();
       void loadedKeysRecoverable().then((recoverable) => {
         try { unchanged(); } catch { return; }
-        const signerLost = getSessionBackup()?.signerOnly === true;
-        if (!recoverable && !signerLost) {
+        if (!recoverable) {
           // A downloaded keystore that was never verified does not count: the file may never have reached the disk (GP-PAGES-02).
-          setLive({ key: getSessionBackup()?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept' });
+          const custody = getSessionBackup();
+          const reason = custody?.signerOnly === true ? 'app.idle.keptSigner' :
+            custody?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept';
+          setLive({ key: reason });
           return;
         }
         clearSession();
-        setIdleWiped({ minutes, signerLost });
+        setIdleWipedAfterMinutes(minutes);
         setLive({ key: 'app.idle.wiped' });
       });
     };
@@ -206,6 +205,21 @@ export function AppShell(props: AppShellProps): ReactNode {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [services, settings.lockTimeoutMin]);
+
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
+  useEffect(() => {
+    if (!loadedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (!hasSession() || sessionHasExternalCopy()) return;
+      e.preventDefault(); e.returnValue = true;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [loadedKeys]);
 
   useEffect(() => {
     if (first.current) {
@@ -294,10 +308,10 @@ export function AppShell(props: AppShellProps): ReactNode {
             {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
-        {session === undefined && idleWiped !== undefined && (
+        {session === undefined && idleWipedAfterMinutes !== undefined && (
           <Notice kind="info">
-            {t('app.idle.wipedNotice', { minutes: idleWiped.minutes })}{idleWiped.signerLost && <> {t('app.idle.signerLost')}</>}{' '}
-            <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
+            {t('app.idle.wipedNotice', { minutes: idleWipedAfterMinutes })}{' '}
+            <button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}

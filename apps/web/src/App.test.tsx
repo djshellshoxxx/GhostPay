@@ -147,23 +147,22 @@ describe('App shell', () => {
     }
   });
 
-  it('C-R10: the idle lock wipes hex keys whose signing key was generated here, and says that this key is gone', async () => {
+  it('keeps the original invoice signer through idle when only the spending and viewing keys were imported', async () => {
+    const services = makeServices();
     setKeyVaultStoreForTests(new MemoryKeyVaultStore());
-    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    const seller = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    await services.vault.unlock(revealViewingKey());
     vi.useFakeTimers();
     try {
-      renderApp(makeServices());
-      // The typed hex loads the spending and viewing keys again: only the generated signing key has no copy.
-      const banner = screen.getByText('The invoice-signing key has no backup').closest('.notice');
-      expect(banner?.textContent).toMatch(/Payments to your meta-address stay sweepable with the spending and viewing keys you imported\./);
-      expect(banner?.textContent).not.toMatch(/every payment/);
-      expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+      renderApp(services);
       await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
-      expect(hasSession()).toBe(false);
-      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
-      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent)
-        .toMatch(/The invoice-signing key generated when the hex keys were imported had no backup and is gone: loading them again generates a new one\./);
+      expect(services.vault.unlocked).toBe(false);
+      expect(getSessionPublic()).toEqual(seller);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent)
+        .toBe('Local tags locked after inactivity. Seller keys stay loaded because the invoice-signing key has no backup.');
+      expect(screen.getByText('The invoice-signing key has no backup')).toBeTruthy();
+      expect(screen.queryByText(/Seller keys were wiped from memory/)).toBeNull();
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);

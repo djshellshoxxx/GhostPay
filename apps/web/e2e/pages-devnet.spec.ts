@@ -307,6 +307,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // GP-PAGES-02: the download is recorded as unverified until "Verify backup" opens the real downloaded file. A damaged
     // copy and the wrong passphrase are refused and change nothing; the exact file makes the backup verified.
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    const wouldWarnOnExit = () => sp.evaluate(() =>
+      !window.dispatchEvent(new Event('beforeunload', { cancelable: true })));
+    const pendingExit = sp.waitForEvent('dialog', { timeout: 10_000 });
+    await sp.evaluate(() => { setTimeout(() => { window.location.reload(); }, 0); });
+    const exit = await pendingExit;
+    expect(exit.type()).toBe('beforeunload');
+    await exit.dismiss();
+    await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     const verifyFile = keysView(sp).getByLabel('Downloaded keystore file', { exact: true });
     const verifyPass = keysView(sp).getByLabel('Keystore passphrase', { exact: true });
     await verifyFile.setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(tamperCiphertext(keystoreText), 'utf8') });
@@ -327,6 +335,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
     await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
+    expect(await wouldWarnOnExit()).toBe(false);
     identity = await identityOf(sp);
     checkKeystore(keystoreText, identity, KEYSTORE_PASS);
 
@@ -708,6 +717,28 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(await anvil.nonce(stealth)).toBe(1);
     expect(await anvil.balance(ACCOUNTS.destination)).toBe(destAfterSweep);
     expect((await anvil.receipt(sweepHash))?.status).toBe('0x1');
+
+    // Fund the same address on the local fixture. Only the restored profile signs this second sweep.
+    const fundingHash = await anvil.call<Hex>('eth_sendTransaction', [{
+      from: ACCOUNTS.payer, to: stealth, value: toHex(PRICE),
+    }]);
+    await expect.poll(async () => (await anvil.receipt(fundingHash))?.status).toBe('0x1');
+    await nav(rp).getByRole('button', { name: 'Seller keys' }).click();
+    await nav(rp).getByRole('button', { name: 'Sweep' }).click();
+    await (await prepareDirectSweep(rp)).click();
+    await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
+    const raw = net.sentRaw.at(-1) as `0x02${string}`;
+    const tx = parseTransaction(raw);
+    expect(tx.chainId).toBe(84532);
+    expect(tx.nonce).toBe(1);
+    expect(tx.to?.toLowerCase()).toBe(ACCOUNTS.destination.toLowerCase());
+    expect(await recoverTransactionAddress({ serializedTransaction: raw })).toBe(getAddress(stealth));
+    const hash = keccak256(raw);
+    await expect.poll(async () => (await anvil.receipt(hash))?.status).toBe('0x1');
+    expect(tx.value ?? 0n).toBeGreaterThan(0n);
+    expect(await anvil.balance(ACCOUNTS.destination) - destAfterSweep).toBe(tx.value);
+    expect(await anvil.nonce(stealth)).toBe(2);
+    txHashes.add(hash);
     net.expectClean();
   });
 

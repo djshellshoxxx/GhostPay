@@ -93,6 +93,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [exportStepUp, setExportStepUp] = useState('');
   const [saveStepUp, setSaveStepUp] = useState('');
   const [deletePass, setDeletePass] = useState('');
+  const [deletePhrase, setDeletePhrase] = useState('');
   // Unlocking would replace keys that have no backup; set once the user asked to unlock anyway (L1-01).
   const [confirmReplace, setConfirmReplace] = useState(false);
   // Wiping would lose keys that have no backup; set once the user asked to wipe them anyway (C-R4).
@@ -433,6 +434,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         if (!mounted.current) return;
         if (saved === undefined) { setVaultState('empty'); return; }
         setDeletePass('');
+        setDeletePhrase('');
         setDeleteExpected(saved);
       },
       (err: unknown) => { if (mounted.current) fail(err); },
@@ -441,7 +443,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onDeleteVault = (): void => {
     const expected = deleteExpected;
-    if (expected === undefined) return;
+    if (expected === undefined || !deleteAuthorized) return;
     const passphrase = deletePass;
     setVaultBusy(true);
     void deleteEncryptedVault(expected, undefined, passphrase).then(
@@ -469,6 +471,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const stepUpNeeded = backup?.vaultStepUp === true || (s !== undefined && vaultState === 'saved' && vaultMeta === s.metaAddress);
   const deleteMeta = deleteExpected === undefined ? undefined : vaultMetaAddress(deleteExpected);
   const deletesLoadedKeys = s !== undefined && deleteMeta === s.metaAddress;
+  const deleteAction = t('sellerKeys.confirmDelete');
+  const deleteAuthorized = deletesLoadedKeys ? deletePass !== '' : deletePhrase === deleteAction;
   // Optional smaller codes for low-resolution cameras: same encrypted text, split into GhostPay multi-part QR.
   let backupParts: readonly string[] | undefined;
   try { backupParts = backupQr !== undefined && backupSmaller ? multipartIfNeeded(backupQr, { force: true }) : undefined; } catch { backupParts = undefined; }
@@ -514,10 +518,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                   {s !== undefined && <p>{t(deletesLoadedKeys ? 'sellerKeys.deleteLoaded' : 'sellerKeys.deleteOther')}</p>}
                 </>
               )}
-              {deletesLoadedKeys && (
+              {deletesLoadedKeys ? (
                 <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-delete" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
+              ) : (
+                <Field label={t('sellerKeys.deleteSoleCopy', { phrase: deleteAction })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={deletePhrase} onChange={(e) => { setDeletePhrase(e.target.value); }} />}</Field>
               )}
-              <button type="button" className="btn btn-danger" disabled={vaultBusy || (deletesLoadedKeys && deletePass === '')} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
+              <button type="button" className="btn btn-danger" disabled={vaultBusy || !deleteAuthorized} onClick={onDeleteVault}>{deleteAction}</button>{' '}
               <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}

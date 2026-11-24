@@ -178,7 +178,7 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByText('Import existing keys (hex)'));
     const hint = document.getElementById(screen.getByLabelText('Invoice-signing private key (optional)').getAttribute('aria-describedby') ?? '');
-    expect(hint?.textContent).toMatch(/It exists only in this tab until you download the encrypted keystore or save the vault: if the tab closes or the idle lock wipes the keys before then, your hex keys load the spending and viewing keys again, but with a new signing key\./);
+    expect(hint?.textContent).toMatch(/Importing the same two hex keys again produces a different signer\./);
   });
 
   it('C-R10: says that only the generated signing key is lost before keys from a hex import are replaced or wiped', async () => {
@@ -808,9 +808,30 @@ describe('encrypted vault delete confirmation', () => {
   async function openConfirmation(): Promise<ReturnType<typeof userEvent.setup>> {
     const user = await open();
     await user.click(await screen.findByRole('button', { name: 'Delete encrypted vault' }));
-    expect(await screen.findByRole('button', { name: CONFIRM })).toBeTruthy();
+    const confirm = await screen.findByRole<HTMLButtonElement>('button', { name: CONFIRM });
+    expect(confirm.disabled).toBe(true);
+    await user.type(screen.getByLabelText(/This vault may be the only copy/), CONFIRM);
+    expect(confirm.disabled).toBe(false);
     return user;
   }
+
+  it('preserves the locked vault on an accidental confirm and resets typed consent when reopened', async () => {
+    const { a } = await savedAWithReplacementB();
+    const user = await open();
+    const begin = () => user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    await begin();
+    const input = await screen.findByLabelText(/This vault may be the only copy/);
+    await user.type(input, 'delete');
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    expect(await vaultStore.get()).toBe(a);
+    await user.clear(input);
+    await user.type(input, CONFIRM);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await begin();
+    expect((await screen.findByLabelText<HTMLInputElement>(/This vault may be the only copy/)).value).toBe('');
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: CONFIRM }).disabled).toBe(true);
+    expect(await vaultStore.get()).toBe(a);
+  });
 
   it('Cancel keeps vault A byte-for-byte', async () => {
     const { a } = await savedAWithReplacementB();
