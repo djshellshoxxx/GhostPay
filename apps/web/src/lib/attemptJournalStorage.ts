@@ -32,7 +32,7 @@ export async function updateJournalSnapshot<T>(
       const read = store.get(SNAPSHOT);
       let updated: ReturnType<typeof update> | undefined;
       let failure: unknown;
-      tx.onabort = () => { reject(failure ?? new Error('wallet attempt snapshot unavailable')); };
+      tx.onabort = () => { reject(failure instanceof Error ? failure : new Error('wallet attempt snapshot unavailable')); };
       tx.oncomplete = () => {
         if (updated === undefined) reject(new Error('wallet attempt snapshot unavailable'));
         else resolve(updated);
