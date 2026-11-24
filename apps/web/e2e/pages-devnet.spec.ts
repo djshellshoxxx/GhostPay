@@ -493,7 +493,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // Local reconciliation: the verified payment is saved and matched to the registered invoice.
     const l = ledger(s);
     await l.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
-    await expect(l.getByText('0 stored records in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    // The pending scan already retained this same inclusion. Finality upgrades it without linking the invoice.
+    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    await expect(l.getByText('Verified on-time transfer — invoice link pending.', { exact: true })).toBeVisible();
+    await expect(l.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
     await expect(l).toContainText(digest);
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });

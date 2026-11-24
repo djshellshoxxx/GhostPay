@@ -312,7 +312,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     const proposal = ledger.getByText(/Exact local match proposed:/);
     await expect(proposal).toContainText(registeredInvoiceDigest);
     await expect(ledger.getByText('No records saved.', { exact: true })).toBeVisible();
-    await expect(ledger.getByText(/No linked observation\./)).toBeVisible();
+    await expect(ledger.getByText('Verified on-time transfer — invoice link pending.', { exact: true })).toBeVisible();
+    await expect(ledger.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
     await auditAccessibility(page, 'flow-reconciliation-match-proposed');
     await ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true }).click();
     const linkedObservation = ledger.locator('li').filter({ hasText: 'Manual invoice link (or a local match you confirmed):' });

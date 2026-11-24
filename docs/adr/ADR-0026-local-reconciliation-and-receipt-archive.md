@@ -233,6 +233,11 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
   association. Expiry does not reverse a transfer.
 - Confirmed reorgs invalidate the affected inclusion and retain its evidence and decision history. Conflicting or
   incomplete RPC evidence is shown as unresolved while fresh verification is pending.
+- A completed scan retains the earliest unresolved seller-linked block in its checkpoint, including on-time and
+  partial transfers. A missing log with an unchanged or unavailable header removes that inclusion from the
+  invoice total until a clean rescan. A verified replacement block permanently invalidates the old inclusion.
+  Other verified partials continue to count. An interrupted reconciliation write leaves the prior snapshot and
+  checkpoint intact. Contradictory deliveries of one inclusion withhold its credit and require a clean page.
 - A direct router call by another wallet can be eligible. Unsupported bare transfers and forged or unsupported
   announcements have no automatic invoice attribution through this scanner. Completing a scan or waiting for a
   timeout is insufficient evidence for reissuance.
