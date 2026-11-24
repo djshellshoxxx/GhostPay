@@ -816,3 +816,8 @@ Worker: Codex on `test/seller-accepted-late-reorg`, stacked on PR #533 at `90e3f
 Own the late-payment case in `apps/web/e2e/core-journey.spec.ts` and this claim. Exercise the existing seller scanner and encrypted ledger through a confirming-block replacement, rescan, and page reload. Check the same invoice loses its paid status and the same payment retains its original seller decision.
 
 Follow-up QA on `qa/accepted-late-reorg-546`, based on the #546 head `7391b31e37d319e79a21b0aa9af89f6900e41241`, for integration into the same PR. Exercise generated reorg, rescan and reload sequences, transient canonical-header loss, and unchanged-block controls. Paths in scope are the existing core browser journey, invoice vault regressions, and the seller reconciliation/scanner code for failures reproduced by those tests.
+
+## Invoice expiry and recovery workflow qualification
+
+Worker: Codex on `codex/invoice-expiry-recovery-devnet`, stacked on #546 at `711168f18e5d808df4e3153da8898cd86fae5266` and #533. Main at discovery: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the registered-invoice expiry display and recovery copy, payer expiry guidance, scoped locale keys, and additional cases in the real Anvil browser journey. Reuse the existing encrypted ledger, explicit seller links, late acceptance and checkpoint recovery. Acceptance covers the open-view expiry boundary, successful and reverted transfers, linked amounts and duplicate scans, interrupted review, and evidence that expiry and seller decisions do not move funds.
