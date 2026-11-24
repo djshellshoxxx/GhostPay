@@ -3,6 +3,7 @@ import { INITIAL, checkLink, formatMinor, parseMinor, reduce } from './pos-logic
 const $ = (id) => document.getElementById(id);
 let state = INITIAL;
 let timer;
+const clockError = 'Check the terminal clock and retry.';
 
 function newSessionId() {
   const b = new Uint8Array(8);
@@ -22,22 +23,37 @@ function render() {
   const due = state.dueMinor ?? 0n;
   $('amounts').textContent = state.dueMinor === undefined ? '' : `${formatMinor(state.paidMinor, state.currency)} / ${formatMinor(due, state.currency)} ${state.currency}`;
   const live = state.status === 'awaiting';
-  $('start').disabled = state.status === 'awaiting';
+  $('start').disabled = live;
+  $('start').textContent = live || state.status === 'idle' ? 'Start sale' : 'New sale';
   $('received').disabled = !live;
   $('cancel').disabled = !live;
   if (!live) {
     clearTimeout(timer);
     clearCustomerView(); // the link is a bearer secret: remove it when the sale ends
-    if (state.status !== 'idle') $('countdown').textContent = '';
-    if (state.status !== 'awaiting' && state.status !== 'idle') $('start').textContent = 'New sale';
+    $('countdown').textContent = '';
+    $('received-amount').value = '';
   }
+}
+
+function applyEvent(event, now) {
+  try {
+    // A late payment is rejected but still moves the session to expired.
+    state = reduce(state, event, now).state;
+  } catch (error) {
+    if (error.message !== 'bad-time-policy') throw error;
+    $('error').textContent = clockError;
+    $('countdown').textContent = '';
+    return false;
+  }
+  if ($('error').textContent === clockError) $('error').textContent = '';
+  return true;
 }
 
 function tick() {
   const now = Math.floor(Date.now() / 1000);
-  state = reduce(state, { type: 'tick' }, now).state;
+  const validClock = applyEvent({ type: 'tick' }, now);
   if (state.status === 'awaiting') {
-    $('countdown').textContent = `${Math.max(0, state.expiresAt - now)}s left`;
+    if (validClock) $('countdown').textContent = `${state.expiresAt - now}s left`;
     timer = setTimeout(tick, 1000);
   }
   render();
@@ -57,7 +73,13 @@ function drawQr(link) {
 
 $('start').addEventListener('click', () => {
   $('error').textContent = '';
-  if (state.status !== 'idle') { state = { ...INITIAL }; clearCustomerView(); render(); $('start').textContent = 'Start sale'; return; }
+  if (state.status === 'awaiting') return;
+  if (state.status !== 'idle') {
+    state = INITIAL;
+    $('amount').value = '';
+    render();
+    return;
+  }
   const cur = $('currency').value.trim().toUpperCase();
   const err = checkLink($('link').value.trim());
   if (!/^[A-Z]{3}$/.test(cur)) { $('error').textContent = 'Currency must be 3 letters.'; return; }
@@ -67,7 +89,7 @@ $('start').addEventListener('click', () => {
   if (err !== undefined) { $('error').textContent = err; return; }
   const link = $('link').value.trim();
   const now = Math.floor(Date.now() / 1000);
-  state = reduce(state, { type: 'start', sessionId: newSessionId(), invoiceId: 'pos-sale', currency: cur, dueMinor: due, ttlSeconds: 300 }, now).state;
+  if (!applyEvent({ type: 'start', sessionId: newSessionId(), invoiceId: 'pos-sale', currency: cur, dueMinor: due, ttlSeconds: 300 }, now)) return;
   $('linkText').textContent = link;
   drawQr(link);
   tick();
@@ -78,12 +100,15 @@ $('received').addEventListener('click', () => {
   if (state.status !== 'awaiting') return;
   const amt = parseMinor($('received-amount').value || '0', state.currency);
   if (amt === undefined || amt <= 0n) { $('error').textContent = 'Enter the received amount.'; return; }
-  state = reduce(state, { type: 'payment', invoiceId: state.invoiceId, currency: state.currency, amountMinor: amt }, Math.floor(Date.now() / 1000)).state;
+  if (!applyEvent({ type: 'payment', invoiceId: state.invoiceId, currency: state.currency, amountMinor: amt }, Math.floor(Date.now() / 1000))) return;
+  $('error').textContent = '';
+  $('received-amount').value = '';
   render();
 });
 
 $('cancel').addEventListener('click', () => {
-  state = reduce(state, { type: 'cancel' }, Math.floor(Date.now() / 1000)).state;
+  applyEvent({ type: 'cancel' }, Math.floor(Date.now() / 1000));
+  $('error').textContent = '';
   render();
 });
 

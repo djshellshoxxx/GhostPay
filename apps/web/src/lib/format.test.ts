@@ -65,6 +65,14 @@ describe('display helpers', () => {
     expect(formatCountdown(-5)).toBe('0:00');
     expect(formatCountdown(500)).toBe('0:01');
   });
+  it('rounds remaining time up across hour, minute and expiry boundaries', () => {
+    expect([3_600_001, 3_600_000, 3_599_999, 3_599_000].map(formatCountdown))
+      .toEqual(['1:00:01', '1:00:00', '1:00:00', '59:59']);
+    expect([60_001, 60_000, 59_999, 59_000].map(formatCountdown))
+      .toEqual(['1:01', '1:00', '1:00', '0:59']);
+    expect([1_001, 1_000, 1, 0, -1].map(formatCountdown))
+      .toEqual(['0:02', '0:01', '0:01', '0:00', '0:00']);
+  });
   it('formats unix time in UTC', () => {
     expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
     expect(formatUnix(253_402_300_799)).toBe('9999-12-31 23:59:59 UTC');

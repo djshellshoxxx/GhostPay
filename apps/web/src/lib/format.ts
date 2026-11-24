@@ -48,6 +48,8 @@ export function shortHex(value: string, head = 8, tail = 6): string {
 
 /** `mm:ss` or `h:mm:ss` countdown label from milliseconds (never negative). */
 export function formatCountdown(ms: number): string {
+  // Runtime JavaScript callers can bypass the number type. Do not coerce malformed durations.
+  if (typeof ms !== 'number' || !Number.isFinite(ms)) return 'invalid time';
   const total = Math.max(0, Math.ceil(ms / 1000));
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);

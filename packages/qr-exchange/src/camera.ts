@@ -143,7 +143,12 @@ export async function startCamera(
     stopStream(stream);
     throw new QrExchangeError('ABORTED');
   }
-  video.srcObject = stream;
+  try {
+    video.srcObject = stream;
+  } catch {
+    stopStream(stream);
+    throw new QrExchangeError('CAMERA_UNAVAILABLE');
+  }
   try {
     await video.play();
   } catch {
