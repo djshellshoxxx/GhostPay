@@ -1,3 +1,11 @@
+# Resumed seller browser qualification — 2026-11-24 UTC
+
+Worker: root. Branch: `resume/seller-reconciliation-20261124`. Parent: PR #575 at `5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727`. Main observed: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the imported-history assertions in `apps/web/e2e/pages-devnet.spec.ts`, the mismatched-observation fixture in `apps/web/src/lib/reconciliationVault.invoices.test.ts`, this claim, and a new handoff. Resume the existing task after the reported interruption. Preserve parent branches and all production code.
+Acceptance: imported historical records display the current unverified state and no credited amount summary; saving the freshly verified observation produces one link and one distinct observation. Preserve the existing encrypted-backup, duplicate, sweep and network checks. Local fixtures only; hosted browser qualification remains required.
+
+---
+
 # Seller payment reconciliation on the #533 → #546 stack
 
 Worker: Codex. Branch `fix/seller-linked-payment-reconciliation` starts at #546 `711168f18e5d808df4e3153da8898cd86fae5266`. Main inspected at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.

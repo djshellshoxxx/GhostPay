@@ -514,7 +514,13 @@ describe('late payments in the encrypted reconciliation vault', () => {
     await vault.registerInvoice(invoice);
     const final = rec(1, { blockTimestamp: String(invoice.expiresAt + 1) });
     await expect(vault.observeInvoicePayments([rec(1, { chainId: 1 })])).rejects.toThrow(/scope/);
-    await vault.observeInvoicePayments([{ ...final, asset: `0x${'2'.repeat(40)}` }, { ...final, amountMinorUnits: '1' }]);
+    const wrongAsset = { ...final, asset: `0x${'2'.repeat(40)}` };
+    // Conflicting copies of one event reject the whole page without storing either copy.
+    await expect(vault.observeInvoicePayments([wrongAsset, { ...final, amountMinorUnits: '1' }]))
+      .rejects.toThrow(/Only a current verified scan observation can be saved/);
+    expect(await vault.read()).toEqual([]);
+    // Distinct observations that mismatch the invoice remain ignored independently.
+    await vault.observeInvoicePayments([wrongAsset, rec(3, { blockTimestamp: final.blockTimestamp!, amountMinorUnits: '1' })]);
     expect(await vault.read()).toEqual([]);
     await expect(vault.confirmProposal(final, synthetic(2).invoiceDigest, { current: [final], acceptLate: true })).rejects.toThrow();
     const pending = rec(2, { blockTimestamp: String(invoice.expiresAt), evidenceStatus: 'pending-at-scan', evidenceSource: 'router-scan-candidate' });
