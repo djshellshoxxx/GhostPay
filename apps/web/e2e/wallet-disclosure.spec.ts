@@ -77,6 +77,19 @@ test('wallet disclosure requires each decision, cancels before wallet exposure, 
   expect(state.sent).toEqual(reviewed.params[0]);
   const hash = `0x${'9'.repeat(64)}`;
   await expect(page.getByText(hash, { exact: true }).first()).toBeVisible();
+  await page.clock.install();
+  // Renew the display grant under the controlled clock before opening the receipt confirmation.
+  await page.getByRole('banner').getByRole('button', { name: 'Hide sensitive details', exact: true }).click();
+  await reveal(page).click();
+  await page.getByRole('button', { name: 'Download local receipt' }).click();
+  const receiptReview = page.getByRole('group', { name: /This receipt contains the amount and time/ });
+  await expect(receiptReview.getByRole('button', { name: 'Cancel' })).toBeFocused();
+  await page.clock.fastForward(30_000);
+  await expect(receiptReview).toHaveCount(0);
+  await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data]);
+  await reveal(page).click();
+  await expect(receiptReview).toHaveCount(0);
+  await expect(page.getByText(hash, { exact: true }).first()).toBeVisible();
   await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
   await expect(reveal(page)).toBeVisible();
   await expectMaskedDocument(page, [hash, reviewed.params[0].from, reviewed.params[0].data, '0.5 ETH']);

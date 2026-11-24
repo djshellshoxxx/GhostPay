@@ -1,3 +1,4 @@
+import { ConfirmAction } from '../../components/ConfirmAction';
 import { ZERO_ADDRESS, deriveScheme2OwnerKey, type Address, type Hex, type PolicyRecord } from '@ghostpay/policy-scheme';
 import type { ScanCursor } from '@ghostpay/chain-adapters';
 import { useRef, useState, type ReactNode } from 'react';
@@ -179,9 +180,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   });
 
   const clear = (key: string): void => run(async (assertCurrent) => {
-    const confirmed = window.confirm(t('policy.withdraw.clearConfirm'));
     assertCurrent();
-    if (!confirmed) return;
     await clearPolicyAction(key, true, undefined, undefined, assertCurrent);
     assertCurrent();
     refreshAttempts(tokenAddress(), snapshot);
@@ -232,7 +231,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       {attempts.length > 0 && <section aria-label={t('policy.withdraw.attempts')}>
         {attempts.map((attempt) => <p key={attempt.id}>
           <Mono>{attempt.hash ?? attempt.status}</Mono>{' '}
-          <button type="button" disabled={busy} onClick={() => { clear(attempt.key); }}>{t('policy.withdraw.clearAttempt')}</button>
+          <ConfirmAction disabled={busy} message={t('policy.withdraw.clearConfirm')} onConfirm={() => { clear(attempt.key); }}>{t('policy.withdraw.clearAttempt')}</ConfirmAction>
         </p>)}
       </section>}
       {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}

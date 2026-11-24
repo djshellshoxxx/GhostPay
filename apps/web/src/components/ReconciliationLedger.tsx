@@ -1,3 +1,4 @@
+import { ConfirmAction } from './ConfirmAction';
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -397,19 +398,13 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 })
               }
             >{t('ledger.ui.exportEncryptedReconciliationBackup')}</button>
-            <button
-              type="button"
+            <ConfirmAction
               className="btn btn-danger"
               disabled={busy}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    t('ledger.ui.deleteEncryptedObservationsInThisSellerAndChainScopeReorg'),
-                  )
-                )
-                  run(async (current) => current.clearRecords());
+              message={t('ledger.ui.deleteEncryptedObservationsInThisSellerAndChainScopeReorg')} onConfirm={() => {
+                run(async (current) => current.clearRecords());
               }}
-            >{t('ledger.ui.deleteEncryptedObservations')}</button>
+            >{t('ledger.ui.deleteEncryptedObservations')}</ConfirmAction>
           </div>
           <Field label={t('ledger.search')}>
             {(id) => (
@@ -619,16 +614,9 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             }
           }}
         >{t('ledger.ui.readUntrustedLegacyRecords')}</button>
-        <button
-          type="button"
+        <ConfirmAction
           className="btn"
-          onClick={() => {
-            if (
-              !window.confirm(
-                t('ledger.ui.exportUntrustedLegacyRecordsAsPlaintextThisRevealsTheStored'),
-              )
-            )
-              return;
+          message={t('ledger.ui.exportUntrustedLegacyRecordsAsPlaintextThisRevealsTheStored')} onConfirm={() => {
             try {
               downloadText(
                 'ghostpay-untrusted-legacy-ledger.txt',
@@ -639,17 +627,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setError(publicLedgerError(cause));
             }
           }}
-        >{t('ledger.ui.exportUntrustedLegacyPlaintext')}</button>
-        <button
-          type="button"
+        >{t('ledger.ui.exportUntrustedLegacyPlaintext')}</ConfirmAction>
+        <ConfirmAction
           className="btn btn-danger"
-          onClick={() => {
-            if (
-              !window.confirm(
-                t('ledger.ui.deleteAllLegacyPlaintextReconciliationDataIncludingUnreadableRecords'),
-              )
-            )
-              return;
+          message={t('ledger.ui.deleteAllLegacyPlaintextReconciliationDataIncludingUnreadableRecords')} onConfirm={() => {
             try {
               clearReconciliationRecords();
               setLegacy(undefined);
@@ -658,7 +639,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setError(new UserFacingError({ key: 'ledger.ui.legacyPlaintextDataCouldNotBeDeleted' }));
             }
           }}
-        >{t('ledger.ui.deleteLegacyPlaintextRecords')}</button>
+        >{t('ledger.ui.deleteLegacyPlaintextRecords')}</ConfirmAction>
         {legacy !== undefined && (
           <ul>
             {legacy.map((record) => (
@@ -710,26 +691,23 @@ function InvoiceRegistry(props: {
                   {linked.has(invoice.invoiceDigest) ? t('ledger.ui.linkedToAVerifiedObservation') : t('ledger.ui.noLinkedObservation')}
                 </p>
                 <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
-                <button
-                  type="button"
+                <ConfirmAction
                   className="btn"
                   disabled={props.busy}
-                  onClick={() => {
-                    if (window.confirm(t('ledger.ui.removeThisInvoiceRegistrationSavedObservationsAndLinksAreKept')))
-                      props.onRemove(invoice.invoiceDigest);
+                  message={t('ledger.ui.removeThisInvoiceRegistrationSavedObservationsAndLinksAreKept')} onConfirm={() => {
+                    props.onRemove(invoice.invoiceDigest);
                   }}
-                >{t('ledger.ui.removeRegistration')}</button>
+                >{t('ledger.ui.removeRegistration')}</ConfirmAction>
               </li>
             ))}
           </ul>
-          <button
-            type="button"
+          <ConfirmAction
             className="btn btn-danger"
             disabled={props.busy}
-            onClick={() => {
-              if (window.confirm(t('ledger.ui.removeAllInvoiceRegistrationsInThisSellerAndChainScope'))) props.onClear();
+            message={t('ledger.ui.removeAllInvoiceRegistrationsInThisSellerAndChainScope')} onConfirm={() => {
+              props.onClear();
             }}
-          >{t('ledger.ui.removeAllInvoiceRegistrations')}</button>
+          >{t('ledger.ui.removeAllInvoiceRegistrations')}</ConfirmAction>
         </>
       )}
     </div>
@@ -761,36 +739,31 @@ function ReceiptArchive(props: {
                   <bdi dir="ltr">{receipt.amountMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{receipt.asset}</bdi>{t('ledger.ui.issued')}{' '}
                   {new Date(receipt.issuedAt * 1000).toISOString()}{t('ledger.ui.archived')}{new Date(archivedAt).toISOString()}.
                 </p>
-                <button
-                  type="button"
+                <ConfirmAction
                   className="btn"
                   disabled={props.busy}
-                  onClick={() => {
-                    if (window.confirm(t('ledger.ui.deleteThisArchivedReceiptFromThisDevice')))
-                      props.onRemove(receipt.signature);
+                  message={t('ledger.ui.deleteThisArchivedReceiptFromThisDevice')} onConfirm={() => {
+                    props.onRemove(receipt.signature);
                   }}
-                >{t('ledger.ui.deleteArchivedReceipt')}</button>
+                >{t('ledger.ui.deleteArchivedReceipt')}</ConfirmAction>
               </li>
             ))}
           </ul>
           <div className="actions">
-            <button
-              type="button"
+            <ConfirmAction
               className="btn"
               disabled={props.busy}
-              onClick={() => {
-                if (window.confirm(t('ledger.ui.exportArchivedReceiptsAsPlaintextJSONTheFileRevealsPayment')))
-                  props.onExport();
+              message={t('ledger.ui.exportArchivedReceiptsAsPlaintextJSONTheFileRevealsPayment')} onConfirm={() => {
+                props.onExport();
               }}
-            >{t('ledger.ui.exportArchivedReceipts')}</button>
-            <button
-              type="button"
+            >{t('ledger.ui.exportArchivedReceipts')}</ConfirmAction>
+            <ConfirmAction
               className="btn btn-danger"
               disabled={props.busy}
-              onClick={() => {
-                if (window.confirm(t('ledger.ui.deleteAllArchivedReceiptsInThisSellerAndChainScope'))) props.onClear();
+              message={t('ledger.ui.deleteAllArchivedReceiptsInThisSellerAndChainScope')} onConfirm={() => {
+                props.onClear();
               }}
-            >{t('ledger.ui.deleteAllArchivedReceipts')}</button>
+            >{t('ledger.ui.deleteAllArchivedReceipts')}</ConfirmAction>
           </div>
         </>
       )}

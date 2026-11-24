@@ -1,6 +1,9 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { usePrivacy } from '../lib/privacyMode';
+
+const HiddenContext = createContext(false);
+export const useBoundaryHidden = (): boolean => useContext(HiddenContext);
 
 /** A visible neutral control remains outside every privacy boundary, including Settings. */
 export function focusPrivacyControl(): void {
@@ -12,6 +15,7 @@ export function focusPrivacyControl(): void {
  * sole-copy keys. Its host belongs to the live document only while display is allowed.
  */
 export function PrivacyBoundary({ hidden, children }: { readonly hidden: boolean; readonly children: ReactNode }): ReactNode {
+  const ancestorHidden = useBoundaryHidden();
   const [host] = useState(() => document.createElement('div'));
   const placeHost = useCallback((slot: HTMLDivElement | null): void => {
     if (slot === null) return;
@@ -31,7 +35,9 @@ export function PrivacyBoundary({ hidden, children }: { readonly hidden: boolean
     host.inert = true;
     host.remove();
   }, [hidden, host]);
-  return <><div ref={placeHost} />{createPortal(children, host)}</>;
+  return <HiddenContext.Provider value={hidden || ancestorHidden}>
+    <div ref={placeHost} />{createPortal(children, host)}
+  </HiddenContext.Provider>;
 }
 
 export function SensitiveContent(props: { readonly active?: boolean; readonly children: ReactNode }): ReactNode {

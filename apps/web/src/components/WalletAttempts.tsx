@@ -1,3 +1,4 @@
+import { ConfirmAction } from './ConfirmAction';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ATTEMPT_JOURNAL_EVENT, clearAttempt, readAttempts, type WalletAttempt } from '../lib/duplicateAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -32,10 +33,9 @@ export function WalletAttempts(props: { readonly wallet?: Pick<WalletSession, 'a
     <PrivateHistory unlocked scope={wallet}>
     <ul className="plain-list">{visible.map((attempt) => <li key={attempt.id}>
       <p>{t('walletAttempts.line', { kind: attempt.kind, chainId: String(attempt.chainId) })} · <Mono>{attempt.account}</Mono> · {attempt.hash === undefined ? t('walletAttempts.unknown') : <>{t('walletAttempts.returnedHash')} <Mono>{attempt.hash}</Mono></>}</p>
-      <button type="button" className="btn" onClick={() => {
-        if (!window.confirm(t('walletAttempts.confirmClear'))) return;
+      <ConfirmAction className="btn" message={t('walletAttempts.confirmClear')} onConfirm={() => {
         try { clearAttempt(attempt.id, true); } catch (e) { setError(captureUserMessage(e)); }
-      }}>{t('walletAttempts.clear')}</button>
+      }}>{t('walletAttempts.clear')}</ConfirmAction>
     </li>)}</ul>
     </PrivateHistory>}
   </section>;

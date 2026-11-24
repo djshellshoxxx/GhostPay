@@ -1,3 +1,4 @@
+import { ConfirmAction } from '../components/ConfirmAction';
 import { findChain, manifestDigest, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
 import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { sha256 } from '@noble/hashes/sha2.js';
@@ -1033,26 +1034,23 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
             {t('scan.tags.lock')}
           </button>
         )}
-        <button
-          type="button"
+        <ConfirmAction
           className="btn btn-danger"
-          onClick={() => {
-            if (window.confirm(t('scan.tags.deleteConfirm'))) {
-              services.vault.wipe().then(
-                () => {
-                  setList(undefined);
-                  force((n) => n + 1);
-                  app.announce(latestT.current('scan.tags.deleted'));
-                },
-                (e: unknown) => {
-                  setErr({ error: captureUserMessage(e) });
-                },
-              );
-            }
+          message={t('scan.tags.deleteConfirm')} onConfirm={() => {
+            services.vault.wipe().then(
+              () => {
+                setList(undefined);
+                force((n) => n + 1);
+                app.announce(latestT.current('scan.tags.deleted'));
+              },
+              (e: unknown) => {
+                setErr({ error: captureUserMessage(e) });
+              },
+            );
           }}
         >
           {t('scan.tags.deleteAll')}
-        </button>
+        </ConfirmAction>
       </div>
       {unlocked && list !== undefined && (
         <ul className="plain-list">

@@ -1,3 +1,4 @@
+import { ConfirmAction } from '../components/ConfirmAction';
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
@@ -1495,17 +1496,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label={t('pay.copyHash')} />
-            <button
-              type="button"
+            <ConfirmAction
               className="btn"
-              onClick={() => {
-                if (window.confirm(t('pay.receipt.download.confirm'))) {
-                  downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
-                }
+              message={t('pay.receipt.download.confirm')} onConfirm={() => {
+                downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
               }}
             >
               {t('pay.receipt.download')}
-            </button>
+            </ConfirmAction>
           </div>
           <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
         </div>
