@@ -115,7 +115,10 @@ export function parseCsv(text: string, limits: ParseLimits = {}): string[][] {
     rows.push(row);
     if (rows.length > maxRows) throw new ExportError('LIMIT_ROWS', 'too many rows', rows.length);
     row = [];
-    if (c === undefined || i >= text.length) return rows;
+    if (c === undefined || i >= text.length) {
+      assertRectangular(rows);
+      return rows;
+    }
   }
 }
 
