@@ -1360,7 +1360,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 }
 
 function FinalPreview(props: {
-  readonly notice: DestinationNotice | undefined;
+  readonly notice: DestinationNotice | 'wallet-changed' | undefined;
   readonly built: BuiltPayment;
   readonly ctx: PayContext;
   readonly onSend: () => void;
