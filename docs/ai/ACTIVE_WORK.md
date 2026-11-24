@@ -1,3 +1,9 @@
+# GP-BUG — Solana reference snapshot baseline reconciliation (2026-11-24 UTC)
+
+Cycle `20261124T0437Z`, one sequential coordinator continuing its existing isolated PR #507 (no independent workers or approval). Branch `automation/20261123T1041Z/bug/solana-reference-snapshot`; expected prior head `5ad9937cdac8f4d75a2dcb4e9a6e62e8fe079705`; fresh main `f76904301cff0b24d65ea4e31cbf37d470db4d95`; common base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Owned paths: additive claim and existing Solana handoff; preserve exact donor production and eight-case regression blobs. Main advanced 19 commits including scan-source #537 and fee corrections. Compare and incorporate current main into this isolated candidate, retaining donor ancestry and all main claims without replacing main or any other branch. Acceptance: both parents retained, exact donor product/test bytes unchanged, current main tree preserved except the four owned paths, no duplicate PR, fresh hosted CI and independent review required. The earlier Core run 45314127729 was still queued at inspection; four other workflow groups passed, not qualification of the refreshed candidate. Existing lock generation 15 released at observation, not acquired; no protected/shared integration or main merge. No deployment, real funds, workflow/configuration edits, paid agents or gate changes.
+
+---
+
 # GP-BUG — Solana Pay reference count regression extension (2026-11-24 UTC)
 
 Cycle: 20261124T0237Z; sequential coordinator continuing its existing isolated PR #507, branch `automation/20261123T1041Z/bug/solana-reference-snapshot`. Exact prior qualified head `f8e40f9d773333c123ed93db2a256b4b2ee75dde`, main base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. No independent subagent or approval. Preserve prior commits and claims.
