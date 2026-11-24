@@ -45,6 +45,7 @@ export async function buildPaymentLink(
  */
 export function buildPaymentButton(url: string, label: string, options: LinkOptions = {}): { href: string; html: string } {
   const { base, fragment } = assertPaymentLink(url, options);
+  if (typeof label !== 'string') throw new HooksError('bad-label');
   // eslint-disable-next-line no-control-regex
   const clean = label.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g, ' ').trim();
   const cps = Array.from(clean);

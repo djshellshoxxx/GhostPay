@@ -31,6 +31,7 @@ export function parseCsv(input: string, limits: CsvLimits = DEFAULT_CSV_LIMITS):
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
+  let sawQuotedField = false;
   let i = 0;
   const n = text.length;
   const fail = (msg: string): never => {
@@ -40,6 +41,7 @@ export function parseCsv(input: string, limits: CsvLimits = DEFAULT_CSV_LIMITS):
     if (field.length > limits.maxFieldLength) throw new BillingError('LIMIT', 'field too long', `row ${rows.length + 1}`);
     row.push(field);
     field = '';
+    sawQuotedField = false;
   };
   const endRow = (): void => {
     endField();
@@ -52,6 +54,7 @@ export function parseCsv(input: string, limits: CsvLimits = DEFAULT_CSV_LIMITS):
   while (i < n) {
     const c = text[i] as string;
     if (field === '' && c === '"') {
+      sawQuotedField = true;
       i++;
       let closed = false;
       while (i < n) {
@@ -90,7 +93,7 @@ export function parseCsv(input: string, limits: CsvLimits = DEFAULT_CSV_LIMITS):
       i++;
     }
   }
-  if (field !== '' || row.length > 0) endRow();
+  if (field !== '' || row.length > 0 || sawQuotedField) endRow();
   if (rows.length === 0) throw new BillingError('CSV', 'empty file');
   return rows;
 }
