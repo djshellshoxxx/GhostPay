@@ -47,14 +47,21 @@ async function createPlatformDetector(ctor: BarcodeDetectorCtorLike | undefined)
   }
 }
 
+function firstBoundedText(found: readonly { readonly rawValue: string }[]): string | null {
+  for (const detection of found) {
+    const text = boundedText(detection.rawValue);
+    if (text !== null) return text;
+  }
+  return null;
+}
+
 /** Reader backed by the platform detector, or null when it is missing or lacks qr_code. */
 export async function createPlatformReader(ctor: BarcodeDetectorCtorLike | undefined): Promise<FrameReader | null> {
   const detector = await createPlatformDetector(ctor);
   if (detector === null) return null;
   return {
     async read(video) {
-      const found = await detector.detect(video);
-      return found[0]?.rawValue ?? null;
+      return firstBoundedText(await detector.detect(video));
     },
   };
 }
@@ -108,13 +115,28 @@ interface DefaultEnv {
   readonly document?: { createElement(tag: 'canvas'): unknown };
 }
 
-/** BarcodeDetector when the platform has it, otherwise canvas + jsQR. */
-export async function createDefaultReader(env: DefaultEnv = globalThis): Promise<FrameReader> {
-  const platform = await createPlatformReader(env.BarcodeDetector);
-  if (platform !== null) return platform;
-  const doc = env.document;
+async function createSoftwareReader(doc: DefaultEnv['document']): Promise<FrameReader> {
   if (doc === undefined) throw new QrExchangeError('SCAN_FAILED');
   return createDecoderReader(createCanvasGrabber(() => doc.createElement('canvas') as Canvas2dLike), await loadJsQrDecoder());
+}
+
+/** Keep native detection on ordinary empty frames. Switch this scan to jsQR if native detection throws. */
+export async function createDefaultReader(env: DefaultEnv = globalThis): Promise<FrameReader> {
+  const platform = await createPlatformReader(env.BarcodeDetector);
+  if (platform === null) return createSoftwareReader(env.document);
+  let fallback: Promise<FrameReader> | undefined;
+  return {
+    async read(video) {
+      if (fallback === undefined) {
+        try {
+          return await platform.read(video);
+        } catch {
+          fallback ??= createSoftwareReader(env.document);
+        }
+      }
+      return (await fallback).read(video);
+    },
+  };
 }
 
 /** Largest image file accepted by decodeQrImage (checked before anything is decoded). */
@@ -267,14 +289,7 @@ export async function decodeQrImage(source: ImageFileLike, options: DecodeImageO
         /* fall back to jsQR below */
       }
       throwIfAborted(signal);
-      if (found.length > 0) {
-        // A bad first decode must not hide a later usable QR from the same image.
-        for (const detection of found) {
-          const text = boundedText(detection.rawValue);
-          if (text !== null) return text;
-        }
-        return null;
-      }
+      if (found.length > 0) return firstBoundedText(found);
     }
     const doc = env.document;
     if (doc === undefined) throw new QrExchangeError('SCAN_FAILED');
