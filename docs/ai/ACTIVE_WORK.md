@@ -1,3 +1,11 @@
+# PR #585 native typecheck resumption — 2026-11-24 UTC
+
+Worker: `/root/recover_local_workers`, coordinated by `/root`. Isolated successor branch `resume/privacy-minimal-typecheck-20261124`; exact saved parent #585 `b82be893d3d360064222fafcce8cef2033cd23a5`, main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only the invalid role-query option in `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/PR585_NATIVE_TYPECHECK_20261124.md`.
+
+Acceptance: reproduce TS2769 from the unsupported `exact` option, remove only that option after verifying the string accessible-name matcher remains exact, retain every privacy-minimal and stale-result assertion, and run focused native tests plus full web typecheck and scoped typed lint. Preserve all production code, dependencies, schemas and signing/payment behavior. #586, #571, Pay paths and original owner branches remain outside this assignment. Root owns independent review and publication. No merge, deployment or real-funds operation.
+
+---
+
 # Issue 287 invoice metadata minimization
 
 Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.
