@@ -1,13 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "released",
+  "status": "held",
   "owner": "chatgpt-74aa08c7aedc-near-finished",
-  "token": "acc3b3a7-d8e1-4f90-b3b7-a7030dca2717",
-  "generation": 16,
-  "base_sha": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
-  "acquired_at": "2026-11-24T08:57:56.000Z",
-  "heartbeat_at": "2026-11-24T08:57:56.000Z",
-  "expires_at": "2026-11-24T09:17:56.000Z",
-  "transport": "github-connector-expected-head-nonforce",
-  "released_at": "2026-11-24T08:58:50.000Z"
+  "token": "99c75e1a-11e4-4a86-9154-538a2ecc2d25",
+  "generation": 17,
+  "base_sha": "2d83de0b7f5bba0fafc0c25d19d1fcb382edf719",
+  "acquired_at": "2026-11-24T09:05:53.000Z",
+  "heartbeat_at": "2026-11-24T09:05:53.000Z",
+  "expires_at": "2026-11-24T09:25:53.000Z",
+  "transport": "github-connector-expected-head-nonforce"
 }
