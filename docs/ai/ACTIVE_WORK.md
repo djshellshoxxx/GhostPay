@@ -1,3 +1,13 @@
+## Pages HTTPS and Tor/RPC compatibility review
+
+Worker: Codex, branch `audit/pages-tor-rpc-compat-20261124`, main base
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own this additive entry,
+`docs/pages/tor-rpc-compatibility.md` and `apps/web/e2e/https-rpc-compatibility.spec.ts`.
+Trace the lean Pages asset graph and RPC dispatch, exercise synthetic invoice and
+scan settings, and distinguish application results from live Tor qualification.
+Network transport, wallet, scanner, hosted onion acceptance and release controls
+remain with their existing owners (#241, #308, #320, #363, #436).
+
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
 Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.
