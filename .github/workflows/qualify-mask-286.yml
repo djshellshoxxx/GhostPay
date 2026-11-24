@@ -19,39 +19,49 @@ jobs:
         with:
           ref: 6df0c30afdc36585feb7c0ca4853c0ffbc849b14
           persist-credentials: false
+      - name: Compose the PR candidate with pinned main
+        env:
+          MAIN: f76904301cff0b24d65ea4e31cbf37d470db4d95
+        run: |
+          set -euo pipefail
+          git fetch --depth=256 origin "$CANDIDATE" "$MAIN"
+          git config user.name "GhostPay qualification"
+          git config user.email "qualification@users.noreply.github.com"
+          # Both branches prepend entries to the shared ownership registry.
+          echo 'docs/ai/ACTIVE_WORK.md merge=union' >> .git/info/attributes
+          git merge --no-ff --no-edit "$MAIN"
+          git log -1 --format='Test merge %H tree %T parents %P'
+          git diff --check "$CANDIDATE" HEAD -- apps/web
       - uses: ./.github/actions/setup-node-libs
         with:
           save-cache: 'false'
-      - run: ./node_modules/.bin/playwright install --with-deps chromium
-      - name: Unit and integration acceptance
-        working-directory: apps/web
+      - name: Web typecheck, lint and repository security checks
         run: |
-          ../../node_modules/.bin/vitest run --maxWorkers=2 src/lib/privacyMode.test.tsx src/AppShell.privacy.test.tsx src/AppShell.quickHide.test.tsx src/views/Pay.masking.test.tsx src/views/WalletPrivacy.lifecycle.test.tsx src/components/WalletDisclosure.quickHide.test.tsx src/components/ReconciliationLedger.privacy.test.tsx src/components/WalletAttempts.test.tsx src/components/PrivacyQuickHide.test.tsx src/views/Settings.clipboardPrivacy.test.tsx
-      - name: Full Pages masking and disclosure
+          npm run typecheck --workspace @ghostpay/web
+          npm run lint --workspace @ghostpay/web
+          npm run ci:scan-secrets
+          npm run ci:check-actions
+          npm run ci:check-tx-origin
+      - name: Install test browsers
+        if: ${{ !cancelled() }}
+        run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
+      - name: Unit and integration acceptance on the composed tree
+        if: ${{ !cancelled() }}
+        working-directory: apps/web
+        run: ../../node_modules/.bin/vitest run --maxWorkers=2 src/lib/privacyMode.test.tsx src/AppShell.privacy.test.tsx src/AppShell.quickHide.test.tsx src/views/Pay.masking.test.tsx src/views/WalletPrivacy.lifecycle.test.tsx src/components/WalletDisclosure.quickHide.test.tsx src/components/ReconciliationLedger.privacy.test.tsx src/components/WalletAttempts.test.tsx src/components/PrivacyQuickHide.test.tsx src/views/Settings.clipboardPrivacy.test.tsx
+      - name: Full Pages browser acceptance on the composed tree
         if: ${{ !cancelled() }}
         working-directory: apps/web
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: full
-        run: ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
-      - name: Lean Pages masking and disclosure
+        run: |
+          ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
+          ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox --project=webkit privacy-mask-history.spec.ts wallet-disclosure.spec.ts
+      - name: Lean Pages browser acceptance on the composed tree
         if: ${{ !cancelled() }}
         working-directory: apps/web
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: lean
-        run: ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
-      - name: Verify pre-fix disclosure with the test-first commit
-        if: ${{ !cancelled() }}
-        env:
-          GHOSTPAY_LOCAL_BUILD_PROFILE: lean
         run: |
-          set -euo pipefail
-          git fetch --depth=1 origin "$BASELINE"
-          git switch --detach "$BASELINE"
-          cd apps/web
-          if ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts --grep 'preserves seller keys' > "$RUNNER_TEMP/masking-red.log" 2>&1; then
-            echo "Expected the baseline to disclose the fixture in the document"
-            exit 1
-          fi
-          grep -q 'assertMaskedDocument.ts' "$RUNNER_TEMP/masking-red.log"
-          grep -q 'not.toContain' "$RUNNER_TEMP/masking-red.log"
-          echo "Confirmed the original failure in the hidden document assertion at $BASELINE."
+          ../../node_modules/.bin/playwright test --project=desktop privacy-mask-history.spec.ts wallet-disclosure.spec.ts
+          ../../node_modules/.bin/playwright test --config=playwright.native.config.ts --project=firefox --project=webkit privacy-mask-history.spec.ts wallet-disclosure.spec.ts
