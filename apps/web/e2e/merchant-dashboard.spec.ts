@@ -1,26 +1,41 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 import { generateKeys } from './helpers';
 
-test('opens encrypted merchant records on mobile and only exports the approved invoice range', async ({ page }, info) => {
-  test.setTimeout(120_000);
-  const passphrase = 'river copper maple starlight';
-  const privateText = 'Local fixture line item';
-  await page.setViewportSize({ width: 375, height: 667 });
+const passphrase = 'river copper maple starlight';
+
+async function saveSeller(page: Page): Promise<void> {
   await page.goto('/');
   await generateKeys(page);
   await page.getByLabel('New vault passphrase (14+ characters)').fill(passphrase);
   await page.getByLabel('Repeat vault passphrase').fill(passphrase);
   await page.getByRole('button', { name: 'Save encrypted vault in this browser' }).click();
-  await expect(page.getByText('Encrypted seller vault saved in this browser. The passphrase was cleared.')).toBeVisible();
+  await expect(page.getByRole('main').getByText('Encrypted seller vault saved in this browser. The passphrase was cleared.', { exact: true })).toBeVisible({ timeout: 30_000 });
+}
 
+async function prepareRegisteredInvoice(page: Page, description: string): Promise<void> {
   await page.locator('nav button[data-view="create"]').click();
   await page.getByLabel('Chain', { exact: true }).selectOption('84532');
   await page.getByLabel('Token amount', { exact: true }).fill('0.5');
-  await page.getByLabel('Item 1 description').fill(privateText);
+  await page.getByLabel('Item 1 description').fill(description);
   await page.getByLabel('Item 1 unit price').fill('50.00');
   await page.getByRole('checkbox', { name: /Register this invoice in my encrypted reconciliation vault/ }).check();
+}
+
+async function unlockSeller(page: Page): Promise<void> {
+  await page.locator('nav button[data-view="seller"]').click();
+  await page.getByLabel('Vault passphrase').fill(passphrase);
+  await page.getByRole('button', { name: 'Unlock saved vault' }).click();
+  await expect(page.getByRole('button', { name: 'Wipe keys from memory' })).toBeVisible({ timeout: 30_000 });
+}
+
+test('opens encrypted merchant records on mobile and only exports the approved invoice range', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  const privateText = 'Local fixture line item';
+  await page.setViewportSize({ width: 375, height: 667 });
+  await saveSeller(page);
+  await prepareRegisteredInvoice(page, privateText);
   await page.getByRole('button', { name: 'Create invoice link' }).click();
   await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.')).toBeVisible();
 
@@ -32,10 +47,7 @@ test('opens encrypted merchant records on mobile and only exports the approved i
   await expect(dashboard).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('main')).toBeFocused();
   await expect(page.getByText('Load your seller keys to open your local merchant records.')).toBeVisible();
-  await page.locator('nav button[data-view="seller"]').click();
-  await page.getByLabel('Vault passphrase').fill(passphrase);
-  await page.getByRole('button', { name: 'Unlock saved vault' }).click();
-  await expect(page.getByRole('button', { name: 'Wipe keys from memory' })).toBeVisible({ timeout: 30_000 });
+  await unlockSeller(page);
 
   const messages: string[] = [];
   const requests: string[] = [];
@@ -84,4 +96,44 @@ test('opens encrypted merchant records on mobile and only exports the approved i
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
   await auditAccessibility(page, 'merchant-dashboard-mobile');
   await retainAccessibilityAudit(page, info);
+});
+
+test('keeps focus on Network for a background ledger refresh and announces an explicit refresh', async ({ page, context }) => {
+  test.setTimeout(120_000);
+  const writer = await context.newPage();
+  await saveSeller(writer);
+  await prepareRegisteredInvoice(writer, 'Background invoice');
+
+  await page.goto('/');
+  await unlockSeller(page);
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Merchant dashboard' }).click();
+  const network = page.getByLabel('Network', { exact: true });
+  await network.selectOption('84532');
+  await page.getByRole('button', { name: 'Open encrypted dashboard' }).click();
+  await expect(page.getByText('No records match this view.')).toBeVisible();
+  const refresh = page.getByRole('button', { name: 'Refresh local records' });
+  await refresh.focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(network).toBeFocused();
+
+  // The writer commits the encrypted invoice. Its broadcast refreshes the reader without input there.
+  await writer.getByRole('button', { name: 'Create invoice link' }).click();
+  const record = page.locator('.dashboard-records li');
+  await expect(record).toHaveText(/Open · no linked evidence/);
+  await expect(network).toBeFocused();
+
+  await page.keyboard.press('Tab');
+  await expect(refresh).toBeFocused();
+  // Capture the transient progress focus even if the local read finishes between Playwright assertions.
+  const focused = await page.evaluateHandle(() => {
+    const labels: string[] = [];
+    document.addEventListener('focusin', ({ target }) => {
+      if (target instanceof HTMLElement) labels.push(target.textContent ?? '');
+    });
+    return labels;
+  });
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Network overview' })).toBeFocused();
+  expect(await focused.jsonValue()).toEqual(['Merchant records are being refreshed…', 'Network overview']);
+  await expect(record).toHaveText(/Open · no linked evidence/);
 });
