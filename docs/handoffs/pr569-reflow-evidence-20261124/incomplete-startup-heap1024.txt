@@ -1,0 +1,44 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@1.0.0-beta.1 test:e2e
+> playwright test --config=playwright.native.config.ts --project=firefox accessibility.spec.ts --grep supported routes have axe|creation, scan|supported routes reflow --trace=retain-on-failure
+
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer]
+[WebServer] <--- Last few GCs --->
+[WebServer]
+[WebServer] [44:0x2a819000]    45044 ms: Scavenge (interleaved) 1013.2 (1025.3) -> 1012.3 (1029.3) MB, pooled: 0 MB[WebServer] , 3.83 / 0.00 ms  (average mu = 0.251, current mu = 0.327) allocation failure;
+[WebServer] [44:0x2a819000]    45812 ms: Mark-Compact 1015.9 (1029.3) -> 1009.8 (1025.3) MB, pooled: 4 MB, 742.49 / 0.00 ms  (average mu = 0.176, current mu = 0.098) allocation failure; scavenge might not succeed
+[WebServer]
+[WebServer] FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+[WebServer] ----- Native stack trace -----
+[WebServer]
+[WebServer]  1: 0x91df90  [node]
+[WebServer]  2: 0x75bb9f node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]
+[WebServer]  3: 0xc77280  [node]
+[WebServer]  4: 0xc7737f  [node]
+[WebServer]  5: 0xf272b5  [node]
+[WebServer]  6: 0xf272e2  [node]
+[WebServer]  7: 0xf27664  [node]
+[WebServer]  8: 0xf393ca  [node]
+[WebServer]  9: 0xf3d880  [node]
+[WebServer] 10: 0x1a420c1  [node]
+[WebServer] Aborted
+[WebServer] npm error Lifecycle script `build` failed with error:
+[WebServer] npm error code 134
+[WebServer] npm error path /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+[WebServer] npm error workspace @ghostpay/web@1.0.0-beta.1
+[WebServer] npm error location /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+[WebServer] npm error command failed
+[WebServer] npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+Error: Process from config.webServer was not able to start. Exit code: 134
+
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+npm error workspace @ghostpay/web@1.0.0-beta.1
+npm error location /workspace/scratch/efb8df2579c9/privacy-569-resume/apps/web
+npm error command failed
+npm error command sh -c playwright test --config=playwright.native.config.ts --project=firefox accessibility.spec.ts --grep 'supported routes have axe|creation, scan|supported routes reflow' --trace=retain-on-failure

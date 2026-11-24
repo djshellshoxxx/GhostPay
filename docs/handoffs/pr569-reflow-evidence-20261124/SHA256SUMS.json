@@ -1,0 +1,54 @@
+{
+  "baseline-full.txt": {
+    "bytes": 19029,
+    "sha256": "8ab34c3d44e2e39208d331df3df6540804503769cd40f6012d9651b2c8128714"
+  },
+  "build-libraries.txt": {
+    "bytes": 17502,
+    "sha256": "d728c407297100ef1d582eee4ad2ec0a9bc6c33da2a268b2d2fb5d0aa265468f"
+  },
+  "changed-file-lint.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "geometry-controls.json": {
+    "bytes": 2518,
+    "sha256": "4c10901302e5d839fe4d2e272b85fe2d66cf9fe2eda6b69f819ffc0632f2f8f0"
+  },
+  "incomplete-lean-enospc.txt": {
+    "bytes": 4094,
+    "sha256": "de225c0263012fc0e8e9578d218237ab8fae43b466dc987dd9d98e58855d397d"
+  },
+  "incomplete-startup-heap1024.txt": {
+    "bytes": 2844,
+    "sha256": "d1126ce2460079b3aaa75cc286eb7daf70d1599b337782bce8fd1c9f138a1079"
+  },
+  "log-provenance.json": {
+    "bytes": 2569,
+    "sha256": "8306babfaa74f95826d66306ce2330a7c45bb770e53e1532c0c2c5ba4bc9e14c"
+  },
+  "original-logs.zip": {
+    "bytes": 12991,
+    "sha256": "daf4928f676ba274918c49ef4d0fbcc27ba84ef18ab5335486dbe6c53235c11d"
+  },
+  "qualification.json": {
+    "bytes": 13587,
+    "sha256": "22706b9b0032eb3db06eddfca9e52d987793b635c7b488a872054c03b3fafe79"
+  },
+  "reflow-full.txt": {
+    "bytes": 8987,
+    "sha256": "c963f76846aa94e75115dc0ab7b94327829092773aa03c1f6d7a9144e9e0b182"
+  },
+  "reflow-lean.txt": {
+    "bytes": 12250,
+    "sha256": "50cf20f2c2b4a6a3152f817eed4c2b93f5882326433a4831269d674f7c7c0a18"
+  },
+  "runtime-and-upstream.json": {
+    "bytes": 951,
+    "sha256": "60e1a84aeedf8880fb484031a42e942936a6996fc3d68cd507860f5049bdb87b"
+  },
+  "secret-scan.txt": {
+    "bytes": 273,
+    "sha256": "11a86c723ca4a46189e1baf2757f5453faeb881e59e75a40e2e566e59a5357ea"
+  }
+}

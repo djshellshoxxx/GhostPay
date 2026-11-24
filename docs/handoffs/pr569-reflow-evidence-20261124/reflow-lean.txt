@@ -1,0 +1,91 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@1.0.0-beta.1 test:e2e
+> playwright test --config=playwright.native.config.ts --project=firefox accessibility.spec.ts --grep supported routes reflow --trace=retain-on-failure
+
+[WebServer] (node:32) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:53) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer]
+[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[WebServer] [plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/efb8df2579c9/privacy-569-resume/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] [plugin builtin:vite-reporter]
+[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+[WebServer]
+[WebServer] (node:92) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:121) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:157) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  pw:browser <launching> /home/agent/.cache/ms-playwright/firefox-1572/firefox/firefox -no-remote -headless -profile /tmp/playwright_firefoxdev_profile-wDBVPn -juggler-pipe -silent +0ms
+  pw:browser <launched> pid=169 +6ms
+  pw:browser [pid=169][err] *** You are running in headless mode. +34ms
+  pw:browser [pid=169][err] JavaScript warning: resource://services-settings/Utils.sys.mjs, line 125: unreachable code after return statement +70ms
+  pw:browser [pid=169][out]  +315ms
+  pw:browser [pid=169][out] Juggler listening to the pipe +0ms
+  pw:browser [pid=169][out] console.error: (new NotFoundError("Could not find fa0fc42c-d91d-fca7-34eb-806ff46062dc in cache or dump", "resource://services-settings/Attachments.sys.mjs", 48)) +2s
+  pw:browser [pid=169][out] console.warn: "Unable to find the attachment for" "fa0fc42c-d91d-fca7-34eb-806ff46062dc" +0ms
+GHOSTPAY_A11Y_RECORD={"format":"ghostpay-accessibility-audit/1","states":[{"version":"4.14.0","profile":"lean","route":"Home","state":"Home-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Seller keys","state":"Seller keys-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"Create invoice","state":"Create invoice-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"Pay","state":"Pay-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Scan and receive","state":"Scan and receive-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Sweep","state":"Sweep-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Public registry","state":"Public registry-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Settings","state":"Settings-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"About and privacy","state":"About and privacy-100percent-320px","rules":"all default enabled axe rules; no exclusions","passes":47,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Home","state":"Home-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Seller keys","state":"Seller keys-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"Create invoice","state":"Create invoice-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":43,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"Pay","state":"Pay-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Scan and receive","state":"Scan and receive-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":44,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Sweep","state":"Sweep-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":42,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Public registry","state":"Public registry-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":[]},{"version":"4.14.0","profile":"lean","route":"Settings","state":"Settings-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":45,"violations":[],"incomplete":["label-content-name-mismatch"]},{"version":"4.14.0","profile":"lean","route":"About and privacy","state":"About and privacy-200percent-320px","rules":"all default enabled axe rules; no exclusions","passes":47,"violations":[],"incomplete":[]}],"limits":"Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."}
+  ✓  1 [firefox] › e2e/accessibility.spec.ts:104:1 › supported routes reflow at 320 CSS pixels with normal and 200 percent text (15.6s)
+  pw:browser [pid=169] <gracefully close start> +14s
+  pw:browser [pid=169][err] JavaScript warning: http://localhost:4173/assets/index-CLoXsLbY.js, line 95: Script terminated by timeout at: +1ms
+  pw:browser [pid=169][err] revoke@http://localhost:4173/assets/index-CLoXsLbY.js:95:44365 +0ms
+  pw:browser [pid=169][err] e@http://localhost:4173/assets/index-CLoXsLbY.js:95:51000 +0ms
+  pw:browser [pid=169][err] EventListener.handleEvent*cO/<@http://localhost:4173/assets/index-CLoXsLbY.js:95:51138 +0ms
+  pw:browser [pid=169][err] vl@http://localhost:4173/assets/index-CLoXsLbY.js:9:95219 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118507 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:119726 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118489 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:119726 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118489 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118489 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:119726 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:119726 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118489 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:119726 +0ms
+  pw:browser [pid=169][err] Ru@http://localhost:4173/assets/index-CLoXsLbY.js:9:118282 +0ms
+  pw:browser [pid=169][err] zu@http://localhost:4173/assets/index-CLoXsLbY.js:9:118555 +0ms
+  pw:browser [pid=169][err] hf@http://localhost:4173/assets/index-CLoXsLbY.js:9:133122 +0ms
+  pw:browser [pid=169][err] l</sf/<@http://localhost:4173/assets/index-CLoXsLbY.js:9:130105 +0ms
+  pw:browser [pid=169][err] D@http://localhost:4173/assets/index-CLoXsLbY.js:2:9403 +0ms
+  pw:browser [pid=169][err] EventHandlerNonNull*a<@http://localhost:4173/assets/index-CLoXsLbY.js:2:9787 +0ms
+  pw:browser [pid=169][err] o/<@http://localhost:4173/assets/rolldown-runtime-XKyaHtl9.js:1:184 +0ms
+  pw:browser [pid=169][err] o<@http://localhost:4173/assets/index-CLoXsLbY.js:2:11368 +0ms
+  pw:browser [pid=169][err] o/<@http://localhost:4173/assets/rolldown-runtime-XKyaHtl9.js:1:184 +0ms
+  pw:browser [pid=169][err] l<@http://localhost:4173/assets/index-CLoXsLbY.js:2:15182 +0ms
+  pw:browser [pid=169][err] o/<@http://localhost:4173/assets/rolldown-runtime-XKyaHtl9.js:1:184 +0ms
+  pw:browser [pid=169][err] u<@http://localhost:4173/assets/index-CLoXsLbY.js:10:50701 +0ms
+  pw:browser [pid=169][err] o/<@http://localhost:4173/assets/rolldown-runtime-XKyaHtl9.js:1:184 +0ms
+  pw:browser [pid=169][err] @http://localhost:4173/assets/index-CLoXsLbY.js:11:1623 +0ms
+  pw:browser [pid=169][err]  +0ms
+  pw:browser [pid=169][err] JavaScript error: chrome://juggler/content/Helper.js, line 82: NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIWebProgress.removeProgressListener] +4ms
+  pw:browser [pid=169] <process did exit: exitCode=0, signal=null> +337ms
+  pw:browser [pid=169] starting temporary directories cleanup +0ms
+  pw:browser [pid=169] finished temporary directories cleanup +10ms
+  pw:browser [pid=169] <gracefully close end> +0ms
+
+  1 passed (52.0s)

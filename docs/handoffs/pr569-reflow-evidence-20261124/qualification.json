@@ -1,0 +1,419 @@
+{
+  "test_source": "fa513ee2857d2cd30ea92d5e65c56cc3c739aaf6",
+  "test_tree": "4ecfb5e2515366e87729d1c2f0c8fcf99f476d23",
+  "implementation": "c79a81031bfc184ac85a3571ab86079d60ad5393",
+  "profiles": [
+    {
+      "profile": "full",
+      "command_exit_code": 0,
+      "tests_passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "audit_states": 18,
+      "audits": {
+        "format": "ghostpay-accessibility-audit/1",
+        "states": [
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Home",
+            "state": "Home-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Seller keys",
+            "state": "Seller keys-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Create invoice",
+            "state": "Create invoice-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Pay",
+            "state": "Pay-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Scan and receive",
+            "state": "Scan and receive-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Sweep",
+            "state": "Sweep-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Public registry",
+            "state": "Public registry-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 46,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Settings",
+            "state": "Settings-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 46,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "About and privacy",
+            "state": "About and privacy-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 48,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Home",
+            "state": "Home-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Seller keys",
+            "state": "Seller keys-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Create invoice",
+            "state": "Create invoice-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Pay",
+            "state": "Pay-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Scan and receive",
+            "state": "Scan and receive-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Sweep",
+            "state": "Sweep-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Public registry",
+            "state": "Public registry-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 46,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "Settings",
+            "state": "Settings-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 46,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "full",
+            "route": "About and privacy",
+            "state": "About and privacy-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 48,
+            "violations": [],
+            "incomplete": []
+          }
+        ],
+        "limits": "Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."
+      }
+    },
+    {
+      "profile": "lean",
+      "command_exit_code": 0,
+      "tests_passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "audit_states": 18,
+      "audits": {
+        "format": "ghostpay-accessibility-audit/1",
+        "states": [
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Home",
+            "state": "Home-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 42,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Seller keys",
+            "state": "Seller keys-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Create invoice",
+            "state": "Create invoice-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Pay",
+            "state": "Pay-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Scan and receive",
+            "state": "Scan and receive-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Sweep",
+            "state": "Sweep-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 42,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Public registry",
+            "state": "Public registry-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Settings",
+            "state": "Settings-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "About and privacy",
+            "state": "About and privacy-100percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 47,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Home",
+            "state": "Home-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 42,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Seller keys",
+            "state": "Seller keys-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Create invoice",
+            "state": "Create invoice-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 43,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Pay",
+            "state": "Pay-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Scan and receive",
+            "state": "Scan and receive-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 44,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Sweep",
+            "state": "Sweep-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 42,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Public registry",
+            "state": "Public registry-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": []
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "Settings",
+            "state": "Settings-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 45,
+            "violations": [],
+            "incomplete": [
+              "label-content-name-mismatch"
+            ]
+          },
+          {
+            "version": "4.14.0",
+            "profile": "lean",
+            "route": "About and privacy",
+            "state": "About and privacy-200percent-320px",
+            "rules": "all default enabled axe rules; no exclusions",
+            "passes": 47,
+            "violations": [],
+            "incomplete": []
+          }
+        ],
+        "limits": "Automated route/state checks only. Incomplete rules and native assistive-technology review remain unresolved."
+      }
+    }
+  ]
+}

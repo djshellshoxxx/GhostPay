@@ -1,3 +1,35 @@
+# Credit recovery: native Firefox failure investigation — 2026-11-24 UTC
+
+Worker: `/root/missed_work_census`; coordinator `/root`. Isolated branch
+`investigate/privacy-569-firefox-20261124`; exact owner PR #569 source
+`c30283d28ec15f0c4fddb8a80d1c5f60ee590401`. Parent #373 remains
+`b660b2d8f3f84ddf72f684d13913f643f33f2eee`; main observed at
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`. Preserve these owner branches.
+
+Own this additive claim, the missed-work coverage/failure matrix, source-pinned
+Firefox investigation evidence, and a narrowly justified child correction to
+`apps/web/e2e/accessibility.spec.ts` only after reproducing the reported 320px
+failure. Inspect responsive owner #583 at
+`c1980912f87f0293b7a15f2419505a6719c5f3a8` for an existing reusable correction;
+do not duplicate its CSS. Any production change requires coordinator path
+coordination. QR source paths remain outside this assignment.
+
+Acceptance: reproduce the original viewport assertion with the exact locked
+native engine, identify the offending control and actual visibility, retain
+all visible-control/scroll/text-enlargement assertions, and verify any repair
+with positive and negative controls. Separately investigate the seven renderer
+crashes in hosted Firefox full job `138251329944`; do not call them environmental
+or resolved without evidence. Preserve original axe rules, native versions,
+gates and owner history. No remote writes, deployments or shared integration.
+
+Completion: implementation `c79a81031bfc184ac85a3571ab86079d60ad5393` passes
+the original full and lean Firefox reflow case, 18 default axe audits each.
+Exact tested source/tree and preserved receipts are in
+`docs/handoffs/PR569_FIREFOX_REFLOW_20261124.md`. The broader native crash gate
+remains blocked by the referenced upstream stable-browser issue; no rules,
+versions or application behavior were changed. Owned edits are released to
+the coordinator for review/publication; original owner refs are preserved.
+
 # Issue #286 global masking of the active document
 
 Worker: Codex. Branch: `fix/286-global-mask-document`. Base: #373 at

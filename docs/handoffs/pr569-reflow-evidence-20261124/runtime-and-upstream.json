@@ -1,0 +1,24 @@
+{
+  "observed_utc_date": "2026-11-24",
+  "node": "24.22.3",
+  "playwright": "1.65.1",
+  "firefox_version": "159.0",
+  "firefox_build": "1572",
+  "platform": "Linux Debian 13",
+  "axe": "4.14.0",
+  "packages_tree": "2b408279895ca472473ccff309db3a81443f1660",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "version_query": "npm view @playwright/test dist-tags --json",
+  "dist_tags": {
+    "rc": "1.18.0-rc1",
+    "beta": "1.65.0-beta-1794598453000",
+    "latest": "1.65.1",
+    "next": "1.66.0-alpha-2026-11-24"
+  },
+  "upstream_references": [
+    "https://github.com/microsoft/playwright/issues/44135",
+    "https://github.com/microsoft/playwright/issues/43967",
+    "https://github.com/microsoft/playwright/pull/43982"
+  ],
+  "conclusion": "No fixed stable Playwright release available at this observation. Keep original native gate blocked; no engine substitutions, rule exclusions or workaround changes."
+}
