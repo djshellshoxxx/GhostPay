@@ -181,3 +181,30 @@ describe('CopyButton localization', () => {
     expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
   });
 });
+
+it('keeps private export bytes intact and out of download metadata', async () => {
+  const payload = {
+    address: `0x${'ab'.repeat(20)}`,
+    balance: '87129.03251',
+    invoiceId: 'fixture-lantern-order',
+    privateKey: `0x${'cd'.repeat(32)}`,
+  };
+  const serialized = JSON.stringify(payload);
+  const url = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:local-test');
+  vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+  const metadata: string[] = [];
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+    metadata.push(this.download, this.href, this.title);
+  });
+  downloadText(`${Object.values(payload).join('-')}.json`, serialized, 'application/json');
+  expect(metadata).toEqual(['export.json', 'blob:local-test', '']);
+  const blob = url.mock.calls[0]?.[0];
+  if (!(blob instanceof Blob)) throw new Error('expected an export Blob');
+  const reader = new FileReader();
+  const read = new Promise<string>((resolve, reject) => {
+    reader.onload = () => { resolve(String(reader.result)); };
+    reader.onerror = () => { reject(new Error('read failed')); };
+  });
+  reader.readAsText(blob);
+  expect(await read).toBe(serialized);
+});

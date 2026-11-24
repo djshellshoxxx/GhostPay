@@ -23,3 +23,9 @@ describe('userMessage', () => {
     expect(userMessage('x')).toBe('Something went wrong. Nothing was sent.');
   });
 });
+
+it('keeps untrusted invoice property names out of schema errors', () => {
+  for (const field of ['invoice-winter-sample', '76219.843', `0x${'ab'.repeat(20)}`, `0x${'cd'.repeat(32)}`]) {
+    expect(userMessage(new SchemaError(field))).not.toContain(field);
+  }
+});
