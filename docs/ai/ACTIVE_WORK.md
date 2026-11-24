@@ -802,3 +802,9 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## Pages automatic language changes on an open page
+
+- Worker: Codex, branch `codex/pages-follow-browser-language`, base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths: `apps/web/src/i18n/context.tsx`, `apps/web/src/i18n/LanguagePicker.test.tsx`, and this entry.
+- Acceptance: with Automatic selected, a browser language change updates the on-screen language and document direction without reloading. A manual selection or an explicit embedding language list keeps precedence. Returning to Automatic uses the current browser preference.
