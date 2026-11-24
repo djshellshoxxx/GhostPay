@@ -143,6 +143,34 @@ describe('single encrypted keypair', () => {
     await expect(exportEncryptedPayment(vectorMatch('a1'), keystore, EXPORT_PASS, { rpc: codeRpc(), signal: before.signal, N: TEST_N })).rejects.toThrow(/export was cancelled/);
   });
 
+  it('refuses a changed scan route before disclosure and discards keys when the route changes during encryption', async () => {
+    const base = codeRpc();
+    let current = false;
+    const rpc = {
+      ...base,
+      assertCurrent: () => {
+        if (!current) throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+      },
+    };
+    const single = () => exportEncryptedPayment(vectorMatch('a1'), keystore, EXPORT_PASS, { rpc, N: TEST_N });
+    await expect(single()).rejects.toThrow(/needs the RPC this scan used/);
+    expect(base.calls).toHaveLength(0);
+
+    let derived: Uint8Array | undefined;
+    const encrypt = stealthExport.encryptPaymentKeys;
+    vi.spyOn(stealthExport, 'encryptPaymentKeys').mockImplementation(async (items, options) => {
+      derived = items[0]?.secret;
+      const text = await encrypt(items, options);
+      current = false;
+      return text;
+    });
+    current = true;
+    await expect(single()).rejects.toThrow(/needs the RPC this scan used/);
+    expect(base.calls).toHaveLength(1);
+    expect(derived?.length).toBe(32);
+    expect(derived?.every((byte) => byte === 0)).toBe(true);
+  });
+
   it('refuses keys replaced during re-authentication without contacting the RPC', async () => {
     const rpc = codeRpc();
     const pending = exportEncryptedPayment(vectorMatch('a1'), keystore, EXPORT_PASS, { rpc, N: TEST_N });
