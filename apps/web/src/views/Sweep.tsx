@@ -1,6 +1,6 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
 import { checkDestinationReuse } from '../lib/destinationReuse';
@@ -41,9 +41,6 @@ export function Sweep(): ReactNode {
   const manifest = useManifest(chainId);
   const [destination, setDestination] = useState('');
   const seller = app.session?.metaAddress;
-  const reuseNotice = useMemo(() => seller === undefined || chainId === undefined ? undefined :
-    checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false),
-    [seller, chainId, destination, sel]);
   const [mode, setMode] = useState<'relayer' | 'direct'>('relayer');
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
   // R12-2: behind a required local proxy the balance read (a direct Settings RPC request naming this one-time address)
@@ -137,6 +134,7 @@ export function Sweep(): ReactNode {
   }
 
   const target: SweepTarget = { chainId, token: tokenAddr, owner: sel.match.stealthAddress, announcement: sel.match.announcement };
+  const reuseNotice = checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false);
   const rememberDestination = (address: string): void => {
     checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, address, true);
   };

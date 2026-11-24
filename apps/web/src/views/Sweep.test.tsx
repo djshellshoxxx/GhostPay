@@ -225,8 +225,6 @@ describe('Sweep', () => {
     expect(screen.getByText(keccak256(raw.raw as `0x${string}`))).toBeTruthy();
     // A subsequent choice can be intentional; bookkeeping alone never prompts a signature.
     const destination = screen.getByLabelText('Destination address (your own wallet)');
-    await user.clear(destination);
-    await user.type(destination, DEST);
     expect(await screen.findByText(/previously submitted a sweep to this destination/)).toBeTruthy();
     await user.clear(destination);
     expect(screen.queryByText(/previously submitted a sweep/)).toBeNull();

@@ -1,9 +1,10 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
+import { watchDestinationWallet } from '../lib/destinationWalletScope';
 import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
@@ -173,29 +174,21 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
-  const [destinationReview, setDestinationReview] = useState<{
-    built: BuiltPayment; wallet: WalletSession; session: typeof app.session; notice: DestinationNotice;
-  }>();
-  const changedWallet = useRef<WalletSession | undefined>(undefined);
-  useEffect(() => {
+  const destinationReviews = useRef(new WeakMap<BuiltPayment, {
+    session: typeof app.session; notice: DestinationNotice;
+  }>());
+  const reviewWallet = useRef<WalletSession | undefined>(undefined);
+  const [walletChanged, setWalletChanged] = useState(false);
+  useLayoutEffect(() => {
+    reviewWallet.current = wallet;
+    setWalletChanged(false);
     if (wallet === undefined) return;
-    const provider = wallet.wallet.provider;
-    const events = ['accountsChanged', 'chainChanged', 'disconnect'];
-    const invalidate = (): void => {
-      changedWallet.current = wallet;
-      setDestinationReview(undefined);
-    };
-    // Watching local wallet events adds no request. An unobservable account cannot safely display its history.
-    if (provider.on === undefined || provider.removeListener === undefined) {
-      invalidate();
-      return;
-    }
-    try { for (const event of events) provider.on(event, invalidate); } catch { invalidate(); }
-    return () => {
-      for (const event of events) {
-        try { provider.removeListener?.(event, invalidate); } catch { /* Optional provider API. */ }
-      }
-    };
+    const stop = watchDestinationWallet(wallet.wallet.provider, () => {
+      if (reviewWallet.current !== wallet) return;
+      reviewWallet.current = undefined;
+      setWalletChanged(true);
+    });
+    return () => { reviewWallet.current = undefined; stop(); };
   }, [wallet]);
   const [builtFor, setBuiltFor] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
@@ -789,11 +782,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setGranted(undefined);
         setApprovalHash(undefined);
         if (!mounted.current) return;
-        const notice = changedWallet.current === wallet ? 'unavailable' : checkDestinationReuse(
+        const notice = reviewWallet.current !== wallet ? undefined : checkDestinationReuse(
           { kind: 'invoice', payer: wallet.account, invoiceDigest: bytesToHex(invoiceDigest(invoice)) },
           wallet.chainId, b.preview.stealth, true,
         );
-        setDestinationReview(notice === undefined ? undefined : { built: b, wallet, session: app.session, notice });
+        if (notice !== undefined) destinationReviews.current.set(b, { session: app.session, notice });
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
@@ -968,6 +961,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setBufferQuote(undefined);
     setPhase('input');
   };
+
+  const destinationReview = built === undefined ? undefined : destinationReviews.current.get(built);
 
   /* ------------------------------- rendering ------------------------------- */
 
@@ -1292,7 +1287,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview notice={destinationReview?.built === built && destinationReview.wallet === wallet && destinationReview.session === app.session ? destinationReview.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}

@@ -147,6 +147,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(same.or(reused)).toHaveCount(0);
     expect(await prepare(second, 11)).toBe(destination);
     await expect(reused).toBeVisible();
+    await expect(page.getByText(/A fresh one-time.*address is derived/i)).toHaveCount(0);
     await expect(same).toHaveCount(0);
     const history = await page.evaluate(() => sessionStorage.getItem('ghostpay.destination-review.v1'));
     expect(history).toBeTruthy();

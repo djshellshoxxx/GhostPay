@@ -1509,6 +1509,7 @@ export const SECURITY_KEY_GROUPS = {
     'reuse.differentInvoice',
     'reuse.sweep',
     'reuse.unavailable',
+    'reuse.walletChanged',
     'reuse.invoiceMeta',
     'pay.final.gross',
     'pay.final.fee',
