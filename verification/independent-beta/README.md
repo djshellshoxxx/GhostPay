@@ -6,16 +6,18 @@ checks requirement-derived safety invariants. It does not import production modu
 or add dependencies. Ordinary CI does **not** run it; a green CI run is no evidence that this harness ran.
 
 - Safety model, requirement citations, invariants I1–I8 and ambiguity items A1–A6: [SAFETY_MODEL.md](SAFETY_MODEL.md)
-- Results, findings and routing to other workers: [HANDOFF.md](HANDOFF.md); raw records under `results/`
+- Results, findings and routing to other workers: [HANDOFF.md](HANDOFF.md); raw records and summaries under `results/<run>/{run.json,SUMMARY.md}`
+- Positive control P1 (fresh profile, outside the accepted guarantee) must be detected, or the run is a harness error;
+  a scenario with no wallet handoff at all is also a harness error (vacuity guard)
 
 ## What it exercises (milestone 1)
 
 One EVM chain/asset (Base Sepolia 84532, native ETH, via the repository's signed fake E2E deployment), one payment
 intent **X** and an unrelated control intent **C**, both 0.5 ETH fixed-price invoices from a fresh seller key.
-Each scenario runs in a fresh browser context: a seller tab creates the invoices and closes, then payer tabs **A** and
+Each scenario runs in a fresh persistent browser profile (its own Chromium process): a seller tab creates the invoices and closes, then payer tabs **A** and
 **B** act. Steps include interrupted wallet replies (hang with/without broadcast, error after broadcast, rejection),
 reload, tab close/reopen, account and chain changes, RPC outages, mining, drops, reorgs, explicit status checks and
-deliberate clears (accepted or dismissed). Every sequence ends with a fixed judgement suffix: retry X in both tabs,
+deliberate clears (accepted or dismissed) and genuine browser restarts (persistent profile relaunched). Every sequence ends with a fixed judgement suffix: retry X in both tabs,
 pay C once, re-check X.
 
 ## Isolation
