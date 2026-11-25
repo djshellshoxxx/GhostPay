@@ -6,7 +6,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import { notifyAppLock } from '../lib/appLock';
-import { DEFAULT_SETTINGS } from '../lib/settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings';
 import { DEFAULT_SCAN_PRIVACY, SCAN_PRIVACY_KEY, type ScanPrivacySettings } from '../lib/scanPrivacy';
 import { ServicesContext } from '../lib/services';
 import type { ScanMatch } from '../lib/scanClient';
@@ -225,6 +225,30 @@ describe('Sweep balance read and scan privacy', () => {
     clickRead();
     await waitFor(() => { expect(m.calls).toHaveLength(2); });
     expect(m.secondaryCalls()).toBe(0);
+  });
+
+  it('sends nothing when another tab saved a different RPC after Sweep opened (W3 stale consent)', async () => {
+    const m = mount();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, rpcUrls: { [String(CHAIN)]: 'https://other.example/' } }));
+    clickRead();
+    await settle();
+    expect(screen.getByText(/changed in another tab after this page opened/)).toBeTruthy();
+    expect(m.getRpcCalls()).toBe(0);
+    expect(m.calls).toEqual([]);
+    expect(m.secondaryCalls()).toBe(0);
+  });
+
+  it('drops a read whose RPC arrives after another tab changed the scan privacy settings (W3 stale consent)', async () => {
+    let release!: () => void;
+    const rpcReady = new Promise<void>((resolve) => { release = resolve; });
+    const m = mount({ rpcReady });
+    clickRead();
+    store(PRIVATE);
+    release();
+    await settle();
+    expect(screen.getByText(/changed in another tab after this page opened/)).toBeTruthy();
+    expect(m.getRpcCalls()).toBe(1);
+    expect(m.calls).toEqual([]);
   });
 
   it('does not retry an unavailable RPC when settings change without another click', async () => {

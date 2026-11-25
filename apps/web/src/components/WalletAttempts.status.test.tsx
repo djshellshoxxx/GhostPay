@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { AttemptResolution } from '../lib/attemptStatus';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt } from '../lib/duplicateAttemptJournal';
 import { mockRpc } from '../test/mockRpc';
@@ -26,6 +26,10 @@ beforeEach(() => {
   finishAttempt(attempt, hash, store);
   window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, records.at(-1) ?? '[]');
 });
+
+// Unmount before the next test and before jsdom teardown, so the mount-time journal migration cannot settle into a
+// component whose window is gone (an unhandled rejection that fails the run).
+afterEach(cleanup);
 
 async function statusFor(next: AttemptResolution): Promise<string> {
   outcome.next = next;
@@ -58,4 +62,18 @@ it('keeps the plain replacement wording for a same-call speed-up', async () => {
   });
   expect(text).toMatch(/^Linked replacement/);
   expect(text).not.toMatch(/different call/);
+});
+
+// #286 item 5: a live region reports the result without reading a transaction hash aloud. The linked replacement's
+// hash stays on screen, outside the live region, so the user can still compare it with the wallet.
+it.each(['same-call', 'different-call'] as const)('keeps the linked %s replacement hash out of the live status region', async (kind) => {
+  const text = await statusFor({
+    state: 'replaced', hash: other, kind,
+    outcome: { state: 'confirmed', blockNumber: 1n, blockHash, confirmations: 1_000n },
+  });
+  expect(text).not.toContain(other);
+  expect(text).not.toMatch(/0x[0-9a-f]{64}/i);
+  const shown = screen.getAllByText(other);
+  expect(shown.length).toBeGreaterThan(0);
+  for (const node of shown) expect(node.closest('[role="status"], [role="alert"], [aria-live]')).toBeNull();
 });

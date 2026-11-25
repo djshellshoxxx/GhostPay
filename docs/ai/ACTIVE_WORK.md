@@ -1,8 +1,118 @@
+# W3 — successor of #649 (FC-02 Sweep balance consent) with stale-consent binding (2026-11-25 UTC)
+
+Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-sweep-consent-successor`, from #649 head `790de53e` (ancestry kept; original branch untouched) merged with main `e2c11634`.
+Why: #649 (all hosted checks green at 790de53e) and its combined candidate #664 lost their driver when feature-completion-06 exited; ghostpay-42 and newghostpay-ae confirmed nobody else took it.
+Owned paths: #649's files (`apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, `Sweep.quoteLifecycle.test.tsx`, `Sweep.test.tsx`, `lib/scanPrivacy.ts` disclosure line, e2e journeys), the merge resolution with #674/#675 in Sweep, one additive `sweep.balanceRead.settingsChanged` key, this entry.
+W3 addition: a balance read is consented to for the saved RPCs and scan privacy settings Sweep opened with; if another tab changed them, nothing is sent (checked at the click and again after the RPC lookup) and a late balance is discarded. #675's live-region rule is kept: the new message names no address, amount or hash.
+Acceptance: #649's tests plus two stale-consent regressions; full hosted CI on the exact head.
+
 # FC-02 — Sweep balance consent and quote/signing lifecycle onto current main (2026-11-25)
 
 - Worker: fc02 (Claude Code implementation worker, feature-completion campaign). Branch `claude/fc02-sweep-consent-20261125`, base `origin/main` `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`. Donor: PR #534 head `5c93c3b172cd002f1cdc68232b1a0f3335aadb76` (merged with `git merge --no-ff`; #252 `4085622463411d3ba27f4efb7b73a70575170535` and selected #272 commits `ab40d79a`, `9e4ec2da`, `a67d0975` stay in history).
 - Owned paths: `apps/web/src/views/Sweep{,.test,.privacy.test,.quoteLifecycle.test}.tsx`, `apps/web/src/lib/scanPrivacy{,.test}.ts`, `apps/web/locales/*.json`, `apps/web/src/i18n/securityKeys.ts`, e2e specs `core-journey`, `devnet-journey`, `pages-devnet`, `sweep`, this entry, and `docs/consolidation/feature-completion-20261125/FC-02-sweep-consent.md`. Not touching #586 or #610 work.
 - Acceptance: Sweep balance refresh only after explicit consent; any change to quote, amount, destination, chain or account invalidates the pre-broadcast signing context; post-handoff evidence retained; current-main Sweep/scanPrivacy behavior preserved; focused tests, typecheck and lint pass; hosted CI pending until reported.
+
+# Local destination-reuse warnings consolidated onto main (#287 item 1) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-reuse-287-20261125`, base main `32ae3977`. Slice assigned by coordinator `feature-completion-06`.
+Donors (merged with `--no-ff`, original branches untouched): #586 `codex/287-local-destination-reuse` `f024ce3e` -> #610 `finish/destination-reuse-type-20261124` `874d3809`.
+Not merged: #584 `codex/287-evm-payment-destination-reuse` `17c5a2ee`, a sibling design that writes fingerprints into the fund-safety payment-attempt journal; superseded by #586's separate advisory history, which cannot veto or alter a payment. #341 (GP-BUG-06) fixes the hygiene `DestLedger`, which main's web app does not use; not applicable to main.
+Owned paths: `apps/web/src/lib/destinationReuse*.ts`, `apps/web/src/lib/destinationWalletScope*.ts`, `apps/web/src/components/DestinationReuseNotice.tsx`, the reuse hunks only in `apps/web/src/views/{Pay,Sweep}.tsx` and their tests, the one meta-address hint in `CreateInvoice.tsx` (not the Copy-link row, which W4 owns), reuse keys in `apps/web/locales/*.json` and `securityKeys.ts`, the reuse section of `docs/user/privacy-limits.md`, the reuse case in `apps/web/e2e/flows.spec.ts`, this entry and a handoff.
+Not owned: Sweep balance consent (FC-02, #664), CreateInvoice clipboard and minimal invoices (W4), the payment-attempt journal, scan code.
+Acceptance: advisory only (never blocks or authorizes a wallet action); no RPC, explorer, wallet or telemetry request; no raw address stored; bounded salted session history; denied or full storage degrades to an "unavailable" notice; web typecheck, lint, unit tests, lean build, Playwright reuse case and full hosted CI pass; independent review; merge through the integration lock queue.
+
+
+# P13 confidential amounts — protocol-neutral client core — 2026-11-25
+
+Worker: Claude Code session `nodata/eloquent-shannon-gfv6t9` (P13 only).
+Branch: `nodata/eloquent-shannon-gfv6t9`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`
+with `future/p13-confidential-amounts` `8846d555` merged for spec ancestry.
+Owned paths: new `packages/confidential-amounts/src/future/p13/**`, new
+`packages/confidential-amounts/browser/**`, additive edits to `packages/confidential-amounts/`
+`package.json`, `README.md`, `DEVIATIONS.md`, new `docs/future/modules/P13-confidential-amounts/IMPLEMENTATION.md`,
+`docs/handoffs/P13_CONFIDENTIAL_AMOUNTS_20261125.md`, lockfile entry for the new workspace dependency, this claim.
+Acceptance: strict amount/asset validation, exact arithmetic, data models, invoice compatibility,
+secret lifecycle, encrypted records with recovery export/import, default-off gate, unsupported-operation
+results and disclosures, each with tests; existing 88 package tests unchanged and passing.
+Out of scope: contracts (incl. the unmerged router return-bomb fix `cd544529`), apps/web wiring,
+settlement activation, deployment, fees, new cryptographic primitives, other modules' files.
+
+# P13 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/p13-confidential-amounts`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/P13-confidential-amounts/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
+
+# Issue #287 item 4 · local metadata retention controls, presentation slice (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-retention-287-20261125`, base main
+`32ae3977`. Claim confirmed with no overlap by `newghostpay-ae` (#670, #674 address reuse) and `ghostpay-backup-60`
+(W3, #672; it keeps the `saveScanPrivacy` handler in Settings.tsx). Ported, not merged, from the diverged 2026-11-20
+privacy candidate line (`Recovered-from:` trailers); donor branches stay untouched.
+Owned paths: `apps/web/src/lib/metadataRetention*`, `lib/useInvoicePreviewRetention.ts`,
+`components/MetadataRetentionControls*`, the retention hunks in `CreateInvoice.tsx`, `PaymentRequestQr.tsx`, `Pay.tsx`
+and `Settings.tsx`, the `retention.*` catalog keys and `metadataRetention` security group, spec 19.
+Not owned: invoice metadata minimization and CreateInvoice's Copy-link row (W4), persistent timestamp retention in
+the reconciliation vault (#383/#587/#609; a later slice), merchant template issuer (full profile, deferred-adjacent).
+Acceptance: default-off preferences; preview, count and explicit confirmation; stale plans clear nothing; only
+presentation copies close and every saved record stays; hosted CI green at the exact head; merge via the shared queue.
+
+# payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
+
+Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.
+Owned paths: `packages/payment-uri/src/invoice-link.ts`, additive cases in `packages/payment-uri/src/{negative,vectors}.test.ts`, `packages/payment-uri/DEVIATIONS.md` item 10, this entry. No `apps/web` changes.
+Acceptance: `parseInvoiceLink`/`buildInvoiceLink` reject whole `.` path segments like `..`, and `origin` omits the scheme's default port; package tests, typecheck and lint pass.
+
+---
+
+# Seller-key restoration on phones, tablets and other devices (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60`; branch `claude/mobile-restore`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
+Resumes the mobile qualification stack with ancestry: #588 `46150f4c` → #597 `a929b178` (all hosted checks green at a929b178). Original branches untouched.
+Owned paths: new `apps/web/e2e/devices-mobile-restore.spec.ts`, its `testMatch` entry in `apps/web/playwright.mobile.config.ts`,
+restore rows in `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md` and `docs/qr/PHYSICAL_DEVICE_ACCEPTANCE.md` (D4 to D6),
+the device-restore section of `docs/user/product-guide.md`, and this entry. No production, crypto-format or workflow-gate changes.
+Acceptance: in Chromium (Pixel, Galaxy Tab, and the default-config iPhone/iPad descriptors) and native WebKit (iPhone SE, iPad Mini) profiles, a fresh device restores the fixed v1 vector keystore and refuses damage and a wrong passphrase. The restored keys survive vault save, reload and unlock. The encrypted backup QR from a separate desktop context restores the same identity, as one code and as out-of-order multi-part codes. Hosted mobile qualification (lean and full) and full CI pass. Physical-device cases stay pending until recorded.
+
+# P1-LATE stack consolidation onto main — 2026-11-24 UTC
+
+Worker: Claude Code (local, `claude/p1-late-reconciliation`). Base: stack tip PR #625 `694383f7` (contains #533 → #546 → #575 → #599) merged with main `c8e131c1`.
+Own only the merge resolution (`apps/web/src/views/Scan.tsx` scan-owner state, this file), fixes for failures reproduced on the merged head inside the stack's existing owned paths, and `docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`. All donor branches stay unchanged; their PRs are superseded only after this merges.
+Acceptance: the merged head passes web/ux-vault/cli typecheck, lint and tests locally and the full hosted CI; never show an unverified or late payment as confirmed; integration lock acquired before merge.
+
+---
+
+# Resumed seller browser qualification — 2026-11-24 UTC
+
+Worker: root. Branch: `resume/seller-reconciliation-20261124`. Parent: PR #575 at `5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727`. Main observed: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the imported-history assertions in `apps/web/e2e/pages-devnet.spec.ts`, the mismatched-observation fixture in `apps/web/src/lib/reconciliationVault.invoices.test.ts`, this claim, and a new handoff. Resume the existing task after the reported interruption. Preserve parent branches and all production code.
+Acceptance: imported historical records display the current unverified state and no credited amount summary; saving the freshly verified observation produces one link and one distinct observation. Preserve the existing encrypted-backup, duplicate, sweep and network checks. Local fixtures only; hosted browser qualification remains required.
+
+---
+
+# Seller payment reconciliation on the #533 → #546 stack
+
+Worker: Codex. Branch `fix/seller-linked-payment-reconciliation` starts at #546 `711168f18e5d808df4e3153da8898cd86fae5266`. Main inspected at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the linked-payment retry and duplicate-observation handling in the portable reconciliation vault, its invoice regressions, the seller assertions in flows.spec.ts and pages-devnet.spec.ts, and the CLI history test fixture that uses that vault. Extend the scanClient.ts page-finality/checkpoint logic and its local scanClient.test.ts fixtures for a retreating tip. Update the reconciliation ADR. The Scan privacy localization fixture has a separate worker and candidate. Leave both parent branches and its test untouched.
+Acceptance: count only distinct verified linked payments, revisit unresolved linked inclusions, withhold credit through interruptions, preserve seller decisions on invalidation, and prove repeated reconciliation and reload against local fixtures. No hosted blockchain, deployment or shared-branch integration.
 
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
@@ -269,6 +379,25 @@ Trace the lean Pages asset graph and RPC dispatch, exercise synthetic invoice an
 scan settings, and distinguish application results from live Tor qualification.
 Network transport, wallet, scanner, hosted onion acceptance and release controls
 remain with their existing owners (#241, #308, #320, #363, #436).
+
+## Issue #286 · private export and notification surfaces
+
+Worker: Codex on `codex/286-private-export-surfaces`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Pages download boundary, policy/adapter/schema error presentation, React and i18n diagnostics, the ux-notify lock-screen formatter, and associated regressions and qualification notes. Keep clipboard, masking, idle-lock, serialization, import and recovery workers' changes separate. Acceptance requires fixed filenames and lock-screen copy, public diagnostics and titles, and exact preservation of explicitly exported bytes. Hosted checks and independent review gate integration.
+
+## Issue #286 item 5 · privacy-safe exports and notifications onto current main (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-export-privacy-286-20261125`, base main
+`32ae3977`, donor #570 `codex/286-private-export-surfaces` @ `55781533` merged with `--no-ff` (not rebased).
+Assigned by the feature-completion coordinator (`feature-completion-06`) after its shared-core privacy triage.
+Owned paths: the Pages download boundary (`apps/web/src/components/Common.tsx` download helpers), the call sites'
+fixed file names, donor #570's error/announcement/diagnostic surfaces, `packages/ux-notify` lock-screen title, and
+their regressions and docs. Not owned: clipboard (W4 #668), CreateInvoice's Copy-link row, privacy-minimal invoices
+(W4), masking (#569), vault/session isolation (#571/#655), RPC disclosure (W3), wallet disclosure (FC-07), address
+reuse (newghostpay-ae).
+Acceptance: no address, hash, amount, invoice detail, date or key in any suggested download name; exported bytes
+unchanged and importable; recovery file names stay recognizable; no secret in notifications, alerts, live regions,
+titles, URLs or console; hosted CI green at the exact head; independent review; merge via the shared queue.
+
 
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
@@ -1975,6 +2104,27 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## Late-payment handling — Pages seller reconciliation (2026-11-23)
+
+- Worker: Codex. Isolated branch: `codex/ghostpay-late-payment-20261123`. Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths on this branch: seller reconciliation matcher, encrypted vault, Scan and invoice registry/create UI, narrowly scoped web locale keys and regression tests, and `docs/handoffs/LATE_PAYMENT_20261123.md`.
+- Continue the M3 source analysis from `6b6a030c598b0beeb3d38846e753a8b2249e96d6` without modifying the M1 wallet-attempt paths or its owner's branch. No shared integration under this claim.
+- Acceptance: canonical timing and existing transfer finality; durable visible provisional, accepted and invalidated evidence; explicit local seller decision; replacement warning; regression and affected Pages qualification on the resulting commit.
+
+## Accepted late payment after a reorg
+
+Worker: Codex on `test/seller-accepted-late-reorg`, stacked on PR #533 at `90e3fff019d14d8df4c610daf2080a32140686de`.
+Own the late-payment case in `apps/web/e2e/core-journey.spec.ts` and this claim. Exercise the existing seller scanner and encrypted ledger through a confirming-block replacement, rescan, and page reload. Check the same invoice loses its paid status and the same payment retains its original seller decision.
+
+Follow-up QA on `qa/accepted-late-reorg-546`, based on the #546 head `7391b31e37d319e79a21b0aa9af89f6900e41241`, for integration into the same PR. Exercise generated reorg, rescan and reload sequences, transient canonical-header loss, and unchanged-block controls. Paths in scope are the existing core browser journey, invoice vault regressions, and the seller reconciliation/scanner code for failures reproduced by those tests.
+
+ 
+## 2026-11-24 — scan locale reconciliation fixture qualification
+- Worker: sequential ChatGPT cycle 20261124T1437Z; branch `automation/20261124T1437Z/bug/scan-locale-vault-fixture`; exact #599 parent `0c7f680d0791668a68c3a92d7d4ba44087dcf2b8`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+- Owned paths: `apps/web/src/views/ScanPrivacy.i18n.test.tsx`, this additive claim and `docs/handoffs/SCAN_LOCALE_VAULT_FIXTURE_20261124.md`. Explicit continuation of #599; preserve #575/#546/#533 and their original branches. No product, storage policy, or deployment edits.
+- Evidence: #599 native web job 138355406523 fails at checkpoint count > 0. Its Scan awaits actual reconciliation vault persistence before allowing checkpoint advancement; this jsdom test lacks the browser IndexedDB fixture. Reuse the existing Scan.test.tsx in-memory ciphertext CAS adapter and actual guarded vault. Preserve all locale, no-replay, checkpoint and settings assertions.
+- Acceptance: native web tests, typed lint/typecheck, fresh hosted acceptance and independent review of this exact child. Local checkout DNS blocked; no local native test pass claimed. Bounded ownership checks found no same-file change in 14 relevant PR inventories, no exact-path claim on main, no #599 child returned by search. Integration lock observed released at generation 20; not acquired; no shared integration.
 ## 2026-11-19T08:36Z — isolated JSON canonicalization correctness repair
 
 - Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.
@@ -3248,6 +3398,10 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
 
+## Interrupted payer verification on Pages
+
+Worker: Codex on `fix/pages-offline-session` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own payment result presentation and exported receipt classification in Pay and payExec, their regression fixtures, and browser coverage for interrupted receipt verification. Coordinate with `codex/offline-interrupted-invoice`, which owns draft recovery, the offline notice and review retry. Reuse existing receipt-correlation work from #298/#302 where applicable. Verify unknown outcomes through disconnect, reconnect and same-tab reload, including zero wallet replay. Keep existing release gates.
+
 
 
 ## #573 browser fixture continuation — 2026-11-24
@@ -3271,6 +3425,7 @@ Worker: Codex. Branch: `fix/364-responsive-pages`. Base: C1 #504 at `1a7447d58c0
 - Fix: `responsive-pages.spec.ts` counted a 304 revalidation as a failed asset. 304 now passes; failures (4xx/5xx) still fail. Reproduced with a same-context navigation probe.
 - Acceptance: static help and privacy pages cover EL5, EL10 and technical explanations, buyer/seller diagrams with text equivalents, backup and recovery, wallet connection, invoices and receipts, merchant status, RPC/network configuration, privacy matrix, glossary, and disclosure-based contextual help. Every feature carries an implemented, experimental, planned or unsupported label checked against source. Responsive at 320/375/768/1280/1920 CSS px and 200% zoom, no horizontal overflow, no remote fonts or scripts, CSP unchanged, axe clean on help and privacy pages, existing unit and e2e tests green.
 - Verification plan: vitest for the touched components, `static-help` and `responsive-pages` Playwright specs on desktop plus mobile projects, typecheck, lint, build with scan-bundle, `node scripts/check-*` guards that cover help assets. Independent review before merge.
+
 ## POS terminal session lifecycle completion — 2026-11-25 UTC
 
 Worker: Claude Code cloud session, branch `nodata/gracious-meitner-0yy6do`, base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Preflight: #406 and #576 (issue #400 guards, POS reliability) are merged; open #411 is a stale ancestor of main; open #614 is docs-only. A scan of every remote branch found no POS source blob newer than main. F09 GhostPOS (`future/f09-ghostpos`) remains specification-only and is not implemented here.
@@ -3311,3 +3466,30 @@ for the vault or RPC. Add the reviewed #272 lifecycle and regression commits
 `a67d09750f13ae2cfee3a0ad7bdc3ccb6c28b4f0`. Keep unrelated donor changes in
 their existing branches. Verify the refresh, stale handoff and post-handoff
 evidence cases on the composed tree.
+
+## Mobile browser workflow qualification — 2026-11-23 Pacific
+
+Codex owns branch `codex/qualify-mobile-browser-engines` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Scope is an additive mobile Playwright configuration, mobile-specific regression coverage and an evidence handoff. Reuse existing signed-invoice, injected-wallet, backup, layout and camera tests. Exercise touch navigation and raster QR imports. Preserve the QR and recovery workers' source paths and #373's separate native-engine branch. Record actual browser/OS, device-emulation scope and physical checks still open.
+
+## Mobile qualification resume: exact memo assertion — 2026-11-24 Pacific
+
+Worker: `/root/missed_work_census`, assigned by the resumed-work coordinator. Isolated branch: `fix/mobile-588-memo-assertion-20261124`, based on PR #588 at `46150f4ce0a34da0e23dda36642ba9463ff1e4a1`. The owner branch stays unchanged. Owned paths are `apps/web/e2e/devices-mobile-workflows.spec.ts`, this additive claim, and `docs/handoffs/MOBILE_588_MEMO_ASSERTION_20261124.md`.
+
+Hosted mobile run `45338469535` failed in both profiles. All four devices reached the payment review after QR import, then failed the exact standalone memo-text selector; the production memo paragraph includes its label. Acceptance: reproduce that assertion failure, assert the exact labeled memo in its visible paragraph, and rerun the existing mobile scenarios in available Chromium and WebKit engines. Preserve the review-before-open assertion, camera-denial route, file chooser and backup round trip. Do not change QR/payment production source, parent branches, release gates or deployment. Record runtime limitations and exact source evidence. Integration remains coordinator-owned.
+
+Completion evidence at test-source commit `7d112a5678496d851e8ec22d6603fbb4dec971cf`: original assertion reproduced two failures in the lean Chromium phone/tablet projects; repaired source passed 24/24 selected mobile tests in lean and 24/24 in full across Chromium and native WebKit. Six virtual-camera cases per profile require full Chromium and remain hosted qualification; the first local all-case attempt is explicitly interrupted after one unsupported-camera failure. The changed test passed typed lint, both web builds/typechecks/bundle scans passed, and the secret/whitespace checks passed. Additive evidence is owned under `docs/handoffs/mobile-588-evidence-20261124/`. The coordinator independently reviewed the test correction and found it preserves exact payload verification. Parent branch and production source remain unchanged; no merge or deployment.
+
+
+## Issue #287 — local EVM destination reuse
+
+Worker: Codex, branch `codex/287-local-destination-reuse`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Scope: destination-history helper/tests, checkout final review, seller sweep destination and successful submission, warning catalog entries, focused browser coverage and v1.1 evidence. The invoice's reusable meta-address is not a payment destination. Compare actual destinations locally within the current account and chain. Verify same and different invoices, address normalization, deliberate sweeps, account changes, reload, storage failure and nonblocking review. Keep payment journals, signing, release and custody gates with their existing owners.
+
+## PR #586 typed notice completion — 2026-11-24
+
+- Worker: `/root/local_handoffs`; coordinator: `/root`. Isolated branch: `finish/destination-reuse-type-20261124`; source parent: `f024ce3e0eab91df40bfd5a75aee2a56d9158e5a` (PR #586), tree `b86ab0da102ab4f7b366acdd23847d8c016958d3`.
+- Owned source: only the `FinalPreview` notice prop annotation in `apps/web/src/views/Pay.tsx`; additive ownership and `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`. Acceptance: reproduce hosted TS2322 locally, admit the existing `wallet-changed` notice already supported by the receiving component, prove emitted JavaScript unchanged, and run available focused checks with existing dependencies only.
+- Coordination: #584 (`17c5a2ee3828d0132cfdf21e4c966ca7550d07f2`) and #586 are siblings of `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Their journal-backed and separate session-storage histories are alternative mechanisms; neither is adopted as the other's successor. Active wallet/account/privacy owners retain their listeners, authority, signing and transaction semantics. No other branch, test assertion, storage mechanism, catalog or runtime body is edited by this lane.
+- Boundaries: no dependency installation, main integration, remote writes, deployment, browser/real-wallet acceptance claim or release-gate change. This narrow repair does not resolve the address-reuse architecture choice or close #287.
+
+Completion: qualified source `3de310900e0261bbfbc00fa30383ca9afcd094c7` passed the original full web typecheck, seven existing focused tests and scoped typed lint. Pay's emitted JavaScript is byte-identical to #586. Root independently approved the one-line prop annotation and subsequently authorized this worker to publish a draft child targeting `codex/287-local-destination-reuse`, preserving #586 ancestry and #584 unchanged. This bounded publication authorization supersedes only the original claim's no-remote-writes boundary; no main integration, shared lease, deployment or gate change is authorized. Source-pinned evidence: `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`.

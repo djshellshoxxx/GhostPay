@@ -313,7 +313,7 @@ export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, 
 /** Returned hash is preserved even if tab storage fails after broadcast. */
 export class WalletBroadcastError extends TransactionOutcomeError {
   public constructor(public readonly hash: Hex) {
-    super({ phase: 'verification-incomplete', hash, code: 'HASH_PERSISTENCE', message: { key: 'transaction.walletBroadcast', values: { hash } } });
+    super({ phase: 'verification-incomplete', hash, code: 'HASH_PERSISTENCE', message: { key: 'transaction.walletBroadcast' } });
     this.name = 'WalletBroadcastError';
   }
 }
@@ -516,11 +516,16 @@ export function parseSeenTx(v: unknown): SeenTx | undefined {
   if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
   try {
+    const hash = o['hash'];
+    const input = o['input'] ?? o['data'];
+    if (typeof hash !== 'string' || typeof input !== 'string') {
+      throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
+    }
     return {
-      hash: String(o['hash']).toLowerCase() as Hex,
+      hash: hash.toLowerCase() as Hex,
       from: toAccount(o['from']),
       to: o['to'] === null ? null : toAccount(o['to']),
-      input: String(o['input'] ?? o['data']).toLowerCase() as Hex,
+      input: input.toLowerCase() as Hex,
       value: parseQuantity(o['value']),
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
       nonce: optionalQuantity(o['nonce']),
@@ -583,8 +588,16 @@ export async function pollReceipt(
       const o = r as Record<string, unknown>;
       let to: Address | undefined;
       try {
+        const receiptHash = o['transactionHash'];
+        if (typeof receiptHash !== 'string' || !HASH_RE.test(receiptHash)) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
+        if (receiptHash.toLowerCase() !== hash.toLowerCase()) throw new SubmissionMismatchError('hash');
         to = o['to'] === null || o['to'] === undefined ? undefined : toAccount(o['to']);
         const status = parseQuantity(o['status']);
+        if (status !== 0n && status !== 1n) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
         if (to !== undefined && to !== getAddress(expectedTo)) throw new SubmissionMismatchError('receipt destination');
         return { status: status === 1n ? 'success' : 'reverted', blockNumber: parseQuantity(o['blockNumber']) };
       } catch (e) {

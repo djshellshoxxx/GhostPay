@@ -2,6 +2,8 @@ import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
+import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
+import { checkDestinationReuse, isOwnOneTimeAddress } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -13,11 +15,15 @@ import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, captureSessionVersionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { browserStorage, loadScanPrivacy, privatePathForbidsDirect } from '../lib/scanPrivacy';
+import { loadSettings } from '../lib/settings';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { MAX_OTHER_HASHES, SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
+
+/** The saved RPCs and scan privacy settings, as stored. Another tab can change them while this page is open. */
+const savedRoute = (): string => JSON.stringify([loadSettings().rpcUrls, loadScanPrivacy(browserStorage())]);
 
 const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
   'unknown-after-handoff': 'sweep.attempt.unknown',
@@ -38,10 +44,15 @@ export function Sweep(): ReactNode {
   const chainId = sel?.chainId;
   const manifest = useManifest(chainId);
   const [destination, setDestination] = useState('');
+  const seller = app.session?.metaAddress;
   const [mode, setMode] = useState<'relayer' | 'direct'>('relayer');
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
   // Every balance lookup names this one-time address to the Settings RPC and needs its own click.
   const [privatePathRequired] = useState(() => privatePathForbidsDirect(loadScanPrivacy(browserStorage())));
+  // A balance read names this one-time address to the Settings RPC. It is consented to for the settings this page was
+  // opened with: when another tab has changed them, nothing is sent until Sweep is reopened with the current ones.
+  const [routeAtOpen] = useState(savedRoute);
+  const routeCurrent = (): boolean => savedRoute() === routeAtOpen;
   const balanceOperation = useRef(0);
   // `asked`: this review context has had a read request (so an empty balance means "unknown", not "not read yet");
   // `noRpc`: the last request found no RPC for the chain and sent nothing.
@@ -134,7 +145,7 @@ export function Sweep(): ReactNode {
       </section>
     );
   }
-  if (app.session === undefined) {
+  if (seller === undefined) {
     return (
       <section aria-labelledby="sw-h">
         <h2 id="sw-h">{t('sweep.title')}</h2>
@@ -144,11 +155,22 @@ export function Sweep(): ReactNode {
   }
 
   const target: SweepTarget = { chainId, token: tokenAddr, owner: sel.match.stealthAddress, announcement: sel.match.announcement };
+  // Another one-time address of these keys outranks the history notice: it links two payments and a payer knows it.
+  // The selected address itself is refused by checkDestination, so only the other matches are compared.
+  const otherOwnAddresses = app.matches.map((m) => m.stealthAddress).filter((a) => a.toLowerCase() !== sel.match.stealthAddress.toLowerCase());
+  const reuseNotice = isOwnOneTimeAddress(destination, otherOwnAddresses)
+    ? 'own-payment' as const
+    : checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false);
+  // Advisory bookkeeping only: checkDestinationReuse never throws, so it cannot veto a handoff.
+  const rememberDestination = (address: string): void => {
+    checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, address, true);
+  };
   const loaded = manifest?.status === 'loaded' ? manifest.manifest : undefined;
   const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
   const nowSec = (): number => Math.floor(services.nowMs() / 1000);
 
   const onReadBalance = (): void => {
+    if (!routeCurrent()) { setError({ key: 'sweep.balanceRead.settingsChanged' }); return; }
     const operationId = ++balanceOperation.current;
     const unchangedSession = captureSessionVersionGuard();
     const current = (): boolean => {
@@ -165,9 +187,11 @@ export function Sweep(): ReactNode {
         const rpc = await app.getRpc(chainId);
         // RPC creation may be asynchronous. A changed selection must not disclose even the old address afterward.
         if (!current()) return;
+        if (!routeCurrent()) { setError({ key: 'sweep.balanceRead.settingsChanged' }); return; }
         if (rpc === undefined) { setBalanceNoRpc(true); return; }
         const next = await readBalance(rpc, sel.match.stealthAddress, tokenAddr);
-        if (current()) setBalance(next);
+        // A delayed answer after a settings change in another tab is discarded.
+        if (current() && routeCurrent()) setBalance(next);
       } catch (e) {
         if (current()) setError(captureUserMessage(e));
       }
@@ -263,6 +287,8 @@ export function Sweep(): ReactNode {
         const lock: SweepLock = { chainId, owner: target.owner, order, status: 'unknown-after-handoff' };
         beginSweepAttempt(lock);
         handoff.lock = lock;
+        // Remembered at handoff, after the lock is persisted: a relayer timeout may still move the funds there.
+        rememberDestination(dest);
       };
       let submitted: string;
       try {
@@ -332,6 +358,7 @@ export function Sweep(): ReactNode {
           onBeforeHandoff: (a) => {
             assertReviewCurrent();
             handoff.lock = beginSweepAttempt(a, replaces);
+            rememberDestination(dest);
           },
         });
       } catch (e) {
@@ -424,6 +451,7 @@ export function Sweep(): ReactNode {
 
       <div className="stack">
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
+        <DestinationReuseNotice notice={reuseNotice} />
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}

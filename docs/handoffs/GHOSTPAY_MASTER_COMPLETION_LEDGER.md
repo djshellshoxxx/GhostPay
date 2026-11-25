@@ -1,5 +1,8 @@
 # GhostPay authoritative completion ledger
 
+**Issue #286 item 5, exports and notifications.** Integration branch `claude/w-export-privacy-286-20261125` merges donor [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) (`55781533`, reviewed at `25966864`) onto main `32ae3977`. Changes beyond the donor: downloads keep a closed list of fixed `ghostpay-*` names, and any other requested name becomes `export.<ext>` (`apps/web/src/lib/downloadNames.ts`). The wallet-attempt replacement hash, the Pay approve/permit/revoke amount and spender, and the uncertain-sweep expected hash leave their live regions and stay visible beside them. Each fix has a red-then-green regression. Status: pending hosted CI and the shared merge queue. This is not release evidence until it is merged and qualified.
+
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for
@@ -151,3 +154,7 @@ acceptance, failed attempts and unavailable external checks.
 
 No protected-main merge, production deployment, release signing, release publication or real-funds operation was
 performed. No continuous background execution or scheduled continuation is claimed.
+
+### v1.1 beta — local address reuse (issue #287, item 1)
+
+Checkout compares the derived EVM destination on explicit payment preparation. Seller sweep compares the chosen destination with earlier submitted sweeps. Acceptance requires account and chain isolation, same-invoice and different-invoice cases, session reload, storage failure, nonblocking controls, and no new remote requests. See [user-facing scope and retention](../user/privacy-limits.md#repeated-evm-destinations). The v1.1 release gate remains open through independent review and integration.
