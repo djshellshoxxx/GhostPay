@@ -14,24 +14,28 @@
 6. All public formats are versioned, bounded, domain-separated, replay-resistant and backwards compatible where possible. New cryptography and real-value contract changes need accepted ADRs, independent vectors and review.
 7. No work starts on these proposals without a **new explicit owner instruction**, updated code/PR comparison, scoped security and threat-model review, tests, and separate release authorization.
 
+## Owner release exclusions — 2026-11-25
+
+F01, F09 and F13 are permanently archived. F08, F11, F12 and F14 are deferred beyond v1.0. All seven are stop-work and excluded from beta and v1.0. Preserve history; no feature development, integration or activation. Existing code must remain dormant and disabled. Explicit owner authorization is required to reverse either status. See [binding engineering instructions](../../../AGENTS.md).
+
 ## Catalog
 
 | No. | Future spec | Status |
 |---|---|---|
-| 01 | [GhostTips: privacy-first donations and tips](01-ghosttips.md) | **FUTURE ONLY** |
+| 01 | [GhostTips: privacy-first donations and tips](01-ghosttips.md) | **ARCHIVED — STOP WORK** |
 | 02 | [GhostStore: privacy-first static storefronts](02-ghoststore.md) | **FUTURE ONLY** |
 | 03 | [Universal private payment links and QR](03-private-payment-links.md) | **FUTURE ONLY** |
 | 04 | [Private local merchant dashboard](04-merchant-dashboard.md) | **FUTURE ONLY** |
 | 05 | [GhostProof: selective-disclosure payment evidence](05-ghostproof.md) | **FUTURE ONLY** |
 | 06 | [Encrypted offline backup and complete recovery](06-encrypted-backups.md) | **FUTURE ONLY** |
 | 07 | [GhostPayouts: private multi-recipient payouts](07-ghostpayouts.md) | **FUTURE ONLY** |
-| 08 | [GhostID: portable independent merchant identities](08-ghostid.md) | **FUTURE ONLY** |
-| 09 | [GhostPOS: private in-person QR checkout](09-ghostpos.md) | **FUTURE ONLY** |
+| 08 | [GhostID: portable independent merchant identities](08-ghostid.md) | **DEFERRED — STOP WORK THROUGH V1.0** |
+| 09 | [GhostPOS: private in-person QR checkout](09-ghostpos.md) | **ARCHIVED — STOP WORK** |
 | 10 | [Privacy-first recurring invoices and subscriptions](10-private-recurring.md) | **FUTURE ONLY** |
-| 11 | [GhostTeams: encrypted merchant collaboration](11-ghostteams.md) | **FUTURE ONLY** |
-| 12 | [GhostBridge: optional private P2P-Offramp handoff](12-ghostbridge.md) | **FUTURE ONLY** |
-| 13 | [Optional privacy-aware fiat conversion](13-fiat-conversion.md) | **FUTURE ONLY** |
-| 14 | [Privacy-aware multi-chain routing](14-multichain-routing.md) | **FUTURE ONLY** |
+| 11 | [GhostTeams: encrypted merchant collaboration](11-ghostteams.md) | **DEFERRED — STOP WORK THROUGH V1.0** |
+| 12 | [GhostBridge: optional private P2P-Offramp handoff](12-ghostbridge.md) | **DEFERRED — STOP WORK THROUGH V1.0** |
+| 13 | [Optional privacy-aware fiat conversion](13-fiat-conversion.md) | **ARCHIVED — STOP WORK** |
+| 14 | [Privacy-aware multi-chain routing](14-multichain-routing.md) | **DEFERRED — STOP WORK THROUGH V1.0** |
 | 15 | [Private scanning, RPC and broadcast paths](15-private-rpc.md) | **FUTURE ONLY** |
 | 16 | [Per-client payment and invoice identity separation](16-per-client-identities.md) | **FUTURE ONLY** |
 | 17 | [Privacy-first sweeping and offline fund management](17-private-funds.md) | **FUTURE ONLY** |
