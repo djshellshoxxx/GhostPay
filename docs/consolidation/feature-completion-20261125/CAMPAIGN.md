@@ -251,6 +251,15 @@ low/info, and remain filler work.
   consented light mode, sweep only POSTs /tx). Nits being folded in locally before push: inventory `automatic`
   convention, stale sweep-preflight flow and missing `inclusion.ts` path, transient "pending CI" text, pre-existing
   `/fee-estimates` overstatement, BTC-2 partial status, R13 matrix status, `specs/12:20` consent qualifier.
+- 2026-11-25T09:38Z — FC-04 review of `a52ecc89` **APPROVE** (quote case exercises main's `price.decimals` bound;
+  every other #271 intent already on main, several in newer form; RCPT-L2 decision tree identical to main and strictly
+  safer with getters). Tightening commit `69831eac` (local): RCPT-L1 asserts `status` was among the trapped reads;
+  RCPT-L2 asserts the exact 7 accessors once each and `chain.status === 'confirmed'`; quote edges 31/1.5/NaN;
+  RCPT-L1/L2 marked "fixed on FC-04 branch, pending integration" in SECURITY_FINDINGS/REMAINING_WORK/
+  FEATURE_INTEGRATION_LOG. Its validation was skipped twice by the worker's RAM guard (236/275 MB free); retry before
+  push (previous head passed: ux-receipts 164/164 with coverage, tsc/eslint clean, quote 23/23).
+  FC-05a-T nit commit `f3800a0e` (local; inventory test 4/4); a factual check of two fee-estimate edits
+  (`QUALIFICATION-2026-11.md:46`, BTC-4) across CLI/packages is pending with the reviewer.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
