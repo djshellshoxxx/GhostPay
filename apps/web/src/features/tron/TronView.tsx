@@ -2,6 +2,7 @@ import { displayMessage, type DisplayMessage } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
@@ -267,6 +268,9 @@ export function TronView(): ReactNode {
                 <Notice kind={broadcastOutcome.phase === 'pending-confirmation' ? 'ok' : broadcastOutcome.phase === 'broadcast-attempted' ? 'info' : 'error'} title={t(TRANSACTION_PHASE_KEYS[broadcastOutcome.phase])}>
                   {displayMessage(broadcastOutcome.message, t)}
                 </Notice>
+                {broadcastOutcome.reference !== undefined && (broadcastOutcome.phase === 'broadcast-unknown' || broadcastOutcome.phase === 'verification-incomplete') && (
+                  <BroadcastReference key={broadcastOutcome.reference} reference={broadcastOutcome.reference} />
+                )}
               </div>}
 
       <div className="panel">

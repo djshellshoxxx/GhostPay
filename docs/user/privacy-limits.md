@@ -126,7 +126,32 @@ tag and reconciliation vaults encrypt stored contents; scope identifiers, existe
 observable. Unlocked contents are available to the running page. Locking does not delete saved data, and exported
 files must be deleted separately from site storage.
 
+Downloaded files get fixed names such as `ghostpay-keystore.json`, `ghostpay-receipt.json` or `ghostpay-tags.gpa`. A
+name never contains an address, amount, transaction hash, date or invoice detail, so two downloads of the same kind
+share a name (the browser may add a number) and the contents identify the file on import. The name and the browser's
+download history still show that a GhostPay file was saved. The contents are what you chose to export: an encrypted
+backup stays encrypted, a receipt or public record does not. Screen-reader announcements and error alerts say what
+happened without reading out a transaction hash, amount or address; the value stays visible on the page.
+
 A second RPC adds comparison and availability while sharing queries with another operator. Explorer lookups also
 reveal the requested address or transaction. A valid receipt signature is a field attestation, and restored history
 is not fresh payment verification. See the [shipped privacy page](../../apps/web/privacy.html) and
 [reconciliation guide](reconciliation-and-receipts.md).
+
+### Repeated EVM destinations
+
+A seller can issue many invoices with the same meta-address. The checkout compares the actual derived destination when you choose **Prepare payment**. It distinguishes reviewing the same signed invoice again from seeing that address on a different invoice. Each preparation derives a new random one-time address, so in normal use neither checkout notice appears. A repeat points to a faulty or tampered random number source in the payer's browser; a seller cannot cause it. Funds sent to the repeated address still reach the seller, but payments to one address can be linked on-chain, so reloading or switching browsers before sending is the safer choice.
+
+On the seller side, the sweep form checks the destination you enter in three ways, all local:
+
+- **Another one-time address of these keys.** If the destination is a one-time address that received a different payment in the current scan, sweeping into it links both payments on-chain, and the payer of that other payment can see the funds arrive.
+- **Another seller profile.** If a different seller profile in this tab already submitted a sweep to the destination on the same network, sweeping again links those profiles on-chain.
+- **The same seller profile.** If this profile already submitted a sweep to the destination, the transfers can be linked.
+
+A repeat can be intentional. These notices never block or authorize a transaction, and the existing signing and duplicate-payment checks stay in force.
+
+The history checks use the current tab's recent history, scoped to the payer wallet (checkout) or to the EVM chain with the seller profile kept as a salted suffix (sweep). The tab keeps up to 128 salted fingerprint records across those scopes in session storage. Reloading the same tab preserves that history. Clearing the tab's session storage removes it. A tab opened with an opener can inherit an initial copy. A miss cannot establish that an address is fresh on-chain. No RPC request, explorer query or telemetry is used for the comparison.
+
+The seller's **Scan and receive** screen also flags distinct router announcements that name the same address in the current scan. Each announcement still requires its own receipt and amount checks. Two announcements do not establish two successful payments.
+
+For wallets with account-change events, checkout drops the advisory when the account or network changes or the wallet disconnects. For request-only wallets the comparison uses the account confirmed at connection. Leaving the page ends that snapshot. Reopen the invoice and reconnect to compare again.
