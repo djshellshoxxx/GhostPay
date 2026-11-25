@@ -2,7 +2,7 @@
  * P13 user-facing copy (English, plain language). Keys extend `CT_COPY`; wording obeys `findForbiddenWording`
  * (no "private", "anonymous", "untraceable", "unlinkable", "mix") and never claims an audit or deployment.
  */
-import { CT_COPY } from '../../copy.js';
+import { CT_COPY, NOT_PROTECTED_KEYS } from '../../copy.js';
 
 /** P13 additions to `CT_COPY`. */
 export const P13_COPY = {
@@ -25,6 +25,28 @@ export const P13_COPY = {
 
 /** P13 copy key. */
 export type P13CopyKey = keyof typeof P13_COPY;
+
+/**
+ * Copy keys each protocol may show (audit A3). The cleartext fixture hides nothing, so it may not carry FHE wording
+ * such as "hides how much" or operator-trust lines; CT-1 may not carry fixture wording.
+ */
+export const PROTOCOL_COPY: Readonly<Record<'ct1-zama' | 'ctm-cleartext', readonly string[]>> = Object.freeze({
+  'ct1-zama': [
+    'CT_HIDES_AMOUNT_ONLY',
+    'CT_TRUST_ZAMA',
+    'CT_TESTNET_ONLY',
+    'CT_WRAP_PUBLIC',
+    'CT_WRAP_EQUALS_GROSS',
+    'CT_WRAP_NOT_ROUND',
+    'CT_UNWRAP_PUBLIC',
+    ...NOT_PROTECTED_KEYS,
+    'P13_SETTLEMENT_OFF',
+    'P13_NOT_REVIEWED',
+    'P13_RECORD_KEY',
+    'P13_NO_FEE_ADDON',
+  ],
+  'ctm-cleartext': ['CT_M_NO_PRIVACY', 'P13_FIXTURE_ONLY', 'CT_TESTNET_ONLY', 'P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY'],
+});
 
 /** True if `key` names an existing `CT_COPY` or {@link P13_COPY} entry. */
 export function isKnownCopyKey(key: string): boolean {

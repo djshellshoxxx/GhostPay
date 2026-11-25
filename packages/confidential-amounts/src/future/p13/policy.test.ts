@@ -61,16 +61,20 @@ describe('disclosures and copy', () => {
   });
 
   it('builds complete disclosures for both built backends', () => {
+    const required = {
+      'ct1-zama': [...NOT_PROTECTED_KEYS, 'P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY'],
+      // The fixture hides nothing: it states so and carries no FHE or operator-trust lines (audit A3).
+      'ctm-cleartext': ['CT_M_NO_PRIVACY', 'P13_FIXTURE_ONLY', 'P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY'],
+    } as const;
     for (const id of ['ct1-zama', 'ctm-cleartext'] as const) {
       const d = buildDisclosure(id);
       expect(d.settlement).toBe('disabled');
       expect(d.review).toBe('none-independent');
-      for (const k of [...NOT_PROTECTED_KEYS, 'P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY']) {
-        expect(d.doesNotHide).toContain(k);
-      }
+      for (const k of required[id]) expect(d.doesNotHide).toContain(k);
       expect(new Set(d.doesNotHide).size).toBe(d.doesNotHide.length);
       for (const line of disclosureLines(d)) expect(line.text.length).toBeGreaterThan(0);
     }
+    for (const k of NOT_PROTECTED_KEYS) expect(buildDisclosure('ctm-cleartext').doesNotHide).not.toContain(k);
     expect(buildDisclosure('ctm-cleartext').hides).toEqual([]);
     expect(buildDisclosure('ct1-zama').relayerOrigin).toBe('https://relayer.testnet.zama.org');
   });

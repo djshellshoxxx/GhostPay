@@ -54,10 +54,16 @@ export function createAesGcmSealer(key: CryptoKey, deps: SealerDeps = defaultSea
     'P13_RECORD_AUTH',
     'record key must be a non-extractable AES-256-GCM key',
   );
+  // Cheap guards against a broken rng (audit A10): an all-zero nonce or a repeat of the previous nonce is refused.
+  // GCM nonce reuse under one key breaks confidentiality and integrity; this does not replace a sound rng.
+  let previous: Uint8Array | undefined;
   return {
     async seal(aad, plaintext) {
-      const nonce = deps.rng(NONCE_LEN);
-      check(nonce instanceof Uint8Array && nonce.length === NONCE_LEN, 'P13_INTERNAL', 'rng returned wrong length');
+      const nonce = Uint8Array.from(deps.rng(NONCE_LEN));
+      check(nonce.length === NONCE_LEN, 'P13_INTERNAL', 'rng returned wrong length');
+      check(nonce.some((b) => b !== 0), 'P13_INTERNAL', 'rng returned zeros');
+      check(previous === undefined || nonce.some((b, i) => b !== previous?.[i]), 'P13_INTERNAL', 'rng repeated a nonce');
+      previous = nonce;
       const ct = new Uint8Array(
         await deps.subtle.encrypt(
           { name: 'AES-GCM', iv: toBuffer(nonce), additionalData: toBuffer(aad), tagLength: TAG_LEN * 8 },

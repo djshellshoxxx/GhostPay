@@ -1,5 +1,8 @@
 /** Deterministic synthetic P13 fixtures. Addresses are made up; nothing here refers to a deployed contract. */
 import { createInvoice, type Invoice, type NewInvoice } from '@ghostpay/invoice-schema';
+import { encodeAbiParameters, encodeEventTopics, getAddress, type Hex } from 'viem';
+import { ROUTER_ABI, TOKEN_ABI } from '../../abi.js';
+import type { PaymentLog } from '../../payment.js';
 import type { ConfidentialAssetV1 } from './asset.js';
 import { PINNED_MANIFEST_DIGESTS, REQUIRED_TRUST_IDS } from './asset.js';
 
@@ -82,4 +85,28 @@ export function sampleInvoice(overrides: Partial<NewInvoice> = {}, seed = 7): In
       return array;
     },
   });
+}
+
+/** Pinned identities and the matching receipt logs of one genuine router payment (synthetic addresses). */
+export const PINNED_PAYMENT = Object.freeze({
+  router: getAddress(`0x${'a1'.repeat(20)}`),
+  token: getAddress(`0x${'b2'.repeat(20)}`),
+  stealth: getAddress(`0x${'c3'.repeat(20)}`),
+  handle: `0x${'7d'.repeat(32)}`,
+});
+
+/** `ConfidentialTransfer(router, stealth, handle)` from the token and `ConfidentialPayment(token, handle)` from the router. */
+export function genuinePaymentLogs(p: typeof PINNED_PAYMENT = PINNED_PAYMENT): PaymentLog[] {
+  return [
+    {
+      address: p.token,
+      topics: encodeEventTopics({ abi: TOKEN_ABI, eventName: 'ConfidentialTransfer', args: { from: p.router, to: p.stealth, amount: p.handle } }) as Hex[],
+      data: '0x',
+    },
+    {
+      address: p.router,
+      topics: encodeEventTopics({ abi: ROUTER_ABI, eventName: 'ConfidentialPayment', args: { token: p.token } }) as Hex[],
+      data: encodeAbiParameters([{ type: 'bytes32' }], [p.handle]),
+    },
+  ];
 }

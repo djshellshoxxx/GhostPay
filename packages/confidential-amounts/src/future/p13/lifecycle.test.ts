@@ -12,6 +12,7 @@ import {
   type P13State,
 } from './lifecycle.js';
 import { SecretAmount } from './secret.js';
+import { PINNED_PAYMENT, genuinePaymentLogs } from './fixtures.testutil.js';
 
 const codeOf = (fn: () => unknown): string => {
   const r = toResult(fn);
@@ -21,7 +22,7 @@ const codeOf = (fn: () => unknown): string => {
 describe('state transitions', () => {
   const allowed: readonly [P13State, P13State][] = [
     ['prepared', 'reviewed'], ['prepared', 'cancelled'], ['reviewed', 'authorized'], ['reviewed', 'prepared'],
-    ['reviewed', 'cancelled'], ['authorized', 'submitted'], ['authorized', 'cancelled'], ['submitted', 'unknown'],
+    ['reviewed', 'cancelled'], ['authorized', 'submitted'], ['submitted', 'unknown'],
     ['submitted', 'verified'], ['submitted', 'reverted'], ['unknown', 'verified'], ['unknown', 'unknown'],
     ['unknown', 'reverted'], ['unknown', 'submitted'], ['verified', 'submitted'], ['reverted', 'submitted'],
   ];
@@ -50,7 +51,7 @@ describe('state transitions', () => {
 
 describe('interpretEvidence (P13-A06, A09)', () => {
   const expectedNet = SecretAmount.from(1_000n);
-  const base = { confirmations: 3, minConfirmations: 2, expectedNet } as const;
+  const base = { confirmations: 3, minConfirmations: 2, expectedNet, logs: genuinePaymentLogs(), pinned: PINNED_PAYMENT } as const;
 
   it('a hash or receipt alone is not verification', () => {
     expect(interpretEvidence({ ...base, receipt: 'none' })).toEqual({ state: 'unknown', reason: 'no-receipt' });

@@ -8,8 +8,19 @@ import { decodeBase64Url, encodeBase64Url } from '@ghostpay/invoice-schema';
 import { check, fail } from './errors.js';
 import type { RecordSealer } from './cipher.js';
 import { assertTransition, mayHaveEffect, type P13State } from './lifecycle.js';
-import { decodeRecord, encodeRecord, summarize, type ConfidentialRecordV1, type RecordEvidence, type RecordSummary } from './record.js';
-import { dataArray, exactRecord, matchString } from './strict.js';
+import {
+  MAX_RECORD_BYTES,
+  decodeEvidence,
+  decodeRecord,
+  encodeRecord,
+  sameLineage,
+  summarize,
+  type ConfidentialRecordV1,
+  type RecordEvidence,
+  type RecordSummary,
+} from './record.js';
+import { dataArray, exactRecord, intIn, matchString } from './strict.js';
+import { isP13State } from './lifecycle.js';
 
 /** Atomic key-value storage. */
 export interface KvPort {
@@ -23,14 +34,16 @@ export interface KvPort {
 const MAGIC = [0x47, 0x50, 0x43, 0x31]; // "GPC1"
 const VERSION = 1;
 const HEADER_LEN = 4 + 1 + 16 + 4;
-/** Envelope cap (spec: ciphertext envelopes 1 MiB). */
-export const MAX_ENVELOPE_BYTES = 1024 * 1024;
-/** Records per backup (COMMON batch budget). */
+/** Largest valid envelope: header + nonce + largest record + tag (audit A10; below the spec's 1 MiB ceiling). */
+export const MAX_ENVELOPE_BYTES = HEADER_LEN + 12 + MAX_RECORD_BYTES + 16;
+/** Records per backup page (COMMON batch budget). */
 export const MAX_BACKUP_RECORDS = 1000;
+/** Default and largest per-namespace record cap, enforced on writes (audit A2). */
+export const MAX_STORE_RECORDS = 10_000;
 // No '/' so one namespace can never be a key prefix of another (`ns/` + 32 hex is the only key shape).
 const NAMESPACE_RE = /^[a-z0-9][a-z0-9:_-]{0,127}$/;
 const RECORD_ID_RE = /^[0-9a-f]{32}$/;
-const B64URL_RE = /^[A-Za-z0-9_-]{1,1400000}$/;
+const B64URL_RE = /^[A-Za-z0-9_-]{1,87456}$/;
 
 function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
@@ -89,12 +102,17 @@ export interface BackupV1 {
  */
 export type CommitGuard = () => void;
 
-/** Fields an update may change; everything else is immutable after creation. */
+/** Fields an update may change; everything else (including the session epoch) is immutable after creation. */
 export interface RecordPatch {
   readonly state: P13State;
   readonly updatedAt: number;
-  readonly sessionEpoch?: number;
   readonly evidence?: RecordEvidence;
+}
+
+/** Store options. */
+export interface StoreOptions {
+  /** Per-namespace cap on stored records, 1..{@link MAX_STORE_RECORDS} (default the maximum). */
+  readonly maxRecords?: number;
 }
 
 /** List entry: a summary, or a marker for an envelope that failed to open (kept, never deleted). */
@@ -106,14 +124,16 @@ export class ConfidentialRecordStore {
   readonly #sealer: RecordSealer;
   readonly #namespace: string;
   readonly #nsBytes: Uint8Array;
+  readonly #maxRecords: number;
   /** Highest revision seen per record in this session (rollback detection within a session). */
   readonly #highWater = new Map<string, number>();
 
   /**
    * @param namespace Profile/network scope, e.g. `p13:profile-1:eip155-31337`.
    */
-  public constructor(kv: KvPort, sealer: RecordSealer, namespace: string) {
-    check(NAMESPACE_RE.test(namespace), 'P13_RECORD_INVALID', 'invalid namespace');
+  public constructor(kv: KvPort, sealer: RecordSealer, namespace: string, options: StoreOptions = {}) {
+    check(typeof namespace === 'string' && NAMESPACE_RE.test(namespace), 'P13_RECORD_INVALID', 'invalid namespace');
+    this.#maxRecords = intIn(options.maxRecords ?? MAX_STORE_RECORDS, 1, MAX_STORE_RECORDS, 'P13_RECORD_LIMIT');
     this.#kv = kv;
     this.#sealer = sealer;
     this.#namespace = namespace;
@@ -124,11 +144,15 @@ export class ConfidentialRecordStore {
     return `${this.#namespace}/${recordId}`;
   }
 
-  /** Keys of exactly this namespace (`ns/<32 hex>`), sorted. */
+  /**
+   * Keys of exactly this namespace (`ns/<32 hex>`), sorted. Reads tolerate up to twice the write cap (tabs racing past
+   * the cap, older data) so inspection, export and reconciliation never lock out; beyond that only a storage writer
+   * could have put the records there, and the read is refused as hostile.
+   */
   async #ownKeys(): Promise<string[]> {
     const prefix = `${this.#namespace}/`;
     const keys = (await this.#kv.keys(prefix)).filter((k) => k.startsWith(prefix) && RECORD_ID_RE.test(k.slice(prefix.length)));
-    check(keys.length <= MAX_BACKUP_RECORDS, 'P13_RECORD_LIMIT', 'too many records');
+    check(keys.length <= 2 * this.#maxRecords, 'P13_RECORD_LIMIT', 'too many records');
     return keys.sort();
   }
 
@@ -172,9 +196,11 @@ export class ConfidentialRecordStore {
   }
 
   /** Stores a new record (revision 1, state `prepared`). @throws `P13_RECORD_CONFLICT` if the id exists. */
-  public async create(r: ConfidentialRecordV1, guard?: CommitGuard): Promise<RecordSummary> {
-    matchString(r.recordId, RECORD_ID_RE, 'P13_RECORD_INVALID');
+  public async create(input: ConfidentialRecordV1, guard?: CommitGuard): Promise<RecordSummary> {
+    // Validate and store one decoded snapshot, never the caller's object (audit A4).
+    const r = decodeRecord(encodeRecord(input));
     check(r.revision === 1 && r.state === 'prepared', 'P13_RECORD_INVALID', 'new records start prepared at revision 1');
+    check((await this.#ownKeys()).length < this.#maxRecords, 'P13_RECORD_LIMIT', 'record cap reached');
     const env = await this.#seal(r);
     guard?.();
     const ok = await this.#kv.compareAndSet(this.#key(r.recordId), undefined, env);
@@ -202,10 +228,19 @@ export class ConfidentialRecordStore {
   public async update(
     recordId: string,
     expectedRevision: number,
-    patch: RecordPatch,
+    patchInput: RecordPatch,
     guard?: CommitGuard,
   ): Promise<ConfidentialRecordV1> {
     matchString(recordId, RECORD_ID_RE, 'P13_RECORD_INVALID');
+    // Snapshot the patch once (audit A4); unknown keys (e.g. a session epoch rebind, audit A11) are refused.
+    const raw = exactRecord(patchInput, ['state', 'updatedAt'], ['evidence'], 'P13_RECORD_INVALID');
+    const state = raw['state'];
+    check(isP13State(state), 'P13_RECORD_INVALID', 'invalid state');
+    const patch: RecordPatch = {
+      state,
+      updatedAt: intIn(raw['updatedAt'], 0, Number.MAX_SAFE_INTEGER, 'P13_RECORD_INVALID'),
+      ...(raw['evidence'] !== undefined ? { evidence: decodeEvidence(raw['evidence']) } : {}),
+    };
     const key = this.#key(recordId);
     const env = await this.#kv.get(key);
     check(env !== undefined, 'P13_RECORD_INVALID', 'record not found');
@@ -221,7 +256,6 @@ export class ConfidentialRecordStore {
       revision: cur.revision + 1,
       state: patch.state,
       updatedAt: patch.updatedAt,
-      sessionEpoch: patch.sessionEpoch ?? cur.sessionEpoch,
       ...(patch.evidence !== undefined ? { evidence: patch.evidence } : {}),
     };
     const nextEnv = await this.#seal(next);
@@ -287,20 +321,40 @@ export class ConfidentialRecordStore {
     return { total: entries.length, invalidatedReviews, stalePlans, needsReconciliation, corrupt };
   }
 
-  /** Exports every stored envelope as-is (ciphertext only; no re-encryption, no plaintext). */
+  /**
+   * Exports every stored envelope as-is (ciphertext only) in one backup.
+   * @throws {P13Error} `P13_RECORD_LIMIT` above {@link MAX_BACKUP_RECORDS}: use {@link exportBackupPages}.
+   */
   public async exportBackup(): Promise<BackupV1> {
+    const pages = await this.exportBackupPages(MAX_BACKUP_RECORDS);
+    check(pages.length <= 1, 'P13_RECORD_LIMIT', 'too many records for one backup; export pages');
+    return pages[0] ?? { schema: 'ghostpay.confidential-backup/v1', namespace: this.#namespace, records: [] };
+  }
+
+  /** Exports every stored envelope as backups of at most `pageSize` records, each importable on its own. */
+  public async exportBackupPages(pageSize: number = MAX_BACKUP_RECORDS): Promise<readonly BackupV1[]> {
+    intIn(pageSize, 1, MAX_BACKUP_RECORDS, 'P13_RECORD_LIMIT');
     const keys = await this.#ownKeys();
-    const records: string[] = [];
+    const pages: BackupV1[] = [];
+    let records: string[] = [];
     for (const key of keys) {
       const env = await this.#kv.get(key);
-      if (env !== undefined) records.push(encodeBase64Url(env));
+      if (env === undefined) continue;
+      records.push(encodeBase64Url(env));
+      if (records.length === pageSize) {
+        pages.push({ schema: 'ghostpay.confidential-backup/v1', namespace: this.#namespace, records });
+        records = [];
+      }
     }
-    return { schema: 'ghostpay.confidential-backup/v1', namespace: this.#namespace, records };
+    if (records.length > 0 || pages.length === 0) pages.push({ schema: 'ghostpay.confidential-backup/v1', namespace: this.#namespace, records });
+    return pages;
   }
 
   /**
    * Restores a backup. Every envelope is opened and validated first (staged); if any fails, nothing is written.
-   * Never replaces a stored record with an older or equal revision.
+   * A stored record is replaced only by a higher revision of the same plan that keeps its evidence: never by an older
+   * or equal revision, another plan under the same id, a branch that drops a possible on-chain effect, or one that
+   * loses a recorded transaction hash (audit A1). Such cases are counted as conflicts and the local copy is kept.
    */
   public async importBackup(value: unknown): Promise<ImportReport> {
     const b = exactRecord(value, ['schema', 'namespace', 'records'], [], 'P13_RECORD_INVALID');
@@ -319,6 +373,9 @@ export class ConfidentialRecordStore {
     }
     const ids = staged.map((s) => s.record.recordId);
     check(new Set(ids).size === ids.length, 'P13_RECORD_INVALID', 'duplicate record in backup');
+    const present = new Set(await this.#ownKeys());
+    const inserts = ids.filter((id) => !present.has(this.#key(id))).length;
+    check(present.size + inserts <= this.#maxRecords, 'P13_RECORD_LIMIT', 'record cap would be exceeded');
     let inserted = 0;
     let replacedOlder = 0;
     let keptNewerOrEqual = 0;
@@ -340,7 +397,12 @@ export class ConfidentialRecordStore {
       if (current === undefined) {
         conflicts += 1;
       } else if (current.revision < record.revision) {
-        if (await this.#kv.compareAndSet(key, existing, env)) replacedOlder += 1;
+        const txHash = current.evidence?.txHash;
+        const safe =
+          sameLineage(current, record) &&
+          (!mayHaveEffect(current.state) || mayHaveEffect(record.state)) &&
+          (txHash === undefined || record.evidence?.txHash === txHash);
+        if (safe && (await this.#kv.compareAndSet(key, existing, env))) replacedOlder += 1;
         else conflicts += 1;
       } else if (current.revision === record.revision && !equalBytes(existing, env)) {
         conflicts += 1;

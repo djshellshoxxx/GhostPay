@@ -4,7 +4,7 @@
  * Decoding is strict and canonical: re-encoding a decoded record must reproduce the input bytes exactly.
  */
 import { canonicalize, parseStrictJson } from '@ghostpay/invoice-schema';
-import { check, fail } from './errors.js';
+import { P13Error, check, fail } from './errors.js';
 import { assertDigest, assetDigest, decodeConfidentialAsset, type ConfidentialAssetV1, type Digest, type P13ProtocolId } from './asset.js';
 import { isP13State, type P13State } from './lifecycle.js';
 import { SecretAmount, assertNoSecretAmount } from './secret.js';
@@ -32,6 +32,7 @@ export interface RecordAmounts {
 export type EvidenceReason =
   | 'no-receipt'
   | 'confirmations'
+  | 'unverified-source'
   | 'not-decrypted'
   | 'zero-delivery'
   | 'underpaid'
@@ -77,7 +78,7 @@ export interface RecordSummary {
   readonly updatedAt: number;
 }
 
-const REASONS: readonly string[] = ['no-receipt', 'confirmations', 'not-decrypted', 'zero-delivery', 'underpaid', 'delivered', 'reverted', 'reloaded'];
+const REASONS: readonly string[] = ['no-receipt', 'confirmations', 'unverified-source', 'not-decrypted', 'zero-delivery', 'underpaid', 'delivered', 'reverted', 'reloaded'];
 
 /** Builds router amounts from a gross amount (the only way to create {@link RecordAmounts}). */
 export function amountsFromGross(gross: bigint): RecordAmounts {
@@ -127,18 +128,38 @@ function toJson(r: ConfidentialRecordV1): unknown {
   };
 }
 
+/** Canonical JSON of the fields that never change after creation (everything but revision, state, time, evidence). */
+function immutableJson(r: ConfidentialRecordV1): string {
+  const j = toJson(r) as Record<string, unknown>;
+  const rest = Object.fromEntries(Object.entries(j).filter(([k]) => !['revision', 'state', 'updatedAt', 'evidence'].includes(k)));
+  return canonicalize(rest);
+}
+
+/** True if `a` and `b` are revisions of the same plan (identical immutable fields). */
+export function sameLineage(a: ConfidentialRecordV1, b: ConfidentialRecordV1): boolean {
+  return immutableJson(a) === immutableJson(b);
+}
+
 /**
  * Canonical UTF-8 bytes of a record. The result contains plaintext amounts: pass it only to a `RecordSealer`.
  * @throws {P13Error} `P13_RECORD_INVALID` if the record does not round-trip through {@link decodeRecord}.
  */
 export function encodeRecord(r: ConfidentialRecordV1): Uint8Array {
-  const bytes = new TextEncoder().encode(canonicalize(toJson(r)));
+  let text: string;
+  try {
+    text = canonicalize(toJson(r));
+  } catch (e) {
+    if (e instanceof P13Error) throw e;
+    return fail('P13_RECORD_INVALID', 'record has a non-canonical field');
+  }
+  const bytes = new TextEncoder().encode(text);
   check(bytes.length <= MAX_RECORD_BYTES, 'P13_RECORD_LIMIT', 'record too large');
   decodeRecord(bytes); // validates every field and the router split
   return bytes;
 }
 
-function decodeEvidence(v: unknown): RecordEvidence {
+/** Strictly decodes untrusted {@link RecordEvidence}. */
+export function decodeEvidence(v: unknown): RecordEvidence {
   const e = exactRecord(v, [], ['txHash', 'reason'], 'P13_RECORD_INVALID');
   const out: { txHash?: string; reason?: EvidenceReason } = {};
   if (e['txHash'] !== undefined) out.txHash = matchString(e['txHash'], TX_HASH_RE, 'P13_RECORD_INVALID');
@@ -159,7 +180,8 @@ export function decodeRecord(bytes: Uint8Array): ConfidentialRecordV1 {
   let text: string;
   let raw: unknown;
   try {
-    text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes);
+    // ignoreBOM keeps a leading U+FEFF in the text, so a BOM-prefixed record fails the strict/canonical checks.
+    text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
     raw = parseStrictJson(text);
   } catch {
     return fail('P13_RECORD_INVALID', 'record is not strict JSON');

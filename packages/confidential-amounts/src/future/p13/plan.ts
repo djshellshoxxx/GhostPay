@@ -85,7 +85,8 @@ export async function prepareConfidentialPlan(input: PrepareInput, deps: PlanDep
       check(decision.mode === 'local' && decision.protocolId === asset.protocolId, 'P13_UNSUPPORTED', 'asset protocol not enabled');
       assertApprovedAsset(asset, input.approved);
       check(
-        ADDRESS_RE.test(input.payer) && ADDRESS_RE.test(input.stealth) && input.payer !== ZERO && input.stealth !== ZERO &&
+        typeof input.payer === 'string' && typeof input.stealth === 'string' &&
+          ADDRESS_RE.test(input.payer) && ADDRESS_RE.test(input.stealth) && input.payer !== ZERO && input.stealth !== ZERO &&
           input.payer !== input.stealth,
         'P13_INVALID_ASSET',
         'payer and stealth must be distinct lowercase addresses',
@@ -193,6 +194,7 @@ export async function cancelPlan(
     guarded(ctx, deps.epoch, deps.clockMs, async () => {
       const cur = await deps.store.load(recordId);
       check(cur !== undefined, 'P13_RECORD_INVALID', 'record not found');
+      check(cur.state === 'prepared' || cur.state === 'reviewed', 'P13_TRANSITION', 'only unsent local work can be cancelled');
       const next = await deps.store.update(
         recordId,
         expectedRevision,

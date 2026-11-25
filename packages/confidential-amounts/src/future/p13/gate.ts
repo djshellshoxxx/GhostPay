@@ -5,7 +5,7 @@
  */
 import { BACKEND_CHAINS } from '../../manifest.js';
 import { check, fail, toResult, type ModuleResult } from './errors.js';
-import { exactRecord } from './strict.js';
+import { dataArray, exactRecord } from './strict.js';
 import { assertDigest, networkId, type Digest, type P13ProtocolId } from './asset.js';
 import { buildDisclosure, disclosureDigest, classifyRoute, type PublicField } from './disclosure.js';
 
@@ -140,7 +140,9 @@ export function p13Capabilities(): readonly CapabilityDescriptorV1[] {
  */
 export function checkFeeRequest(request: { readonly moduleFees?: readonly unknown[] }): ModuleResult<'router-fee-only'> {
   return toResult(() => {
-    check(request.moduleFees === undefined || request.moduleFees.length === 0, 'P13_FEE_UNSUPPORTED', 'no P13 fee exists');
+    // Snapshot once; only an absent field or a real, empty array means "no extra fee" (audit A4).
+    const r = exactRecord(request, [], ['moduleFees'], 'P13_FEE_UNSUPPORTED');
+    if (r['moduleFees'] !== undefined) check(dataArray(r['moduleFees'], 0, 'P13_FEE_UNSUPPORTED').length === 0, 'P13_FEE_UNSUPPORTED', 'no P13 fee exists');
     return 'router-fee-only' as const;
   });
 }

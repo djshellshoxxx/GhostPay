@@ -76,16 +76,20 @@ describe('stress: full-size batches', () => {
     expect(tImport).toBeLessThan(30_000);
   }, 120_000);
 
-  it('one record over the batch limit makes list/export/reconcile refuse (P13_RECORD_LIMIT) without data loss', async () => {
+  it('past one backup page, list and reconcile still work and paged export restores everything (audit A2)', async () => {
     const kv = createMemoryKv();
-    const store = new ConfidentialRecordStore(kv, await sealer(), NS);
+    const s = await sealer();
+    const store = new ConfidentialRecordStore(kv, s, NS);
     for (let i = 0; i <= MAX_BACKUP_RECORDS; i++) await store.create(record(i));
-    const ops: (() => Promise<unknown>)[] = [() => store.list(), () => store.exportBackup(), () => store.reconcileAfterReload(2, NOW)];
-    for (const op of ops) {
-      expect(await toResultAsync(op)).toMatchObject({ ok: false, code: 'P13_RECORD_LIMIT' });
-    }
+    expect(await store.list()).toHaveLength(MAX_BACKUP_RECORDS + 1);
+    expect((await store.reconcileAfterReload(2, NOW)).total).toBe(MAX_BACKUP_RECORDS + 1);
+    expect(await toResultAsync(() => store.exportBackup())).toMatchObject({ ok: false, code: 'P13_RECORD_LIMIT' });
+    const pages = await store.exportBackupPages();
+    expect(pages.map((p) => p.records.length)).toEqual([MAX_BACKUP_RECORDS, 1]);
+    const restored = new ConfidentialRecordStore(createMemoryKv(), s, NS);
+    for (const page of pages) await restored.importBackup(JSON.parse(JSON.stringify(page)));
+    expect(await restored.list()).toHaveLength(MAX_BACKUP_RECORDS + 1);
     expect(kv.raw.size).toBe(MAX_BACKUP_RECORDS + 1);
-    expect((await store.load(idOf(1)))?.state).toBe('prepared');
   }, 120_000);
 });
 
