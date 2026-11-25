@@ -307,6 +307,11 @@ low/info, and remain filler work.
   3 skipped**, **#649 FC-02 39/39 + 3 skipped**, **#656 FC-05a 40/40 + 3 skipped**, 0 failures.
 - 2026-11-25T10:40Z — owner instruction: finish this task, wait 15 minutes, then start the W4 prompt
   (`%USERPROFILE%\GhostPay-coordination\TEAM.md` referenced; not present at 10:38Z).
+- 2026-11-25T10:45Z — owner: "start W4 as a fresh agent". Launched agent `w4` (fresh context, own worktree) with the W4
+  prompt verbatim (#580/#553 clipboard stack; #600/#585 privacy-minimal invoices; hand qualified PR to W1), plus context:
+  TEAM.md absent at 10:38Z, #664 includes FC-01's `CreateInvoice.tsx` change, lock gen 25 held by
+  `claude-ghostpay-backup-60`, host memory limits and the shared heavy-run mutex. The coordinator continues the round-1
+  integration in parallel (lock wait + #664 CI).
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
