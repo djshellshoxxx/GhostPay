@@ -435,6 +435,34 @@ describe('session persistence and recovery', () => {
     assert.equal(presentLink(IDLE_SESSION, LINK).error, 'not-active');
   });
 
+  for (const count of [1, 60, 63, MAX_SEEN_EVENTS, MAX_SEEN_EVENTS + 10]) {
+    test(`valid maximum-length report IDs survive a reload after ${count} reports`, () => {
+      const invoiceId = 'i'.repeat(128);
+      let s = open({ invoiceId, amount: '100.00' });
+      let lastBody;
+      for (let i = 0; i < count; i++) {
+        lastBody = JSON.stringify({
+          id: 'e'.repeat(125) + String(i).padStart(3, '0'),
+          type: 'invoice.partial',
+          createdAt: T0,
+          data: { invoiceId, currency: 'USD', amountMinor: String(i + 1) },
+        });
+        const result = applyFeedMessage(s, lastBody, T0 + 1);
+        assert.equal(result.outcome, 'counted');
+        s = result.session;
+      }
+      assert.equal(s.seen.length, Math.min(count, MAX_SEEN_EVENTS));
+      const text = serializeSession(s);
+      assert.doesNotMatch(text, /gpi=|https:/);
+      const restored = restoreSession(text, T0 + 2);
+      assert.equal(restored.notice, 'restored');
+      assert.deepEqual(restored.session.sale, s.sale);
+      assert.equal(restored.session.verifiedMinor, BigInt(count));
+      assert.deepEqual(restored.session.seen, s.seen);
+      assert.equal(applyFeedMessage(restored.session, lastBody, T0 + 3).outcome, 'duplicate');
+    });
+  }
+
   test('only an awaiting sale is stored; closed and idle sessions clear storage', () => {
     const s = open();
     assert.equal(serializeSession(IDLE_SESSION), undefined);
