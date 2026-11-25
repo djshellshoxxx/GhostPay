@@ -54,6 +54,9 @@ export const ALL_CAPABILITIES: readonly Capability[] = [
 export const IMPLICIT_ERROR_KEYS: readonly ErrorKey[] = [
   'privacy.err.notSelectable',
   'privacy.err.unknownValue',
+  'privacy.err.unknownPreset',
+  'privacy.err.invalidSelection',
+  'privacy.err.invalidContext',
   'privacy.err.wrongAsset',
   ...ACK_KEYS.map((k) => `privacy.err.ackMissing.${k.slice('privacy.ack.'.length)}` as ErrorKey),
   ...ALL_CAPABILITIES.map((c) => `privacy.err.requires.cap.${c}` as ErrorKey),

@@ -404,6 +404,91 @@ exports[`preset snapshots for four fixed contexts > maximum / web Base Sepolia s
 }
 `;
 
+exports[`preset snapshots for four fixed contexts > shielded / empty caps web Sepolia 1`] = `
+{
+  "acks": [],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > shielded / full caps web-onion Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.poolDisclosure",
+    "privacy.ack.shieldedPoolTestnet",
+  ],
+  "downgrades": [],
+  "trust": [
+    "own-circuits-dev-ceremony",
+    "own-unaudited-contracts",
+    "pool-relayer",
+    "privacy-pools-asp",
+    "privacy-pools-operator",
+    "third-party-unaudited-code",
+  ],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+    "pay.source": "shielded-pool",
+    "sweep.exit": "privacy-pools",
+    "sweep.exitGas": "eip7702",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > shielded / node anvil test-mode 1`] = `
+{
+  "acks": [],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > shielded / web Base Sepolia sponsor+eip7702 1`] = `
+{
+  "acks": [],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+  },
+}
+`;
+
 exports[`preset snapshots for four fixed contexts > standard / empty caps web Sepolia 1`] = `
 {
   "acks": [],

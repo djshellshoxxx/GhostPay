@@ -4,6 +4,8 @@
  * @security Chain guard: any non-default option on a chain outside the testnet list is blocking (R-01).
  */
 import { OPTION_CATALOGUE } from './catalogue.js';
+import { deepFreeze } from './freeze.js';
+import { normalizeContext, normalizeSelection } from './input.js';
 import { RULES } from './rules.js';
 import {
   ACK_KEYS,
@@ -38,6 +40,8 @@ interface State {
 const RELAY_LIKE: ReadonlySet<TrustParty> = new Set<TrustParty>([
   'sweep-relayer', 'payer-sponsor', 'bundler', 'pool-relayer', 'railgun-broadcaster', 'zama-decrypt-relayer', 'payjoin-directory',
 ]);
+const INVALID_SELECTION: ErrorKey = 'privacy.err.invalidSelection';
+const INVALID_CONTEXT: ErrorKey = 'privacy.err.invalidContext';
 const NOT_SELECTABLE: ErrorKey = 'privacy.err.notSelectable';
 const UNKNOWN_VALUE: ErrorKey = 'privacy.err.unknownValue';
 const WRONG_ASSET: ErrorKey = 'privacy.err.wrongAsset';
@@ -152,14 +156,25 @@ function cmpIssue(a: Issue, b: Issue): number {
 }
 
 /**
- * Evaluates a selection against a context.
- * @security Never throws; unknown options or values in `sel` become blocking issues and fall back to defaults.
+ * Evaluates a selection against a context. The result is deeply frozen.
+ * @security Never throws. Unknown options or values in `sel` become blocking issues and fall back to defaults.
+ * A malformed selection or context (wrong runtime type, unknown action, env or asset, non-integer chain id, capabilities
+ * that are not a Set) is blocking and is replaced by its most restrictive form, so it can only block, never allow.
  */
-export function evaluate(sel: Selection, ctx: Context): Evaluation {
+export function evaluate(selIn: Selection, ctxIn: Context): Evaluation {
+  return deepFreeze(evaluateRaw(selIn, ctxIn));
+}
+
+/** Same as {@link evaluate} without freezing the result; used inside loops that discard it. */
+export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
+  const { selection: sel, problems: selProblems } = normalizeSelection(selIn);
+  const { context: ctx, problems: ctxProblems } = normalizeContext(ctxIn);
   const issues: Issue[] = [];
+  if (selProblems.length > 0) issues.push({ code: 'E_INVALID_SELECTION', key: INVALID_SELECTION, options: [] });
+  if (ctxProblems.length > 0) issues.push({ code: 'E_INVALID_CONTEXT', key: INVALID_CONTEXT, options: [] });
   const vals = {} as Record<OptionId, string>;
   const active = {} as Record<OptionId, boolean>;
-  const rawValues: Readonly<Record<string, unknown>> = typeof sel.values === 'object' && sel.values !== null ? sel.values : {};
+  const rawValues: Readonly<Record<string, unknown>> = sel.values;
   for (const k of Object.keys(rawValues)) {
     if (!(OPTION_IDS as readonly string[]).includes(k)) issues.push({ code: 'E_UNKNOWN_VALUE', key: UNKNOWN_VALUE, options: [] });
   }
@@ -278,30 +293,31 @@ export function evaluate(sel: Selection, ctx: Context): Evaluation {
 /** Adds one extra blocking issue to an evaluation (used by option setters). */
 export function withIssue(ev: Evaluation, issue: Issue): Evaluation {
   const blocking = [...ev.blocking, issue].sort(cmpIssue);
-  return { ...ev, ok: false, blocking };
+  return deepFreeze({ ...ev, ok: false, blocking });
 }
 
 /**
  * Honest explanation rows: every option in scope with its effective value and definition, so the UI can render
  * trust parties, warnings and method-owned copy keys.
  */
-export function explain(sel: Selection, ctx: Context): readonly { option: OptionId; value: string; def: ValueDef }[] {
-  const ev = evaluate(sel, ctx);
+export function explain(selIn: Selection, ctxIn: Context): readonly { option: OptionId; value: string; def: ValueDef }[] {
+  const ev = evaluate(selIn, ctxIn);
+  const { context: ctx } = normalizeContext(ctxIn);
   const out: { option: OptionId; value: string; def: ValueDef }[] = [];
   for (const id of OPTION_IDS) {
     if (!inScope(OPTION_CATALOGUE[id], ctx)) continue;
     const def = valueDef(id, ev.effective[id]);
     if (def) out.push({ option: id, value: ev.effective[id], def });
   }
-  return out;
+  return deepFreeze(out);
 }
 
 /** Honest label keys for an evaluation: fixed headline, trust parties and what stays visible. Never prose. */
 export function honestLabel(ev: Evaluation): { readonly headline: WarningKey; readonly trusts: readonly TrustParty[]; readonly stillVisible: readonly LeakKey[]; readonly warnings: readonly WarningKey[] } {
-  return {
+  return deepFreeze({
     headline: 'privacy.warn.noAnonymity',
     trusts: ev.trust,
     stillVisible: ev.doesNotHide,
     warnings: uniqSorted(ev.warnings.map((w) => w.key as WarningKey)),
-  };
+  });
 }

@@ -11,12 +11,18 @@ export const TESTNET_CHAIN_IDS: readonly Chain[] = [31337, 11155111, 84532];
 export type BtcNetwork = 'testnet' | 'signet' | 'regtest';
 /** Bitcoin testnet-only guard list. */
 export const TESTNET_BTC_NETWORKS: readonly BtcNetwork[] = ['testnet', 'signet', 'regtest'];
+/** Runtime environments, as data so inputs can be checked at the trust boundary. */
+export const ENVS = ['web', 'web-onion', 'node'] as const;
 /** Runtime environment of the caller. */
-export type Env = 'web' | 'web-onion' | 'node';
+export type Env = (typeof ENVS)[number];
+/** User actions, as data. */
+export const ACTIONS = ['settings', 'create-invoice', 'pay', 'scan', 'sweep', 'btc-receive', 'btc-send'] as const;
 /** User action an evaluation is for. */
-export type Action = 'settings' | 'create-invoice' | 'pay' | 'scan' | 'sweep' | 'btc-receive' | 'btc-send';
+export type Action = (typeof ACTIONS)[number];
+/** Asset kinds, as data. */
+export const ASSET_KINDS = ['erc20-permit', 'erc20', 'native', 'confidential', 'btc'] as const;
 /** Kind of asset the action moves. */
-export type AssetKind = 'erc20-permit' | 'erc20' | 'native' | 'confidential' | 'btc';
+export type AssetKind = (typeof ASSET_KINDS)[number];
 /** Which party chooses an option. */
 export type Scope = 'payer' | 'seller' | 'both' | 'relayer-operator' | 'deployment' | 'build';
 /** Maturity of a value, copied from its method spec. */
@@ -221,8 +227,8 @@ export interface OptionDef {
   readonly activeWhen?: Pred;
 }
 
-/** Preset ids. */
-export type PresetId = 'standard' | 'enhanced' | 'maximum' | 'confidential-amount';
+/** Preset ids, in display order. */
+export type PresetId = 'standard' | 'enhanced' | 'shielded' | 'maximum' | 'confidential-amount';
 
 /** A user selection. Missing option means its default. */
 export interface Selection {
@@ -254,6 +260,8 @@ export type IssueCode =
   | 'E_MATURITY'
   | 'E_ACK_MISSING'
   | 'E_SELFTEST'
+  | 'E_INVALID_SELECTION'
+  | 'E_INVALID_CONTEXT'
   | 'W_RULE'
   | 'W_VALUE'
   | 'W_MOOT';
