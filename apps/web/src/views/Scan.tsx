@@ -12,7 +12,7 @@ import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { placeScanMatch, sharedRouterAddresses } from '../lib/scanMatches';
-import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
+import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, guardScanClient, loadScanPrivacy, openScanClients, planScan, SCAN_ROUTE_CHANGED } from '../lib/scanPrivacy';
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
@@ -215,7 +215,20 @@ export function Scan(): ReactNode {
         const scanPrivacySelection = JSON.stringify(privacy);
         const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
+        // Every request of this scan re-checks the saved route it started with: its privacy settings, the Settings RPC
+        // it uses and its second RPC. A change in this or another tab stops it before anything more is sent.
+        const savedAtStart = loadSettings();
+        const startRpcUrl = savedAtStart.rpcUrls[String(chainId)];
+        const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
+        const assertScanPath = (): void => {
+          const saved = loadSettings();
+          if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
+              (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
+            throw new UserFacingError(SCAN_ROUTE_CHANGED);
+          }
+        };
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath });
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -233,6 +246,7 @@ export function Scan(): ReactNode {
           setError(msg('scan.error.secondRpc'));
           return;
         }
+        if (rpc2 !== undefined) rpc2 = guardScanClient(rpc2, assertScanPath);
         assertScopeCurrent();
         let cursor = resume || append ? checkpoint : undefined;
         if (cursor === undefined) {
