@@ -5,13 +5,19 @@
 // changes product code. It lets the lean (GitHub Pages) build and the emitted-artifact check fail closed if a later
 // integration renders a stopped product's module into the site.
 //
-// Matching is on bundler module ids (absolute or source-relative paths, `src/` or built `dist/` files). Shared-core
+// Matching is on source-relative bundler module ids (relative to apps/web: `src/...`, `../../packages/<pkg>/dist/...`,
+// `../../node_modules/@ghostpay/...`); callers must not pass checkout-absolute paths, whose parent directory names
+// would otherwise be matched. Patterns are case-insensitive and anchored at a path segment. Shared-core
 // mechanisms that the owner retained (stealth destinations, encrypted invoices and history, masking, private links/QR,
 // identity verification, reconciliation, receipts, recovery, disclosure and consent) live in core modules that no
 // pattern below names. A new pattern must name a product-specific directory, package or file, never a core one.
 
 const PKG = String.raw`(?:packages|node_modules\/@ghostpay)\/`;
 const FEATURE = String.raw`\/src\/features\/(?:future\/)?`;
+/** Case-insensitive, anchored at the start of a path segment, tolerant of camelCase, `-` and `_` joins. */
+const seg = (word) => new RegExp(String.raw`\/${word}`, 'i');
+/** A product directory directly under src/features or src/features/future. */
+const feature = (word) => new RegExp(String.raw`${FEATURE}${word}(?:\/|[-_.])`, 'i');
 
 /**
  * @typedef {{ readonly id: string; readonly name: string; readonly status: 'archived' | 'deferred' | 'future-only';
@@ -22,26 +28,23 @@ const FEATURE = String.raw`\/src\/features\/(?:future\/)?`;
 export const STOPPED_PRODUCTS = Object.freeze([
   {
     id: 'F01', name: 'GhostTips', status: 'archived',
-    modules: [new RegExp(String.raw`\/${PKG}ux-links\/(?:src|dist)\/tip\.(?:[cm]?[jt]s|d\.ts)$`), /\/ghost-?tips?(?:\/|\.|-)/i],
+    modules: [new RegExp(String.raw`\/${PKG}ux-links\/(?:src|dist)\/tip\.(?:[cm]?[jt]s|d\.ts)$`), seg('ghost[-_]?tips?'), feature('tips?')],
   },
-  { id: 'F02', name: 'GhostStore', status: 'deferred', modules: [new RegExp(`${FEATURE}ghost-?store\\/`, 'i'), /\/ghost-?store(?:\/|\.|-)/i] },
-  {
-    id: 'F04', name: 'Merchant dashboard', status: 'deferred',
-    modules: [new RegExp(`${FEATURE}merchant-dashboard\\/`), /\/src\/views\/MerchantDashboard\.tsx$/],
-  },
-  { id: 'F08', name: 'GhostID', status: 'deferred', modules: [new RegExp(`${FEATURE}ghost-?id\\/`, 'i')] },
+  { id: 'F02', name: 'GhostStore', status: 'deferred', modules: [seg('ghost[-_]?store'), feature('(?:store|storefront|catalog)')] },
+  { id: 'F04', name: 'Merchant dashboard', status: 'deferred', modules: [seg('merchant[-_]?dashboard'), feature('dashboard')] },
+  { id: 'F08', name: 'GhostID', status: 'deferred', modules: [seg('ghost[-_]?id'), feature('(?:identity|merchant[-_]?identity)')] },
   {
     id: 'F09', name: 'GhostPOS', status: 'archived',
-    modules: [/\/(?:examples\/)?pos-terminal\//, new RegExp(String.raw`\/${PKG}merchant-hooks\/`), /\/ghost-?pos(?:\/|\.|-)/i],
+    modules: [seg('pos[-_]?terminal'), new RegExp(String.raw`\/${PKG}merchant-hooks\/`), seg('ghost[-_]?pos'), feature('pos')],
   },
-  { id: 'F11', name: 'GhostTeams', status: 'deferred', modules: [new RegExp(`${FEATURE}ghost-?teams\\/`, 'i'), /\/ghost-?teams(?:\/|\.|-)/i] },
-  { id: 'F12', name: 'GhostBridge / P2P-Offramp integration', status: 'deferred', modules: [/\/ghost-?bridge(?:\/|\.|-)/i, /p2p-?off-?ramp/i] },
+  { id: 'F11', name: 'GhostTeams', status: 'deferred', modules: [seg('ghost[-_]?teams?'), feature('teams?')] },
+  { id: 'F12', name: 'GhostBridge / P2P-Offramp integration', status: 'deferred', modules: [seg('ghost[-_]?bridge'), seg('p2p[-_]?off[-_]?ramp')] },
   {
     id: 'F13', name: 'Fiat conversion', status: 'archived',
-    modules: [new RegExp(`${FEATURE}fiat-conversion\\/`), new RegExp(String.raw`\/${PKG}ux-fiat\/`), /\/off-?ramp(?:\/|\.|-)/i],
+    modules: [seg('fiat[-_]?conversion'), feature('fiat'), new RegExp(String.raw`\/${PKG}ux-fiat\/`), seg('off[-_]?ramp')],
   },
-  { id: 'F14', name: 'Multi-chain routing', status: 'deferred', modules: [new RegExp(`${FEATURE}(?:multi-?chain|cross-?chain)`, 'i'), /multi-?chain-?rout/i] },
-  { id: 'P07', name: 'Encrypted device synchronization', status: 'deferred', modules: [/\/(?:encrypted-)?device-?sync(?:\/|\.|-)/i] },
+  { id: 'F14', name: 'Multi-chain routing', status: 'deferred', modules: [seg('multi[-_]?chain[-_]?rout'), feature('(?:multi[-_]?chain|cross[-_]?chain)')] },
+  { id: 'P07', name: 'Encrypted device synchronization', status: 'deferred', modules: [seg('(?:encrypted[-_]?)?device[-_]?sync')] },
   // Every catalog proposal under src/features/future is FUTURE ONLY (docs/future/privacy-first/README.md).
   { id: 'FUTURE', name: 'Future-only feature proposal', status: 'future-only', modules: [/\/src\/features\/future\//] },
 ].map((p) => Object.freeze({ ...p, modules: Object.freeze(p.modules) })));

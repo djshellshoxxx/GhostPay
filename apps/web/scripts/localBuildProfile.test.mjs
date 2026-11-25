@@ -251,6 +251,16 @@ test('lean rejects rendered stopped-product modules (owner stop-work containment
     }
   }
   assert.doesNotThrow(() => leanOutput().generateBundle({}, chunk('/fixture/src/features/future/ghostid/OfflineProfileReview.tsx', 0)));
+  // Query suffixes and NUL-prefixed virtual ids still resolve to the product module.
+  assert.throws(() => leanOutput().generateBundle({}, chunk('/fixture/src/features/future/ghostid/OfflineProfileReview.tsx?worker')), /stopped-product module \(F08 /);
+});
+
+test('stopped-product guard ignores product-like names above the web root (checkout path)', () => {
+  for (const root of ['/home/u/ghostpos-demo/GhostPay/apps/web', '/srv/offramp/GhostPay/apps/web', '/w/device-sync/GhostPay/apps/web']) {
+    const output = leanOutput({ leanAppPath: `${root}/src/AppLean.tsx`, publicDir: `${root}/public` });
+    assert.doesNotThrow(() => output.generateBundle({}, chunk(`${root}/src/views/Pay.tsx`)), root);
+    assert.throws(() => output.generateBundle({}, chunk(`${root}/src/features/future/ghostid/x.tsx`)), /stopped-product/, root);
+  }
 });
 
 test('lean requires real nonempty chunk-module facts without a report flag', () => {

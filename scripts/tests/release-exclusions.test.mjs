@@ -1,7 +1,7 @@
 // Regression tests for the emitted-artifact release-exclusion check (owner stop-work directive, AGENTS.md 2026-11-25).
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -61,6 +61,32 @@ test('each stopped product module is attributed to that product', () => {
   assert.equal(stoppedProductForModule('/abs/apps/web/src/views/MerchantDashboard.tsx?v=1')?.id, 'F04');
 });
 
+test('camelCase, compound and directory spellings of stopped products are caught (review findings)', () => {
+  const cases = {
+    F01: ['src/components/GhostTipPanel.tsx', 'src/features/tips/index.ts'],
+    F02: ['src/features/store/cart.ts', 'src/features/storefront/Shelf.tsx', 'src/lib/ghost_store.ts'],
+    F04: ['src/features/merchantDashboard/Totals.tsx', 'src/features/MerchantDashboard/x.ts', 'src/features/dashboard/x.ts'],
+    F08: ['src/components/GhostIdBadge.tsx', 'src/lib/ghostId.ts', 'src/lib/ghost-id.ts'],
+    F09: ['src/lib/posTerminal.ts', 'src/features/pos/Keypad.tsx'],
+    F11: ['src/features/teams/roster.ts', 'src/lib/GhostTeam.ts'],
+    F12: ['src/lib/ghostBridge.ts', 'src/lib/p2p_offramp/client.ts'],
+    F13: ['src/features/fiatConversion/terms.ts', 'src/features/FiatConversion/x.ts', 'src/features/fiat/rate.ts', 'src/lib/offRamp.ts'],
+    F14: ['src/lib/multiChainRouter.ts', 'src/features/crossChain/route.ts'],
+    P07: ['src/lib/encryptedDeviceSync.ts', 'src/lib/device_sync.ts'],
+  };
+  for (const [id, samples] of Object.entries(cases)) {
+    for (const sample of samples) assert.equal(stoppedProductForModule(sample)?.id, id, sample);
+  }
+});
+
+test('patterns are anchored at path segments, not substrings of core names', () => {
+  for (const sample of ['src/lib/idbStore.ts', 'src/i18n/catalog.ts', 'src/lib/positions.ts', 'src/lib/tooltip.ts',
+    'src/lib/offset.ts', '../../node_modules/viem/_esm/errors/chain.js', '../../packages/chain-adapters/dist/config/chains.js',
+    'src/lib/multipart.ts', 'src/views/Settings.tsx']) {
+    assert.equal(stoppedProductForModule(sample), undefined, sample);
+  }
+});
+
 test('retained shared-core modules are never attributed to a stopped product', () => {
   for (const sample of CORE_SAMPLES) assert.equal(stoppedProductForModule(sample), undefined, sample);
   for (const bad of [undefined, null, '', 42, {}]) assert.equal(stoppedProductForModule(bad), undefined);
@@ -97,10 +123,10 @@ test('a report that cannot prove what it rendered is a failure, not a pass', () 
   assert.match(checkReportExclusions(report([], { chunks: [], workers: [] })).problems.join(), /no chunks/);
   assert.match(checkReportExclusions(report([], { chunks: [{ fileName: 'a.js' }] })).problems.join(), /no module list/);
   assert.match(checkReportExclusions(report([], { chunks: [{ fileName: 'a.js', modules: [{ renderedLength: 1 }] }] })).problems.join(), /without id/);
-  for (const bad of [-1, Number.NaN, '5', Number.POSITIVE_INFINITY]) {
+  for (const bad of [undefined, null, -1, Number.NaN, '5', Number.POSITIVE_INFINITY]) {
     const r = report(['src/AppLean.tsx']);
-    r.chunks[0].modules[0].renderedLength = bad;
-    assert.match(checkReportExclusions(r).problems.join(), /malformed renderedLength/, String(bad));
+    r.chunks[0].modules[0] = { id: 'src/features/future/ghostid/x.ts', ...(bad === undefined ? {} : { renderedLength: bad }) };
+    assert.match(checkReportExclusions(r).problems.join(), /missing or malformed renderedLength/, String(bad));
   }
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: 'x' })).problems.join(), /not a list/);
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: [7] })).problems.join(), /non-string/);
@@ -148,9 +174,23 @@ test('CLI exits 0 on a clean report and 1 listing every stopped module', () => {
     assert.equal(bad.status, 1);
     assert.equal(bad.stderr.split('\n').filter((l) => l.startsWith(' - ')).length, Object.keys(STOPPED_SAMPLES).length);
     assert.equal(spawnSync(process.execPath, [CLI], { encoding: 'utf8' }).status, 2);
+    // A symlinked or wrapped invocation must still run the gate, never silently exit 0.
+    const link = join(dir, 'verify-link.mjs');
+    symlinkSync(CLI, link);
+    const viaLink = spawnSync(process.execPath, [link, dirty], { encoding: 'utf8' });
+    assert.equal(viaLink.status, 1, viaLink.stdout);
     const missing = verifyReleaseExclusions(join(dir, 'absent.json'));
     assert.match(missing.problems.join(), /cannot read lean report/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test('build-pages.sh runs the verifier on the assembled site before anything reaches the output directory', () => {
+  const script = readFileSync(fileURLToPath(new URL('../pages/build-pages.sh', import.meta.url)), 'utf8');
+  const assemble = script.indexOf('mv "$work/dist" "$site"');
+  const verify = script.indexOf('node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die');
+  const publish = script.indexOf('mv "$site" "$out/site"');
+  assert.ok(assemble > 0 && verify > assemble && publish > verify, `assemble ${assemble} verify ${verify} publish ${publish}`);
+  assert.match(script, /^set -euo pipefail$/m);
 });

@@ -7,8 +7,9 @@
 // build guard also uses, so the build and this check cannot drift apart.
 //
 // Usage: node scripts/release/verify-release-exclusions.mjs <ghostpay-lean-build.json> [<site-dir>]
+// The site-dir check only sees emitted file names (Vite hashes chunk names), so the module report is the primary proof.
 // Exit 0 with a one-line summary when clean; exit 1 listing every problem otherwise.
-import { lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STOPPED_PRODUCTS, stoppedProductForModule } from '../../apps/web/scripts/stoppedProducts.mjs';
@@ -47,12 +48,13 @@ export function checkReportExclusions(report) {
         problems.push(`lean report chunk ${String(chunk.fileName)} has a module without id`);
         continue;
       }
+      // The writer always records a number; a missing or malformed length cannot prove the module was tree-shaken.
       const rendered = m.renderedLength;
-      if (rendered !== undefined && (typeof rendered !== 'number' || !Number.isFinite(rendered) || rendered < 0)) {
-        problems.push(`lean report module ${id} has a malformed renderedLength`);
+      if (typeof rendered !== 'number' || !Number.isFinite(rendered) || rendered < 0) {
+        problems.push(`lean report module ${id} has a missing or malformed renderedLength`);
         continue;
       }
-      if ((rendered ?? 0) === 0) continue;
+      if (rendered === 0) continue;
       modules += 1;
       const product = stoppedProductForModule(id);
       if (product !== undefined) problems.push(`stopped product ${describe(product)} module rendered into the site: ${id}`);
@@ -105,7 +107,17 @@ export function verifyReleaseExclusions(reportPath, siteDir) {
   return { problems: [...fromReport.problems, ...fromSite.problems], modules: fromReport.modules, files: fromSite.files };
 }
 
-if (process.argv[1] !== undefined && fileURLToPath(import.meta.url) === process.argv[1]) {
+/** True when this file is the process entry point, also when invoked through a symlink or a relative path. */
+function isMain() {
+  if (process.argv[1] === undefined) return false;
+  try {
+    return realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1]);
+  } catch {
+    return false;
+  }
+}
+
+if (isMain()) {
   const [reportPath, siteDir] = process.argv.slice(2);
   if (reportPath === undefined) {
     console.error('usage: verify-release-exclusions.mjs <ghostpay-lean-build.json> [<site-dir>]');

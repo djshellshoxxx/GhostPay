@@ -123,7 +123,8 @@ function collectLeanChunks(bundle, webRoot) {
         const deferredPackage = /\/(?:packages|node_modules\/@ghostpay)\/(?:btc-silent-payments|btc-family|btc-payjoin|chain-solana|chain-tron|chain-evm-extra|solana-stealth|tron-adapter|policy-scheme|pool-[^/]+|external-pools(?:-[^/]+)?|pir-[^/]+)(?:\/|$)/.test(path);
         if (feature || entry || archive || embedProtocol || deferredPackage) throw new Error(`lean build rendered excluded module: ${id}`);
         // Owner stop-work containment (AGENTS.md 2026-11-25): stopped and deferred products never ship in the lean site.
-        const stopped = stoppedProductForModule(path);
+        // Matched on the web-root-relative id, the same form the emitted report and its verifier use.
+        const stopped = stoppedProductForModule(isAbsolute(id) ? relative(webRoot, id).replaceAll('\\', '/') : id);
         if (stopped !== undefined) throw new Error(`lean build rendered excluded stopped-product module (${stopped.id} ${stopped.name}): ${id}`);
         if (/\/src\/lib\/embedHost\.ts$/.test(path) && exports.some((name) => name !== 'notifyEmbedDone')) {
           throw new Error('lean build rendered embedding startup/profile exports');
