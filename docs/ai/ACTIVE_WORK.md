@@ -19,6 +19,12 @@ Acceptance: imported historical records display the current unverified state and
 Worker: Codex. Branch `fix/seller-linked-payment-reconciliation` starts at #546 `711168f18e5d808df4e3153da8898cd86fae5266`. Main inspected at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
 Own the linked-payment retry and duplicate-observation handling in the portable reconciliation vault, its invoice regressions, the seller assertions in flows.spec.ts and pages-devnet.spec.ts, and the CLI history test fixture that uses that vault. Extend the scanClient.ts page-finality/checkpoint logic and its local scanClient.test.ts fixtures for a retreating tip. Update the reconciliation ADR. The Scan privacy localization fixture has a separate worker and candidate. Leave both parent branches and its test untouched.
 Acceptance: count only distinct verified linked payments, revisit unresolved linked inclusions, withhold credit through interruptions, preserve seller decisions on invalidation, and prove repeated reconciliation and reload against local fixtures. No hosted blockchain, deployment or shared-branch integration.
+# FC-03 — Solana/TRON meta-address and memo interoperability alignment (2026-11-25 UTC)
+
+- Worker: fc03. Branch: `claude/fc03-chain-interop-20261125`. Base: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f` (origin/main). Donor: PR #376 head `f717157271fe494eb8094e504e9fec8276d51fcc`, merged with `--no-ff`.
+- Owned paths: the donor's 34 source paths (Solana/TRON libraries, adapters, CLI inspection), this claim, `docs/consolidation/feature-completion-20261125/FC-03-chain-interop.md`, plus follow-up paths `packages/solana-stealth/README.md`, `packages/solana-stealth/src/meta-address.ts`, `packages/solana-stealth/src/stealth.test.ts` and `docs/remote/chain-ports/solana-impl.md`.
+- Excluded: apps/web, contracts, workflows, root manifests/lockfile.
+- Acceptance: Solana/TRON/CLI workspace tests, typecheck and lint pass with coverage thresholds held; web and library vectors agree; TRON build stays fail-closed (`MEMO_NOT_BOUND`); no mainnet enablement. Testnet/proof-of-concept only.
 
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
@@ -985,6 +991,33 @@ Owned paths: new `apps/web/src/lib/browserChecks.ts`, `apps/web/src/lib/browserC
 Scope: startup and resumed/runtime local capability checks, displayed at the bottom of every shared browser-app view with a mobile-friendly disclosure. Distinguish checks of secure context, WebCrypto SHA-256 known answer and temporary storage round trip from independent client artifact verification, chain/funds safety and recovery guarantees. No network requests or telemetry, no wallet, key or payment changes.
 Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
 Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
+
+# Solana/TRON interoperability recovery — 2026-11-21 UTC (HISTORICAL: donor claim, its branch lease is not active; superseded by the FC-03 claim at the top of this file)
+
+Worker: `/root/chain_interop_recovery`, delegated by coordinator `5ceb6203640a-root`.
+Owned branch: `recover/ghostpay-chain-interop-20261121-5ceb`.
+Verified live main/base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**`,
+`test-vectors/meta-address-sol-tron-v1.json`, and the three relevant CLI files
+`packages/cli/src/chain-commands.test.ts`, `packages/cli/src/commands/chain.ts`,
+`packages/cli/src/payment-context.ts`; additive claim and a source-pinned handoff.
+Task: selectively recover existing #211 G5/G5b compatibility and safe request
+construction changes, preserving exact current browser-facing adapter sources.
+Current #211 head `a92658b1ef6b95ff0145b2e1933d0047d51289d5` says its workers
+finished; its original branch remains reserved and unchanged. #218 remains an
+open historical CLI owner, but its three relevant files match current main.
+No existing PR or other worktree is modified. #369 owns separate web TRON adapter
+paths, which are outside this recovery.
+Acceptance: documented Solana/TRON formats and deterministic shared reference
+vectors agree with the browser packages; unsupported unbound TRON construction
+refuses; CLI reports the supported Solana cluster and fixed legacy-format errors.
+Run corrected-source package/CLI coverage, ordinary interoperability properties,
+typecheck, lint and builds. Preserve original assertions and exact donor SHAs.
+Do not execute vulnerability reproductions, construct exploits or send real
+payments. No contracts, fees, custody, dependencies or network policy changes.
+The generation-11 integration lease remains held by `994a0d214fb9-root-r3`.
+This worker has no remote-write, merge, deployment or release authority. Root
+owns independent review, new owned publication and final shared integration gates.
 
 ---
 

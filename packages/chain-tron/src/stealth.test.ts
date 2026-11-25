@@ -14,6 +14,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { evmToTronAddress, tronAddressFromHex, tronAddressFromPublicKey, tronAddressToHex, tronToEvmAddress } from './address.js';
 import { TronError } from './errors.js';
+import { encodeTronMetaAddress, parseTronAnnouncementMemo } from './meta.js';
 import {
   checkTronAnnouncement,
   deriveTronStealthPayment,
@@ -23,9 +24,9 @@ import {
 } from './stealth.js';
 import { seededRng } from './testutil.testutil.js';
 
-function setup(seed: number): { keys: StealthKeySet; meta: string } {
+function setup(seed: number): { keys: StealthKeySet; meta: string; evmMeta: string } {
   const keys = generateKeySet(seededRng(seed));
-  return { keys, meta: encodeMetaAddress(keys) };
+  return { keys, meta: encodeTronMetaAddress(keys), evmMeta: encodeMetaAddress(keys) };
 }
 
 function announce(p: ReturnType<typeof deriveTronStealthPayment>): TronAnnouncement {
@@ -37,14 +38,22 @@ function announce(p: ReturnType<typeof deriveTronStealthPayment>): TronAnnouncem
 }
 
 describe('Tron stealth', () => {
-  it('matches core-crypto for the same randomness', () => {
-    const { meta } = setup(1);
-    const evm = deriveStealthPayment(meta, seededRng(99));
+  it('matches core-crypto for the same randomness and carries the GPT1 memo', () => {
+    const { meta, evmMeta } = setup(1);
+    const evm = deriveStealthPayment(evmMeta, seededRng(99));
     const tron = deriveTronStealthPayment(meta, seededRng(99));
     expect(tronToEvmAddress(tron.stealthAddress)).toBe(evm.stealthAddress.toLowerCase());
     expect(tron.ephemeralPublicKey).toEqual(evm.ephemeralPublicKey);
     expect(tron.viewTag).toEqual(evm.viewTag);
     expect(tron.metadataPrefix).toEqual(evm.metadataPrefix);
+    expect(bytesToHex(tron.memo)).toBe(`47505431${bytesToHex(evm.ephemeralPublicKey)}${bytesToHex(evm.viewTag)}`);
+    expect(parseTronAnnouncementMemo(tron.memo)).toEqual({ ephemeralPublicKey: evm.ephemeralPublicKey, viewTag: evm.viewTag[0] });
+  });
+
+  it('refuses the EVM st:eth:0x form for TRON with LEGACY_META_ADDRESS', () => {
+    const { evmMeta } = setup(1);
+    expect(() => deriveTronStealthPayment(evmMeta)).toThrow(expect.objectContaining({ code: 'LEGACY_META_ADDRESS' }));
+    expect(() => deriveTronStealthPayment('st:trx:0x00')).toThrow(expect.objectContaining({ code: 'INVALID_META_ADDRESS' }));
   });
 
   it('round trip: derive, scan, spend key controls the Tron address', () => {
