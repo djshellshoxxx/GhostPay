@@ -1,0 +1,390 @@
+// W5 independent payment-state verifier: scenario runner.
+// Usage (from the repository root, after `node verification/independent-beta/harness/build.mjs`):
+//   node verification/independent-beta/harness/run.mjs [--named] [--seeds 1-20] [--only NAME] [--concurrency 3]
+//                                                       [--minimize] [--out verification/independent-beta/results/<id>]
+// Exit status: 0 = no product-defect candidates, 1 = candidates found, 2 = harness error.
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import os from 'node:os';
+import { join } from 'node:path';
+import { DIST, REPO, distFingerprint, sourceIdentity } from './build.mjs';
+import { SyntheticChain } from './chain.mjs';
+import { Rng } from './prng.mjs';
+import { MockRpc } from './rpc.mjs';
+import { BROWSER_SHIM, WalletController } from './wallet.mjs';
+import { checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
+import { Oracle } from './oracle.mjs';
+import { NAMED, SUFFIX, generated } from './scenarios.mjs';
+import { serveDist } from './serve.mjs';
+
+const require = createRequire(import.meta.url);
+const PINNED_MAIN = 'aaa71a112d90fd39f59b40de9f139e9cfdc62d61';
+const CHROMIUM = process.env.GHOSTPAY_CHROMIUM ?? '/opt/pw-browsers/chromium';
+
+function parseArgs(argv) {
+  const a = { named: false, seeds: [], only: null, concurrency: 3, minimize: false, out: null };
+  for (let i = 0; i < argv.length; i += 1) {
+    const k = argv[i];
+    if (k === '--named') a.named = true;
+    else if (k === '--minimize') a.minimize = true;
+    else if (k === '--only') a.only = argv[++i];
+    else if (k === '--concurrency') a.concurrency = Math.max(1, Math.min(6, Number(argv[++i])));
+    else if (k === '--out') a.out = argv[++i];
+    else if (k === '--seeds') {
+      const [lo, hi] = String(argv[++i]).split('-').map(Number);
+      const top = Math.min(hi ?? lo, lo + 199); // hard bound: at most 200 generated sequences per run
+      for (let s = lo; s <= top; s += 1) a.seeds.push(s);
+    } else throw new Error(`unknown argument ${k}`);
+  }
+  if (!a.named && a.seeds.length === 0 && a.only === null) a.named = true;
+  return a;
+}
+
+/** One scenario in one fresh browser context (= one fresh browser profile with two tabs). */
+async function runScenario(browser, origin, scenario, { withSuffix = true } = {}) {
+  const chain = new SyntheticChain();
+  const rng = new Rng(scenario.seed ?? hashName(scenario.name));
+  const rpc = new MockRpc(chain);
+  const pageIds = new WeakMap();
+  const tabOfPage = new WeakMap();
+  let pageCounter = 0;
+  const world = {
+    origin,
+    chain,
+    rpc,
+    tabs: {},
+    intentOfTab: { A: null, B: null },
+    links: null,
+    clears: { X: 0, C: 0 },
+    lastClearSeq: { X: 0, C: 0 },
+    clearedHashes: new Set(),
+    hashes: { X: new Set(), C: new Set() },
+    closedAt: new Map(),
+    deliveredToOpenPage: new Set(),
+    reorged: new Set(),
+    dialogs: [],
+  };
+  const wallet = new WalletController({
+    chain,
+    rng,
+    tabOf: (p) => tabOfPage.get(p) ?? '?',
+    intentOf: (tab) => world.intentOfTab[tab] ?? null,
+    pageIdOf: (p) => pageIds.get(p),
+    onDelivered: (h) => world.deliveredToOpenPage.add(h),
+  });
+  world.wallet = wallet;
+  const oracle = new Oracle(world);
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 } });
+  const trace = [];
+  const started = Date.now();
+  let harnessError = null;
+  try {
+    await rpc.install(context, origin);
+    await context.addInitScript(BROWSER_SHIM);
+    await context.addInitScript(settingsInitScript());
+    await context.exposeBinding('__w5wallet', (source, payload) => wallet.handle(source.page, payload));
+    const newTab = async (label) => {
+      const p = await context.newPage();
+      pageIds.set(p, (pageCounter += 1));
+      tabOfPage.set(p, label);
+      p.on('close', () => world.closedAt.set(pageIds.get(p), Date.now()));
+      p.on('dialog', (d) => {
+        world.dialogs.push({ tab: label, type: d.type(), message: d.message().slice(0, 200) });
+        // A reload/close/navigation step is a deliberate leave, so a leave-page warning is accepted. Any other dialog
+        // not owned by an explicit clear step (e.g. a receipt download confirm) is dismissed.
+        if (d.type() === 'beforeunload') void d.accept().catch(() => undefined);
+        else if (p.listenerCount('dialog') <= 1) void d.dismiss().catch(() => undefined);
+      });
+      world.tabs[label] = p;
+      return p;
+    };
+    // Seller role in its own tab: fresh keys + two invoices, then the tab is closed (no beforeunload), so the two
+    // payer tabs A and B start as ordinary checkout tabs of the same browser profile.
+    const seller = await context.newPage();
+    world.links = await sellerSetup(seller, origin);
+    await seller.close({ runBeforeUnload: false });
+    await newTab('A');
+    await newTab('B');
+    const steps = withSuffix ? [...scenario.steps, ...SUFFIX] : scenario.steps;
+    for (let i = 0; i < steps.length; i += 1) {
+      const step = steps[i];
+      const rec = { i, step, t: Date.now() - started };
+      try {
+        rec.result = await execStep(world, wallet, oracle, newTab, step, i);
+      } catch (e) {
+        rec.error = String(e?.message ?? e).split('\n')[0];
+      }
+      for (const h of wallet.handoffs) if (h.hash !== undefined && h.intent !== null) world.hashes[h.intent].add(h.hash);
+      const obs = {};
+      for (const [label, p] of Object.entries(world.tabs)) obs[label] = await observe(p).catch(() => ({ closed: true }));
+      oracle.checkHandoffs(i);
+      oracle.checkObservations(i, step, obs);
+      rec.obs = Object.fromEntries(
+        Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { headings: o.headings.slice(0, 4), statuses: o.statuses, alerts: o.alerts, journal: o.journal, sendButton: o.sendButton }]),
+      );
+      rec.handoffs = wallet.handoffs.length;
+      trace.push(rec);
+    }
+  } catch (e) {
+    harnessError = String(e?.stack ?? e);
+  } finally {
+    await context.close().catch(() => undefined);
+  }
+  return {
+    name: scenario.name,
+    why: scenario.why,
+    seed: scenario.seed ?? null,
+    steps: scenario.steps,
+    suffix: withSuffix,
+    durationMs: Date.now() - started,
+    harnessError,
+    handoffs: wallet.handoffs.map(({ seq, tab, intent, behaviour, hash, broadcastHash, account, chainId, params, deliveredToOpenPage }) => ({
+      seq, tab, intent, behaviour, hash: hash ?? null, broadcastHash: broadcastHash ?? null, account, chainId,
+      from: params?.from ?? null, to: params?.to ?? null, value: params?.value ?? null, delivered: deliveredToOpenPage ?? null,
+    })),
+    clears: world.clears,
+    dialogs: world.dialogs,
+    chainLog: chain.log,
+    rpcUnknownMethods: [...rpc.unknownMethods],
+    blockedOrigins: [...new Set(rpc.blockedOrigins)],
+    walletMethods: countBy(wallet.requests.map((r) => r.method)),
+    violations: oracle.violations.map(({ key, ...v }) => v),
+    ambiguities: oracle.ambiguities.map(({ key, ...v }) => v),
+    notes: oracle.notes,
+    trace,
+  };
+}
+
+async function execStep(world, wallet, oracle, newTab, step, i) {
+  const page = step.tab === undefined ? null : world.tabs[step.tab];
+  switch (step.op) {
+    case 'open': {
+      world.intentOfTab[step.tab] = step.intent;
+      const r = await openAndPrepare(page, world.links[step.intent]);
+      world.prepared = { ...(world.prepared ?? {}), [step.tab]: r.prepared };
+      return r;
+    }
+    case 'send': {
+      const intent = world.intentOfTab[step.tab];
+      const beforeC = oracle.handoffsFor('C').length;
+      const before = wallet.handoffs.length;
+      wallet.nextSend = step.behaviour;
+      const clicked = await clickSend(page);
+      if (clicked !== 'clicked') wallet.nextSend = 'ok';
+      if (step.mineOnSubmit === true) {
+        for (let k = 0; k < 40 && wallet.handoffs.length === before; k += 1) await page.waitForTimeout(100);
+        const h = wallet.handoffs[before];
+        if (h?.broadcastHash !== undefined) world.chain.mine([h.broadcastHash]);
+      }
+      await settle(page, { capMs: step.behaviour.startsWith('hang') ? 4_000 : 55_000 });
+      if (wallet.handoffs.length === before) wallet.nextSend = 'ok'; // no request reached the wallet
+      if (intent === 'C') oracle.checkControlReached(i, beforeC, clicked, world.prepared?.[step.tab] === true && wallet.chainId === '0x14a34');
+      return { clicked, newHandoffs: wallet.handoffs.length - before };
+    }
+    case 'mine': {
+      const pending = [...world.chain.txs.entries()].filter(([, t]) => t.state === 'mempool').map(([h]) => h);
+      return { block: world.chain.mine(pending), included: pending.length };
+    }
+    case 'advance':
+      world.chain.advance(step.n);
+      return { head: world.chain.head };
+    case 'reorg': {
+      const orphaned = world.chain.reorg(step.depth);
+      for (const h of orphaned) world.reorged.add(h);
+      return { orphaned };
+    }
+    case 'drop': {
+      const pending = [...world.chain.txs.entries()].filter(([, t]) => t.state === 'mempool').map(([h]) => h);
+      for (const h of pending) world.chain.drop(h);
+      return { dropped: pending.length };
+    }
+    case 'rpc':
+      world.rpc.mode = step.mode;
+      return { mode: step.mode };
+    case 'reload':
+      await page.reload();
+      await settle(page, { capMs: 15_000 });
+      world.intentOfTab[step.tab] = null; // the app strips the invoice fragment; a reload lands on the input screen
+      return {};
+    case 'closeReopen': {
+      await page.close();
+      const p = await newTab(step.tab);
+      await p.goto(`${world.origin}/`);
+      world.intentOfTab[step.tab] = null;
+      return {};
+    }
+    case 'account':
+      await wallet.switchAccount(Object.values(world.tabs));
+      return { account: wallet.account };
+    case 'chain': {
+      const want = step.to === 'other' ? '0xaa36a7' : '0x14a34';
+      if (wallet.chainId !== want) await wallet.switchChain(Object.values(world.tabs));
+      return { chainId: wallet.chainId };
+    }
+    case 'release': {
+      const released = wallet.releaseHeld();
+      for (const p of Object.values(world.tabs)) if (!p.isClosed()) await settle(p, { capMs: 50_000 });
+      return { released: released.length };
+    }
+    case 'clear': {
+      const others = [...world.hashes[step.intent === 'X' ? 'C' : 'X']];
+      const known = [...world.hashes[step.intent]].filter((h) => !world.clearedHashes.has(h));
+      const sel = known.length > 0 ? { hash: known[known.length - 1] } : { excludeHashes: others };
+      const r = await clearRow(page, sel, step.accept);
+      if (r.cleared) {
+        world.clears[step.intent] += 1;
+        world.lastClearSeq[step.intent] = wallet.seq;
+        for (const h of world.hashes[step.intent]) world.clearedHashes.add(h);
+      }
+      return r;
+    }
+    case 'check': {
+      const known = [...world.hashes[step.intent]].filter((h) => !world.clearedHashes.has(h));
+      if (known.length === 0) return { checked: false, reason: 'no-known-hash' };
+      const hash = known[known.length - 1];
+      const r = await checkRow(page, { hash });
+      oracle.checkStatusResult(i, step.intent, hash, r);
+      return { ...r, hash };
+    }
+    case 'wait':
+      await new Promise((ok) => setTimeout(ok, Math.min(step.ms, 10_000)));
+      return {};
+    default:
+      throw new Error(`harness: unknown op ${step.op}`);
+  }
+}
+
+function countBy(xs) {
+  const m = {};
+  for (const x of xs) m[x] = (m[x] ?? 0) + 1;
+  return m;
+}
+
+function hashName(s) {
+  let h = 2166136261;
+  for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+  return h;
+}
+
+/** Same failure set (invariant ids) means "still failing" for minimization. */
+const sig = (r) => [...new Set(r.violations.map((v) => v.inv))].sort().join(',');
+
+/** ddmin over the scenario's own steps (suffix kept); bounded to 24 replays. */
+async function minimize(browser, origin, failing) {
+  const target = sig(failing);
+  let steps = failing.steps.slice();
+  let n = 2;
+  let budget = 24;
+  while (steps.length >= 2 && budget > 0) {
+    const size = Math.ceil(steps.length / n);
+    let reduced = false;
+    for (let start = 0; start < steps.length && budget > 0; start += size) {
+      const candidate = [...steps.slice(0, start), ...steps.slice(start + size)];
+      if (candidate.length === 0) continue;
+      budget -= 1;
+      const r = await runScenario(browser, origin, { ...failing, steps: candidate, name: `${failing.name}-min` });
+      if (r.harnessError === null && sig(r).includes(target.split(',')[0])) {
+        steps = candidate;
+        n = Math.max(n - 1, 2);
+        reduced = true;
+        break;
+      }
+    }
+    if (!reduced) {
+      if (n >= steps.length) break;
+      n = Math.min(steps.length, n * 2);
+    }
+  }
+  const confirm = await runScenario(browser, origin, { ...failing, steps, name: `${failing.name}-min-confirm` });
+  return { steps, reproduced: sig(confirm).includes(target.split(',')[0]), confirmViolations: confirm.violations, replaysUsed: 24 - budget };
+}
+
+async function pool(items, n, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(n, items.length) }, async () => {
+      while (next < items.length) {
+        const idx = next;
+        next += 1;
+        out[idx] = await fn(items[idx], idx);
+      }
+    }),
+  );
+  return out;
+}
+
+function environment(browser) {
+  const pw = require('playwright-core/package.json');
+  return {
+    node: process.version,
+    platform: `${os.platform()} ${os.release()} ${os.arch()}`,
+    cpus: os.cpus().length,
+    playwrightCore: pw.version,
+    chromium: browser.version(),
+    chromiumPath: CHROMIUM,
+  };
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const source = sourceIdentity();
+  const build = JSON.parse(readFileSync(join(DIST, '.w5-build.json'), 'utf8'));
+  const dist = distFingerprint();
+  if (dist === null || dist.sha256 !== build.dist.sha256) throw new Error('harness: dist changed since build.mjs recorded it; rebuild');
+  const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', PINNED_MAIN, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
+  const { chromium } = require('playwright-core');
+  const browser = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'] });
+  const server = await serveDist(DIST);
+  let list = [];
+  if (args.named) list.push(...NAMED);
+  if (args.only !== null) list = NAMED.filter((s) => s.name === args.only);
+  for (const s of args.seeds) list.push(generated(s));
+  const runId = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
+  const out = args.out ?? join(REPO, 'verification/independent-beta/results', runId);
+  mkdirSync(out, { recursive: true });
+  const t0 = Date.now();
+  let results = [];
+  try {
+    results = await pool(list, args.concurrency, async (s) => {
+      const r = await runScenario(browser, server.origin, s);
+      process.stdout.write(`${r.harnessError ? 'HARNESS-ERROR' : r.violations.length ? 'VIOLATION' : 'ok'}\t${r.name}\t${(r.durationMs / 1000).toFixed(1)}s\tviol=${sig(r) || '-'}\tamb=${[...new Set(r.ambiguities.map((a) => a.inv))].join(',') || '-'}\n`);
+      return r;
+    });
+    if (args.minimize) {
+      for (const r of results) if (r.violations.length > 0 && r.harnessError === null) r.minimized = await minimize(browser, server.origin, r);
+    }
+  } finally {
+    await server.close();
+    await browser.close();
+  }
+  const record = {
+    runId,
+    command: `node verification/independent-beta/harness/run.mjs ${process.argv.slice(2).join(' ')}`.trim(),
+    pinnedMain: PINNED_MAIN,
+    source,
+    productionPathsDifferingFromPinnedMain: productionDiff === '' ? [] : productionDiff.split('\n'),
+    build,
+    environment: environment(browser),
+    seeds: args.seeds,
+    wallMs: Date.now() - t0,
+    totals: {
+      scenarios: results.length,
+      harnessErrors: results.filter((r) => r.harnessError !== null).length,
+      withViolations: results.filter((r) => r.violations.length > 0).length,
+      withAmbiguities: results.filter((r) => r.ambiguities.length > 0).length,
+      handoffs: results.reduce((n, r) => n + r.handoffs.length, 0),
+      blockedOffOrigin: [...new Set(results.flatMap((r) => r.blockedOrigins))],
+    },
+    results,
+  };
+  writeFileSync(join(out, 'run.json'), `${JSON.stringify(record, null, 2)}\n`);
+  process.stdout.write(`\nrecord: ${out}/run.json\n${JSON.stringify(record.totals)}\n`);
+  process.exitCode = record.totals.harnessErrors > 0 ? 2 : record.totals.withViolations > 0 ? 1 : 0;
+}
+
+main().catch((e) => {
+  console.error(e?.stack ?? e);
+  process.exit(2);
+});

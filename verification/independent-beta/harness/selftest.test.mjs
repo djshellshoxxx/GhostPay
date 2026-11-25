@@ -1,0 +1,183 @@
+// W5 independent payment-state verifier: harness self-audit (no browser).
+// Run: node --test verification/independent-beta/harness/selftest.test.mjs
+// Bounded property checks over the synthetic chain and RPC, plus oracle sensitivity tests: the oracle must flag
+// planted violations, or a green browser run would prove nothing.
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { GENESIS, SyntheticChain } from './chain.mjs';
+import { Oracle } from './oracle.mjs';
+import { Rng } from './prng.mjs';
+import { MockRpc } from './rpc.mjs';
+import { classify } from './app.mjs';
+
+const QTY = /^0x(0|[1-9a-f][0-9a-f]*)$/; // canonical JSON-RPC quantity
+
+test('PRNG is deterministic per seed and differs across seeds', () => {
+  const a = new Rng(7);
+  const b = new Rng(7);
+  const c = new Rng(8);
+  const sa = Array.from({ length: 50 }, () => a.hash32());
+  assert.deepEqual(sa, Array.from({ length: 50 }, () => b.hash32()));
+  assert.notDeepEqual(sa, Array.from({ length: 50 }, () => c.hash32()));
+  for (const h of sa) assert.match(h, /^0x[0-9a-f]{64}$/);
+});
+
+test('chain properties hold over 300 seeded random operation sequences', () => {
+  for (let seed = 1; seed <= 300; seed += 1) {
+    const rng = new Rng(seed);
+    const chain = new SyntheticChain();
+    const rpc = new MockRpc(chain);
+    const hashes = [];
+    for (let step = 0; step < 25; step += 1) {
+      const r = rng.next();
+      if (r < 0.3) {
+        const h = rng.hash32();
+        hashes.push(h);
+        chain.submit(h, { from: rng.pick(['0xaa', '0xbb']).padEnd(42, '0'), to: '0x1111111111111111111111111111111111111111', value: '0x1', data: '0x' });
+      } else if (r < 0.6) chain.mine(hashes.filter(() => rng.next() < 0.7), { success: rng.next() < 0.9 });
+      else if (r < 0.75) chain.reorg(rng.int(1, 3));
+      else if (r < 0.85) chain.drop(rng.pick(hashes.length ? hashes : ['0x0']));
+      else chain.advance(rng.int(1, 2));
+      // canonical linkage
+      for (let n = Math.max(GENESIS + 1, chain.head - 6); n <= chain.head; n += 1) {
+        assert.equal(chain.blockObject(n).parentHash, chain.blockObject(n - 1).hash, `seed ${seed}: parent link at ${n}`);
+      }
+      assert.equal(rpc.one({ id: 1, method: 'eth_blockNumber' }).result, `0x${chain.head.toString(16)}`);
+      for (const h of hashes) {
+        const t = chain.truth(h);
+        const tx = chain.txObject(h);
+        const rc = chain.receiptObject(h);
+        assert.equal(rc !== null, t.state === 'mined', `seed ${seed}: receipt iff mined`);
+        if (t.state === 'mined') {
+          assert.ok(t.block <= chain.head && t.block > GENESIS);
+          assert.ok(chain.blocks.get(t.block).txs.includes(h), `seed ${seed}: mined tx is in its canonical block`);
+          assert.equal(rc.blockHash, chain.blockObject(t.block).hash, `seed ${seed}: receipt block hash is canonical`);
+          assert.equal(tx.blockHash, rc.blockHash);
+          assert.match(rc.blockNumber, QTY);
+        } else if (t.state === 'mempool') {
+          assert.equal(tx.blockHash, null);
+          assert.equal(tx.blockNumber, null);
+        } else if (t.state === 'dropped') assert.equal(tx, null);
+        if (tx !== null) for (const k of ['nonce', 'value', 'gas', 'chainId']) assert.match(tx[k], QTY, `seed ${seed}: ${k} canonical`);
+      }
+      for (const from of ['0xaa', '0xbb'].map((x) => x.padEnd(42, '0'))) {
+        assert.ok(chain.nonceOf(from, 'latest') <= chain.nonceOf(from, 'pending'));
+      }
+    }
+  }
+});
+
+test('a reorg orphans exactly the transactions above the fork point and changes those block hashes', () => {
+  const chain = new SyntheticChain();
+  chain.submit('0x' + '1'.repeat(64), { from: '0x' + 'a'.repeat(40), to: '0x' + 'b'.repeat(40) });
+  const b1 = chain.mine(['0x' + '1'.repeat(64)]);
+  const oldHash = chain.hashOf(b1);
+  chain.advance(2);
+  assert.deepEqual(chain.reorg(1), []);
+  assert.equal(chain.truth('0x' + '1'.repeat(64)).state, 'mined');
+  assert.deepEqual(chain.reorg(3), ['0x' + '1'.repeat(64)]);
+  assert.equal(chain.truth('0x' + '1'.repeat(64)).state, 'mempool');
+  assert.notEqual(chain.hashOf(b1), oldHash);
+});
+
+test('RPC: batch requests, unknown methods error, router getters and code answer the fixture', () => {
+  const rpc = new MockRpc(new SyntheticChain());
+  assert.equal(rpc.one({ id: 1, method: 'eth_chainId' }).result, '0x14a34');
+  assert.equal(rpc.one({ id: 2, method: 'eth_nope' }).error.code, -32601);
+  assert.equal(rpc.one({ id: 3, method: 'eth_getCode', params: ['0x1111111111111111111111111111111111111111'] }).result, '0x60016000');
+  const feeBps = rpc.one({ id: 4, method: 'eth_call', params: [{ to: '0x1111111111111111111111111111111111111111', data: '0xbf333f2c' }] });
+  assert.ok(typeof feeBps.result === 'string');
+});
+
+function fakeWorld() {
+  const chain = new SyntheticChain();
+  return {
+    chain,
+    wallet: { handoffs: [], seq: 0 },
+    intentOfTab: { A: 'X', B: 'C' },
+    clears: { X: 0, C: 0 },
+    lastClearSeq: { X: 0, C: 0 },
+    clearedHashes: new Set(),
+    hashes: { X: new Set(), C: new Set() },
+    closedAt: new Map(),
+    deliveredToOpenPage: new Set(),
+    reorged: new Set(),
+  };
+}
+const handoff = (seq, intent, extra = {}) => ({ seq, intent, tab: 'A', account: '0x5555', chainId: '0x14a34', params: { from: '0x5555' }, behaviour: 'ok', ...extra });
+const obsOf = (o) => ({ closed: false, headings: ['Review payment'], statuses: [], alerts: [], journal: [], mainText: '', mainHashes: [], storedHashes: [], ...o });
+
+test('oracle flags planted I2 (second wallet request without a clear) but not after one deliberate clear', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  w.wallet.handoffs.push(handoff(1, 'X'), handoff(2, 'X'));
+  o.checkHandoffs(0);
+  assert.equal(o.violations[0]?.inv, 'I2');
+  const w2 = fakeWorld();
+  w2.clears.X = 1;
+  const o2 = new Oracle(w2);
+  w2.wallet.handoffs.push(handoff(1, 'X'), handoff(2, 'X'));
+  o2.checkHandoffs(0);
+  assert.equal(o2.violations.length, 0);
+});
+
+test('oracle flags planted I5a (request from a stale account / wrong chain)', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  w.wallet.handoffs.push(handoff(1, 'X', { params: { from: '0x6666' } }), handoff(2, 'C', { chainId: '0xaa36a7' }));
+  o.checkHandoffs(0);
+  assert.deepEqual(o.violations.map((v) => v.inv), ['I5a', 'I5a']);
+});
+
+test('oracle flags planted I1/I8 (success shown for a reorged-out hash) and accepts canonical success', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  const h = '0x' + '2'.repeat(64);
+  w.chain.submit(h, { from: '0x5555', to: '0x1111' });
+  w.chain.mine([h]);
+  o.checkStatusResult(0, 'X', h, { checked: true, text: 'Included in a canonical block.', cls: classify('Included in a canonical block.') });
+  assert.equal(o.violations.length, 0);
+  w.chain.reorg(1);
+  w.reorged.add(h);
+  o.checkStatusResult(1, 'X', h, { checked: true, text: 'Included in a canonical block.', cls: classify('Included in a canonical block.') });
+  assert.equal(o.violations[0]?.inv, 'I8');
+});
+
+test('oracle flags planted I4 (returned hash lost) and I3 (unknown record not shown), honours R5 exception', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  const h = '0x' + '3'.repeat(64);
+  w.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1 }));
+  w.deliveredToOpenPage.add(h);
+  o.checkObservations(0, { op: 'reload' }, { A: obsOf({}) });
+  assert.ok(o.violations.some((v) => v.inv === 'I4'));
+  assert.ok(o.violations.some((v) => v.inv === 'I3'));
+  // Same, but the page closed within the record window: the hash may legitimately be missing (R5/A5).
+  const w2 = fakeWorld();
+  const o2 = new Oracle(w2);
+  w2.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1 }));
+  w2.deliveredToOpenPage.add(h);
+  w2.closedAt.set(1, Date.now() - 9_500);
+  o2.checkObservations(0, { op: 'reload' }, { A: obsOf({ journal: ['payment on chain 84532 · Outcome unknown'] }) });
+  assert.equal(o2.violations.length, 0);
+});
+
+test('oracle flags planted I5b (other intent hash shown in a checkout) and I7 (control never reached wallet)', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  const hx = '0x' + '4'.repeat(64);
+  w.hashes.X.add(hx);
+  o.checkObservations(0, { op: 'open' }, { B: obsOf({ headings: ['Final check before your wallet'], mainText: `Transaction hash: ${hx}`, mainHashes: [hx] }) });
+  assert.ok(o.violations.some((v) => v.inv === 'I5b'));
+  o.checkControlReached(1, 0, 'clicked', true);
+  assert.ok(o.violations.some((v) => v.inv === 'I7'));
+});
+
+test('status vocabulary classifies the app strings it is meant to (en.json wording)', () => {
+  assert.deepEqual(classify('Included in a canonical block. Waiting for the chain’s configured confirmation depth.'), ['success']);
+  assert.deepEqual(classify('The RPC confirmed execution of this transaction.'), ['success']);
+  assert.deepEqual(classify('Pending. The RPC sees the transaction without a verified receipt.'), ['pending']);
+  assert.deepEqual(classify('Outcome unknown. Keep tracking this attempt and check your wallet before retrying.'), ['unknown']);
+  assert.ok(classify('Status: included in block 501 (not necessarily final yet).').includes('success'));
+  assert.deepEqual(classify('The RPC confirmed that this transaction reverted.').includes('success'), false);
+});
