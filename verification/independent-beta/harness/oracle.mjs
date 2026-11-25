@@ -142,7 +142,9 @@ export class Oracle {
 
   /** I4: a hash the wallet returned to a page that stayed open long enough must survive until deliberately cleared. */
   checkRetention(stepIndex, obs) {
-    const open = Object.values(obs).filter((o) => !o.closed && o.storedHashes !== undefined);
+    // Evidence lives in the app origin's storage; a tab on about:blank (e.g. right after a restart) shows none
+    // (harness fix H6).
+    const open = Object.values(obs).filter((o) => !o.closed && o.storedHashes !== undefined && o.origin === this.w.origin);
     if (open.length === 0) return;
     const visibleAnywhere = new Set();
     for (const o of open) {

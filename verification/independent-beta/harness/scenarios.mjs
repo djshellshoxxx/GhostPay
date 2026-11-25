@@ -172,6 +172,25 @@ export const NAMED = [
   },
 ];
 
+/**
+ * Positive controls: conditions OUTSIDE the accepted guarantee, under which a correct app may (and here must) lose
+ * its protection. The run fails as a harness error unless the oracle detects the declared violations end to end.
+ */
+export const CONTROLS = [
+  {
+    name: 'P1-control-fresh-profile-loses-journal',
+    why: 'R26 out of scope: a different browser profile has its own journal, so paying X again reaches the wallet; I2 must fire',
+    expectViolations: ['I2'],
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+      { op: 'freshProfile' },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+    ],
+  },
+];
+
 /** Random middle step alphabet with weights; every op is bounded (no unbounded waits or loops). */
 function randomStep(rng) {
   const r = rng.next();

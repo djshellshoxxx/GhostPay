@@ -92,6 +92,7 @@ test('RPC: batch requests, unknown methods error, router getters and code answer
 function fakeWorld() {
   const chain = new SyntheticChain();
   return {
+    origin: 'http://localhost:4173',
     chain,
     wallet: { handoffs: [], seq: 0 },
     intentOfTab: { A: 'X', B: 'C' },
@@ -105,7 +106,7 @@ function fakeWorld() {
   };
 }
 const handoff = (seq, intent, extra = {}) => ({ seq, intent, tab: 'A', account: '0x5555', chainId: '0x14a34', params: { from: '0x5555' }, behaviour: 'ok', ...extra });
-const obsOf = (o) => ({ closed: false, headings: ['Review payment'], statuses: [], alerts: [], journal: [], mainText: '', mainHashes: [], storedHashes: [], ...o });
+const obsOf = (o) => ({ closed: false, origin: 'http://localhost:4173', headings: ['Review payment'], statuses: [], alerts: [], journal: [], mainText: '', mainHashes: [], storedHashes: [], ...o });
 
 test('oracle flags planted I2 (second wallet request without a clear) but not after one deliberate clear', () => {
   const w = fakeWorld();
@@ -160,6 +161,18 @@ test('oracle flags planted I4 (returned hash lost) and I3 (unknown record not sh
   w2.docEndedAt.set('1:1', Date.now() - 9_500);
   o2.checkObservations(0, { op: 'reload' }, { A: obsOf({ journal: ['payment on chain 84532 · Outcome unknown'] }) });
   assert.equal(o2.violations.length, 0);
+});
+
+test('oracle does not judge retention from a tab outside the app origin (H6)', () => {
+  const w = fakeWorld();
+  const o = new Oracle(w);
+  const h = '0x' + '5'.repeat(64);
+  w.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1 }));
+  w.deliveredToOpenPage.add(h);
+  o.checkRetention(0, { A: obsOf({ origin: 'null', headings: [] }) });
+  assert.equal(o.violations.length, 0);
+  o.checkRetention(1, { A: obsOf({}) });
+  assert.equal(o.violations[0]?.inv, 'I4');
 });
 
 test('oracle flags planted I5b (other intent hash shown in a checkout) and I7 (control never reached wallet)', () => {

@@ -15,7 +15,7 @@ import { MockRpc } from './rpc.mjs';
 import { BROWSER_SHIM, WalletController } from './wallet.mjs';
 import { checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
 import { Oracle } from './oracle.mjs';
-import { NAMED, SUFFIX, generated } from './scenarios.mjs';
+import { CONTROLS, NAMED, SUFFIX, generated } from './scenarios.mjs';
 import { serveDist } from './serve.mjs';
 
 const require = createRequire(import.meta.url);
@@ -80,7 +80,8 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
   });
   world.wallet = wallet;
   const oracle = new Oracle(world);
-  const userDataDir = mkdtempSync(join(os.tmpdir(), 'w5-profile-'));
+  let userDataDir = mkdtempSync(join(os.tmpdir(), 'w5-profile-'));
+  const profileDirs = [userDataDir];
   let context = null;
   const boot = async () => {
     context = await launcher.launch(userDataDir);
@@ -124,8 +125,14 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     await newTab('B');
     await seller.close({ runBeforeUnload: false });
     // Browser restart: every tab and in-flight wallet reply of the old process is gone; site data persists.
-    world.restart = async () => {
+    // `fresh` = relaunch on an EMPTY profile: a different browser profile, outside the accepted guarantee (R26).
+    // Used only by positive-control scenarios, which must produce the violations they declare.
+    world.restart = async (fresh = false) => {
       await context.close();
+      if (fresh) {
+        userDataDir = mkdtempSync(join(os.tmpdir(), 'w5-profile-'));
+        profileDirs.push(userDataDir);
+      }
       await boot();
       await newTab('A', context.pages()[0]);
       await newTab('B');
@@ -158,11 +165,17 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     harnessError = String(e?.stack ?? e);
   } finally {
     await context?.close().catch(() => undefined);
-    rmSync(userDataDir, { recursive: true, force: true });
+    for (const d of profileDirs) rmSync(d, { recursive: true, force: true });
+  }
+  const found = new Set(oracle.violations.map((v) => v.inv));
+  const expect = scenario.expectViolations ?? [];
+  if (expect.length > 0 && harnessError === null && !expect.every((inv) => found.has(inv))) {
+    harnessError = `harness: positive control did not detect expected ${expect.filter((i) => !found.has(i)).join(',')} (oracle blind)`;
   }
   return {
     name: scenario.name,
     why: scenario.why,
+    expectViolations: expect,
     seed: scenario.seed ?? null,
     steps: scenario.steps,
     suffix: withSuffix,
@@ -278,7 +291,8 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       return { ...r, hash };
     }
     case 'restart':
-      await world.restart();
+    case 'freshProfile':
+      await world.restart(step.op === 'freshProfile');
       world.intentOfTab = { A: null, B: null };
       return { restarted: true };
     case 'wait':
@@ -387,8 +401,8 @@ async function main() {
   };
   const server = await serveDist(DIST);
   let list = [];
-  if (args.named) list.push(...NAMED);
-  if (args.only !== null) list = NAMED.filter((s) => s.name === args.only);
+  if (args.named) list.push(...CONTROLS, ...NAMED);
+  if (args.only !== null) list = [...CONTROLS, ...NAMED].filter((s) => args.only.split(',').includes(s.name));
   for (const s of args.seeds) list.push(generated(s));
   const runId = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
   const out = args.out ?? join(REPO, 'verification/independent-beta/results', runId);
@@ -398,11 +412,11 @@ async function main() {
   try {
     results = await pool(list, args.concurrency, async (s) => {
       const r = await runScenario(browser, server.origin, s);
-      process.stdout.write(`${r.harnessError ? 'HARNESS-ERROR' : r.violations.length ? 'VIOLATION' : 'ok'}\t${r.name}\t${(r.durationMs / 1000).toFixed(1)}s\tviol=${sig(r) || '-'}\tamb=${[...new Set(r.ambiguities.map((a) => a.inv))].join(',') || '-'}\n`);
+      process.stdout.write(`${r.harnessError ? 'HARNESS-ERROR' : r.expectViolations.length ? 'CONTROL-DETECTED' : r.violations.length ? 'VIOLATION' : 'ok'}\t${r.name}\t${(r.durationMs / 1000).toFixed(1)}s\tviol=${sig(r) || '-'}\tamb=${[...new Set(r.ambiguities.map((a) => a.inv))].join(',') || '-'}\n`);
       return r;
     });
     if (args.minimize) {
-      for (const r of results) if (r.violations.length > 0 && r.harnessError === null) r.minimized = await minimize(browser, server.origin, r);
+      for (const r of results) if (r.violations.length > 0 && r.harnessError === null && r.expectViolations.length === 0) r.minimized = await minimize(browser, server.origin, r);
     }
   } finally {
     await server.close();
@@ -420,7 +434,8 @@ async function main() {
     totals: {
       scenarios: results.length,
       harnessErrors: results.filter((r) => r.harnessError !== null).length,
-      withViolations: results.filter((r) => r.violations.length > 0).length,
+      withViolations: results.filter((r) => r.violations.length > 0 && r.expectViolations.length === 0).length,
+      positiveControls: results.filter((r) => r.expectViolations.length > 0).map((r) => ({ name: r.name, expected: r.expectViolations, detected: [...new Set(r.violations.map((v) => v.inv))] })),
       withAmbiguities: results.filter((r) => r.ambiguities.length > 0).length,
       handoffs: results.reduce((n, r) => n + r.handoffs.length, 0),
       blockedOffOrigin: [...new Set(results.flatMap((r) => r.blockedOrigins))],

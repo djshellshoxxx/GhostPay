@@ -234,6 +234,7 @@ export async function observe(page) {
     const hashes = [...new Set(store.join('\n').match(/0x[0-9a-fA-F]{64}/g) ?? [])].map((h) => h.toLowerCase());
     return {
       closed: false,
+      origin: location.origin,
       url: location.pathname + (location.hash ? '#…' : ''),
       headings,
       statuses,
