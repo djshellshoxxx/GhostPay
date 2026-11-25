@@ -60,6 +60,9 @@ Not owned: invoice metadata minimization and CreateInvoice's Copy-link row (W4),
 the reconciliation vault (#383/#587/#609; a later slice), merchant template issuer (full profile, deferred-adjacent).
 Acceptance: default-off preferences; preview, count and explicit confirmation; stale plans clear nothing; only
 presentation copies close and every saved record stays; hosted CI green at the exact head; merge via the shared queue.
+Status (2026-11-25 18:03Z): **merged** as PR #676 (`e2c11634`) through candidate #681 (42 pass, 0 fail at the exact
+head), lock generation 29 (released `62a6ea30`). Open follow-ups: persistent timestamp cleanup in the reconciliation
+vault (#383/#587/#609; vault format change shared with the CLI, owner decision pending).
 
 # payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
 
@@ -383,6 +386,8 @@ reuse (newghostpay-ae).
 Acceptance: no address, hash, amount, invoice detail, date or key in any suggested download name; exported bytes
 unchanged and importable; recovery file names stay recognizable; no secret in notifications, alerts, live regions,
 titles, URLs or console; hosted CI green at the exact head; independent review; merge via the shared queue.
+Status (2026-11-25 18:03Z): **merged** as PR #675 (`236501fe`) through candidate #681 (42 pass, 0 fail at the exact
+head), lock generation 29 (released `62a6ea30`). Donor #570 is superseded by #675.
 
 
 # Scan-source consolidation candidate — 2026-11-24 UTC
