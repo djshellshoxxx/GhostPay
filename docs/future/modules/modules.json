@@ -1,4 +1,27 @@
 {
+  "owner_stop_work": {
+    "date": "2026-11-25",
+    "authority": "AGENTS.md owner stop-work directive and shared-core clarification (overrides this catalog)",
+    "record": "docs/ai/STOP_WORK_20261125.md (added by PR #667; AGENTS.md is authoritative until it merges)",
+    "archived": [
+      "F01",
+      "F09",
+      "F13"
+    ],
+    "deferred_excluded_beta_v1": [
+      "F02",
+      "F04",
+      "F08",
+      "F11",
+      "F12",
+      "F14"
+    ],
+    "separately_excluded": [
+      "P07"
+    ],
+    "rule": "Do not implement, revive, merge as feature work, enable or count as outstanding release work.",
+    "id_namespace": "Original catalog module IDs; not the conversational inventory IDs (e.g. catalog P14 = shielded payment research, conversational P14 = RPC provider disclosure)."
+  },
   "schema_version": 1,
   "date": "2026-11-19",
   "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",

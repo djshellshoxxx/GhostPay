@@ -1,5 +1,16 @@
 # GhostPay modular future-feature specifications
 
+> **Owner stop-work status (2026-11-25) — read first.** The owner directive in [`AGENTS.md`](../../../AGENTS.md)
+> overrides this 2026-11-19 catalog. Archived (permanent stop work): **F01, F09, F13**. Deferred and excluded from beta and
+> v1.0: **F02, F04, F08, F11, F12, F14**. The separate original **P07** exclusion also stands. None of these ten may be
+> implemented, revived, merged as feature work, enabled or counted as outstanding release work. Shared-core privacy
+> mechanisms stay in scope as `AGENTS.md` describes. The stop-work record is `docs/ai/STOP_WORK_20261125.md` (added by
+> PR #667; until it merges, `AGENTS.md` is authoritative).
+>
+> **IDs here are the original module IDs of this catalog**, not the conversational inventory IDs used in the owner's
+> clarification. For example, this catalog's **P14 is "Non-custodial shielded payment research"**. The in-scope
+> conversational P14, RPC provider disclosure, is a different item. Do not map one numbering onto the other.
+
 **40 independent feature branches; specifications only.** Prepared 2026-11-19 from source commit c977b5d6723f6822c3b5d86cd6b231712c53c395. Application sources are identical across these branches. A shared documentation foundation supplies this map and common contracts; each future branch adds its own specification and ownership claim. The index branch also collects all 40 specs for one-place review.
 
 The owner requested branch/spec creation. Implementation, pricing, payment activation, release and deployment remain separate decisions. See [shared contracts](COMMON.md), [source traceability](SOURCES.md), and [machine-readable catalog](modules.json).
