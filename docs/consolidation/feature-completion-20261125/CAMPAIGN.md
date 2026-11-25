@@ -159,3 +159,11 @@ low/info, and remain filler work.
 - 2026-11-25T08:10Z — final candidates pushed, each containing main `60824005`: FC-01 #650 `aae8d592`
   (fix `5543c2a3`), FC-02 #649 `ef101fd5` (fix `096b338d`), FC-03 #648 `a13ab24d` (fix `11cdee32`). Hosted CI
   restarted on all three; final follow-up reviews requested on the exact fix commits.
+- 2026-11-25T08:13Z — final reviews: FC-01 `aae8d592` **APPROVE** (re-queried D1 tests assert node identity;
+  5543c2a3 has no production code; main merge exact union, F03 e2e selectors intact). FC-03 `a13ab24d` **APPROVE**
+  (ADR-0017 doc formulas, error-code wording, object-overload mainnet refusal with zero RNG draws, claim paths;
+  FC-03 patch-id unchanged by the main merge). Non-blocking follow-up recorded: `chain-solana` `CHAIN_DISABLED`
+  text ("devnet, testnet and localnet only", `errors.ts:42`) is right for derivation but also thrown by
+  `createSolanaAdapter`, which enables devnet/testnet only (`adapter.ts:22,72`); not shown by CLI or web. Queue for
+  the small follow-up bundle (one-line neutral wording + `stealth.test.ts:211`). Also optional: `solana-impl.md:31`
+  old `K` naming.
