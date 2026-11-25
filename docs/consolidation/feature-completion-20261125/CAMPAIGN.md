@@ -312,6 +312,11 @@ low/info, and remain filler work.
   TEAM.md absent at 10:38Z, #664 includes FC-01's `CreateInvoice.tsx` change, lock gen 25 held by
   `claude-ghostpay-backup-60`, host memory limits and the shared heavy-run mutex. The coordinator continues the round-1
   integration in parallel (lock wait + #664 CI).
+- 2026-11-25T10:52Z — owner: pause coordinator work 03:00–03:20 PST (11:00–11:20Z) to free resources for other
+  workers, then resume. Coordinator CI watcher stopped; resume timer set for 11:20Z. Hosted CI on #664 continues
+  remotely. Agreed lock order with `ghostpay-15` (#647 kept separate): after gen 25 releases, whichever exact-head CI is
+  green first goes first; if both, the coordinator first. Resume point: check #664 CI and lock gen 25; when released,
+  merge new main into the candidate (merge, not rebase), requalify, acquire the lock, fast-forward main, release, verify.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
