@@ -293,6 +293,20 @@ low/info, and remain filler work.
 - 2026-11-25T10:08Z — owner asked whether a force merge was possible. Coordinator explained it would bypass the P1-LATE
   session's held lock (gen 24, renewed to 10:37Z) and unfinished exact-head CI. **Owner decision:** wait for the lock,
   then one combined candidate CI run (plan above). P1-LATE session asked to message `feature-completion-06` on release.
+- 2026-11-25T10:27Z — P1-LATE released lock gen 24 (`9dc8e4ac`); main → `aaa71a11` (Merge PR #635). One minute later
+  `claude-ghostpay-backup-60` acquired gen 25 (`3682e237`, expires 13:28Z) to merge #657 (mobile e2e/workflow/docs) and
+  #660 (keystore flake fixes; `ux-vault/keystore-portable.ts`), ETA 1–2 h. Neither overlaps the candidate's paths. Not
+  taken over; that session will message on release.
+- 2026-11-25T10:40Z — combined candidate built on `aaa71a11`: `claude/fc-integration-20261125`, seven `--no-ff` merge
+  commits + coordinator commit `d4bdd022` (drops FC-01's duplicate `afterEach(cleanup)` in
+  `WalletAttempts.status.test.tsx`; #635 had already added it, so the file now equals main). Composition: ACTIVE_WORK
+  union +242/−0; 156 single-source paths byte-identical; for files also changed by #635 (`Pay.tsx`, `CreateInvoice.tsx`,
+  `core-journey.spec.ts`, `pages-devnet.spec.ts`) the feature's changed-line multiset is identical before and after #635.
+  Qualification draft **#664** (do not merge) opened; CI started. Superseded individual runs on #661/#650/#662/#663
+  cancelled to free shared runners (re-runnable). Individual exact-head results already complete: **#648 FC-03 40/40 +
+  3 skipped**, **#649 FC-02 39/39 + 3 skipped**, **#656 FC-05a 40/40 + 3 skipped**, 0 failures.
+- 2026-11-25T10:40Z — owner instruction: finish this task, wait 15 minutes, then start the W4 prompt
+  (`%USERPROFILE%\GhostPay-coordination\TEAM.md` referenced; not present at 10:38Z).
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
