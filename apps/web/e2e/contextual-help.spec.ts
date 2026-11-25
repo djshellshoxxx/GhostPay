@@ -40,10 +40,15 @@ test('contextual RPC help is described, keyboard operable and dismissible at a m
   await help.press('Enter');
   await expect(tooltip).toBeVisible();
   await expect(help).toHaveAttribute('aria-expanded', 'true');
+  // The secondary RPC URL is a real tab stop between the primary field's help and its Test button.
+  // Preserve its keyboard accessibility rather than assuming Tab skips an inserted input.
+  const secondary = page.locator('.rpc-row').filter({ has: input }).locator('input[type="url"]').nth(1);
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Test Base Sepolia', exact: true })).toBeFocused();
+  await expect(secondary).toBeFocused();
   await expect(tooltip).toBeHidden();
   await expect(help).toHaveAttribute('aria-expanded', 'false');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Test Base Sepolia', exact: true })).toBeFocused();
   await expect(input).toHaveValue(before);
 });
 

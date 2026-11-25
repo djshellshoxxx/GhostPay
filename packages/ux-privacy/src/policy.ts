@@ -198,7 +198,10 @@ export function formatUnits(amount: bigint, decimals: number): string {
   if (!Number.isInteger(decimals) || decimals < 0 || decimals > 36) return fail('decimals');
   const s = amount.toString().padStart(decimals + 1, '0');
   const whole = s.slice(0, s.length - decimals);
-  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  const fractionStart = s.length - decimals;
+  let fractionEnd = s.length;
+  while (fractionEnd > fractionStart && s[fractionEnd - 1] === '0') fractionEnd -= 1;
+  const frac = s.slice(fractionStart, fractionEnd);
   return frac === '' ? whole : `${whole}.${frac}`;
 }
 
@@ -268,12 +271,12 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
     );
   } else {
     const seen = new Set<string>();
-    p.spendLimits.forEach((l, i) => {
+    for (const [i, l] of p.spendLimits.entries()) {
       const f = `spendLimits[${String(i)}]`;
       const tok = typeof l === 'object' && l !== null ? checkAddress(l.token, `${f}.token`, out, true) : null;
       if (typeof l !== 'object' || l === null) {
         out.push(issue('error', 'INVALID_LIMITS', f, 'This limit row is malformed.'));
-        return;
+        continue;
       }
       if (tok !== null) {
         if (seen.has(tok))
@@ -309,7 +312,7 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
           );
         }
       }
-    });
+    }
     out.push(
       issue(
         'info',
@@ -333,7 +336,7 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
       );
     } else if (list.length > 0) {
       const set = new Set<string>();
-      (list as unknown[]).forEach((a, i) => {
+      for (const [i, a] of (list as unknown[]).entries()) {
         const x = checkAddress(a, `allowlist[${String(i)}]`, out);
         if (x !== null) {
           if (set.has(x))
@@ -342,7 +345,7 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
             );
           set.add(x);
         }
-      });
+      }
       if (dest !== null && !set.has(dest)) {
         out.push(
           issue(
@@ -372,11 +375,11 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
       out.push(issue('error', 'INVALID_GUARDIANS', 'guardians', 'Guardians must be a list of at most 10.'));
     } else if (gl.length > 0) {
       const set = new Set<string>();
-      p.guardians.forEach((g, i) => {
+      for (const [i, g] of p.guardians.entries()) {
         const f = `guardians[${String(i)}]`;
         if (typeof g !== 'object' || g === null) {
           out.push(issue('error', 'INVALID_GUARDIANS', f, 'This guardian entry is malformed.'));
-          return;
+          continue;
         }
         const x = checkAddress(g.address, `${f}.address`, out);
         checkLabel(g.label, `${f}.label`, out);
@@ -394,7 +397,7 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
             );
           set.add(x);
         }
-      });
+      }
       const th = p.guardianThreshold;
       if (th === undefined || !Number.isInteger(th) || th < 1 || th > gl.length) {
         out.push(
@@ -414,6 +417,8 @@ export function validateFriendlyPolicy(p: FriendlyPolicy): PolicyValidation {
           'Guardians are not part of the current scheme and are not enforced on-chain.',
         ),
       );
+    } else if (p.guardianThreshold !== undefined) {
+      out.push(issue('error', 'INVALID_THRESHOLD', 'guardianThreshold', 'A threshold needs guardians.'));
     }
   } else if (p.guardianThreshold !== undefined) {
     out.push(issue('error', 'INVALID_THRESHOLD', 'guardianThreshold', 'A threshold needs guardians.'));

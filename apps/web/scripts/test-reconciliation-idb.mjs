@@ -68,7 +68,18 @@ try {
     });
   });
   await pages[0].waitForFunction(() => window.testVaultRecords[0]?.evidenceStatus === 'verified-at-scan');
-  await pages[1].evaluate(() => window.testVault.invalidateFrom(100n));
+  // invalidateFrom(block, observed, canonicalHash): only observations whose block the providers now report with a
+  // different hash are invalidated. Height 120 was replaced; any other height must not be asked for.
+  const heights = await pages[1].evaluate(async () => {
+    const asked = [];
+    await window.testVault.invalidateFrom(100n, [], async (height) => {
+      asked.push(String(height));
+      if (height !== 120n) throw new Error(`unexpected canonical hash read at ${height}`);
+      return `0x${'e'.repeat(64)}`;
+    });
+    return asked;
+  });
+  assert.deepEqual(heights, ['120'], 'the reorg check reads exactly the stored observation heights');
   await pages[0].waitForFunction(() => window.testVaultRecords[0]?.evidenceStatus === 'invalidated-after-reorg');
   await pages[0].evaluate(() => window.unsubscribeVaultTest());
   assert.deepEqual(unexpected, [], 'local-only browser test must not contact external origins');

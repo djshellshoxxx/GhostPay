@@ -28,6 +28,9 @@
     "test:dependency-tooling": "node --test scripts/tests/dependency-tooling.test.mjs"
   },
   "overrides": {
+    "@sentry/node@5.30.0": {
+      "cookie": "0.7.2"
+    },
     "ws": "8.21.0",
     "underscore": "1.13.8",
     "@0xbow/privacy-pools-core-sdk": {

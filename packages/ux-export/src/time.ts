@@ -39,6 +39,7 @@ function utc(y: number, mo: number, d: number, h = 0, mi = 0, s = 0, ms = 0): nu
   ) {
     throw new ExportError('INVALID_DATE', 'not a valid calendar date/time');
   }
+  assertTimestamp(t);
   return t;
 }
 

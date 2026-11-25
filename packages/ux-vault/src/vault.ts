@@ -209,13 +209,14 @@ export function createVault(opts: VaultOptions): Vault {
         }),
       changePassword: (current, next) =>
         serial(async () => {
-          const { b } = live();
+          const { c, b } = live();
           const stored = await storageGet(profileKey(profileId));
           if (!stored) return fail('DECRYPT_FAILED', AUTH_FAILURE_MESSAGE);
           await open(deps, stored, normalizePasswordForUnlock(current), 'profile'); // proves knowledge of current password
           const fresh = await newKeyContext(deps, normalizeNewPassword(next), profileId, 'profile');
           await persist(fresh, b);
-          ctx = fresh;
+          // A lock during asynchronous rekey must not restore the old session's key context.
+          if (ctx === c) ctx = fresh;
         }),
       exportBackup: async (pw) => {
         const { b } = live();

@@ -66,7 +66,7 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   await importer.getByRole('button', { name: 'Use pasted text' }).click();
   await expect(page.getByRole('heading', { name: 'Review scanned invoice' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Review payment' })).toHaveCount(0);
-  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
   expect(page.url()).toBe(location);
   await page.getByText('Scan an invoice QR', { exact: true }).click();
   await page.getByText('Scan an invoice QR', { exact: true }).click();
@@ -78,7 +78,7 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
   await expect(page.getByText('Local QR preview only')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
-  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
   expect(page.url()).toBe(location);
   expect(bad.map(message => message.text())).toEqual([]);
 });

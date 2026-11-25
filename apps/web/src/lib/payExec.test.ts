@@ -1,3 +1,5 @@
+import { createTestLocks, stubJournalWindow } from '../test/locks';
+import type { AttemptLockManager } from './duplicateAttemptJournal';
 import { ChainAdapterError, PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
@@ -20,12 +22,7 @@ afterEach(() => {
 
 /** In-memory attempt journal so a test can prove that no wallet attempt was reserved. */
 function stubAttemptJournal(): Map<string, string> {
-  const mem = new Map<string, string>();
-  vi.stubGlobal('window', {
-    sessionStorage: { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => { mem.set(k, v); }, removeItem: (k: string) => { mem.delete(k); } },
-    dispatchEvent: () => true,
-  });
-  return mem;
+  return stubJournalWindow(vi.stubGlobal);
 }
 
 /** A session whose provider runs `hook` after each wallet answer (models time passing during a wallet await). */
@@ -658,6 +655,37 @@ describe('submitTx', () => {
     expect(error).toBeInstanceOf(PostBroadcastError);
     expect((error as PostBroadcastError).outcome.code).toBeUndefined();
     expect(userMessage(error)).not.toMatch(/private|credential|diagnostic input/i);
+  });
+
+  it('records the nonce of the verified transaction in the attempt journal, once', async () => {
+    const journal = stubAttemptJournal();
+    const { session, wallet } = await setup();
+    const withNonce = (nonce: unknown) => chainSeeing(wallet, (m, p) => m === 'eth_getTransactionByHash' && wallet.sent !== undefined
+      ? { hash: p[0], from: wallet.sent['from'], to: wallet.sent['to'], input: wallet.sent['data'], value: wallet.sent['value'], chainId: '0x14a34', nonce }
+      : undefined);
+    const res = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc: withNonce('0x2a'), nowSeconds: () => NOW, sleep }, noStatus, undefined, undefined, { kind: 'transaction' });
+    expect(res.verification).toBe('verified');
+    expect(JSON.parse(journal.get('ghostpay.wallet-attempts.v1') ?? '[]')).toMatchObject([{ status: 'submitted', hash: res.hash, nonce: 42 }]);
+  });
+
+  it('keeps a verified result when the RPC gives no usable nonce or the nonce cannot be saved', async () => {
+    const journal = stubAttemptJournal();
+    const { session, wallet } = await setup();
+    const rpc = chainSeeing(wallet, (m, p) => m === 'eth_getTransactionByHash' && wallet.sent !== undefined
+      ? { hash: p[0], from: wallet.sent['from'], to: wallet.sent['to'], input: wallet.sent['data'], value: wallet.sent['value'], chainId: '0x14a34', nonce: `0x${(2n ** 60n).toString(16)}` }
+      : undefined);
+    const res = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc, nowSeconds: () => NOW, sleep }, noStatus, undefined, undefined, { kind: 'transaction', scope: 'a' });
+    expect(res.verification).toBe('verified');
+    expect((JSON.parse(journal.get('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[])[0]).not.toHaveProperty('nonce');
+    // Begin and finish get the lock; the later nonce save does not. The verified result must stand.
+    const locks = createTestLocks();
+    let grants = 0;
+    const flaky: AttemptLockManager = { request: (name, cb) => (++grants > 2 ? Promise.reject(new Error('lock lost')) : locks.request(name, cb)) };
+    const second = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc: chainSeeing(wallet, (m, p) => m === 'eth_getTransactionByHash' && wallet.sent !== undefined
+      ? { hash: p[0], from: wallet.sent['from'], to: wallet.sent['to'], input: wallet.sent['data'], value: wallet.sent['value'], chainId: '0x14a34', nonce: '0x1' }
+      : undefined), nowSeconds: () => NOW, sleep }, noStatus, undefined, undefined, { kind: 'transaction', scope: 'b', lockManager: flaky });
+    expect(grants).toBe(3);
+    expect(second.verification).toBe('verified');
   });
 
   it('reports unverifiable transactions as not-visible-yet', async () => {

@@ -76,6 +76,8 @@ export function planBuffer(raw: bigint, mode: BufferRounding): BufferPlan {
  * @throws {HygieneError} `INVALID_INPUT` for negative inputs.
  */
 export function bufferDust(paid: bigint, gasUsed: bigint, effectiveGasPrice: bigint): bigint {
+  if (typeof paid !== 'bigint' || typeof gasUsed !== 'bigint' || typeof effectiveGasPrice !== 'bigint')
+    fail('INVALID_INPUT', 'non-bigint amount');
   if (paid < 0n || gasUsed < 0n || effectiveGasPrice < 0n) fail('INVALID_INPUT', 'negative amount');
   const spent = gasUsed * effectiveGasPrice;
   return paid > spent ? paid - spent : 0n;

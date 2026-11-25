@@ -1,0 +1,529 @@
+﻿2026-11-24T13:09:07.2338388Z Current runner version: '2.338.2'
+2026-11-24T13:09:07.2360105Z ##[group]Runner Image Provisioner
+2026-11-24T13:09:07.2360804Z Hosted Compute Agent
+2026-11-24T13:09:07.2361485Z Version: 20261111.635
+2026-11-24T13:09:07.2362257Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-24T13:09:07.2362889Z Build Date: 2026-11-11T01:49:01Z
+2026-11-24T13:09:07.2363471Z Worker ID: {9fd1dc33-7658-416c-acf8-758e5773daea}
+2026-11-24T13:09:07.2364048Z Region: westus3
+2026-11-24T13:09:07.2364605Z Cloud: Azure
+2026-11-24T13:09:07.2365053Z ##[endgroup]
+2026-11-24T13:09:07.2366540Z ##[group]Operating System
+2026-11-24T13:09:07.2367079Z Ubuntu
+2026-11-24T13:09:07.2367517Z 26.04.1
+2026-11-24T13:09:07.2368017Z LTS
+2026-11-24T13:09:07.2368449Z ##[endgroup]
+2026-11-24T13:09:07.2368895Z ##[group]Runner Image
+2026-11-24T13:09:07.2369445Z Image: ubuntu-26.04
+2026-11-24T13:09:07.2369921Z Version: 20261116.202.1
+2026-11-24T13:09:07.2371049Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-24T13:09:07.2372564Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-24T13:09:07.2373414Z ##[endgroup]
+2026-11-24T13:09:07.2374406Z ##[group]GITHUB_TOKEN Permissions
+2026-11-24T13:09:07.2376063Z Contents: read
+2026-11-24T13:09:07.2376556Z Metadata: read
+2026-11-24T13:09:07.2377093Z ##[endgroup]
+2026-11-24T13:09:07.2378824Z Secret source: Dependabot
+2026-11-24T13:09:07.2379676Z Cache mode: write
+2026-11-24T13:09:07.2380302Z Prepare workflow directory
+2026-11-24T13:09:07.2680154Z Prepare all required actions
+2026-11-24T13:09:07.2730687Z Getting action download info
+2026-11-24T13:09:07.5380280Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-24T13:09:07.7098920Z Complete job name: ts-typecheck
+2026-11-24T13:09:07.7820404Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-24T13:09:07.7821216Z with:
+2026-11-24T13:09:07.7821734Z   persist-credentials: false
+2026-11-24T13:09:07.7822171Z   repository: djshellshoxxx/GhostPay
+2026-11-24T13:09:07.7825247Z   token: ***
+2026-11-24T13:09:07.7825605Z   ssh-strict: true
+2026-11-24T13:09:07.7825966Z   ssh-user: git
+2026-11-24T13:09:07.7826309Z   clean: true
+2026-11-24T13:09:07.7826678Z   sparse-checkout-cone-mode: true
+2026-11-24T13:09:07.7827102Z   fetch-depth: 1
+2026-11-24T13:09:07.7827453Z   fetch-tags: false
+2026-11-24T13:09:07.7827816Z   show-progress: true
+2026-11-24T13:09:07.7828179Z   lfs: false
+2026-11-24T13:09:07.7828518Z   submodules: false
+2026-11-24T13:09:07.7828883Z   set-safe-directory: true
+2026-11-24T13:09:07.7829286Z   allow-unsafe-pr-checkout: false
+2026-11-24T13:09:07.7829856Z ##[endgroup]
+2026-11-24T13:09:07.9908512Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-24T13:09:07.9910272Z ##[group]Getting Git version info
+2026-11-24T13:09:07.9910856Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-24T13:09:07.9911856Z [command]/usr/bin/git version
+2026-11-24T13:09:07.9928247Z git version 2.56.1
+2026-11-24T13:09:07.9944306Z ##[endgroup]
+2026-11-24T13:09:07.9954643Z Temporarily overriding HOME='/home/runner/work/_temp/c180f545-c4f7-4267-ab28-69acea8dcf89' before making global git config changes
+2026-11-24T13:09:07.9956767Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-24T13:09:07.9959381Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-24T13:09:08.0039854Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-24T13:09:08.0041346Z ##[group]Determining repository object format
+2026-11-24T13:09:08.0042513Z ##[endgroup]
+2026-11-24T13:09:08.0043135Z ##[group]Initializing the repository
+2026-11-24T13:09:08.0043681Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-24T13:09:08.0132690Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-24T13:09:08.0133886Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-24T13:09:08.0135277Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-24T13:09:08.0136142Z hint: call:
+2026-11-24T13:09:08.0136706Z hint:
+2026-11-24T13:09:08.0137468Z hint: 	git config --global init.defaultBranch <name>
+2026-11-24T13:09:08.0138328Z hint:
+2026-11-24T13:09:08.0139152Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-24T13:09:08.0140402Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-24T13:09:08.0141806Z hint:
+2026-11-24T13:09:08.0142561Z hint: 	git branch -m <name>
+2026-11-24T13:09:08.0143383Z hint:
+2026-11-24T13:09:08.0144355Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-24T13:09:08.0145937Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-24T13:09:08.0151412Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-24T13:09:08.0199210Z ##[endgroup]
+2026-11-24T13:09:08.0200303Z ##[group]Disabling automatic garbage collection
+2026-11-24T13:09:08.0202317Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-24T13:09:08.0233986Z ##[endgroup]
+2026-11-24T13:09:08.0235217Z ##[group]Setting up auth
+2026-11-24T13:09:08.0236087Z Removing SSH command configuration
+2026-11-24T13:09:08.0240113Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T13:09:08.0272866Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T13:09:08.0672750Z Removing HTTP extra header
+2026-11-24T13:09:08.0677917Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T13:09:08.0709670Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T13:09:08.0943386Z Removing includeIf entries pointing to credentials config files
+2026-11-24T13:09:08.0947474Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T13:09:08.0978216Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T13:09:08.1215730Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-24T13:09:08.1250785Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:08.1278978Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:08.1307931Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:08.1334974Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:08.1359772Z ##[endgroup]
+2026-11-24T13:09:08.1360368Z ##[group]Fetching the repository
+2026-11-24T13:09:08.1365509Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2cc679d111f3dcc1bab44d3ac806285b25ee67e4:refs/remotes/pull/493/merge
+2026-11-24T13:09:09.3090429Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-24T13:09:09.3092237Z  * [new ref]         2cc679d111f3dcc1bab44d3ac806285b25ee67e4 -> pull/493/merge
+2026-11-24T13:09:09.3094942Z ##[endgroup]
+2026-11-24T13:09:09.3096375Z ##[group]Determining the checkout info
+2026-11-24T13:09:09.3097597Z ##[endgroup]
+2026-11-24T13:09:09.3100880Z [command]/usr/bin/git sparse-checkout disable
+2026-11-24T13:09:09.3155497Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-24T13:09:09.3187862Z ##[group]Checking out the ref
+2026-11-24T13:09:09.3191124Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/493/merge
+2026-11-24T13:09:09.6024507Z Note: switching to 'refs/remotes/pull/493/merge'.
+2026-11-24T13:09:09.6025061Z 
+2026-11-24T13:09:09.6025389Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-24T13:09:09.6026110Z changes and commit them, and you can discard any commits you make in this
+2026-11-24T13:09:09.6026796Z state without impacting any branches by switching back to a branch.
+2026-11-24T13:09:09.6027527Z 
+2026-11-24T13:09:09.6027950Z If you want to create a new branch to retain commits you create, you may
+2026-11-24T13:09:09.6030082Z do so (now or later) by using -c with the switch command. Example:
+2026-11-24T13:09:09.6030620Z 
+2026-11-24T13:09:09.6030930Z   git switch -c <new-branch-name>
+2026-11-24T13:09:09.6031257Z 
+2026-11-24T13:09:09.6031505Z Or undo this operation with:
+2026-11-24T13:09:09.6031946Z 
+2026-11-24T13:09:09.6032170Z   git switch -
+2026-11-24T13:09:09.6032500Z 
+2026-11-24T13:09:09.6032986Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-24T13:09:09.6033547Z 
+2026-11-24T13:09:09.6034084Z HEAD is now at 2cc679d Merge 51160bcb70cd02fe66eeaca2f8ad6518d032a21b into cc090bf80bbf35c1db81ecbe6acae694a518bed0
+2026-11-24T13:09:09.6043047Z ##[endgroup]
+2026-11-24T13:09:09.6103092Z [command]/usr/bin/git log -1 --format=%H
+2026-11-24T13:09:09.6118876Z 2cc679d111f3dcc1bab44d3ac806285b25ee67e4
+2026-11-24T13:09:09.6127560Z ##[group]Removing auth
+2026-11-24T13:09:09.6128648Z Removing SSH command configuration
+2026-11-24T13:09:09.6131313Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T13:09:09.6161488Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T13:09:09.6407248Z Removing HTTP extra header
+2026-11-24T13:09:09.6409971Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T13:09:09.6438361Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T13:09:09.6675455Z Removing includeIf entries pointing to credentials config files
+2026-11-24T13:09:09.6677607Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T13:09:09.6700001Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-24T13:09:09.6700772Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-24T13:09:09.6701280Z includeif.gitdir:/github/workspace/.git.path
+2026-11-24T13:09:09.6702063Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-24T13:09:09.6708210Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-24T13:09:09.6728478Z /home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:09.6738570Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-db1b0c32\-f8d8\-419c\-abf9\-7deebf87ada8\.config
+2026-11-24T13:09:09.6770627Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-24T13:09:09.6791123Z /home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:09.6798524Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-db1b0c32\-f8d8\-419c\-abf9\-7deebf87ada8\.config
+2026-11-24T13:09:09.6828875Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-24T13:09:09.6849620Z /github/runner_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:09.6856108Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-db1b0c32\-f8d8\-419c\-abf9\-7deebf87ada8\.config
+2026-11-24T13:09:09.6886324Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-24T13:09:09.6906233Z /github/runner_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config
+2026-11-24T13:09:09.6913466Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-db1b0c32\-f8d8\-419c\-abf9\-7deebf87ada8\.config
+2026-11-24T13:09:09.6947567Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T13:09:09.7183102Z Removing credentials config '/home/runner/work/_temp/git-credentials-db1b0c32-f8d8-419c-abf9-7deebf87ada8.config'
+2026-11-24T13:09:09.7192058Z ##[endgroup]
+2026-11-24T13:09:09.7969241Z Prepare all required actions
+2026-11-24T13:09:09.7970045Z Getting action download info
+2026-11-24T13:09:09.9203265Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-24T13:09:10.0150114Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-24T13:09:10.2319080Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-24T13:09:10.2319358Z with:
+2026-11-24T13:09:10.2319532Z   save-cache: true
+2026-11-24T13:09:10.2319711Z ##[endgroup]
+2026-11-24T13:09:10.2366801Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-24T13:09:10.2441679Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-24T13:09:10.2441998Z with:
+2026-11-24T13:09:10.2442165Z   node-version: 22
+2026-11-24T13:09:10.2442342Z   cache: npm
+2026-11-24T13:09:10.2442573Z   package-manager-cache: true
+2026-11-24T13:09:10.2442781Z   check-latest: false
+2026-11-24T13:09:10.2444699Z   token: ***
+2026-11-24T13:09:10.2444867Z ##[endgroup]
+2026-11-24T13:09:10.3494727Z Found in cache @ /opt/hostedtoolcache/node/22.23.5/x64
+2026-11-24T13:09:10.4078275Z ##[group]Environment details
+2026-11-24T13:09:10.6713811Z node: v22.23.5
+2026-11-24T13:09:10.6727309Z npm: 10.9.9
+2026-11-24T13:09:10.6727575Z yarn: 1.22.22
+2026-11-24T13:09:10.6728174Z ##[endgroup]
+2026-11-24T13:09:10.6728464Z [command]/opt/hostedtoolcache/node/22.23.5/x64/bin/npm config get cache
+2026-11-24T13:09:10.7597291Z /home/runner/.npm
+2026-11-24T13:09:11.0327721Z Cache hit for: node-cache-Linux-x64-npm-6693dc3557d2d16fa826c37cd170cd4434eb3fffd30bf813379c17b1b8c60b2a
+2026-11-24T13:09:12.2698755Z Received 58720256 of 253501931 (23.2%), 56.0 MBs/sec
+2026-11-24T13:09:13.2719394Z Received 218103808 of 253501931 (86.0%), 103.9 MBs/sec
+2026-11-24T13:09:13.4087425Z Received 253501931 of 253501931 (100.0%), 113.0 MBs/sec
+2026-11-24T13:09:13.4088247Z Cache Size: ~242 MB (253501931 B)
+2026-11-24T13:09:13.4143909Z [command]/usr/bin/tar -xf /home/runner/work/_temp/254f4abe-4df9-441b-ae1a-e7174c5caca6/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-24T13:09:13.7826638Z Cache restored successfully
+2026-11-24T13:09:13.7929617Z Cache restored from key: node-cache-Linux-x64-npm-6693dc3557d2d16fa826c37cd170cd4434eb3fffd30bf813379c17b1b8c60b2a
+2026-11-24T13:09:13.8214376Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=3584]
+2026-11-24T13:09:13.8217760Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-24T13:09:13.8256315Z ##[group]Run npm ci --ignore-scripts
+2026-11-24T13:09:13.8256664Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-24T13:09:13.8296461Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-24T13:09:13.8296769Z ##[endgroup]
+2026-11-24T13:09:24.0475928Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-24T13:09:30.8256244Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-24T13:10:11.2843472Z 
+2026-11-24T13:10:11.2844239Z added 1051 packages, and audited 1120 packages in 57s
+2026-11-24T13:10:11.2844494Z 
+2026-11-24T13:10:11.2844635Z 159 packages are looking for funding
+2026-11-24T13:10:11.2844918Z   run `npm fund` for details
+2026-11-24T13:10:11.2971016Z 
+2026-11-24T13:10:11.2971677Z 17 low severity vulnerabilities
+2026-11-24T13:10:11.2971951Z 
+2026-11-24T13:10:11.2972264Z To address issues that do not require attention, run:
+2026-11-24T13:10:11.2972644Z   npm audit fix
+2026-11-24T13:10:11.2972794Z 
+2026-11-24T13:10:11.2973094Z To address all issues possible (including breaking changes), run:
+2026-11-24T13:10:11.2973588Z   npm audit fix --force
+2026-11-24T13:10:11.2973766Z 
+2026-11-24T13:10:11.2974005Z Some issues need review, and may require choosing
+2026-11-24T13:10:11.2974877Z a different dependency.
+2026-11-24T13:10:11.2975082Z 
+2026-11-24T13:10:11.2975241Z Run `npm audit` for details.
+2026-11-24T13:10:11.5955480Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=57773]
+2026-11-24T13:10:11.5958033Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-24T13:10:12.2461303Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-24T13:10:12.2461906Z with:
+2026-11-24T13:10:12.2462089Z   path: packages/*/dist
+2026-11-24T13:10:12.2462464Z   key: libs-Linux-node22-8e207d61a556bc6eb76b908c3aa4cba30e9d579ce818eb8f93a9ace5f0c761ee
+2026-11-24T13:10:12.2462877Z   enableCrossOsArchive: false
+2026-11-24T13:10:12.2463094Z   fail-on-cache-miss: false
+2026-11-24T13:10:12.2463289Z   lookup-only: false
+2026-11-24T13:10:12.2463471Z   save-always: false
+2026-11-24T13:10:12.2463641Z ##[endgroup]
+2026-11-24T13:10:12.5659460Z Cache not found for input keys: libs-Linux-node22-8e207d61a556bc6eb76b908c3aa4cba30e9d579ce818eb8f93a9ace5f0c761ee
+2026-11-24T13:10:12.5729918Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=977]
+2026-11-24T13:10:12.5735856Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-24T13:10:12.5744301Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-24T13:10:12.5745903Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-24T13:10:12.5777249Z ##[group]Run npm run build:libs
+2026-11-24T13:10:12.5777490Z [36;1mnpm run build:libs[0m
+2026-11-24T13:10:12.5807796Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-24T13:10:12.5808081Z ##[endgroup]
+2026-11-24T13:10:12.6632140Z 
+2026-11-24T13:10:12.6632781Z > ghostpay@0.1.0 build:libs
+2026-11-24T13:10:12.6633216Z > node scripts/build-workspaces.mjs --libraries
+2026-11-24T13:10:12.6633419Z 
+2026-11-24T13:10:12.8099018Z 
+2026-11-24T13:10:12.8099867Z > @ghostpay/address-safety@0.1.0 build
+2026-11-24T13:10:12.8100391Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:12.8100623Z 
+2026-11-24T13:10:14.2175369Z 
+2026-11-24T13:10:14.2176077Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-24T13:10:14.2176592Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:14.2176830Z 
+2026-11-24T13:10:15.3637682Z 
+2026-11-24T13:10:15.3638410Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-24T13:10:15.3638913Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:15.3639145Z 
+2026-11-24T13:10:16.3202089Z 
+2026-11-24T13:10:16.3202801Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-24T13:10:16.3203471Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-24T13:10:16.3204167Z 
+2026-11-24T13:10:16.4506489Z 
+2026-11-24T13:10:16.4507195Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-24T13:10:16.4507717Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:16.4507942Z 
+2026-11-24T13:10:17.5141671Z 
+2026-11-24T13:10:17.5142437Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-24T13:10:17.5142880Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:17.5143036Z 
+2026-11-24T13:10:20.4803312Z 
+2026-11-24T13:10:20.4803935Z > @ghostpay/amount-blur@0.1.0 build
+2026-11-24T13:10:20.4804497Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:20.4804693Z 
+2026-11-24T13:10:21.5006643Z 
+2026-11-24T13:10:22.4153442Z > @ghostpay/btc-family@0.1.0 build
+2026-11-24T13:10:22.4153970Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:22.4154214Z 
+2026-11-24T13:10:22.4154222Z 
+2026-11-24T13:10:22.4154430Z > @ghostpay/btc-payjoin@0.1.0 build
+2026-11-24T13:10:22.4154826Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:22.4155072Z 
+2026-11-24T13:10:23.8833491Z 
+2026-11-24T13:10:23.8834458Z > @ghostpay/btc-silent-payments@0.1.0 build
+2026-11-24T13:10:23.8834971Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:23.8835190Z 
+2026-11-24T13:10:25.5185408Z 
+2026-11-24T13:10:25.5186087Z > @ghostpay/chain-evm-extra@0.1.0 build
+2026-11-24T13:10:25.5186489Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:25.5187124Z 
+2026-11-24T13:10:26.5001124Z 
+2026-11-24T13:10:26.5002235Z > @ghostpay/chain-solana@0.1.0 build
+2026-11-24T13:10:26.5002658Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:26.5002815Z 
+2026-11-24T13:10:27.3138933Z 
+2026-11-24T13:10:27.3139557Z > @ghostpay/chain-tron@0.1.0 build
+2026-11-24T13:10:27.3139950Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:27.3140112Z 
+2026-11-24T13:10:28.0957237Z 
+2026-11-24T13:10:28.0957859Z > @ghostpay/i18n@0.1.0 build
+2026-11-24T13:10:28.0958349Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:28.0958581Z 
+2026-11-24T13:10:29.3783508Z 
+2026-11-24T13:10:29.3784091Z > @ghostpay/merchant-hooks@0.1.0 build
+2026-11-24T13:10:29.3784762Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-24T13:10:29.3785068Z 
+2026-11-24T13:10:29.5140454Z 
+2026-11-24T13:10:29.5141131Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-24T13:10:29.5141842Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:29.5142092Z 
+2026-11-24T13:10:31.1344623Z 
+2026-11-24T13:10:31.1345285Z > @ghostpay/merchant-billing@0.1.0 build
+2026-11-24T13:10:31.1345659Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:31.1345809Z 
+2026-11-24T13:10:32.0505612Z 
+2026-11-24T13:10:32.0506272Z > @ghostpay/merchant-ledger@0.1.0 build
+2026-11-24T13:10:32.0506937Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-24T13:10:32.0507227Z 
+2026-11-24T13:10:32.1782553Z 
+2026-11-24T13:10:32.1783157Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-24T13:10:32.1783515Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:32.1783670Z 
+2026-11-24T13:10:33.7017015Z 
+2026-11-24T13:10:33.7017666Z > @ghostpay/merchant-multisig@0.1.0 build
+2026-11-24T13:10:33.7018073Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:33.7018220Z 
+2026-11-24T13:10:34.5853788Z 
+2026-11-24T13:10:34.5854367Z > @ghostpay/qr-exchange@0.1.0 build
+2026-11-24T13:10:34.5854849Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:34.5855076Z 
+2026-11-24T13:10:35.5474103Z 
+2026-11-24T13:10:35.5474777Z > @ghostpay/sandbox@0.1.0 build
+2026-11-24T13:10:35.5475178Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:35.5475328Z 
+2026-11-24T13:10:36.3787096Z 
+2026-11-24T13:10:36.3787794Z > @ghostpay/ux-vault@0.1.0 build
+2026-11-24T13:10:36.3788296Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:36.3788523Z 
+2026-11-24T13:10:37.7010426Z 
+2026-11-24T13:10:37.7011032Z > @ghostpay/cli@0.1.0 build
+2026-11-24T13:10:37.7011800Z > tsc -p tsconfig.build.json && node stamp-build.mjs
+2026-11-24T13:10:37.7012073Z 
+2026-11-24T13:10:40.4093407Z 
+2026-11-24T13:10:40.4094113Z > @ghostpay/confidential-amounts@0.1.0 build
+2026-11-24T13:10:40.4094675Z > tsc -p tsconfig.build.json
+2026-11-24T13:10:40.4095401Z 
+2026-11-24T13:10:46.3938555Z ##[error]src/backends/zama-sdk.ts(100,9): error TS2322: Type '{ account: undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; cacheTime: number; ... 77 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }' is not assignable to type '{ account: undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; cacheTime: number; ... 76 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }'.
+2026-11-24T13:10:46.3941191Z   Types of property 'chain' are incompatible.
+2026-11-24T13:10:46.3942725Z     Type '{ blockExplorers?: { [key: string]: ChainBlockExplorer; default: ChainBlockExplorer; } | undefined; blockTime?: number | undefined; contracts?: { ...; } | undefined; ... 16 more ...; verifyHash?: ChainVerifyHashFn | undefined; }' is not assignable to type 'Chain'.
+2026-11-24T13:10:46.3945685Z       Type '{ blockExplorers?: { [key: string]: ChainBlockExplorer; default: ChainBlockExplorer; } | undefined; blockTime?: number | undefined; contracts?: { ...; } | undefined; ... 16 more ...; verifyHash?: ChainVerifyHashFn | undefined; }' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+2026-11-24T13:10:46.3947246Z         Types of property 'fees' are incompatible.
+2026-11-24T13:10:46.3947980Z           Type 'ChainFees<undefined> | undefined' is not assignable to type 'ChainFees<ChainFormatters | undefined> | undefined'.
+2026-11-24T13:10:46.3949405Z             Type 'ChainFees<undefined>' is not assignable to type 'ChainFees<ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-11-24T13:10:46.3950500Z               Types of property 'baseFeeMultiplier' are incompatible.
+2026-11-24T13:10:46.3951859Z                 Type 'number | ((args: ChainFeesFnParameters<undefined>) => number | Promise<number>)' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+2026-11-24T13:10:46.3953643Z                   Type '(args: ChainFeesFnParameters<undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+2026-11-24T13:10:46.3955379Z                     Type '(args: ChainFeesFnParameters<undefined>) => number | Promise<number>' is not assignable to type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>'.
+2026-11-24T13:10:46.3956421Z                       Types of parameters 'args' and 'args' are incompatible.
+2026-11-24T13:10:46.3957295Z                         Type 'ChainFeesFnParameters<ChainFormatters | undefined>' is not assignable to type 'ChainFeesFnParameters<undefined>'.
+2026-11-24T13:10:46.3958107Z                           Types of property 'client' are incompatible.
+2026-11-24T13:10:46.3961880Z                             Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain<import("/hom...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...'.
+2026-11-24T13:10:46.3966137Z                               Type 'Client<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>>' is not assignable to type 'Client_Base<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.3967814Z                                 Types of property 'account' are incompatible.
+2026-11-24T13:10:46.3969493Z                                   Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined'.
+2026-11-24T13:10:46.3972446Z                                     Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+2026-11-24T13:10:46.3977405Z                                       Type '{ client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | ...' is not assignable to type '{ client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/Ghost...'.
+2026-11-24T13:10:46.3980672Z                                         Types of property 'client' are incompatible.
+2026-11-24T13:10:46.3984529Z                                           Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | undefined,...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...'.
+2026-11-24T13:10:46.3990058Z                                             Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.3992606Z                                               Types of property 'account' are incompatible.
+2026-11-24T13:10:46.3996055Z                                                 Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/node...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_ty...'.
+2026-11-24T13:10:46.4001809Z                                                   Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+2026-11-24T13:10:46.4006641Z                                                     Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }'.
+2026-11-24T13:10:46.4009291Z                                                       Types of property 'nonceManager' are incompatible.
+2026-11-24T13:10:46.4011203Z                                                         Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+2026-11-24T13:10:46.4014131Z                                                           Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+2026-11-24T13:10:46.4015722Z                                                             Types of property 'consume' are incompatible.
+2026-11-24T13:10:46.4018041Z                                                               Type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+2026-11-24T13:10:46.4020216Z                                                                 Types of parameters 'parameters' and 'parameters' are incompatible.
+2026-11-24T13:10:46.4022538Z                                                                   Type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }'.
+2026-11-24T13:10:46.4024622Z                                                                     Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+2026-11-24T13:10:46.4025496Z                                                                       Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4027233Z                                                                         Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client'.
+2026-11-24T13:10:46.4029466Z                                                                           Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4030479Z                                                                             Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4032398Z                                                                               Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/accounts/types").Account | undefined'.
+2026-11-24T13:10:46.4035326Z                                                                                 Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+2026-11-24T13:10:46.4040380Z                                                                                   Type '{ client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/Ghost...' is not assignable to type '{ client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | ...'.
+2026-11-24T13:10:46.4044065Z                                                                                     Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4047946Z                                                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | undefined,...'.
+2026-11-24T13:10:46.4053680Z                                                                                         Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4056236Z                                                                                           Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4059554Z                                                                                             Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_ty...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/node...'.
+2026-11-24T13:10:46.4065260Z                                                                                               Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+2026-11-24T13:10:46.4070265Z                                                                                                 Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }'.
+2026-11-24T13:10:46.4072964Z                                                                                                   Types of property 'nonceManager' are incompatible.
+2026-11-24T13:10:46.4075004Z                                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+2026-11-24T13:10:46.4077923Z                                                                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+2026-11-24T13:10:46.4079676Z                                                                                                         Types of property 'consume' are incompatible.
+2026-11-24T13:10:46.4082263Z                                                                                                           Type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+2026-11-24T13:10:46.4084673Z                                                                                                             Types of parameters 'parameters' and 'parameters' are incompatible.
+2026-11-24T13:10:46.4086895Z                                                                                                               Type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }'.
+2026-11-24T13:10:46.4089204Z                                                                                                                 Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+2026-11-24T13:10:46.4090225Z                                                                                                                   Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4092178Z                                                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client'.
+2026-11-24T13:10:46.4093542Z                                                                                                                       Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4094510Z                                                                                                                         Types of property 'chain' are incompatible.
+2026-11-24T13:10:46.4095691Z                                                                                                                           Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain | undefined'.
+2026-11-24T13:10:46.4096799Z                                                                                                                             Type 'Chain' is not assignable to type 'Chain | undefined'.
+2026-11-24T13:10:46.4097931Z                                                                                                                               Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain'.
+2026-11-24T13:10:46.4099160Z                                                                                                                                 Type 'Chain' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+2026-11-24T13:10:46.4099917Z                                                                                                                                   Types of property 'fees' are incompatible.
+2026-11-24T13:10:46.4102236Z                                                                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined'.
+2026-11-24T13:10:46.4105620Z                                                                                                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-11-24T13:10:46.4107749Z                                                                                                                                         Types of property 'baseFeeMultiplier' are incompatible.
+2026-11-24T13:10:46.4110039Z                                                                                                                                           Type 'number | ((args: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>)' is not assignable to type 'number | ((args: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<.....'.
+2026-11-24T13:10:46.4112585Z                                                                                                                                             Type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+2026-11-24T13:10:46.4115166Z                                                                                                                                               Type '(args: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>' is not assignable to type '(args: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>'.
+2026-11-24T13:10:46.4117107Z                                                                                                                                                 Types of parameters 'args' and 'args' are incompatible.
+2026-11-24T13:10:46.4119113Z                                                                                                                                                   Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>'.
+2026-11-24T13:10:46.4120890Z                                                                                                                                                     Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4123412Z                                                                                                                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain<import("/hom...'.
+2026-11-24T13:10:46.4126319Z                                                                                                                                                         Type 'Client<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>>' is not assignable to type 'Client_Base<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4127440Z                                                                                                                                                           Types of property 'chain' are incompatible.
+2026-11-24T13:10:46.4129622Z                                                                                                                                                             Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined, Record<string, unknown> | undefined>' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+2026-11-24T13:10:46.4131973Z                                                                                                                                                               Type 'Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+2026-11-24T13:10:46.4132944Z                                                                                                                                                                 Types of property 'fees' are incompatible.
+2026-11-24T13:10:46.4134929Z                                                                                                                                                                   Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined'.
+2026-11-24T13:10:46.4138418Z                                                                                                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFees<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-11-24T13:10:46.4140602Z                                                                                                                                                                       Types of property 'baseFeeMultiplier' are incompatible.
+2026-11-24T13:10:46.4142996Z                                                                                                                                                                         Type 'number | ((args: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<.....' is not assignable to type 'number | ((args: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>)'.
+2026-11-24T13:10:46.4145624Z                                                                                                                                                                           Type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+2026-11-24T13:10:46.4148249Z                                                                                                                                                                             Type '(args: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>' is not assignable to type '(args: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>'.
+2026-11-24T13:10:46.4150258Z                                                                                                                                                                               Types of parameters 'args' and 'args' are incompatible.
+2026-11-24T13:10:46.4152411Z                                                                                                                                                                                 Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>'.
+2026-11-24T13:10:46.4154273Z                                                                                                                                                                                   Types of property 'request' are incompatible.
+2026-11-24T13:10:46.4156796Z                                                                                                                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/actions/wallet/prepareTransactionRequest").PrepareTransactionRequestParameters<Omit<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/actions/wallet/prepareTransactionRequest").PrepareTransactionRequestParameters<Omit<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain<import("/home/r...'.
+2026-11-24T13:10:46.4160488Z                                                                                                                                                                                       Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'PrepareTransactionRequestParameters<Omit<Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, "formatters"> & { formatters: ChainFormatters | undefined; }, Account | undefined, undefined> | undefined'.
+2026-11-24T13:10:46.4163877Z                                                                                                                                                                                         Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type '(Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; ... 10 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }) | (Omit<...> & ... 4 more ... & { ...; }...'.
+2026-11-24T13:10:46.4167067Z                                                                                                                                                                                           Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "eip7702" | undefined; ... 10 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }'.
+2026-11-24T13:10:46.4170173Z                                                                                                                                                                                             Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "eip7702" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from">'.
+2026-11-24T13:10:46.4172005Z                                                                                                                                                                                               Types of property 'type' are incompatible.
+2026-11-24T13:10:46.4172771Z                                                                                                                                                                                                 Type '"legacy" | undefined' is not assignable to type '"eip7702" | undefined'.
+2026-11-24T13:10:46.4173670Z                                                                                                                                                                                                   Type '"legacy"' is not assignable to type '"eip7702"'.
+2026-11-24T13:10:46.4178463Z ##[error]src/backends/zama-sdk.ts(101,9): error TS2322: Type '{ account: { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }; ... 44 more ...; scope: (options?: { ...; } | undefined) => Cl...' is not assignable to type '{ account: Account | undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; ... 43 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }'.
+2026-11-24T13:10:46.4180115Z   Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4181143Z     Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }' is not assignable to type 'Account | undefined'.
+2026-11-24T13:10:46.4183537Z       Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 19 more ...; isDeployed?: undefined; }'.
+2026-11-24T13:10:46.4184949Z         Types of property 'nonceManager' are incompatible.
+2026-11-24T13:10:46.4185996Z           Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+2026-11-24T13:10:46.4187577Z             Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+2026-11-24T13:10:46.4188463Z               Types of property 'consume' are incompatible.
+2026-11-24T13:10:46.4189763Z                 Type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+2026-11-24T13:10:46.4190979Z                   Types of parameters 'parameters' and 'parameters' are incompatible.
+2026-11-24T13:10:46.4192324Z                     Type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }'.
+2026-11-24T13:10:46.4193528Z                       Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+2026-11-24T13:10:46.4193970Z                         Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4195065Z                           Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client'.
+2026-11-24T13:10:46.4196169Z                             Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4196719Z                               Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4197713Z                                 Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined'.
+2026-11-24T13:10:46.4199405Z                                   Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+2026-11-24T13:10:46.4202481Z                                     Type '{ client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | ...' is not assignable to type '{ client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/Ghost...'.
+2026-11-24T13:10:46.4204418Z                                       Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4206575Z                                         Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | undefined,...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...'.
+2026-11-24T13:10:46.4209819Z                                           Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4211277Z                                             Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4213552Z                                               Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/node...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_ty...'.
+2026-11-24T13:10:46.4216941Z                                                 Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+2026-11-24T13:10:46.4219871Z                                                   Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }'.
+2026-11-24T13:10:46.4221354Z                                                     Types of property 'nonceManager' are incompatible.
+2026-11-24T13:10:46.4222724Z                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+2026-11-24T13:10:46.4224430Z                                                         Type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+2026-11-24T13:10:46.4225389Z                                                           Types of property 'consume' are incompatible.
+2026-11-24T13:10:46.4226757Z                                                             Type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+2026-11-24T13:10:46.4228056Z                                                               Types of parameters 'parameters' and 'parameters' are incompatible.
+2026-11-24T13:10:46.4229328Z                                                                 Type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client; }'.
+2026-11-24T13:10:46.4230573Z                                                                   Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+2026-11-24T13:10:46.4231090Z                                                                     Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4232446Z                                                                       Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client'.
+2026-11-24T13:10:46.4233644Z                                                                         Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4234276Z                                                                           Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4235357Z                                                                             Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/accounts/types").Account | undefined'.
+2026-11-24T13:10:46.4237293Z                                                                               Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+2026-11-24T13:10:46.4240181Z                                                                                 Type '{ client: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/Ghost...' is not assignable to type '{ client: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | ...'.
+2026-11-24T13:10:46.4242288Z                                                                                   Types of property 'client' are incompatible.
+2026-11-24T13:10:46.4244568Z                                                                                     Type 'import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostP...' is not assignable to type 'import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/createClient").Client<import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/chain").Chain | undefined,...'.
+2026-11-24T13:10:46.4247930Z                                                                                       Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+2026-11-24T13:10:46.4249482Z                                                                                         Types of property 'account' are incompatible.
+2026-11-24T13:10:46.4251842Z                                                                                           Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_ty...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/home/runner/work/GhostPay/GhostPay/node...'.
+2026-11-24T13:10:46.4255313Z                                                                                             Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+2026-11-24T13:10:46.4258236Z                                                                                               Type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }'.
+2026-11-24T13:10:46.4259795Z                                                                                                 Types of property 'signTypedData' are incompatible.
+2026-11-24T13:10:46.4262122Z                                                                                                   Type '<const typedData extends TypedData | Record<string, unknown>, primaryType extends keyof typedData | "EIP712Domain" = keyof typedData>(parameters: import("/home/runner/work/GhostPay/GhostPay/packages/confidential-amounts/node_modules/viem/_types/types/typedData").TypedDataDefinition<typedData, primaryType>) => Promis...' is not assignable to type '<const typedData extends TypedData | Record<string, unknown>, primaryType extends keyof typedData | "EIP712Domain" = keyof typedData>(parameters: import("/home/runner/work/GhostPay/GhostPay/node_modules/viem/_types/types/typedData").TypedDataDefinition<typedData, primaryType>) => Promise<...>'.
+2026-11-24T13:10:46.4264144Z                                                                                                     Types of parameters 'parameters' and 'parameters' are incompatible.
+2026-11-24T13:10:46.4266276Z                                                                                                       Type 'TypedDataDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undef...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+2026-11-24T13:10:46.4269786Z                                                                                                         Type 'EIP712DomainDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: un...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+2026-11-24T13:10:46.4273445Z                                                                                                           Type 'EIP712DomainDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: un...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+2026-11-24T13:10:46.4276976Z                                                                                                             Type 'MessageDefinition<typedData, primaryType, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]...' is not assignable to type 'MessageDefinition<typedData, keyof typedData, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${stri...'.
+2026-11-24T13:10:46.4280331Z                                                                                                               Type 'MessageDefinition<typedData, primaryType, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]...' is not assignable to type '{ message: { [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefin...'.
+2026-11-24T13:10:46.4282218Z                                                                                                                 Types of property 'message' are incompatible.
+2026-11-24T13:10:46.4285704Z                                                                                                                   Type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly import("/home/runner/work/GhostPay/GhostPay/node_modules/abitype/dist/types/abi").TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undef...' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly import("/home/runner/work/GhostPay/GhostPay/node_modules/abitype/dist/types/abi").TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undef...'. Two different types with this name exist, but they are unrelated.
+2026-11-24T13:10:46.4292176Z                                                                                                                     Type 'Record<string, unknown> | (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `functi...' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `fu...'.
+2026-11-24T13:10:46.4296862Z                                                                                                                       Type 'Record<string, unknown>' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `fu...'.
+2026-11-24T13:10:46.4442816Z npm error Lifecycle script `build` failed with error:
+2026-11-24T13:10:46.4443308Z npm error code 2
+2026-11-24T13:10:46.4443908Z npm error path /home/runner/work/GhostPay/GhostPay/packages/confidential-amounts
+2026-11-24T13:10:46.4444617Z npm error workspace @ghostpay/confidential-amounts@0.1.0
+2026-11-24T13:10:46.4445398Z npm error location /home/runner/work/GhostPay/GhostPay/packages/confidential-amounts
+2026-11-24T13:10:46.4445978Z npm error command failed
+2026-11-24T13:10:46.4446408Z npm error command sh -c tsc -p tsconfig.build.json
+2026-11-24T13:10:46.4620686Z ##[error]Process completed with exit code 2.
+2026-11-24T13:10:46.4628263Z ##[end-action id=__self.__run_2;outcome=failure;conclusion=failure;duration_ms=33888]
+2026-11-24T13:10:46.4737118Z Post job cleanup.
+2026-11-24T13:10:46.4740758Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__441c74b4-55d2-4305-b15c-7483b6e45b57.libs]
+2026-11-24T13:10:46.4743122Z ##[end-action id=__441c74b4-55d2-4305-b15c-7483b6e45b57.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-24T13:10:46.4744902Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__441c74b4-55d2-4305-b15c-7483b6e45b57.__actions_setup-node]
+2026-11-24T13:10:46.4746568Z ##[end-action id=__441c74b4-55d2-4305-b15c-7483b6e45b57.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-24T13:10:46.4860240Z Post job cleanup.
+2026-11-24T13:10:46.5603960Z [command]/usr/bin/git version
+2026-11-24T13:10:46.5679848Z git version 2.56.1
+2026-11-24T13:10:46.5709561Z Temporarily overriding HOME='/home/runner/work/_temp/e5f6b9ab-73d5-44e8-ab8b-154c072c8149' before making global git config changes
+2026-11-24T13:10:46.5710811Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-24T13:10:46.5713868Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-24T13:10:46.5747126Z Removing SSH command configuration
+2026-11-24T13:10:46.5767766Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T13:10:46.5792104Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T13:10:46.6064765Z Removing HTTP extra header
+2026-11-24T13:10:46.6083136Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T13:10:46.6114447Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T13:10:46.6445653Z Removing includeIf entries pointing to credentials config files
+2026-11-24T13:10:46.6451185Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T13:10:46.6483136Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T13:10:46.6883495Z Cleaning up orphan processes

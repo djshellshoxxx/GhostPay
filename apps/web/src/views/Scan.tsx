@@ -1,6 +1,9 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
+import { StealthExportPayment } from '../components/StealthExportPayment';
+import type { ExportRpc } from '../lib/paymentKeyExport';
+import { loadSettings } from '../lib/settings';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
 import { useManifest } from '../components/Disclosure';
@@ -91,7 +94,7 @@ export function Scan(): ReactNode {
   const [privacyNote, setPrivacyNote] = useState<AnonymitySet | undefined>(undefined);
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
-  const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [scanOwner, setScanOwner] = useState<{ readonly exportRpc: ExportRpc; readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const [lateReview, setLateReview] = useState<{
     readonly matches: readonly ScanMatch[];
     readonly verify: (match: ScanMatch) => Promise<boolean>;
@@ -207,6 +210,8 @@ export function Scan(): ReactNode {
         const privacy = loadScanPrivacy(browserStorage());
         const lanes = loadScanLanes(browserStorage());
         const plan = planScan(privacy, chain);
+        const scanPrivacySelection = JSON.stringify(privacy);
+        const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
         const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
@@ -244,7 +249,20 @@ export function Scan(): ReactNode {
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
         const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
         assertScopeCurrent();
-        setScanOwner(scope);
+        // A stopped scan can still export its matches. Reuse only its verified client.
+        // Check the saved route again before sending an address or returning an export.
+        const exportRpc: ExportRpc = {
+          chainId: rpc.chainId,
+          request: (method, params) => rpc.request(method, params),
+          assertCurrent: () => {
+            guardSession();
+            if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+                (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
+              throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+            }
+          },
+        };
+        setScanOwner({ ...scope, exportRpc });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
@@ -474,6 +492,7 @@ export function Scan(): ReactNode {
       <Matches
         chainId={chainId}
         matches={scopedMatches}
+        exportRpc={scanMatchesCurrentScope ? scanOwner.exportRpc : undefined}
         sellerSignerPublicKey={app.session.signerPublicKey}
         receiptSignerPublicKey={scanMatchesCurrentScope ? scanOwner.signerPublicKey : undefined}
       />
@@ -486,7 +505,7 @@ export function Scan(): ReactNode {
         verifyLateEvidence={scanMatchesCurrentScope && !running ? lateReview?.verify : undefined}
         onAnnounce={app.announce}
       />
-      <Tags chainId={chainId} />
+      <Tags key={chainId} chainId={chainId} sellerKeyId={keyId} />
     </section>
   );
 }
@@ -506,7 +525,7 @@ function describe(m: ScanMatch, chainId: number, t: T): string {
   return token === undefined ? t('scan.match.unlistedToken', { amount: m.metadata.netAmount.toString(), token: m.metadata.token }) : `${formatUnits(m.metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
+function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();
@@ -604,6 +623,9 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                   </button>
                 </div>
               )}
+              {m.announcement.schemeId === 1n && (
+                <StealthExportPayment match={m} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
+              )}
               {m.receipt === 'verified' && m.metadata !== undefined && props.receiptSignerPublicKey !== undefined && props.receiptSignerPublicKey === props.sellerSignerPublicKey && (
                 <ReceiptPanel match={m} sellerSignerPublicKey={props.receiptSignerPublicKey} />
               )}
@@ -618,21 +640,53 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   );
 }
 
-function Tags(props: { readonly chainId: number }): ReactNode {
+function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
-  const [, force] = useState(0);
+  const [refreshGeneration, force] = useState(0);
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
   const [err, setErr] = useState<ScanText | undefined>(undefined);
-  const unlocked = services.vault.unlocked;
+  const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
+  const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
 
-  const refresh = (): void => {
-    services.vault.list(props.chainId).then(setList, (e: unknown) => {
-      setErr({ error: captureUserMessage(e) });
-    });
-  };
+  // Session revisions invalidate tag access even when the replacement has the same public keys.
+  // Keep this component mounted within a chain so a pending unlock can report its guarded failure.
+  useEffect(() => subscribeSession(() => {
+    services.vault.lock();
+    setAuthorizedSellerKeyId(undefined);
+    setList(undefined);
+    force((n) => n + 1);
+  }), [services.vault]);
+
+  // Re-read the selected chain after unlocking or remounting. The parent keys this component by
+  // chain and seller key identity so the previous chain's rows cannot flash during a scope switch.
+  // In-flight readbacks belong to the previous effect and are never allowed to repopulate this list.
+  useEffect(() => {
+    let live = true;
+    setList(undefined);
+    if (!unlocked) return () => { live = false; };
+    let sessionGuard: () => void;
+    try {
+      sessionGuard = captureSessionGuard();
+    } catch {
+      return () => { live = false; };
+    }
+    void services.vault.list(props.chainId).then(
+      (next) => {
+        if (!live) return;
+        try { sessionGuard(); } catch { return; }
+        setList(next);
+      },
+      (e: unknown) => {
+        if (!live) return;
+        try { sessionGuard(); } catch { return; }
+        setErr({ error: captureUserMessage(e) });
+      },
+    );
+    return () => { live = false; };
+  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked]);
 
   return (
     <div>
@@ -661,9 +715,10 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                       setErr({ error: captureUserMessage(e) });
                       return;
                     }
+                    setList(undefined);
+                    setAuthorizedSellerKeyId(props.sellerKeyId);
                     setErr(undefined);
                     force((n) => n + 1);
-                    refresh();
                     app.announce(latestT.current('scan.tags.unlocked'));
                   },
                   (e: unknown) => {

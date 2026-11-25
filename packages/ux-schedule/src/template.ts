@@ -101,7 +101,7 @@ export function updateTemplate(t: PaymentTemplate, patch: unknown, clock: Clock)
   };
   const v = validateFields(merged);
   if (!v.ok) return v;
-  return ok({ ...v.value, createdAtMs: t.createdAtMs, updatedAtMs: readClock(clock) });
+  return ok({ ...v.value, createdAtMs: t.createdAtMs, updatedAtMs: Math.max(t.updatedAtMs, readClock(clock)) });
 }
 
 /** Add to a list; enforces uniqueness of id and (case-insensitive) name, and the size cap. */

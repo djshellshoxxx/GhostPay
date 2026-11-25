@@ -1,0 +1,66 @@
+{
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "parents": [
+    "20dae6f75a5426899e22bb690e06136454092740",
+    "7851c5063282255117709296ddde7dcef148444c"
+  ],
+  "head": "2b2d60df7283e1bc01fdfe22cf355a42aa6ac99a",
+  "tree": "07e5e91cee42c1891cba614f3d02c53ae5b0929b",
+  "conflicts": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "removed_conflict_markers": 3,
+  "both_registry_sequences_and_multiplicities_preserved": true,
+  "exact_nonshared_entries": [
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+      "entry": "100644 blob 182946aee0f50032e953e1c14a0a15688c58f31a"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+      "entry": "100644 blob 63971489f71f0554ec03bf8e70b73f37be5d3b8d"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz",
+      "entry": "100644 blob 1b340fbbd7dbfcf4c607a61b25c37edd3b1f732e"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md",
+      "entry": "100644 blob ae26340fbfcb3d45495db9743dafbbc41247040b"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/audit/mythril-evidence.mjs",
+      "entry": "100644 blob 32834b760e90d53b43515bf8935b81a9e2cb9762"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+      "entry": "100644 blob b2f14f5c595ec1f5d27534c844008ac1323728ec"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/coordination/reconcile-claims.mjs",
+      "entry": "100644 blob 2f644028be422170922728d93b0640bcc512f0bd"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/coordination/reconcile-claims.test.mjs",
+      "entry": "100644 blob a52b00eb5a997870bbf25700005cd120f6b111bc"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/tests/mythril-evidence.test.mjs",
+      "entry": "100644 blob ce1ae5f4da22f84080b369bc57c8cf7dea384193"
+    },
+    {
+      "parent": "7851c5063282255117709296ddde7dcef148444c",
+      "path": "scripts/tests/reconcile-claims.test.mjs",
+      "entry": "100644 blob 478e1aef52c3ebd788a3c08d8766a3c5aa1f818f"
+    }
+  ]
+}

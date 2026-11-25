@@ -113,7 +113,7 @@ if [ -n "$filter" ]; then jq -r "$filter" "$page"; else cat "$page"; fi
 
 const REPO = 'djshellshoxxx/GhostPay';
 // The check-run names ci.yml emits (e2e is a matrix job); runs count only when GitHub Actions created them.
-const GATES = ['typescript', 'contracts', 'e2e (full)', 'e2e (lean)', 'secrets-and-egress'];
+const GATES = ['typescript', 'contracts', 'e2e (full)', 'e2e (lean)', 'secrets-and-egress', 'ghostid-native (default-full)', 'ghostid-native (opt-in-full)', 'ghostid-native (lean-with-flag)'];
 const ACTIONS = { slug: 'github-actions' };
 
 function pr(number, { ref = `codex/ghostpay-cloud-${number}`, draft = false, login = 'github-actions[bot]',
