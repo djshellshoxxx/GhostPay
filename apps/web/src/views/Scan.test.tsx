@@ -266,6 +266,57 @@ describe('Scan and receive', () => {
     expect([...vaultData.values()][0]).not.toContain(txHash);
   });
 
+  it('refuses a late-payment recheck after the saved RPC changes, without contacting the old route', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const txHash = `0x${'a'.repeat(64)}`;
+    const announcement = { ...mine.log, transactionHash: txHash };
+    const payer = '0x2222222222222222222222222222222222222222' as Address;
+    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], announcement.data as Hex);
+    const parsed = parseMetadata(metadata);
+    if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
+    const token = '0x036cbd53842c5426634e7929541ec2318f3dcf7e';
+    const transfer = {
+      address: token, topics: [TRANSFER_TOPIC, topicAddress(payer), announcement.topics?.[2] ?? '0x'],
+      data: `0x${2_500_000n.toString(16).padStart(64, '0')}`, blockNumber: announcement.blockNumber,
+      blockHash: announcement.blockHash, transactionHash: txHash, logIndex: '0x0',
+    };
+    const blockTime = Math.floor(Date.now() / 1000) - 3600;
+    const chain = chainWithLogs(84532, 500, [announcement], (method, params) => {
+      if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === token) return [transfer];
+      const common = { to: FAKE_ROUTER, from: payer, blockHash: announcement.blockHash, blockNumber: announcement.blockNumber };
+      if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, announcement] };
+      if (method === 'eth_getTransactionByHash') return { ...common, hash: txHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
+      return undefined;
+    });
+    // Canonical headers carry block time, so the late payment is decided by chain time rather than scan time.
+    const rpc: typeof chain = { ...chain, getBlock: async (n) => {
+      const block = await chain.getBlock(n);
+      return block === null ? null : { ...block, timestamp: BigInt(blockTime) + (n - 120n) * 2n };
+    } };
+    const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    await (await createCurrentReconciliationVault(84532, keyId)).registerInvoice({
+      version: 1, invoiceDigest: `0x${'b'.repeat(64)}`, nonce: 'c'.repeat(32), chainId: 84532, asset: token,
+      expectedNetMinorUnits: parsed.netAmount.toString(), createdAt: blockTime - 600, expiresAt: blockTime - 1, registeredAt: Date.now(),
+    });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Seller-signed receipt')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    const accept = await screen.findByRole('button', { name: 'Accept late payment for this invoice' });
+
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://replacement.test' } }));
+    const before = rpc.calls.length;
+    await user.click(accept);
+    expect(await screen.findByText(/The RPC could not reverify this payment/)).toBeTruthy();
+    expect(rpc.calls.slice(before).map((call) => call.method)).not.toContain('eth_getTransactionReceipt');
+    const saved = await (await createCurrentReconciliationVault(84532, keyId)).read();
+    expect(saved.some((record) => record.lateAcceptedAt !== undefined || record.invoiceDigest !== undefined)).toBe(false);
+  });
+
   it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));

@@ -137,6 +137,7 @@ export function Scan(): ReactNode {
     abort.current?.abort();
     app.setMatches([]);
     setScanOwner(undefined);
+    setLateReview(undefined);
     setProgress(undefined);
     setDone(undefined);
   }), [app.setMatches]);
@@ -153,6 +154,7 @@ export function Scan(): ReactNode {
       abort.current?.abort();
       app.setMatches([]);
       setScanOwner(undefined);
+      setLateReview(undefined);
     }
   }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
 
@@ -369,7 +371,8 @@ export function Scan(): ReactNode {
             setLateReview({
               matches,
               verify: async (match) => {
-                guardSession();
+                // Recheck only through the route this scan used; a changed RPC or privacy selection needs a new scan.
+                exportRpc.assertCurrent();
                 const { announcement, metadata } = match;
                 if (!matches.includes(match) || metadata === undefined || announcement.blockTimestamp === undefined) return false;
                 const evidence = await verifyClaimedPayment({
@@ -377,10 +380,11 @@ export function Scan(): ReactNode {
                   claim: { ...match, metadata },
                   ...(secondary === undefined ? {} : { secondaryClient: secondary }),
                 });
+                exportRpc.assertCurrent();
                 if (evidence.status !== 'received' || !evidence.final) return false;
                 const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
                 const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
-                guardSession();
+                exportRpc.assertCurrent();
                 return blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
                   block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
                   block.timestamp?.toString() === announcement.blockTimestamp);

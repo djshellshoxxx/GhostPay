@@ -740,11 +740,14 @@ function invoiceEvidenceStates(
         states.add(record.lateAcceptedAt === undefined ? 'ledger.late.verified' : 'ledger.late.accepted');
       else states.add('ledger.ui.linkedToAVerifiedObservation');
     } else {
+      // A proposal speaks only for the invoices it names; one resolved to another invoice says nothing about this one.
       const proposal = proposals.get(record.id);
-      if (proposal?.kind === 'exact') states.add('ledger.late.onTime');
-      else if (proposal?.kind === 'ambiguous')
+      if (proposal === undefined) states.add('ledger.late.ambiguous');
+      else if (proposal.kind === 'exact') {
+        if (proposal.invoice.invoiceDigest === invoice.invoiceDigest) states.add('ledger.late.onTime');
+      } else if (proposal.candidates.some((c) => c.invoiceDigest === invoice.invoiceDigest)) {
         states.add(proposal.reason === 'late-observation' ? 'ledger.late.verified' : 'ledger.late.ambiguous');
-      else states.add('ledger.late.ambiguous');
+      }
     }
   }
   return [...states];

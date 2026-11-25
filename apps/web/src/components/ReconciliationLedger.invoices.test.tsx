@@ -295,6 +295,19 @@ describe('late transfer status and decisions', () => {
     expect(screen.queryByRole('button', { name: 'Accept late payment for this invoice' })).toBeNull();
   });
 
+  it('shows a payment proposed for another invoice only on that invoice', async () => {
+    const [claimed, open2] = [invoice(1), invoice(2)];
+    await vault.registerInvoice(claimed);
+    await vault.registerInvoice(open2);
+    await vault.save({ ...recordFromVerifiedMatch(match(1), keyId), invoiceDigest: claimed.invoiceDigest });
+    await open({ matches: [match(2)] });
+    const card = (digest: string): HTMLElement => screen.getAllByText(digest).map((node) => node.closest('li.card'))
+      .find((li): li is HTMLLIElement => li !== null && li.textContent?.includes('base units of') === true)!;
+    await waitFor(() => expect(card(open2.invoiceDigest).textContent).toContain('Verified on-time transfer'));
+    expect(card(claimed.invoiceDigest).textContent).toContain('Linked to a verified observation');
+    expect(card(claimed.invoiceDigest).textContent).not.toContain('Verified on-time transfer');
+  });
+
   it('refuses a previously final transfer when its evidence no longer rechecks', async () => {
     const payment = match();
     await vault.registerInvoice({ ...invoice(1), expiresAt: nowSeconds - 1 });
