@@ -12,6 +12,15 @@ Acceptance: #649's tests plus two stale-consent regressions; full hosted CI on t
 - Owned paths: `apps/web/src/views/Sweep{,.test,.privacy.test,.quoteLifecycle.test}.tsx`, `apps/web/src/lib/scanPrivacy{,.test}.ts`, `apps/web/locales/*.json`, `apps/web/src/i18n/securityKeys.ts`, e2e specs `core-journey`, `devnet-journey`, `pages-devnet`, `sweep`, this entry, and `docs/consolidation/feature-completion-20261125/FC-02-sweep-consent.md`. Not touching #586 or #610 work.
 - Acceptance: Sweep balance refresh only after explicit consent; any change to quote, amount, destination, chain or account invalidates the pre-broadcast signing context; post-handoff evidence retained; current-main Sweep/scanPrivacy behavior preserved; focused tests, typecheck and lint pass; hosted CI pending until reported.
 
+# W3 — EVM provider/privacy boundary: fail-closed scan privacy settings and per-request route checks (2026-11-25 UTC)
+
+Worker: W3 (Claude Code session `ghostpay-backup-60`, home team per `%USERPROFILE%\GhostPay-coordination\TEAM.md`); branch `claude/w3-provider-privacy-boundary`; base main `32ae3977`.
+Builds on, without taking over: #658 (RPC disclosure evidence), #228 (dispatch-time own-node guard idea; not on main), #649/#664 (Sweep balance consent, owned by feature-completion-06).
+Owned paths (milestone 1): `apps/web/src/lib/scanPrivacy.ts`, new `apps/web/src/lib/scanPrivacy.integrity.test.ts`, the scan-start wiring in `apps/web/src/views/Scan.tsx` (route guard only), additive `scanPrivacy.*` keys in the four locales and `apps/web/src/i18n/securityKeys.ts`, this entry and `docs/handoffs/W3_PROVIDER_PRIVACY_BOUNDARY_20261125.md`.
+Acceptance (M1): saved scan privacy settings that are present but not exactly valid, or a storage read that throws, never fall back to Direct; scanning is blocked with a review message, the second RPC is skipped and Sweep stays on-request until the user saves valid settings.
+Acceptance (M2): every scan request (custom endpoint transport including retries and chain re-checks, the app RPC client, the indexer fetch and the second RPC) re-checks the saved scan privacy settings and the RPC URLs it started with, before sending and after the answer; a change in this or another tab stops the scan with a typed error and discards the delayed answer. Submitted hashes, checkpoints and recovery records are not touched.
+Out of scope: wallet-extension traffic (explained, not controlled), Tor/proxy certification, new transports, F14 routing.
+
 # External wallet disclosure gate on main (#287 item 3; owner gate 4) — 2026-11-25 UTC
 
 Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-wallet-disclosure-287-20261125`, base main `e6faa19b`. Previous claimant `feature-completion-06` ("FC-07") exited without a branch; ghostpay-backup-60 (W3) and ghostpay-42 informed.

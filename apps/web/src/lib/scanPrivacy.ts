@@ -23,6 +23,7 @@ import {
   type LogFilter,
   type RpcClient,
   type RpcLog,
+  type RpcTransport,
 } from '@ghostpay/chain-adapters';
 import { FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, createFetchTransport, type FetchLike } from '@ghostpay/net-transport/browser';
 import { createIndexerSource, padWindow, ScanSourceError, TESTNET_CHAIN_IDS, type HttpTransport, type HeadSource, type ScanAnnouncement } from '@ghostpay/scan-source';
@@ -48,6 +49,13 @@ export interface ScanPrivacySettings {
   readonly indexerUrls: Readonly<Record<string, string>>;
   /** Spec 05: non-router ("open lane") announcements processed per scan before the rest is deferred. */
   readonly openLaneBudget: number;
+  /**
+   * Set only in memory, never saved: settings were saved in this browser but cannot be read exactly as saved (edited,
+   * corrupted, or the browser refused the read). The saved intent is unknown, so nothing may weaken it: scanning is
+   * blocked, the second RPC is not contacted and Sweep reads a balance only on request, until the user saves valid
+   * settings again. It never falls back to Direct.
+   */
+  readonly unreadable?: true;
 }
 
 export const DEFAULT_SCAN_PRIVACY: ScanPrivacySettings = Object.freeze({
@@ -143,13 +151,56 @@ export function browserStorage(): StorageLike | undefined {
   }
 }
 
+const UNREADABLE_TEXT = 'They could not be read exactly as saved in this browser, so nothing is sent: scanning is blocked, the second RPC is not contacted and Sweep reads a balance only on request. Review and save them in Settings.';
+
+/** Saved settings whose intent cannot be read: the defaults, with the private path required and scanning blocked. */
+export const UNREADABLE_SCAN_PRIVACY: ScanPrivacySettings = Object.freeze({ ...DEFAULT_SCAN_PRIVACY, requireProxy: true, unreadable: true });
+
+const sameKeys = (raw: unknown, kept: Readonly<Record<string, string>>): boolean =>
+  typeof raw === 'object' && raw !== null && !Array.isArray(raw) &&
+  Object.keys(raw).length === Object.keys(kept).length && Object.keys(raw).every((k) => k in kept);
+
+/**
+ * True when every field that is present in `raw` survived sanitizing as itself (or, for a URL map, as the same chains).
+ * Missing fields are allowed: they come from older saved versions and take their defaults.
+ */
+function intactScanPrivacy(raw: unknown, s: ScanPrivacySettings): boolean {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return false;
+  const o = raw as Record<string, unknown>;
+  const has = (k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
+  if (has('transport') && o['transport'] !== s.transport) return false;
+  if (has('requireProxy') && o['requireProxy'] !== s.requireProxy) return false;
+  if (has('source') && o['source'] !== s.source) return false;
+  if (has('windowBlocks') && o['windowBlocks'] !== s.windowBlocks) return false;
+  if (has('openLaneBudget') && o['openLaneBudget'] !== s.openLaneBudget) return false;
+  if ((has('jitterMinMs') && o['jitterMinMs'] !== s.jitterMinMs) || (has('jitterMaxMs') && o['jitterMaxMs'] !== s.jitterMaxMs)) return false;
+  if (has('endpoints') && !sameKeys(o['endpoints'], s.endpoints)) return false;
+  if (has('indexerUrls') && !sameKeys(o['indexerUrls'], s.indexerUrls)) return false;
+  return true;
+}
+
+/**
+ * Reads the saved settings. Nothing saved (or no storage API at all) gives the defaults. Saved settings that are not
+ * exactly valid, or a read the browser refuses, give {@link UNREADABLE_SCAN_PRIVACY}-style settings: their saved
+ * intent is unknown and must not be weakened by falling back to Direct or to field defaults.
+ */
 export function loadScanPrivacy(storage: StorageLike | undefined): ScanPrivacySettings {
+  let text: string | null | undefined;
   try {
-    const text = storage?.getItem(SCAN_PRIVACY_KEY);
-    return text === null || text === undefined ? DEFAULT_SCAN_PRIVACY : sanitizeScanPrivacy(JSON.parse(text));
+    text = storage?.getItem(SCAN_PRIVACY_KEY);
   } catch {
-    return DEFAULT_SCAN_PRIVACY;
+    return UNREADABLE_SCAN_PRIVACY;
   }
+  if (text === null || text === undefined) return DEFAULT_SCAN_PRIVACY;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return UNREADABLE_SCAN_PRIVACY;
+  }
+  const s = sanitizeScanPrivacy(raw);
+  // Keep what could be read so Settings can show it for review, but require the private path and block until saved.
+  return intactScanPrivacy(raw, s) ? s : { ...s, requireProxy: true, unreadable: true };
 }
 
 /** Returns false when the browser refused to store the settings. */
@@ -200,12 +251,14 @@ function blockedPlan(reasonMessage: MessageDescriptor): Extract<ScanPlan, { kind
  * request would link the user's IP address to what it asks about.
  */
 export function privatePathForbidsDirect(s: ScanPrivacySettings): boolean {
-  return s.requireProxy && s.transport === 'local-proxy';
+  // Unreadable saved settings may have required the private path: treat them as if they did.
+  return s.unreadable === true || (s.requireProxy && s.transport === 'local-proxy');
 }
 
 /** Decides how one chain is scanned. Never falls back silently: a missing private path is a blocked scan. */
 export function planScan(s: ScanPrivacySettings, chain: ChainConfig): ScanPlan {
   const id = String(chain.chainId);
+  if (s.unreadable === true) return blockedPlan({ key: 'scanPrivacy.blocked.settingsUnreadable' });
   if (s.requireProxy && s.transport === 'direct') {
     return blockedPlan({ key: 'scanPrivacy.blocked.requirePrivatePath' });
   }
@@ -251,6 +304,7 @@ export interface DisclosureMessageRow {
 /** Public message data only: callers translate at render time, without reopening or replanning a scan. */
 export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { readonly hasSecondary: boolean }): DisclosureMessageRow[] {
   const rows: DisclosureMessageRow[] = [];
+  if (s.unreadable === true) rows.push({ party: { key: 'scanPrivacy.disclosure.unreadableParty' }, learns: { key: 'scanPrivacy.disclosure.unreadable' } });
   const windows: MessageDescriptor = s.windowBlocks > 0
     ? { key: 'scanPrivacy.disclosure.windowsFixed', values: { blocks: String(s.windowBlocks) } }
     : { key: 'scanPrivacy.disclosure.windowsExact' };
@@ -274,6 +328,8 @@ export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { read
   // Not part of the scan: Sweep reads the found address's balance and prepares/sends the sweep via the Settings RPC.
   const sweepIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
   rows.push({ party: { key: 'scanPrivacy.disclosure.sweepParty' }, learns: { key: 'scanPrivacy.disclosure.sweepOnRequest', values: { ip: sweepIp } } });
+  // A connected wallet talks to its own provider: none of these settings or checks reach that traffic.
+  rows.push({ party: { key: 'scanPrivacy.disclosure.walletParty' }, learns: { key: 'scanPrivacy.disclosure.wallet' } });
   rows.push({ party: { key: 'scanPrivacy.disclosure.everyoneParty' }, learns: s.transport === 'direct'
     ? { key: 'scanPrivacy.disclosure.everyone' }
     : { key: 'scanPrivacy.disclosure.everyonePrivate', values: { notice: { key: 'scanPrivacy.disclosure.firstUseNotice' } } } });
@@ -283,6 +339,7 @@ export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { read
 /** Source-English compatibility disclosure (spec 10 section 2); UI uses describeScanDisclosureMessages. */
 export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly hasSecondary: boolean }): DisclosureRow[] {
   const rows: DisclosureRow[] = [];
+  if (s.unreadable === true) rows.push({ party: 'Saved scan privacy settings', learns: UNREADABLE_TEXT });
   const windows = s.windowBlocks > 0 ? `fixed ${String(s.windowBlocks)}-block windows (coarse, but they still show roughly how far you have scanned)` : 'the exact block ranges you scan';
   const ip = s.transport === 'direct' ? 'your IP address' : s.transport === 'tor-browser' ? 'your IP address unless you really opened this page in Tor Browser' : 'the IP address of your proxy\'s exit, not yours, if your proxy really forwards over Tor';
   const logsFrom = s.source === 'indexer' ? 'block hashes for the scanned windows and announcement blocks' : `that you read GhostPay announcements, ${windows}, and when`;
@@ -300,6 +357,7 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
   }
   const sweepHow = 'but only when you press "Read balance from the Settings RPC" in Sweep';
   rows.push({ party: 'Settings RPC (Sweep)', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; the one-time address of a found payment, ${sweepHow}. Signing a sweep also reads from it, and a direct sweep is sent through it. These requests go to the RPC in Settings directly, not through the scan path.` });
+  rows.push({ party: 'Your wallet (extension or app)', learns: 'Not covered by these settings: a wallet you connect to pay, sign or publish uses its own RPC provider and network settings. The wallet and its provider can see your accounts, the chain, each request you approve and your IP address. GhostPay cannot route, check or see that traffic.' });
   rows.push({ party: 'Everyone', learns: `Nothing on-chain is hidden: payer, amount, token, timing and the announcement are public.${s.transport === 'direct' ? '' : ` ${FIRST_USE_NOTICE}`}` });
   return rows;
 }
@@ -617,6 +675,72 @@ export interface OpenScanOptions {
   readonly appRpc: () => Promise<RpcClient | undefined>;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   readonly sleep: (ms: number) => Promise<void>;
+  /**
+   * Throws when the route this scan was planned for is no longer the saved one (see {@link guardScanClient}). Checked
+   * before every request this client sends, including transport retries and chain re-checks on a scan endpoint and
+   * indexer fetches, and again when each answer arrives.
+   */
+  readonly assertCurrent?: () => void;
+}
+
+/** The scan's privacy settings or RPC changed while it was running; nothing more is sent on the old route. */
+export const SCAN_ROUTE_CHANGED: MessageDescriptor = { key: 'scanPrivacy.blocked.routeChanged' };
+
+export function isScanRouteChanged(e: unknown): boolean {
+  return e instanceof UserFacingError && e.translation?.key === SCAN_ROUTE_CHANGED.key;
+}
+
+/** Runs `call` between two route checks. A failure after a route change reports the change, not the failure. */
+async function checkedCall<T>(assertCurrent: () => void, call: () => Promise<T>): Promise<T> {
+  assertCurrent();
+  let out: T;
+  try {
+    out = await call();
+  } catch (e) {
+    assertCurrent();
+    throw e;
+  }
+  // A delayed answer from a route the user has since changed is discarded.
+  assertCurrent();
+  return out;
+}
+
+/**
+ * Re-checks the current scan route around every request of `inner`. A cached client stays usable while the saved
+ * settings still match; once they change (here or in another tab), no further request leaves this client. Requests
+ * already sent cannot be recalled.
+ */
+export function guardScanClient(inner: RpcClient, assertCurrent: () => void): RpcClient {
+  return {
+    chainId: inner.chainId,
+    request: (method, params) => checkedCall(assertCurrent, () => inner.request(method, params)),
+    blockNumber: () => checkedCall(assertCurrent, () => inner.blockNumber()),
+    getBlock: (n) => checkedCall(assertCurrent, () => inner.getBlock(n)),
+    getLogs: (f) => checkedCall(assertCurrent, () => inner.getLogs(f)),
+  };
+}
+
+/**
+ * Checks the route before every transport send, so the client's own retries and chain re-checks cannot reach a changed
+ * route. The refusal is a non-retryable adapter error (an unknown error would be retried); the client-level guard
+ * around it reports it as {@link SCAN_ROUTE_CHANGED}.
+ */
+function guardTransport(inner: RpcTransport, assertCurrent: () => void): RpcTransport {
+  const check = (): void => {
+    try {
+      assertCurrent();
+    } catch {
+      throw new ChainAdapterError('RPC_URL_REJECTED', 'scan route changed');
+    }
+  };
+  return {
+    send: async (url, body, init) => {
+      check();
+      const text = await inner.send(url, body, init);
+      check();
+      return text;
+    },
+  };
 }
 
 export interface ScanClients {
@@ -632,28 +756,39 @@ export interface ScanClients {
  * fail-closed handling stays in one place.
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
-  const { plan } = o;
+  const { plan, assertCurrent } = o;
+  const fetchImpl = assertCurrent === undefined
+    ? o.fetchImpl
+    : (url: string, init: RequestInit): Promise<Response> => checkedCall(assertCurrent, () => o.fetchImpl(url, init));
   let base: RpcClient | undefined;
   if (plan.endpoint !== undefined) {
-    const transport = createFetchTransport({ fetchImpl: o.fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
+    const fetchTransport = createFetchTransport({ fetchImpl: fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
+    const transport = assertCurrent === undefined ? fetchTransport : guardTransport(fetchTransport, assertCurrent);
     try {
-      base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
+      const open = (): Promise<RpcClient> => createClient(o.chain, plan.endpoint as string, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
+      base = assertCurrent === undefined ? await open() : await checkedCall(assertCurrent, open);
     } catch (e) {
+      if (isScanRouteChanged(e)) throw e;
       const blocked = new UserFacingError({ key: 'error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed' });
       blocked.cause = e;
       throw blocked;
     }
   } else {
+    if (assertCurrent !== undefined) assertCurrent();
     base = await o.appRpc();
   }
   if (base === undefined) return undefined;
+  // The app's RPC is cached across views; guard this scan's use of it without changing the cached client.
+  if (assertCurrent !== undefined) base = guardScanClient(base, assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
-  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
+  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl, windowBlocks: plan.window.windowBlocks });
   const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
-  return { base, scan };
+  // The outer guard also turns an indexer or window failure that follows a route change into SCAN_ROUTE_CHANGED.
+  return { base, scan: assertCurrent === undefined ? scan : guardScanClient(scan, assertCurrent) };
 }
 
 // i18n-use: error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr error.scanPrivacy.indexerURLIsNotAValidURL error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270 error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed
 
+// i18n-use: scanPrivacy.blocked.settingsUnreadable scanPrivacy.blocked.routeChanged scanPrivacy.disclosure.unreadableParty scanPrivacy.disclosure.unreadable scanPrivacy.disclosure.walletParty scanPrivacy.disclosure.wallet
 // i18n-use: scanPrivacy.blocked.requirePrivatePath scanPrivacy.blocked.proxyEndpoint scanPrivacy.blocked.indexerChain scanPrivacy.blocked.indexerMissing scanPrivacy.blocked.endpointRejected scanPrivacy.blocked.indexerRejected
 // i18n-use: scanPrivacy.disclosure.windowsFixed scanPrivacy.disclosure.windowsExact scanPrivacy.disclosure.ipDirect scanPrivacy.disclosure.ipTorBrowser scanPrivacy.disclosure.ipProxyExit scanPrivacy.disclosure.logsIndexer scanPrivacy.disclosure.logsRpc scanPrivacy.disclosure.rpcParty scanPrivacy.disclosure.rpc scanPrivacy.disclosure.indexerParty scanPrivacy.disclosure.indexer scanPrivacy.disclosure.proxyParty scanPrivacy.disclosure.proxy scanPrivacy.disclosure.torExitParty scanPrivacy.disclosure.torExit scanPrivacy.disclosure.torBrowserNotice scanPrivacy.disclosure.secondParty scanPrivacy.disclosure.secondWindowsFixed scanPrivacy.disclosure.secondWindowsExact scanPrivacy.disclosure.secondDirectIp scanPrivacy.disclosure.second scanPrivacy.disclosure.sweepParty scanPrivacy.disclosure.sweepAuto scanPrivacy.disclosure.sweepOnRequest scanPrivacy.disclosure.everyoneParty scanPrivacy.disclosure.everyone scanPrivacy.disclosure.everyonePrivate scanPrivacy.disclosure.firstUseNotice

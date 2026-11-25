@@ -16,6 +16,7 @@ import {
   loadScanPrivacy,
   planScan,
   saveScanPrivacy,
+  UNREADABLE_SCAN_PRIVACY,
   type ScanPrivacySettings,
 } from './scanPrivacy';
 
@@ -357,6 +358,11 @@ describe('scan privacy settings', () => {
     expect(loadScanPrivacy(s)).toEqual(next);
     s.setItem('ghostpay.scanPrivacy.v1', JSON.stringify({ transport: 'socks', endpoints: { '84532': 'http://evil.example/' }, windowBlocks: -5, jitterMinMs: 9, jitterMaxMs: 1, openLaneBudget: 1e12, indexerUrls: { x: 'https://a.example' } }));
     const l = loadScanPrivacy(s);
+    // W3: hostile or corrupted saved settings are unreadable. Fields are still sanitised for review, but the private
+    // path is required and the scan is blocked: they never fall back to an unrequired Direct scan.
+    expect(l.unreadable).toBe(true);
+    expect(l.requireProxy).toBe(true);
+    expect(planScan(l, chain).kind).toBe('blocked');
     expect(l.transport).toBe('direct');
     expect(l.endpoints).toEqual({});
     expect(l.windowBlocks).toBe(DEFAULT_SCAN_PRIVACY.windowBlocks);
@@ -364,7 +370,7 @@ describe('scan privacy settings', () => {
     expect(l.openLaneBudget).toBe(20_000);
     expect(l.indexerUrls).toEqual({});
     s.setItem('ghostpay.scanPrivacy.v1', '{not json');
-    expect(loadScanPrivacy(s)).toEqual(DEFAULT_SCAN_PRIVACY);
+    expect(loadScanPrivacy(s)).toBe(UNREADABLE_SCAN_PRIVACY);
     expect(saveScanPrivacy({ getItem: () => null, setItem: () => { throw new Error('quota'); } }, next)).toBe(false);
   });
 

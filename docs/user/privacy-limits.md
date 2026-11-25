@@ -80,6 +80,25 @@ amount rounding exist as libraries but are **not switched on in the web app or t
 protect you. See the [threat model](../threat-model/PRIVACY_THREAT_MODEL.md#8-mitigations-available-today-honestly-rated)
 and [seller privacy](seller-privacy.md).
 
+### What the scan privacy settings cover, and what they do not
+
+- They apply to the requests GhostPay sends while scanning: to the scan RPC or your local proxy, the optional indexer
+  and the second RPC. Before each of those requests, and again when its answer arrives, the app checks that the saved
+  scan privacy settings and the RPC addresses the scan started with are unchanged. If you change them, in this tab or
+  another one, the scan stops: nothing more goes out on the old route and late answers from it are ignored. Start the
+  scan again. Requests that were already sent cannot be recalled.
+- If the saved settings cannot be read exactly as saved (for example, after a manual edit, or because the browser
+  refused to read site storage), GhostPay does not guess and does not fall back to Direct. Scanning stays blocked, the
+  second RPC is not contacted and Sweep reads a balance only when you ask, until you review and save the settings.
+- Sweep, paying an invoice and checking a receipt use the RPC in Settings directly, not the scan path (see the table
+  above).
+- **Your wallet's own traffic is outside them.** A browser wallet or wallet app that you connect to pay, sign or
+  publish talks to its own RPC provider and services, with its own network settings. GhostPay's transport, local proxy,
+  Tor Browser setting, second RPC and request checks do not apply to that traffic, and GhostPay can neither see nor
+  check it. The wallet and its provider can see your accounts, the chain, each request you approve and, unless you hide
+  it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
+  hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
+
 ## Specific limits to remember
 
 1. **Links carrying their decryption key are bearer secrets and may persist in browser history.** Passphrase mode keeps the passphrase separate. The app clears the address bar after reading the link, but that cannot guarantee deletion from history, clipboard, screenshots or extensions.
