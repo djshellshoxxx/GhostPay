@@ -1,3 +1,62 @@
+# M4-DORM371 — land #371 dormant F04/F05/F10 base on main (2026-11-24)
+
+Worker: Claude coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr). Branch `claude/nifty-bohr-5ra2ap-dormant-371`, base main `03695a7b`.
+Source: PR #371 head `1de6e0247e0f76afe6f1615b43e55007ece25d9b`, merged unchanged. Owned paths: the merge itself, this claim, `docs/engineering/milestones/M4-DORM371.md`.
+Acceptance: future modules unreachable from full/lean bundles; isolation, package-map, future suites, web typecheck/lint/build/test green; hosted CI green on exact head; merge only under the integration lock. Evidence: `docs/engineering/milestones/M4-DORM371.md`.
+
+---
+
+# F04 source-preserving current-main consolidation — 2026-11-20 Pacific
+
+- Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
+- Owned branch: `consolidate/ghostpay-f04-current-main-1f782-20261121`.
+- Frozen donor: PR #322 `future/f04-merchant-dashboard` at `066731b4d6d19d96469dd18fa082b264f3efed5d`; current main input: `da6b05da5bb2e4293f38572da361980960d91911`.
+- Scope: preserve the existing F04 M1 source and all donor history while composing with current main. Own only this additive registry claim and conflict reconciliation, plus `docs/consolidation/future-modules-20261121-1f782/F04_COMPOSITION.md`. The five files under `apps/web/src/features/future/merchant-dashboard/` are immutable source inputs; no source edit or feature activation is authorized by this claim.
+- Acceptance: preserve both parents; retain every exact registry line from each input in order; retain current-main paths; prove each F04 runtime/test blob and mode is unchanged; independently review the dormant module; rerun applicable repository checks on the final composition through the coordinator's shared runtime. Do not count prior donor checks as a new combined-source pass.
+- Ownership: this is an isolated successor of the existing F04 owner. The original future branch, shared integration branch, main and integration lock remain untouched. F03, backup, F11, Tor, #367 and the active narrow-merge queue remain separately owned.
+- Validation plan: no dependency installation or heavy tests in this worker. The coordinator owns final shared validation, publication and integration. Existing F04 M1 remains disconnected from all production routes; real evidence/persistence/UI integration is unfinished.
+
+---
+
+# F04 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f04-merchant-dashboard`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F04-merchant-dashboard/SPEC.md` and this additive claim.
+
+# F05 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f05-ghostproof`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F05-ghostproof/SPEC.md` and this additive claim.
+
+
+# F10 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f10-private-recurring`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F10-private-recurring/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
@@ -1009,6 +1068,8 @@ Evidence: GP-BUG-02 in PR #312, independently source-confirmed; `print.css` appl
 Acceptance: reproduce both print modes with print-media computed styles in a browser fixture; ensure receipt is visible without a bill, bill is visible without a receipt, and bill remains exclusive when both exist; all other UI stays print-hidden; retain sensitive-data print restrictions; source review against exact main files; run available tests or record unexecuted checks; preserve the branch as draft pending hosted qualification and separate review. No contracts, workflows, dependencies, Pages settings or deployments.
 Status: implementation and six print-media fixture cases committed. Exact-source static/PostCSS syntax checks passed; repository Playwright, typecheck, lint, hosted CI and independent verification remain outstanding. Lock metadata is separate; no shared integration or protected-main merge attempted.
 
+
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
@@ -1188,6 +1249,8 @@ bytes that do not round-trip through UTF-8, retaining valid Unicode filenames.
 Run only dependency-free Node tests and source checks, obtain independent review,
 and publish a draft with exact source/test pins. No real artifact, hosted CI,
 deployment, main integration, or arbitrary concurrent-filesystem immunity claim.
+
+
 
 # Historical security promotion — 2026-11-19
 
@@ -1718,6 +1781,42 @@ Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
+## F10 browser recurring-plan continuation — 2026-11-20
+
+Worker: ChatGPT `future_inventory`, coordinated by the future-feature continuation lead.
+Branch: `future/f10-private-recurring`.
+Specification head: `1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9`.
+Current main to consolidate before implementation: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+
+Owned paths: `apps/web/src/features/future/private-recurring/**`,
+`docs/future/modules/F10-private-recurring/**`, this additive ownership record,
+and the minimal web workspace dependency declaration/lock entry for the existing
+`@ghostpay/merchant-billing` package if required. Other worktrees and active F03,
+seller-session, receipt-print, backup-ownership and v1 privacy repairs remain
+independently owned.
+
+Acceptance: implement a strict browser-safe plan/snapshot adapter using existing
+UTC schedule helpers, canonical token-atomic quantities distinct from fiat plans,
+validated presentation timezones, at most 24 due-period previews, duplicate
+identity checks, and explicit one-period review with revision/session/clock
+invalidation. Preview must not invoke invoice creation or consume nonce
+randomness. Exercise month-end/leap-year cadence, pause/cancel behavior, bounded
+catch-up and malformed state with deterministic tests. Record exact verification
+commands and limitations in the F10 handoff.
+
+Scope is an unmounted future module. No signing, automatic invoice issuance,
+network requests, notification delivery, persistence-provider implementation,
+production/lean route activation, fees, deployment or remote publication.
+
+Status: M1 product/test source `e0b6e44379447037be09d20934972d8afc7a6600` implements
+strict staged snapshots, UTC due previews and single-use local review. All 84
+focused cases pass with unchanged coverage thresholds. The module is unmounted;
+actual P04/P05 issuance/persistence, paused legacy migration, UI, and browser
+qualification remain pending. A typed lint attempt was killed with exit 137;
+serial coordinator lint/typecheck and independent review are still required.
+See `docs/future/modules/F10-private-recurring/HANDOFF.md` for exact contracts,
+source pins, research decisions, acceptance mapping and remaining work.
+
 Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
 regressions (4 failed / 15 passed before correction; 19/19 after), package
 typecheck/lint/build, secret scan and action pins passing. Available full package
@@ -1858,6 +1957,141 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - State: ownership recorded before edits. PR #314's existing hosted checks passed, but independent source review found unlock ownership incomplete. New verification results will be recorded after execution.
 - Continuation result: controller-owned cancellable state and independently owned durable writes implemented; refreshed main `aa3df1cb37274fae73af0ca957183c15c51b62d3` preserved. Final local SellerKeys selection passed 74/74 across seven files, scoped TypeScript and targeted lint passed, and the lean build/postbuild passed. Two new browser journeys are committed but local Chromium launch is blocked; full-project TypeScript and hosted browser qualification remain gates. The source-pinned supersession handoff records exact scope and limits. PR #314 is continued through a leased fast-forward; no main merge or deployment.
 
+
+## F04 future dashboard continuation — 2026-11-20
+
+Worker: future_features/f04_dashboard, coordinated by ChatGPT root.
+Branch: `future/f04-merchant-dashboard`.
+Specification head: `711e9e8f7e2b32431353b82c4e39e184d3ba0b58`.
+Main reconciliation input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/merchant-dashboard/`,
+`docs/future/modules/F04-merchant-dashboard/`, and this additive registry claim.
+Acceptance: strict bounded atomic-unit projections, explicit invoice/evidence binding,
+duplicate/conflicting observation handling, provider-qualified finality, reorg demotion,
+asset-separated exact totals, bounded selectors and stale-session/cancellation guards.
+The existing fiat ledger remains unchanged; the new module is disconnected from
+production routes and the lean artifact. No network, wallet, persistent state, fee,
+contract, dependency or release changes. Focused tests, source checks and independent
+review are required; the coordinator owns remote publication.
+Status: ownership recorded before implementation; main reconciliation next.
+
+
+### F04 milestone checkpoint — 2026-11-20
+
+Product source: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`.
+Isolated evidence projection and bounded selectors implemented; final focused
+56/56 tests and scoped strict TypeScript/type-aware ESLint passed. Whole-project
+typed-lint attempts exited 137; the final scoped check retained every repository
+rule with a smaller TypeScript program. Details and incomplete acceptance:
+`docs/future/modules/F04-merchant-dashboard/HANDOFF.md`.
+No production entry point or remote ref changed. Fresh independent review,
+full-web qualification and publication remain coordinator-owned.
+
+
+### F04 canonical-format review correction — 2026-11-20
+
+Worker: future_features/f04_dashboard. Starting head:
+`81ff020105231b0fba82798a6f1356ad1f18b409`.
+Owned correction: the F04 reference, atomic amount, chain, asset and hash
+validators and their malformed-format tests. Require full-input matching,
+preserve valid inputs, rerun focused tests and scoped strict TypeScript/typed
+ESLint under the shared validation lock. The independent reviewer's report is
+owned separately and must not be staged by this worker.
+
+
+## F04 independent milestone review — 2026-11-20
+
+Worker: `f04_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f04-merchant-dashboard`; starting documentation head
+`b2dcc7a843dfc89bed6fc8926b3d904d7b365920`.
+Original product: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`; canonical-format
+correction: `966f415e520298310efd1f03883ea69844ea5eed`.
+Owned edits: this additive record and
+`docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md` only.
+Acceptance: independently inspect all introduced source/tests, review the narrow
+format correction, replay existing focused tests, and record exact results and
+remaining provider/browser/release limits. Product source stays read-only.
+No remote mutation, deployment, exploit tooling, full-web typed-lint retry,
+or change to qualification gates.
+
+## F05 offline receipt assurance continuation — 2026-11-20
+
+Worker: future_features/f05_ghostproof, coordinated by ChatGPT root.
+Branch: `future/f05-ghostproof`; specification head `a241d0a5556c23bf2670f6ba17e7c928b41d7eb4`.
+Main input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/ghostproof/**`, F05 specification and
+handoff, minimal web dependency declaration and matching lock entry if needed.
+Acceptance: bounded offline receipt import using the existing digest and signed
+receipt providers; accurate assurance, trust, binding and unknown finality labels;
+immutable disclosure preview; rejection of unsupported claims; stale/session/abort
+lifecycle protection; deterministic tests with real signed receipts.
+Keep the feature outside production routes and the lean artifact. No provider
+cryptography, existing receipt-core changes, network access, automatic export,
+wallet access, production activation, release, main merge or remote writes.
+Status: main reconciled at `7d64e0f4`; product/tests complete at
+`726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`. Normal configured focused tests
+pass 62/62; scoped coverage, strict TypeScript and repository ESLint pass.
+Source-pinned evidence and remaining scope: `docs/future/modules/F05-ghostproof/HANDOFF.md`.
+Full feature, production activation, independent review and hosted/browser gates remain pending.
+
+
+## F05 independent milestone review — 2026-11-20
+
+Worker: `future_features/f05_independent_review`; branch `future/f05-ghostproof`.
+Starting head: `160acff6dfa40491d36aea151b0e7aa679f05307`.
+Product/test source: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: this additive claim, `docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md`,
+and the coordinator-requested correction summary in the F05 handoff.
+Product code is read-only. Review assurance, signer/invoice binding, strict input
+limits, immutable state and cancellation; replay only the existing focused tests.
+Do not run whole-web TypeScript or typed lint while another worker owns the heavy
+validation slot. No remote mutation, production activation, deployment or payment.
+Status: initial review passed 62/62 focused tests. The canonical-format observation
+was corrected by the coordinator at `d44604ce463cec708c77a230b068f0ac44669280` and independently
+re-reviewed; final focused replay passed 67/67. No remaining introduced blocking
+defect found. Whole-web, browser and release gates remain separate.
+
+
+## F05 canonical binding correction — 2026-11-20
+
+Worker: ChatGPT coordinator, independent-review follow-up.
+Base product: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: GhostProof `review.ts` and `review.test.ts` only.
+Acceptance: canonical binding strings must match their complete input; retain
+explicit whitespace normalization of caller-configured signer pins. Add ordinary
+malformed-format coverage and rerun focused checks before independent re-review.
+
+Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
+focused tests pass; full integration qualification remains coordinator-owned.
+
+## F10 independent milestone review — 2026-11-20
+
+Worker: `f10_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f10-private-recurring`. Reviewed product/test source:
+`e0b6e44379447037be09d20934972d8afc7a6600`; initial documentation head:
+`e7991b659fb77c748bf82de6f2e4fe7f8242cc57`.
+Owned paths: this additive ownership record and
+`docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md`.
+Product source remains read-only. Acceptance: independently inspect canonical
+units, UTC schedule reuse, staged snapshot identities, explicit local review and
+revocation; replay maintained focused tests; record incomplete integration and
+qualification honestly. No remote writes, production activation, new test probes,
+full-web typecheck or typed lint; coordinator owns the serialized broader gates.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `49088efa043ca3f016e0b802f8b7bf51bf18a97a`.
+
+Worker: ChatGPT coordinator. Starting head: `f8aab16068bfd55210e0acbcf5bb8492f8c8f472`.
+
+Worker: ChatGPT coordinator. Starting head: `a76e89f538314e8d8d292a4caa7c281ef82e64d8`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
 ## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
 
 - Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
@@ -1868,6 +2102,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
 
+
+## F04 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `19b47216b1c41653913196dd231f40faaa2d76a1`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 61 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.
 
 ## TRON range completeness recovery — 2026-11-20 continuation R2
 
@@ -1892,6 +2135,39 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## Dormant F04/F05/F10 branch consolidation — 2026-11-21 UTC
+
+- Coordinator: `1f782d9c4748-root`; independent workers: `branch_inventory`, `ci_merge_review`, and `defensive_review`.
+- Isolated branch: `consolidate/ghostpay-dormant-modules-1f782-20261121`; base main: `da6b05da5bb2e4293f38572da361980960d91911`.
+- Inputs: F04 #322 `066731b4d6d19d96469dd18fa082b264f3efed5d`, F05 #323 `ccd1b16dea7be84552f40d3bcd0f23b4224699d3`, and F10 #324 `4a48f2f09b1334036a6a88bab4e51f958cee46dd`.
+- Owned changes: preserve the three existing M1 source histories and application/test bytes; resolve additive registry and module-catalog conflicts; reconcile the two existing workspace dependency declarations and exact lock entries; regenerate `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`; repair `scripts/tests/lean-core-reachability.test.mjs` with explicit pending dependency inventory and a fail-closed dormant-module admission test; source-pinned evidence under `docs/consolidation/dormant-modules-20261121-1f782/`.
+- Acceptance: reproduce the two original tooling failures on the composition, preserve the reviewed allowlist and all prior assertions, review the existing workspace dependency closure, prove dormant modules remain unreachable from production imports/builds, and run relevant tests, full web typecheck/lint, full/lean builds and applicable hosted checks. Do not claim complete product features from these M1 modules.
+- Ownership reconciliation: current integration owner `5ceb6203640a-root` holds generation 12 and is repairing camera/policy/TRON and narrow child stacks. This task does not change those branches, their source, main, or the shared lease. Existing F04/F05/F10 source branches remain immutable; this successor preserves their exact frozen contributions for coordinated integration.
+- Boundaries: no production UI activation, signing/issuance/persistence feature additions, remote services, contract edits, external dependency version changes, deployment or branch deletion. The root owns publication of this isolated candidate; shared integration requires the existing coordination protocol.
+- Status: claim recorded before composition. Exact-head candidate qualification is not yet asserted.
+
+Qualification update (2026-11-21 UTC): source `751ca76d6b0b3a09b5712b01723b3c230978ef52` preserves all 17 donor source/test blobs and now incorporates main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Whole-web coverage passed 3,027 tests with 13 existing conditional skips; the separate no-coverage suite passed three tests. Both full/lean builds and original scans passed, and every emitted artifact file is byte-identical to the corresponding captured-main build (19 full, 17 lean). The original tooling selection passed 242 of 244 tests; missing `cast` and unavailable `gpg-agent` remain recorded environment failures. Independent source/artifact review approved the disconnected milestones. Exact receipts, reviewed limitations and the public/local source mapping are under `docs/consolidation/dormant-modules-20261121-1f782/`. Hosted Node 22, mandatory Anvil and browser qualification remain pending.
+
+Ownership correction: shared lock commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` restored the prior generation-11 held record owned by `994a0d214fb9-root-r3`; its correction explicitly rejects expiration alone as takeover evidence. This task has not changed the lock. The isolated candidate is ready for hosted review; shared-target integration remains blocked until the prior owner releases it or verified stopped-writer handoff establishes a valid recovery. Existing feature source branches and other active workers remain preserved.
+
+Hosted qualification follow-up (2026-11-21 UTC): coordinator `1f782d9c4748-root` owns a candidate-only correction to `apps/web/src/features/future/ghostproof/review.test.ts` and corresponding consolidation evidence on `consolidate/ghostpay-dormant-modules-1f782-20261121`, based on local `7fb8d0f6a94f1e19f9ee17da837bd7c96bcfc783` / public `3580f0f352c309c990c8c3c6aff0902ab6b28f7c`. CodeQL reports one high-severity incomplete-string-escaping annotation at line 138; the identical annotation and test blob are present on the original F05 donor. The affected expression deliberately injects an unknown root JSON field into a generated test fixture. Acceptance: make that fixture construction explicit while preserving its exact output and rejection assertion, retain all production source and original donor branches/history, run the unchanged module suite and typed checks, obtain independent review and qualify the final hosted head without a CodeQL suppression or gate change. This narrow test-fixture follow-up supersedes the immutable-test-file part of the earlier claim only for that one candidate path; all other ownership boundaries remain in force.
+
+## F05 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `e08333af3eb830a36d375ecf2174db955f559d64`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 67 passing tests,
+
+## F10 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `e134147beb21b7f71d4776def94cd4e24b83346b`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 84 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.
 ## 2026-11-19T08:36Z — isolated JSON canonicalization correctness repair
 
 - Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.

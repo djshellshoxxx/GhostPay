@@ -1,0 +1,46 @@
+{
+  "schema": "ghostpay.publication-map/v1",
+  "branch": "future/f10-private-recurring",
+  "remoteBase": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9",
+  "validatedMain": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "sourceTip": "e134147beb21b7f71d4776def94cd4e24b83346b",
+  "publishedTip": "9bdf6d9a4d74a8afa4560571fb01bc242cf2b61a",
+  "note": "Maps local source and review commits to public Git objects with identical complete tree hashes. This file records through the validated source checkpoint; later branch commits add qualification/publication documentation.",
+  "commits": [
+    {
+      "local": "03f27f61fbd06c839a5aa61783a5f50eb5d7d15f",
+      "published": "c46cca6490544e424cacef7f65c6f83ede60d166",
+      "tree": "024ca9cef34740aa2721c2c2fd0eb73529f9ceee"
+    },
+    {
+      "local": "6d71e9ab2f0fad7ab08777ca31a8eed9e16538ca",
+      "published": "62d3711febd626cacfe6006bb5471a6cf10ab67b",
+      "tree": "1c04b834fe09e46c9406b8727b4891f16443a2b7"
+    },
+    {
+      "local": "e0b6e44379447037be09d20934972d8afc7a6600",
+      "published": "54902b99e1dfac19011d9aaadd032431bc0801f1",
+      "tree": "cc691580e01f14c14cab657b1597e083d2633034"
+    },
+    {
+      "local": "e7991b659fb77c748bf82de6f2e4fe7f8242cc57",
+      "published": "1f8f74cea95f201744ca38e60dcc0c3046751990",
+      "tree": "eb5d68c85f5e170e27fae9e1d1400ccf9f8720d5"
+    },
+    {
+      "local": "a76e89f538314e8d8d292a4caa7c281ef82e64d8",
+      "published": "bea3546ed8fe54c6633b4c5267540d009f15c2fb",
+      "tree": "5a4bca60d91de1417b880f8c8c18277ec8167647"
+    },
+    {
+      "local": "6c579c7a0e74f842200bf2078c5137451bc2c08a",
+      "published": "05a6907eea59d48fe3553b1beaa305fb4392b49f",
+      "tree": "d627e5ffef12c65e5356046c61a763495117b349"
+    },
+    {
+      "local": "e134147beb21b7f71d4776def94cd4e24b83346b",
+      "published": "9bdf6d9a4d74a8afa4560571fb01bc242cf2b61a",
+      "tree": "debd5972dc36dfa7d26323a0f6a85c41b37c441f"
+    }
+  ]
+}

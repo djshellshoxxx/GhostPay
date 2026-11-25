@@ -27,7 +27,7 @@
 | `hygiene` | Own-leak hygiene options HY-DST/CON/VER/BUF/FUND (testnet PoC). | chain-adapters, core-crypto | - | - |
 | `i18n` | GhostPay localisation framework: message catalogs, ICU-lite plural/placeholder formatting, locale negotiation, RTL, BCP47 validation, completeness checks. | - | cli, ux-i18n | - |
 | `invoice-schema` | GhostPay v1 invoice schema, canonical serialization, signing and fragment envelope (ADR-0002, ADR-0005). | - | apps/web, chain-adapters, cli, merchant-billing, merchant-hooks, merchant-ledger, qr-exchange, sdk, ux-vault | - |
-| `merchant-billing` | Pure merchant billing logic for GhostPay: subscriptions (reminder invoices), deposits and installments, private refund plans, split and bulk payouts. | invoice-schema, merchant-hooks | cli | - |
+| `merchant-billing` | Pure merchant billing logic for GhostPay: subscriptions (reminder invoices), deposits and installments, private refund plans, split and bulk payouts. | invoice-schema, merchant-hooks | apps/web, cli | - |
 | `merchant-hooks` | Self-hosted order webhooks, payment buttons, POS/QR and NFC payload builders (pure). | invoice-schema | cli, merchant-billing | - |
 | `merchant-ledger` | Merchant reconciliation and accounting/tax exports (pure, bigint money). | invoice-schema | cli | - |
 | `merchant-multisig` | GhostPay m-of-n merchant account approval policy: proposals, canonical digests, domain-separated secp256k1 approvals, replay protection, timelocks. | - | cli | - |
@@ -68,12 +68,12 @@
 | `ux-notify` | GhostPay usability: notify (pure logic, no UI, no network). | - | - | - |
 | `ux-presets` | GhostPay usability: presets (pure logic, no UI, no network). | - | - | - |
 | `ux-privacy` | GhostPay usability: privacy (pure logic, no UI, no network). | - | - | - |
-| `ux-receipts` | GhostPay usability: receipts (pure logic, no UI, no network). | - | - | - |
+| `ux-receipts` | GhostPay usability: receipts (pure logic, no UI, no network). | - | apps/web | - |
 | `ux-sandbox` | GhostPay usability: sandbox (pure logic, no UI, no network). | sandbox | - | - |
 | `ux-schedule` | GhostPay usability: schedule (pure logic, no UI, no network). | - | - | - |
 | `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli | - |
 | `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, relayer-guard | - | start, ops, smoke:container |
-| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, validate:deployments, test:e2e, e2e:devnet |
+| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, merchant-billing, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-receipts, ux-vault | - | dev, postbuild, preview, validate:deployments, test:e2e, e2e:devnet |
 
 ## Foundry projects (no package.json; run `forge` inside the directory)
 

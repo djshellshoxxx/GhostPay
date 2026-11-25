@@ -1,0 +1,116 @@
+{
+  "format": "ghostpay-publication-mapping/1",
+  "note": "GitHub API publication preserves each complete tree and ordered parent relationship. Commit metadata differs. These mappings include the test-fixture source checkpoint before the final evidence-only commit.",
+  "commits": {
+    "9ca39d2562dcfc32bc2a0623111d4fe23d2f9b8e": {
+      "public_commit": "f759cd4d7f5e977621032c5a7b21081d97606830",
+      "tree": "ebf410053d94cd216ab8a9fcad475d904f8eaef5",
+      "parents": [
+        "da6b05da5bb2e4293f38572da361980960d91911"
+      ]
+    },
+    "75e340e222086baefd161d66ac21554cba063707": {
+      "public_commit": "ed476550f5907aecfb2e54c45ae56c9b91ee37e3",
+      "tree": "ace2c56273451da7f784f2c99e73c9fd7dfa04d7",
+      "parents": [
+        "066731b4d6d19d96469dd18fa082b264f3efed5d"
+      ]
+    },
+    "7b86048f8d801389e93803c8ccf3d05d8410619d": {
+      "public_commit": "4dc375f8ef83d77c5e2e4c9d1449690524005529",
+      "tree": "83aefed27a3701ca2fd8e8bab1c66d850902bffb",
+      "parents": [
+        "ed476550f5907aecfb2e54c45ae56c9b91ee37e3",
+        "da6b05da5bb2e4293f38572da361980960d91911"
+      ]
+    },
+    "546fde4a93aeb2c7f5c3ec77eebcc3928720f4e2": {
+      "public_commit": "4551f879e9f1dc0b60c95696b7e506f964de51e5",
+      "tree": "ac6a9100a137df9566423318e2f351330b55f624",
+      "parents": [
+        "4dc375f8ef83d77c5e2e4c9d1449690524005529"
+      ]
+    },
+    "ef057a77f97b584c7905ea8087e9d1e97a001891": {
+      "public_commit": "a098b6c6b7ce8118e24f1888aafc96035bb78e22",
+      "tree": "20f7bddb1a44668b00bf2f79ea1d06320a61ac8d",
+      "parents": [
+        "4551f879e9f1dc0b60c95696b7e506f964de51e5"
+      ]
+    },
+    "be67b60264217a60cb9a7bc60f4fadeab0b17ac3": {
+      "public_commit": "44cdd4407fa77c03ceae713932c3682a430d7350",
+      "tree": "f3bfb23e31a29f1dbbd99c20cd587a721d801b62",
+      "parents": [
+        "f759cd4d7f5e977621032c5a7b21081d97606830",
+        "a098b6c6b7ce8118e24f1888aafc96035bb78e22"
+      ]
+    },
+    "f592306324e00b0ca0a8e002204b6a45efcdf7fa": {
+      "public_commit": "5c0c7bedf8a3d95c4eb411df98eddc3133e7843f",
+      "tree": "fed243c450ec92c046ecead86a0e46f8da9fbb5c",
+      "parents": [
+        "44cdd4407fa77c03ceae713932c3682a430d7350",
+        "ccd1b16dea7be84552f40d3bcd0f23b4224699d3"
+      ]
+    },
+    "07bcfc7a69236cd92c0129a37d5144991b6de701": {
+      "public_commit": "ea43fde00b247b6dfea03d97d2b934e6942a9a3d",
+      "tree": "4e0f4a7115375757c2cf4baffaeafa6bfde40e64",
+      "parents": [
+        "5c0c7bedf8a3d95c4eb411df98eddc3133e7843f",
+        "4a48f2f09b1334036a6a88bab4e51f958cee46dd"
+      ]
+    },
+    "19be51424cb0009df5835171699a57a2b9fe19b6": {
+      "public_commit": "7b3187b358070e8c2cde0cd4209fc76433a41f15",
+      "tree": "9ecd86f9b85d2703a421a530330860811019b42f",
+      "parents": [
+        "ea43fde00b247b6dfea03d97d2b934e6942a9a3d"
+      ]
+    },
+    "f324a7016b4d9697410326d22d89fd396dc44be2": {
+      "public_commit": "bbbf888613a9796c0a217e7e5a62605672f66de1",
+      "tree": "64d28ac974cad3495c9178df7b394662fee6548b",
+      "parents": [
+        "7b3187b358070e8c2cde0cd4209fc76433a41f15"
+      ]
+    },
+    "5cc99b56c214134b27cb9279f79bbdeeb7efc239": {
+      "public_commit": "020161d3de667d82cb722f34c48003250634014b",
+      "tree": "3e1a223e59a3a59a574ba50e056e3df4db8a9e52",
+      "parents": [
+        "bbbf888613a9796c0a217e7e5a62605672f66de1"
+      ]
+    },
+    "751ca76d6b0b3a09b5712b01723b3c230978ef52": {
+      "public_commit": "5f90680e7a3ccc703d518268fd45124a3b466bed",
+      "tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "parents": [
+        "020161d3de667d82cb722f34c48003250634014b",
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ]
+    },
+    "7fb8d0f6a94f1e19f9ee17da837bd7c96bcfc783": {
+      "public_commit": "3580f0f352c309c990c8c3c6aff0902ab6b28f7c",
+      "tree": "4a3f11dbc082d23cbaa7e24f99bdd7a41ec7e79c",
+      "parents": [
+        "5f90680e7a3ccc703d518268fd45124a3b466bed"
+      ]
+    },
+    "3c8392ce116488f997b974aaf8ca85787ff5347b": {
+      "public_commit": "0b941a54d29bc6948b1db2b2669e269050be42d0",
+      "tree": "8a47de8f2b7eb12ba88f258449a937ef6377ab00",
+      "parents": [
+        "3580f0f352c309c990c8c3c6aff0902ab6b28f7c"
+      ]
+    },
+    "e210890e744540b070282bf768942174004f591d": {
+      "public_commit": "c51072fbe188cecbb529693cfc78fdd66710ebf6",
+      "tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "parents": [
+        "0b941a54d29bc6948b1db2b2669e269050be42d0"
+      ]
+    }
+  }
+}

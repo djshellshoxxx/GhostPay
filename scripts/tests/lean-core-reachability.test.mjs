@@ -65,11 +65,14 @@ const WEB_REVIEWED = [
 // a new dep fails, and a PENDING entry that left the closure fails too, so the list never grows or lingers silently.
 // A WEB_DEFERRED package must never be listed here.
 const WEB_PENDING_OWNER_REVIEW = [
+  '@ghostpay/merchant-billing', // F10 #324 4a48f2f0: dormant recurring schedule helpers; no route activation
+  '@ghostpay/merchant-hooks', // F10 #324: existing transitive dependency of merchant-billing
   '@ghostpay/net-transport', // 61e790da: apps/web direct dep (with scan-source)
   '@ghostpay/payment-uri', // bff25c1d: apps/web direct dep
   '@ghostpay/pir-two-server', // 62e6a449: transitive via @ghostpay/scan-source
   '@ghostpay/policy-scheme', // ca9bbbd7: apps/web direct dep
   '@ghostpay/scan-source', // 61e790da: apps/web direct dep
+  '@ghostpay/ux-receipts', // F05 #323 ccd1b16d: dormant offline receipt review; no route activation
   '@ghostpay/ux-vault', // 5ee84c91: apps/web direct dep
 ];
 

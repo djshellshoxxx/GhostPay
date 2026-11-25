@@ -1,0 +1,29 @@
+Source: f8aab16068bfd55210e0acbcf5bb8492f8c8f472
+Command: ["node", "../../node_modules/vitest/vitest.mjs", "run", "src/features/future/ghostproof", "--maxWorkers=1", "--coverage.enabled=true", "--coverage.include=src/features/future/ghostproof/{review,session}.ts"]
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f05/apps/web
+      Coverage enabled with v8
+
+
+ Test Files  2 passed (2)
+      Tests  67 passed (67)
+   Start at  08:34:55
+   Duration  1.10s (tests 42%, import 33%, transform 20%, worker 4%)
+
+ % Coverage report from v8
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------|---------|----------|---------|---------|-------------------
+All files   |   98.68 |    98.11 |     100 |   99.09 |                   
+ review.ts  |   99.06 |     98.6 |     100 |     100 | 179,188           
+ session.ts |   97.77 |    93.75 |     100 |   97.14 | 57                
+------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.68% ( 150/152 )
+Branches     : 98.11% ( 156/159 )
+Functions    : 100% ( 23/23 )
+Lines        : 99.09% ( 110/111 )
+================================================================================
+
+Exit: 0

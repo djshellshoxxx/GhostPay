@@ -1,0 +1,56 @@
+{
+  "schema": "ghostpay.publication-map/v1",
+  "branch": "future/f04-merchant-dashboard",
+  "remoteBase": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58",
+  "validatedMain": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "sourceTip": "19b47216b1c41653913196dd231f40faaa2d76a1",
+  "publishedTip": "69fc05b82e944c7d399162e028a6c6a2eaf8284c",
+  "note": "Maps local source and review commits to public Git objects with identical complete tree hashes. This file records through the validated source checkpoint; later branch commits add qualification/publication documentation.",
+  "commits": [
+    {
+      "local": "1dc3b8aca2eeea10a35aaa7ec511ae3ad494e227",
+      "published": "2d7120fb3491e312dbb2129b8c548b5ac2a9036a",
+      "tree": "3a5ceb1b68093696d910ccd1e72681d3b271ab55"
+    },
+    {
+      "local": "b0cedd6470aa770a7b2eb3fa3c54c88e6aee08dd",
+      "published": "4c884663af81f9624b11d0294dd99a7ce6072e7f",
+      "tree": "db8064b903f4facec2d6255cb1c33b3695f09eaf"
+    },
+    {
+      "local": "be37f79df4d60e2d87cd845fbf8e6f0fa117b135",
+      "published": "62312ba0f0fb1c84abfce0ea7cab467aaea98753",
+      "tree": "a00350a2230da989b92046238affd4db806bc599"
+    },
+    {
+      "local": "81ff020105231b0fba82798a6f1356ad1f18b409",
+      "published": "e35b1b3a73b5803a37c8fa1f8804a043c732854d",
+      "tree": "48cf22bd8d81cf198c9aba76d4e5b8581a4e8ea5"
+    },
+    {
+      "local": "966f415e520298310efd1f03883ea69844ea5eed",
+      "published": "7aa093817d3f71cee0c69301a22bfa0c91b93373",
+      "tree": "78b153dca133f9882c40c5f6c80a2d0539965362"
+    },
+    {
+      "local": "b2dcc7a843dfc89bed6fc8926b3d904d7b365920",
+      "published": "3ff7a3489bb9899071589279e4a5bdc1acdba446",
+      "tree": "377083041a23ec87a748c223ea96e6613ea61a4b"
+    },
+    {
+      "local": "49088efa043ca3f016e0b802f8b7bf51bf18a97a",
+      "published": "9f3ae17894607b986192d7129a069ab8ae73f160",
+      "tree": "d9bb38f57b42fdc91f87f18db5c3a989075f3cd1"
+    },
+    {
+      "local": "cde7944c9391a899acb388d5859ea728831eff18",
+      "published": "a7a8328ee206062916bca1bea5c456f08b00bb03",
+      "tree": "d1570d9f031a97dc3d42b34d9f982e2076d79cdb"
+    },
+    {
+      "local": "19b47216b1c41653913196dd231f40faaa2d76a1",
+      "published": "69fc05b82e944c7d399162e028a6c6a2eaf8284c",
+      "tree": "37396a9f071851cde08e0a948560a0b74a400b4a"
+    }
+  ]
+}

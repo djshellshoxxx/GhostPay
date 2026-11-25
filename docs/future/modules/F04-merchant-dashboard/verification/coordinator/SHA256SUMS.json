@@ -1,0 +1,8 @@
+{
+  "artifact-comparison.json": "20733ffe5ccc9406e22b1a82673a6ba1b63a2aea0804132781405eb636f75668",
+  "f04-current-main-bundle-scan.txt": "30220732edd59dcff0ddcd6646e214f61a968a055f39ad19ed1e67ae076b57e6",
+  "f04-current-main-focused-tests.txt": "7d23772c9fcd4ff78b7e2087fcf1978350c9dc7994f100458bcdb305d251b4ec",
+  "f04-current-main-lean-build.txt": "acf081e26e3c126b3ccea313dff34a1ac9a62ef4470823dcbf621deb302ff1c3",
+  "f04-current-main-web-typecheck.txt": "1a756104b4d10aecf57b9feba7792b879b35090473544e287f47f213b82d2633",
+  "f04-final-coverage.txt": "b3517a16b1cabf2e4000ba59fb482b3e11c56e4bbcd168fa85135728627c209a"
+}

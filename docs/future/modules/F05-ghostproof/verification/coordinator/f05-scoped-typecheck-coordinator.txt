@@ -1,0 +1,4 @@
+Source: f8aab16068bfd55210e0acbcf5bb8492f8c8f472
+Command: ["node", "node_modules/typescript/bin/tsc", "-p", "apps/web/tsconfig.future-validation.json", "--noEmit"]
+
+Exit: 0; seconds: 4.03

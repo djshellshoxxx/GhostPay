@@ -1,0 +1,33 @@
+Source: 726d16dc560f8b12e4c71f6c04895fd1dcbd34f4
+Command: ["npm", "exec", "--", "vitest", "run", "src/features/future/ghostproof/review.test.ts", "src/features/future/ghostproof/session.test.ts", "--maxWorkers=1", "--coverage.enabled=true", "--coverage.include=src/features/future/ghostproof/{review,session}.ts"]
+Exit: 0
+
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f05/apps/web
+      Coverage enabled with v8
+
+
+ Test Files  2 passed (2)
+      Tests  62 passed (62)
+   Start at  08:20:09
+   Duration  4.16s (import 42%, tests 35%, transform 16%, worker 7%)
+
+    Isolate  2 workers spawned · ~604ms startup each (spawn + environment, per file)
+             at least ~604ms faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------|---------|----------|---------|---------|-------------------
+All files   |   98.66 |    98.11 |     100 |   99.09 |                   
+ review.ts  |   99.04 |     98.6 |     100 |     100 | 178,187           
+ session.ts |   97.77 |    93.75 |     100 |   97.14 | 57                
+------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.66% ( 148/150 )
+Branches     : 98.11% ( 156/159 )
+Functions    : 100% ( 22/22 )
+Lines        : 99.09% ( 109/110 )
+================================================================================
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.

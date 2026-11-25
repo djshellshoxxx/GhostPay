@@ -1,0 +1,4 @@
+Source: 726d16dc560f8b12e4c71f6c04895fd1dcbd34f4
+Command: ["node", "node_modules/typescript/bin/tsc", "--noEmit", "--moduleResolution", "Bundler", "--module", "ESNext", "--target", "ES2022", "--lib", "ES2022,DOM", "--strict", "--noUncheckedIndexedAccess", "--exactOptionalPropertyTypes", "--skipLibCheck", "apps/web/src/features/future/ghostproof/index.ts", "apps/web/src/features/future/ghostproof/review.test.ts", "apps/web/src/features/future/ghostproof/session.test.ts"]
+Exit: 0
+
