@@ -304,7 +304,7 @@
 
       <section aria-labelledby="merchants">
         <h2 id="merchants">12. Merchant guidance</h2>
-        <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Plan your bookkeeping outside the app until the features below are available.</p>
+        <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Keep aggregate bookkeeping outside the app. GhostPay's beta and v1.0 focus on private payments and recovery; excluded products have no scheduled restart.</p>
         <div class="table-wrap" tabindex="0" role="region" aria-labelledby="merchant-table-caption">
           <table>
             <caption id="merchant-table-caption">Merchant capabilities and their status</caption>
@@ -314,11 +314,11 @@
               <tr><th scope="row">Merchant profile: load a published profile by URL</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Loads only when you press Load</td></tr>
               <tr><th scope="row">Merchant profile: issue an invoice template</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Needs the session key to match the profile's signer</td></tr>
               <tr><th scope="row">Publish a merchant profile</th><td><span class="status status-planned">Planned</span></td><td>No reachable publish path in the app</td></tr>
-              <tr><th scope="row">Aggregate merchant dashboard (totals and records)</th><td><span class="status status-planned">Planned</span></td><td>Not in the current interface</td></tr>
-              <tr><th scope="row">Subscriptions and installments</th><td><span class="status status-planned">Planned</span> for the app</td><td>Available in the command-line tools only</td></tr>
+              <tr><th scope="row">Aggregate merchant dashboard (totals and records)</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Archived indefinitely; ordinary invoice status and reconciliation remain available</td></tr>
+              <tr><th scope="row">Subscriptions and installments</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Outside the browser payment and recovery scope</td></tr>
               <tr><th scope="row">Webhooks</th><td><span class="status status-planned">Planned</span> delivery</td><td>Command-line tools can sign and verify payloads. The app does not deliver them</td></tr>
               <tr><th scope="row">Refund execution</th><td><span class="status status-unsupported">Unsupported</span></td><td>Refund records can be inspected. GhostPay refuses to execute a refund</td></tr>
-              <tr><th scope="row">Point-of-sale terminal and NFC</th><td><span class="status status-planned">Planned</span></td><td>Library code only. No screen in the app</td></tr>
+              <tr><th scope="row">Point-of-sale terminal and NFC</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Terminal product archived; ordinary invoice QR exchange remains available</td></tr>
             </tbody>
           </table>
         </div>
