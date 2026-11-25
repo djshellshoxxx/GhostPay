@@ -101,8 +101,9 @@ export interface HardeningReport {
 /**
  * Spec section 6 conflict and dependency rules.
  *
- * @remarks Errors block (mutually exclusive or invalid pair); warnings are dependency notes. Each
- * id must be absent (off) or a real boolean; a string such as `"false"` is rejected, not treated as on.
+ * @remarks Errors block (mutually exclusive or invalid pair); warnings are dependency notes. Every
+ * id must be present as a real boolean (run {@link normalizeHardening} first to fill defaults); a
+ * string such as `"false"` is rejected, not treated as on.
  * @throws {MetadataHardeningError} `INVALID_INPUT` for a malformed settings object, including a
  * `tagMode` that is not `full`, `ignore` or `mask:1..7`.
  */
@@ -111,10 +112,11 @@ export function validateHardening(s: HardeningSettings): HardeningReport {
   const enabled = s.enabled as unknown;
   requireRecord(enabled, 'settings.enabled');
   if (typeof s.tagMode !== 'string') fail('tagMode must be a string');
+  // Complete maps only: a missing id would be "off" here but a default in normalizeHardening.
   for (const id of MH_IDS) {
-    if (Object.hasOwn(enabled, id) && typeof enabled[id] !== 'boolean') fail('every enabled flag must be a boolean');
+    if (!Object.hasOwn(enabled, id) || typeof enabled[id] !== 'boolean') fail('every id needs a boolean flag (use normalizeHardening to fill defaults)');
   }
-  const on = (id: MhId): boolean => Object.hasOwn(enabled, id) && enabled[id] === true;
+  const on = (id: MhId): boolean => enabled[id] === true;
   const errors: string[] = [];
   const warnings: string[] = [];
   parseTagMode(s.tagMode); // malformed settings: INVALID_INPUT, like every other wrong-typed field

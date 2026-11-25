@@ -2,14 +2,15 @@
 import { describe, expect, it } from 'vitest';
 import { roundGross } from './amounts.js';
 import { stripPsbtFingerprints, planChange } from './btc.js';
-import { assertHardening, parseHardeningJson } from './catalogue.js';
+import { assertHardening, defaultHardening, normalizeHardening, parseHardeningJson, validateHardening } from './catalogue.js';
 import { deriveInvoiceKeyRange, deriveInvoiceKeys } from './derive.js';
 import { assertOnlyAllowedTxFields, bucketGasLimit } from './gas.js';
 import { MetadataHardeningError, parseEndpoint } from './guard.js';
 import { RelayerPinning, validateRelayerUrls } from './release.js';
-import { assertNoUserAddressFilter, roleForRequest } from './scan.js';
+import { padLengthFor, padPrivatePart, stripPrivatePad } from './invoice.js';
+import { assertNoUserAddressFilter, dedupeLogs, roleForRequest } from './scan.js';
 import { SEED, seededRng } from './testutil.testutil.js';
-import { sriDigest, verifySri } from './web.js';
+import { findUnsafeAnchors, sriDigest, verifySri } from './web.js';
 
 function codeOf(fn: () => unknown): string {
   try {
@@ -166,5 +167,87 @@ describe('review (smaller): strictness and compatibility', () => {
     for (const bad of [{ keyType: 0x1_0000_0000, key: '', value: '' }, { keyType: 0, key: 'zz<>', value: '' }, { keyType: 0, key: '', value: 'abc' }]) {
       expect(codeOf(() => stripPsbtFingerprints('regtest', { global: [bad], inputs: [], outputs: [] }))).toBe('INVALID_INPUT');
     }
+  });
+});
+
+describe('review round 2: the anchor lint follows the HTML tokeniser through comments, raw text and other tags', () => {
+  const unsafe0 = [{ index: 0, reason: 'MISSING_REL' }];
+  it('a fake anchor inside a comment, script, style, textarea or title never swallows or shifts real ones', () => {
+    for (const html of [
+      '<!-- <a href="x --><a target="_blank" href="y">l</a>',
+      '<script>x="<a y=\'";</script><a target="_blank" href="/">z</a>',
+      '<style>a::after{content:"<a target=_blank>"}</style><a target="_blank">',
+      '<textarea><a target="_blank"></textarea><a target="_blank">',
+      '<title><a target="_blank"></title><a target="_blank">',
+      '<SCRIPT><a target=_blank></ScRiPt ><a target=_blank>',
+      '<script><a target=_blank></scriptx><a target=_blank></script><a target=_blank>',
+    ]) {
+      expect(findUnsafeAnchors(html), html).toEqual(html.includes('</scriptx>') ? [{ index: 0, reason: 'MISSING_REL' }] : unsafe0);
+    }
+  });
+  it('an anchor-looking string inside another tag\'s attribute value is not an anchor', () => {
+    expect(findUnsafeAnchors('<div title="<a target=_blank>"></div><a target="_blank">')).toEqual(unsafe0);
+    expect(findUnsafeAnchors("<img alt='<a target=_blank>'><a target=_blank>")).toEqual(unsafe0);
+  });
+  it('declarations, bogus comments, empty comments and end tags with quoted ">" end where HTML ends them', () => {
+    for (const html of [
+      '<!DOCTYPE html><a target=_blank>',
+      '<?xml version="1.0"?><a target=_blank>',
+      '<!--><a target=_blank>',
+      '<!---><a target=_blank>',
+      '<!-- x --!><a target=_blank>',
+      '<!-- x ---><a target=_blank>',
+      '</a title=">"><a target="_blank">',
+      '</><a target="_blank">',
+      '</ x><a target="_blank">',
+      'a < b <a target="_blank"> 1<2',
+    ]) {
+      expect(findUnsafeAnchors(html), html).toEqual(unsafe0);
+    }
+  });
+  it('an unterminated comment or raw-text element consumes the rest of the input', () => {
+    for (const html of ['<!doctype html <a target=_blank>', '</ x <a target=_blank>', '</a title="<a target=_blank>', '<script></b><a target=_blank>', '<!-- <a target="_blank">', '<script><a target=_blank>', '<plaintext><a target=_blank>', '<a href="x"><!-- <a target=_blank>']) {
+      expect(findUnsafeAnchors(html), html).toEqual([]);
+    }
+  });
+  it('a character reference in target is treated as a possible _blank (conservative), rel stays literal', () => {
+    expect(findUnsafeAnchors('<a target="&#95;blank">')).toEqual(unsafe0);
+    expect(findUnsafeAnchors('<a target="&#x5f;blank">')).toEqual(unsafe0);
+    expect(findUnsafeAnchors('<a target="&lowbar;blank" rel="noopener noreferrer">')).toEqual([]);
+    expect(findUnsafeAnchors('<a target="_blank" rel="&#110;oreferrer noopener">')).toEqual([{ index: 0, reason: 'MISSING_NOREFERRER' }]);
+  });
+  it('stays linear with many comments, scripts and raw-text elements', () => {
+    const t0 = Date.now();
+    expect(findUnsafeAnchors('<!-- '.repeat(200_000))).toEqual([]);
+    expect(findUnsafeAnchors('<script>'.repeat(100_000))).toEqual([]);
+    expect(findUnsafeAnchors('<!--x--><script></script><a target=_blank>'.repeat(20_000)).length).toBe(20_000);
+    expect(findUnsafeAnchors('<a "'.repeat(500_000))).toEqual([]);
+    expect(Date.now() - t0).toBeLessThan(5000);
+  });
+});
+
+describe('review round 2: padding the empty object, bigint block numbers, complete settings', () => {
+  it('padPrivatePart({}) hits the bucket (the closing "}" saves a comma)', () => {
+    expect(padLengthFor(2)).toEqual({ target: 256, padChars: 246 });
+    const canon = (v: unknown): string => JSON.stringify(v);
+    const padded = padPrivatePart({}, canon);
+    expect(new TextEncoder().encode(canon(padded)).length).toBe(256);
+    expect(stripPrivatePad(padded)).toEqual({});
+  });
+  it('dedupeLogs accepts the bigint block numbers chain-adapters produces, and still rejects bad ones', () => {
+    const key = (l: { blockNumber: number | bigint; id: string }): string => l.id;
+    const logs = [{ blockNumber: 5n, id: 'a' }, { blockNumber: 3n, id: 'old' }, { blockNumber: 5, id: 'a' }, { blockNumber: 9n, id: 'b' }];
+    expect(dedupeLogs(logs, 5, new Set(), key).map((l) => l.id)).toEqual(['a', 'b']);
+    for (const blockNumber of [-1n, NaN, '5', null]) {
+      expect(codeOf(() => dedupeLogs([{ blockNumber, id: 'x' } as never], 0, new Set(), key))).toBe('INVALID_INPUT');
+    }
+  });
+  it('validateHardening needs every id as a real boolean, so it agrees with normalizeHardening', () => {
+    const d = defaultHardening();
+    const partial = { enabled: { 'MH-TAG-2': true } as never, tagMode: 'ignore' };
+    expect(codeOf(() => validateHardening(partial))).toBe('INVALID_INPUT');
+    expect(codeOf(() => normalizeHardening(partial))).toBe('CONFLICT');
+    expect(codeOf(() => validateHardening({ enabled: { ...d.enabled, 'MH-WAL-1': undefined } as never, tagMode: 'full' }))).toBe('INVALID_INPUT');
+    expect(codeOf(() => validateHardening(d))).toBe('NO_THROW');
   });
 });

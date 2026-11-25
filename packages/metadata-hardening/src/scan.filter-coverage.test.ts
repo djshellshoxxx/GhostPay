@@ -166,7 +166,7 @@ describe('MH-SCAN-2 alignedScanRange: bounds and shape', () => {
 describe('MH-SCAN-2 dedupeLogs: untrusted log objects', () => {
   const key = (l: { blockNumber: number; id?: string }): string => `${l.blockNumber}:${l.id ?? ''}`;
   it('rejects non-integer block numbers instead of silently keeping the log (regression: NaN passed)', () => {
-    for (const blockNumber of [NaN, Infinity, -1, 1.5, '5', null, undefined, 5n]) {
+    for (const blockNumber of [NaN, Infinity, -1, 1.5, '5', null, undefined, -5n]) {
       expect(codeOf(() => dedupeLogs([{ blockNumber } as never], 0, new Set(), key))).toBe('INVALID_INPUT');
     }
   });

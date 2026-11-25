@@ -66,17 +66,57 @@ function readAnchorAttrs(s: string, start: number, out: AnchorAttrs): number {
   }
 }
 
+/** Elements whose content is text, not markup: nothing inside them is a tag. */
+const RAW_TEXT_ELEMENTS: ReadonlySet<string> = new Set(['script', 'style', 'textarea', 'title', 'xmp', 'iframe', 'noembed', 'noframes']);
+
+function isAsciiLetter(c: number): boolean {
+  return (c >= 0x41 && c <= 0x5a) || (c >= 0x61 && c <= 0x7a);
+}
+
+/** Index just after the end of a comment, declaration or bogus comment starting at `lt` (`<!` or `<?`); -1 when unterminated. */
+function skipNonTag(s: string, lt: number): number {
+  if (s.startsWith('<!--', lt)) {
+    const open = lt + 4;
+    if (s.charCodeAt(open) === 0x3e) return open + 1; // "<!-->"
+    if (s.startsWith('->', open)) return open + 2; // "<!--->"
+    for (let i = s.indexOf('--', open); i !== -1; i = s.indexOf('--', i + 1)) {
+      if (s.charCodeAt(i + 2) === 0x3e) return i + 3; // "-->"
+      if (s.charCodeAt(i + 2) === 0x21 && s.charCodeAt(i + 3) === 0x3e) return i + 4; // "--!>"
+    }
+    return -1;
+  }
+  const gt = s.indexOf('>', lt + 2);
+  return gt === -1 ? -1 : gt + 1;
+}
+
+/** Index just after the end tag `</name` of a raw-text element, searching from `from` (ASCII case-insensitive); -1 when absent. */
+function skipRawText(s: string, from: number, name: string): number {
+  for (let i = s.indexOf('</', from); i !== -1; i = s.indexOf('</', i + 2)) {
+    const nameEnd = i + 2 + name.length;
+    if (asciiLower(s.slice(i + 2, nameEnd)) !== name) continue;
+    const after = s.charCodeAt(nameEnd);
+    if (isHtmlSpace(after) || after === 0x2f || after === 0x3e) {
+      return readAnchorAttrs(s, nameEnd, {}); // end index of the end tag, -1 when unterminated
+    }
+  }
+  return -1;
+}
+
 /**
  * MH-WEB-1 R3: finds `<a target="_blank">` tags without `rel` containing `noreferrer` and
  * `noopener`.
  *
- * @remarks A forward tokeniser over markup text, linear in its length: a lint aid, not an HTML
- * parser. `index` is the ordinal of the anchor among all anchors. It does not skip comments or
- * `<script>` bodies (conservative), does not decode character references in `target` or `rel`
- * (so `target="&#95;blank"` is missed), and does not
- * understand JSX: run it over rendered HTML. Only the `_blank` keyword is checked (ASCII
- * case-insensitive, exact); `rel` tokens split on HTML whitespace only, so a no-break space does
- * not separate tokens.
+ * @remarks A forward tokeniser over HTML text, linear in its length: a lint aid, not an HTML
+ * parser. It follows the HTML tokeniser where that decides what is a tag: comments, declarations
+ * and bogus comments are skipped, the content of `script`, `style`, `textarea`, `title`, `xmp`,
+ * `iframe`, `noembed` and `noframes` is text, `plaintext` ends the scan, and every other tag's
+ * attributes are read (so `<div title="<a target=_blank>">` holds no anchor). `index` is the
+ * ordinal of the `<a>` start tag among all `<a>` start tags, as `querySelectorAll('a')` orders them.
+ * Not modelled: `<noscript>` (read as markup, as with scripting disabled), foreign content
+ * (`<svg>` CDATA) and script double-escape. `target` matches the `_blank` keyword exactly (ASCII
+ * case-insensitive); a value containing `&` may be a character reference and is treated as
+ * `_blank` (conservative). `rel` splits on HTML whitespace only (a no-break space is not a
+ * separator) and is not entity-decoded. It does not understand JSX: run it over rendered HTML.
  *
  * @throws {MetadataHardeningError} `INVALID_INPUT` for a non-string (never "no findings"),
  * `LIMIT_EXCEEDED` above {@link MAX_MARKUP_LENGTH}.
@@ -91,15 +131,42 @@ export function findUnsafeAnchors(markup: string): UnsafeAnchor[] {
     const lt = markup.indexOf('<', from);
     if (lt === -1) break;
     from = lt + 1;
-    const letter = markup.charCodeAt(lt + 1);
-    const after = markup.charCodeAt(lt + 2);
-    if ((letter !== 0x61 && letter !== 0x41) || !(isHtmlSpace(after) || after === 0x2f || after === 0x3e)) continue;
+    const c1 = markup.charCodeAt(lt + 1);
+    if (c1 === 0x21 || c1 === 0x3f) {
+      const next = skipNonTag(markup, lt);
+      if (next === -1) break;
+      from = next;
+      continue;
+    }
+    const isEnd = c1 === 0x2f;
+    const nameStart = lt + (isEnd ? 2 : 1);
+    if (!isAsciiLetter(markup.charCodeAt(nameStart))) {
+      if (isEnd) {
+        // "</>" is ignored; any other "</" + non-letter is a bogus comment.
+        const next = markup.charCodeAt(nameStart) === 0x3e ? nameStart + 1 : skipNonTag(markup, lt);
+        if (next === -1) break;
+        from = next;
+      }
+      continue;
+    }
+    let nameEnd = nameStart + 1;
+    for (let c = markup.charCodeAt(nameEnd); nameEnd < markup.length && !isHtmlSpace(c) && c !== 0x2f && c !== 0x3e; c = markup.charCodeAt(nameEnd)) nameEnd++;
+    const name = asciiLower(markup.slice(nameStart, nameEnd));
     const attrs: AnchorAttrs = {};
-    const end = readAnchorAttrs(markup, lt + 2, attrs);
+    const end = readAnchorAttrs(markup, nameEnd, attrs);
     if (end === -1) break;
     from = end;
+    if (isEnd) continue;
+    if (name === 'plaintext') break;
+    if (RAW_TEXT_ELEMENTS.has(name)) {
+      const after = skipRawText(markup, end, name);
+      if (after === -1) break;
+      from = after;
+      continue;
+    }
+    if (name !== 'a') continue;
     const idx = index++;
-    if (attrs.target === undefined || asciiLower(attrs.target) !== '_blank') continue;
+    if (attrs.target === undefined || !(attrs.target.includes('&') || asciiLower(attrs.target) === '_blank')) continue;
     if (attrs.rel === undefined) {
       out.push({ index: idx, reason: 'MISSING_REL' });
       continue;

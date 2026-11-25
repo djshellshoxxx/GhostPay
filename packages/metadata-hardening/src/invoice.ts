@@ -30,9 +30,11 @@ function checkBuckets(buckets: unknown): asserts buckets is readonly number[] {
 export function padLengthFor(plaintextBytes: number, buckets: readonly number[] = DEFAULT_PLAINTEXT_BUCKETS): PadPlan {
   requireInput(Number.isInteger(plaintextBytes) && plaintextBytes >= 2, 'plaintext length out of range');
   checkBuckets(buckets);
-  const target = buckets.slice().sort((a, b) => a - b).find((b) => b >= plaintextBytes + PAD_OVERHEAD);
+  // The only 2-byte object is "{}": the pad member needs no leading comma there.
+  const overhead = plaintextBytes === 2 ? PAD_OVERHEAD - 1 : PAD_OVERHEAD;
+  const target = buckets.slice().sort((a, b) => a - b).find((b) => b >= plaintextBytes + overhead);
   if (target === undefined) throw new MetadataHardeningError('LIMIT_EXCEEDED', 'private part exceeds the largest bucket');
-  return { target, padChars: target - plaintextBytes - PAD_OVERHEAD };
+  return { target, padChars: target - plaintextBytes - overhead };
 }
 
 /** Runs the caller's canonicalizer; a throw or a non-string result becomes a typed error with no caller text. */

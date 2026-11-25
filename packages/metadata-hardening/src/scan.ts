@@ -190,7 +190,7 @@ export function alignedScanRange(opts: AlignedScanOptions, rng?: RandomSource): 
  *
  * @param keyOf Stable unique key per log, e.g. `${txHash}:${logIndex}`.
  */
-export function dedupeLogs<T extends { readonly blockNumber: number }>(
+export function dedupeLogs<T extends { readonly blockNumber: number | bigint }>(
   logs: readonly T[],
   discardBefore: number,
   seen: Set<string>,
@@ -203,7 +203,7 @@ export function dedupeLogs<T extends { readonly blockNumber: number }>(
   // Validate and key every log first so a bad entry leaves `seen` untouched.
   const keyed: { log: T; key: string }[] = [];
   for (const l of logs) {
-    requireInput(isRecord(l) && Number.isSafeInteger(l.blockNumber) && l.blockNumber >= 0, 'log needs a block number');
+    requireInput(isRecord(l) && isBlockNumber(l.blockNumber), 'log needs a block number');
     let key: unknown;
     try {
       key = keyOf(l);
@@ -215,7 +215,7 @@ export function dedupeLogs<T extends { readonly blockNumber: number }>(
   }
   const out: T[] = [];
   for (const { log, key } of keyed) {
-    if (log.blockNumber < discardBefore) continue;
+    if (BigInt(log.blockNumber) < BigInt(discardBefore)) continue;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(log);
@@ -224,6 +224,11 @@ export function dedupeLogs<T extends { readonly blockNumber: number }>(
 }
 
 const MAX_LOGS = 1_000_000;
+
+/** A block number as `number` (safe integer) or `bigint` (what `chain-adapters` logs carry), never negative. */
+function isBlockNumber(v: unknown): v is number | bigint {
+  return typeof v === 'bigint' ? v >= 0n : typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
+}
 
 /** RPC role: `scan` = bulk range reads; `query` = anything tied to a specific address, plus broadcast. */
 export type RpcRole = 'scan' | 'query';
