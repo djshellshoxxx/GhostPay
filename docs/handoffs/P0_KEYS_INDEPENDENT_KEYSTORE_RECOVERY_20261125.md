@@ -118,6 +118,22 @@ QA at merged head `2101af28` (plus docs-only follow-up edits):
 
 Not tested: the no-echo terminal passphrase prompt (needs an interactive TTY; unchanged pre-existing code).
 
+After #641 merged into main (`60824005`), main was merged into this branch (`98ec1be0`; the registry conflict was
+resolved by keeping both entries). #641 changed GhostPay's keystore codec to typed errors and an explicit check that
+the spending and viewing keys differ; its acceptance set is unchanged. After rebuilding `ux-vault` from the merged
+source:
+
+| Check | Result |
+|---|---|
+| `node --test scripts/recovery/*.test.mjs` (differential tests against #641's codec) | 47 tests: 45 pass, 0 fail, 2 skipped (anvil) |
+| `FUZZ_SCALE=5 FUZZ_SEED=post-641-20261125` fuzz suite | 5/5 pass |
+| Web typecheck, ESLint on the new spec, new browser spec (Chrome, full) against #641's Seller keys | exit 0, exit 0, pass (1.5 min) |
+
+Hosted CI on `31006b27`: `ts-test (web)` failed with 3289/3289 tests passing but one unhandled rejection after
+teardown. `WalletAttempts.tsx:104` called `setError` once jsdom's `window` was gone; the rejection originated in
+`WalletAttempts.status.test.tsx`. This PR touches no web source, the same job passed on `2bb16151`, and open PR #595
+("Finish wallet-attempt status fixture lifetime qualification") owns that test file. It was left for #595.
+
 ## Remaining and blockers
 
 - Independent human review before marking the PR ready and merging. The read-only review above was AI-assisted.
