@@ -75,11 +75,30 @@ export async function sellerSetup(page, origin) {
 }
 
 /** Open an invoice link as a fresh navigation and walk to the final check. Returns what happened. */
-export async function openAndPrepare(page, link) {
-  await page.goto('about:blank');
-  await page.goto(link);
+export async function openAndPrepare(page, link, { inPage = false } = {}) {
+  if (inPage) {
+    // Same-document invoice change (no reload): any in-flight work of the previous invoice keeps running.
+    await page.evaluate((h) => {
+      location.hash = h;
+    }, new URL(link).hash);
+  } else {
+    await page.goto('about:blank');
+    await page.goto(link);
+  }
   if (!(await visible(page.getByRole('heading', { level: 2, name: T.review }), 20_000))) return { prepared: false, reason: 'no-review' };
-  await page.getByRole('button', { name: 'Continue' }).click();
+  const cont = page.getByRole('button', { name: 'Continue' });
+  // Continue stays disabled while the deployment/RPC checks run; a failed check legitimately keeps checkout closed
+  // (harness fix H4: report it, do not throw). Wait up to 20 s for it to become usable.
+  let enabled = false;
+  for (let i = 0; i < 40 && !enabled; i += 1) {
+    enabled = (await cont.count()) > 0 && (await cont.first().isEnabled().catch(() => false));
+    if (!enabled) {
+      if ((await page.getByRole('alert').filter({ hasText: /Blocked by a safety check/ }).count()) > 0) break;
+      await page.waitForTimeout(500);
+    }
+  }
+  if (!enabled) return { prepared: false, reason: 'continue-blocked' };
+  await cont.first().click();
   const connect = page.getByRole('button', { name: /Connect E2E Wallet/ });
   if (await visible(connect, 10_000)) await connect.click();
   const prep = page.getByRole('button', { name: 'Prepare payment' });
@@ -141,15 +160,26 @@ export async function checkRow(page, sel) {
   if ((await row.count()) === 0) return { checked: false, reason: 'no-row' };
   const btn = row.getByRole('button', { name: T.checkBtn });
   if (!(await visible(btn, 2_000))) return { checked: false, reason: 'no-check-button' };
+  const before = await row.innerText();
   await btn.click();
-  const status = row.getByRole('status');
-  for (let i = 0; i < 30; i += 1) {
+  // The result may render as a status line or as an error notice inside the row (harness fix H4): wait until the
+  // button is usable again and the row text changed, then classify everything below the record line.
+  let text = '';
+  for (let i = 0; i < 40; i += 1) {
     await page.waitForTimeout(500);
     const busy = !(await btn.isEnabled().catch(() => true));
-    if (!busy && (await status.count()) > 0) break;
+    const now = await row.innerText().catch(() => before);
+    if (!busy && now !== before) {
+      text = now;
+      break;
+    }
   }
-  const text = (await status.count()) > 0 ? await status.first().innerText() : '';
-  return { checked: true, text, cls: classify(text) };
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const result = lines
+    .slice(1)
+    .filter((l) => ![T.checkBtn, T.clearBtn, 'Link a replacement transaction', '✖ Problem', ':'].includes(l))
+    .join(' ');
+  return { checked: true, text: result, cls: classify(result) };
 }
 
 /** Everything a user (or a forensic look at site data) can see in one tab. */

@@ -122,13 +122,27 @@ export const NAMED = [
       { op: 'reload', tab: 'A' },
     ],
   },
+  {
+    name: 'N9-late-hash-after-in-page-invoice-switch',
+    why: 'R28/R29/R42: tab switches to control C in-page while X waits in the wallet; the late X hash must stay X evidence, never C status, and C still pays once',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'hang-broadcast' },
+      { op: 'switchInPage', tab: 'A', intent: 'C' },
+      { op: 'release' },
+      { op: 'mine' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+      { op: 'check', tab: 'A', intent: 'X' },
+    ],
+  },
 ];
 
 /** Random middle step alphabet with weights; every op is bounded (no unbounded waits or loops). */
 function randomStep(rng) {
   const r = rng.next();
   const tab = rng.pick(['A', 'B']);
-  if (r < 0.16) return { op: 'open', tab, intent: rng.next() < 0.8 ? 'X' : 'C' };
+  if (r < 0.13) return { op: 'open', tab, intent: rng.next() < 0.8 ? 'X' : 'C' };
+  if (r < 0.16) return { op: 'switchInPage', tab, intent: rng.pick(['X', 'C']) };
   if (r < 0.32) return { op: 'send', tab, behaviour: rng.pick(SEND_BEHAVIOURS) };
   if (r < 0.42) return { op: 'mine' };
   if (r < 0.48) return { op: 'reorg', depth: rng.int(1, 3) };

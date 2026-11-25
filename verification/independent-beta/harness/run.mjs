@@ -115,7 +115,8 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
       } catch (e) {
         rec.error = String(e?.message ?? e).split('\n')[0];
       }
-      for (const h of wallet.handoffs) if (h.hash !== undefined && h.intent !== null) world.hashes[h.intent].add(h.hash);
+      // Only hashes that actually reached an open page can be shown by the app (harness fix H3).
+      for (const h of wallet.handoffs) if (h.hash !== undefined && h.intent !== null && h.deliveredToOpenPage === true) world.hashes[h.intent].add(h.hash);
       const obs = {};
       for (const [label, p] of Object.entries(world.tabs)) obs[label] = await observe(p).catch(() => ({ closed: true }));
       oracle.checkHandoffs(i);
@@ -126,6 +127,9 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
       rec.handoffs = wallet.handoffs.length;
       trace.push(rec);
     }
+    // Vacuity guard: every scenario starts with a payment of X, and its suffix pays C, so a run in which nothing ever
+    // reached the wallet means the harness failed to drive the app, not that the app is safe.
+    if (wallet.handoffs.length === 0) harnessError = 'harness: vacuous run (no wallet handoff at all)';
   } catch (e) {
     harnessError = String(e?.stack ?? e);
   } finally {
@@ -159,9 +163,10 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
 async function execStep(world, wallet, oracle, newTab, step, i) {
   const page = step.tab === undefined ? null : world.tabs[step.tab];
   switch (step.op) {
-    case 'open': {
+    case 'open':
+    case 'switchInPage': {
       world.intentOfTab[step.tab] = step.intent;
-      const r = await openAndPrepare(page, world.links[step.intent]);
+      const r = await openAndPrepare(page, world.links[step.intent], { inPage: step.op === 'switchInPage' });
       world.prepared = { ...(world.prepared ?? {}), [step.tab]: r.prepared };
       return r;
     }

@@ -105,7 +105,13 @@ export class Oracle {
       // I5b / I7: a checkout for one intent must not present the other intent's hash outside the shared journal.
       if (intent !== null) {
         const other = intent === 'X' ? 'C' : 'X';
-        for (const h of o.mainHashes) if (this.w.hashes[other].has(h)) this.violation('I5b', stepIndex, { tab, intent, foreignHash: h });
+        // Disclosing the previous invoice's hash under its own labelled warning is correct, not bleed.
+        const labelledPrevious = /Previous invoice transaction may have been submitted/.test(o.mainText);
+        for (const h of o.mainHashes) {
+          if (!this.w.hashes[other].has(h)) continue;
+          if (labelledPrevious) this.notes.push({ step: stepIndex, note: 'previous-invoice hash disclosed under its warning', tab, intent, hash: h });
+          else this.violation('I5b', stepIndex, { tab, intent, foreignHash: h, text: o.mainText.slice(0, 300) });
+        }
       }
       // I3: records of every un-cleared handoff are visible on the screens that show the journal.
       const journalScreen = o.headings.some((x) => x === 'Review payment' || x === 'Pay an invoice');
