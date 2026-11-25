@@ -1,3 +1,13 @@
+# Feature-completion campaign coordinator — 2026-11-25 UTC
+
+Claude Code session `feature-completion`, branch `claude/feature-completion-20261125`, base main
+`c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063` (main observed later at `5dc05bd6`). Owned paths:
+`docs/consolidation/feature-completion-20261125/**` and this entry. Workers own their own branches:
+FC-01 `claude/fc01-f03-request-file-20261125` (#650), FC-02 `claude/fc02-sweep-consent-20261125` (#649),
+FC-03 `claude/fc03-chain-interop-20261125` (#648). Donor branches (#310, #534, #376) are merged, never modified.
+Acceptance: each feature merges only with exact-head hosted CI green, independent review approved and the
+integration lock held; checkpoint in `docs/consolidation/feature-completion-20261125/CAMPAIGN.md`.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
