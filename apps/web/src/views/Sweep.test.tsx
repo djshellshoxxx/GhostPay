@@ -146,14 +146,17 @@ function nativeLog(metaAddress: string): RpcLog {
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string; nativePayment?: boolean; wrongTag?: boolean } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string; nativePayment?: boolean; wrongTag?: boolean; secondPayment?: (stealthAddress: string) => void } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   if (opts.vaultPass !== undefined) await saveEncryptedVault(opts.vaultPass, { N: 1 << 14 });
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
   const mine = opts.nativePayment === true
     ? { log: nativeLog(pub.metaAddress) }
     : makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n, ...(opts.wrongTag === true ? { wrongTag: true } : {}) });
-  const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
+  // A second payment to the same keys, later in the range, so its one-time address is a known own address.
+  const second = opts.secondPayment === undefined ? undefined : makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 60, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
+  if (second !== undefined) opts.secondPayment?.(second.stealthAddress);
+  const rpc = chainWithLogs(84532, 100, second === undefined ? [mine.log] : [mine.log, second.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
   const user = userEvent.setup();
   renderApp(makeServices({ loadManifest: opts.unsigned === true ? (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) : loaded, createRpc: () => Promise.resolve(withManifestChain(rpc, { code: opts.code ?? FAKE_CODE })), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
@@ -161,7 +164,7 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
   await user.type(screen.getByLabelText('Start block'), '0');
   if (opts.wrongTag === true) await user.click(screen.getByLabelText('Deep scan (also check wrong view tags)'));
   await user.click(screen.getByRole('button', { name: 'Start scan' }));
-  await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
+  await user.click((await screen.findAllByRole('button', { name: 'Sweep this payment' }))[0]!);
   return user;
 }
 
@@ -235,6 +238,35 @@ describe('Sweep', () => {
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
     expect(screen.getByText(keccak256(raw.raw as `0x${string}`))).toBeTruthy();
+    // A subsequent choice can be intentional; bookkeeping alone never prompts a signature.
+    const destination = screen.getByLabelText('Destination address (your own wallet)');
+    expect(await screen.findByText(/previously submitted a sweep to this destination/)).toBeTruthy();
+    await user.clear(destination);
+    expect(screen.queryByText(/previously submitted a sweep/)).toBeNull();
+  });
+
+  it('warns, without blocking, when the destination is another one-time address of these keys', async () => {
+    let secondAddress = '';
+    const raw: { raw?: string } = {};
+    const user = await toSweep({ raw, secondPayment: (a) => { secondAddress = a; } });
+    expect(await screen.findByText('5 USDC')).toBeTruthy();
+    expect(secondAddress).toMatch(/^0x[0-9a-fA-F]{40}$/);
+    const destination = screen.getByLabelText('Destination address (your own wallet)');
+    // [0] is the first payment (block 50); if the order ever changed, the selected address would be refused below.
+    await user.type(destination, secondAddress.toLowerCase());
+    expect(await screen.findByText(/another one-time address announced as a payment to these keys/)).toBeTruthy();
+    expect(raw.raw).toBeUndefined();
+    await user.clear(destination);
+    await user.type(destination, DEST);
+    expect(screen.queryByText(/another one-time address/)).toBeNull();
+    // The warning is advisory: the seller can still sweep into that address deliberately.
+    await user.clear(destination);
+    await user.type(destination, secondAddress.toLowerCase());
+    expect(await screen.findByText(/another one-time address announced/)).toBeTruthy();
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted')).toBeTruthy();
+    expect(raw.raw).toMatch(/^0x02/);
   });
 
   it('WEB-APP-01: re-verifies the manifest on chain before signing and refuses on mismatch', async () => {
@@ -296,6 +328,7 @@ describe('Sweep', () => {
     await screen.findByText(/Relayer fee: 0\.025 USDC/);
     await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
     expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+    expect(screen.getByText(/previously submitted a sweep to this destination/)).toBeTruthy();
     // The relayed transaction may still be pending: a fresh direct signature from the same address must not be offered.
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
@@ -622,6 +655,8 @@ describe('Sweep', () => {
       await fill(user);
       await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
       await screen.findByText('Outcome unknown');
+      // The funds may have moved: the destination was remembered at handoff, not only after a confirmed broadcast.
+      expect(screen.getByText(/previously submitted a sweep to this destination/)).toBeTruthy();
       sink.receiptFailed = true;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/outcome is still unknown/)).toBeTruthy();
