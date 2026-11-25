@@ -13,3 +13,8 @@ Prefer minimal changes. Add regression tests for behavioral fixes; run relevant 
 
 ## Integration
 Do not force-push shared branches or merge failing changes. Check PR overlap, dependencies and release behavior. Keep handoffs source-pinned, concise and current.
+
+## Owner stop-work directive — 2026-11-25 (overrides all earlier plans)
+PERMANENTLY ARCHIVED: F01 GhostTips, F09 GhostPOS, F13 fiat conversion. Stop all feature development indefinitely; preserve history and donor refs only. Do not resume without explicit owner reversal.
+DEFERRED: F08 (F8) GhostID, F11 GhostTeams, F12 GhostBridge, F14 multi-chain routing. Stop development now; excluded from beta and v1.0; no automatic resumption; explicit owner approval for a later release required.
+For all seven: do not implement, complete, assign, revive, promote, merge feature work, enable, advertise, deploy or count as outstanding release work. Mark existing branches/PRs as archival or deferred; preserve history, do not delete refs. Mixed PRs must exclude feature-specific changes while preserving unrelated required functionality. Already integrated code must remain dormant and disabled, with no user-facing routes, controls, automatic activation or release exposure; exclude from shipped artifacts where feasible. Verify absence/disabled behavior before beta and v1.0 release. Only containment, release-exclusion verification and necessary shared-core safety maintenance are permitted, not feature development. Preserve core invoice/payment/recovery functionality. This directive supersedes older specs, handoffs, task queues, consolidation and completion instructions. Read current main AGENTS.md before any work, including on old branches.
