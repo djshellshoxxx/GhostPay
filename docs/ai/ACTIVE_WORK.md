@@ -1,3 +1,11 @@
+# Account-privacy private scanner presentation qualification — 2026-11-25 UTC
+
+Sequential ChatGPT QA coordinator, isolated child `automation/20261125T0841Z/qa/private-scan-presentation` of #652 at `724afdcf557178d8b78d841b681f50e99d41935f`; observed main `60824005b89611aea2b16d3355378eebf072eedb`. Own only `apps/web/src/views/Scan.privateCheckpoint.test.tsx`, this additive claim and a handoff. #635 owns Scan.tsx reconciliation; #649 owns Sweep.test.tsx; #582/#596 own idle authority; historical #248/#256 source is retained. No edits to any production file or existing branch. Integration lock generation 24 is held by another coordinator; no integration.
+
+Acceptance: reconcile three CI failures in job 139030868461 with SessionPresentationBoundary's intentional invalidation of shell setters and Scan's fresh checkpoint load. Retain exact durable bytes, sole-key identity, immediate vault lock, automatic disarm, no extra scan before explicit restart, no stale results and successful explicit restart for low-level lock notification. Direct cancellation retains its separate Paused assertion. Actual idle suspension remains distinct and must not regain scan authority. No timeouts or gates changed. Fresh hosted verification and independent review required; local GitHub DNS unavailable.
+
+---
+
 # Registry history live-region qualification — 2026-11-24 Pacific
 
 Sequential ChatGPT coordinator, isolated child `automation/20261125T0437Z/qa/registry-history-live-region` of #612 at `e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Own only `apps/web/src/features/registry/RegistryView.history.test.tsx`, this additive claim and a source-pinned handoff. Parent and other owners retain all runtime paths. Recent #620/#635/#641/#616/#615/#613/#610/#630/#632/#636 changed-file lists do not touch this test or RegistryView/WalletAttempts. Do not merge or deploy.
