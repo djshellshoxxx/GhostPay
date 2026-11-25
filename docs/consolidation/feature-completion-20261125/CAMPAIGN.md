@@ -290,6 +290,9 @@ low/info, and remain filler work.
   +243/−0, 259 other paths — 156 single-source paths byte-identical to their input, 0 mismatches, 0 unexplained; the
   only true cross-feature merges are the four locale catalogs and `securityKeys.ts` (FC-01/FC-02/FC-05a key additions,
   conflict-free); all other multi-input paths are parent + stacked follow-up pairs.
+- 2026-11-25T10:08Z — owner asked whether a force merge was possible. Coordinator explained it would bypass the P1-LATE
+  session's held lock (gen 24, renewed to 10:37Z) and unfinished exact-head CI. **Owner decision:** wait for the lock,
+  then one combined candidate CI run (plan above). P1-LATE session asked to message `feature-completion-06` on release.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
