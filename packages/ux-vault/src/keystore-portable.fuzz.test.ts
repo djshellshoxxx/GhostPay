@@ -16,6 +16,8 @@ const DECRYPT_CODES = new Set([
   'error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys',
 ]);
 const hex = (bytes: Uint8Array): string => Buffer.from(bytes).toString('hex');
+// Fixed so CI is reproducible; change it locally to explore other cases. A failure report prints its own seed and path.
+const SEED = 20261125;
 
 function codeOf(error: unknown): string {
   // A raw runtime error fails the property with its class name instead of a fixed code.
@@ -48,7 +50,7 @@ describe('keystore envelope fuzzing (fixed diagnostics only)', () => {
     fc.assert(fc.property(fc.oneof(fc.string({ maxLength: 400 }), fc.string({ unit: 'binary', maxLength: 200 }), json.map((v) => JSON.stringify(v) ?? '')), (text) => {
       const outcome = envelopeOutcome(text);
       expect(ENVELOPE_CODES.has(outcome), outcome).toBe(true);
-    }), { numRuns: 600 });
+    }), { numRuns: 600, seed: SEED });
   });
 
   it('replacing any field or nested field with arbitrary JSON never escapes the fixed diagnostics', () => {
@@ -64,7 +66,7 @@ describe('keystore envelope fuzzing (fixed diagnostics only)', () => {
       if (remove) delete parent[key]; else parent[key] = value;
       const outcome = envelopeOutcome(JSON.stringify(file));
       expect(outcome === 'accepted' || ENVELOPE_CODES.has(outcome), outcome).toBe(true);
-    }), { numRuns: 800 });
+    }), { numRuns: 800, seed: SEED });
   });
 
   it('prototype keys, duplicate keys and deep nesting are refused', () => {
@@ -85,16 +87,18 @@ describe('keystore decryption fuzzing (damaged copies of the fixed vector)', () 
       const outcome = await decryptOutcome(text);
       expect(outcome === 'own-keys' || DECRYPT_CODES.has(outcome), outcome).toBe(true);
       if (text !== KEYSTORE_V1 && outcome === 'own-keys') {
-        // Only a semantically equivalent file (whitespace or a case-insensitive hex digit) can still open.
-        expect(JSON.stringify(JSON.parse(text.toLowerCase()))).toBe(JSON.stringify(JSON.parse(KEYSTORE_V1)));
+        // Only an equal JSON value can still open: an edit in the whitespace between tokens. The replacement alphabet
+        // is lower-case, so no case-only hex change can occur.
+        expect(JSON.parse(text)).toEqual(JSON.parse(KEYSTORE_V1));
       }
-    }), { numRuns: 30 });
+      // Always checked first: a newline turned into a space still opens the file (it once failed CI, PR #635 run 45572915393).
+    }), { numRuns: 30, seed: SEED, examples: [[KEYSTORE_V1.indexOf('\n'), ' ']] });
   }, 120_000);
 
   it('arbitrary passphrases never open the file and never throw raw errors', async () => {
     await fc.assert(fc.asyncProperty(fc.string({ maxLength: 64 }).filter((p) => p !== KEYSTORE_V1_PASSPHRASE), async (passphrase) => {
       const outcome = await decryptOutcome(KEYSTORE_V1, passphrase);
       expect(outcome).toBe('error.keystore.wrongPassphraseOrTheKeystoreWasModified');
-    }), { numRuns: 12 });
+    }), { numRuns: 12, seed: SEED });
   }, 120_000);
 });
