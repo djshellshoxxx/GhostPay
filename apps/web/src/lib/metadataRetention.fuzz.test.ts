@@ -56,12 +56,13 @@ describe('presentation retention registry, model-checked over generated operatio
     fc.assert(fc.property(fc.array(op, { maxLength: 80 }), (ops) => {
       const registry = new InvoicePreviewRetention();
       // Model: every registration, whether its owner disposed it, how often its clear() ran.
-      const entries: { at: number; fails: boolean; disposed: boolean; cleared: number; dispose: () => void }[] = [];
+      interface ModelEntry { at: number; fails: boolean; disposed: boolean; cleared: number; dispose: () => void }
+      const entries: ModelEntry[] = [];
       const plans: { preview: RetentionPreview; revision: number; live: number }[] = [];
       const live = (): typeof entries => entries.filter((e) => !e.disposed && e.cleared === 0);
       for (const o of ops) {
         if (o.kind === 'register') {
-          const entry = { at: o.at, fails: o.fails, disposed: false, cleared: 0, dispose: () => undefined };
+          const entry: ModelEntry = { at: o.at, fails: o.fails, disposed: false, cleared: 0, dispose: () => undefined };
           const before = live().length;
           try {
             entry.dispose = registry.register(() => {
