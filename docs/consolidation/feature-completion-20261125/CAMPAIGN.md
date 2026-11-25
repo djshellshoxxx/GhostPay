@@ -59,6 +59,19 @@ newer active owner. Donor branches are merged (not rebased) so their commits and
 | FC-05 | Bitcoin spent-output detection and private-scan consent (Spec 12, full profile) | #244 `chatgpt/btc-spent-private-scan-20261118` `981cc2f4` (contains #219 `9617e857`); #254 `2b4b1e91` diverges | #219 and #244 all CI green; #244 conflicts only in ACTIVE_WORK | Integrate #244; reconcile #254's divergent spentness evidence; catalog string |
 | FC-06 | Private seller scan checkpoints and durable discovery | #248 `chatgpt/ghostpay-private-scan-completion-20261119` `18b36745` | Red: 8 lint errors, e2e strict-mode duplicate address locator | Catalog conflicts, lint, e2e locator; medium |
 
+Coordinator refinement (06:15Z):
+- FC-04 is smaller than a feature: current main already carries #271's `rpc.ts` egress hardening
+  (`credentials: 'omit'`, `no-referrer`, `no-store`); the unique remainder is regression tests (`quote.test.ts`
+  absurd `price.decimals`, `chain.hardening.test.ts` additions). Re-scoped as a low-priority test-recovery bundle
+  together with RCPT-L1/L2.
+- FC-06 (#248) **deferred**: `apps/web/src/views/Scan.tsx` and `apps/web/src/lib/scanClient.ts` are changed by 11
+  active PRs updated 2026-11-24/25, including P1-LATE #635 and P0-KEYS #622. Integrating 2.6k lines there now would
+  collide with active owners. Revisit after #635/#622 land.
+- FC-05 (#244, +1.3k lines, `packages/btc-silent-payments` has no active overlap) is the round-2 lead.
+- `automation/20261124T1637Z/bug/hostile-text-fresh-payer` (no PR) belongs to the seller-keystore recovery stack
+  that #641 is consolidating; left to that owner.
+- Round-2 work reuses finished round-1 workers and their installed worktrees (disk: 16 GB free after three installs).
+
 Deferred from triage: closed #164 tip `d6f6617e` residual (quote/rpc retry, `check-tx-origin` gate, pool files) needs
 hunk-level review against later main commits `be7e9671`/`bec1410f` first. RCPT-L1/L2 and QA-I1 are unclaimed,
 low/info, and remain filler work.
@@ -92,3 +105,6 @@ low/info, and remain filler work.
   merged #638 POS terminal → main `f18e8c0c`. Round-1 branches start from `c8e131c1` and must merge `f18e8c0c`
   (or later) and requalify before integration. Read-only round-2 triage (Haiku) launched for #250/#271/#164,
   #248, BTC Spec 12 (#244/#254/#219), RCPT-L1/L2 and QA-I1.
+- 2026-11-25T06:05Z — round-1 merges exist on main `f18e8c0c`: FC-01 `225383a9`, FC-02 `5613341b`,
+  FC-03 `166a9b11` (local refs; workers asked to push and open draft PRs so hosted CI overlaps the serialized
+  local queue). Independent read-only Opus reviews launched against those exact merge commits.
