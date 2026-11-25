@@ -1,9 +1,11 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import { emptyConfig } from './config.js';
 import { evaluate } from './evaluate.js';
 import { ERROR_KEYS } from './keys.js';
 import { acknowledge, applyPreset, defaultSelection, setOption } from './resolve.js';
 import { sanitizeSelection, serializeSelection } from './serialize.js';
+import { createSnapshot } from './snapshot.js';
 import type { Capability, Context, Selection } from './types.js';
 import { ctx, sel } from './x.testutil.js';
 
@@ -83,6 +85,18 @@ describe('evaluate is total on malformed contexts and fails closed', () => {
   it('invalid capabilities container grants nothing (fail closed)', () => {
     const c = { ...ctx(), capabilities: ['sweep-relayer', 'multi-relayer'] as unknown as ReadonlySet<Capability> };
     expect(codes(sel(HOPS1), c)).toContain('E_CAPABILITY');
+  });
+  it('an object that only claims to be a Set (toStringTag, has) is not accepted and cannot make anything throw', () => {
+    const fake = { [Symbol.toStringTag]: 'Set', has: () => true, size: 1 };
+    const c = { ...ctx(), capabilities: fake } as unknown as Context;
+    expect(codes(sel(HOPS1), c)).toContain('E_INVALID_CONTEXT');
+    expect(codes(sel(HOPS1), c)).toContain('E_CAPABILITY');
+    expect(() => createSnapshot(emptyConfig(), c)).not.toThrow();
+    expect(createSnapshot(emptyConfig(), c).ok).toBe(false);
+  });
+  it('a Set from another realm or a Set subclass is accepted', () => {
+    class Caps extends Set<Capability> {}
+    expect(codes(defaultSelection(), ctx({ capabilities: new Caps() }))).toEqual([]);
   });
   it('a valid cross-realm style Set is accepted', () => {
     const c = ctx({ capabilities: new Set<Capability>(['sweep-relayer']) });

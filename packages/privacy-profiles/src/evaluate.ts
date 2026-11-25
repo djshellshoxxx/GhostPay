@@ -5,7 +5,7 @@
  */
 import { OPTION_CATALOGUE } from './catalogue.js';
 import { deepFreeze } from './freeze.js';
-import { normalizeContext, normalizeSelection } from './input.js';
+import { isRecord, normalizeContext, normalizeSelection } from './input.js';
 import { RULES } from './rules.js';
 import {
   ACK_KEYS,
@@ -50,7 +50,7 @@ const has = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.c
 
 /** Definition of the chosen value, if the option has it. */
 export function valueDef(id: OptionId, value: string): ValueDef | undefined {
-  return OPTION_CATALOGUE[id].values.find((v) => v.value === value);
+  return has(OPTION_CATALOGUE, id) ? OPTION_CATALOGUE[id].values.find((v) => v.value === value) : undefined;
 }
 
 function inScope(def: OptionDef, ctx: Context): boolean {
@@ -340,10 +340,15 @@ export function explain(selIn: Selection, ctxIn: Context): readonly { option: Op
 
 /** Honest label keys for an evaluation: fixed headline, trust parties and what stays visible. Never prose. */
 export function honestLabel(ev: Evaluation): { readonly headline: WarningKey; readonly trusts: readonly TrustParty[]; readonly stillVisible: readonly LeakKey[]; readonly warnings: readonly WarningKey[] } {
+  // Total on garbage: anything that is not an evaluation gives the bare headline with empty lists. Build labels only
+  // from `evaluate()` results; an empty list from garbage is not a statement that nothing stays visible.
+  const list = (x: unknown): unknown[] => (Array.isArray(x) ? x : []);
+  const rec: Record<string, unknown> = isRecord(ev) ? ev : {};
+  const keys = list(rec['warnings']).flatMap((w) => (isRecord(w) && typeof w['key'] === 'string' ? [w['key'] as WarningKey] : []));
   return deepFreeze({
     headline: 'privacy.warn.noAnonymity',
-    trusts: ev.trust,
-    stillVisible: ev.doesNotHide,
-    warnings: uniqSorted(ev.warnings.map((w) => w.key as WarningKey)),
+    trusts: list(rec['trust']).filter((t): t is TrustParty => typeof t === 'string'),
+    stillVisible: list(rec['doesNotHide']).filter((l): l is LeakKey => typeof l === 'string'),
+    warnings: uniqSorted(keys),
   });
 }

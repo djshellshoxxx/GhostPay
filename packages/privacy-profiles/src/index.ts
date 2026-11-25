@@ -11,5 +11,7 @@ export { WARNING_KEYS, ACK_KEYS, ERROR_KEYS, CHAIN_ERROR_KEYS, CHAIN_WARNING_KEY
 export * from './config.js';
 export * from './snapshot.js';
 export * from './claims.js';
+export { validateDefinitions, findDependencyCycles } from './definitions.js';
+export type { Definitions, DefinitionIssue, DefinitionIssueCode } from './definitions.js';
 export * from './steps.js';
 export * from './chainRules.js';

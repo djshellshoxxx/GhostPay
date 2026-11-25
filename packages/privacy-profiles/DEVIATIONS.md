@@ -32,6 +32,22 @@ From chaining.md: C-04, C-06, C-07, C-14, C-17 (FEE-2 part), C-34; isolation def
 - Pipeline-only warning keys (`chain.longRun`, `chain.appMustStayOpen`, `chain.combinationFingerprint`) and error key `chain.layerChanged` have no rule row here; the pipeline package emits them.
 - `chainMatrix()` is one cell per rule (spec 4 compact table is a hand layout).
 
+## Completion work, 2026-11-25 (issue 284 / F18 standalone package slice)
+
+Owner-review items. None is stated by profiles.md; each is a proposal that is easy to change.
+
+1. [new] `shielded` preset (issue 284 section 2, F18 section 1). Membership: the pool track only, with the same preferences as `maximum` for `sweep.exit`, `sweep.exitGas`, `sweep.poolAmountPlan` and `pay.source`, and `pay.amountBlur` limited to `delay`. No network hardening, sponsors, hops or amount splitting. Confidential amounts are excluded because R-11 and R-13 block combining a confidential asset with a pool (those rules are themselves [new], Q3). F18 section 13 lists "final preset memberships" as an owner decision.
+2. [new] Input guards: `E_INVALID_SELECTION` and `E_INVALID_CONTEXT` (keys `privacy.err.invalidSelection`, `privacy.err.invalidContext`) and `privacy.err.unknownPreset`. profiles.md says every function is total; before this change a non-object selection or context threw and a string in `acks` acknowledged by substring match.
+3. [new] Version 2 stored configuration (`parseConfig`, `serializeConfig`, `loadConfig`). profiles.md specifies only version 1 (`serializeSelection`, `sanitizeSelection`), which is unchanged and still lenient. Version 2 adds `consents` and strict, all-or-nothing parsing; version 1 migrates with an empty consent list.
+4. [new] Consent model (`reviewConfig`, `createSnapshot`): a configuration needs `party:<trust party>` consent for every party an effective value relies on, and `experimental:<option>=<value>` for each experimental value, on top of the existing acknowledgements. Includes parties that are GhostPay's own unaudited code (`own-circuits-dev-ceremony`, `own-unaudited-contracts`). Owner may narrow which parties need consent. No fee, quote or provider consent exists here because nothing in the catalogue is paid.
+5. [new] Capability claims (`describeConfig`, `describePreset`): `qualification` is always `unqualified` and `verified` always `false`. F18 AC06 asks for exact-context evidence before any label says otherwise; this package has no evidence input, so it never does.
+6. [new] `validateDefinitions` treats any cycle through `requires` rules or `activeWhen` conditions as an error. The shipped data has none. A cycle is not strictly unsatisfiable (both options can be set), so this is a conservative authoring check; the owner may relax it.
+7. Static tables (catalogue, rules, presets, chain rules, steps) and every result are now deeply frozen. A consumer that mutated them (none in the repository does) now gets a `TypeError`.
+8. `sanitizeSelection` still returns the default selection for any version other than 1, silently. Use `parseConfig` where the user must be told.
+9. Test strengthening: `rules.test.ts` now checks each rule fires as a blocking issue or a warning according to the kind written out in the test (a mutation check found a conflict demoted to a warning passed unnoticed). The preset id lists in `presets.test.ts` and `serialize.test.ts` gained `shielded`; the four existing preset snapshot contexts gained `shielded` entries and no existing snapshot changed.
+
+Unchanged and still open: Q1 (third-party pool first), Q2 (`standard` changes four defaults), Q3 (R-12, R-13, R-14 blocking), Q4 (spike-gated capability names), Q5 (per-role selections), Q6 (legal, deferred).
+
 ## Mutation check (manual, 2026-10-21)
 
 Deleting R-11, R-12 or R-29, or flipping `sweep.destination` default, makes tests fail (2, 3, 3 and 1 failures).
@@ -39,3 +55,5 @@ Deleting R-11, R-12 or R-29, or flipping `sweep.destination` default, makes test
 ## Not done
 
 UI wiring (lane E6), capability detection, umbrella end-to-end per preset, `selectionToPipeline` (pipeline package), numeric performance bench (PP-19 informational, not run).
+
+Also not done, outside this package: the F18 app layer (`apps/web/src/features/privacy-modes/`: review reducer, accessible dependency and cost UI, saved variants, tab conflict handling), fee quotes (FEE01), live capability observations and their expiry, reconciling `@ghostpay/privacy-pipeline`'s local copy of the rules with `RULES`, and any Maximum or Shielded end-to-end evidence.

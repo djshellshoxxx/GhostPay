@@ -24,8 +24,19 @@ export type InputProblem =
 /** A value that is a non-array object (null excluded). */
 export const isRecord = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
 
-/** True for a real `Set` from any realm; rejects arrays and look-alike objects with a `has` method. */
-export const isSet = (x: unknown): x is ReadonlySet<unknown> => Object.prototype.toString.call(x) === '[object Set]';
+/**
+ * True for a real `Set` (or subclass) from any realm. `Set.prototype.has` checks the internal slot, so arrays, look-alike
+ * objects with their own `has` and objects that merely claim `Symbol.toStringTag = 'Set'` are all rejected.
+ */
+export const isSet = (x: unknown): x is ReadonlySet<unknown> => {
+  if (typeof x !== 'object' || x === null) return false;
+  try {
+    Set.prototype.has.call(x, undefined);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const SAFE_SELECTION: Selection = Object.freeze({ preset: 'custom', values: Object.freeze({}), acks: Object.freeze([]) });
 
