@@ -275,6 +275,21 @@ low/info, and remain filler work.
   libraries with added mainnet refusals (no scope expansion, nothing activated); FC-05a = reduces disclosure of the
   existing full-profile Bitcoin feature (automatic provider query → local detection + opt-in consent). None touches
   F02/F04. All remain eligible. Docs-only drift (`AGENTS.md`), no overlap with FC branches.
+- 2026-11-25T10:05Z — P1-LATE session (ghostpay-58) confirmed it holds lock gen 24 for #635, expects release about
+  10:15–10:30Z after one `ts-test (rest-2)` rerun (#641 keystore fuzz flake, fixed by #660), and is renewing the lock.
+  Follow-up PRs opened: **#661** FC-03-T (`a2b14ca8`, stacked on #648), **#662** FC-05a-T (`22c3cb1d`, stacked on #656;
+  must merge after #656), **#663** FC-04 (`d0510887`, base main; local: ux-receipts 164/164 with coverage
+  99.75/98.29/98.07/99.68, tsc/eslint clean, quote 23/23).
+- **Integration plan change (CI economy).** After #635 lands, main changes in source paths and every round-1 PR would
+  need a fresh re-merge and full CI run in turn (≈1 h each on congested runners). Instead: build ONE candidate branch
+  from post-#635 main with sequential `--no-ff` merges, one merge commit per PR (FC-03 #648, FC-03-T #661, FC-01 #650,
+  FC-02 #649, FC-05a #656, FC-05a-T #662, FC-04 #663), qualify that exact head on hosted CI (draft PR, do not merge),
+  hold the integration lock with heartbeats while it runs, then fast-forward `main` to the qualified SHA (non-force) and
+  release. Main then equals the exact CI-qualified tree and each feature keeps its own traceable merge commit; the PRs
+  show as merged. Dry run on main `c365dc41` (local, deleted afterwards): all seven inputs merged, ACTIVE_WORK union
+  +243/−0, 259 other paths — 156 single-source paths byte-identical to their input, 0 mismatches, 0 unexplained; the
+  only true cross-feature merges are the four locale catalogs and `securityKeys.ts` (FC-01/FC-02/FC-05a key additions,
+  conflict-free); all other multi-input paths are parent + stacked follow-up pairs.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
