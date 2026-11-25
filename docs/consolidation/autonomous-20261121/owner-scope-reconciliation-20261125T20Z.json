@@ -1,0 +1,127 @@
+{
+  "checkpoint": "2026-11-25T20Z",
+  "priorLedger": "4ff8fc8facc6a72bdf75f9a95b0a6518ee9a16b4",
+  "priorSnapshot": "docs/consolidation/autonomous-20261121/owner-scope-reconciliation-20261125T19Z.json",
+  "main": "f9a3ccd45a5ebe2692a64c0dda8c66f963c7c1e2",
+  "branchCount": 799,
+  "openPRCount": 255,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    99,
+    0
+  ],
+  "prPageLengths": [
+    100,
+    100,
+    55,
+    0
+  ],
+  "frozenRefsVerified": 34,
+  "originalRefsVerified": 34,
+  "archiveMismatches": [],
+  "snapshotSemantics": "Full paginated refresh compared to prior snapshot. Apply branch and PR deltas to prior inventory; publication of this ledger itself advances the ledger branch after the snapshot. Counts are mechanical, not full semantic disposition or completion evidence.",
+  "delta": {
+    "branchAdded": [],
+    "branchRemoved": [],
+    "branchChanged": {
+      "automation/ghostpay-integration-lock": "46d2e23d0a70c10c0b6fe409180e3530bcf85b57",
+      "claude/w3-provider-privacy-boundary": "6985ec0091cdd0deed52472575bd6cb86ec58078",
+      "claude/w3-sweep-consent-successor": "4a2258d397c9322554d92e8d76d8f9641a58dbdd",
+      "integration/ghostpay-autonomous-ledger-20261121-5ceb": "4ff8fc8facc6a72bdf75f9a95b0a6518ee9a16b4",
+      "main": "f9a3ccd45a5ebe2692a64c0dda8c66f963c7c1e2",
+      "nodata/optimistic-maxwell-epuo8f": "7bc3c030be8a88b4706b192b559eadf87452b7bd"
+    },
+    "postCensusPolicyBranchUpdate": {
+      "automation/20261125T1635Z/coordinator/owner-scope-landing": "fc1d274f90876eac4236e2c21fb78ff3ab9bfa31"
+    },
+    "openPRAdded": [],
+    "openPRRemoved": [
+      672,
+      677,
+      679
+    ],
+    "openPRChanged": {
+      "380": "4ff8fc8facc6a72bdf75f9a95b0a6518ee9a16b4",
+      "673": "7bc3c030be8a88b4706b192b559eadf87452b7bd",
+      "680": "fc1d274f90876eac4236e2c21fb78ff3ab9bfa31",
+      "683": "4a2258d397c9322554d92e8d76d8f9641a58dbdd"
+    }
+  },
+  "newlyIntegrated": [
+    {
+      "pr": 672,
+      "head": "6985ec0091cdd0deed52472575bd6cb86ec58078",
+      "merge": "f9a3ccd45a5ebe2692a64c0dda8c66f963c7c1e2",
+      "tree": "e38713d676f228e011a224cf5e8685b2f56ad2c9",
+      "exactTree": true,
+      "checks": "39 success, 3 skipped; six workflows success",
+      "disposition": "integrated: fail-closed scan settings and dispatch-time route checks"
+    },
+    {
+      "pr": 677,
+      "head": "f038ae45d8d119be22317d0a395f15c9b67204cc",
+      "merge": "13a29e706fcfd84cd261698fc417388f3a8723dc",
+      "checks": "39 success, 3 skipped; six workflows success",
+      "disposition": "integrated: external wallet library gate; actual merge contains extra UI changes, not tree identical"
+    },
+    {
+      "pr": 679,
+      "head": "36b8a71bffda10076f25068126f1450bfd6354ae",
+      "merge": "f007ec7c82f470f82a6f3eecec02c4c84b068ae3",
+      "checks": "37 success, 3 skipped; six listed workflows success; no separate dynamic CodeQL run listed for this head",
+      "disposition": "integrated: wallet disclosure UI; merge differs from head only by four documentation paths"
+    }
+  ],
+  "policy": {
+    "pr": 680,
+    "head": "fc1d274f90876eac4236e2c21fb78ff3ab9bfa31",
+    "tree": "a5a1560e4082df804e26b5c09b7c55b8d204c1f8",
+    "parents": [
+      "8a4a9a3823f9e8f7a68f273146fad377f0d2bb93",
+      "f9a3ccd45a5ebe2692a64c0dda8c66f963c7c1e2"
+    ],
+    "ownershipBlob": "1dcba2e69acf15adecd45412e42bae6658435278",
+    "verification": "Eight documentation paths only; seven policy blobs unchanged from previous candidate, current main ACTIVE_WORK exact prefix and three historical claims appended once; zero behind at preflight; expected-head non-force update and readback verified.",
+    "checks": "CI 45691681764 and CodeQL 45691668314 queued, 5 checks queued at read; independent formal approval absent at previous head",
+    "mainStopFile": "404 at pinned main; read candidate directive instead, owner scope binding",
+    "next": "Request independent approval and await exact-head qualification. No lease or main merge."
+  },
+  "releaseExclusion": {
+    "pr": 673,
+    "head": "7bc3c030be8a88b4706b192b559eadf87452b7bd",
+    "checks": "39 success, 3 skipped; all six workflows success",
+    "finding": "Source comparison: verifier accepts empty per-chunk module arrays and empty Worker inventory despite lean writer rejecting both. Matching emitted executable filenames can pass without per-chunk provenance. Reconcile writer contract and add regressions; no runtime repro claimed.",
+    "comment": 7173175952,
+    "disposition": "Existing owner retained; draft, review and requalification required"
+  },
+  "lease": {
+    "generation": 32,
+    "status": "released",
+    "head": "46d2e23d0a70c10c0b6fe409180e3530bcf85b57"
+  },
+  "mainPushWorkflows": {
+    "hosting": "45690962237 success",
+    "CI": "45690962215 in_progress",
+    "CodeQL": "45690961157 in_progress"
+  },
+  "heldMixed": [
+    371,
+    592,
+    614,
+    616,
+    617,
+    621
+  ],
+  "limitations": [
+    "Git CLI DNS resolution failed; no local runtime test or independent formal review performed.",
+    "Branch protection endpoint denied 403; no main merge authorized on assumptions.",
+    "Global unresolved semantic count remains unproven; prior branch dispositions retained. New merged PRs confirmed via remote metadata, not a new full historical audit.",
+    "No deployment, deletion, force push, archive modification, or stopped feature development."
+  ]
+}
