@@ -72,6 +72,22 @@ Coordinator refinement (06:15Z):
   that #641 is consolidating; left to that owner.
 - Round-2 work reuses finished round-1 workers and their installed worktrees (disk: 16 GB free after three installs).
 
+Coordinator analysis while round 1 waits (07:40Z, git-only, against main `5dc05bd6`):
+- **FC-05 split.** #244 (`981cc2f4`) and #254 (`2b4b1e91`) are two independent continuations of #219
+  (`9617e857`) from the same base `58d89b39`. Merging them together conflicts in 18 Bitcoin source files
+  (`BtcView.tsx`, `scan.ts`, `scanWorker*`, `headers.ts`, `esplora.ts`, `btc-silent-payments/src/scan/{scanner,state}.ts`, …),
+  i.e. two implementations of the same spentness logic. Plan: **FC-05a** = #244 alone (merges onto main with only an
+  ACTIVE_WORK conflict; all CI green at its head); **FC-05b** = port #254's distinct hardening onto FC-05a under an
+  Opus implementer and separate review (`78e50547` canonical spends vs duplicate/replayed evidence, `ba588c82`
+  re-validate spentness before retained sweep actions, `524215eb` bound distinct scan outputs, `4281fce1` restrict
+  matched-transaction proofs to authorized light scans). #254 also touches the contended `scanClient.ts`; port only
+  the Bitcoin-scoped parts. Main's later BTC fix `0860e8fb` (sweep-preview destination network validation) must survive.
+- **Closed #164 (`d6f6617e`) residual: superseded, nothing to recover.** Hunk review: main replaced its bash
+  `check-tx-origin.sh` with `check-tx-origin.mjs` (`7abb3123`, after `be7e9671`); main's `quote.ts` is a strict superset
+  (sequencer uptime/grace, reference-feed deviation, USD peg, expected decimals, `price.decimals` 0..30 in
+  `fiatToTokenAmount`); `scan-bundle.mjs` has newer main commits (`81614e56`); the remaining pool-circuits/pool-relayer
+  hunks are net deletions against main in the experimental pool PoC (out of beta scope). Branch preserved unchanged.
+
 Deferred from triage: closed #164 tip `d6f6617e` residual (quote/rpc retry, `check-tx-origin` gate, pool files) needs
 hunk-level review against later main commits `be7e9671`/`bec1410f` first. RCPT-L1/L2 and QA-I1 are unclaimed,
 low/info, and remain filler work.
