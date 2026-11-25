@@ -912,13 +912,13 @@
       "id": "btc-match-proof",
       "flows": [
         "bitcoin-scan",
-        "matched-output-validation",
-        "sweep-preflight"
+        "matched-output-validation"
       ],
       "sourcePaths": [
         "apps/web/src/features/btc/esplora.ts",
         "apps/web/src/features/btc/scan.ts",
-        "apps/web/src/features/btc/oracleSource.ts"
+        "apps/web/src/features/btc/oracleSource.ts",
+        "apps/web/src/features/btc/inclusion.ts"
       ],
       "symbols": [
         "rawTransaction",
@@ -933,8 +933,8 @@
         "outpoints",
         "ownership interest"
       ],
-      "automatic": false,
-      "authorization": "Opt-in only. The per-outpoint /outspend check runs only when the user enables the provider spent check; /hex and /merkle-proof reads run only in light-oracle mode after explicit consent. By default confirmed spends are derived locally from scanned block inputs and no outpoint is sent. Addressed by FC-05a (#656), pending hosted CI.",
+      "automatic": true,
+      "authorization": "Opt-in only. The per-outpoint /outspend check runs only when the user enables the provider spent check; /hex and /merkle-proof reads run only in light-oracle mode after explicit consent. By default confirmed spends are derived locally from scanned block inputs and no outpoint is sent. Addressed by FC-05a (#656).",
       "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; when consented, matched-output queries still reveal what is checked to that source.",
       "failureBehavior": "Invalid proof/spentness stops qualification; do not describe these reads as unlinkable or silently switch endpoint.",
       "profile": [
@@ -1030,12 +1030,11 @@
         "apps/web/src/features/btc/esplora.ts"
       ],
       "symbols": [
-        "feeRate",
         "broadcast",
         "signSweep"
       ],
       "trigger": "User requests review/sign/broadcast of selected outputs.",
-      "destination": "Selected Esplora /fee-estimates and POST /tx. Spent and proof reads happen only in a scan the user explicitly consented to, not as part of sweep review.",
+      "destination": "Selected Esplora POST /tx only (the fee rate is entered by the user). Spent and proof reads happen only in a scan the user explicitly consented to, not as part of sweep review.",
       "transport": "http-get-and-post",
       "sensitiveData": [
         "chosen inputs",

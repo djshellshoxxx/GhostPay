@@ -17,7 +17,7 @@ Sources: research s3 (Appendix A open research; ~30 MB/month for 3-day scans, Ju
 | Mode | Scan key leaves client? | Server learns | Bandwidth |
 |---|---|---|---|
 | A own-node Esplora with local `EsploraTweakSource` (default path) | no | selected Esplora sees IP and block range; optional, explicitly authorized outspend queries reveal matched outpoints | full blocks plus headers |
-| B explicitly selected BlindBit HTTP or HTTPS gRPC-Web | no | oracle sees IP/block range; light proof queries reveal matching transaction IDs to Esplora; outspend queries reveal matched outpoints | full mode retains full-block bandwidth; light mode fetches tweaks/outputs and matched transaction proofs; no current size estimate claimed |
+| B explicitly selected BlindBit HTTP or HTTPS gRPC-Web | no | oracle sees IP/block range; light proof queries reveal matching transaction IDs to Esplora; outspend queries (required, with explicit consent, in light mode; optional with consent in full mode) reveal matched outpoints | full mode retains full-block bandwidth; light mode fetches tweaks/outputs and matched transaction proofs; no current size estimate claimed |
 | C hosted scan service (Frigate-style) | yes (scan key) | all incoming payments | minimal; loudly labelled opt-in, own ToS (MULTICHAIN s4) |
 Hosted mode C remains absent and ADR-gated. BlindBit gRPC schema/transport provenance is pinned in the worker handoff. Deployed server/proxy compatibility is not demonstrated by fixtures. HTTP is the legacy adapter; full, unfiltered capabilities and exact network identity are required at runtime.
 
