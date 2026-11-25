@@ -1,8 +1,11 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
+import { watchDestinationWallet } from '../lib/destinationWalletScope';
+import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
@@ -156,7 +159,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
   const invoiceQrRevision = useRef(0);
-  const invoiceQrMounted = useRef(true);
+  const mounted = useRef(true);
   const invoiceQrDisclosure = useRef<HTMLDetailsElement | null>(null);
   const invoiceQrObserver = useRef<MutationObserver | undefined>(undefined);
   const [needsPassphrase, setNeedsPassphrase] = useState(false);
@@ -174,6 +177,22 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
+  const destinationReviews = useRef(new WeakMap<BuiltPayment, {
+    session: typeof app.session; notice: DestinationNotice;
+  }>());
+  const reviewWallet = useRef<WalletSession | undefined>(undefined);
+  const [walletChanged, setWalletChanged] = useState(false);
+  useLayoutEffect(() => {
+    reviewWallet.current = wallet;
+    setWalletChanged(false);
+    if (wallet === undefined) return;
+    const stop = watchDestinationWallet(wallet.wallet.provider, () => {
+      if (reviewWallet.current !== wallet) return;
+      reviewWallet.current = undefined;
+      setWalletChanged(true);
+    });
+    return () => { reviewWallet.current = undefined; stop(); };
+  }, [wallet]);
   const [builtFor, setBuiltFor] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
@@ -225,8 +244,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [parsed, resetInvoiceQr]);
   useEffect(() => { invalidateInvoiceQr(); }, [invoiceQrScope, invalidateInvoiceQr]);
   useEffect(() => {
-    invoiceQrMounted.current = true;
-    return () => { invoiceQrMounted.current = false; invoiceQrRevision.current += 1; };
+    mounted.current = true;
+    return () => { mounted.current = false; invoiceQrRevision.current += 1; };
   }, []);
 
   const importInvoiceQr = async (text: string, signal: AbortSignal): Promise<boolean> => {
@@ -234,7 +253,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const scope = invoiceQrScope;
     const assertSession = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!invoiceQrIsOpen() || signal.aborted || !invoiceQrMounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope) return false;
+      if (!invoiceQrIsOpen() || signal.aborted || !mounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope) return false;
       try { assertSession(); return true; } catch { return false; }
     };
     if (!current()) return false;
@@ -366,7 +385,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
-    if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
+    if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
     app.setFragment(undefined);
     setParsed(undefined);
@@ -507,7 +526,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
+      if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
@@ -769,6 +788,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setApproval(plan);
         setGranted(undefined);
         setApprovalHash(undefined);
+        if (!mounted.current) return;
+        const notice = reviewWallet.current !== wallet ? undefined : checkDestinationReuse(
+          { kind: 'invoice', payer: wallet.account, invoiceDigest: bytesToHex(invoiceDigest(invoice)) },
+          wallet.chainId, b.preview.stealth, true,
+        );
+        if (notice !== undefined) destinationReviews.current.set(b, { session: app.session, notice });
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
@@ -945,6 +970,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setBufferQuote(undefined);
     setPhase('input');
   };
+
+  const destinationReview = built === undefined ? undefined : destinationReviews.current.get(built);
 
   /* ------------------------------- rendering ------------------------------- */
 
@@ -1269,7 +1296,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
@@ -1342,6 +1369,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 }
 
 function FinalPreview(props: {
+  readonly notice: DestinationNotice | 'wallet-changed' | undefined;
   readonly built: BuiltPayment;
   readonly ctx: PayContext;
   readonly onSend: () => void;
@@ -1364,6 +1392,7 @@ function FinalPreview(props: {
     <div className="panel" aria-labelledby="final-h">
       <h3 id="final-h">{t('pay.final.heading')}</h3>
       <p>{t('pay.final.intro')}</p>
+      <DestinationReuseNotice notice={props.notice} />
       <dl className="details">
         <dt>{t('pay.final.method')}</dt>
         <dd>{decoded.method}</dd>
