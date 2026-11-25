@@ -1119,6 +1119,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.journalBroken.body',
     'sweep.balanceRead.button',
     'sweep.balanceRead.warning',
+    'sweep.balanceRead.note',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.wipeUnverified.title',
