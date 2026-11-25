@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-ghostpay-backup-60-w3",
   "token": "a91c4e07-2d5b-4f38-b6e2-58d0f3a7c914",
   "generation": 33,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-25T20:31:25.000Z",
   "heartbeat_at": "2026-11-25T20:31:25.000Z",
   "expires_at": "2026-11-25T23:31:25.000Z",
-  "transport": "git-push-nonforce"
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-25T20:32:29.000Z"
 }
