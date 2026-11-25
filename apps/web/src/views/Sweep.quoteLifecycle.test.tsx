@@ -99,9 +99,10 @@ async function ready(m: ReturnType<typeof mount>): Promise<void> {
   expect(m.requests).toEqual([]);
 }
 async function requestQuote(m: ReturnType<typeof mount>, count = 1): Promise<void> {
+  // A new balance can render before `busy` clears in a separate update; a click on the still-disabled button is lost.
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: QUOTE }).disabled).toBe(false); });
   fireEvent.click(screen.getByRole('button', { name: QUOTE }));
-  // The quote path awaits the RPC and the manifest check first; under CI load that can exceed waitFor's 1 s default.
-  await waitFor(() => { expect(m.requests).toHaveLength(count); }, { timeout: 5_000 });
+  await waitFor(() => { expect(m.requests).toHaveLength(count); });
 }
 async function answer(m: ReturnType<typeof mount>, index = 0): Promise<void> {
   await act(async () => {
