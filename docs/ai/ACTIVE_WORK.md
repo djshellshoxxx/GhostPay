@@ -10,6 +10,18 @@ components, `requestFileInterop.test.ts`, `Pay.requestFile.test.tsx`, `Pay.invoi
 Acceptance: file selection never connects a wallet or submits payment; opened requests pass the existing
 signature, signer, passphrase, expiry and review flow and the #500 pre-send checks; hosted CI green.
 
+## FC-01 independent qualification (2026-11-25)
+
+Worker: Claude Code session `focused-meitner-07a9u7`. Branch `nodata/focused-meitner-07a9u7`, a descendant of the FC-01
+head `5543c2a3670ceffc43fd7751edeab74feac4f3e4` (main `5dc05bd6b73effef3d6fd3443a2e2fdde1103d3a`). The owner `fc01`
+was still pushing when this started, so its branch is not edited and integration stays with that owner. Owned
+paths: this subsection, `docs/consolidation/feature-completion-20261125/FC-01-f03-request-file-QUALIFICATION.md` (the owner keeps
+`FC-01-f03-request-file.md`) and the new
+browser regression `apps/web/e2e/payment-request-file-attempt.spec.ts` (file entry versus the #500 journal). No
+production source change. Acceptance: the affected local gates, the six request-file browser scenarios on fresh full and lean
+builds, union and hunk checks against main and the donor, an independent review, and hosted CI recorded against
+exact SHAs. The handoff is left ready for the owner's integration.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
