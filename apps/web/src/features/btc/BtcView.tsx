@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DEFAULT_FORK_HEADERS, SilentPaymentError, zeroize, createScanState, type ScanState, type HeaderChain } from '@ghostpay/btc-silent-payments';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
@@ -564,6 +565,9 @@ export function BtcView(
                 <Notice kind={broadcastOutcome.phase === 'pending-confirmation' ? 'ok' : broadcastOutcome.phase === 'broadcast-attempted' ? 'info' : 'error'} title={t(TRANSACTION_PHASE_KEYS[broadcastOutcome.phase])}>
                   {displayMessage(broadcastOutcome.message, t)}
                 </Notice>
+                {broadcastOutcome.reference !== undefined && (broadcastOutcome.phase === 'broadcast-unknown' || broadcastOutcome.phase === 'verification-incomplete') && (
+                  <BroadcastReference key={broadcastOutcome.reference} reference={broadcastOutcome.reference} />
+                )}
               </div>}
 
       <div className="panel">

@@ -108,7 +108,8 @@ it('blocks payment after a mined approval when a newly loaded record excludes th
   await expect(sendPolicyPayment(wallet, prepared, { rpc, nowSeconds: () => 1, sleep: () => Promise.resolve() }, () => undefined, (hash) => hashes.push(hash), {
     deployment: DEPLOYMENT, reviewed: reviewPolicyPayment(prepared, DEPLOYMENT),
     assertCurrent: () => { assertPayeeTokenCoverage(prepared.metaAddress, prepared.token, records); },
-  })).rejects.toThrow(/The approval \(0x9+\) was already mined and the router allowance remains; no payment was sent/);
+  // #286 item 5: the error names no approval hash; the hash stays in the wallet attempt journal.
+  })).rejects.toThrow(/^(?!.*0x[0-9a-f]{64}).*The approval was already mined and the router allowance remains; no payment was sent/s);
   expect(w.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
   expect(String(w.sent?.['to']).toLowerCase()).toBe(DAI.toLowerCase());
   expect(hashes).toEqual([`0x${'9'.repeat(64)}`]);

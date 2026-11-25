@@ -11,6 +11,10 @@ import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
 import { installPolicyTestLocks } from './withdrawal.testutil';
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, deploymentCalls, fakeChain, walletMirror } from './fixtures.testutil';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const realVerifyDeployment = chainModule.verifyPolicyDeployment;
 const LABEL = 'Policy accounts (experimental)';

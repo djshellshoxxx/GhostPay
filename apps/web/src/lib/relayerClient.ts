@@ -65,7 +65,10 @@ function errorClass(text: string): string | undefined {
     const j = JSON.parse(text) as { error?: unknown };
     const e = j.error;
     const code = typeof e === 'string' ? e : typeof e === 'object' && e !== null ? (e as { code?: unknown }).code : undefined;
-    return typeof code === 'string' && /^[a-z_]{1,40}$/.test(code) ? code : undefined;
+    if (typeof code !== 'string') return undefined;
+    if (PRE_BROADCAST_CODES.has(code) || code === 'nonce_used' || code === 'send_failed' || code === 'budget_exhausted') return code;
+    // Preserve the existing field-validation classification without retaining a remote field name.
+    return /^invalid_[a-z_]{1,32}$/.test(code) ? 'invalid_field' : undefined;
   } catch {
     return undefined;
   }

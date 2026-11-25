@@ -63,3 +63,17 @@ it('keeps the plain replacement wording for a same-call speed-up', async () => {
   expect(text).toMatch(/^Linked replacement/);
   expect(text).not.toMatch(/different call/);
 });
+
+// #286 item 5: a live region reports the result without reading a transaction hash aloud. The linked replacement's
+// hash stays on screen, outside the live region, so the user can still compare it with the wallet.
+it.each(['same-call', 'different-call'] as const)('keeps the linked %s replacement hash out of the live status region', async (kind) => {
+  const text = await statusFor({
+    state: 'replaced', hash: other, kind,
+    outcome: { state: 'confirmed', blockNumber: 1n, blockHash, confirmations: 1_000n },
+  });
+  expect(text).not.toContain(other);
+  expect(text).not.toMatch(/0x[0-9a-f]{64}/i);
+  const shown = screen.getAllByText(other);
+  expect(shown.length).toBeGreaterThan(0);
+  for (const node of shown) expect(node.closest('[role="status"], [role="alert"], [aria-live]')).toBeNull();
+});

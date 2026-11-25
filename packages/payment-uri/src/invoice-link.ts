@@ -15,7 +15,7 @@ const IPV4_LAST_LABEL = /(?:^|\.)(?:[0-9]+|0x[0-9a-f]*)$/i;
 
 /** Parsed invoice link. */
 export interface InvoiceLink {
-  /** `https://host[:port]` lowercase, for display and comparison. */
+  /** `https://host[:port]` lowercase, default port omitted (as `location.origin`), for display and comparison. */
   readonly origin: string;
   readonly host: string;
   readonly path: string;
@@ -35,7 +35,7 @@ export interface InvoiceLinkOptions {
 
 /**
  * Strict parser for `https://<host>[:port][/path]#gpi=v1.<base64url>`. Rejects userinfo, query strings, non-ASCII hosts
- * (use punycode), IP literals in every form a browser reads as IPv4 (decimal, octal, hex or mixed) other than a literal
+ * (use punycode), `.` and `..` path segments, IP literals in every form a browser reads as IPv4 (decimal, octal, hex or mixed) other than a literal
  * `127.0.0.1` in dev mode, `http` outside dev mode, and anything over {@link MAX_INVOICE_LINK_LENGTH}. The fragment is
  * NOT decoded or authenticated here.
  *
@@ -57,11 +57,16 @@ export function parseInvoiceLink(link: string, opts: InvoiceLinkOptions = {}): I
   if (local && !dev) return fail('INVALID_LINK');
   if (scheme === 'http' && !(dev && local)) return fail('INVALID_LINK');
   if (port !== undefined && Number(port) > 65535) return fail('INVALID_LINK');
-  if (path.includes('..')) return fail('INVALID_LINK');
+  // A browser removes `.` segments and resolves `..` before loading, so the path shown here would not be the path
+  // fetched. `includes('..')` also covers `..` segments; the split catches a lone `.` segment (`/./pay`, `/pay/.`).
+  if (path.includes('..') || path.split('/').includes('.')) return fail('INVALID_LINK');
   if (opts.allowedHosts !== undefined && !opts.allowedHosts.includes(host)) return fail('INVALID_LINK');
   if (payload.length % 4 === 1) return fail('INVALID_LINK');
+  // WHATWG origin serialisation omits the scheme's default port, so `https://host:443` and `https://host` are one
+  // origin. Keeping `:443` here would make a comparison with `location.origin` fail for the same site.
+  const defaultPort = scheme === 'https' ? '443' : '80';
   return {
-    origin: `${scheme}://${host}${port === undefined ? '' : `:${port}`}`,
+    origin: `${scheme}://${host}${port === undefined || port === defaultPort ? '' : `:${port}`}`,
     host,
     path,
     payload,
