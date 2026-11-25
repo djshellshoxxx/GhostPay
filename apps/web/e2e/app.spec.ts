@@ -33,6 +33,9 @@ test('create invoice -> open link -> review screen (no manifest shipped, so paym
   const link = await createInvoice(page, { memo: 'Thanks for your business', chainLabel: 'Ethereum Sepolia' });
   await expect(page.getByRole('img', { name: 'QR code containing the invoice link' })).toBeVisible();
   await expect(page.getByText('Bearer link')).toBeVisible();
+  const invoiceLink = page.getByRole('textbox', { name: 'Link', exact: true });
+  await expect(invoiceLink).toHaveValue(link);
+  expect(await invoiceLink.evaluate((element) => element.closest('[aria-live="polite"], [aria-live="assertive"], [role="status"], [role="alert"]') !== null)).toBe(false);
 
   await openFresh(page, link);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
@@ -259,4 +262,21 @@ test('mobile width: no horizontal page scroll', async ({ page }) => {
   await openFresh(page, link);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
+
+test('keeps rejected QR text out of titles, alerts, logs and navigation', async ({ page }) => {
+  const markers = [`0x${'ab'.repeat(20)}`, '87129.03251', 'invoice-winter-sample', `0x${'cd'.repeat(32)}`];
+  const diagnostics: string[] = [];
+  page.on('console', (msg) => diagnostics.push(msg.text()));
+  page.on('pageerror', (error) => diagnostics.push(error.message));
+  await page.goto('/');
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
+  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  const importer = page.getByRole('region', { name: 'Invoice QR import' });
+  await importer.getByLabel('Or paste QR text').fill(markers.join(' '));
+  await importer.getByRole('button', { name: 'Use pasted text' }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  await expect(page).toHaveTitle('GhostPay');
+  const publicOutput = [await page.title(), page.url(), ...await page.getByRole('alert').allTextContents(), ...diagnostics].join('\n');
+  for (const marker of markers) expect(publicOutput).not.toContain(marker);
 });

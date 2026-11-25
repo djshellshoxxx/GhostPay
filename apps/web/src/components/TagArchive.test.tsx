@@ -44,6 +44,7 @@ async function exported(): Promise<{ user: User; services: ReturnType<typeof mak
   await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
   await waitFor(() => { expect(blobs).toHaveLength(1); }, { timeout: 60_000 });
   expect((await screen.findAllByText(/SHA-256 [0-9a-f]{64}/)).length).toBeGreaterThan(0);
+  for (const live of screen.getAllByRole('status')) expect(live.textContent).not.toMatch(/SHA-256 [0-9a-f]{64}/);
   return { user, services, file: new File([blobs[0] as Blob], 'ghostpay-tags-20260101.gpa') };
 }
 
@@ -76,12 +77,12 @@ describe('TagArchive blocked download cleanup', () => {
     await waitFor(() => { expect(click).toHaveBeenCalledOnce(); });
     expect(blobs).toHaveLength(1);
     // The rejected click must not strand the encrypted export in the page or in a live object URL.
-    expect(document.querySelector('a[download="ghostpay-tags-blocked.gpa"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:x');
     // Nor may it be reported as a download: the archive notice and the backup checklist both say it failed.
     expect((await screen.findByRole('alert')).textContent).toMatch(/Something went wrong/);
     expect(screen.queryByText(/Archive downloaded/)).toBeNull();
-    expect(within(screen.getByTestId('backup-item-tags')).getAllByRole('status')[0]?.textContent).toMatch(/^Failed: The latest tag archive attempt failed and produced no file/);
+    expect(within(screen.getByTestId('backup-item-tags')).getAllByRole('status')[0]?.parentElement?.textContent).toMatch(/^Failed: The latest tag archive attempt failed and produced no file/);
   }, 120_000);
 });
 

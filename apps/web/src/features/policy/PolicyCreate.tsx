@@ -12,7 +12,7 @@ import { CopyButton, Field, Mono, Notice, downloadText } from '../../components/
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
-import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
+import { getAddress, isAddress } from 'viem/utils';
 import { createPolicyMetaAddress, DELAY_PRESETS, type LimitRow } from './create';
 import type { PolicyCtx } from './PolicyView';
 import { recordBelongsToSeller } from './recordIdentity';
@@ -58,8 +58,8 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
       }
       const mine = session !== undefined && recordBelongsToSeller(rec, session.spendingPublicKey, session.viewingPublicKey);
       setImportMsg(mine ? { kind: 'ok', text: t('policy.create.imported') } : { kind: 'warn', text: t('policy.create.otherKeys') });
-    } catch (e) {
-      setImportMsg({ kind: 'error', text: t('policy.create.rejected', { reason: e instanceof Error && e.name === 'PolicySchemeError' ? e.message : userMessage(e) }) });
+    } catch {
+      setImportMsg({ kind: 'error', text: t('policy.create.rejected') });
     }
   };
 
@@ -140,11 +140,7 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
                   {r.policy.limitsRoot === ZERO_HASH ? t('policy.create.withdrawableAny') : t('policy.create.withdrawableOnly', { tokens: r.limits.map((l) => l.token === ZERO_ADDRESS ? 'native' : l.token).join(', ') })}
                 </Notice>
                 <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
-                <button type="button" onClick={() => {
-                  // The canonical meta-address binds both seller keys and the policy hash.
-                  const identity = keccak256(toBytes(r.metaAddress)).slice(2);
-                  downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}-${identity}.json`, serializePolicyRecord(r), 'application/json');
-                }}>{t('policy.create.download')}</button>
+                <button type="button" onClick={() => { downloadText('ghostpay-policy-record.json', serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
               </li>
             ))}
           </ul>
