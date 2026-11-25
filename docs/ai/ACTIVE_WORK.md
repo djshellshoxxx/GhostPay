@@ -1,3 +1,13 @@
+# P13 confidential-amounts — fuzz, stress, QA, security audit, bug search — 2026-11-25
+
+Worker: Claude Code session `nodata/eloquent-shannon-gfv6t9` (restarted from main `69485773` after #642 merged).
+Owned paths: new test files under `packages/confidential-amounts/src/future/p13/` and `packages/confidential-amounts/src/`
+(fuzz/stress/differential only), `packages/confidential-amounts/browser/**`, focused fixes for confirmed findings inside
+`packages/confidential-amounts/src/**`, new `docs/audits/P13_CONFIDENTIAL_AMOUNTS_QA_20261125.md`, this claim.
+Acceptance: deterministic fuzz/property and stress suites pass; two-tab IndexedDB concurrency and stress run in Chromium;
+every confirmed finding has a failing-then-passing regression test; audit report lists findings with severity and status.
+Out of scope: contracts (`confidential-contracts`, PRs #220/#442), apps/web, activation, deployment, other packages.
+
 # P13 confidential amounts — protocol-neutral client core — 2026-11-25
 
 Worker: Claude Code session `nodata/eloquent-shannon-gfv6t9` (P13 only).
