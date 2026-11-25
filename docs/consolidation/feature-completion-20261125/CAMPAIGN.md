@@ -151,3 +151,11 @@ low/info, and remain filler work.
   merge `ace2f873` clean union with main). One final batched push each (FC-03: retired-derivation doc, error-text
   accuracy, object-overload mainnet refusal, claim paths; FC-01: post-event re-query in the two D1 tests, handoff
   accuracy, three docs) before integration, to avoid repeated 40-minute CI cycles.
+- 2026-11-25T08:00Z — main moved to `60824005` (#641 seller-keystore backup, other session). All three FC branches
+  merge with it (only the additive ACTIVE_WORK registry conflicts); workers merge it in their final push. Not using
+  #540/#573/#629 (other session closing them after #641). Integration rule given hourly main movement: merge a
+  feature only when its CI-green head already contains the current `origin/main`; otherwise re-merge main and
+  requalify (no lock held during CI).
+- 2026-11-25T08:10Z — final candidates pushed, each containing main `60824005`: FC-01 #650 `aae8d592`
+  (fix `5543c2a3`), FC-02 #649 `ef101fd5` (fix `096b338d`), FC-03 #648 `a13ab24d` (fix `11cdee32`). Hosted CI
+  restarted on all three; final follow-up reviews requested on the exact fix commits.
