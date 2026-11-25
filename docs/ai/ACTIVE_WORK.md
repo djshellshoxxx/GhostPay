@@ -7,7 +7,8 @@ Gap: the reference recovery script reads only the Spec 18 `ghostpay-stealth-*` f
 independent reader so that file can be verified and used to recover one-time payment keys without GhostPay code,
 the original browser profile, device or storage. The keystore format and the app are unchanged.
 Owned paths: additive seller-keystore reader and `--expected-meta-address` in
-`scripts/recovery/stealth-export-recover.mjs`; new `scripts/recovery/seller-keystore-recover.test.mjs`; new
+`scripts/recovery/stealth-export-recover.mjs`; new `scripts/recovery/seller-keystore-recover.test.mjs` and
+`scripts/recovery/seller-keystore-recover.fuzz.test.mjs`; new
 `test-vectors/generate-seller-keystore.mjs`, `test-vectors/seller-keystore-v1.json` and their README entry; new
 `docs/specs/18-seller-keystore-v1-format.md`; additive sections in `docs/user/recover-stealth-payment-keys.md`; new
 `apps/web/e2e/independent-keystore-recovery.spec.ts`; this claim; new

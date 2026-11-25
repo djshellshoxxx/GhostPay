@@ -322,6 +322,8 @@ codec, including one at the production cost, must open in the script. The test a
 same one-time keys as the master-backup vectors, and recovers a payment in an isolated directory.
 `apps/web/e2e/independent-keystore-recovery.spec.ts` downloads a keystore in one browser profile and closes it. The
 script then recovers a payment key from that file, and a fresh profile imports the same file.
+`scripts/recovery/seller-keystore-recover.fuzz.test.mjs` fuzzes the reader against GhostPay's codec. It is
+deterministic: set `FUZZ_SEED` to replay a reported case, and `FUZZ_SCALE` (for example 10) for a deeper run.
 
 The anvil test runs when Foundry (`anvil`, `cast`) is found through `ANVIL_BIN`/`CAST_BIN`, `PATH` or
 `~/.foundry/bin`. It skips otherwise, unless `REQUIRE_ANVIL=1`, where a missing tool fails the test.

@@ -67,6 +67,7 @@ Legacy seller keystore v1 (`ghostpay-keystore.json`) vectors (descriptive format
 - **Consumer:** `scripts/recovery/seller-keystore-recover.test.mjs` checks every vector in both readers. The built
   codec refuses each refusal except `authentic-noncanonical-body` (marked `ghostpayCodec: "accepts"`; GhostPay never
   writes that body). A's keys must recover every `stealth-export.json` announcement key.
+  `scripts/recovery/seller-keystore-recover.fuzz.test.mjs` mutates the valid file (seeded, deterministic).
 - **Secrets:** TEST-ONLY. The passphrase, salt, IV, second seller and the low scrypt cost N=2^14 are fixed test values
   (production keystores use N=2^17 and fresh randomness). Regenerating changes only `generatedAt`/`node`; any other
   diff must be investigated.

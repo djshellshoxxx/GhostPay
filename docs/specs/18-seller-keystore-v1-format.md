@@ -105,3 +105,6 @@ GhostPay's codec refuses the same inputs with its own messages, except for the b
 with `node:crypto` and noble only. It contains two valid files and 26 refusals, each with its reference code. The
 consumer is `scripts/recovery/seller-keystore-recover.test.mjs`. It checks that GhostPay's codec and the reference reader
 agree on every vector, and that files written by GhostPay's codec open in the reference reader.
+`scripts/recovery/seller-keystore-recover.fuzz.test.mjs` mutates these files (seeded with `FUZZ_SEED`, deeper with
+`FUZZ_SCALE`). It checks that the reader never accepts a header the codec refuses, beyond the ciphertext length in
+section 2.

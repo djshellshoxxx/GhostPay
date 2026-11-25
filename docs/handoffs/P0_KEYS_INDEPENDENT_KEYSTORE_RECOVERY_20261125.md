@@ -82,6 +82,42 @@ Windows 10, 3.9 GB RAM (about 0.2 GB free at start, other sessions running), 4 C
 browsers are installed and the config forbids `playwright install`. Foundry is not on PATH. Any test that did not run
 here is listed as not run, with the reason.
 
+## Second pass: security audit, bug audit, fuzzing, QA (2026-11-25)
+
+Done in this order: security, bugs, fuzzing, QA. Merged main `5dc05bd6` into the branch with a merge commit (not a
+rebase), so every SHA cited above stays valid.
+
+| ID | Severity | Finding | Fix |
+|---|---|---|---|
+| SEC-1 | medium (docs/UX) | A payment's payer chose its ephemeral secret, so the payer knows its tweak h; a revealed one-time key k gives p_spend = (k - h) mod n. Guide and usage warned only about viewing-key holders. | `ea432f1e`: guide and usage say never to send a revealed key to the payer; a test recomputes the vector spending key from the a1 payer secret. |
+| BUG-1 | low | A BOM-prefixed keystore with a later `v` reported `invalidFile`, not `unsupportedVersion`. | `ea432f1e`: the BOM rule covers the whole keystore family; test failed first. |
+| BUG-2 | low | `--inspect` with `--scan-announcement` exited 0 having derived nothing (keystore and master). | `ea432f1e`: usage error, like `--inspect` with `--reveal-private-keys`; test failed first. |
+
+Security areas checked with no finding: secret wiping on every path; fixed error strings with no input echo;
+null-prototype strict JSON (no prototype pollution); KDF and size bounds (at most about 256 MiB scrypt, 8 KiB file);
+AAD binding of meta-address, signer and N/r/p; header authenticity under `--inspect`; passphrase handling (the app does
+not trim; the script keeps the passphrase exact apart from one trailing newline on stdin); BOM handling limited to
+keystores. History check: every GhostPay keystore writer since `1f7ab710` used the canonical body and N=2^17, r=8, p=1.
+
+Fuzzing (`scripts/recovery/seller-keystore-recover.fuzz.test.mjs`, `bc0d1738`): five seeded targets. Three planted bugs
+(hex case accepted, signer check removed, every announcement owned) were each caught by their target after the header
+and body targets were strengthened. The first version missed two of the three. Default scale passes in about 14 s.
+`FUZZ_SCALE=10` with seeds `deep-a-20261125` and `deep-b-20261125` (about 6,000 cases each) passes. No defects found.
+
+QA at merged head `2101af28` (plus docs-only follow-up edits):
+
+| Check | Result |
+|---|---|
+| `node --test scripts/recovery/*.test.mjs` | 47 tests: 45 pass, 0 fail, 2 skipped (anvil not installed here) |
+| Documented guide commands run verbatim on the TEST-ONLY vector | inspect, expected meta-address, scan plus reveal (exact a3 key) and wrong-seller refusal behave as documented |
+| Vector generator rerun | byte-identical output |
+| Committed line endings | LF in the index for every new file |
+| Web `tsc -p tsconfig.json --noEmit`, ESLint on the new spec | exit 0 |
+| New browser spec, Chrome, full profile | pass (1.4 min) |
+| `scan-secrets.sh`, `check-actions-pinned.sh` | OK |
+
+Not tested: the no-echo terminal passphrase prompt (needs an interactive TTY; unchanged pre-existing code).
+
 ## Remaining and blockers
 
 - Independent human review before marking the PR ready and merging. The read-only review above was AI-assisted.
