@@ -318,8 +318,9 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onVerifyBackup = (e: FormEvent): void => {
     e.preventDefault();
-    if (verifyFile === undefined) { setVerifyResult({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
-    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setVerifyResult({ kind: 'error', text: { key: 'error.keystore.fileTooLarge' } }); return; }
+    // A refused attempt clears the passphrase like a failed check does.
+    if (verifyFile === undefined) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
+    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'error.keystore.fileTooLarge' } }); return; }
     const controller = startOperation('verify');
     const selected = verifyFile; const passphrase = verifyPass;
     // The result is for the keys loaded now: a seller change during reading or checking retires it.
@@ -647,8 +648,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                 {verifyFile !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={verifyFile.name} /></bdi></p>}
               </>}</Field>
               <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operation.current?.kind === 'verify') stopOperation(); setVerifyStage(undefined); setVerifyResult(undefined); setVerifyPass(e.target.value); }} />}</Field>
-              {/* A pending unlock is never cancelled by a verification: it replaces the keys this file is compared with. */}
-              <button type="submit" className="btn" disabled={verifyBusy || unlockBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
+              <button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
               {verifyBusy && <button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button>}
             </form>
           </section>

@@ -87,6 +87,12 @@ async function prepareVerification(user: ReturnType<typeof userEvent.setup>): Pr
   fireEvent.change(screen.getByLabelText('Keystore passphrase'), { target: { value: PASS } });
 }
 
+async function confirmSoleCopyDelete(user: ReturnType<typeof userEvent.setup>): Promise<void> {
+  // The synthetic vault is not the loaded seller's, so deleting it needs the typed phrase (#573).
+  await user.type(await screen.findByLabelText(/To permanently delete it, type/), CONFIRM_DELETE);
+  await user.click(button(CONFIRM_DELETE));
+}
+
 async function savedVault(): Promise<void> {
   await vaultStore.putIfEmpty(SYNTHETIC);
   vi.spyOn(keyVault, 'loadedKeysRecoverable').mockResolvedValue(true);
@@ -396,7 +402,7 @@ describe('SellerKeys durable vault write ownership', () => {
     try {
       await prepareUnlock();
       await user.click(button(DELETE));
-      await user.click(await screen.findByRole('button', { name: CONFIRM_DELETE }));
+      await confirmSoleCopyDelete(user);
       await waitFor(() => { expect(remove).toHaveBeenCalledOnce(); });
       fireEvent.change(screen.getByLabelText('Vault passphrase'), { target: { value: 'a newly edited passphrase' } });
       expect(button(UNLOCK).disabled).toBe(true);
@@ -439,7 +445,7 @@ describe('SellerKeys durable vault write ownership', () => {
       await user.click(button('Cancel vault unlock'));
       expect(button(DELETE).disabled).toBe(false);
       await user.click(button(DELETE));
-      await user.click(await screen.findByRole('button', { name: CONFIRM_DELETE }));
+      await confirmSoleCopyDelete(user);
       await waitFor(() => { expect(remove).toHaveBeenCalledOnce(); });
 
       await settle(preflight, 'resolve', true);

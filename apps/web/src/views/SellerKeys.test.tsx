@@ -346,7 +346,7 @@ describe('Seller keys', () => {
     expect(keySession.sessionHasExternalCopy()).toBe(true);
   });
 
-  it('verification cannot start or cancel an in-progress vault unlock, then verifies the unlocked keys', async () => {
+  it('verification supersedes a pending vault unlock: the loaded keys and the saved vault stay unchanged', async () => {
     const pub = generateSession();
     const pass = 'a long passphrase';
     await saveEncryptedVault(pass, { N: 1 << 14 });
@@ -360,31 +360,24 @@ describe('Seller keys', () => {
       await gate;
       return unlock(...args);
     });
-    const verify = vi.spyOn(keySession, 'verifyDownloadedBackup');
     await user.type(screen.getByLabelText('Vault passphrase'), pass);
     await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
     await waitFor(() => { expect(pendingUnlock).toHaveBeenCalled(); });
     const panel = within(screen.getByRole('region', { name: 'Verify the backup' }));
     await user.upload(panel.getByLabelText('Downloaded keystore file'), new File([mine], 'backup.json', { type: 'application/json' }));
     await user.type(panel.getByLabelText('Keystore passphrase'), pass);
+    await user.click(panel.getByRole('button', { name: 'Verify backup' }));
     try {
-      // The pending unlock replaces the keys this file is compared with: verification waits instead of cancelling it.
-      expect(panel.getByRole('button', { name: 'Verify backup' })).toHaveProperty('disabled', true);
-      expect(screen.getByRole('button', { name: 'Cancel vault unlock' })).toBeTruthy();
-      expect(verify).not.toHaveBeenCalled();
+      // The newest action owns the form (#314): the unlock was cancelled, the file is checked against the loaded keys.
+      expect(pendingUnlock.mock.calls[0]?.[2]?.aborted).toBe(true);
+      expect(await panel.findByText(/^Backup verified:/, {}, { timeout: 15_000 })).toBeTruthy();
     } finally {
       release();
     }
-    await waitFor(() => {
-      expect(getSessionPublic()).not.toBe(pub);
-      expect(getSessionPublic()?.metaAddress).toBe(pub.metaAddress);
-    }, { timeout: 15_000 });
-    // The session change cleared the selected file; select it again for the unlocked keys.
-    await user.upload(panel.getByLabelText('Downloaded keystore file'), new File([mine], 'backup.json', { type: 'application/json' }));
-    await user.type(panel.getByLabelText('Keystore passphrase'), pass);
-    await user.click(panel.getByRole('button', { name: 'Verify backup' }));
-    expect(await panel.findByText(/^Backup verified:/, {}, { timeout: 15_000 })).toBeTruthy();
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
+    expect(getSessionPublic()).toBe(pub);
     expect(await vaultStore.get()).toBe(saved);
+    expect(keySession.sessionHasExternalCopy()).toBe(true);
   });
 
   it('GP-PAGES-02: a cancelled verification and a failed vault unlock leave every other form enabled', async () => {
