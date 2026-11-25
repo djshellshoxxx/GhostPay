@@ -1,5 +1,10 @@
 # GhostPay authoritative completion ledger
 
+## Issue #286 clipboard protection
+
+[Pages copy-action inventory](../privacy/clipboard-actions.md). The remaining-action candidate stacks on #553. Combined release-candidate qualification and independent review are pending.
+
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for

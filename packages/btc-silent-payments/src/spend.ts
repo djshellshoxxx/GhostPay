@@ -224,6 +224,8 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
   let total = 0n;
   for (const a of p.inputAmountsSats) total += amount(a);
   const isSp = isSilentPaymentAddress(p.address);
+  // Prefix recognition is not validation: the signing path decodes against this network.
+  if (isSp) decodeSilentPaymentAddress(p.address, p.network);
   const len = isSp ? P2TR_SCRIPT_LEN : scriptOf(p.address, p.network, p.regtest === true).length;
   const vsize = estimateKeyPathVsize(n, [len]);
   const feeSats = feeFor(p.feeRate, vsize);

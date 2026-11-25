@@ -67,7 +67,10 @@ bidi and BOM characters are refused.
   default constraint is `facingMode: environment`, and `deviceId` is matched exactly. Errors map to
   `CAMERA_DENIED`, `CAMERA_NOT_FOUND`, `CAMERA_IN_USE`, `CAMERA_INSECURE`, `CAMERA_UNAVAILABLE`.
 - `scanFromVideo` stops every track on finish, abort or error; it reads at a 120 ms interval and skips consecutive
-  identical texts. `listVideoInputs` / `activeDeviceId` expose ids only, never labels.
+  identical texts. Native camera and image readers use the first nonempty result within the 4096 UTF-16 code-unit
+  limit, in detector order. The receiving screen validates the payload family. Empty native camera frames keep the
+  scan running. A native camera read error retries the current frame with jsQR and uses it for the rest of that scan.
+  `listVideoInputs` / `activeDeviceId` expose ids only, never labels.
 - `decodeQrImage(file, { signal })`: raster images only (SVG rejected), ≤ 10 MiB file, ≤ 40 MP bitmap, downscaled to
   ≤ 1600 px. It tries BarcodeDetector, then jsQR. No object URLs; the bitmap is closed on every path. For PNG, GIF,
   JPEG and WebP the declared size is read from the header (`imageHeaderDimensions`, ≤ 256 KiB probe) and refused
@@ -111,6 +114,7 @@ half-rotated state). It does not undo a past view-key exposure.
 | Classifier | `apps/web/src/lib/qrClassify{,.fuzz}.test.ts` |
 | Importer | `apps/web/src/components/CameraImporter{,.behavior,.lifecycle,.multipart,.i18n}.test.tsx` |
 | Screens | `views/Pay.invoiceQr.test.tsx`, `views/Settings.exchange.test.tsx`, `views/SellerKeys.test.tsx`, `views/CreateInvoice.test.tsx` |
+| Browser (invoice image) | `apps/web/e2e/qr-invoice-image.spec.ts` (rendered invoice PNG into Pay, truncated PNG, wrong-family QR, explicit review) |
 | Browser (virtual camera) | `apps/web/e2e/qr-camera.spec.ts`, `qr-camera-multipart.spec.ts` (Y4M fixture: `e2e/qr-video.mjs`) |
 
 ```bash

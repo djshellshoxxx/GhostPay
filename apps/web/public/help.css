@@ -1,28 +1,6 @@
-:root {
-  color-scheme: light dark;
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --text: #14171c;
-  --muted: #4a5260;
-  --border: #c3c9d4;
-  --accent: #0b4fd6;
-  --notice: #e8f0fe;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1218;
-    --surface: #181c24;
-    --text: #eef1f6;
-    --muted: #b4bccb;
-    --border: #3b4252;
-    --accent: #7aa7ff;
-    --notice: #14233f;
-  }
-}
 * { box-sizing: border-box; }
 body { margin: 0; color: var(--text); background: var(--bg); line-height: 1.65; }
-main, .site-header, .site-nav, .site-footer { max-width: 60rem; margin-inline: auto; padding-inline: 1rem; overflow-wrap: anywhere; }
+main, .site-header, .site-nav, .site-footer { max-width: 62rem; margin-inline: auto; padding-inline: 1rem; overflow-wrap: anywhere; }
 .site-header { padding-block: 1.5rem .5rem; }
 .brand { display: flex; align-items: center; gap: .65rem; font-weight: 700; font-size: 1.15rem; }
 .brand img { flex: 0 0 auto; }
@@ -39,7 +17,7 @@ a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--accent); ou
 [aria-current="page"] { font-weight: 700; }
 main { padding-block: .5rem 2rem; }
 .intro { color: var(--muted); max-width: 48rem; }
-.notice { padding: 1rem 1.25rem; border-inline-start: 4px solid var(--accent); background: var(--notice); margin-block: 1.5rem; }
+.notice { padding: 1rem 1.25rem; border-inline-start: 4px solid var(--accent); background: var(--info-bg); margin-block: 1.5rem; }
 .notice p:first-child { margin-block-start: 0; }
 .notice p:last-child { margin-block-end: 0; }
 li { margin-block: .4rem; }
@@ -57,3 +35,45 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 @media (max-width: 30rem) { th, td { padding: .5rem; font-size: .92rem; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 @media print { .site-nav, .skip, .site-footer ul { display: none; } body { background: #fff; color: #000; } a { color: inherit; } }
+
+/* Guide components. Layout is fluid: nothing here fixes a width, and lanes stack below 40rem. */
+.flow-lanes { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-block: 1rem; }
+@media (min-width: 40rem) { .flow-lanes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.flow-lane { min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: .5rem 1rem 1rem; background: var(--surface); }
+.flow-lane h3 { margin-block-start: .5rem; }
+.flow { list-style: none; counter-reset: step; padding: 0; margin: 0; }
+.flow > li { counter-increment: step; position: relative; margin-block: .6rem; padding-inline-start: 2.75rem; min-width: 0; }
+.flow > li::before { content: counter(step); position: absolute; inset-inline-start: 0; top: .1rem; inline-size: 2rem; block-size: 2rem; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: .95rem; }
+.flow > li > strong { display: block; }
+.flow-handoff { margin-block: .5rem; padding: .5rem .75rem; border-inline-start: 3px dashed var(--border); color: var(--muted); }
+
+.status { display: inline-block; margin-inline-end: .25rem; padding: .05rem .55rem; border: 1px solid currentColor; border-radius: 999px; font-size: .8rem; font-weight: 700; line-height: 1.6; white-space: normal; }
+.status-implemented { color: var(--ok); }
+.status-experimental { color: var(--warn-border); }
+.status-planned { color: var(--accent); }
+.status-unsupported { color: var(--danger); }
+
+details { margin-block: 1rem; border: 1px solid var(--border); border-radius: 6px; padding: 0 1rem; background: var(--surface); }
+details[open] { padding-block-end: .75rem; }
+summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 700; color: var(--text); }
+summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.technical { font-size: .9rem; line-height: 1.55; color: var(--muted); }
+.technical p, .technical li { margin-block: .4rem; }
+
+dl.glossary { display: grid; gap: .25rem 1rem; margin-block: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) { dl.glossary { grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); } }
+dl.glossary dt { font-weight: 700; }
+dl.glossary dd { margin: 0 0 .6rem; }
+.glossary-entry { scroll-margin-top: 1rem; }
+
+.table-wrap { overflow-x: auto; max-width: 100%; }
+.table-wrap:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.table-wrap table { margin-block: .5rem 1rem; min-width: 0; }
+
+.key-points { padding-inline-start: 1.25rem; }
+.kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 .35em; background: var(--surface); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+@media print { details { border: 0; } details > * { display: block; } summary { display: none; } .flow-lanes { grid-template-columns: 1fr; } }
+.matrix { table-layout: auto; min-width: 46rem; }
+.matrix th[scope="row"] { min-width: 12rem; }

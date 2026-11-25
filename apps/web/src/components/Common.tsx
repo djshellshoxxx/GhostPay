@@ -1,4 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useClipboardDelayMs } from '../state';
+import { copyClipboardText } from '../lib/clipboardPrivacy';
 import { sanitizeDisplayText } from '../lib/sanitize';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { ContextHelp } from './ContextHelp';
@@ -43,7 +45,8 @@ export function Field(props: {
   );
 }
 
-export function CopyButton(props: { readonly text: string; readonly label: string }): ReactNode {
+export function CopyButton(props: { readonly text: string; readonly label: string; readonly autoClearAfterMs?: number }): ReactNode {
+  const delay = useClipboardDelayMs();
   const [result, setResult] = useState<{ readonly text: string; readonly state: 'copied' | 'failed' } | undefined>();
   const attempt = useRef(0);
   const currentText = useRef(props.text);
@@ -66,7 +69,8 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
         };
         void (async () => {
           try {
-            await navigator.clipboard.writeText(text);
+            await copyClipboardText(text, navigator.clipboard, props.autoClearAfterMs ?? delay,
+              () => request === attempt.current && currentText.current === text);
             finish('copied');
           } catch {
             finish('failed');

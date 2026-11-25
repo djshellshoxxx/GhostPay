@@ -1,0 +1,14 @@
+{
+  "object_store": "/workspace/scratch/f80482f352bc/branch-index-refresh-objects.git",
+  "read_only_alternate": "/workspace/scratch/f80482f352bc/GhostPay/.git/objects",
+  "remote_reference": "origin URL read from GhostPay-followups; no ref changed",
+  "missing_objects": [
+    "3107b816144b4a6fe43f197fbdc323b5d8d80628",
+    "51160bcb70cd02fe66eeaca2f8ad6518d032a21b"
+  ],
+  "started_at": "2026-11-24T13:16:05.297974+00:00",
+  "completed_at": "2026-11-24T13:16:12.939626+00:00",
+  "exit_code": 0,
+  "no_root_git_writes": true,
+  "remote_read_only": true
+}

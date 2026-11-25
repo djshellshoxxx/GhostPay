@@ -1,0 +1,163 @@
+{
+  "format": "ghostpay-frozen-698-evidence/1",
+  "files": [
+    {
+      "original": "BRANCH_INDEX_698.csv",
+      "original_bytes": 312694,
+      "original_sha256": "8ee2f70beb417bffb6a79258bf517a974d21aac972190914897f011da430fe5b",
+      "stored": "evidence/frozen-698/BRANCH_INDEX_698.csv",
+      "stored_bytes": 312694,
+      "stored_sha256": "8ee2f70beb417bffb6a79258bf517a974d21aac972190914897f011da430fe5b",
+      "lossless_readback": true
+    },
+    {
+      "original": "SOURCE.json",
+      "original_bytes": 11234,
+      "original_sha256": "2e0c72a27a35de5e5c2556b530a544a301154b359bc78cf5820cf4b0c0dfb12a",
+      "stored": "evidence/frozen-698/SOURCE.json",
+      "stored_bytes": 11234,
+      "stored_sha256": "2e0c72a27a35de5e5c2556b530a544a301154b359bc78cf5820cf4b0c0dfb12a",
+      "lossless_readback": true
+    },
+    {
+      "original": "VERIFY.json",
+      "original_bytes": 1887,
+      "original_sha256": "2307f520f9311194d004cc7944e7ca5881ddcfd7d5177188e593b2b1a5605505",
+      "stored": "evidence/frozen-698/VERIFY.json",
+      "stored_bytes": 1887,
+      "stored_sha256": "2307f520f9311194d004cc7944e7ca5881ddcfd7d5177188e593b2b1a5605505",
+      "lossless_readback": true
+    },
+    {
+      "original": "RESIDUAL_OVERLAY.md",
+      "original_bytes": 48294,
+      "original_sha256": "c658c965073a261708978f8fe2680e68dc67b81b879d0a017737fef99c00955b",
+      "stored": "evidence/frozen-698/RESIDUAL_OVERLAY.md",
+      "stored_bytes": 48294,
+      "stored_sha256": "c658c965073a261708978f8fe2680e68dc67b81b879d0a017737fef99c00955b",
+      "lossless_readback": true
+    },
+    {
+      "original": "LEDGER_REFRESH_1224.json",
+      "original_bytes": 13615,
+      "original_sha256": "8b1fe56eed1ab7425a3657877334e5449bf28c7c68e9cec8eca5195e3bb9c75a",
+      "stored": "evidence/frozen-698/LEDGER_REFRESH_1224.json",
+      "stored_bytes": 13615,
+      "stored_sha256": "8b1fe56eed1ab7425a3657877334e5449bf28c7c68e9cec8eca5195e3bb9c75a",
+      "lossless_readback": true
+    },
+    {
+      "original": "branch-ref-snapshot-final.json",
+      "original_bytes": 93175,
+      "original_sha256": "6b6d23efc5a74f59481b5173b9db92615fe18c3ae544c10ea46c1653724eeacf",
+      "stored": "evidence/frozen-698/branch-ref-snapshot-final.json",
+      "stored_bytes": 93175,
+      "stored_sha256": "6b6d23efc5a74f59481b5173b9db92615fe18c3ae544c10ea46c1653724eeacf",
+      "lossless_readback": true
+    },
+    {
+      "original": "branch-index-notes.json",
+      "original_bytes": 29303,
+      "original_sha256": "75c34bf85ae06c2f7dc8a3ff1d466b88a6b1e7a8a7b403872a73a9ceeca2303d",
+      "stored": "evidence/frozen-698/branch-index-notes.json",
+      "stored_bytes": 29303,
+      "stored_sha256": "75c34bf85ae06c2f7dc8a3ff1d466b88a6b1e7a8a7b403872a73a9ceeca2303d",
+      "lossless_readback": true
+    },
+    {
+      "original": "residual-index-notes.json",
+      "original_bytes": 13890,
+      "original_sha256": "b6329b9a7b574a8dd673c6f45cac2c1507096c1ea663e8f356b8a1737afa6a9f",
+      "stored": "evidence/frozen-698/residual-index-notes.json",
+      "stored_bytes": 13890,
+      "stored_sha256": "b6329b9a7b574a8dd673c6f45cac2c1507096c1ea663e8f356b8a1737afa6a9f",
+      "lossless_readback": true
+    },
+    {
+      "original": "branch-617-comparison.json",
+      "original_bytes": 6392,
+      "original_sha256": "e97e54249aa3738636d829750acfb78e641feb99f11dd57c98dc57322b937c53",
+      "stored": "evidence/frozen-698/branch-617-comparison.json",
+      "stored_bytes": 6392,
+      "stored_sha256": "e97e54249aa3738636d829750acfb78e641feb99f11dd57c98dc57322b937c53",
+      "lossless_readback": true
+    },
+    {
+      "original": "mixed-scope-deeper-review.md",
+      "original_bytes": 12098,
+      "original_sha256": "d4aad0af4ba798aa98deceacf82e6a2d3813136306f569bdd1957364bd5d3cf0",
+      "stored": "evidence/frozen-698/mixed-scope-deeper-review.md",
+      "stored_bytes": 12098,
+      "stored_sha256": "d4aad0af4ba798aa98deceacf82e6a2d3813136306f569bdd1957364bd5d3cf0",
+      "lossless_readback": true
+    },
+    {
+      "original": "build-index.mjs",
+      "original_bytes": 2677,
+      "original_sha256": "6d7ae4c995eb57215167165cff67d08acee53c898873877e36cc7f1d4040f223",
+      "stored": "evidence/frozen-698/build-index.mjs",
+      "stored_bytes": 2677,
+      "stored_sha256": "6d7ae4c995eb57215167165cff67d08acee53c898873877e36cc7f1d4040f223",
+      "lossless_readback": true
+    },
+    {
+      "original": "compile-branch-index.py",
+      "original_bytes": 39843,
+      "original_sha256": "b513be60d6ae02ef1ae732c78174387a720e16e6193b88b24c72398e3f8d6a66",
+      "stored": "evidence/frozen-698/compile-branch-index.py",
+      "stored_bytes": 39843,
+      "stored_sha256": "b513be60d6ae02ef1ae732c78174387a720e16e6193b88b24c72398e3f8d6a66",
+      "lossless_readback": true
+    },
+    {
+      "original": "INDEX_DATA.json",
+      "original_bytes": 617912,
+      "original_sha256": "b856ca8754ac02ef978d8032b42c663b3481f163bc55953c46fb377953b83aac",
+      "stored": "evidence/frozen-698/INDEX_DATA.json.gz",
+      "stored_bytes": 68169,
+      "stored_sha256": "75869903023867515cbc4751fc8c04d4251c73c1726d5d3e3068872985b8147e",
+      "lossless_readback": true
+    },
+    {
+      "original": "CURRENT_SOURCE_COMPARISONS.json",
+      "original_bytes": 4551642,
+      "original_sha256": "20303d18701db88d3331e04069d7d97ac080f2d4ab037b9e57ef379ebea31dcd",
+      "stored": "evidence/frozen-698/CURRENT_SOURCE_COMPARISONS.json.gz",
+      "stored_bytes": 283953,
+      "stored_sha256": "be87e7ef3cc4c03485be78310ee0213f48548e1b0dd6ecceb91a8051687e6ffe",
+      "lossless_readback": true
+    },
+    {
+      "original": "branch-current-code-comparisons.json",
+      "original_bytes": 4348890,
+      "original_sha256": "171a7b42317ca7232fa1e7164faed3c7f98109a838162aa2cd021ae467b8bef4",
+      "stored": "evidence/frozen-698/branch-current-code-comparisons.json.gz",
+      "stored_bytes": 257126,
+      "stored_sha256": "303fe77d580caf28ee5076a0cc800b82b6b98698d496d2a5e577de5d4ca05214",
+      "lossless_readback": true
+    },
+    {
+      "original": "branch-refresh-698.json",
+      "original_bytes": 475622,
+      "original_sha256": "556086c112bbcb3e33461db9faf5f49840e8042d14c3425a00899566fb515dff",
+      "stored": "evidence/frozen-698/branch-refresh-698.json.gz",
+      "stored_bytes": 82289,
+      "stored_sha256": "a5cfcf6394d25d9ca390f564e10b7deafec2c2df91621e9e2ffd5cffb8069b08",
+      "lossless_readback": true
+    },
+    {
+      "original": "RESIDUAL_OVERLAY.json",
+      "original_bytes": 146435,
+      "original_sha256": "09b1966569d97231556906fce114af4825ddb020eb724ab9120a97a14b43779e",
+      "stored": "evidence/frozen-698/RESIDUAL_OVERLAY.json.gz",
+      "stored_bytes": 28354,
+      "stored_sha256": "a74441673e602cb02d89c84ce2e3bbdbed8910061a17a7b87d2409065a372f11",
+      "lossless_readback": true
+    }
+  ],
+  "baseline_references": [
+    "../all-branches-20261124/evidence/branch-census-695.json.gz",
+    "../all-branches-20261124/README.md"
+  ],
+  "limit": "The prior 695/696 census and historical 67-row audit remain in the core report; this directory preserves the unique later evidence without duplicating those archives."
+}

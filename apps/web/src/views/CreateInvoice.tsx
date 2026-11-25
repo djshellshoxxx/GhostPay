@@ -373,6 +373,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <ContextHelp id="register-matching-help" label={t('help.about', { control: t('create.matching.label') })}>{t('help.merchantRegistration')}</ContextHelp>
         </fieldset>
 
+        <Notice kind="warn">{t('ledger.late.beforeCreate')}</Notice>
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
@@ -388,7 +389,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
-          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} autoClearAfterMs={app.settings.invoiceLinkClipboardDelaySec * 1_000} /></p>
           <DownloadInvoiceLink link={visibleCreated.link} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame

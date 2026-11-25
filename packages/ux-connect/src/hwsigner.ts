@@ -55,11 +55,11 @@ export function validateTxRequest(r: TxSignRequest): Result<TxSignRequest> {
   if (!Number.isSafeInteger(r.chainId) || r.chainId <= 0) return err('bad chainId');
   if (!isAddress(r.to)) return err('bad to');
   if (!isHexData(r.data) || (r.data.length - 2) / 2 > MAX_DATA_BYTES) return err('bad data');
-  if (r.value < 0n || r.value > U256) return err('bad value');
+  if (typeof r.value !== 'bigint' || r.value < 0n || r.value > U256) return err('bad value');
   if (!Number.isSafeInteger(r.nonce) || r.nonce < 0) return err('bad nonce');
-  if (r.gasLimit <= 0n || r.gasLimit > U64) return err('bad gasLimit');
-  if (r.maxFeePerGas < 0n || r.maxFeePerGas > U256) return err('bad maxFeePerGas');
-  if (r.maxPriorityFeePerGas < 0n || r.maxPriorityFeePerGas > r.maxFeePerGas)
+  if (typeof r.gasLimit !== 'bigint' || r.gasLimit <= 0n || r.gasLimit > U64) return err('bad gasLimit');
+  if (typeof r.maxFeePerGas !== 'bigint' || r.maxFeePerGas < 0n || r.maxFeePerGas > U256) return err('bad maxFeePerGas');
+  if (typeof r.maxPriorityFeePerGas !== 'bigint' || r.maxPriorityFeePerGas < 0n || r.maxPriorityFeePerGas > r.maxFeePerGas)
     return err('priority fee exceeds max fee');
   return ok(r);
 }
@@ -339,6 +339,15 @@ const HW_ERRORS: Record<HwErrorCode, HwError> = {
 /** Look up a taxonomy entry. */
 export const hwError = (code: HwErrorCode): HwError => HW_ERRORS[code];
 
+/** Preserve the same-line app-message match without backtracking over wallet text. */
+function isAppNotOpenMessage(message: string): boolean {
+  if (message.includes('open the')) return true;
+  return message.split(/[\n\r\u2028\u2029]/).some((line) => {
+    const app = line.indexOf('app');
+    return app !== -1 && (line.indexOf('not', app + 3) !== -1 || line.indexOf('closed', app + 3) !== -1);
+  });
+}
+
 /**
  * Map a raw wallet/transport error ({code, message}) to the taxonomy.
  * Codes: EIP-1193 4001 rejected, 4200 unsupported, 4900/4901 disconnected;
@@ -353,7 +362,7 @@ export function classifyHwError(raw: unknown): HwError {
     return HW_ERRORS['user-rejected'];
   if (code === '0x5515' || /locked/.test(msg)) return HW_ERRORS['device-locked'];
   if (code === '0x6a80' || /blind/.test(msg)) return HW_ERRORS['blind-signing-disabled'];
-  if (code === '0x6e00' || code === '0x6d00' || code === '0x6511' || /app.*(not|closed)|open the/.test(msg))
+  if (code === '0x6e00' || code === '0x6d00' || code === '0x6511' || isAppNotOpenMessage(msg))
     return HW_ERRORS['app-not-open'];
   if (code === '4900' || code === '4901' || /disconnect|no device|not connected/.test(msg))
     return HW_ERRORS['device-disconnected'];

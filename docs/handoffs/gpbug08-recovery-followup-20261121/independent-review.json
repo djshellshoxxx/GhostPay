@@ -1,0 +1,24 @@
+{
+  "reviewer": "/root/round2_recovery_review",
+  "kind": "independent static source review",
+  "result": "pass",
+  "blocking_findings": [],
+  "base_sha": "e871eccc1238b7145cd1d0a667afb393c373cf83",
+  "reviewed_file_sha256": {
+    "apps/web/src/features/policy/PolicyCreate.tsx": "9ac367b1262d3d79d3b0c40a3d528208e29a9ece3480815ae586ecd2692d8980",
+    "apps/web/src/features/policy/PolicyCreate.recordDownloads.test.tsx": "969ce09a302001e896c1d611d818c0bdac51446216269d417f5efc01a26927c2",
+    "apps/web/src/features/policy/PolicyView.more.test.tsx": "49dd14265130d5b6a5eca95c80d7a825ea1e359d4bcbcdea73e2e1c45a7a747a",
+    "apps/web/src/features/policy/PolicyView.recordIdentity.test.tsx": "708352b9dba37a6400d53fb39fa9e6ce6a486a65ccf57533678f631601e3499c"
+  },
+  "catalog_review": "Exactly one added message leaf in each ar/es/ja catalog; all existing values and metadata preserved.",
+  "checks": [
+    "full canonical meta-address digest binds both seller keys and policy",
+    "real import/download regression checks names, repeat stability and serialized bytes",
+    "fresh recovery preserves different-seller donor and restores missing target",
+    "duplicate recovery warning and record count remain explicit",
+    "each seller key is independently covered",
+    "ownership, feature flags and adjacent pending-send source preserved"
+  ],
+  "test_execution": "Product tests were executed by the root worker; this reviewer did not rerun them.",
+  "formal_github_approval": false
+}

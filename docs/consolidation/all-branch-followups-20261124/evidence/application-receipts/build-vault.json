@@ -1,0 +1,23 @@
+{
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "results": [
+    {
+      "gate": "vault-build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+      "environment": {},
+      "exit_code": 0,
+      "seconds": 2.589,
+      "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/vault-build.log",
+      "sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b",
+      "summaries": []
+    }
+  ]
+}

@@ -309,9 +309,14 @@ describe.skipIf(!available)('policy-scheme anvil cross-check (real PolicyAccount
     const td = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token: ZERO_ADDRESS, amount: native.net, deadline: now + 3600n, nonce: 1n, limit: { limitsRoot: tree.root, proof } });
     const sig = await signPolicyTypedData(td, key.ownerSecret, key.ownerAddress);
     expect(await send(encodeRequestWithdraw(td, proof, sig))).toBe('success');
-    const tdToken = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } });
-    expect(() => encodeRequestWithdraw(tdToken, proof, '0x')).toThrow(/limitLeafHash/);
-    // Bypass the client check: the contract itself refuses the mismatched leaf (LimitLeafMismatch).
+    const mismatchedTokenOrder = { chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } };
+    // The restored signing preflight now refuses the wrong token's Merkle leaf before an order can be signed.
+    expect(() => buildWithdrawTypedData(mismatchedTokenOrder)).toThrow(/leaf does not match token, limit and window/);
+    // Independently retain the calldata encoder's exact signed-leaf check on an otherwise valid native order.
+    expect(() => encodeRequestWithdraw(td, { ...proof, windowSeconds: proof.windowSeconds + 1n }, '0x')).toThrow(/limitLeafHash/);
+    // For a real-contract negative test, sign an ERC-20 order with no claimed limit leaf, then supply the
+    // native-only proof in raw calldata. The deployed account has a nonzero root and must reject the mismatch.
+    const tdToken = buildWithdrawTypedData({ ...mismatchedTokenOrder, limit: null });
     const raw = encodeFunctionData({
       abi: policyAccountAbi,
       functionName: 'requestWithdraw',

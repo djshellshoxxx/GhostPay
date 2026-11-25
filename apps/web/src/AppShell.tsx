@@ -4,7 +4,8 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -18,6 +19,8 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { BrowserChecks } from './components/BrowserChecks';
+import { CopiedBackupNotice } from './components/SecretBackup';
 import { notifyAppLock } from './lib/appLock';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
@@ -116,8 +119,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (settings.theme === 'system') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', settings.theme);
+    root.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
@@ -147,7 +149,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       locked = true;
       services.vault.lock();
       // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
-      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
+      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard if unchanged (G2-02).
       notifyAppLock('idle');
       if (!hasSession()) {
         setLive({ key: 'app.idle.tagsLocked' });
@@ -207,6 +209,21 @@ export function AppShell(props: AppShellProps): ReactNode {
     };
   }, [services, settings.lockTimeoutMin]);
 
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
+  useEffect(() => {
+    if (!loadedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (!hasSession() || sessionHasExternalCopy()) return;
+      e.preventDefault(); e.returnValue = true;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [loadedKeys]);
+
   useEffect(() => {
     if (first.current) {
       first.current = false;
@@ -244,6 +261,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       setView,
       settings,
       updateSettings: (s) => {
+        if (s.invoiceLinkClipboardDelaySec !== settings.invoiceLinkClipboardDelaySec) cancelClipboardCleanup();
         setSettings(s);
         return saveSettings(s);
       },
@@ -300,6 +318,7 @@ export function AppShell(props: AppShellProps): ReactNode {
             <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
+        <CopiedBackupNotice />
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
@@ -309,6 +328,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       </main>
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
       <footer className="site-footer">
+        <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
           <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>

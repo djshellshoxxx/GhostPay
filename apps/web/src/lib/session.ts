@@ -50,7 +50,7 @@ interface Custody {
   /**
    * A copy outside this browser profile. `verified`: the keys were imported (a keystore, or hex with its signing key), or a
    * downloaded keystore was opened again with its passphrase and holds exactly these keys. `unverified`: a keystore was
-   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it lifts the backup gate, not the wipe.
+   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it grants neither verification nor permission to wipe.
    */
   readonly external: 'none' | 'unverified' | 'verified';
   /**
@@ -404,6 +404,20 @@ export async function verifyVaultForCurrentSession(ciphertext: string, passphras
 }
 
 /**
+ * Re-authentication for a spec 18 secret export: `text` (a vault record or a keystore backup file) must open with
+ * `passphrase` and hold exactly the loaded keys. Resolves to a guard for those keys. Unlike {@link verifyDownloadedBackup}
+ * it records nothing: custody, backup and vault state stay as they are, and nothing is loaded or replaced. Rejects when
+ * `signal` aborts or the keys change meanwhile; every decrypted secret is wiped on every path.
+ */
+export async function verifyCredentialForCurrentSession(text: string, passphrase: string, source: 'vault' | 'keystore', signal?: AbortSignal): Promise<() => void> {
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theSecretExportWasCancelled' }); };
+  const mismatch = new UserFacingError({ key: source === 'vault' ? 'error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller' : 'error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys' });
+  const guard = await matchLoadedSession(text, passphrase, assertOpen, mismatch);
+  assertOpen();
+  return guard;
+}
+
+/**
  * "Verify backup" (GP-PAGES-02): opens a downloaded keystore file with its passphrase and, only on an exact match with the
  * loaded keys, records the copy as verified, which lets the idle lock and an explicit wipe treat the keys as recoverable.
  * Nothing is loaded or replaced; a wrong passphrase, a damaged file or another seller's keystore change nothing. Rejects
@@ -488,3 +502,5 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
 // i18n-use: error.session.signingFormat
 
 // i18n-use: error.session.signingInvalid
+
+// i18n-use: error.session.theSecretExportWasCancelled

@@ -52,6 +52,8 @@ export function currencyExponent(currency: string, overrides?: Readonly<Record<s
  * @returns Decimal string with exactly `exponent` fraction digits.
  */
 export function formatMinor(minor: bigint, exponent: number): string {
+  // Keep the formatting boundary consistent with currencyExponent and never reinterpret invalid precision.
+  if (!Number.isInteger(exponent) || exponent < 0 || exponent > 18) throw new LedgerError('bad-exponent');
   const neg = minor < 0n;
   const digits = (neg ? -minor : minor).toString().padStart(exponent + 1, '0');
   const int = digits.slice(0, digits.length - exponent);

@@ -49,8 +49,9 @@ identity. Other network families use separate views and verification rules, not 
 1. Open **Seller keys** and generate keys, or import your existing encrypted keystore.
 2. Download an encrypted keystore. The export policy requires at least **14 characters** and rejects weak
    passphrases; a generated suggestion is available. Keep the file and passphrase separately.
-3. Verify import in another browser profile before discarding the original session. A displayed public meta-address
-   does not mean its private keys were backed up.
+3. In **Verify backup**, select the file you saved and enter its file passphrase. GhostPay decrypts it locally and
+   compares the spending, viewing and invoice-signing keys with the loaded seller. Verify a retained copy before
+   closing the original profile. For a recovery rehearsal, follow [Restore the correct file](#restore-the-correct-file).
 4. If you choose the encrypted browser vault, keep an external keystore too. Clearing site data deletes local state.
 5. Configure the intended RPC and optional independent second RPC in **Settings**. Endpoints are stored in plaintext,
    including credentials embedded in their path/query. Read the provider/privacy explanations.
@@ -123,6 +124,16 @@ valid invoice and independently checked payment are different things. Sources:
 [payment-request QR](../../apps/web/src/components/PaymentRequestQr.tsx).
 
 ## Restore the correct file
+
+**Restore a seller on a clean profile.** Keep the source profile open. In a new browser profile, open **Seller keys → Import an encrypted keystore**, select the saved file, enter its file passphrase and choose **Decrypt and load**. Check the public meta-address **and** invoice-signing public key against the original. Import loads the three private keys into memory. To keep them across restarts, save an encrypted browser vault in the new profile and test unlocking it after reload. Its passphrase may differ from the file passphrase. An occupied destination vault remains intact.
+
+**Payment recovery.** The v1 seller keystore restores the scheme-1 EVM spending and viewing keys and the independent invoice-signing key. With the corresponding announcement (including the ephemeral public key), these keys can rediscover and derive the one-time spending key for a payment made to that seller. In a new profile configure the correct network and RPC and rescan the relevant blocks. The public payment address alone is insufficient to derive its private key. The chain determines the current balance, including whether the payment has already been swept. Restoration cannot reverse a sweep.
+
+**What to retain separately.** The keystore contains no transaction history, original invoice links or invoice decryption passwords, registered invoices, receipts, reconciliation decisions, tags, scan checkpoints or settings. Keep the appropriate archives and original documents. A connected payer wallet, a destination wallet and keys for other network families each have their own recovery material. Public addresses, a pairing QR or a payment receipt cannot replace any private key.
+
+**If recovery fails.** A wrong passphrase and altered ciphertext can produce the same authentication error. An unreadable or malformed file also cannot install keys. Keep the original file and profile, try another retained copy, or export again from a still-unlocked seller. There is no server-side passphrase reset. Losing every usable copy of a private key loses that key's authority. Spending and viewing hex without the original signing key can recover matching payments, but importing just those two keys generates a new signer for future invoices and receipts.
+
+**Before leaving or deleting.** The app requests the browser's leave-page warning while loaded keys lack a verified external copy. Browsers may suppress the prompt or terminate a tab without an unload event. With a two-key hex import, immediately back up the generated invoice signer. The recovery-only idle fix for that signer follows the [idle-lock integration branch](https://github.com/djshellshoxxx/GhostPay/pull/577). Saving a browser vault, deleting site data, and deleting a downloaded file are separate actions. To remove a locked or unrelated vault, GhostPay requires typing the displayed deletion phrase. Deliberately deleting the last copy, accepting a destructive wipe, a browser crash or erasing a profile can still cause permanent loss.
 
 | File | Correct use | What it does not do |
 | --- | --- | --- |

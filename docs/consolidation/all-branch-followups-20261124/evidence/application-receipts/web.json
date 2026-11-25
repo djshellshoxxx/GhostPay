@@ -1,0 +1,46 @@
+{
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "results": [
+    {
+      "gate": "web-coverage",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups/apps/web",
+      "environment": {},
+      "exit_code": 0,
+      "seconds": 1492.878,
+      "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-coverage.log",
+      "sha256": "d61b39fefcb97a7d3b7096a1feaee2b76bddbd6ea1a351786eb6a8c8064ff1a1",
+      "summaries": [
+        "Test Files  235 passed | 2 skipped (237)",
+        "Tests  3046 passed | 13 skipped (3059)",
+        "All files          |   92.99 |    89.38 |   94.53 |   96.79 |"
+      ]
+    },
+    {
+      "gate": "web-nocov",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups/apps/web",
+      "environment": {},
+      "exit_code": 0,
+      "seconds": 27.139,
+      "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/web-nocov.log",
+      "sha256": "ba389aa16e1b9b10ea2ccb16a92fce1f9bc64fa00fd971216aea12ddd8cd791f",
+      "summaries": [
+        "Test Files  3 passed (3)",
+        "Tests  3 passed (3)"
+      ]
+    }
+  ]
+}

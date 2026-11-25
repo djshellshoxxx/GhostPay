@@ -1,0 +1,216 @@
+{
+  "schema": "ghostpay-scoped-qualification/v1",
+  "recorded_utc": "2026-11-24T13:31:21.802435+00:00",
+  "worker": "/root/historical_review",
+  "branch": "integration/neutral-deployment-diagnostic-20261124",
+  "base": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+  "source_tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+  "claim": "cafa0ebd6c8e872d2041ac77eb9213d1af280cce",
+  "donor": {
+    "pr": 619,
+    "head": "3107b816144b4a6fe43f197fbdc323b5d8d80628",
+    "original_production_commit": "ccf93d2283130a487d7d171c9c983e2a86a6a157",
+    "corrected_hardening_commits": [
+      "138b648a9655f58a876d39b362b041e6830e134e",
+      "fc91f371572e4029a58947d50668cd3e8bf9e2a5"
+    ],
+    "whole_branch_merged": false
+  },
+  "status": "local scoped qualification passed; fresh final combined hosted acceptance remains required",
+  "source_scope": [
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "base_entry": "100644 blob 6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "donor_entry": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79",
+      "selected_entry": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79",
+      "exact_donor": true
+    },
+    {
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "base_entry": "100644 blob be90aa64969b62e5616161b848ef35e0b12b9804",
+      "donor_entry": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b",
+      "selected_entry": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b",
+      "exact_donor": true
+    },
+    {
+      "path": "apps/web/src/lib/hardening.test.ts",
+      "base_entry": "100644 blob 582a53936fc57d9a483f8ee26b0a20eec45f4c4e",
+      "donor_entry": "100644 blob 5c62abd6c7899bc2625a6608ac2b7ffd85a64b0c",
+      "selected_entry": "100644 blob 5c62abd6c7899bc2625a6608ac2b7ffd85a64b0c",
+      "exact_donor": true
+    }
+  ],
+  "preservation": {
+    "outside_selected_paths_and_append_only_claim_unchanged": true,
+    "original_deployment_test_file_exact_prefix": true,
+    "original_hardening_named_cases_retained": 16,
+    "other_hardening_sections_exact_except_import": true,
+    "no_rpc_checking_verified_and_payment_disabled_contract_retained": true,
+    "secondary_provider_passthrough_unchanged": true
+  },
+  "reachability": "Current imports of checkDeployment/deploymentProblem are only deployment.test.ts and hardening.test.ts; live application uses the separate manifest readback path, which is unchanged.",
+  "broader_donor_privacy_export_completed": false,
+  "results": [
+    {
+      "name": "focused-web",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/lib/deployment.test.ts",
+        "src/lib/hardening.test.ts",
+        "src/lib/manifest.test.ts",
+        "src/lib/defaultServices.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci/apps/web",
+      "source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+      "tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+      "started_utc": "2026-11-24T13:29:04.606736+00:00",
+      "completed_utc": "2026-11-24T13:29:18.392066+00:00",
+      "elapsed_seconds": 13.785,
+      "exit_code": 0,
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "npm_config_cache": "/workspace/scratch/f80482f352bc/deployment-diagnostic-qualification/npm-cache",
+        "CI": "1"
+      },
+      "log": "focused-web.log",
+      "log_bytes": 501,
+      "log_sha256": "021f49cda65d33d2d3e2ac1ab98d4563361c25de3f8166490ddabc7f9c247339"
+    },
+    {
+      "name": "web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+      "tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+      "started_utc": "2026-11-24T13:29:18.393514+00:00",
+      "completed_utc": "2026-11-24T13:30:10.723091+00:00",
+      "elapsed_seconds": 52.33,
+      "exit_code": 0,
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "npm_config_cache": "/workspace/scratch/f80482f352bc/deployment-diagnostic-qualification/npm-cache",
+        "CI": "1"
+      },
+      "log": "web-typecheck.log",
+      "log_bytes": 216,
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "name": "web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/native-idb-ci",
+      "source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+      "tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+      "started_utc": "2026-11-24T13:30:10.725085+00:00",
+      "completed_utc": "2026-11-24T13:31:12.353153+00:00",
+      "elapsed_seconds": 61.628,
+      "exit_code": 0,
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "npm_config_cache": "/workspace/scratch/f80482f352bc/deployment-diagnostic-qualification/npm-cache",
+        "CI": "1"
+      },
+      "log": "web-lint.log",
+      "log_bytes": 228,
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    }
+  ],
+  "executed_test_totals": {
+    "files": 4,
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "newly_authored_tests": 0
+  },
+  "dependencies": {
+    "node": "v24.22.3",
+    "installation_performed": false,
+    "workspace_links": 68,
+    "all_workspace_links_resolve_inside_isolated_checkout": true,
+    "reused_existing_web_dependencies": true,
+    "actual_cookie_version": "0.4.2",
+    "whole_lock_equivalence_claim": false,
+    "cookie_override_qualification_claim": false,
+    "source_identical_package_build_outputs_refreshed": [
+      "packages/ux-vault"
+    ],
+    "separate_cookie_qualification_preserved": true,
+    "node_resolution_flags_changed": false
+  },
+  "independent_review": {
+    "reviewer": "/root/ownership_review",
+    "approved_source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+    "approved_tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+    "source_decision": "approved, no source blocker",
+    "qualification_and_final_documentation_review": "separate reviewer addendum; no runtime reruns requested"
+  },
+  "limits": [
+    "No full application suite, bundle build, native/browser run, analyzer execution or fresh dependency install was requested or performed for this bounded unit.",
+    "Existing web dependencies include cookie 0.4.2; these tests qualify web source only, not installation of the changed cookie lockfile.",
+    "The live application uses a separate manifest readback path; no new helper caller or broader donor privacy/export lifecycle is introduced.",
+    "Root owns final composition review, exact-final-head hosted acceptance and promotion."
+  ],
+  "evidence_archive": {
+    "path": "run-logs.tar.gz",
+    "bytes": 9326,
+    "sha256": "8263be6b725860d69fd6beafaee74d0452d013f5f050bc60971b04ebb07eb29c",
+    "members": [
+      {
+        "path": "environment.json",
+        "bytes": 18450,
+        "sha256": "0285b75af6e8afb047463b6bfe9095328a072b196fc9d85b8369975a4743a67a"
+      },
+      {
+        "path": "preservation.json",
+        "bytes": 3671,
+        "sha256": "8f8c02d6f3ddd2331dba860823c000379e7d9ee358aa58e0b32c60090636226a"
+      },
+      {
+        "path": "selected-source.patch",
+        "bytes": 5126,
+        "sha256": "d8c3762ce3efe0d81891de8d3695926ca9e67b5d1f6666aedbbd9918a35efe32"
+      },
+      {
+        "path": "gate-results.json",
+        "bytes": 2905,
+        "sha256": "5355c10ea6e276ab11e8ce17d610c1543d7e42185f4af9b43fb866c063823cde"
+      },
+      {
+        "path": "focused-web.log",
+        "bytes": 501,
+        "sha256": "021f49cda65d33d2d3e2ac1ab98d4563361c25de3f8166490ddabc7f9c247339"
+      },
+      {
+        "path": "web-typecheck.log",
+        "bytes": 216,
+        "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+      },
+      {
+        "path": "web-lint.log",
+        "bytes": 228,
+        "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+      },
+      {
+        "path": "run_gates.py",
+        "bytes": 2123,
+        "sha256": "d5ae01c66e7ab44454b6c3efc8d213ceb071db3f040e0d133ad28246080decef"
+      }
+    ]
+  },
+  "source_clean_after_all_three_gates": true
+}

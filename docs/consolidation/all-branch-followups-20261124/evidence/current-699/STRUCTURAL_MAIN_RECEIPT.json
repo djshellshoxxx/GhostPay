@@ -1,0 +1,17 @@
+{
+  "rows": 699,
+  "main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+  "counts": {
+    "ancestor": 350,
+    "evidence-only": 86,
+    "needs-semantic-review": 255,
+    "code-tree-equivalent": 5,
+    "no-net-delta": 1,
+    "unrelated-history": 1,
+    "main": 1
+  },
+  "uncapped": true,
+  "uncompressed_bytes": 17538540,
+  "uncompressed_sha256": "5007ef7b1aba56cb65d14e91b6f3a71cae76a56edea805f6dfde567a44579a71",
+  "compressed_bytes": 1967105
+}
