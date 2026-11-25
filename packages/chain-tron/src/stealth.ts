@@ -11,6 +11,7 @@ import {
   type StealthKeySet,
 } from '@ghostpay/core-crypto';
 import { evmToTronAddress, tronAddressFromPublicKey, tronToEvmAddress, type TronAddress } from './address.js';
+import { buildTronAnnouncementMemo, toSchemeOneMetaAddress } from './meta.js';
 
 /** Sender-side result; all fields are public data. */
 export interface TronStealthPayment {
@@ -22,6 +23,8 @@ export interface TronStealthPayment {
   readonly viewTag: Uint8Array;
   /** Bytes that must begin announcement metadata. */
   readonly metadataPrefix: Uint8Array;
+  /** 38-byte `raw_data.data` memo `"GPT1" || R || viewTag`, the announcement the web scanner reads. */
+  readonly memo: Uint8Array;
 }
 
 /** Announcement fields; address is a Tron address (base58check or `41…` hex). */
@@ -39,26 +42,28 @@ export type TronAnnouncementCheck =
   { readonly matches: false } | { readonly matches: true; readonly stealthAddress: TronAddress };
 
 /**
- * Derives a one-time Tron address from an ERC-5564 scheme-1 meta-address.
+ * Derives a one-time Tron address from an `st:trx:0x` meta-address (ADR-0019, as `@ghostpay/tron-adapter`).
  *
  * @remarks Thin wrapper over core-crypto `deriveStealthPayment`: the stealth
  * public key and its keccak256 address payload are identical for EVM and Tron,
- * only the 0x41 prefix and base58check presentation differ. The meta-address is
- * the same `st:eth:0x…` encoding (see DEVIATIONS).
+ * only the 0x41 prefix and base58check presentation differ. The result equals
+ * `@ghostpay/tron-adapter` `deriveTronStealth` for the same randomness, memo included.
  *
- * @param metaAddress Scheme-1 meta-address.
+ * @param metaAddress `st:trx:0x` meta-address (`st:eth:0x` is refused with `LEGACY_META_ADDRESS`).
  * @param rng Test-only randomness injection.
  * @returns Public derivation result.
- * @throws {GhostPayCryptoError} From core-crypto on invalid input.
+ * @throws {TronError} `INVALID_META_ADDRESS`, `LEGACY_META_ADDRESS`.
+ * @throws {GhostPayCryptoError} From core-crypto (RNG, zero hash).
  * @security Ephemeral scalar handling is core-crypto's; nothing secret is returned.
  */
 export function deriveTronStealthPayment(metaAddress: string, rng?: RandomSource): TronStealthPayment {
-  const p = deriveStealthPayment(metaAddress, rng);
+  const p = deriveStealthPayment(toSchemeOneMetaAddress(metaAddress), rng);
   return {
     stealthAddress: evmToTronAddress(p.stealthAddress),
     ephemeralPublicKey: p.ephemeralPublicKey,
     viewTag: p.viewTag,
     metadataPrefix: p.metadataPrefix,
+    memo: buildTronAnnouncementMemo(p.ephemeralPublicKey, p.viewTag[0] as number),
   };
 }
 

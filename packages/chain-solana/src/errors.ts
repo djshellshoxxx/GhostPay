@@ -6,6 +6,8 @@ export type SolanaStealthErrorCode =
   | 'INVALID_SCALAR'
   | 'INVALID_POINT'
   | 'INVALID_META_ADDRESS'
+  | 'LEGACY_META_ADDRESS'
+  | 'NETWORK_MISMATCH'
   | 'INVALID_ANNOUNCEMENT'
   | 'INVALID_ADDRESS'
   | 'INVALID_SEEDS'
@@ -25,6 +27,9 @@ const MESSAGES: Readonly<Record<SolanaStealthErrorCode, string>> = {
   INVALID_SCALAR: 'invalid secret scalar (must be 32 little-endian bytes in [1, L-1])',
   INVALID_POINT: 'invalid public key (must be a canonical, prime-order ed25519 point)',
   INVALID_META_ADDRESS: 'invalid Solana stealth meta-address',
+  LEGACY_META_ADDRESS:
+    'retired gpsol: meta-address format is not accepted; ask the recipient for an st:sol: meta-address (ADR-0017)',
+  NETWORK_MISMATCH: 'Solana meta-address is for a different cluster',
   INVALID_ANNOUNCEMENT: 'invalid Solana stealth announcement',
   INVALID_ADDRESS: 'invalid Solana address (must be base58 of 32 bytes)',
   INVALID_SEEDS: 'invalid program-derived-address seeds',
