@@ -1,0 +1,811 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "source_tree": "2634456ffa35681e799f71b72bb907f946a77618",
+  "index_branch": "docs/ghostpay-future-module-specs-20261119",
+  "modules": [
+    {
+      "id": "F01",
+      "slug": "ghosttips",
+      "title": "GhostTips private donations and tips",
+      "kind": "product",
+      "branch": "future/f01-ghosttips",
+      "spec_path": "docs/future/modules/F01-ghosttips/SPEC.md",
+      "hard_dependencies": [
+        "F03",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08",
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F02",
+      "slug": "ghoststore",
+      "title": "GhostStore static private storefronts",
+      "kind": "product",
+      "branch": "future/f02-ghoststore",
+      "spec_path": "docs/future/modules/F02-ghoststore/SPEC.md",
+      "hard_dependencies": [
+        "F03",
+        "F08",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F07",
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F03",
+      "slug": "private-payment-links",
+      "title": "Private payment links and QR exchange",
+      "kind": "product",
+      "branch": "future/f03-private-payment-links-spec",
+      "spec_path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+      "hard_dependencies": [
+        "P04"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false,
+      "related_implementation_branch": "future/f03-private-payment-links",
+      "related_implementation_head": "dd665344d6290c109d2292093e01903e4770adff"
+    },
+    {
+      "id": "F04",
+      "slug": "merchant-dashboard",
+      "title": "Private local merchant dashboard",
+      "kind": "product",
+      "branch": "future/f04-merchant-dashboard",
+      "spec_path": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P03"
+      ],
+      "optional_integrations": [
+        "F05",
+        "F06"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F05",
+      "slug": "ghostproof",
+      "title": "GhostProof selective-disclosure evidence workflow",
+      "kind": "product",
+      "branch": "future/f05-ghostproof",
+      "spec_path": "docs/future/modules/F05-ghostproof/SPEC.md",
+      "hard_dependencies": [
+        "P12",
+        "P05"
+      ],
+      "optional_integrations": [
+        "P14",
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F06",
+      "slug": "encrypted-backups",
+      "title": "Encrypted backup and independent recovery workflow",
+      "kind": "product",
+      "branch": "future/f06-encrypted-backups",
+      "spec_path": "docs/future/modules/F06-encrypted-backups/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P07"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F07",
+      "slug": "ghostpayouts",
+      "title": "GhostPayouts private multi-recipient payouts",
+      "kind": "product",
+      "branch": "future/f07-ghostpayouts",
+      "spec_path": "docs/future/modules/F07-ghostpayouts/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10",
+        "T01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F08",
+      "slug": "ghostid",
+      "title": "GhostID independent merchant identities",
+      "kind": "product",
+      "branch": "future/f08-ghostid",
+      "spec_path": "docs/future/modules/F08-ghostid/SPEC.md",
+      "hard_dependencies": [
+        "P06",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F16"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F09",
+      "slug": "ghostpos",
+      "title": "GhostPOS private in-person checkout",
+      "kind": "product",
+      "branch": "future/f09-ghostpos",
+      "spec_path": "docs/future/modules/F09-ghostpos/SPEC.md",
+      "hard_dependencies": [
+        "F03",
+        "P03",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08",
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F10",
+      "slug": "private-recurring",
+      "title": "Private recurring invoices and subscriptions",
+      "kind": "product",
+      "branch": "future/f10-private-recurring",
+      "spec_path": "docs/future/modules/F10-private-recurring/SPEC.md",
+      "hard_dependencies": [
+        "P04",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F03",
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F11",
+      "slug": "ghostteams",
+      "title": "GhostTeams encrypted merchant collaboration",
+      "kind": "product",
+      "branch": "future/f11-ghostteams",
+      "spec_path": "docs/future/modules/F11-ghostteams/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P07",
+        "F08"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F12",
+      "slug": "ghostbridge",
+      "title": "GhostBridge optional P2P-Offramp handoff",
+      "kind": "product",
+      "branch": "future/f12-ghostbridge",
+      "spec_path": "docs/future/modules/F12-ghostbridge/SPEC.md",
+      "hard_dependencies": [
+        "P04",
+        "P06"
+      ],
+      "optional_integrations": [
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F13",
+      "slug": "fiat-conversion",
+      "title": "Privacy-aware optional fiat conversion",
+      "kind": "product",
+      "branch": "future/f13-fiat-conversion",
+      "spec_path": "docs/future/modules/F13-fiat-conversion/SPEC.md",
+      "hard_dependencies": [
+        "P02",
+        "P11"
+      ],
+      "optional_integrations": [
+        "FEE01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F14",
+      "slug": "multichain-routing",
+      "title": "Privacy-aware multi-chain route comparison",
+      "kind": "product",
+      "branch": "future/f14-multichain-routing",
+      "spec_path": "docs/future/modules/F14-multichain-routing/SPEC.md",
+      "hard_dependencies": [
+        "P02",
+        "P08",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P13",
+        "P14",
+        "P16"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F15",
+      "slug": "private-rpc",
+      "title": "Private RPC and scanning configuration workflow",
+      "kind": "product",
+      "branch": "future/f15-private-rpc",
+      "spec_path": "docs/future/modules/F15-private-rpc/SPEC.md",
+      "hard_dependencies": [
+        "P02",
+        "P03",
+        "P10"
+      ],
+      "optional_integrations": [
+        "P01",
+        "P07"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F16",
+      "slug": "per-client-identities",
+      "title": "Per-client payment identity separation",
+      "kind": "product",
+      "branch": "future/f16-per-client-identities",
+      "spec_path": "docs/future/modules/F16-per-client-identities/SPEC.md",
+      "hard_dependencies": [
+        "P06",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F17",
+      "slug": "private-funds",
+      "title": "Private sweeping and offline fund management",
+      "kind": "product",
+      "branch": "future/f17-private-funds",
+      "spec_path": "docs/future/modules/F17-private-funds/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P08"
+      ],
+      "optional_integrations": [
+        "P03",
+        "P09",
+        "P10",
+        "FEE01",
+        "T02"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "F18",
+      "slug": "privacy-modes",
+      "title": "Editable privacy presets and capability selection",
+      "kind": "product",
+      "branch": "future/f18-privacy-modes",
+      "spec_path": "docs/future/modules/F18-privacy-modes/SPEC.md",
+      "hard_dependencies": [
+        "P11",
+        "FEE01",
+        "P18"
+      ],
+      "optional_integrations": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P17",
+        "P19",
+        "T01",
+        "T02"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P01",
+      "slug": "tor-onion-hosting",
+      "title": "HTTPS and Tor-compatible static hosting",
+      "kind": "platform",
+      "branch": "future/p01-tor-onion-hosting",
+      "spec_path": "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+      "hard_dependencies": [
+        "P18"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P02",
+      "slug": "rpc-policy",
+      "title": "User-selected RPC policy and consent enforcement",
+      "kind": "platform",
+      "branch": "future/p02-rpc-policy",
+      "spec_path": "docs/future/modules/P02-rpc-policy/SPEC.md",
+      "hard_dependencies": [],
+      "optional_integrations": [
+        "P01"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P03",
+      "slug": "local-stealth-scanning",
+      "title": "Local stealth discovery and private retrieval",
+      "kind": "platform",
+      "branch": "future/p03-local-stealth-scanning",
+      "spec_path": "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+      "hard_dependencies": [
+        "P02",
+        "P06"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P04",
+      "slug": "encrypted-offline-invoices",
+      "title": "Encrypted authenticated offline invoices",
+      "kind": "platform",
+      "branch": "future/p04-encrypted-offline-invoices",
+      "spec_path": "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+      "hard_dependencies": [
+        "P06",
+        "P11"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P05",
+      "slug": "encrypted-local-state",
+      "title": "Encrypted local state and recovery primitives",
+      "kind": "platform",
+      "branch": "future/p05-encrypted-local-state",
+      "spec_path": "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P06",
+      "slug": "key-role-separation",
+      "title": "Independent key roles and scoped delegation",
+      "kind": "platform",
+      "branch": "future/p06-key-role-separation",
+      "spec_path": "docs/future/modules/P06-key-role-separation/SPEC.md",
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P07",
+      "slug": "encrypted-device-sync",
+      "title": "Optional encrypted device synchronization",
+      "kind": "platform",
+      "branch": "future/p07-encrypted-device-sync",
+      "spec_path": "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P02"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P08",
+      "slug": "linkability-analysis",
+      "title": "Local payment linkability analysis",
+      "kind": "platform",
+      "branch": "future/p08-linkability-analysis",
+      "spec_path": "docs/future/modules/P08-linkability-analysis/SPEC.md",
+      "hard_dependencies": [],
+      "optional_integrations": [
+        "P05"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P09",
+      "slug": "noncustodial-gas-services",
+      "title": "Optional non-custodial gas service adapters",
+      "kind": "platform",
+      "branch": "future/p09-noncustodial-gas-services",
+      "spec_path": "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+      "hard_dependencies": [
+        "P02",
+        "P06",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P10",
+        "P17"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P10",
+      "slug": "private-submission",
+      "title": "Explicit private transaction submission",
+      "kind": "platform",
+      "branch": "future/p10-private-submission",
+      "spec_path": "docs/future/modules/P10-private-submission/SPEC.md",
+      "hard_dependencies": [
+        "P02"
+      ],
+      "optional_integrations": [
+        "P09"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P11",
+      "slug": "metadata-timing-policy",
+      "title": "Metadata minimization and bounded timing policy",
+      "kind": "platform",
+      "branch": "future/p11-metadata-timing-policy",
+      "spec_path": "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P12",
+      "slug": "selective-disclosure-proofs",
+      "title": "Selective-disclosure proof provider",
+      "kind": "platform",
+      "branch": "future/p12-selective-disclosure-proofs",
+      "spec_path": "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [
+        "P13",
+        "P14"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P13",
+      "slug": "confidential-amounts",
+      "title": "Confidential amount settlement research",
+      "kind": "research",
+      "branch": "future/p13-confidential-amounts",
+      "spec_path": "docs/future/modules/P13-confidential-amounts/SPEC.md",
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P14",
+      "slug": "shielded-payments",
+      "title": "Non-custodial shielded payment research",
+      "kind": "research",
+      "branch": "future/p14-shielded-payments",
+      "spec_path": "docs/future/modules/P14-shielded-payments/SPEC.md",
+      "hard_dependencies": [
+        "P13",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P15",
+      "slug": "anonymous-withdrawals",
+      "title": "User-controlled shielded exit research",
+      "kind": "research",
+      "branch": "future/p15-anonymous-withdrawals",
+      "spec_path": "docs/future/modules/P15-anonymous-withdrawals/SPEC.md",
+      "hard_dependencies": [
+        "P14"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P16",
+      "slug": "shielded-cross-chain",
+      "title": "Shielded cross-chain transfer research",
+      "kind": "research",
+      "branch": "future/p16-shielded-cross-chain",
+      "spec_path": "docs/future/modules/P16-shielded-cross-chain/SPEC.md",
+      "hard_dependencies": [
+        "P14",
+        "P15"
+      ],
+      "optional_integrations": [
+        "P09"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P17",
+      "slug": "private-fee-outputs",
+      "title": "Privacy-preserving fee settlement outputs",
+      "kind": "research",
+      "branch": "future/p17-private-fee-outputs",
+      "spec_path": "docs/future/modules/P17-private-fee-outputs/SPEC.md",
+      "hard_dependencies": [
+        "P14",
+        "FEE01"
+      ],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P18",
+      "slug": "telemetry-release-integrity",
+      "title": "Telemetry minimization and release integrity",
+      "kind": "platform",
+      "branch": "future/p18-telemetry-release-integrity",
+      "spec_path": "docs/future/modules/P18-telemetry-release-integrity/SPEC.md",
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "P19",
+      "slug": "optional-fee-gateway",
+      "title": "Optional self-hosted fee enforcement gateway",
+      "kind": "optional-service",
+      "branch": "future/p19-optional-fee-gateway",
+      "spec_path": "docs/future/modules/P19-optional-fee-gateway/SPEC.md",
+      "hard_dependencies": [
+        "FEE01",
+        "P18"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P17"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "T01",
+      "slug": "staggered-transfers",
+      "title": "User-controlled staggered transfers",
+      "kind": "paid-transfer",
+      "branch": "future/t01-staggered-transfers",
+      "spec_path": "docs/future/modules/T01-staggered-transfers/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P11",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10",
+        "T02"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "T02",
+      "slug": "intermediary-routing",
+      "title": "Self-controlled intermediary-address routing",
+      "kind": "paid-transfer",
+      "branch": "future/t02-intermediary-routing",
+      "spec_path": "docs/future/modules/T02-intermediary-routing/SPEC.md",
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P08",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    },
+    {
+      "id": "FEE01",
+      "slug": "modular-fee-policy",
+      "title": "Modular fee quotes, authorization and accounting",
+      "kind": "shared-policy",
+      "branch": "future/fee01-modular-fee-policy",
+      "spec_path": "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [
+        "P17",
+        "P19"
+      ],
+      "status": "specification-only",
+      "implementation_authorized": false
+    }
+  ],
+  "implementation_waves": [
+    [
+      "P02",
+      "P06",
+      "P08",
+      "P11",
+      "P18"
+    ],
+    [
+      "F13",
+      "FEE01",
+      "P01",
+      "P03",
+      "P04",
+      "P05",
+      "P10",
+      "P12",
+      "P13"
+    ],
+    [
+      "F03",
+      "F04",
+      "F05",
+      "F06",
+      "F07",
+      "F08",
+      "F10",
+      "F11",
+      "F12",
+      "F14",
+      "F15",
+      "F16",
+      "F17",
+      "F18",
+      "P07",
+      "P09",
+      "P14",
+      "P19",
+      "T01",
+      "T02"
+    ],
+    [
+      "F01",
+      "F02",
+      "F09",
+      "P15",
+      "P17"
+    ],
+    [
+      "P16"
+    ]
+  ],
+  "architecture_aliases": {
+    "5a": [
+      "P18"
+    ],
+    "5b": [
+      "P05",
+      "P06"
+    ],
+    "5c": [
+      "P03",
+      "P06"
+    ],
+    "5d": [
+      "P02",
+      "P03",
+      "F15"
+    ],
+    "5e": [
+      "P08",
+      "F17"
+    ],
+    "5f": [
+      "P04",
+      "P11",
+      "F03"
+    ],
+    "5g": [
+      "P01"
+    ],
+    "5h": [
+      "P09",
+      "P10"
+    ],
+    "5i": [
+      "P06",
+      "P09",
+      "P10",
+      "F16"
+    ],
+    "5j": [
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17"
+    ],
+    "5k": [
+      "existing-spec-18"
+    ],
+    "5l": [
+      "P18"
+    ]
+  }
+}
