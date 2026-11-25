@@ -67,6 +67,16 @@ workflow changes; secret material only in test fixtures; `bash scripts/scan-secr
 - `PolicyView.guard.test.tsx` "fails closed when the attempt journal cannot be read" fails locally at the unchanged
   head `57819c4f` too (passes in hosted CI): local environment, not this change.
 
+## CI flakes found on `fb141fa5` and main `f18e8c0c`
+
+- Main CI failed `ts-test (web)`: an unhandled `ReferenceError: window is not defined` from `WalletAttempts.tsx` (mount-time
+  journal migration settling after jsdom teardown). The web tests have no vitest globals, so RTL never auto-unmounts and
+  the last mounted component outlives its test. Fixed in this feature's tests: `afterEach(cleanup)` in
+  `WalletAttempts.status.test.tsx` and `WalletAttempts.test.tsx` (6/6 locally).
+- PR CI failed `ts-test (rest-2)` once: `keystore.test.ts` expects every generated passphrase rated `strong`; the
+  generator only redraws refused ones, so a rare draw rates `good` (0 of 100,000 local draws). Owned by the keystore
+  backup claim and open #641, so not edited here; job rerun.
+
 ## Status
 
 - Done: consolidation, merge with main, payer outcome binding, review fixes, fuzz tests.
