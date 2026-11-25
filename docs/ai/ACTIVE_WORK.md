@@ -1,3 +1,8 @@
+# FC-04 hardening regression tests and receipt follow-ups (2026-11-25)
+
+- Worker: fc02 (Claude Code), branch `claude/fc04-hardening-tests-20261125`, base `origin/main` `595a184b381980a440165832f51a83e8dfd3e8a8`. Owned paths: `packages/chain-adapters/src/quote.test.ts`, `packages/ux-receipts/src/verify.ts`, `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, `docs/consolidation/feature-completion-20261125/FC-04-hardening-tests.md`, this entry.
+- Acceptance: recover the missing #271 quote decimals regression test; close RCPT-L1 and RCPT-L2 test-first; keep coverage thresholds; local only until the coordinator approves a push.
+
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
 Worker: Claude Code session `ghostpay-backup-60`; branch `claude/backup-recovery`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
