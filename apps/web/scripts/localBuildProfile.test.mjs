@@ -231,6 +231,28 @@ test('lean rejects rendered optional features even when no external report was r
   }
 });
 
+test('lean rejects rendered stopped-product modules (owner stop-work containment)', () => {
+  for (const [product, id] of [
+    ['F01', '/fixture/../../packages/ux-links/dist/tip.js'], ['F02', '/fixture/src/features/future/ghoststore/catalog.ts'],
+    ['F04', '/fixture/src/views/MerchantDashboard.tsx'], ['F08', '/fixture/src/features/future/ghostid/OfflineProfileReview.tsx'],
+    ['F09', '/fixture/../../examples/pos-terminal/pos-session.js'], ['F11', '/fixture/src/features/ghostteams/membership.ts'],
+    ['F12', '/fixture/src/features/ghostbridge/handoff.ts'], ['F13', '/fixture/src/features/fiat-conversion/terms.ts'],
+    ['F14', '/fixture/src/features/future/multichain-routing/route.ts'], ['P07', '/fixture/src/features/device-sync/pair.ts'],
+    ['FUTURE', '/fixture/src/features/future/ghostproof/review.ts'],
+  ]) {
+    assert.throws(() => leanOutput().generateBundle({}, chunk(id)), new RegExp(`stopped-product module \\(${product} `), id);
+    assert.throws(() => leanOutput({ worker: true, workerEvidence: [] }).generateBundle({}, chunk(id)), /stopped-product/, `${id} worker`);
+  }
+  for (const id of ['/fixture/src/components/MerchantProfilePanel.tsx', '/fixture/src/views/Scan.tsx', '/fixture/../../packages/ux-links/dist/uri.js']) {
+    try {
+      leanOutput().generateBundle({}, chunk(id));
+    } catch (e) {
+      assert.doesNotMatch(String(e), /stopped-product/, id);
+    }
+  }
+  assert.doesNotThrow(() => leanOutput().generateBundle({}, chunk('/fixture/src/features/future/ghostid/OfflineProfileReview.tsx', 0)));
+});
+
 test('lean requires real nonempty chunk-module facts without a report flag', () => {
   assert.throws(() => leanOutput().generateBundle({}, { 'entry.js': { type: 'chunk', fileName: 'entry.js' } }), /metadata/i);
   assert.throws(() => leanOutput().generateBundle({}, {}), /chunk|metadata/i);

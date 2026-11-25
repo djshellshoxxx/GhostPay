@@ -137,6 +137,8 @@ rm -f "$work/dist/_headers"
 rm -rf "$work/dist/deployments"
 : >"$work/dist/.nojekyll"
 mv "$work/dist" "$site"
+# Owner stop-work containment (AGENTS.md 2026-11-25): no stopped or deferred product module or file may be emitted.
+node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die "release-exclusion check failed"
 
 # Label the mirror (ADR-0015 item 5): a static, script-free banner above the app root, worded for the payment state.
 cp "$ROOT/scripts/pages/assets/pages-mirror.css" "$site/pages-mirror.css"
