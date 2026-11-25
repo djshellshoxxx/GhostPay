@@ -7,10 +7,11 @@ Status: milestone 1 delivered (model + harness + recorded runs). Coordination: t
 
 | Item | Value |
 |---|---|
-| Pinned main | `aaa71a112d90fd39f59b40de9f139e9cfdc62d61` (Merge PR #635, P1-LATE) |
+| Current candidate | main `8aca5a06a9435dd30e40378ba606da3c68f94863` (Merge PR #683; includes the #287 item 3 wallet disclosure gate), tested unmodified in `results/m1c-32e141ee` |
+| Historical pin | main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61` (Merge PR #635, P1-LATE), tested in `results/m1-d3edbdb` and `results/m1b-9e7f7c4` |
 | Candidate under test | main (unmodified). No W1-approved candidate and no W1 coordination handoff were found in PRs, issues or branches at start (2026-11-25 ~10:40 UTC). #664 head `d4bdd0224aec5b35b41483830b65006f146de7cd` was observed only, not tested. |
-| Production diff vs pinned main | none (each run record verifies `git diff aaa71a11 HEAD -- apps packages package.json package-lock.json` is empty) |
-| Bundle | lean (Pages) profile, built by `harness/build.mjs` exactly as `apps/web/playwright.config.ts` does; dist sha256 `cae30f5d6a2c1f389d545adeec84143f993ea20281f6eec4997f86b1227721b4` (18 files) |
+| Production diff vs candidate | none; `run.mjs --candidate <sha>` (default `origin/main`) refuses to run if `git diff <candidate> HEAD -- apps packages package.json package-lock.json` is not empty |
+| Bundles | lean (Pages) profile, built by `harness/build.mjs` exactly as `apps/web/playwright.config.ts` does: `b440bed21c63a6c4262e5f8e9020d1bb1d2daf1fbb8bb087bbf72f95ca3e248d` for `8aca5a06`, `cae30f5d6a2c1f389d545adeec84143f993ea20281f6eec4997f86b1227721b4` for `aaa71a11` (18 files each) |
 
 ## Capabilities in this session
 
@@ -61,6 +62,7 @@ node v22.23.5, linux x64, 4 CPUs. Wallet, RPC and chain are synthetic; no traffi
 |---|---|---|---|---|---|---|---|
 | `results/m1-d3edbdb/` | `d3edbdb` | `run.mjs --named --seeds 1-30 --concurrency 3` | 40 (N1–N10, G-1…G-30) | 83 | **0** | 0 | 1 (A1, N8) |
 | `results/m1b-9e7f7c4/` | `9e7f7c4` | `run.mjs --only P1…,N11…,N12… --seeds 31-50 --concurrency 3 --minimize` | 23 (P1, N11, N12, G-31…G-50) | 48 | **0** (P1 control detected as required) | 0 | 0 |
+| `results/m1c-32e141ee/` (candidate `8aca5a06`, bundle `b440bed2…`) | `32e141ee` | `run.mjs --named --seeds 1-30 --concurrency 3 --minimize --candidate 8aca5a06` | 44 (P1, N1–N13, G-1…G-30) | 91 | **0** (P1 detected I2, I3, I4) | 0 | 1 (A1, N8) |
 
 Seeds are tied to the harness SHA (the generator's alphabet gained `restart` at `16c3593`); every record also stores
 each scenario's exact steps, so any sequence can be replayed without the generator.
@@ -93,7 +95,24 @@ split; reassign if W1's coordination says otherwise.
 | A2 | docs contradiction | W2 / docs | `docs/handoffs/PAGES_INTERRUPTED_PAYMENT_VERIFICATION.md:7,14` still say the payer journal is "same-tab" / "tab-scoped" and that other or closed tabs are outside it. The built app blocks across tabs, tab close and full browser restart (N1, N2, N10, N11, N12), matching `en.json:1076`. | traces above | update the Pages verification doc |
 | O1 | observation (known residual JRNL-L2) | W2 | After an accepted clear, the original held wallet reply arriving later recreated a record for X (evidence kept; no extra wallet request). Consistent with R33 and the documented residual "a cleared record can still come back". | N4 step 10 (journal 1 → 2 rows) | none required; mention in the user guide's clear-step text |
 
-No I1–I8 violation (product-defect candidate) was found in 63 scenarios on the pinned candidate.
+No I1–I8 violation (product-defect candidate) was found: 63 scenarios on `aaa71a11` and 44 on `8aca5a06`, the second with the stricter G1/G2 oracle below. F1 still reproduces on `8aca5a06` (94 of 97 refused send clicks), A1 still reproduces (N8), and A2 is still present at `8aca5a06` (`PAGES_INTERRUPTED_PAYMENT_VERIFICATION.md:7,14`).
+
+New on `8aca5a06` (wallet disclosure gate, #287 item 3), observation O2: cancelling the "Review wallet disclosure" dialog for the payment sent nothing to the wallet, created no journal record and showed "Wallet disclosure was cancelled or became stale. Review again before continuing."; the next deliberate send reached the wallet once and was then blocked (N13). This is consistent with R13 (nothing that might exist was reset) because the provider was never called.
+
+## Review response — source review on #665, 2026-11-25 23:02 UTC (head `2be20088`)
+
+| Gap | Reviewer's point | Change | Evidence |
+|---|---|---|---|
+| G1 | I1 done-panel check passed silently when the success text showed no matching wallet hash | I1 now judges displayed full or masked hashes; else every hash the wallet returned for that intent (fallback basis recorded); a claim with no returned hash, or on a tab of unknown intent with no qualifying hash, fails | fixtures: no hash + no canonical tx → I1; masked canonical → pass; masked unmined → I1; foreign hash → I1; unknown-intent tab → I1; full canonical control → pass |
+| G2 | I3 compared row counts, so another intent's or a duplicate row could hide a missing X record | I3 matches each expected record by identity (hash rows by hash, full or masked; hash-less unknown rows consumed once per intent; identity-unjudgeable cases recorded). An enabled pay action with X's record missing fails I3 with the button state; with the record visible it is explicitly classified `payEnabledWithRecord` (R20) | fixtures: two C rows / one C row with X unknown expected → I3 for X; enabled button + missing record → I3; both records visible → pass + classification; recorded hash shown only as an unknown row → I3 |
+| A2 | tab-scoped statements still on main | re-read at `8aca5a06`: still at lines 7 and 14; routing unchanged (docs owner) | `git show 8aca5a06:docs/handoffs/PAGES_INTERRUPTED_PAYMENT_VERIFICATION.md` |
+| Rerun | rerun on the current candidate, not only the historical bundle | `--candidate` pin; full rerun on `8aca5a06` (`results/m1c-32e141ee`); harness drives the new disclosure gate (H7 below) | 44 scenarios, 0 violations, 0 harness errors |
+
+Self-test: 22 pass, 0 fail. The 11 new fixtures were run against the previous oracle first: 10 failed there (the canonical control passed on both), so they demonstrably cover the gaps.
+
+H7 (harness defect): the candidate's disclosure gate stops every wallet request until the user presses "Continue to
+wallet"; the vacuity guard flagged the first smoke run (no wallet request at all). The harness user now approves the
+dialog by its visible text, or cancels it when a scenario asks (N13), and records every dialog shown.
 
 ## Not covered yet (next milestones)
 
@@ -101,7 +120,8 @@ No I1–I8 violation (product-defect candidate) was found in 63 scenarios on the
    decision history. Needs staged announcement + Transfer evidence in the synthetic chain.
 2. ERC-20 checkout (approval/permit + payment): the per-invoice request count is ambiguous (A3) and needs an owner rule.
 3. Replacement linking ("Link a replacement transaction" / nonce consumed) and wallet rejection 4001 policy (A4).
-4. A W1-approved candidate SHA: rerun `build.mjs` + `run.mjs --named --seeds 1-50` on it when W1 names one.
+4. A W1-approved candidate SHA, if W1 names one other than current main: `build.mjs` then
+   `run.mjs --named --seeds 1-50 --candidate <sha>` on a checkout whose production paths equal it.
 5. Real-chain full browser restart (`docs/beta/CORE_BETA_COMPLETION_TRACKER.md:151` stays unchecked: this harness
    restarts a real browser over a mocked chain only).
 
@@ -120,5 +140,5 @@ node --test verification/independent-beta/harness/selftest.test.mjs
 ```
 
 ```bash
-node verification/independent-beta/harness/run.mjs --named --seeds 1-50 --concurrency 3 --minimize
+node verification/independent-beta/harness/run.mjs --named --seeds 1-50 --concurrency 3 --minimize --candidate origin/main
 ```

@@ -42,7 +42,7 @@ node verification/independent-beta/harness/build.mjs --profile lean
 ```
 
 ```bash
-node verification/independent-beta/harness/run.mjs --named --concurrency 3
+node verification/independent-beta/harness/run.mjs --named --concurrency 3 --candidate origin/main
 ```
 
 ```bash
@@ -51,7 +51,8 @@ node verification/independent-beta/harness/run.mjs --seeds 1-24 --concurrency 3 
 
 `build.mjs` refuses to build when any production path differs from `HEAD`, builds exactly like
 `apps/web/playwright.config.ts` (ephemeral signed fake manifest, public test key, no release commit) and fingerprints
-`apps/web/dist`. `run.mjs` refuses to run if the bundle changed since that fingerprint, and records source SHAs,
+`apps/web/dist`. `run.mjs` refuses to run if the bundle changed since that fingerprint or if any production path
+differs from `--candidate` (default `origin/main`), and records source SHAs,
 production-path diff against the pinned main, environment, command, seeds, every wallet handoff, chain log, dialog,
 RPC method gaps, per-step observations, violations and ambiguities in `results/<run>/run.json`. Exit status: 0 no
 product-defect candidates, 1 candidates found, 2 harness error.
@@ -63,6 +64,7 @@ product-defect candidates, 1 candidates found, 2 harness error.
 | `harness/chain.mjs` | synthetic chain: mempool, blocks, fork-tagged hashes, reorg, drop, truth |
 | `harness/rpc.mjs` | JSON-RPC answers over the chain, outage mode, off-origin deny guard |
 | `harness/wallet.mjs` | EIP-6963 shim + Node controller: scripted send behaviours, account/chain events, handoff log |
+| `harness/app.mjs` (disclosure shim) | approves or, on request, cancels the app's "Review wallet disclosure" dialog by visible text; records each |
 | `harness/app.mjs` | UI driver by accessible names / en.json text; generic storage observation |
 | `harness/oracle.mjs` | invariants I1–I8, ambiguity classification |
 | `harness/scenarios.mjs` | named scenarios N1–N8 and the seeded generator |
