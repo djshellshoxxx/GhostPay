@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { AttemptResolution } from '../lib/attemptStatus';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt } from '../lib/duplicateAttemptJournal';
 import { mockRpc } from '../test/mockRpc';
@@ -26,6 +26,10 @@ beforeEach(() => {
   finishAttempt(attempt, hash, store);
   window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, records.at(-1) ?? '[]');
 });
+
+// Unmount before the next test and before jsdom teardown, so the mount-time journal migration cannot settle into a
+// component whose window is gone (an unhandled rejection that fails the run).
+afterEach(cleanup);
 
 async function statusFor(next: AttemptResolution): Promise<string> {
   outcome.next = next;

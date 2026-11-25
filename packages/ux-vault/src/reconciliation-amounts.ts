@@ -1,5 +1,6 @@
 import {
   createReconciliationApi,
+  type ReconciliationRecord,
   type ReconciliationScope,
   type RegisteredInvoice,
   type VaultRecord,
@@ -36,7 +37,7 @@ export function createInvoicePaymentSummarizer(
   scope: ReconciliationScope,
 ): (invoice: RegisteredInvoice) => InvoicePaymentSummary {
   const unavailable = (): InvoicePaymentSummary => ({ kind: 'unavailable' });
-  const totals = new Map<string, { amount: bigint; count: number }>();
+  const linked = new Map<string, ReconciliationRecord[]>();
   let chainId: number;
   try {
     if (
@@ -53,10 +54,10 @@ export function createInvoicePaymentSummarizer(
       const { provenance, ...plain } = value;
       void provenance;
       const record = validateReconciliationRecord(plain);
-      // The same transaction log cannot be two payments, even if two copies claim different block hashes.
-      const event = `${record.transactionHash}:${String(record.logIndex)}`;
+      // The verified direct router transaction carries one payment across inclusion positions.
+      const event = record.transactionHash;
       // Check the whole scope before filtering invoice/asset: conflicting copies cannot reserve different invoices.
-      const facts = `${record.id}:${record.blockNumber}:${record.blockTimestamp ?? ''}:${record.asset}:${record.amountMinorUnits}:${record.invoiceDigest ?? ''}`;
+      const facts = `${record.id}:${record.blockNumber}:${record.blockTimestamp ?? ''}:${record.asset}:${record.amountMinorUnits}:${record.invoiceDigest ?? ''}:${record.lateAcceptedAt ?? ''}`;
       const previous = seen.get(event);
       if (previous !== undefined) {
         if (previous !== facts) return unavailable;
@@ -65,8 +66,9 @@ export function createInvoicePaymentSummarizer(
       seen.set(event, facts);
       if (record.invoiceDigest !== undefined) {
         const key = `${record.invoiceDigest}:${record.asset}`;
-        const total = totals.get(key) ?? { amount: 0n, count: 0 };
-        totals.set(key, { amount: total.amount + BigInt(record.amountMinorUnits), count: total.count + 1 });
+        const group = linked.get(key) ?? [];
+        group.push(record);
+        linked.set(key, group);
       }
     }
   } catch {
@@ -77,7 +79,12 @@ export function createInvoicePaymentSummarizer(
     try {
       const registered = validateRegisteredInvoice(invoice);
       if (registered.chainId !== chainId) return unavailable();
-      const { amount, count } = totals.get(`${registered.invoiceDigest}:${registered.asset}`) ?? { amount: 0n, count: 0 };
+      const records = linked.get(`${registered.invoiceDigest}:${registered.asset}`) ?? [];
+      const confirmed = records.filter((record) => record.blockTimestamp === undefined ||
+        BigInt(record.blockTimestamp) < BigInt(registered.expiresAt) ||
+        (record.lateAcceptedAt !== undefined && record.amountMinorUnits === registered.expectedNetMinorUnits));
+      const count = confirmed.length;
+      const amount = confirmed.reduce((sum, record) => sum + BigInt(record.amountMinorUnits), 0n);
       const expected = BigInt(registered.expectedNetMinorUnits);
       return {
         kind: count === 0 ? 'unlinked' : amount < expected ? 'below' : amount > expected ? 'above' : 'equal',
