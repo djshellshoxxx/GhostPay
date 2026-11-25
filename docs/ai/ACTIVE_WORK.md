@@ -394,6 +394,9 @@ Source: PR #372 head `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` (Spec 18 K01–K
 Owned paths: `packages/ux-vault/src/stealth-export-portable*` and its export entries; `apps/web/src/lib/{stealthExport,paymentKeyExport}*`; `apps/web/src/components/StealthExport*`; additive export authorization in `apps/web/src/lib/keyVault.ts` and `apps/web/src/lib/session.ts`; export mounts in `apps/web/src/views/{Scan,SellerKeys}.tsx`; matching locale/security keys; `scripts/recovery/*`; `docs/handoffs/P0_KEYS_SPEC18_EXTRACTION_20261123.md`.
 Not owned: M1 journal paths claimed by `claude/keen-volta-8ctx9x` (PR #500), privacy/network-authorization lineage of #372, Sweep, relayer, contracts, hosting kit.
 Acceptance: encrypted single/archive/master export and raw-key export behind re-authentication; recovery of any export in a fresh session; standalone decoder recovers signing authority with GhostPay session cleared (anvil-backed); tampered/wrong-passphrase/oversize/wrong-chain inputs refused; existing main RPC client only (no new endpoint, no fallback); full web + ux-vault gates; independent review; merge only under the integration lock.
+# Dashboard qualification — IndexedDB fixture rejection (2026-11-24 UTC)
+
+Worker: single sequential coordinator, cycle 20261124T1037Z. Isolated branch `automation/20261124T1037Z/bug/dashboard-idb-rejection`, parent #579 exact head `6366767fb632ab3a01603497b49f12714ab796bb`; main observed `706188000c38b3dde5a3a362370a530870aa7587`. Owned paths: only `apps/web/e2e/merchant-dashboard-totals.spec.ts`, this additive claim and a dedicated handoff. Preserve parent #579, #564, #543, #535 and all production behavior. #579's hosted lint job 138272495233 rejects two nullable IndexedDB error reasons. Acceptance: use Error objects with original browser failure as cause, preserve rejection and database-close behavior and every dashboard assertion. No production edit, no gate weakening, no shared branch update. Fresh exact-head CI and independent verification required; local git network DNS failed. Integration lock observed released generation 17; not acquired.
 
 ---
 
@@ -3164,3 +3167,33 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ### 2026-11-24 bounded deployment diagnostic completion
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
+
+## F04 Pages dashboard continuation — 2026-11-23
+
+- Worker: Codex dashboard continuation. Branch: `feat/f04-pages-dashboard-20261123`. Start: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Own the new dashboard screen, narrow shell/navigation and source-catalog wiring, dashboard adapter/tests, and this claim. Reuse only F04 files from #460 (`ff60e1e45cac1348d554f94ea24717285ecc5608`, stacked on #397 and #371, which contains #322). Leave all donor branches and unrelated #371 modules alone.
+- Pages already supports opt-in encrypted reconciliation with scoped invoice registration, scan observations, cross-tab invalidation and encrypted backup/restore. Those local records alone cannot establish current canonical settlement or prove invoice attribution. P03/P05 branches contain specifications only. Use authenticated local history with visible freshness/provenance, no implicit RPC, and an invoice-only consented export. Current-canonical invoice settlement requires a qualified independent evidence adapter.
+- Verify real projection, selection, analytics and export, client routing and lock/invalidation, workspace typecheck/lint, lean bundle/privacy checks and browser behavior. Live generation 12 lock was released at `082e754f44944ebb4be283f89176b966bf8f7b4f`; recheck ownership, rules and exact-head review before integration.
+
+The preview reads the existing seller- and chain-scoped vault, including its stored reorg invalidations and backup/restore path in Scan and receive. It performs no RPC, offers no finality or invoice-attribution claim, and exports minimized invoice metadata only. Verify explicit canonical event binding and refresh before adding pending/confirmed amounts or promoting F04 as complete. Original donor branches remain independent.
+
+## F04 dashboard refresh focus
+
+- Worker: Codex dashboard focus. Branch: `fix/f04-dashboard-refresh-focus`, based on #535 at `e16bd876c3bd9aa6f075dd5ae27711d9836eb890`. Main: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Own the refresh focus behavior in `apps/web/src/views/MerchantDashboard.tsx`, the corresponding browser case in `apps/web/e2e/merchant-dashboard.spec.ts`, and this entry. Target the dashboard owner's preview branch.
+- Acceptance: a cross-tab encrypted invoice registration refreshes the results while the Network picker retains keyboard focus. Explicit refresh continues to focus the progress status and then the overview. Dashboard promotion stays gated by #535.
+
+- Follow-up QA by the same focus worker, starting at #543 `88f2882f5a35ecf93c685cb5ed6ff42c0b717e4c`. Stage on `qa/f04-dashboard-focus-regressions` and fast-forward #543 after rechecking its head. Exercise interrupted reads, alternate keyboard destinations, failure and retry, and out-of-order refreshes. Own the dashboard view and its component/browser tests plus the type-only import in `apps/web/src/lib/reconciliationVault.ts` needed for the normal Pages browser build.
+
+## Merchant dashboard record browsing
+
+- Worker: Codex UI. Branch `ui/merchant-dashboard-records`. Parent: #543 at `3085c87a57147afeb7dac7bc563af62f2c9784e5`, stacked on #535. Main at discovery: `e0cb4681e453af77bb10be45ba61b4d19579f41b`.
+- Own the dashboard's record filter group, empty states, clear action, related styles, four dashboard locale catalogs, and focused component/browser assertions. Preserve the parent refresh behavior and preview release gates.
+- Acceptance: distinguish an empty network-scoped invoice or payment list from a filtered-out list. Clear search, status and dates together by keyboard, reset pagination and invalidate any export preview while retaining network, list, sort and format. Fit narrow and wide screens.
+- Arabic browser QA found that the preview's dashboard messages were missing from the existing i18n classification. Include the dashboard entries in `apps/web/src/i18n/securityKeys.ts` and its classification test. Localize browsing controls and scoped empty states, and keep consent, monetary data and evidence qualifications on the reviewed-text path.
+
+## Merchant dashboard overview totals qualification
+
+- Worker: Codex overview. Branch `feat/f04-dashboard-totals-qualification`, based on #564 at `37a714cfedec93749083d5cf5b46fa8adcd9bfa1`. Main at discovery: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+- Own the network overview's per-asset historical scan amounts, evidence exclusions, overview wording and long-value wrapping, plus focused regressions. Stack on #564. #535 owns preview integration, #543 owns refresh focus, and #564 owns browsing controls.
+- Acceptance: exact atomic amounts across refreshes, duplicate observations counted once, imported, ambiguous and reorg-invalidated evidence excluded from scan sums, network/date scope and accessible mobile layout verified with synthetic records. Keep current revenue unavailable pending the independent evidence adapter and release qualification in #535.
