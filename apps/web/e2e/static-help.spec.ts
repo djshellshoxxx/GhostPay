@@ -74,6 +74,28 @@ test.describe('help guide coverage', () => {
     await expect(page.locator('.flow-lanes .flow > li')).toHaveCount(10);
   });
 
+  test('merchant help preserves ordinary reconciliation without promising excluded products', async ({ page }) => {
+    await page.goto('/help.html');
+    const merchant = page.getByRole('table', { name: 'Merchant capabilities and their status' });
+    for (const [name, notes] of [
+      ['Aggregate merchant dashboard (totals and records)', 'Archived indefinitely; ordinary invoice status and reconciliation remain available'],
+      ['Subscriptions and installments', 'Outside the browser payment and recovery scope'],
+      ['Point-of-sale terminal and NFC', 'Terminal product archived; ordinary invoice QR exchange remains available'],
+    ]) {
+      const row = merchant.getByRole('row').filter({
+        has: page.getByRole('rowheader', { name, exact: true }),
+      });
+      await expect(row).toHaveCount(1);
+      await expect(row.getByRole('cell').first()).toHaveText('Unsupported beta and v1.0');
+      await expect(row.getByRole('cell').last()).toHaveText(notes);
+    }
+    const ledger = merchant.getByRole('row').filter({
+      has: page.getByRole('rowheader', { name: 'Per-invoice payment summary in the scan ledger', exact: true }),
+    });
+    await expect(ledger.getByRole('cell').first()).toHaveText('Implemented Both builds');
+    await expect(page.getByText('Keep aggregate bookkeeping outside the app.', { exact: false })).toContainText('excluded products have no scheduled restart.');
+  });
+
   test('the privacy matrix uses only the status labels defined by the guide legend', async ({ page }) => {
     await page.goto('/help.html');
     const legend = (await page.locator('.legend .status').allTextContents()).map((s) => s.trim()).sort();
