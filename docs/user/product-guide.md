@@ -171,6 +171,11 @@ Settings are plaintext. Optional vaults/archives encrypt contents but retain obs
 size. Unlocked content is available to the page. Locking does not delete records; clearing site data does. Exported
 files remain until separately deleted.
 
+Settings can close on-screen previews after 5, 15 or 60 minutes while the app is open: the generated invoice result
+and the payment-proof QR and text of an included payment. Both preferences start off, and each has a preview and a
+confirmation for closing previews now. Closing a preview does not revoke a shared link or remove any saved invoice,
+payment, receipt, vault or backup. See [spec 19](../specs/19-local-metadata-retention.md).
+
 RPC/explorer queries expose lookups to those services. A second independent RPC can identify disagreement but
 shares queries with another operator. Selecting Tor/proxy preferences does not install or prove transport.
 Stealth addressing does not hide public graphs or sweep destinations. See the [shipped privacy page](../../apps/web/privacy.html).

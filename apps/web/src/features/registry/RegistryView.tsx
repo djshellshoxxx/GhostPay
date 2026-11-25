@@ -1,6 +1,7 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
@@ -67,7 +68,7 @@ export function RegistryView(): ReactNode {
   const [reviewed, setReviewed] = useState<RegistryCall | undefined>(undefined);
   const [reviewAction, setReviewAction] = useState<'publish' | 'clear' | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const [pub, setPub] = useState<Msg | undefined>(undefined);
+  const [pub, setPub] = useState<(Msg & { readonly reference?: string }) | undefined>(undefined);
   const [who, setWho] = useState('');
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
@@ -210,7 +211,7 @@ export function RegistryView(): ReactNode {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
         if (!mounted.current) return;
         if (returnedHash !== undefined) {
-          setPub({ kind: 'warn', text: { key: 'registry.walletReturned', values: { hash: returnedHash } } });
+          setPub({ kind: 'warn', text: { key: 'registry.walletReturned' }, reference: returnedHash });
           return;
         }
         try { guard(); } catch { return; }
@@ -313,6 +314,7 @@ export function RegistryView(): ReactNode {
         </BackupGate>
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{displayMessage(pub.text, t)}</Notice>}
+      {pub?.reference !== undefined && <BroadcastReference key={pub.reference} reference={pub.reference} />}
 
       <section className="panel" aria-label={t('registry.qrReviewLabel')}>
         <h3>{t('registry.qrHeadingH3')}</h3>

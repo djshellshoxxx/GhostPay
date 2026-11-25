@@ -1,9 +1,14 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
+import { BroadcastReference } from '../components/BroadcastReference';
+import { TransactionStatusLine } from '../components/TransactionStatusLine';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { useWalletDisclosure } from '../components/WalletDisclosure';
+import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
+import { watchDestinationWallet } from '../lib/destinationWalletScope';
+import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
@@ -159,7 +164,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
   const invoiceQrRevision = useRef(0);
-  const invoiceQrMounted = useRef(true);
+  const mounted = useRef(true);
   const invoiceQrDisclosure = useRef<HTMLDetailsElement | null>(null);
   const invoiceQrObserver = useRef<MutationObserver | undefined>(undefined);
   const [needsPassphrase, setNeedsPassphrase] = useState(false);
@@ -177,6 +182,22 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
+  const [destinationReviews] = useState(() => ({ current: new WeakMap<BuiltPayment, {
+    session: typeof app.session; notice: DestinationNotice;
+  }>() }));
+  const reviewWallet = useRef<WalletSession | undefined>(undefined);
+  const [walletChanged, setWalletChanged] = useState(false);
+  useLayoutEffect(() => {
+    reviewWallet.current = wallet;
+    setWalletChanged(false);
+    if (wallet === undefined) return;
+    const stop = watchDestinationWallet(wallet.wallet.provider, () => {
+      if (reviewWallet.current !== wallet) return;
+      reviewWallet.current = undefined;
+      setWalletChanged(true);
+    });
+    return () => { reviewWallet.current = undefined; stop(); };
+  }, [wallet]);
   const [builtFor, setBuiltFor] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
@@ -228,8 +249,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [parsed, resetInvoiceQr]);
   useEffect(() => { invalidateInvoiceQr(); }, [invoiceQrScope, invalidateInvoiceQr]);
   useEffect(() => {
-    invoiceQrMounted.current = true;
-    return () => { invoiceQrMounted.current = false; invoiceQrRevision.current += 1; };
+    mounted.current = true;
+    return () => { mounted.current = false; invoiceQrRevision.current += 1; };
   }, []);
 
   const importInvoiceQr = async (text: string, signal: AbortSignal): Promise<boolean> => {
@@ -237,7 +258,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const scope = invoiceQrScope;
     const assertSession = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!invoiceQrIsOpen() || signal.aborted || !invoiceQrMounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope) return false;
+      if (!invoiceQrIsOpen() || signal.aborted || !mounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope) return false;
       try { assertSession(); return true; } catch { return false; }
     };
     if (!current()) return false;
@@ -367,9 +388,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
   latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
+  // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
+  // payment and scope instead, so an ordinary rerender cannot restart its age.
+  const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
-    if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
+    if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
     app.setFragment(undefined);
     setParsed(undefined);
@@ -510,7 +534,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
+      if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
@@ -772,6 +796,16 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setApproval(plan);
         setGranted(undefined);
         setApprovalHash(undefined);
+        if (!mounted.current) return;
+        // Advisory only: nothing here may throw into the payment flow.
+        let notice: DestinationNotice | undefined;
+        try {
+          notice = reviewWallet.current !== wallet ? undefined : checkDestinationReuse(
+            { kind: 'invoice', payer: wallet.account, invoiceDigest: bytesToHex(invoiceDigest(invoice)) },
+            wallet.chainId, b.preview.stealth, true,
+          );
+        } catch { notice = 'unavailable'; }
+        if (notice !== undefined) destinationReviews.current.set(b, { session: app.session, notice });
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
@@ -949,6 +983,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setPhase('input');
   };
 
+  const destinationReview = built === undefined ? undefined : destinationReviews.current.get(built);
+
   /* ------------------------------- rendering ------------------------------- */
 
   const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
@@ -959,9 +995,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts getRpc={app.getRpc} />
         {previousBroadcast !== undefined && (
-          <Notice kind="warn" title={t('pay.previous.title')}>
-            {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-          </Notice>
+          <>
+            <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
+            <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
+          </>
         )}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
@@ -1026,9 +1063,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts getRpc={app.getRpc} />
       {previousBroadcast !== undefined && (
-        <Notice kind="warn" title={t('pay.previous.title')}>
-          {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
-        </Notice>
+        <>
+          <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
+          <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
+        </>
       )}
 
       <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
@@ -1272,14 +1310,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
-      {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
+      {status !== '' && <TransactionStatusLine status={status} />}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
-        <div className="panel" aria-live="polite">
+        <div className="panel">
           <h3>{broadcastKind === 'approval' ? t('pay.sent.approvalTitle') : t('pay.sent.paymentTitle')}</h3>
           <p>{rich('pay.sent.body', { kind: broadcastKind, hash: broadcast }, monoTag('hash'))}</p>
           <div className="actions">
@@ -1289,7 +1327,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
-        <div className="panel" aria-live="polite">
+        <div className="panel">
           <h3>{t('pay.done.heading')}</h3>
           <p>{rich('pay.done.hash', { hash: result.hash }, monoTag('hash'))}</p>
           <p>
@@ -1321,7 +1359,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
         </div>
       )}
 
@@ -1345,6 +1383,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 }
 
 function FinalPreview(props: {
+  readonly notice: DestinationNotice | 'wallet-changed' | undefined;
   readonly built: BuiltPayment;
   readonly ctx: PayContext;
   readonly onSend: () => void;
@@ -1367,6 +1406,7 @@ function FinalPreview(props: {
     <div className="panel" aria-labelledby="final-h">
       <h3 id="final-h">{t('pay.final.heading')}</h3>
       <p>{t('pay.final.intro')}</p>
+      <DestinationReuseNotice notice={props.notice} />
       <dl className="details">
         <dt>{t('pay.final.method')}</dt>
         <dd>{decoded.method}</dd>
@@ -1404,7 +1444,10 @@ function FinalPreview(props: {
             <p>{t('pay.approval.enough')}</p>
           )}
           {props.granted !== undefined && props.granted > props.approval.need && (
-            <p role="alert">{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
+            <div>
+              <p role="alert">{t('pay.approval.excessAlert')}</p>
+              <p>{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
+            </div>
           )}
           {props.granted !== undefined && (
             <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></p>

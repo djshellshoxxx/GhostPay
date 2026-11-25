@@ -362,7 +362,8 @@ describe('Pay: invoice reading and review', () => {
     const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv: hostile, sig })))}`;
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(await screen.findByText('Invoice rejected')).toBeTruthy();
-    expect(screen.getByRole('alert').textContent).toMatch(/not valid and was rejected\. \(field: expiresAt\)/);
+    expect(screen.getByRole('alert').textContent).toContain('not valid and was rejected');
+    expect(screen.getByRole('alert').textContent).not.toContain('expiresAt');
     expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
   });
@@ -984,8 +985,12 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     });
     await screen.findByRole('heading', { name: 'Review payment' });
     act(() => { releaseReceipt?.(); });
-    const warning = await screen.findByText(/This was a approval for the invoice/);
-    expect(warning.textContent).toContain(`0x${'9'.repeat(64)}`);
+    const warning = await screen.findByText(/This approval was for the invoice/);
+    const reference = `0x${'9'.repeat(64)}`;
+    expect(warning.textContent).not.toContain(reference);
+    const summary = screen.getByText('Transaction reference', { selector: 'summary' });
+    await t.user.click(summary);
+    await waitFor(() => { expect(summary.parentElement?.querySelector('code')?.textContent).toBe(reference); });
     expect(screen.queryByText('Token approval confirmed')).toBeNull();
     expect(t.wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   });

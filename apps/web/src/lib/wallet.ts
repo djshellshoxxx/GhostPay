@@ -431,7 +431,7 @@ export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, 
 /** Returned hash is preserved even if tab storage fails after broadcast. */
 export class WalletBroadcastError extends TransactionOutcomeError {
   public constructor(public readonly hash: Hex) {
-    super({ phase: 'verification-incomplete', hash, code: 'HASH_PERSISTENCE', message: { key: 'transaction.walletBroadcast', values: { hash } } });
+    super({ phase: 'verification-incomplete', hash, code: 'HASH_PERSISTENCE', message: { key: 'transaction.walletBroadcast' } });
     this.name = 'WalletBroadcastError';
   }
 }

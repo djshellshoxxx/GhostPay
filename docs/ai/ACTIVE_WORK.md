@@ -9,6 +9,15 @@ Acceptance: without a gate, identical requests and call sequences (existing wall
 
 ---
 
+# Local destination-reuse warnings consolidated onto main (#287 item 1) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-reuse-287-20261125`, base main `32ae3977`. Slice assigned by coordinator `feature-completion-06`.
+Donors (merged with `--no-ff`, original branches untouched): #586 `codex/287-local-destination-reuse` `f024ce3e` -> #610 `finish/destination-reuse-type-20261124` `874d3809`.
+Not merged: #584 `codex/287-evm-payment-destination-reuse` `17c5a2ee`, a sibling design that writes fingerprints into the fund-safety payment-attempt journal; superseded by #586's separate advisory history, which cannot veto or alter a payment. #341 (GP-BUG-06) fixes the hygiene `DestLedger`, which main's web app does not use; not applicable to main.
+Owned paths: `apps/web/src/lib/destinationReuse*.ts`, `apps/web/src/lib/destinationWalletScope*.ts`, `apps/web/src/components/DestinationReuseNotice.tsx`, the reuse hunks only in `apps/web/src/views/{Pay,Sweep}.tsx` and their tests, the one meta-address hint in `CreateInvoice.tsx` (not the Copy-link row, which W4 owns), reuse keys in `apps/web/locales/*.json` and `securityKeys.ts`, the reuse section of `docs/user/privacy-limits.md`, the reuse case in `apps/web/e2e/flows.spec.ts`, this entry and a handoff.
+Not owned: Sweep balance consent (FC-02, #664), CreateInvoice clipboard and minimal invoices (W4), the payment-attempt journal, scan code.
+Acceptance: advisory only (never blocks or authorizes a wallet action); no RPC, explorer, wallet or telemetry request; no raw address stored; bounded salted session history; denied or full storage degrades to an "unavailable" notice; web typecheck, lint, unit tests, lean build, Playwright reuse case and full hosted CI pass; independent review; merge through the integration lock queue.
+
 
 # P13 confidential amounts — protocol-neutral client core — 2026-11-25
 
@@ -48,6 +57,21 @@ Acceptance: all source IDs covered, hard dependency graph acyclic, real code
 reuse documented, independent branch/spec publication verified, documentation-only
 diffs. No implementation, main merge, deployment, activation, fee decisions or release
 changes. Feature branches append their own claim before their specification commit.
+
+# Issue #287 item 4 · local metadata retention controls, presentation slice (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-retention-287-20261125`, base main
+`32ae3977`. Claim confirmed with no overlap by `newghostpay-ae` (#670, #674 address reuse) and `ghostpay-backup-60`
+(W3, #672; it keeps the `saveScanPrivacy` handler in Settings.tsx). Ported, not merged, from the diverged 2026-11-20
+privacy candidate line (`Recovered-from:` trailers); donor branches stay untouched.
+Owned paths: `apps/web/src/lib/metadataRetention*`, `lib/useInvoicePreviewRetention.ts`,
+`components/MetadataRetentionControls*`, the retention hunks in `CreateInvoice.tsx`, `PaymentRequestQr.tsx`, `Pay.tsx`
+and `Settings.tsx`, the `retention.*` catalog keys and `metadataRetention` security group, spec 19.
+Not owned: invoice metadata minimization and CreateInvoice's Copy-link row (W4), persistent timestamp retention in
+the reconciliation vault (#383/#587/#609; a later slice), merchant template issuer (full profile, deferred-adjacent).
+Acceptance: default-off preferences; preview, count and explicit confirmation; stale plans clear nothing; only
+presentation copies close and every saved record stays; hosted CI green at the exact head; merge via the shared queue.
+
 # payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
 
 Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.
@@ -352,6 +376,25 @@ Trace the lean Pages asset graph and RPC dispatch, exercise synthetic invoice an
 scan settings, and distinguish application results from live Tor qualification.
 Network transport, wallet, scanner, hosted onion acceptance and release controls
 remain with their existing owners (#241, #308, #320, #363, #436).
+
+## Issue #286 · private export and notification surfaces
+
+Worker: Codex on `codex/286-private-export-surfaces`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Pages download boundary, policy/adapter/schema error presentation, React and i18n diagnostics, the ux-notify lock-screen formatter, and associated regressions and qualification notes. Keep clipboard, masking, idle-lock, serialization, import and recovery workers' changes separate. Acceptance requires fixed filenames and lock-screen copy, public diagnostics and titles, and exact preservation of explicitly exported bytes. Hosted checks and independent review gate integration.
+
+## Issue #286 item 5 · privacy-safe exports and notifications onto current main (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-export-privacy-286-20261125`, base main
+`32ae3977`, donor #570 `codex/286-private-export-surfaces` @ `55781533` merged with `--no-ff` (not rebased).
+Assigned by the feature-completion coordinator (`feature-completion-06`) after its shared-core privacy triage.
+Owned paths: the Pages download boundary (`apps/web/src/components/Common.tsx` download helpers), the call sites'
+fixed file names, donor #570's error/announcement/diagnostic surfaces, `packages/ux-notify` lock-screen title, and
+their regressions and docs. Not owned: clipboard (W4 #668), CreateInvoice's Copy-link row, privacy-minimal invoices
+(W4), masking (#569), vault/session isolation (#571/#655), RPC disclosure (W3), wallet disclosure (FC-07), address
+reuse (newghostpay-ae).
+Acceptance: no address, hash, amount, invoice detail, date or key in any suggested download name; exported bytes
+unchanged and importable; recovery file names stay recognizable; no secret in notifications, alerts, live regions,
+titles, URLs or console; hosted CI green at the exact head; independent review; merge via the shared queue.
+
 
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
@@ -3363,3 +3406,18 @@ Worker: `/root/missed_work_census`, assigned by the resumed-work coordinator. Is
 Hosted mobile run `45338469535` failed in both profiles. All four devices reached the payment review after QR import, then failed the exact standalone memo-text selector; the production memo paragraph includes its label. Acceptance: reproduce that assertion failure, assert the exact labeled memo in its visible paragraph, and rerun the existing mobile scenarios in available Chromium and WebKit engines. Preserve the review-before-open assertion, camera-denial route, file chooser and backup round trip. Do not change QR/payment production source, parent branches, release gates or deployment. Record runtime limitations and exact source evidence. Integration remains coordinator-owned.
 
 Completion evidence at test-source commit `7d112a5678496d851e8ec22d6603fbb4dec971cf`: original assertion reproduced two failures in the lean Chromium phone/tablet projects; repaired source passed 24/24 selected mobile tests in lean and 24/24 in full across Chromium and native WebKit. Six virtual-camera cases per profile require full Chromium and remain hosted qualification; the first local all-case attempt is explicitly interrupted after one unsupported-camera failure. The changed test passed typed lint, both web builds/typechecks/bundle scans passed, and the secret/whitespace checks passed. Additive evidence is owned under `docs/handoffs/mobile-588-evidence-20261124/`. The coordinator independently reviewed the test correction and found it preserves exact payload verification. Parent branch and production source remain unchanged; no merge or deployment.
+
+
+## Issue #287 — local EVM destination reuse
+
+Worker: Codex, branch `codex/287-local-destination-reuse`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Scope: destination-history helper/tests, checkout final review, seller sweep destination and successful submission, warning catalog entries, focused browser coverage and v1.1 evidence. The invoice's reusable meta-address is not a payment destination. Compare actual destinations locally within the current account and chain. Verify same and different invoices, address normalization, deliberate sweeps, account changes, reload, storage failure and nonblocking review. Keep payment journals, signing, release and custody gates with their existing owners.
+
+## PR #586 typed notice completion — 2026-11-24
+
+- Worker: `/root/local_handoffs`; coordinator: `/root`. Isolated branch: `finish/destination-reuse-type-20261124`; source parent: `f024ce3e0eab91df40bfd5a75aee2a56d9158e5a` (PR #586), tree `b86ab0da102ab4f7b366acdd23847d8c016958d3`.
+- Owned source: only the `FinalPreview` notice prop annotation in `apps/web/src/views/Pay.tsx`; additive ownership and `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`. Acceptance: reproduce hosted TS2322 locally, admit the existing `wallet-changed` notice already supported by the receiving component, prove emitted JavaScript unchanged, and run available focused checks with existing dependencies only.
+- Coordination: #584 (`17c5a2ee3828d0132cfdf21e4c966ca7550d07f2`) and #586 are siblings of `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Their journal-backed and separate session-storage histories are alternative mechanisms; neither is adopted as the other's successor. Active wallet/account/privacy owners retain their listeners, authority, signing and transaction semantics. No other branch, test assertion, storage mechanism, catalog or runtime body is edited by this lane.
+- Boundaries: no dependency installation, main integration, remote writes, deployment, browser/real-wallet acceptance claim or release-gate change. This narrow repair does not resolve the address-reuse architecture choice or close #287.
+
+Completion: qualified source `3de310900e0261bbfbc00fa30383ca9afcd094c7` passed the original full web typecheck, seven existing focused tests and scoped typed lint. Pay's emitted JavaScript is byte-identical to #586. Root independently approved the one-line prop annotation and subsequently authorized this worker to publish a draft child targeting `codex/287-local-destination-reuse`, preserving #586 ancestry and #584 unchanged. This bounded publication authorization supersedes only the original claim's no-remote-writes boundary; no main integration, shared lease, deployment or gate change is authorized. Source-pinned evidence: `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`.
