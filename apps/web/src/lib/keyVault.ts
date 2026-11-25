@@ -407,7 +407,7 @@ export async function deleteEncryptedVault(expected: string, store: KeyVaultStor
   const loaded = getSessionPublic();
   if (loaded !== undefined && vaultMetaAddress(expected) === loaded.metaAddress) {
     if (passphrase === undefined || passphrase === '') throw new UserFacingError({ key: 'error.keyVault.thisVaultHoldsTheSellerKeysLoadedNowEnterIts' });
-    await provePassphrase(expected, passphrase);
+    await verifyVaultForCurrentSession(expected, passphrase);
   }
   unchanged();
   await store.delete(expected);

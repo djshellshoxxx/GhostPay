@@ -4,7 +4,7 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -206,6 +206,21 @@ export function AppShell(props: AppShellProps): ReactNode {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [services, settings.lockTimeoutMin]);
+
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
+  useEffect(() => {
+    if (!loadedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (!hasSession() || sessionHasExternalCopy()) return;
+      e.preventDefault(); e.returnValue = true;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [loadedKeys]);
 
   useEffect(() => {
     if (first.current) {

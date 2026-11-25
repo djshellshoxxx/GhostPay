@@ -83,9 +83,9 @@ describe('keystore', () => {
       return decryptKeystore(JSON.stringify(f), 'correct horse battery');
     };
     await expect(decryptKeystore('not json', 'x')).rejects.toThrow(/not a valid/);
-    await expect(decryptKeystore('x'.repeat(9000), 'x')).rejects.toThrow(/not a valid/);
+    await expect(decryptKeystore('x'.repeat(9000), 'x')).rejects.toThrow(/size limit/);
     await expect(decryptKeystore('[]', 'x')).rejects.toThrow(/not a valid/);
-    await expect(bad((f) => { f['v'] = 2; })).rejects.toThrow(/not a valid/);
+    await expect(bad((f) => { f['v'] = 2; })).rejects.toThrow(/does not support/);
     await expect(bad((f) => { f['kdf'] = 'pbkdf2'; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { kp(f)['N'] = 1 << 30; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { kp(f)['N'] = 3; })).rejects.toThrow(/not a valid/);
@@ -116,7 +116,7 @@ describe('keystore', () => {
 
   it('rejects a decrypted body with malformed keys', async () => {
     const text = await encryptKeystore({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(31) }, META, 'correct horse battery', FAST);
-    await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/not a valid|different length/i);
+    await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/invalid seller keys/i);
   });
 });
 
