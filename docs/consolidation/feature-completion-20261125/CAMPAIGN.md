@@ -317,6 +317,19 @@ low/info, and remain filler work.
   remotely. Agreed lock order with `ghostpay-15` (#647 kept separate): after gen 25 releases, whichever exact-head CI is
   green first goes first; if both, the coordinator first. Resume point: check #664 CI and lock gen 25; when released,
   merge new main into the candidate (merge, not rebase), requalify, acquire the lock, fast-forward main, release, verify.
+- 2026-11-25T11:25Z — side work while waiting (owner: interleave side tasks with integration):
+  - **FC-05b scoped** (git-only vs FC-05a `8e7b1915`). Of #254's four hardening commits, three are already in FC-05a
+    in its own form: `78e50547` (scanner `reportedSpends` dedupe, first spend preserved, no re-confirmation at another
+    height: scanner.ts:165/242-244, state.ts:89/108-111), `524215eb` (resume cap scan.ts:118, output-identity cap
+    :180), `4281fce1` (worker/bridge proof gating). Their tests are to be ported as regression coverage. **Gap:**
+    `ba588c82` — FC-05a's `inputsChecked`/`sweepable` (BtcView.tsx:227-245) read the render-closure `scan`, so a
+    retained sign/broadcast handler can re-check against a stale scan after a rescan; port #254's `scanRef.current`
+    guard test-first. Plus the session pending-spend guard (FC-05a reviewer L3). Brief ready; start after #656 lands.
+  - **FC-06 (#248) re-check on `aaa71a11`:** now conflicts in `Scan.tsx` and `scanClient.ts` (the scan checkpoint path
+    #635 just reworked: `9d7f191b`, `87f06fe2`, `df1b76f5`, `54b56c0c`) plus catalogs; overlaps FC-02's `scanPrivacy.ts`.
+    `privateScanStore.ts` (365 lines) and `privateScanLifecycle.ts` are not on main. Class: substantial (semantic merge
+    with P1-LATE checkpoint logic). Keep deferred; coordinate with the P1-LATE owner before assigning.
+  - Integration-log entry pre-drafted (coordinator scratchpad) for the post-merge record.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
