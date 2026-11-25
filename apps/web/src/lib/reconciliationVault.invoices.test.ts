@@ -1,5 +1,7 @@
 import { createCipheriv, hkdfSync, randomBytes } from 'node:crypto';
 import { routerNet } from '@ghostpay/chain-adapters';
+import { summarizeInvoicePayments } from '@ghostpay/ux-vault/portable';
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { ReconciliationRecord } from './reconciliationLedger';
 import { registrationFromInvoice, type RegisteredInvoice } from './reconciliationMatch';
@@ -47,8 +49,9 @@ function rec(n: number, overrides: Partial<ReconciliationRecord> = {}): Reconcil
   };
   return { ...base, id: `${scope.sellerKeyId}:${base.chainId}:${tx}:${base.stealthAddress}:${base.blockHash}:0` };
 }
-async function unlocked(store = new Store(), guard = (): void => undefined): Promise<ReconciliationVault> {
-  const vault = new ReconciliationVault(store, scope, guard);
+const decisionTime = (NOW + 7200) * 1000;
+async function unlocked(store = new Store(), guard = (): void => undefined, now = () => decisionTime): Promise<ReconciliationVault> {
+  const vault = new ReconciliationVault(store, scope, guard, now);
   await vault.unlock(new Uint8Array(32).fill(7));
   return vault;
 }
@@ -472,5 +475,325 @@ describe('encrypted backups with registrations and receipts', () => {
     store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(template, doc({ invoices: Array.from({ length: MAX_REGISTERED_INVOICES }, (_, i) => synthetic(i + 1)) })));
     const backup = encryptBody(template, doc({ invoices: [synthetic(MAX_REGISTERED_INVOICES + 5)] }));
     await expect(target.activateImport(await target.previewImport(backup))).rejects.toThrow(/would exceed/);
+  });
+});
+
+describe('late payments in the encrypted reconciliation vault', () => {
+  it('keeps pending and unaccepted final evidence across unlock, then records an explicit decision', async () => {
+    const store = new Store();
+    let vault = await unlocked(store);
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const final = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    const pending = { ...final, evidenceStatus: 'pending-at-scan', evidenceSource: 'router-scan-candidate' } as const;
+    await vault.observeInvoicePayments([pending, pending]);
+    vault.lock();
+    vault = await unlocked(store);
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'pending-at-scan' }]);
+    expect((await vault.read())[0]).not.toHaveProperty('invoiceDigest');
+    await expect(vault.confirmProposal(pending, invoice.invoiceDigest, { current: [pending], acceptLate: true })).rejects.toThrow();
+    await vault.observeInvoicePayments([final, final]);
+    vault.lock();
+    vault = await unlocked(store);
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'verified-at-scan' }]);
+    expect((await vault.read())[0]).not.toHaveProperty('invoiceDigest');
+    await expect(vault.confirmProposal(final, invoice.invoiceDigest)).rejects.toThrow(/single exact/);
+    await expect(vault.confirmProposal(final, invoice.invoiceDigest, { acceptLate: true })).rejects.toThrow(/single exact/);
+    await expect(vault.save({ ...final, invoiceDigest: invoice.invoiceDigest })).rejects.toThrow(/single exact/);
+    await vault.confirmProposal(final, invoice.invoiceDigest, { current: [final], acceptLate: true });
+    vault.lock();
+    vault = await unlocked(store);
+    expect(await vault.read()).toMatchObject([{ invoiceDigest: invoice.invoiceDigest, lateAcceptedAt: decisionTime }]);
+    await expect(vault.confirmProposal(final, synthetic(2).invoiceDigest, { current: [final], acceptLate: true })).rejects.toThrow(/single exact/);
+    expect([...store.data.values()][0]).not.toContain(invoice.invoiceDigest.slice(2));
+  });
+
+  it('withholds ambiguous amount/asset/chain/association and conflicting inclusions', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const final = rec(1, { blockTimestamp: String(invoice.expiresAt + 1) });
+    await expect(vault.observeInvoicePayments([rec(1, { chainId: 1 })])).rejects.toThrow(/scope/);
+    const wrongAsset = { ...final, asset: `0x${'2'.repeat(40)}` };
+    // Conflicting copies of one event reject the whole page without storing either copy.
+    await expect(vault.observeInvoicePayments([wrongAsset, { ...final, amountMinorUnits: '1' }]))
+      .rejects.toThrow(/Only a current verified scan observation can be saved/);
+    expect(await vault.read()).toEqual([]);
+    // Distinct observations that mismatch the invoice remain ignored independently.
+    await vault.observeInvoicePayments([wrongAsset, rec(3, { blockTimestamp: final.blockTimestamp!, amountMinorUnits: '1' })]);
+    expect(await vault.read()).toEqual([]);
+    await expect(vault.confirmProposal(final, synthetic(2).invoiceDigest, { current: [final], acceptLate: true })).rejects.toThrow();
+    const pending = rec(2, { blockTimestamp: String(invoice.expiresAt), evidenceStatus: 'pending-at-scan', evidenceSource: 'router-scan-candidate' });
+    await vault.observeInvoicePayments([pending]);
+    expect((await vault.proposals([final])).get(final.id)).toMatchObject({ kind: 'ambiguous', reason: 'multiple-payments' });
+    await expect(vault.confirmProposal(final, invoice.invoiceDigest, { current: [final], acceptLate: true })).rejects.toThrow();
+    const forkCopy = rec(1, { blockHash: `0x${'e'.repeat(64)}`, blockTimestamp: final.blockTimestamp! });
+    await expect(vault.confirmProposal(final, invoice.invoiceDigest, { current: [final, forkCopy], acceptLate: true })).rejects.toThrow();
+    expect((await vault.read()).every((record) => record.invoiceDigest === undefined)).toBe(true);
+  });
+
+  it('invalidates an accepted payment missing from the resumed range without a checkpoint-parent reorg', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const payment = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.observeInvoicePayments([payment]);
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+    const height = BigInt(payment.blockNumber);
+    await vault.observeInvoicePayments([], undefined, {
+      from: height, through: height + 99n, canonicalHash: () => Promise.resolve(payment.blockHash),
+    });
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'unverified-at-scan', lateAcceptedAt: decisionTime }]);
+    await vault.observeInvoicePayments([], undefined, {
+      from: height, through: height + 99n, canonicalHash: () => Promise.resolve(`0x${'b'.repeat(64)}`),
+    });
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'invalidated-after-reorg', lateAcceptedAt: decisionTime }]);
+    await vault.observeInvoicePayments([payment]);
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'invalidated-after-reorg' }]);
+  });
+
+  it('checks only the scanned snapshot when another tab saves at the same height', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    const otherTab = await unlocked(store);
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const first = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    const concurrent = rec(2, {
+      blockNumber: first.blockNumber, blockHash: `0x${'e'.repeat(64)}`, blockTimestamp: first.blockTimestamp!,
+    });
+    await vault.observeInvoicePayments([first]);
+    const height = BigInt(first.blockNumber);
+    await vault.observeInvoicePayments([], undefined, {
+      from: height, through: height,
+      canonicalHash: async () => {
+        await otherTab.observeInvoicePayments([concurrent]);
+        return first.blockHash;
+      },
+    });
+    expect(await vault.read()).toMatchObject([
+      { id: first.id, evidenceStatus: 'unverified-at-scan' },
+      { id: concurrent.id, evidenceStatus: 'verified-at-scan' },
+    ]);
+  });
+
+  it('preserves the decision and counts only canonical evidence across generated rescans and reloads', async () => {
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    const scenario = fc.record({
+      height: fc.integer({ min: 1, max: 100_000 }),
+      lateBy: fc.integer({ min: 0, max: 300 }),
+      forkOffset: fc.constantFrom(-1, 0, 1),
+      checkpointReorg: fc.boolean(),
+      padding: fc.integer({ min: 0, max: 120 }),
+      steps: fc.array(fc.constantFrom('reload', 'missing header', 'incomplete logs', 'duplicate scan', 'adjacent page'), { maxLength: 8 }),
+    });
+    await fc.assert(fc.asyncProperty(scenario, async ({ height, lateBy, forkOffset, checkpointReorg, padding, steps }) => {
+      const store = new Store();
+      let clock = decisionTime;
+      let vault = await unlocked(store, undefined, () => clock);
+      const payment = rec(1, { blockNumber: String(height), blockTimestamp: String(invoice.expiresAt + lateBy) });
+      await vault.registerInvoice(invoice);
+      await vault.observeInvoicePayments([payment]);
+      await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+      const retries: bigint[] = [];
+      const page = { from: BigInt(Math.max(0, height - padding)), through: BigInt(height + padding),
+        retryFrom: (block: bigint) => { retries.push(block); } };
+      let expected: ReconciliationRecord['evidenceStatus'] = 'verified-at-scan';
+      const check = async (): Promise<void> => {
+        const records = await vault.read();
+        expect(records).toMatchObject([{ id: payment.id, invoiceDigest: invoice.invoiceDigest,
+          lateAcceptedAt: decisionTime, evidenceStatus: expected }]);
+        expect(summarizeInvoicePayments(invoice, records, scope).kind).toBe(expected === 'verified-at-scan' ? 'equal' : 'unlinked');
+      };
+      for (const step of steps) {
+        clock++;
+        retries.length = 0;
+        if (step === 'reload') {
+          vault.lock();
+          vault = await unlocked(store, undefined, () => clock);
+        } else if (step === 'missing header' || step === 'incomplete logs') {
+          await vault.observeInvoicePayments([], undefined, { ...page,
+            canonicalHash: () => step === 'missing header' ? Promise.reject(new Error('offline')) : Promise.resolve(payment.blockHash) });
+          expected = 'unverified-at-scan';
+        } else if (step === 'duplicate scan') {
+          await vault.observeInvoicePayments([payment, payment], undefined, { ...page, canonicalHash: () => Promise.resolve(payment.blockHash) });
+          expected = 'verified-at-scan';
+        } else {
+          await vault.observeInvoicePayments([], undefined, { ...page, from: BigInt(height + 1), through: BigInt(height + 2),
+            canonicalHash: () => Promise.resolve(payment.blockHash) });
+        }
+        expect(retries).toEqual(step === 'missing header' || step === 'incomplete logs' ? [BigInt(height)] : []);
+        await check();
+      }
+      retries.length = 0;
+      const forkHeight = height + forkOffset;
+      const replaced = height >= forkHeight;
+      const canonicalHash = () => Promise.resolve(replaced ? `0x${'B'.repeat(64)}` : payment.blockHash);
+      if (checkpointReorg) await vault.invalidateFrom(BigInt(forkHeight), [], canonicalHash);
+      await vault.observeInvoicePayments(replaced ? [] : [payment], undefined, { ...page, canonicalHash });
+      expect(retries).toEqual([]);
+      expected = replaced ? 'invalidated-after-reorg' : 'verified-at-scan';
+      // A delayed duplicate of the original observation cannot restore an orphaned inclusion.
+      await vault.observeInvoicePayments([payment]);
+      vault.lock();
+      vault = await unlocked(store, undefined, () => ++clock);
+      await check();
+    }), { seed: 20261124, numRuns: 300 });
+  }, 60_000);
+
+  it('retries missing linked partials, keeps surviving credit and resumes after an interrupted page', async () => {
+    const store = new Store();
+    let vault = await unlocked(store);
+    const invoice = { ...synthetic(1), expectedNetMinorUnits: '100' };
+    await vault.registerInvoice(invoice);
+    const first = rec(1, { amountMinorUnits: '40' });
+    const second = rec(2, { amountMinorUnits: '60' });
+    for (const payment of [first, second]) await vault.save({ ...payment, invoiceDigest: invoice.invoiceDigest });
+    const retries: bigint[] = [];
+    const from = BigInt(first.blockNumber);
+    const through = BigInt(second.blockNumber);
+    const page = { from, through, canonicalHash: () => Promise.resolve(first.blockHash),
+      retryFrom: (height: bigint) => { retries.push(height); } };
+    const total = async () => summarizeInvoicePayments(invoice, await vault.read(), scope);
+    expect(await total()).toMatchObject({ kind: 'equal', observedMinorUnits: '100', observationCount: 2 });
+
+    let cancelled = false;
+    const before = await vault.exportEncrypted();
+    await expect(vault.observeInvoicePayments([second], () => {
+      if (cancelled) throw new Error('scan interrupted');
+    }, { ...page, canonicalHash: () => { cancelled = true; return Promise.resolve(first.blockHash); } }))
+      .rejects.toThrow('scan interrupted');
+    expect(await vault.exportEncrypted()).toBe(before);
+    expect(retries).toEqual([]);
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await vault.observeInvoicePayments([second, second], undefined, page);
+      vault.lock();
+      vault = await unlocked(store);
+      expect(await total()).toMatchObject({ kind: 'below', observedMinorUnits: '60', observationCount: 1 });
+    }
+    expect(retries).toEqual([from, from]);
+    await vault.observeInvoicePayments([first, first, second], undefined, page);
+    expect(await total()).toMatchObject({ kind: 'equal', observationCount: 2 });
+    await vault.observeInvoicePayments([second], undefined, {
+      ...page, canonicalHash: () => Promise.resolve(`0x${'e'.repeat(64)}`),
+    });
+    await vault.observeInvoicePayments([first, second], undefined, page);
+    vault.lock();
+    vault = await unlocked(store);
+    expect(await total()).toMatchObject({ kind: 'below', observedMinorUnits: '60', observationCount: 1 });
+    expect(await vault.read()).toMatchObject([
+      { id: first.id, invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'invalidated-after-reorg' },
+      { id: second.id, invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'verified-at-scan' },
+    ]);
+    expect(retries).toEqual([from, from]);
+  });
+
+  it('withholds an accepted payment through conflicting duplicate deliveries in either order', async () => {
+    const store = new Store();
+    let vault = await unlocked(store);
+    const invoice = synthetic(1);
+    await vault.registerInvoice(invoice);
+    const final = rec(3, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.observeInvoicePayments([final]);
+    await vault.confirmProposal(final, invoice.invoiceDigest, { current: [final], acceptLate: true });
+    const different = { ...final, amountMinorUnits: '1' };
+    await expect(vault.save(different)).rejects.toThrow();
+    const height = BigInt(final.blockNumber);
+    const retries: bigint[] = [];
+    const page = { from: height, through: height, canonicalHash: () => Promise.resolve(final.blockHash),
+      retryFrom: (block: bigint) => { retries.push(block); } };
+    const unverified = { ...final, evidenceSource: 'router-scan-candidate', evidenceStatus: 'unverified-at-scan' } as const;
+    await vault.observeInvoicePayments([unverified], undefined, page);
+    expect(retries).toEqual([height]);
+    for (const batch of [[different, final], [final, different], [final, unverified], [unverified, final]]) {
+      await vault.observeInvoicePayments([final, final], undefined, page);
+      await expect(vault.observeInvoicePayments(batch, undefined, page)).rejects.toThrow();
+      vault.lock();
+      vault = await unlocked(store);
+      const records = await vault.read();
+      expect(records).toMatchObject([{ id: final.id, amountMinorUnits: final.amountMinorUnits,
+        evidenceStatus: 'unverified-at-scan', invoiceDigest: invoice.invoiceDigest, lateAcceptedAt: decisionTime }]);
+      expect(summarizeInvoicePayments(invoice, records, scope).kind).toBe('unlinked');
+    }
+    await vault.observeInvoicePayments([final, final], undefined, page);
+    expect(summarizeInvoicePayments(invoice, await vault.read(), scope)).toMatchObject({ kind: 'equal', observationCount: 1 });
+    expect(await vault.read()).toMatchObject([{ lateAcceptedAt: decisionTime }]);
+  });
+
+  it('withdraws confirmed credit in a saturated vault without admitting new observations', async () => {
+    const store = new Store();
+    let vault = await unlocked(store);
+    const invoice = synthetic(1);
+    const payment = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.registerInvoice(invoice);
+    await vault.observeInvoicePayments([payment]);
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+    const state = await vault.readState();
+    store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(await vault.exportEncrypted(),
+      doc({ invoices: state.invoices, records: state.records, saturated: true })));
+    const height = BigInt(payment.blockNumber);
+    const replacementHash = `0x${'f'.repeat(64)}`;
+    const replacement = rec(2, { blockNumber: payment.blockNumber, blockHash: replacementHash,
+      blockTimestamp: String(invoice.expiresAt + 1) });
+    await vault.observeInvoicePayments([replacement], undefined, {
+      from: height, through: height, canonicalHash: () => Promise.resolve(replacementHash),
+    });
+    vault.lock();
+    vault = await unlocked(store);
+    const after = await vault.readState();
+    expect(after.readOnly).toBe(true);
+    expect(after.records).toMatchObject([{ id: payment.id, invoiceDigest: invoice.invoiceDigest,
+      lateAcceptedAt: decisionTime, evidenceStatus: 'invalidated-after-reorg' }]);
+    expect(summarizeInvoicePayments(invoice, after.records, scope).kind).toBe('unlinked');
+    await vault.observeInvoicePayments([payment, replacement]);
+    expect(await vault.read()).toEqual(after.records);
+  });
+
+  it('quarantines both copies when an accepted transaction returns at another inclusion', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const original = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.observeInvoicePayments([original]);
+    await vault.confirmProposal(original, invoice.invoiceDigest, { current: [original], acceptLate: true });
+    const conflicting = rec(1, {
+      blockTimestamp: String(invoice.expiresAt + 1), blockNumber: '120', blockHash: `0x${'e'.repeat(64)}`,
+    });
+    await vault.observeInvoicePayments([conflicting]);
+    expect(await vault.read()).toMatchObject([
+      { id: original.id, evidenceStatus: 'unverified-at-scan', lateAcceptedAt: decisionTime },
+      { id: conflicting.id, evidenceStatus: 'unverified-at-scan' },
+    ]);
+    await expect(vault.confirmProposal(conflicting, invoice.invoiceDigest, { current: [conflicting], acceptLate: true })).rejects.toThrow();
+  });
+
+  it('keeps decisions through RPC uncertainty and reorg, then requires verification of the replacement inclusion', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const first = rec(1, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.observeInvoicePayments([first]);
+    await vault.confirmProposal(first, invoice.invoiceDigest, { current: [first], acceptLate: true });
+    const [accepted] = await vault.read();
+    await vault.observeInvoicePayments([{ ...first, amountMinorUnits: '1' }]);
+    expect(await vault.read()).toEqual([{ ...accepted, evidenceStatus: 'unverified-at-scan' }]);
+    await vault.observeInvoicePayments([first]);
+    expect(await vault.read()).toEqual([accepted]);
+    await vault.quarantineInvoicePayments(BigInt(first.blockNumber));
+    await expect(vault.invalidateFrom(BigInt(first.blockNumber), [], () => Promise.reject(new Error('RPC offline')))).rejects.toThrow('RPC offline');
+    expect(await vault.read()).toEqual([{ ...accepted, evidenceStatus: 'unverified-at-scan' }]);
+    const replacement = rec(1, { blockHash: `0x${'e'.repeat(64)}`, blockTimestamp: String(invoice.expiresAt + 1) });
+    await vault.invalidateFrom(BigInt(first.blockNumber), [], () => Promise.resolve(replacement.blockHash));
+    await vault.observeInvoicePayments([first, replacement]);
+    expect(await vault.read()).toMatchObject([
+      { ...accepted, evidenceStatus: 'invalidated-after-reorg' },
+      { id: replacement.id, evidenceStatus: 'verified-at-scan' },
+    ]);
+    expect((await vault.read())[1]).not.toHaveProperty('lateAcceptedAt');
+    await vault.confirmProposal(replacement, invoice.invoiceDigest, { current: [replacement], acceptLate: true });
+    expect((await vault.read()).filter((record) => record.evidenceStatus === 'verified-at-scan')).toMatchObject([
+      { id: replacement.id, invoiceDigest: invoice.invoiceDigest, lateAcceptedAt: decisionTime },
+    ]);
   });
 });

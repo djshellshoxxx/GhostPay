@@ -1,0 +1,98 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@0.1.0 test:e2e
+> playwright test --config=playwright.mobile.config.ts --project=android-phone-chromium --project=android-tablet-chromium --grep after a camera denial
+
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[WebServer] [plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/efb8df2579c9/mobile-588-resume/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+[WebServer] 
+[WebServer] [plugin builtin:vite-reporter] 
+[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] (node:91) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:99) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [android-phone-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (11.7s)
+(node:236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [android-tablet-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (12.1s)
+
+
+  1) [android-phone-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Mobile file import', { exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Mobile file import', { exact: true }) with timeout 10000ms
+      - waiting for getByText('Mobile file import', { exact: true })
+
+
+      34 |   await page.getByRole('button', { name: 'Open scanned invoice' }).tap();
+      35 |   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
+    > 36 |   await expect(page.getByText(memo, { exact: true })).toBeVisible();
+         |                                                       ^
+      37 | });
+      38 |
+      39 | test('an encrypted backup downloaded by touch can be selected again and verified', async ({ page }, testInfo) => {
+        at /workspace/scratch/efb8df2579c9/mobile-588-resume/apps/web/e2e/devices-mobile-workflows.spec.ts:36:55
+
+    Error Context: test-results/mobile/devices-mobile-workflows-a-0809e-w-it-before-opening-payment-android-phone-chromium/error-context.md
+
+  2) [android-tablet-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Mobile file import', { exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Mobile file import', { exact: true }) with timeout 10000ms
+      - waiting for getByText('Mobile file import', { exact: true })
+
+
+      34 |   await page.getByRole('button', { name: 'Open scanned invoice' }).tap();
+      35 |   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
+    > 36 |   await expect(page.getByText(memo, { exact: true })).toBeVisible();
+         |                                                       ^
+      37 | });
+      38 |
+      39 | test('an encrypted backup downloaded by touch can be selected again and verified', async ({ page }, testInfo) => {
+        at /workspace/scratch/efb8df2579c9/mobile-588-resume/apps/web/e2e/devices-mobile-workflows.spec.ts:36:55
+
+    Error Context: test-results/mobile/devices-mobile-workflows-a-0809e-w-it-before-opening-payment-android-tablet-chromium/error-context.md
+
+  2 failed
+    [android-phone-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment 
+    [android-tablet-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment 
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /workspace/scratch/efb8df2579c9/mobile-588-resume/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/efb8df2579c9/mobile-588-resume/apps/web
+npm error command failed
+npm error command sh -c playwright test --config=playwright.mobile.config.ts --project=android-phone-chromium --project=android-tablet-chromium --grep 'after a camera denial'

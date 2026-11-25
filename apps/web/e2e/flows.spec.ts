@@ -18,7 +18,7 @@ test.afterEach(async ({ page }, info) => {
 });
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
-import { RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
+import { CORS, RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
 
 interface WalletControls {
   holdSend: boolean;
@@ -338,6 +338,56 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(state.sendCalls).toBe(1); // Clearing itself never starts another wallet request.
   });
 
+  test('a stale receipt delivered on reconnect cannot settle the payment or change its journal hash', async ({ page, context }) => {
+    const state: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const link = await createInvoice(page);
+    await openFresh(page, link);
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+    await page.getByRole('button', { name: 'Prepare payment' }).click();
+
+    // Pause after the transaction matches the wallet preview, at the separate receipt read.
+    const receiptRead = page.waitForRequest(req => req.url().startsWith(RPC) &&
+      req.method() === 'POST' && (req.postDataJSON() as { method?: string } | null)?.method === 'eth_getTransactionReceipt');
+    let releaseReceipt!: () => void;
+    const released = new Promise<void>(resolve => { releaseReceipt = resolve; });
+    const wrongHash = `0x${'8'.repeat(64)}`;
+    await context.route(`${RPC}/**`, async route => {
+      const req = route.request();
+      if (req.method() !== 'POST') return route.fallback();
+      const body = req.postDataJSON() as { method: string; id: number };
+      if (body.method !== 'eth_getTransactionReceipt') return route.fallback();
+      await released;
+      await route.fulfill({ json: { jsonrpc: '2.0', id: body.id, result: {
+        transactionHash: wrongHash, status: '0x1', blockNumber: '0x1f5', to: FAKE_ROUTER,
+      } }, headers: CORS });
+    });
+    const journal = page.getByRole('region', { name: 'Wallet attempt journal' });
+    const submittedHash = `0x${'9'.repeat(64)}`;
+    try {
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await receiptRead;
+      await context.setOffline(true);
+      await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(false);
+      await expect(journal).toContainText(submittedHash);
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+      await context.setOffline(false);
+    } finally { releaseReceipt(); }
+    await expect(page.getByRole('alert')).toContainText(/differs from the preview.*hash/i);
+    await expect(page.getByRole('button', { name: 'Download local receipt' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+    await page.reload();
+    await page.getByRole('navigation').getByRole('button', { name: 'Pay', exact: true }).click();
+    await expect(journal).toContainText(submittedHash);
+    await expect(journal).not.toContainText(wrongHash);
+    expect(state.sendCalls).toBe(1);
+  });
+
   test('refuses a changed wallet account during the final authority recheck before send', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
@@ -456,7 +506,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     const proposal = ledger.getByText(/Exact local match proposed:/);
     await expect(proposal).toContainText(registeredInvoiceDigest);
     await expect(ledger.getByText('No records saved.', { exact: true })).toBeVisible();
-    await expect(ledger.getByText(/No linked observation\./)).toBeVisible();
+    await expect(ledger.getByText('Verified on-time transfer — invoice link pending.', { exact: true })).toBeVisible();
+    await expect(ledger.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
     await auditAccessibility(page, 'flow-reconciliation-match-proposed');
     await ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true }).click();
     const linkedObservation = ledger.locator('li').filter({ hasText: 'Manual invoice link (or a local match you confirmed):' });

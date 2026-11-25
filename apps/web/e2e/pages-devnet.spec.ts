@@ -502,7 +502,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // Local reconciliation: the verified payment is saved and matched to the registered invoice.
     const l = ledger(s);
     await l.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
-    await expect(l.getByText('0 stored records in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    // The pending scan already retained this same inclusion. Finality upgrades it without linking the invoice.
+    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    await expect(l.getByText('Verified on-time transfer — invoice link pending.', { exact: true })).toBeVisible();
+    await expect(l.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
     await expect(l).toContainText(digest);
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
@@ -703,9 +706,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText('Imported historical observation — untrusted until independently rescanned.');
     await expect(record).toContainText(digest);
-    // Imported history preserves invoice annotations, but cannot establish fresh verification.
-    await expect(l.getByText('No linked observation.')).toBeVisible();
-    await expect(l.getByText('Linked to a verified observation.')).toHaveCount(0);
+    // Imported history preserves annotations, but contributes no verified link or credited amount summary.
+    const registeredInvoice = l.locator('li.card').filter({
+      has: rp.getByRole('button', { name: 'Remove registration', exact: true }),
+    });
+    await expect(registeredInvoice).toHaveCount(1);
+    await expect(registeredInvoice.getByText('Unverified observation. Scan again before relying on it.', { exact: true })).toBeVisible();
+    await expect(registeredInvoice.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
+    await expect(registeredInvoice.getByRole('region', { name: 'Linked invoice amounts', exact: true })).toHaveCount(0);
     // Adding the freshly rescanned, verified observation upgrades that same record instead of counting the payment twice.
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.', { timeout: 30_000 });
@@ -713,8 +721,11 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText(digest);
     // Only a freshly saved live-router observation makes the invoice registry link verified.
-    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
-    await expect(l.getByText('No linked observation.')).toHaveCount(0);
+    await expect(registeredInvoice.getByText('Linked to a verified observation.', { exact: true })).toBeVisible();
+    await expect(registeredInvoice.getByText('Unverified observation. Scan again before relying on it.', { exact: true })).toHaveCount(0);
+    const linkedAmounts = registeredInvoice.getByRole('region', { name: 'Linked invoice amounts', exact: true });
+    await expect(linkedAmounts.getByText('Linked total equals the expected net amount.', { exact: true })).toBeVisible();
+    await expect(linkedAmounts.getByText('Distinct linked observations: 1.', { exact: true })).toBeVisible();
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
