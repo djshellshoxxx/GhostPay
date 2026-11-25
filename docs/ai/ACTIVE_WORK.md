@@ -1,3 +1,11 @@
+# Registry history live-region qualification — 2026-11-24 Pacific
+
+Sequential ChatGPT coordinator, isolated child `automation/20261125T0437Z/qa/registry-history-live-region` of #612 at `e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Own only `apps/web/src/features/registry/RegistryView.history.test.tsx`, this additive claim and a source-pinned handoff. Parent and other owners retain all runtime paths. Recent #620/#635/#641/#616/#615/#613/#610/#630/#632/#636 changed-file lists do not touch this test or RegistryView/WalletAttempts. Do not merge or deploy.
+
+Acceptance: reproduce the CI-observed stale region query (job 138374082256). Reacquire the mounted journal after wallet connection and consent withdrawal because WalletAttempts keys its child by wallet scope. Verify old region detached, matching account/hash only, cancelled clear preserves exact stored bytes, withdrawal conceals live history, no RPC and no send. Preserve all original assertions. Hosted exact-head test and independent review required; no native worker or local execution claimed.
+
+---
+
 # Encrypted checkout wallet-change notice — 2026-11-24 UTC
 
 Worker: `resume_package_qualification`, exclusively assigned by coordinator `/root` after the original real-Anvil #598 run passed two cases and failed the wrong-chain case. Child: `fix/20261124/encrypted-wallet-revocation-notice`; base `6419f237660978aa4f97c4eae2e39b96854b9d3e`, containing published #598 at `86450d8d459ccf4a6925742d082e1c7ad0905e75` plus its qualification claim. Other source remains owned by its original workers.
