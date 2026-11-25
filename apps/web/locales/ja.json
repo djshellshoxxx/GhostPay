@@ -814,7 +814,7 @@
     "create.link.label": "リンク",
     "create.link.copy": "リンクをコピー",
     "create.qr.caption": "請求書リンクを含む QR コード",
-    "create.qr.multipartNote": "この請求書は1つのQRコードには長すぎるため、{total}個のパートで表示しています。支払者はGhostPayの「請求書QRをスキャン」ですべてのパートを読み取る必要があります。通常のカメラアプリは複数パートのコードを読めません。上のリンクは単独でも使えます。",
+    "create.qr.multipartNote": "この請求書は1つのQRコードには長すぎるため、{total}個のパートで表示しています。支払者はGhostPayの「Scan an invoice QR or open a request file」ですべてのパートを読み取る必要があります。通常のカメラアプリは複数パートのコードを読めません。上のリンクは単独でも使えます。",
     "create.buffer.label": "ガスバッファーポリシー",
     "create.buffer.off": "ポリシーなし（標準の請求書）",
     "create.buffer.declined": "ガスバッファーを断る",
