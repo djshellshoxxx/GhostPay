@@ -162,6 +162,7 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
   if (opts.wrongTag === true) await user.click(screen.getByLabelText('Deep scan (also check wrong view tags)'));
   await user.click(screen.getByRole('button', { name: 'Start scan' }));
   await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
+  await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
   return user;
 }
 
@@ -394,6 +395,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -423,6 +425,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -466,6 +469,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -587,6 +591,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
       expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
@@ -659,6 +664,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
       expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -841,6 +847,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       expect(screen.getByText('Outcome unknown')).toBeTruthy();
       expect(await directDisabled(user)).toBe(true);
@@ -986,6 +993,7 @@ describe('L1-02: the vault step-up belongs to the loaded keys', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     expect(screen.getByLabelText('Vault passphrase (required for each sweep action)')).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
