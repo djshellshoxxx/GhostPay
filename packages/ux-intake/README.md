@@ -10,7 +10,7 @@ Pure, DOM-free, network-free intake logic for GhostPay. Every parser takes untru
 | `nl-amount` | `nlamount.ts` | `twenty usdc`, `1,5 eth`, `1.5k` to exact `bigint` base units with locale-aware separators and homoglyph rejection |
 
 Specs: `docs/remote/usability/specs/{qr-scan,deep-link-share,nl-amount}.md`.
-Wiring: `docs/remote/usability/wiring/ux-intake.md`. Audit: `docs/remote/usability/audit-ux-intake.md`.
+Wiring: `docs/remote/usability/wiring/ux-intake.md`. Audit: `docs/remote/usability/audit-ux-intake.md` (file not present in this tree).
 
 Invoice fragments are bearer secrets (ADR-0005). Results carry the raw `fragment` only so it can be passed to
 `parseFragment`; display and log with `safeDisplay` / `redactForLog`.
