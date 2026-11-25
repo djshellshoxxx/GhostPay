@@ -133,7 +133,7 @@ test('a report that cannot prove what it rendered is a failure, not a pass', () 
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: [''] })).problems.join(), /non-string or empty/);
 });
 
-test('report containers must have the writer\'s exact shapes; empty worker and public lists stay legal', () => {
+test('report containers must have the writer\'s exact shapes; only an empty public-copy list is legal', () => {
   const missing = (key) => { const r = report(['src/AppLean.tsx']); delete r[key]; return checkReportExclusions(r).problems.join('\n'); };
   assert.match(missing('chunks'), /chunks is missing or not a list/);
   assert.match(missing('workers'), /workers is missing or not a list/);
@@ -148,8 +148,10 @@ test('report containers must have the writer\'s exact shapes; empty worker and p
     assert.ok(problems.length > 0, JSON.stringify(worker));
   }
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { chunks: [{ fileName: '', modules: [] }] })).problems.join(), /no fileName/);
-  assert.deepEqual(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [], publicCopied: [] })).problems, []);
-  assert.deepEqual(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [{ chunks: [] }] })).problems, []);
+  // The writer always records Worker evidence and per-chunk module provenance (localBuildProfile.mjs).
+  assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [] })).problems.join(), /no Worker build evidence/);
+  assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [{ chunks: [] }] })).problems.join(), /worker 0 has an empty chunk list/);
+  assert.deepEqual(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: [] })).problems, []);
 });
 
 test('a report with no rendered application module is not evidence', () => {
@@ -216,6 +218,35 @@ test('site provenance: report chunks and emitted executables must match exactly'
     // A report chunk that was not emitted fails.
     rmSync(join(dir, 'assets', 'scanner.worker-def.js'));
     assert.match(checkSiteExclusions(dir, r).problems.join('\n'), /was not emitted into the site: assets\/scanner\.worker-def\.js/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('a chunk with matching emitted file name but no module provenance fails (app and Worker)', () => {
+  const { dir, r } = siteWithReport();
+  try {
+    // App: add a second chunk whose file exists in the site but whose module list is empty.
+    writeFileSync(join(dir, 'assets', 'vendor-123.js'), '');
+    const app = structuredClone(r);
+    app.chunks.push({ fileName: 'assets/vendor-123.js', modules: [] });
+    const appProblems = [...checkReportExclusions(app).problems, ...checkSiteExclusions(dir, app).problems].join('\n');
+    assert.match(appProblems, /assets\/vendor-123\.js has an empty module list/);
+    // Worker: the Worker chunk file exists but its module list is empty.
+    const worker = structuredClone(r);
+    worker.workers[0].chunks[0].modules = [];
+    assert.match(checkReportExclusions(worker).problems.join('\n'), /worker 0 chunk 0 assets\/scanner\.worker-def\.js has an empty module list/);
+    // Through the full verifier the same reports fail although every emitted executable is named.
+    const reportDir = mkdtempSync(join(tmpdir(), 'gp-release-rep-'));
+    try {
+      for (const bad of [app, worker]) {
+        const path = join(reportDir, 'r.json');
+        writeFileSync(path, JSON.stringify(bad));
+        assert.match(verifyReleaseExclusions(path, dir).problems.join('\n'), /empty module list/);
+      }
+    } finally {
+      rmSync(reportDir, { recursive: true, force: true });
+    }
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

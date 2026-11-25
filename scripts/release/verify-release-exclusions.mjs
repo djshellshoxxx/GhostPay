@@ -19,10 +19,12 @@ function describe(product) {
 }
 
 /**
- * Validates the report's container shapes exactly as localBuildProfile.mjs writes them:
- * `chunks: Array<{ fileName: string, modules: Array }>` (nonempty), `workers: Array<{ chunks: Array<chunk> }>`
- * (may be empty) and `publicCopied: string[]` (may be empty). Returns the chunk groups to inspect, each labelled.
- * Missing or malformed containers are problems; they are never read as empty.
+ * Validates the report's container shapes exactly as the lean writer in apps/web/scripts/localBuildProfile.mjs
+ * produces them: `chunks` is a nonempty list of `{ fileName, modules }` and every chunk's `modules` is nonempty
+ * (collectLeanChunks throws "lean build chunk metadata is missing" / "lean chunk module provenance is missing");
+ * `workers` is a nonempty list (writeBundle throws "lean Worker build evidence is missing") whose every entry has a
+ * nonempty `chunks` list of such chunks; `publicCopied` is a list of strings and may be empty (an empty public dir).
+ * Returns the chunk groups to inspect. Missing, malformed or empty containers are problems, never read as empty.
  */
 function reportGroups(report, problems) {
   const groups = [];
@@ -30,6 +32,7 @@ function reportGroups(report, problems) {
     if (chunk === null || typeof chunk !== 'object' || Array.isArray(chunk)) problems.push(`${where} is not an object`);
     else if (typeof chunk.fileName !== 'string' || chunk.fileName === '') problems.push(`${where} has no fileName`);
     else if (!Array.isArray(chunk.modules)) problems.push(`${where} ${chunk.fileName} has no module list`);
+    else if (chunk.modules.length === 0) problems.push(`${where} ${chunk.fileName} has an empty module list (no module provenance)`);
     else return true;
     return false;
   };
@@ -37,10 +40,15 @@ function reportGroups(report, problems) {
   else if (report.chunks.length === 0) problems.push('lean report lists no application chunks');
   else report.chunks.forEach((chunk, i) => { if (chunkShape(chunk, `lean report chunk ${String(i)}`)) groups.push({ chunk, worker: false }); });
   if (!Array.isArray(report.workers)) problems.push('lean report workers is missing or not a list');
+  else if (report.workers.length === 0) problems.push('lean report lists no Worker build evidence');
   else {
     report.workers.forEach((w, i) => {
       if (w === null || typeof w !== 'object' || Array.isArray(w) || !Array.isArray(w.chunks)) {
         problems.push(`lean report worker ${String(i)} has no chunk list`);
+        return;
+      }
+      if (w.chunks.length === 0) {
+        problems.push(`lean report worker ${String(i)} has an empty chunk list`);
         return;
       }
       w.chunks.forEach((chunk, j) => { if (chunkShape(chunk, `lean report worker ${String(i)} chunk ${String(j)}`)) groups.push({ chunk, worker: true }); });
