@@ -1,12 +1,17 @@
 import { erc20Abi } from '@ghostpay/chain-adapters';
 import { policyAccountAbi } from '@ghostpay/policy-scheme';
 import { encodeFunctionData } from 'viem/utils';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MockWallet } from '../test/mockWallet';
 import { readAttempts, type AttemptLockManager, type AttemptStorage } from './duplicateAttemptJournal';
 import { connectWallet, sendViaWallet, signTypedDataViaWallet, type Eip1193Provider, type WalletInfo, type WalletSession } from './wallet';
 import { summarizeWalletCall } from './walletCallSummary';
 import { WALLET_DISCLOSURE_MS, WalletDisclosureController, type WalletDisclosureGate } from './walletDisclosure';
+import { installTestLocks } from '../test/locks';
+
+// Node-environment suite: Node 22 (CI) has no Web Locks API, so the durable journal gets the in-process test lock,
+// as browser-environment suites get it from test/setup.ts. Newer Node versions would otherwise use their native one.
+beforeEach(() => { installTestLocks(); });
 
 // Regressions for the independent review of the disclosure port (findings 1, 2, 4, 5, 6, 8, 9, 10 and the untested
 // invariants it listed). Finding 3 (typed-data labels) is covered in walletDisclosure.test.ts.
