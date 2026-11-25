@@ -52,7 +52,7 @@ function allowanceRpc(wallet: MockWallet): MockRpc {
       return { hash: params[0], from: s['from'], to: s['to'], input: s['data'], value: s['value'], chainId: '0x14a34' };
     }
     if (method === 'eth_getTransactionReceipt') {
-      return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     }
     throw new Error(`unexpected ${method}`);
   });

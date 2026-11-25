@@ -36,15 +36,13 @@ const record: ReconciliationRecord = {
 };
 /** The chain now has another block at every height: each stored observation is orphaned. */
 const orphanedEverywhere = (): Promise<string> => Promise.resolve(`0x${'9'.repeat(64)}`);
-/** The same observation in another block. */
-function variant(block: number, hashChar: string, over: Partial<ReconciliationRecord> = {}): ReconciliationRecord {
-  const blockHash = `0x${hashChar.repeat(64)}`;
+/** Distinct payments by default. Supply the original transaction hash to model re-inclusion. */
+function paymentAt(block: number, hashChar: string, over: Partial<Pick<ReconciliationRecord, 'transactionHash' | 'recordedAt' | 'blockHash'>> = {}): ReconciliationRecord {
+  const transactionHash = over.transactionHash ?? `0x${block.toString(16).padStart(64, '0')}`;
+  const blockHash = over.blockHash ?? `0x${hashChar.repeat(64)}`;
   return {
-    ...record,
-    blockNumber: String(block),
-    blockHash,
-    id: `${scope.sellerKeyId}:${scope.chainId}:${record.transactionHash}:${record.stealthAddress}:${blockHash}:4`,
-    ...over,
+    ...record, ...over, transactionHash, blockHash, blockNumber: String(block),
+    id: `${scope.sellerKeyId}:${scope.chainId}:${transactionHash}:${record.stealthAddress}:${blockHash}:4`,
   };
 }
 async function unlocked(store = new Store(), guard = (): void => undefined, now?: () => number): Promise<ReconciliationVault> {
@@ -201,9 +199,9 @@ describe('encrypted reconciliation vault', () => {
 
   it('invalidates only observations whose block hash is no longer canonical (L1-03, L3-F1)', async () => {
     const vault = await unlocked();
-    const kept = variant(150, 'e');
-    const orphaned = variant(160, 'f');
-    const pending = variant(170, '1');
+    const kept = paymentAt(150, 'e');
+    const orphaned = paymentAt(160, 'f');
+    const pending = paymentAt(170, '1');
     await vault.save(kept);
     await vault.save(orphaned);
     // Providers may answer in mixed case; the comparison is on the hash value.
@@ -234,7 +232,7 @@ describe('encrypted reconciliation vault', () => {
     const vault = await unlocked(store);
     const stored = Array.from({ length: 20 }, (_, i) => {
       const blockHash = `0x${(100 + i).toString(16).padStart(64, '0')}`;
-      return variant(100 + i, '0', { blockHash, id: `${scope.sellerKeyId}:${scope.chainId}:${record.transactionHash}:${record.stealthAddress}:${blockHash}:4` });
+      return paymentAt(100 + i, '0', { blockHash });
     });
     for (const r of stored) await vault.save(r);
     let inFlight = 0;
@@ -267,8 +265,8 @@ describe('encrypted reconciliation vault', () => {
   it('restores later canonical history unchanged and previews exactly what activation invalidates (L1-03)', async () => {
     const vault = await unlocked();
     const template = await vault.exportEncrypted();
-    const orphaned = { ...variant(123, 'c'), evidenceStatus: 'invalidated-after-reorg' as const, provenance: 'live-scan' };
-    const later = { ...variant(200, 'f'), recordedAt: record.recordedAt + 1000, provenance: 'live-scan' };
+    const orphaned = { ...paymentAt(123, 'c', { transactionHash: record.transactionHash }), evidenceStatus: 'invalidated-after-reorg' as const, provenance: 'live-scan' };
+    const later = { ...paymentAt(200, 'f', { transactionHash: record.transactionHash }), recordedAt: record.recordedAt + 1000, provenance: 'live-scan' };
     // The source vault saw a reorg at 100 (orphaned record tombstoned), then saved a later canonical observation.
     const backup = encryptBody(template, { version: 2, records: [orphaned, later], invalidatedFrom: '100', tombstones: [orphaned.id], saturated: false, invoices: [], receipts: [] });
     const preview = await vault.previewImport(backup);
@@ -278,7 +276,7 @@ describe('encrypted reconciliation vault', () => {
     expect(restored.find((r) => r.id === later.id)).toMatchObject({ evidenceStatus: 'verified-at-scan', provenance: 'imported-history' });
     expect(restored.find((r) => r.id === orphaned.id)?.evidenceStatus).toBe('invalidated-after-reorg');
     // A fresh rescan can still record the canonical observation as live evidence.
-    await vault.save(variant(200, 'f'));
+    await vault.save(paymentAt(200, 'f', { transactionHash: record.transactionHash }));
     expect((await vault.read()).find((r) => r.id === later.id)?.provenance).toBe('live-scan');
   });
 
@@ -286,8 +284,8 @@ describe('encrypted reconciliation vault', () => {
     const at = 1_850_000_000_000;
     const vault = await unlocked(new Store(), undefined, () => at);
     await vault.invalidateFrom(100n, [], orphanedEverywhere);
-    const earlier = variant(150, 'e', { recordedAt: at - 1 });
-    const later = variant(160, 'f', { recordedAt: at + 1 });
+    const earlier = paymentAt(150, 'e', { recordedAt: at - 1 });
+    const later = paymentAt(160, 'f', { recordedAt: at + 1 });
     const source = await unlocked();
     await source.save(earlier);
     await source.save(later);
@@ -308,8 +306,8 @@ describe('encrypted reconciliation vault', () => {
     const template = await vault.exportEncrypted();
     store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(template, { version: 2, records: [], invalidatedFrom: '100', tombstones: [], saturated: false, invoices: [], receipts: [] }));
     const source = await unlocked();
-    await source.save(variant(150, 'e', { recordedAt: 8_000_000_000_000_000 }));
-    await source.save(variant(90, 'f'));
+    await source.save(paymentAt(150, 'e', { recordedAt: 8_000_000_000_000_000 }));
+    await source.save(paymentAt(90, 'f'));
     const preview = await vault.previewImport(await source.exportEncrypted());
     expect(preview.invalidatedCount).toBe(1);
     await vault.activateImport(preview);
