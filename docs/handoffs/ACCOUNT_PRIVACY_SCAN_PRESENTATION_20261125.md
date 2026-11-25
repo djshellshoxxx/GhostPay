@@ -1,0 +1,15 @@
+# Account privacy scanner presentation qualification — 2026-11-25 UTC
+
+Parent #652: 724afdcf557178d8b78d841b681f50e99d41935f. Main observed 60824005b89611aea2b16d3355378eebf072eedb; integration lock generation 24 held by another coordinator. Isolated claim f0cf716da1106882a45cf2a896bc41611dfe95eb. Test correction 7d5a3f0e10ff849f7be20687d8f6a281aac9306e; test blob 099d9e0eb99b025e48e343d7c5e5a8551b259f80 read back from remote. No runtime source edits.
+
+## Evidence and hypothesis
+
+Parent web job https://github.com/djshellshoxxx/GhostPay/actions/runs/45562186536/job/139030868461 recorded 4428 passes, 8 failures, 1 skip. Prior signer-pin and QR failures did not recur. Pages, Tor-static, hosting kit and beta workflows passed. The three scanner failures were missing Paused status twice and a disabled Start scan immediately after automatic disarm. The old tests call notifyAppLock directly, not the full AppShell idle suspension. SessionPresentationBoundary (parent blob e1398c251d7253b18c804aeb549751f3288e4ff5) changes guarded app.setMatches identity on lock, clears presentation and invokes setFragment. Scan's checkpoint-loading effect depends on that setter and resets private status and data, then loads durable state. This explains why the old operation's Paused message need not survive. Fresh compatible state is expected to render Not started for the initial uncommitted scan or Saved scan history for the completed scan. Runtime confirmation is still required.
+
+The test candidate keeps immediate vault lock, auto checkbox disarm, retained sole-copy session identity, manual readiness before releasing the pending gate, byte-identical storage, explicit restart and recovered address. It strengthens pre/post-gate runner counts and stale-address absence. For the due timer it checks synchronous disarm, no additional run, bytes and session identity before restoring real timers, then requires fresh checkpoint readiness and verifies those invariants again. The independent direct-cancel test still requires Paused. Actual AppShell suspension must continue to block scan authority until ordinary unlock/import; this fixture alone does not qualify that separate path.
+
+## Remaining work
+
+No native execution or independent reviewer available. Local git ls-remote failed DNS resolution. Run targeted Scan.privateCheckpoint.test.tsx, full unit coverage, lint/typecheck and applicable hosted acceptance on exact final source. If the new state/readiness assertion fails, inspect checkpoint reload and network invalidation before touching runtime; do not weaken the test or mask a safety defect. Coordinate Scan.tsx with #635, Sweep.test.tsx with #649 and idle authority with #582/#596. Remaining parent failures: two late outcome, one approval hash and two Sweep clearance. No merge or deployment. Do not duplicate this test candidate.
+
+Other worker's #641 merged at 60824005b89611aea2b16d3355378eebf072eedb, covering seller-keystore backup stack #530/#540/#573/#629. #635 is under active integration ownership; no action on shared refs.
