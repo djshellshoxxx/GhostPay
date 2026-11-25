@@ -81,6 +81,11 @@ beforeAll(async () => {
   out['IA'] = await runDisclosureScenario({ id: 'I-agree', seller, chain: chainOf(common), secondary: chainOf(common), matched: [mine], checkpoints: memoryCheckpoints() });
   out['ID'] = await runDisclosureScenario({ id: 'I-disagree', seller, chain: chainOf(common), secondary: chainOf([others[0]!]), matched: [mine], checkpoints: memoryCheckpoints() });
 
+  // K: a payment announced directly (not by the router) that matches the seller: open lane, unverifiable by the router rule.
+  const direct = sellerLog(seller, { block: 300, index: 2, caller: '0x9999999999999999999999999999999999999999' });
+  forbidden.push(direct.stealthAddress, direct.log.transactionHash ?? '');
+  out['K'] = await runDisclosureScenario({ id: 'K-direct-announcement', seller, chain: chainOf([direct, others[0]!]), matched: [direct], checkpoints: memoryCheckpoints() });
+
   // J: long historical range with one retried request.
   const chJ = chainOf([mine, strangerLog({ block: 5300, index: 1 })], 12000);
   chJ.failNext('eth_getLogs', new WireFault('http', 503), 1);
@@ -89,7 +94,7 @@ beforeAll(async () => {
 });
 
 const rows = (k: string): readonly RpcDisclosureRecord[] => (out[k] as ScenarioOutput).rec.records;
-const ALL = ['A', 'B', 'N', 'C', 'N3', 'D', 'E1', 'E2', 'N2', 'H0', 'H', 'G', 'IA', 'ID', 'J', 'J0'];
+const ALL = ['A', 'B', 'N', 'C', 'N3', 'D', 'E1', 'E2', 'N2', 'H0', 'H', 'G', 'IA', 'ID', 'K', 'J', 'J0'];
 
 describe('all scenarios', () => {
   it('complete without a scan error (except none expected)', () => {
@@ -192,6 +197,15 @@ describe('C, D, F: matching payments and receipt verification', () => {
   });
 });
 
+describe('K: direct announcement that matches the seller', () => {
+  it('is listed as a claim only and sends no transaction, address or balance request (the balance read is never enabled by the app)', () => {
+    expect(out['K']?.matches.map((m) => [m.viaRouter, m.receipt])).toEqual([[false, 'claimed']]);
+    expect(txSpecific(rows('K'))).toHaveLength(0);
+    expect(rows('K').some((r) => r.method === 'eth_getBalance' || r.method === 'eth_call')).toBe(false);
+    expect(sameShape(rows('K'), rows('N'))).toBe(true);
+  });
+});
+
 describe('E: rejected candidates', () => {
   it('E1: a wrong view tag is rejected locally and adds no request at all', () => {
     expect(sameShape(rows('E1'), rows('N'))).toBe(true);
@@ -283,7 +297,7 @@ describe('report', () => {
       A: 'A empty scan', B: 'B public announcements only', N: 'N non-matching twin of C', C: 'C one matching payment', N3: 'N3 non-matching twin of D',
       D: 'D three matching payments', E1: 'E1 wrong view tag', E2: 'E2 unverifiable router claim', N2: 'N2 non-matching twin of E2',
       H0: 'H0 first run (saves checkpoint)', H: 'H resume from checkpoint', G: 'G fork at checkpoint anchor', IA: 'I two providers agree',
-      ID: 'I two providers disagree', J: 'J 12k blocks with one retry', J0: 'J0 12k blocks no retry',
+      ID: 'I two providers disagree', K: 'K direct (non-router) matching announcement', J: 'J 12k blocks with one retry', J0: 'J0 12k blocks no retry',
     };
     const text = renderReport('Scan lifecycle request counts (mock chain, sanitized)', ALL.map((k) => ({ ...summarize(labels[k] ?? k, rows(k)) })));
     assertSanitized(text, forbidden);
