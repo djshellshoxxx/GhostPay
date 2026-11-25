@@ -20,7 +20,7 @@ export function fiatDecimals(currency) {
  * decimals than the currency has ("1500.5" JPY, "12.345" KWD): never rounds.
  */
 export function parseMinor(s, currency) {
-  if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) return undefined;
+  if (typeof s !== 'string' || typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) return undefined;
   const m = /^(0|[1-9][0-9]{0,15})(?:\.([0-9]{1,8}))?$/.exec(s.trim());
   if (!m) return undefined;
   const d = fiatDecimals(currency);
@@ -51,20 +51,49 @@ export function checkLink(link) {
   return undefined;
 }
 
+function isUnixSecond(value) {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function assertIdentity(sessionId, invoiceId, currency) {
+  if (![sessionId, invoiceId, currency].every(value => typeof value === 'string' && value.trim().length > 0))
+    throw new Error('bad-session');
+}
+
 export function reduce(state, event, now) {
   const no = { state, accepted: false };
   if (event.type === 'start') {
     if (state.status !== 'idle') return no;
-    if (!Number.isInteger(event.ttlSeconds) || event.ttlSeconds < MIN_TTL || event.ttlSeconds > MAX_TTL) throw new Error('bad-ttl');
-    if (event.dueMinor <= 0n) throw new Error('bad-amount');
-    return { accepted: true, state: { status: 'awaiting', sessionId: event.sessionId, invoiceId: event.invoiceId, currency: event.currency, dueMinor: event.dueMinor, paidMinor: 0n, expiresAt: now + event.ttlSeconds } };
+    const { sessionId, invoiceId, currency, dueMinor, ttlSeconds } = event;
+    assertIdentity(sessionId, invoiceId, currency);
+    if (!Number.isInteger(ttlSeconds) || ttlSeconds < MIN_TTL || ttlSeconds > MAX_TTL)
+      throw new Error('bad-ttl');
+    if (typeof dueMinor !== 'bigint' || dueMinor <= 0n) throw new Error('bad-amount');
+    if (!isUnixSecond(now) || now > Number.MAX_SAFE_INTEGER - ttlSeconds) throw new Error('bad-time-policy');
+    return {
+      accepted: true,
+      state: { status: 'awaiting', sessionId, invoiceId, currency, dueMinor, paidMinor: 0n, expiresAt: now + ttlSeconds },
+    };
   }
   if (state.status !== 'awaiting') return no;
-  if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
-  if (state.expiresAt !== undefined && now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
-  if (event.type === 'tick') return no;
-  if (event.invoiceId !== state.invoiceId || event.currency !== state.currency || event.amountMinor <= 0n) return no;
-  const paidMinor = state.paidMinor + event.amountMinor;
-  const status = state.dueMinor !== undefined && paidMinor >= state.dueMinor ? 'paid' : 'awaiting';
-  return { accepted: true, state: { ...state, paidMinor, status } };
+  assertIdentity(state.sessionId, state.invoiceId, state.currency);
+  const { dueMinor, paidMinor, expiresAt } = state;
+  if (typeof dueMinor !== 'bigint' || dueMinor <= 0n ||
+      typeof paidMinor !== 'bigint' || paidMinor < 0n || paidMinor >= dueMinor)
+    throw new Error('bad-amount');
+
+  if (event.type === 'cancel') {
+    const cancelled = { ...state, status: 'cancelled' };
+    // A broken clock must not block cancellation or leave an invalid deadline on the closed sale.
+    if (!isUnixSecond(expiresAt)) delete cancelled.expiresAt;
+    return { accepted: true, state: cancelled };
+  }
+  if (!isUnixSecond(now) || !isUnixSecond(expiresAt)) throw new Error('bad-time-policy');
+  if (now >= expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
+  if (event.type !== 'payment' || event.invoiceId !== state.invoiceId || event.currency !== state.currency) return no;
+  const { amountMinor } = event;
+  if (typeof amountMinor !== 'bigint') throw new Error('bad-amount');
+  if (amountMinor <= 0n) return no;
+  const total = paidMinor + amountMinor;
+  return { accepted: true, state: { ...state, paidMinor: total, status: total >= dueMinor ? 'paid' : 'awaiting' } };
 }

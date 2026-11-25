@@ -100,7 +100,7 @@ export function TronView(): ReactNode {
     }
   };
 
-  /** Fresh client for the current URL, after refusing a node that reports mainnet. */
+  /** Fresh client, only after checking the selected chain against block-0 identity. */
   const connect = async (signal: AbortSignal): Promise<TronRpc> => {
     let rpc: TronRpc;
     try {
@@ -108,7 +108,7 @@ export function TronView(): ReactNode {
     } catch {
       throw new TronViewError({ key: 'tron.node.missing' });
     }
-    await checkNetwork(rpc, signal);
+    await checkNetwork(rpc, netId, signal);
     return rpc;
   };
 

@@ -1,10 +1,8 @@
-import { readAttempts, clearAttempt, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
+import { ATTEMPT_JOURNAL_LOCK, readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { UserFacingError } from '../../lib/errors';
 import { sendViaWallet, walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 
-export interface PolicyLockManager {
-  request<T>(name: string, callback: () => Promise<T>): Promise<T>;
-}
+export type PolicyLockManager = AttemptLockManager;
 
 /** Reuses the bounded attempt schema. Only metadata and hashes persist; never request calldata or seller secrets. */
 export function policyAttemptStorage(): AttemptStorage {
@@ -30,13 +28,12 @@ export function policyActionAttempts(key: string, storage = policyAttemptStorage
 }
 
 /** No automatic clearing: a reorg or absent transaction is not proof that a prior submission cannot mine. */
-export async function clearPolicyAction(key: string, confirmed: boolean, storage = policyAttemptStorage(), lockManager = locks(), assertCurrent: () => void = () => undefined): Promise<void> {
-  await lockManager.request('ghostpay:durable-wallet-attempts:v1', () => {
+export async function clearPolicyAction(key: string, confirmed: boolean, storage: AttemptStorage | undefined = undefined, lockManager = locks(), assertCurrent: () => void = () => undefined): Promise<void> {
+  await withAttemptJournal((journal) => {
     assertCurrent();
-    clearAttempt(key, confirmed, storage);
+    clearAttempt(key, confirmed, journal);
     assertCurrent();
-    return Promise.resolve();
-  });
+  }, { ...(storage === undefined ? {} : { storage }), lockManager });
 }
 
 /**
@@ -49,13 +46,14 @@ export async function sendPolicyAction(p: {
 }): Promise<`0x${string}`> {
   const storage = p.storage ?? policyAttemptStorage();
   const manager = p.lockManager ?? locks();
-  return manager.request('ghostpay:durable-wallet-attempts:v1', async () => {
+  return manager.request(ATTEMPT_JOURNAL_LOCK, async () => {
     p.assertCurrent();
     const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
     if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
     const tx = await p.prepare();
     p.assertCurrent();
-    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage });
+    // This callback already holds the non-reentrant journal lock: sendViaWallet must write in place, not request it again.
+    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, ...(p.storage === undefined ? {} : { storage }), journalLockHeld: true });
   });
 }
 

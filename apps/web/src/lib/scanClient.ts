@@ -104,6 +104,16 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
+  /** Preserve relevant evidence before a checkpoint can advance past it. */
+  readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
+    readonly finalizedThrough: bigint;
+    readonly resumed: boolean;
+    readonly from: bigint;
+    readonly through: bigint;
+    readonly canonicalHash: (height: bigint) => Promise<Hex>;
+    readonly retryFrom: (height: bigint) => void;
+  }) => Promise<boolean>;
+  readonly onUnresolvedEvidence?: (from: bigint) => Promise<void>;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
   readonly onQuarantine?: (rolledBackTo: bigint) => void;
   /**
@@ -220,6 +230,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
+  let canSaveCheckpoint = true;
+  let retryHeight: bigint | undefined;
+  const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
+  const uncertainFrom = (from: bigint, head: bigint): bigint => {
+    const first = finalizedAt(head) + 1n;
+    return first < 0n ? 0n : first < from ? first : from;
+  };
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -267,6 +284,17 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const res = await fetchAnnouncements({
         chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+      }).catch(async (cause: unknown) => {
+        if (!p.signal.aborted && p.onUnresolvedEvidence !== undefined) {
+          let from = cursor.nextBlock;
+          if (cursor.last !== undefined) {
+            // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.
+            if (secondaryHead !== undefined) from = uncertainFrom(from, secondaryHead);
+            try { from = uncertainFrom(from, await p.client.blockNumber()); } catch { /* Retain the known boundary. */ }
+          }
+          if (!p.signal.aborted) await p.onUnresolvedEvidence(from);
+        }
+        throw cause;
       });
       if (p.signal.aborted) break;
       // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
@@ -314,13 +342,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             discrepancies.push(...conflicts);
             p.onDiscrepancy?.(conflicts);
             if (p.signal.aborted) break;
+            await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
             // An unconfirmed fork report must not delete the saved checkpoint either: keep it and this run's
             // position, so the next scan checks the same anchor again.
             p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
             break;
           }
         }
-        await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        try {
+          await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        } catch (cause) {
+          if (!p.signal.aborted) await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
+          throw cause;
+        }
         if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
@@ -470,6 +504,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // or continue into later pages, since a later successful page could otherwise checkpoint
       // past these withheld logs and permanently skip them on resume.
       if (disagree) {
+        await p.onUnresolvedEvidence?.(uncertainFrom(pageFrom, pageHead));
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
@@ -477,6 +512,20 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
       }
+      // Include the agreed finality boundary even when no new blocks were scanned.
+      const finalizedThrough = finalizedAt(pageHead);
+      const resumed = p.cursor.last !== undefined;
+      if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed,
+        canonicalHash: (height) => canonicalHashAt(p, height),
+        retryFrom: (height) => {
+          const retry = height > pageHead ? pageHead + 1n : height;
+          // A resumed scan may need to revisit a linked observation quarantined during an earlier interruption.
+          if (retry >= 0n && (resumed || retry > finalizedThrough) && retry < persistenceFloor) persistenceFloor = retry;
+          if (retryHeight === undefined || retry < retryHeight) retryHeight = retry;
+        },
+      }) === false) canSaveCheckpoint = false;
+      if (p.signal.aborted) break;
       if (deferred > 0) {
         backlog = deferred;
         if (res.reorg !== undefined) {
@@ -488,10 +537,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       }
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
-      if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
+      if (canSaveCheckpoint && p.checkpoints !== undefined) {
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches, retryHeight);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
+          await p.onUnresolvedEvidence?.(pageFrom);
           // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);
@@ -594,7 +644,7 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
  * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[], retryHeight?: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   let settled = head + 1n > depth ? head + 1n - depth : 0n;
@@ -610,6 +660,8 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
   for (const m of pageMatches) {
     if (m.viaRouter && m.receipt === 'claimed' && m.announcement.blockNumber > floor && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   }
+  // A previously accepted payment disappeared from this run but its block could not be confirmed as replaced.
+  if (retryHeight !== undefined && retryHeight < next) next = retryHeight;
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) {
     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;

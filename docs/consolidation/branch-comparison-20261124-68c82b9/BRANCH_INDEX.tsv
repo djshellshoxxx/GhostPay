@@ -1,0 +1,687 @@
+branch	sha	ahead_of_main	behind_main	mechanical_disposition	non_documentation_changes	different_non_documentation_paths	prior_disposition	semantic_action
+ai/agent-harness-20261113	15dc9c192c6086f2e51bcce68ca18ea483968b57	0	1743	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+audit/bugcheck-core-latest-20261120	9cb8f511b0e1bd4a807fc51d569117b4e991e622	1	184	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ct-c-2-fee-event-forensics-20261121	4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b	2	66	source-differences-require-semantic-review	1	1	diagnostic-audit-only-not-main-candidate	Retain #442 forensic test as diagnostic evidence.
+audit/f03-browser-qualification-20261120	9a0e268034ee2321c5e333c35a3aa1825b1c8f63	11	184	source-differences-require-semantic-review	19	19	retained-in-unmerged-recovery-PR310-pending-gates	Use the named owner; retain original donor provenance without reimplementing its source.
+audit/ghostpay-blue-team-20261119	6dcd163413fc94d5b2db760d5e15db391760a099	2	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-census-20261121-r7	0d8437c1097fad30d505c343ce4da356350ea4c3	0	70	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+audit/ghostpay-complete-claim-reconciliation-20261120	c9e53c2c5908cbb64c104d096ce84773cf804ccc	2	110	source-differences-require-semantic-review	3	3	audit-snapshot-only	Preserve coordination/audit source separately from the payment application.
+audit/ghostpay-core-latest-security-20261119	b6e484c252723fc3293c7106ce2c46069c2668a8	1	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-current-census-20261120-r2	53a33810a86c47b4eaa6835ddebee237a5f78bf5	0	126	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+audit/ghostpay-fund-recovery-expiry-20261122-p0	74b9f85523f75c473b6fc65e5b44e75bac3f1fd9	3	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-main-447-census-20261121-r9	c493df9e210f6227471864a623ee536cc9483a3a	33	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-qa-stress-20261119	e9643073be74dac54c2875143501451812763f9c	1	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r12-delta-20261121-0507	2eb64d0a19e172ca02abe10a191b7d711962cb52	8	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r13-capped-lineage-20261121	bb668e18b1bad2e92811c22ca57cb019b1b4b281	11	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r15-475-delta-20261121	4aea5f7ed3dec4b328bd01594bf61cca35c72ab9	14	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r22-privacy-option-guards-20261121	e8afa1d2297b792cc00e40df94c2f3406d93d638	9	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+audit/ghostpay-r24-494-ci-triage-20261121	2e8e2fde366f10915daabc157b55b6772e5da730	4	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r30-504-reconciliation-20261122	745004a16dbb712a1085d3e7377d9abe951e9599	4	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r32-census-and-ci-gates-20261122	bd1bc845bb855686ca48922baacc057c1c40dee2	4	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r33-514-branch-pr-qualification-20261122	8251eaa0813af7d2fc056ed432d43c6e762cf6c0	9	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r38-source-census-20261122	4f529cbb152916dfd2f3283b224d321533ec5a2d	4	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r39-uncapped-branch-triage-20261122	87eb78767567c9aa58bce10c0c020f282d1491c7	14	66	source-differences-require-semantic-review	2	2	owned-tooling-pr-466-review-finding	Preserve the owner source; qualify current-main composition and required reviews/gates.
+audit/ghostpay-r40-semantic-branch-dispositions-20261122	fd3abbc297febe54f6539b801cd752d6f4d9e4f8	8	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/ghostpay-r41-semantic-backfill-20261122-1400Z	d068ffd41637de364310b2117d737153d4da3fd8	182	66	source-differences-require-semantic-review	6	6	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+audit/ghostpay-r68-jitter-expiry-qualification-20261123	f2b262c2afe5d51c258e466d9be1d22798817135	8	211	source-differences-require-semantic-review	3	3	unique-but-incomplete-test-qualification	Preserve the owner source; qualify current-main composition and required reviews/gates.
+audit/ghostpay-scheme2-completion-20261122	ecfe65666b510d9adfc51902880ee7ac5f419baa	4	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+audit/pages-tor-rpc-compat-20261124	20733b6a8ebc6a2598d5baff2eed62d58a0a7675	1	34	source-differences-require-semantic-review	1	1	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+audit/zero-cool-core-20261119	bdffcb1d88557b3ca9110c20e03261508011c902	3	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+automation/20261119-c977/bug/build-profile-failclosed	25c380f253e3338c0e6b79e8d052cdf8950f9e88	0	187	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T073600Z/bug/camera-visibility	d073414b718242eefdd22c0debc56901045d5f7a	0	108	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T073600Z/coordinator/integration-lock	61f2b3729fa4b78c90d43a1ecd8c351e9c22f577	2	228	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve coordination/audit source separately from the payment application.
+automation/20261119T083600Z/audit/merchant-clock	75dc9d3b29e3449b56e13889496c3771ec7c2f93	0	210	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T083600Z/bug/json-canonical-array	c591b54078febcf24cba01b29bc173b2fac1f9cb	6	211	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261119T095600Z/bug/merchant-profile-clock	ddfc8cfafa44b09103ced821f160c1d37fdfe552	4	211	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261119T104800Z/bug/jitter-expiry-rollback	a4c6f945adef0438bfd0b347fb7c11057e3973ce	5	211	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261119T124337Z/bug/qr-utf8-surrogate-guard	b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0	0	186	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T1640Z/bug/scan-privacy-partial-30d	0041514a630398c89693498d9b5e44ef562d9c61	0	187	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T183817Z/bug/merchant-pin-duplicate-json	9fbf3312cb8e65083f604cc0bf0512d59c83f141	0	187	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T204728Z/bug/qr-kind-failclosed	89942105c48df03b9351f777278b6a992e35a95e	0	187	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261119T2243Z/bug/base64url-runtime-input	856b2d60fd38eabb8a1c856c95ad82f1c7d30c64	4	191	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261120/bug/btc-fee-floor-config	9dcd2d88ff32060e519ef18e2d8753691b56abc1	0	149	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261120/bug/policy-review-revocation-r1	ccc8c3521511e2a2b9b66ef11f12723d87ce5f44	13	110	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T003500Z/coordinator/qr-runtime-qualification	ec546311f994fe1db544fe85ff2aa6db428d67d4	399	185	carried-by-pending-integration-requires-qualification	490	476	unresolved-review-required	-
+automation/20261120T003500Z/coordinator/qualification-evidence	52122f8b7076b2636d47f59f8bb607b189d3ab39	402	185	source-differences-require-semantic-review	490	476	audit-or-documentation-only	Retain evidence documents; use the named retained source for inherited implementation obligations.
+automation/20261120T0035Z/coordinator/cycle-checkpoint	a47648872e648fe7848a17080a5ffa1473e98e8b	6	228	source-differences-require-semantic-review	2	2	audit-snapshot-only	Preserve coordination/audit source separately from the payment application.
+automation/20261120T0035Z/worker/qr-flag-coverage	4493793ad2c438fcc0f45f96851eac8967cb607a	402	185	carried-by-pending-integration-requires-qualification	490	476	unresolved-review-required	-
+automation/20261120T0035Z/worker/qr-kind-primitives	17333ceda784ecdf5734a666ef57ee1d1e599296	5	187	source-differences-require-semantic-review	2	2	superseded-by-retained-owner-pr-pending-integration	Reconcile the donor intent with #290; do not silently finalize from the overlay label.
+automation/20261120T004531Z/feature/clipboard-guard	6c648770f5647ca7993cc108ef9e5ede9b46b4c9	402	185	source-differences-require-semantic-review	494	478	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261120T0115Z/coordinator/clipboard-qualification	04910f65dc0268e41519c4b1a44e83264272f0bf	405	185	source-differences-require-semantic-review	494	478	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261120T0115Z/coordinator/cycle-checkpoint	77e01d9a78cde3073ac6881608ba1497d5cc7d0e	10	228	source-differences-require-semantic-review	2	2	audit-snapshot-only	Preserve coordination/audit source separately from the payment application.
+automation/20261120T0115Z/worker/receipt-hash-validation	acbf39ee21ad35e9d14df958fa16fbcc2e230cae	429	185	carried-by-pending-integration-requires-qualification	500	484	unresolved-review-required	-
+automation/20261120T0243Z/worker/format-units-validation	7523da612ba365451f1d5c2dbc01d0bdeedbe8c7	4	191	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T0434Z/bug/erc20-simulation-result	87cf6c603338ad64ec02300fe42b96c3e0a205b9	4	191	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T0641Z/bug/payment-uri-aggregate-length	0fa33f7101f3c9ac4d685673aece16eda6e98366	0	177	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261120T0641Z/bug/payment-uri-decimal-options	c48c9917708ea86ea1a82a9d5d44f3add9876c98	5	184	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T0835Z/bug/sellerkeys-operation-supersession	e6ed3ee64a786c33b1af06b5fc7a51d742eb6544	8	152	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/20261120T1042Z/bug/ledger-actionable-activation	7e1a189c065f4ae437a2570f03922eb66ca38c2c	3	184	carried-by-pending-integration-requires-qualification	1	1	unresolved-review-required	-
+automation/20261120T1241Z/bug/receipt-print-css	e0c583be2514b44af7f3b15619fb8160358f1470	8	152	carried-by-pending-integration-requires-qualification	9	9	unresolved-review-required	-
+automation/20261120T1435Z/bug/chain-scoped-tags	caa4bd7e3465b5d6655eb3dbe86e5f240eb21462	9	184	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T1600Z/bug/scan-tags-session-lifecycle	caa4bd7e3465b5d6655eb3dbe86e5f240eb21462	9	184	carried-by-pending-integration-requires-qualification	2	2	redundant-pending-pr-head-sha-alias	-
+automation/20261120T1635Z/bug/tron-scan-abort	87c3bf5a59f4d443c9e5cf81368162554a5315c3	0	148	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261120T1840Z/bug/receipt-archive-identity	71632fa389ae93824b2f42d265278a9bd0f6de59	5	152	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T2036Z/bug/btc-preview-network	692cac58b1c345137264936e60bee7b1e2eed8b2	4	152	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261120T2234Z/bug/sweep-ledger-seven-testnets	78137622011528a646ae94155ee4acf7f72e1e2a	71	152	source-differences-require-semantic-review	93	91	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261121/bug/cache-control-no-cache-r3	8d55b4e39be48a0410c16d4a4c0acaa57da55b9b	4	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261121/bug/deeplink-explicit-port-r10	ea2719992e44909b72c74a9d661bdfa7fa0aab68	7	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/display-text-expansion-bound-r1	b655bc273a6704c9c140287b8adcdf4085b91882	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/fiat-overlapping-separator-r4	de3d45ff59547ab5becee2d90904a76ba74d2ec8	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/large-amount-noise-bound-r1	699c8db24451a5ff6c034b1f247c48e6cc0bdd45	9	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/20261121/bug/netstate-stale-summary-r7	93095a796a52ee664279439a5334042b97fe9c9a	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/onboarding-review-gate-r1	3ec919bace3e497fe58126396787b2b1b93938cc	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/payagain-evm-address-case-r6	a5d062d3e2ecf281cd616805e94cad11c206e37b	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/pos-runtime-guard-r14	506604288e31c195c852fa2e8896e131da34bc3b	13	66	carried-by-pending-integration-requires-qualification	4	4	unresolved-review-required	-
+automation/20261121/bug/receipt-evm-truncated-tail-r11	61d7fc56c98edaa7f377c7d227492ad7354e24d8	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/summary-period-runtime-guard-r5	8d3dd35c6d7e3ccfe91f2697312897812a140381	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/undo-maxpending-bound-r2	24caac5117f7dd19d7cf8b9cacae6c29f84956d0	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/ux-connect-pending-kind-r12	ffdf6adc34dcd187583b426fec0fade767488d92	6	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/ux-fees-urgency-validation-r9	55106dad616d548b9beb174c7f5735d1b5821a22	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/ux-links-max-lifetime-guard	b2c7e800516030b2910071c93b9afc652550ab8e	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121/bug/ux-schedule-weekly-maxyear-r8	0e6b5491bbb37c699bf22e70edd610ef32152c90	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121T0033Z/bug/router-duplicate-warning	89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8	4	110	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121T0238Z/qa/settings-partial-import-drafts	a8c10a965f726a6c2dc8eb7391f495df833b3e9b	93	120	source-differences-require-semantic-review	104	102	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261121T0440Z/bug/payment-uri-utf16-failclosed	2844ec6c22fe179987585679a934e10033ff3384	4	110	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261121T0638Z/bug/payment-uri-runtime-types	3d57d9881033f60786fecb3a71562af445441a3e	9	110	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/20261121T0842Z/bug/payment-uri-query-boundaries	31b943bbc5bc3c3fdd3d1aec0d3fb5fa3d35c8a2	13	110	carried-by-pending-integration-requires-qualification	4	4	unresolved-review-required	-
+automation/20261121T0900Z/qa/firefox-closed-details-reflow	df0e715686bc42d270617692a7e310a8b362e840	584	66	source-differences-require-semantic-review	599	599	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261121T1033Z/bug/fiat-minor-units	f3e5540777491559e79565cafe0978f5e8e30003	8	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261121T1238Z/bug/unix-timestamp-runtime-guard	11117b9fff062d859c9db123ff62641cc0479192	12	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261121T1439Z/bug/qr-print-policy-boolean	0bd06cbbdfc3b449fd56237b385d0b3d084f317d	93	120	source-differences-require-semantic-review	103	101	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261121T1636Z/bug/countdown-invalid-runtime	5d3e21617a8a368c5694739319856d083a6c3881	19	66	source-differences-require-semantic-review	3	3	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261121T1835Z/bug/display-surrogate-cut	62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3	4	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261121T2033Z/integration/display-text-boundaries	f846464db3cb2f12c221d0c2f56e3aa3702d4fcb	9	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/20261121T2235Z/bug/journal-hash-integrity	e9404bad766b3ee7d93f54f2172059b9566fcb57	4	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261122-r11/audit/mythril-evidence-summary	cb63ec21cbac15b0a665b61ada37a9f0662ff79a	4	66	source-differences-require-semantic-review	2	2	new-owned-security-tool-pr-468	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261122-r11/bug/hygiene-bufferdust-runtime-types	9bc3013e36bd0d245b54cbc5367d225ea4e6668d	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-review-required	-
+automation/20261122-r11/bug/ux-vault-base64url-padbits	9aeed83b73916d0b51c192dbea04cfdc601f94a9	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-review-pending	-
+automation/20261122-r12/bug/guide-sparse-checklist	ffd187c7721d8e2b4aa1de647ef2bc5c07aa81f5	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-pending	-
+automation/20261122-r12/bug/ux-receipts-canonical-sparse	366c912ee6b7b6b017dd1f04b934f9f52ba656fa	5	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-bug-only-review-required	-
+automation/20261122-r34/bug/ux-receipts-lookup-boundary	5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d	0	58	included-in-main-by-ancestry	0	0	included-in-main-by-proven-ancestry-r58	-
+automation/20261122-r36-consolidation/bug/no-cache-response	dd8f82d9ed3ae5f2c0c342de833a6b419a0d3a54	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r36/bug/ux-fiat-runtime-separators	66545f23707aeabb70e6a41601beb64998fe4d90	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r37/bug/ux-fees-asset-symbol-collision	a3ac91c8f38b99c25749ba1a87ba308c9f1f5a2e	6	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r4/bug/ux-schedule-invalid-utf16	3104e010863a93e2d88911515542f858301f6112	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r5/bug/ux-receipts-invalid-chain-facts	ff8c800a495f1cc4d2df704d321b3d22e6f67a78	0	62	included-in-main-by-ancestry	0	0	included-in-main-by-proven-ancestry-r58	-
+automation/20261122-r6/bug/ux-guide-detect-exact-settings	1f674b9b3432887d3c721cdb8be5370023feef7d	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r7/bug/ux-intake-address-runtime-types	2eb885054210d958e41bf559a4c10cc3ea790cd5	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122-r8/bug/ux-presets-missing-blob	0d5fb9c93e9f7b46725c1cf1cab01cb8975b2691	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122/bug/notify-snapshot-seq-r9	a234ea9487805d102bd6e6bb045fea5c95962557	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122/bug/search-tag-normalization-r1	6cce62fe107b76280074e9be161add3ba65b1a28	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122/bug/store-onlykeys-plain-r1	31c0d0aebad7be2d2eb6ffad246e6c1f688ef1df	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered	-
+automation/20261122/bug/ux-export-parse-nonstring-r10	860c7f4d09b6a9ef06a17089b2187d8aa7253007	4	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-bug-pr-467	-
+automation/20261122/bug/ux-fiat-parse-rounding-r12	3be7dcdc98105f805315954ef6175f428430faf7	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered	-
+automation/20261122/bug/ux-links-book-sparse-entries-r13	9a0b976fe5348705cb617bb65b21e59b16614d67	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-needs-semantic-review	-
+automation/20261122/bug/ux-notify-manifest-purpose-whitespace	c7a9f9148ceea15b89090b533f31054a77f17765	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122/bug/ux-schedule-cancel-single-clock-11	782a5bce33a6fa981eb1d6f80f77e90665cad301	7	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-unreviewed	-
+automation/20261122/bug/wcsession-request-clock-r11	051b722a34d5f0488af65cd486da3b0492ffc6a1	5	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-review-required	-
+automation/20261122/tor-scan-saved-message-contract-r29	cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362	579	66	source-differences-require-semantic-review	588	588	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261122T0035Z/bug/settings-exchange-stale-basis	11b71fc9b0c66007e1d8c8700a53cfeb226d840d	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0123Z/bug/meta-fingerprint-surrogate	37864653893467c3cb28ec6eb653639319cb7ab6	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0218Z/bug/notify-label-surrogate-cut-r11	88ab4b971e1492492230dd091c53991254e2cafc	7	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0239Z/bug/settings-exchange-incoming-snapshot	6af1a4bc3cd8b33cd3e3e85a645ba43e7e456eef	9	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/20261122T0326Z/bug/ux-privacy-empty-guardians-threshold	9e72c9820ed457f18c2635e17da629216eedbbdf	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0438Z/bug/wallet-hash-type-guard	2b73dec30338e3c33a52d80d2ec7299879301b72	8	66	source-differences-require-semantic-review	3	3	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261122T0522Z/bug/ux-export-header-once-r3	315941d854200b8c59b4ffb5565392a8662f9a3d	5	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0641Z/bug/qr-classify-surrogate-input	17c638125ff66bde25fbd21fb434bc741b649032	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T0838Z/bug/receipt-accessor-failclosed	d0814403c69e1cc18960a0ce2df75c1c49e96e44	0	54	included-in-main-by-ancestry	0	0	included-in-main-by-proven-ancestry-r58	-
+automation/20261122T1036Z/bug/opstack-serialization-boundary	149300330d59642e1e97b76231ac1bea3200a973	8	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+automation/20261122T1426Z/bug/ux-flow-b64url-runtime-types	eca2a97b02860ea0e251d69c719af1455aff8067	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered	-
+automation/20261122T1440Z/bug/qr-svg-matrix-snapshot	f05504b5bcd62aa59c715f7c43934ca88107187a	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered	-
+automation/20261122T1640Z/bug/qr-snapshot-lint	6aba5e7c2fee75ac2e75b9689414f3e6e2d7280f	7	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered	-
+automation/20261122T1818Z/bug/amount-blur-crowd-overflow-r11	f702d2628673954983eb57814633475b8ae96df5	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-review-required	-
+automation/20261122T1834Z/bug/palette-action-snapshot	ebac41d9eaee5439a84e5330c0974d0c59ca13c2	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-unreviewed	-
+automation/20261122T2038Z/bug/policy-sparse-records	e5705abded6761c2b53cde2343210372e2264ef7	8	66	carried-by-pending-integration-requires-qualification	3	3	newly-discovered-owned-pr-pending	-
+automation/20261122T2123Z/bug/export-pre-epoch-date-guard	4ebce7eeafd28029ebd0b6a9a3ec295279f8a653	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-review-pending	-
+automation/20261122T2232Z/bug/policy-sparse-test-typecheck	fe1c59a3d5aa25dbdcdf30db38ec869566fa0f5f	11	66	carried-by-pending-integration-requires-qualification	3	3	newly-discovered-owned-pr-review-pending	-
+automation/20261123-r11/bug/merchant-button-invalid-label	d181a89e67978ef375b08a60bf065506bc913171	0	49	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123-r11/bug/merchant-csv-empty-quoted-eof	19e723d31ce184e963a2fcfc346bd1629115f709	0	48	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123-r11/bug/metadata-anchor-attribute-boundaries	ee193665d32e223c10e4c9fcbbc15aa53e831390	7	53	source-differences-require-semantic-review	2	2	newly-discovered-owned-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123-r11/bug/reminder-accessor-result	c86d5a32e02efbee14d935548c821b27e287f507	5	53	source-differences-require-semantic-review	2	2	newly-discovered-owned-pr-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123-r11/bug/sanitize-marker-mixed-script	b215b4d63ac8c13a853f9aa874e0d6a466e90bce	4	53	source-differences-require-semantic-review	2	2	new-owned-qualification-pending	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123-r11/bug/ux-flow-embed-option-record	1e91fc43196c39498f392ef21d59bb80b7b83629	5	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-pending-qualified-review	-
+automation/20261123-r12/bug/qr-camera-attach-cleanup	93d719f98751852366a74a464f6f0dc39d4dcecc	4	53	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-review-required	-
+automation/20261123-r16/bug/ux-fees-neartie-savings	e3c98d91d00e8fe8a458859232548fe041a85bfc	0	48	included-in-main-by-ancestry	0	0	included-in-main-by-verified-ancestry	-
+automation/20261123/bug/export-column-holes-r11	cf642259db1e9cfe63937dd2728d4d2336fa7bb0	4	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-bug-only-pending-review	-
+automation/20261123/bug/intake-invoice-default-port-r11	a8b10c12db402b6ab2dd2f41bd605327056d287d	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-PR-pending-review	-
+automation/20261123/bug/notify-jws-query-cache-r12	1fc6f89f171b7c51eb6e84ccbc59800f19a4352e	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owner-held-review-required	-
+automation/20261123/bug/ux-fiat-quote-accessor-r12	faa2bd8abd6c3e3a805530106a604cba4f4063aa	4	53	source-differences-require-semantic-review	2	2	newly-discovered-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123/bug/ux-flow-origin-port-length-r12	f5008152754937d2c78f98b13ff35363f9e4d765	8	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-review-required	-
+automation/20261123/bug/ux-presets-real-cryptokey-r11	59b5bbfc6f6dc3cc83d24c1fccbe87b15cd72d0c	6	53	source-differences-require-semantic-review	2	2	new-owned-bug-only-pending-qualification	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123T0021Z/bug/hwsigner-bigint-boundary	e8dd09862face30c57e6123c01bcda3f6d2eec2c	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-review-required	-
+automation/20261123T0032Z/bug/theme-css-snapshot	6d46d500da8171fe560090739c3ef9f1d3af94a7	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-pr-review-required	-
+automation/20261123T0237Z/bug/fiat-rate-quote-snapshot	8dd2dee49994f872aa9788206afa5878a2b49258	4	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-bug-only-pending-review	-
+automation/20261123T0441Z/bug/eip3770-registry-guard	920a9ffe366dedc727d5e33b57c455cbcccde6af	4	66	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owned-PR-pending-review	-
+automation/20261123T0635Z/bug/eip681-amount-snapshot	72c4b7aa0f111bcbdb53ace5424ab9fc544d04f7	4	66	carried-by-pending-integration-requires-qualification	2	2	new-owned-pending-qualified-review	-
+automation/20261123T0742Z/bug/ux-links-sparse-tip-presets-r11	651d669371379c6a11eb8d56d700b96294da3074	4	53	carried-by-pending-integration-requires-qualification	2	2	new-owned-pending-qualified-review	-
+automation/20261123T0840Z/bug/bitcoin-uri-input-snapshot	02aba52ad3d38991cc58a7d6869836cd70a0cbb5	4	53	carried-by-pending-integration-requires-qualification	2	2	newly-discovered-owner-held-bug-only-PR502	-
+automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13	141c6556ead107b1f622a1c3d89cdfc6004e1f92	0	49	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123T1041Z/bug/solana-reference-snapshot	7e618aef8e9c84055f445b4959a339e7ad470cbf	10	34	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14	1cf9ec458bdd193f186499ac30ac3f7b207cfe0c	4	53	carried-by-pending-integration-requires-qualification	2	2	new-owned-review-required	-
+automation/20261123T1239Z/bug/c1-context-help-focus	e205b107b57794fd96a8302d54d2df3cb273e9e9	580	53	carried-by-pending-integration-requires-qualification	212	212	represented-by-retained-owner-pr-ancestry	-
+automation/20261123T1440Z/bug/c1-rpc-input-subgrid	ad921a34a81037943e05ee48c39370261da21baa	587	53	carried-by-pending-integration-requires-qualification	213	213	unresolved-current-owner-pr	-
+automation/20261123T1637Z/bug/c1-sweep-simulation-fixture	fbd450936b2495026ff88a2eae08bfee02e92db6	586	53	carried-by-pending-integration-requires-qualification	213	213	represented-by-retained-owner-pr-ancestry	-
+automation/20261123T1719Z/bug/nfc-nan-limit-r11	26d10a1f1e74d28408ea4c81d627afd227b7a48b	0	48	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123T1840Z/bug/scan-announcement-getters	74164baa0c0781955383794d5243f5ed25e46ae4	0	49	included-in-main-by-ancestry	0	0	included-in-main-by-verified-ancestry	-
+automation/20261123T1924Z/bug/nl-amount-locale-snapshot	cc2166140089967fbfd621d200abf15354d668d2	0	49	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123T2018Z/bug/merchant-ledger-duplicate-invoice-export	907838ef75bbd0b08b4e23f3bbea9ac9b08403d4	4	53	source-differences-require-semantic-review	2	2	new-owned-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+automation/20261123T2041Z/bug/scan-proxy-test-lint	36cf79d0ce4a31f79a5799af2f8f5e30bd244029	0	46	included-in-main-by-ancestry	0	0	new-owned-review-required	-
+automation/20261123T2123Z/bug/ux-export-ragged-parser	f1b243199b54f9726e20e8f8375e26530229589d	0	49	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261123T2221Z/bug/qr-svg-sparse-matrix	5741f0bea3e3b4a510220f193aae8276dda94a00	7	34	carried-by-pending-integration-requires-qualification	2	2	unresolved-current-owner-pr	-
+automation/20261123T2235Z/test/scan-range-record-isolation	482d6ab973389083126dd8794f2b21d096a04977	0	43	included-in-main-by-ancestry	0	0	included-in-main-by-verified-ancestry	-
+automation/20261124/bug/merchant-decimal-uint256-roundtrip	5f280cab9c252cf57a68e2c2d156c07b36d2b018	4	47	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261124/bug/template-clock-rollback-r11	68a4e9596062b2144ca5d9da3ff817b73644e2e1	0	30	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/20261124/bug/vault-duplicate-group-kind-r11	41ddd0f21986d3ec65d43ead73fafda39a4a2f4d	4	53	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261124T0018Z/bug/ux-intake-japanese-script-extensions	1f3d230be9f5ab67e5314c5084dc1f4b5e141472	4	53	source-differences-require-semantic-review	2	2	new-owned-qualification-pending	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261124T0037Z/coordinator/scan-source-rollup	ed9dbdb5ceebc18ab6765382f348ed28d1b7e218	0	41	included-in-main-by-ancestry	0	0	included-in-main-by-verified-ancestry	-
+automation/20261124T0524Z/bug/ux-fiat-conversion-output-bound	c9ebbdd41368f65cab27c909a146dc7d0960553d	5	0	source-differences-require-semantic-review	2	2	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261124T0637Z/bug/tron-uri-input-snapshot	97cb98591a2a2e95c8d9a701d0eb60e4e2bc7a4b	5	34	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+automation/20261124T0837Z/bug/tron-network-absence	9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce	7	34	source-differences-require-semantic-review	3	3	unresolved-new-or-advanced-head	Reconcile the undefined-only network default with #593 before integrating the overlapping TRON builder source.
+automation/api-funded-ghostpay-cloud-20261103	29ce481d2d4a964f0acc42cc5233eb2d9c3e9482	0	1757	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/ghostpay-20261120-embed-popup-noopener-r1	08d2111a5fd3b71a148fc8648481200e680faf53	8	152	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+automation/ghostpay-integration-lock	89107c2612d4f025571d9c4ca11bf77f7d19286b	37	228	source-differences-require-semantic-review	2912	2912	unresolved-new-or-advanced-head	Preserve and respect the live coordination record; never merge its reduced state tree onto main.
+automation/ghostpay-parallel-four-agents-20261103	68dc5b502f25ed192f3ca82ee4fece8ee91d3bce	6	1755	source-differences-require-semantic-review	2	2	experimental-out-of-pages-beta-scope	Preserve the optional hosted worker automation as a separate scope.
+automation/ghostpay-parallel-review-wave-20261103	03a3f5701c89e19667f309bb5f01bd36793a5474	0	1752	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+automation/ghostpay-recurrent-backlog-20261103	5835736c12968231ac7b3152e394077bee453622	3	1755	source-differences-require-semantic-review	1	1	experimental-out-of-pages-beta-scope	Preserve the optional hosted worker automation as a separate scope.
+backup/codex-observed-pr37-915d710-20261028	915d71053e2335dfff638b729b160f9df3200c22	0	1593	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+backup/individual-stealth-keypair-export-20261123-28bba11c	28bba11cdaebc13edc4d100761ee00750c3f396f	10	53	source-differences-require-semantic-review	32	32	redundant-exact-sha-alias-retained	Keep aliases for provenance; qualify and integrate the implementation owner once.
+backup/pr30-before-consolidation-20261025	356fe5e44d42db1731d6b35794c6474afcc23037	0	1736	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+backup/pr31-before-consolidation-20261025	a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523	0	1758	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/btc-spent-private-scan-20261118	981cc2f4395d2d76c499a5cd46387daaaa3a6b1f	18	249	source-differences-require-semantic-review	38	38	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+chatgpt/btc-spent-qualification-20261119	7954f1e5a29988fb9239225d1f829c6c3dc71e08	20	249	source-differences-require-semantic-review	38	38	retained-in-unmerged-recovery-PR244-pending-gates	Retain evidence documents; use the named retained source for inherited implementation obligations.
+chatgpt/btc-spentness-private-scan-20261118	2b4b1e912350cb18c630a68b5c1990426e29dbc0	15	213	source-differences-require-semantic-review	36	36	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/consolidation-reconciliation-20261113	3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-beta-consolidation-20261118	df5e4f6990bd32bd38f01d40141044d4c0e37071	4	254	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/ghostpay-beta-log-artifact-20261118	7109290b7e4f029c36d9743bde9fd664d1da5474	0	253	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-beta-qualification-20261112	c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa	0	870	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-billing-horizon-port-20261112	eb21d57c8ad1550481d5d674fa6356ac98f146f0	0	991	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-browser-selfchecks-20261121	1edc524e69554e4a45017858c7e3e25c46dae419	3	66	carried-by-pending-integration-requires-qualification	11	11	unresolved-review-required	-
+chatgpt/ghostpay-cli-sentinel-port-20261112	3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9	0	990	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-csv-leading-whitespace-20261121	d283116dfcf3baa2e0ffc6dbf2d5657830849315	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+chatgpt/ghostpay-historical-consolidation-20261115	7dc7eccc34af289050aa1606784a88dfe8a5633a	7	612	source-differences-require-semantic-review	7	4	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/ghostpay-idle-lifecycle-20261119	7e6089e2e40a2a7daf93961eddef17d3fe8501fd	84	250	carried-by-pending-integration-requires-qualification	286	277	unresolved-review-required	-
+chatgpt/ghostpay-idle-lifecycle-qualified-20261119	d5fe06e7a7b383da1726c4d38165c824e996b9db	2	244	carried-by-pending-integration-requires-qualification	14	14	retained-in-unmerged-recovery-PR372-pending-gates	-
+chatgpt/ghostpay-integration-matrix-20261112	1a5e815d8446f00a63f98de261081910c9c78ce6	0	991	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-invoice-validation-20261118	5e9e7be70399a9818579cf87bd494e013e25d4f9	0	253	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-ledger-exponent-guard-20261121-0313	0d1193014e3a28f529afcba7787fcaea9bdac280	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+chatgpt/ghostpay-merchant-csv-port-20261112	bbc7dda4ce275613296609a5001bac36c888229e	0	991	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-mythril-checker-failclosed-20261118	94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57	7	258	source-differences-require-semantic-review	7	7	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/ghostpay-onion-canonical-port-20261112	8277879eeaa003c31fd76b4f840b9628f4b02cf7	0	990	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-own-node-guard-20261118	685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed	3	258	carried-by-pending-integration-requires-qualification	93	93	unresolved-review-required	-
+chatgpt/ghostpay-pages-artifact-integrity-20261119	f39a9dd36c09f8b02d937c5f3d19676d334976d6	6	193	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+chatgpt/ghostpay-pages-checkpoint-v4-20261118	a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1	0	253	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-pages-client-hardening-20261115	f3872e90eb255b46a773d78f4f5adb6239db2b4f	0	827	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-pages-gp02-gp04-review-20261115	9b3a3070499a2a6d70349d540f7aaaed006426e9	0	831	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-pages-idle-clock-20261118	613667be4eeb132c7d21ccd06c627f9a7144d85b	0	253	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-pages-second-pass-notes-20261115	cf6a8d69620af6271e573a8b20fe1562e89ef81c	0	826	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-pinned-signer-completion-20261119	276aed60f19671cc6fa551be616b61041cb45b50	91	250	carried-by-pending-integration-requires-qualification	298	293	unresolved-review-required	-
+chatgpt/ghostpay-privacy-browser-fixtures-20261118	67cf835d0bf5f3b239e8ee6f18dca401fd5a5050	3	258	carried-by-pending-integration-requires-qualification	100	100	unresolved-review-required	-
+chatgpt/ghostpay-private-scan-completion-20261119	18b367457103fb1731a5b4ef5c51faa37a010e47	3	243	source-differences-require-semantic-review	23	23	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/ghostpay-recovery-review-20261118	18110015e99efbeb4f23d47cd88bd6f917010108	7	259	carried-by-pending-integration-requires-qualification	36	36	unresolved-review-required	-
+chatgpt/ghostpay-remaining-work-20261119	509a800439f2feb6173b20d2543746c3d74e9a42	85	211	source-differences-require-semantic-review	403	403	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/ghostpay-rpc-filter-guard-20261114	dfed84c18b5f02c568c87f14a4fa4cec20fea80b	2	612	source-differences-require-semantic-review	2	1	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/ghostpay-rpc-filter-guard-beta-20261114	73923350fcda62f00be0f2b83ad346f416a24bb6	5	628	source-differences-require-semantic-review	4	3	superseded-by-main-source	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/ghostpay-rpc-layout-reflow-20261121-r1	63d5a0d0d1b08db14cbd52bd720736f4ceb4612e	5	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+chatgpt/ghostpay-sensitive-surface-audit-20261115	90a145740a163a9515e5c70e79be33610b67b293	0	825	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115	97a617b5b95f04a1e736c5c730c587ef0824d05a	0	824	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-six-fixes-combined-20261112	36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef	6	992	all-branch-nondocumentation-deltas-exact-in-main	6	0	already-included-blob-equivalent	-
+chatgpt/ghostpay-sonar-review-20261118	3a3b136a326e0d8c1f369d94d4517ad0711babc8	6	258	source-differences-require-semantic-review	33	33	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/ghostpay-sweep-balance-consent-20261118	d9ff386807de724eb1a1c4d400c882df0fc20bb7	1	254	carried-by-pending-integration-requires-qualification	12	12	unresolved-review-required	-
+chatgpt/ghostpay-sweep-ledger-memory-20261118	0b2609c2c83143741ad343bfb08234a2d1182aa5	3	258	carried-by-pending-integration-requires-qualification	93	93	unresolved-review-required	-
+chatgpt/ghostpay-tm-hardening-20261118	c17e5c387e3c2b83f48b02ac33a669c44c69ced6	86	250	source-differences-require-semantic-review	300	290	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/ghostpay-top-down-audit-20261115	775756931be4683f47e8af6b2ecf26f9458897d7	0	823	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-ux-clock-port-20261112	c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df	0	990	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-ux-guide-port-20261112	f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b	0	990	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/ghostpay-viem-alignment-20261118	defdaa308a2d05ab407af7e42f8dc457cf52d103	2	258	source-differences-require-semantic-review	69	69	redundant-dependency-repair-preserved-in-retired-donor	Preserve the old scoped dependency repair and reconcile it with active #493.
+chatgpt/pages-browser-fixes-combined-20261114	73923350fcda62f00be0f2b83ad346f416a24bb6	5	628	source-differences-require-semantic-review	4	3	superseded-by-main-source	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/pages-release-gate-audit-20261114	2221a6117cdcf397527d96c2b20862d05a6b26da	2	628	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/spec18-recovery-completion-20261118	38d69832ddc58ec27a19c00dbe3c89347c577495	89	250	source-differences-require-semantic-review	288	278	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+chatgpt/spec18-recovery-reviewed-20261118-a264	4a1b181c89e02ee564b5568d4b4b8d689f5e42c5	89	250	carried-by-pending-integration-requires-qualification	290	280	unresolved-review-required	-
+chatgpt/zero-codex-continuation-spec-20261109	d15921981ecfe8342886c27c52af43c22c1c6205	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/audit-main-20261118-r185	a238c22dbc8a38c32db4a38f7bd5536ab32e3aee	0	244	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/audit-pages-release-20261112	364b01f847391cd02b3aecb74e18ddd047096c97	43	775	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/zero-codex/audit-secret-box-20261110	621ee0af3f4748c072eee0479accad82f7c2fdd3	0	1140	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/b0-receipt-recovery-20261110	0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa	0	1167	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/cli-sentinel-value-20261111	a6e74591e134b31de3e0efc84448eb97cdc3b012	2	1168	all-branch-nondocumentation-deltas-exact-in-main	2	0	already-included-blob-equivalent	-
+chatgpt/zero-codex/docs-pages-scope-20261112	c5efadab9d9af6a0053f489ebe6c0c06e760d025	110	667	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/zero-codex/docs-postmerge-wiki-20261118	362dfa999a96dc615a1d146b4f37f8325268a595	25	258	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/zero-codex/docs-wiki-20261110	fa375dbc1f2416b27d75e44487e5a382f237b379	0	1107	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/handoff-postmerge-20261118	bb193849a5688bb604e3e32dc83e1647e37fe447	0	244	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/merchant-csv-safety-20261111	afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790	0	1165	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/merchant-schedule-horizon-20261111	7cdc6b32ecafd73636136c852542fddd42213848	1	1168	all-branch-nondocumentation-deltas-exact-in-main	1	0	redundant-current-blob	-
+chatgpt/zero-codex/onion-canonical-host-20261111	72dde82d9d898f5ed0c3c2b6901870c557a5012a	2	1168	all-branch-nondocumentation-deltas-exact-in-main	2	0	already-included-blob-equivalent	-
+chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110	5280569b7eaad9b4d996861410211cd40d005fdb	0	1165	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117	9732adb949cc7191beddcb986dff76e9f9534537	0	801	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-backup-gate-verified-only-20261115	433307b869acf2d81b2d12b415631076a89f7213	0	824	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-bearer-qr-warning-20261114	81fd4c032e29a87ce509236a0398468022c23012	0	833	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-combined-qualification-20261113	ab427ab81c7bc18a6d908c5201cf86450cf3f21f	0	848	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-download-cleanup-20261116	cf5ad81cab48424e6302e507c9af46bf4c99aee4	0	814	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-fragment-history-state-20261117	68993c668aa70ac4be1a9deeeef3badec3b10fcd	0	803	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-fragment-shell-gates-20261117	120dcd7fc15b2d5a646a93835287ef9bc7281fe1	0	805	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117	b570d4bb748d318e0963d6bfa2f5e19f22e0d666	0	800	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-invoice-stale-submit-20261115	dffe072511c34b8a73bd64ac6147d5a79256480e	0	822	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-keystore-reimport-control-20261118	30cc4560c6a71694a1cd116d879823e9a596e4d3	0	796	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-late-invoice-focus-20261117	23cc6db4b924943ba99b169ac83c214272dcaa10	0	799	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113	907e2919e93091fd2e9c2abaecbeb95e331f4b7d	0	840	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-manifest-gates-20261117	12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0	0	806	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-negative-fiat-regression-20261114	9bdc9cbade90995e3207b72535a7818f909c2684	1	834	all-branch-nondocumentation-deltas-exact-in-main	1	0	redundant-current-blob	-
+chatgpt/zero-codex/pages-owner-ci-handoff-20261114	83fe9b022d2b5a4068137fd7987467f1803803dc	42	803	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+chatgpt/zero-codex/pages-owner-transfer-filter-20261115	cf5e876ce164e63d535fb6e40319573798b746e1	3	612	source-differences-require-semantic-review	2	1	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/zero-codex/pages-pay-rich-tags-20261117	c15833bc2aa6e0e0189f6cd18becf293e0e6e73e	0	807	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-qr-combined-20261115	26f83ccdda98ee82c26ad5f71c3f90d90ad68c20	7	628	source-differences-require-semantic-review	6	5	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116	57acf1b06b3b31ada0220556cf64344e1f854e21	0	818	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113	c8d4c42bee724bacd244bc90b0259c961d27e84f	0	835	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-reconciliation-imported-link-20261115	97cf5a0cda257451c99643909a7b5ebe7da89a79	0	819	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-relayer-stream-limit-20261114	9a84764e70603e5f4e0b7bac13bdb6eeec6e469b	0	833	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-renderer-own-property-20261116	dd4a7eb4dd71435284d9d326310cb2695faa249a	0	811	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-rpc-http-status-20261113	68aca93bc19e4c9d91fa37212d9b8c502b4ce884	0	851	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-same-view-invoice-focus-20261117	2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1	0	797	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-scan-transfer-filter-20261114	7b6c4983e5c0ba048edf97aaff7399bd77980234	2	628	source-differences-require-semantic-review	2	1	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/zero-codex/pages-smoke-project-boundary-20261113	eece5aff554255ca6c02e53849403f66123b8e40	0	847	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-tag-store-closed-connection-20261116	17f681915f25441f5c38326ad718b8082495d52a	0	816	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117	8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b	1	811	source-differences-require-semantic-review	1	1	superseded-by-main-tests	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+chatgpt/zero-codex/pages-verifier-comment-attrs-20261112	6f59cc2cb7add5ca04aa05eef724cb0a65bb3891	0	851	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/qualify-98-20261110	a2f4205f900d87ed0726aadeda4b808e6c76fd0c	0	1139	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/receipt-boundary-regressions-20261110	83d17adb4a07ff2120c6674a5128684e4f13776a	0	1167	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/recovery-auth-negative-20261110	969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3	0	1166	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110	b12a20e1d6e284e8e3e228ab6bf08c83c012777a	0	1165	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/rpc-response-correlation-20261110	bbe300b7fb21829350f66677d270a689f3a79ecf	0	1164	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110	0ab175e552485032672c59d9b38c733545c7c50f	0	1167	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+chatgpt/zero-codex/ux-confirm-clock-boundary-20261111	d77956901d95c3eeb8c5c1d67ae7d1647bd069aa	2	1168	all-branch-nondocumentation-deltas-exact-in-main	2	0	already-included-blob-equivalent	-
+chatgpt/zero-codex/ux-guide-plain-object-20261111	cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a	3	1168	all-branch-nondocumentation-deltas-exact-in-main	2	0	already-included-blob-equivalent	-
+checkpoint/ghostpay-recovery-20261102	1dffa5a366fc88a4428823634f43247913048915	0	1759	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+checkpoint/ghostpay-source-reconciliation-20261101	243d98d67c7cbcc854b2107da5461e4718cb6272	2	1438	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+claude/admiring-albattani-6kydor	ef610872aa4ef1f2ee3d0b177f883481662d4733	0	257	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/adoring-wozniak-850ue6	a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523	0	1758	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-a0-pr47-green	4a38efdfa999f84685e5004b4c17a2a8e493f704	0	1427	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-a4-btc-headersync	27d1580c5c535cef5ea44491716d0d86712df841	0	1419	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-a5-announcer-budget	d9fe8b4e9c020f8cef0073b9a990903fad38f1a8	0	1424	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-a6-combined-backup	f5d219851a4715cb947eb224976f97a7bec49380	0	1418	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-a7-policy-send-guard	f7b8ee9db98162a97a962ff40d77460cb6eb8417	0	1421	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-b1-core-journey	e0a499bdd95da4d9dd24a19a73fe9609e302b104	0	1422	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-b2-lean-bound-receipts	2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0	0	1423	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-b3-sweep-permit-states	9d100956f08ddab66c6aeff1647ca51f3d5ef9cc	0	1396	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-b5-testnet-feeds	76199cdac3ee336e2751995d511111467141d943	0	1426	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c1-reconciliation-adr	1e87109119c1945ea81bfa7e29bc9d1663984bf7	0	1423	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c2-qr-pairing	78be1730ad2a7963d66ba8c69e5b6480fa46bf2f	0	1421	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c4-i18n-create-b4-buffer-ui	4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd	0	1406	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c4-i18n-pay	e02d04c7540607624e4bf4627566a5e605242fe1	0	1424	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c4-i18n-scan	7f4702fdd36671fa8c114d08a8e0e4ae13939ddd	0	1418	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c5-device-matrix	92af349a2e877d6cf94e7ed95a6466163a205089	0	1424	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ar-c7-embed-iframe-e2e	2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c	0	1423	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/consolidation-2026-11-04	a28ca06a83dc621a2bcb0eb0432889d7b4416285	0	1294	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cool-albattani-xopr89	7373172db4cf40ce5622e5a92a55b2b086e5e7cb	0	1671	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-c2	b9cba0978cade31e15faa4067adae448e4dcbc04	0	1329	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-c4	511c23bd925504b02d329e1c82bc30593d3ac496	0	1335	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-c5	99d80dcd0e18ca3c6ec41fcb1333ff99e9075275	0	1329	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w1	704e268bfa7df57964175f820f67400834bdce43	0	1335	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w10	391454b2609b97dd9e98f65df470dfb880e16142	0	1312	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w11	764020c208c144e165437e244b6a1bc43673dc5f	0	1313	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w5	f030376a331445f5059061f24238acb5cf867b29	0	1334	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w6	16cddc21931775fc17ade3a8f37361aed4ae90bf	0	1329	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w7	a4ee36ee4328d80fa30d10b4a81af6b1865b2edd	0	1313	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w8	f162960457b40eb28eaed25a532a56b0a7bc7785	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/cw-w9	8303c8c6a79ca2aeac1789161ba091fa6772e3aa	0	1313	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/docs-screenshots	0476cb117ff5ee6b5ccaff77aecc4b4e86038298	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/docs-snapshot-1	dc2340c998250039d906a7beb72a4bed7a2b56c5	0	2408	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/docs-snapshot-2	e1a92c876c4443b5ad49318ede200119ceaf4e8d	0	2407	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/exciting-brown-7v69cr	b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e	34	258	source-differences-require-semantic-review	36	36	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+claude/friendly-turing-1ui0on	f4e79b078514cdd174a087bd5142ad76bc49f811	2	258	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+claude/gallant-hamilton-4wzkyn	ca358acfa8f48d4deff9b770214bcba797b6b1f0	0	992	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ghostpay-autonomous-completion-y4sk2h	b6a0871d0618c5ee804947af22d21b794948fa3d	0	1445	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ghostpay-autonomous-prompt-scpgun	1db8e967af91bc1d3132e99fa5f4d94696e22997	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ghostpay-completion-audit-ot5jjm	b5e2ea3e5030b56c79063eb1f91c8a634ee5d740	24	258	source-differences-require-semantic-review	41	41	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+claude/ghostpay-consolidation-9xhtxg	c487f0fe649e24a1e89f1f8fd0d82e90a3441c62	0	256	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ghostpay-consolidation-9xhtxg-feeguard	9e5cc3789b7b8a3c550ed2680304ab6245ec6676	1	258	carried-by-pending-integration-requires-qualification	5	5	unresolved-review-required	-
+claude/ghostpay-consolidation-9xhtxg-security	4894d0d8d94333dffa8ae3937a4d8314f27c686f	6	258	source-differences-require-semantic-review	7	7	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+claude/ghostpay-consolidation-9xhtxg-spec18	ebf7c92c3be1c7aebd37fc58b5567e114fb932fc	6	259	carried-by-pending-integration-requires-qualification	36	36	unresolved-review-required	-
+claude/ghostpay-github-pages-up6cj6	ac08062ec540d429a0bfb24f3aab042be5d212eb	0	854	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/ghostpay-lean-core-milestone-t5lwox	87b5e4bf92c4b0fa851e0ee56d243a06f7780c6e	9	53	documentation-or-coordination-only	0	0	unresolved-new-or-advanced-ref	-
+claude/gifted-planck-115x2k	1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78	4	1451	source-differences-require-semantic-review	10	10	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+claude/gracious-heisenberg-97ji6q	c6ce2259e7f14e3442e26d37a50313b119e9b442	0	1726	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/haiku-wave-2-handoff-qepfoe	8d1bde36bb7d16374a2f9ad0ac2c39f46c086951	3	1438	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+claude/haiku-wave-3-2026-11-24	274477472bbfe7acca340bd08bf9237f00ed8aaf	1	53	documentation-or-coordination-only	0	0	audit-documentation-only	-
+claude/happy-maxwell-onl4x5	fd710eb367eff8bbc250024f5a4317875930736b	1	1438	source-differences-require-semantic-review	2	2	superseded-by-stronger-main-source-and-regression	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+claude/hopeful-bardeen-8ch6l8	2a5b29de6a71f13ba855571b74fd33a603cc8736	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/inspiring-fermat-vxv689	c1c4ac9b648174db33c87b59bc9c09267eca731c	0	2438	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/keen-volta-8ctx9x	ad67862f63590fe38410d21b88ebf0e05329da47	40	53	source-differences-require-semantic-review	44	44	new-owned-pending-qualified-review	Use the newer owner stack; compare its source before declaring semantic supersession.
+claude/kind-faraday-8qzf6e	1e4d19f1a533db0be9ce7341a083b7934f8ee81e	0	1147	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/laughing-bardeen-4t20ys	e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5	0	2278	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/lucid-meitner-apalzc	d6f6617e595bbba7e83a1fcdec585bedb9adaf0f	19	586	source-differences-require-semantic-review	18	15	unresolved-review-required	Preserve the closed-PR164 source and reconcile its remaining15 differing entries by subsystem.
+claude/nice-ritchie-8vivls	1bf25be7c5405c0055c3bb99b0ceec8a2226fe23	0	1158	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/nifty-bohr-5ra2ap	caef97781b407b105c8dce177c76dd515462e94e	3	53	source-differences-require-semantic-review	16	16	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+claude/pages-site-1	7f77a44483ad844fbf9021ffd6fa4dd95fc8226d	0	2394	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/portable-hosting-kit	cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2	0	1719	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-1	39cce4663d98c7da06775441a301040af51907ed	0	2381	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-10	698404ca488c87347858105bda66be21bf428303	0	2365	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-2	df150cbdb58203789f5afc3050e75d92c655fa49	0	2416	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-3	cdfc2ba228d76dd7605921736ed33891d1b14b0b	0	2349	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-4	4ffb7a99b222f58fde51726e06df90a6e9863b6d	0	2374	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-5	1337f6c121463aa70107bdd065ea88ed30ec3584	0	2375	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-6	7fb7aca6d68b96b89d32959636827fcfb343968d	0	2378	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-7	e2ac361b7f425ef3b3a7e98389ad3add3353086e	0	2366	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-8	ad76a87e1dd5bd21599fcaecec7508de1a241996	0	2368	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/remote-extensions-9	f09decc278c2052c90dfa209a7098888c8d9877a	0	2371	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/sharp-bohr-uigfgh	c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483	2	1760	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+claude/vibrant-cori-scu18b	9617e8572f9bc414410bd937b0e7718d0c5bd55c	1	258	carried-by-pending-integration-requires-qualification	24	24	unresolved-review-required	-
+claude/vigilant-johnson-yjgq94	4403d3703cd1dff893e1984e98505691267f8a20	1	832	source-differences-require-semantic-review	1	1	superseded-by-main-tests	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+claude/wizardly-babbage-mfsdrl	ade77362de33156de849989e26206126f978bb8f	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+claude/wonderful-thompson-ir89i9	97b919c9c19ddc4c0eec6c04299cebd644c8e28a	0	1150	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/286-private-export-surfaces	557815335b8ef94b6c311c0ca4369daf0756ae1d	6	34	source-differences-require-semantic-review	49	49	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/287-evm-payment-destination-reuse	17c5a2ee3828d0132cfdf21e4c966ca7550d07f2	4	34	source-differences-require-semantic-review	15	15	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/287-local-destination-reuse	f024ce3e0eab91df40bfd5a75aee2a56d9158e5a	5	34	source-differences-require-semantic-review	16	16	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/287-wallet-request-preview	697cb7314c323b574bfbb1f102244265046dd93a	582	66	source-differences-require-semantic-review	603	603	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/checkout-rev-l2-durable-preflight	d1e167f1b5372f74506fc104220b9a03cb6a3e92	43	53	source-differences-require-semantic-review	46	46	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-approval-gated-auto-integration-20261109	e36786bce4e752cb79d60bdca4b640e36ad45753	0	1746	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-autonomous-20261120-9a4ab6	3433f7f098b5e61253a102a087dfb7e780dbb730	90	120	source-differences-require-semantic-review	105	103	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/ghostpay-browser-isolation-20261118	e8857bfa1ec93fafa9ff83f63f7430ef26a362c2	0	252	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-canonical-time-20261116	27852ba898968a08f7d7c448fac8b19058189281	0	338	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-caveman-completion-20261116	0c4c3c8d951a9d6e71affcdaa26478911c8037f1	0	340	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-caveman-followup-20261116	2de9b0c5764cb1fb80a648e18d269b4d91210dcc	0	339	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-cloud-41868394956	f34a80f710d191b025538bae43cc9b4c92fd2455	1	1751	source-differences-require-semantic-review	3	2	already-in-main-by-semantic-source-and-regression-equivalence	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+codex/ghostpay-companion-merchant-20261109	b748ecdce06d2dfa911144814161c31a46a09e9b	0	1204	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-completion-20261116	b4be8866f6ff883fbbedc49be88b5b251a7d270e	0	365	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-consolidation-20261030	70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2	0	1438	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-consolidation-audit-20261104	e2ac398c2c8943a244239b9d6ffa2181e13e7782	0	1748	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-consolidation-followthrough-20261119	73545f63112910d46002718354ab5e99f8652e1f	242	192	carried-by-pending-integration-requires-qualification	452	444	unresolved-review-required	-
+codex/ghostpay-consolidation-records-20261119	042b2ce3c79fefb8cbc729fc167894fbeed2c456	36	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+codex/ghostpay-continuation-20261109	0a68a57b77a70d3bcf4635ccbc5190d735e71f40	0	1259	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-export-authorization-20261119	b0abb726c138ad1df2f03b7b102c9bd9de318887	221	193	carried-by-pending-integration-requires-qualification	454	441	unresolved-review-required	-
+codex/ghostpay-feature-consolidation-20261119	40b64e8f3a0f34f7b19235ba4655ef918687f22e	241	190	source-differences-require-semantic-review	450	442	unresolved-review-required	Retain #262 evidence; track inherited feature source through #270/#278/#372.
+codex/ghostpay-hosting-timestamp-main-20261119	57dff1ad7706959bc78861fa4cf9af58952f4643	0	185	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-integrate-product-cli-20261109	3ec039c554f7052b859975facb2b634a1763d5cf	0	1174	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-keystore-verification-20261123	88f7d1b496a1452f062d472d78e99b5401c61e35	2	53	source-differences-require-semantic-review	12	12	new-owned-qualification-pending	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-late-payment-20261123	90e3fff019d14d8df4c610daf2080a32140686de	2	53	source-differences-require-semantic-review	19	19	new-owned-qualification-pending	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-mythril-recovery-20261116	ffd957e28f982f5c6d2dc00f51143766b2406773	0	364	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-observability-20261116	c738f96e2f1a0dfef9003ae29ad636b03cf74b09	0	338	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-ops-response-cap-20261116	73371b57040c61bdb480e724e8593313d95c6781	0	338	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-pages-manifest-command-20261123	e9e9d60dacb6458796f3e1b5d704f1afdca62ae0	4	34	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-policy-localization-20261109	5628bc00b05a6dd0d9cd89f04f0385d9119281ac	0	1222	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-policy-lock-release-20261123	ff274a08de2a84bcbdf0e373fb607666543554a2	43	53	source-differences-require-semantic-review	44	44	new-owned-qualification-pending	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-private-checkpoint-browser-20261119	683f8587b8de45448f14aab0539cb07a5f21bce3	239	193	carried-by-pending-integration-requires-qualification	456	443	unresolved-review-required	-
+codex/ghostpay-private-scan-lint-20261119	1b010ec910d04df105fd662cc360629cb0a2f5dd	221	193	carried-by-pending-integration-requires-qualification	451	438	redundant-to-retained-source-history	-
+codex/ghostpay-product-20261109	cfc7b0f3325a550df830584e86db4c38bcc9d6b2	0	1246	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-receipt-print-integration-20261123	51c04326ff9258861621b94ce2ab06f44bba8301	9	53	source-differences-require-semantic-review	9	9	new-owned-qualification-pending	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/ghostpay-recovered-lean-checkpoint-20261028	371d235c3e5926014c00e027196b6aa567ea1b82	19	1760	source-differences-require-semantic-review	168	143	unresolved-review-required	Keep this canonical checkpoint for the four October recovery/SBOM histories.
+codex/ghostpay-registry-recovery-20261116	98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c	0	364	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-research-acceptance-tests-41750257638	57b414bfbc1fa9de9ef68675b9181b4c148f18e4	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-research-documentation-ux-41750257638	96fc22c42a704d1c590d56d624fff15a945c8231	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-research-release-qualification-41750257638	6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-research-security-review-41750257638	2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-resume-20261028	75400888c96b9bddb2a406dd8fd6d273521aebb2	1	1621	documentation-or-coordination-only	0	0	audit-documentation-only	-
+codex/ghostpay-security-audit-20261030	63994db6cff8b3b3ca698427eee9e95904230546	5	1451	source-differences-require-semantic-review	12	12	unresolved-review-required	Preserve this historical donor and its original source; recover only explicitly reviewed remaining intent.
+codex/ghostpay-spec09-matrix-20261116	2de9b0c5764cb1fb80a648e18d269b4d91210dcc	0	339	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/ghostpay-sweep-balance-integration-20261123	5c93c3b172cd002f1cdc68232b1a0f3335aadb76	8	53	source-differences-require-semantic-review	15	15	new-owned-qualification-pending	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/ghostpay-unified-completion	beb525dddcca103de9eda447b55cddf7ee2f428c	0	331	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/gp-pages-02-recovery-proof	56fb25aa2ff098737dbc181fa88c0aac06425c8e	6	53	source-differences-require-semantic-review	19	19	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/gp-pages-02-retain-suspended-signer	2363943571de84bfd5da0b3f167699f34eb53ce7	126	110	source-differences-require-semantic-review	121	119	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/individual-stealth-keypair-export	28bba11cdaebc13edc4d100761ee00750c3f396f	10	53	source-differences-require-semantic-review	32	32	unresolved-newly-discovered	Qualify and integrate the #572 owner source once; keep its exact backup alias for provenance.
+codex/invoice-expiry-recovery-devnet	e8b0f3081f51f9718c5d1f7a6892292da3f31d23	6	53	source-differences-require-semantic-review	20	20	documentation-only-relative-to-retained-parent	Retain evidence documents; use the named retained source for inherited implementation obligations.
+codex/network-isolation-complete-20261119	3ae0b4f642a8941592fad48c26e9ed1bbec327f4	87	248	source-differences-require-semantic-review	313	302	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/offline-interrupted-invoice	49862e2d3b4832f1f52714f5bc1bc551af2fe54f	2	34	carried-by-pending-integration-requires-qualification	18	18	unresolved-newly-discovered	-
+codex/pages-follow-browser-language	0dd3bcd33f843e89980baf1ea98372fb58521f01	5	47	source-differences-require-semantic-review	3	3	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/qr-exchange-browser-completion	41a598b8433e10a95598c72c2a23027e63010024	24	34	carried-by-pending-integration-requires-qualification	10	10	unresolved-newly-discovered	-
+codex/qualify-508-invoice-link	36a5b4e0007ad3154cd5e36c914fafede30d4140	7	53	carried-by-pending-integration-requires-qualification	2	2	unresolved-current-owner-pr	-
+codex/qualify-mobile-browser-engines	46150f4ce0a34da0e23dda36642ba9463ff1e4a1	2	34	source-differences-require-semantic-review	3	3	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/recover-minimal-invoice-qualification-20261124	2d612e37f3f71b785129f447c14731cbef9143c7	5	34	source-differences-require-semantic-review	15	15	unresolved-new-or-advanced-head	Use the #585/#600 owner line and retain the alternative fixture correction as evidence.
+codex/recover-wallet-attempt-status-fixture-20261124	534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c	44	53	source-differences-require-semantic-review	46	46	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/recover-wallet-disclosure-qualification-20261124	f941ac01fd9464fc881266dcc2d2e1e530d5f15b	583	66	source-differences-require-semantic-review	603	603		Qualify this test-only child with #589 owner.
+codex/recovery-spec02-unqualified-20261116	8d6fd6df5effc5fad93fd7afafe65f258182923c	4	365	documentation-or-coordination-only	0	0	audit-documentation-only	-
+codex/seller-keys-file-switch-browser	8daebb0fa4a1cc1f771dbe724dede67f00028298	3	53	source-differences-require-semantic-review	13	13	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/seller-ledger-receipt-qr	bb011134c1bf9cd0e75090fec75d85235d637281	0	1802	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+codex/setup-autonomous-agent-20261104	122e51710eeee51a5ffc3f9dc76ee0b8ec291d43	2	1749	source-differences-require-semantic-review	1	1	unresolved-review-required	Preserve the optional hosted worker automation as a separate scope.
+codex/spec-03-fiat-price-feeds	e9025d72f1408ec48e6d1ca29a5361a55175ec31	1	34	source-differences-require-semantic-review	34	34	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+codex/stopped-scan-payment-export-acceptance	7bbd651def1aa064f31ed91e272d07f629d3b871	4	53	source-differences-require-semantic-review	17	17	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+codex/verify-encrypted-payment-spend	2d79881a52e8f425e19704367c2ac8f91f1d7922	4	53	source-differences-require-semantic-review	16	16	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+consolidate/ghostpay-dormant-modules-1f782-20261121	1de6e0247e0f76afe6f1615b43e55007ece25d9b	52	66	source-differences-require-semantic-review	21	21	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+consolidation/ops-monitor-bounded-streams-20261116	d2e8689b038034233d6587cfca547bff3321fcde	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+consolidation/six-verified-boundaries-20261116	c9787b223a240b8bd5a626325944b3c01a2d4be0	0	1745	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+dependabot/github_actions/actions-8158e918cd	592b99417039b7bba588235c40418f368f09ebb4	1	66	source-differences-require-semantic-review	5	5	newly-discovered-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+dependabot/npm_and_yarn/npm-major-1ddf9439d6	81fe4607fd79d192064111016ea4d75ad5fc0ace	1	66	source-differences-require-semantic-review	69	69	advanced-head-requires-semantic-recheck	Preserve the owner source; qualify current-main composition and required reviews/gates.
+dependabot/npm_and_yarn/npm-minor-patch-f6308e442e	14635ec8015b76e74994fc6623cc65399b80b21b	1	66	source-differences-require-semantic-review	68	68	newly-discovered-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+docs/f05-receipt-assurance-coverage-20261122	300c9d215b01f30c0eee53f58bcb6aba85ebbd5b	54	66	source-differences-require-semantic-review	21	21	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+docs/f11-minimal-merchant-checkout-spec-20261120	c8d917a6c88114825a65dc46b7b3d21adebbe834	1	110	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+docs/future-privacy-feature-specs-20261109	896c671f19fdb81c4aae56cd3170c09fe1aba7b7	2	1749	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+docs/ghostpay-3q-stealth-keypair-export-20261116	16bc61fa1c19083cf3c8ee8e33be52bc7f90de83	0	329	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+docs/ghostpay-coordination-ledger-20261120	5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5	3	120	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+docs/ghostpay-core-readonly-audit-20261119	8d03ebe48a9f6184d9905c2a9c93e8dc080f2618	1	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+docs/ghostpay-deep-research-20261103	894dc868dc5d07102ecb7f6a1e251381d8127f61	0	1750	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+docs/ghostpay-future-module-specs-20261119	6030b8f44fee0c0889d7cacfc0eda8a49bc72b52	4	191	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+docs/ghostpay-live-census-20261123	111c3de7fc586734dd5dddb213242faa9c352f6a	4	53	documentation-or-coordination-only	0	0	audit-documentation-only	-
+docs/ghostpay-privacy-architecture-5a-5l-20261116	e05044d4209de7e9cc242c8a83e5fc2264663174	0	330	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+docs/lean-release-handoff-2026-10-24	2b032d77fef95d5eaa446a72fda2eef46e83bbcd	0	1761	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+docs/readme-and-wiki	ab2b61687210f79fa5401c8a25fa9a96bcb1ca61	0	2459	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+evidence/ghostpay-completion-20261120	070fc5bbbf35bb667a6dacbc94ff49af4b22d874	470	185	source-differences-require-semantic-review	505	491	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+evidence/ghostpay-continuation-20261121-539818	c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c	463	185	source-differences-require-semantic-review	585	569	unresolved-review-required	Preserve the unique documents and route inherited product work to the named source.
+evidence/ghostpay-continuation-r2-20261120	c2b575e945b71563e30a9bef162cf3fdc92181f0	68	152	source-differences-require-semantic-review	91	89	unresolved-review-required	Preserve the unique documents and route inherited product work to the named source.
+evidence/ghostpay-fee-floor-qualification-20261120-r2	aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a	1	149	documentation-or-coordination-only	0	0	audit-documentation-only	-
+evidence/ghostpay-idle-session-r2-20261120	ebc3fea4640e2a82585a6cfb73a97fbf0b907949	97	152	source-differences-require-semantic-review	112	110	unresolved-review-required	Preserve the unique documents and route inherited product work to the named source.
+evidence/ghostpay-remediation-20261120	6fe35de42587e8da06e2590983b584ffde93d40f	444	185	source-differences-require-semantic-review	496	480	unresolved-review-required	Preserve the unique documents and route inherited product work to the named source.
+evidence/ghostpay-tron-qualification-r2-20261120	437cddb9e012786fe5f6cbcdc1536841aa4ce77a	1	148	documentation-or-coordination-only	0	0	audit-documentation-only	-
+evidence/ghostpay-vault-rekey-qualification-20261120	b9911c7228e95a3f8a6666d10aae50bcda08bd7d	4	152	source-differences-require-semantic-review	2	2	audit-evidence-only-source-represented-in-pending-pr	Retain evidence documents; use the named retained source for inherited implementation obligations.
+evidence/ghostpay-web-qualification-20261120	6152dd035822fe6ee97fba712ef1c37434e19035	69	152	source-differences-require-semantic-review	91	89	audit-or-documentation-only	Retain evidence documents; use the named retained source for inherited implementation obligations.
+feat/create-invoice-link-clipboard-286	21b1d68c0a31159f528b77872b3a660f0da901f7	408	185	source-differences-require-semantic-review	496	480	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feat/f04-dashboard-totals-qualification	6366767fb632ab3a01603497b49f12714ab796bb	13	53	source-differences-require-semantic-review	30	30	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feat/f04-deliberate-local-export-20261121	a9f19eb236fb2265f48444a0b4ad7bbffb411897	64	66	source-differences-require-semantic-review	23	23	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+feat/f04-evidence-analytics-20261122	ff60e1e45cac1348d554f94ea24717285ecc5608	74	66	source-differences-require-semantic-review	25	25	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feat/f04-pages-dashboard-20261123	e16bd876c3bd9aa6f075dd5ae27711d9836eb890	3	53	source-differences-require-semantic-review	27	27	new-owned-qualification-pending	Use the newer owner stack; compare its source before declaring semantic supersession.
+feat/ghostpay-privacy-quick-hide-20261120	137628961463fc5abd8b7927b2efe6b18a0a206a	427	185	carried-by-pending-integration-requires-qualification	526	510	unresolved-review-required	-
+feat/ghostpay-tor-completion-20261119	e60c69f32dbbd9edf7e81ed8866144d665e3de9a	2	184	carried-by-pending-integration-requires-qualification	17	17	unresolved-review-required	-
+feat/remaining-sensitive-clipboard-286	e68d32d7e424daf7264165987868eb6b891048b2	10	47	source-differences-require-semantic-review	31	31	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feature/287-minimal-invoice-sharing	b82be893d3d360064222fafcce8cef2033cd23a5	4	34	source-differences-require-semantic-review	15	15	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/287-receipt-timestamp-retention	19a11f90db0bcf84c94a0b883a310e103ce8878a	579	66	source-differences-require-semantic-review	595	595	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feature/f02-ghoststore-catalog-cart	974fe2ce363e6d7644e3d4f080a98d6f37b68e35	2	53	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f08-offline-merchant-profile-review	923e1edfb9ac34f8b6855d8ac8516cd835070afd	4	34	source-differences-require-semantic-review	10	10	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feature/f10-durable-cas-m4-20261122	9e8a619cc2ce2688c16c89d16df4aeb7959bc627	86	66	source-differences-require-semantic-review	29	29	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f10-lifecycle-m2-20261121	20a353d28e1aac89216ba2e8980000477307bf03	59	66	source-differences-require-semantic-review	23	23	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f10-reviewed-preparation-m3-20261121	7079eedfc67180c9a0012c7154758e41fe6208c9	64	66	source-differences-require-semantic-review	25	25	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f11-ghostteams-invitation-review	10d995fa3290b51e0c35804a681ae0b30c4785b3	1	47	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f11-ghostteams-membership	9229a14c303944380523d2a65b783a25541f8403	2	47	source-differences-require-semantic-review	4	4	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/f11-ghostteams-membership-commit	8ade47153d0d08de4a7cc45fb60672a2b6afd658	4	47	source-differences-require-semantic-review	6	6	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feature/f13-offline-quote-terms	7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a	1	34	source-differences-require-semantic-review	2	2	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+feature/ghostpay-invoice-file-completion-20261120	7de737b5c8c5fc02086ba0030d78c181d239590c	8	184	carried-by-pending-integration-requires-qualification	19	19	retained-in-unmerged-recovery-PR372-pending-gates	-
+feature/ghostpay-invoice-timestamp-retention-20261121-5ceb	cfa8131bab9a012cd1ce970f4afa8de23adfdf80	577	66	source-differences-require-semantic-review	593	593	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+feature/ghostpay-retention-completion-20261120	a34ce43e296e302e3e65ed077ea8ac892c5189a1	444	185	carried-by-pending-integration-requires-qualification	583	567	unresolved-review-required	-
+feature/ghostpay-retention-focus-20261120	9608ec996fb159f11b84b9baec0b48033a48a6a5	450	185	carried-by-pending-integration-requires-qualification	583	567	unresolved-review-required	-
+feature/p08-local-history-coverage	0419d3609caeba7857fefdd9f19f884adeff5646	8	191	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+finish/fee-quote-completion-20261124	02d9b7149ad715a7c2c9229f5297f0aa0834c415	21	0	source-differences-require-semantic-review	6	6	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+finish/merchant-ledger-completion-20261124	78193fca9477c297a62937e4cdd032fdb15772c4	6	0	source-differences-require-semantic-review	2	2		Continue the root-selected current-main merchant-ledger qualification.
+finish/offline-completion-20261124	2f2c282e4e88e32fb54648864bb9ed51c8307880	5	0	source-differences-require-semantic-review	24	24		Preserve the owner source; qualify current-main composition and required reviews/gates.
+finish/qr-browser-qualification-20261124	73f521bad57c24e44fe5c69fbdeecd1d2da2fec1	25	0	source-differences-require-semantic-review	16	16		Preserve the owner source; qualify current-main composition and required reviews/gates.
+finish/recurring-m4-qualification-20261124	8d8fe2f0986bc5796dae2081ef34602c6a9db703	87	66	source-differences-require-semantic-review	29	29	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/286-account-vault-privacy	63f40efac175e5ee49563326dbef930aafb14235	589	66	source-differences-require-semantic-review	594	594	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+fix/286-global-mask-document	c30283d28ec15f0c4fddb8a80d1c5f60ee590401	589	66	source-differences-require-semantic-review	601	601	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/364-responsive-pages	c1980912f87f0293b7a15f2419505a6719c5f3a8	591	34	source-differences-require-semantic-review	229	229	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/countdown-394-main	96d20f778e3f92fa26144c9f97525eae4b3290a1	2	0	source-differences-require-semantic-review	3	3	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/f04-dashboard-refresh-focus	3085c87a57147afeb7dac7bc563af62f2c9784e5	10	53	source-differences-require-semantic-review	27	27	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+fix/ghostpay-backup-completion-20261120	627ab977c9cc4e5ebc682eda822cfe792cd76fc1	10	184	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+fix/ghostpay-backup-preflight-20261120-r2	3172a93ceb8fce5a4343a93b453dcc0e68f09d87	99	152	carried-by-pending-integration-requires-qualification	114	112	unresolved-review-required	-
+fix/ghostpay-browser-acceptance-20261120-r3	2affd298c364c284d4d74f703fd4a612cc0f16d9	462	185	source-differences-require-semantic-review	585	569	unresolved-review-required	Reconcile the seven browser/disclosure differences with the privacy/native owner stack.
+fix/ghostpay-browser-selfchecks-lint-r16-20261121	087ecf7e17f702d3b09bee4d67fef5e9ca2f6cbb	11	66	carried-by-pending-integration-requires-qualification	11	11	unresolved-review-required	-
+fix/ghostpay-browser-selfchecks-optionals-r13-20261121	3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565	7	66	carried-by-pending-integration-requires-qualification	11	11	unresolved-review-required	-
+fix/ghostpay-cloud-api-secret-aliases-20261103	cdbb7ec775a37f985f6c66afddbcbba6e043f467	1	1756	source-differences-require-semantic-review	1	1	superseded-by-hardened-main-workflow	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+fix/ghostpay-devnet-wallet-consent-20261120-r2	410353a23631234aa888e46f38df22291c699a26	453	185	carried-by-pending-integration-requires-qualification	584	568	unresolved-review-required	-
+fix/ghostpay-disclosure-focus-recovery-20261120	0fb2831a1b89430c69896f6db57306cd5518e55f	464	185	carried-by-pending-integration-requires-qualification	586	570	unresolved-review-required	-
+fix/ghostpay-embed-popup-legacy-test-20261120-r1	0750012546aeb4336b4340fe16751f8d83804acd	7	152	carried-by-pending-integration-requires-qualification	3	3	redundant-exact-tree-in-unmerged-parent-pr	-
+fix/ghostpay-format-validation-20261120	a9e0715573f7247d7a16f9d1d030cf0232708fb2	476	185	source-differences-require-semantic-review	507	493	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/ghostpay-hygiene-transfer-evidence-20261120	d03600ca87c7156d4acd1ff78bef6e92c20d9ea4	10	152	carried-by-pending-integration-requires-qualification	4	4	unresolved-review-required	-
+fix/ghostpay-pages-integrity-gate-20261120	936d054ed067d89c773310d42e33939c1129bbfa	442	185	carried-by-pending-integration-requires-qualification	496	480	unresolved-review-required	-
+fix/ghostpay-pasted-invoice-fragment-boundary-20261121	b5045aec476833a5c87f1d733521dcd76e1843d1	7	66	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/ghostpay-policy-pendingedit-lint-20261121-r1	23f55bfea1068a5791b8e8e29409e4a13d0b28a3	12	110	carried-by-pending-integration-requires-qualification	2	2	redundant-exact-tree-in-unmerged-parent-pr	-
+fix/ghostpay-policy-record-seller-identity-20261121	e871eccc1238b7145cd1d0a667afb393c373cf83	8	110	carried-by-pending-integration-requires-qualification	6	6	unresolved-review-required	-
+fix/ghostpay-policy-recovery-followup-20261121-r1	67542c09ba180eec95004fb9b7a6d52d1a8dd809	9	110	carried-by-pending-integration-requires-qualification	11	11	unresolved-review-required	-
+fix/ghostpay-policy-security-translation-parity-20261121-r1	18d0442a156106abe2309f8a6e82358aab37961a	13	110	carried-by-pending-integration-requires-qualification	13	13	unresolved-review-required	-
+fix/ghostpay-pos-parity-expiry-r16-20261121	482d36ad436f4b27b2d86ff9a2c22daf150000ad	17	66	carried-by-pending-integration-requires-qualification	4	4	unresolved-review-required	-
+fix/ghostpay-qr-capacity-unicode-surrogate-20261121	cd1ddb7d6efd7d4ab0004e324c6e902a67704eed	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7	172695efb41665a4e50d335029e54184bbb5b328	397	185	carried-by-pending-integration-requires-qualification	492	476	unresolved-review-required	-
+fix/ghostpay-receipt-archive-identity-20261120-r2	e31a090501b3f5e77afcee812323e6f69e1fd565	103	152	carried-by-pending-integration-requires-qualification	116	114	unresolved-review-required	-
+fix/ghostpay-reconciliation-saturated-state-20261109	a864949d9ee48cb48a43710f5dbd382032ab8db9	0	1221	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+fix/ghostpay-request-file-async-20261120-r3	a88157b53d1e0925350d5c8db047eabb4365f4e9	107	152	carried-by-pending-integration-requires-qualification	116	114	unresolved-review-required	-
+fix/ghostpay-signer-pin-continue-20261121-r11	51c019d0cd3b010b7399bb0a3e85af543bc6a1ce	587	66	source-differences-require-semantic-review	599	599	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/ghostpay-sweep-privacy-ci-expected-note-r23-20261121	ec3c7d9bf304fd9e837eaf7da9bbc0cf3fdb3ce3	13	66	carried-by-pending-integration-requires-qualification	3	3	unresolved-review-required	-
+fix/ghostpay-tor-qualification-20261120	e8010bbe002331ee0cb37dc6b16dfd91c8b8647d	3	152	carried-by-pending-integration-requires-qualification	17	17	unresolved-review-required	-
+fix/ghostpay-tron-genesis-guard-gpbug15-20261120	b86a3e6affe8b71c6f13d16783accad446271ba4	8	152	carried-by-pending-integration-requires-qualification	5	5	unresolved-review-required	-
+fix/ghostpay-tron-genesis-legacy-callers-20261120-r1	06fd87c3e90000118ffa94048529db36f0a67d41	7	152	carried-by-pending-integration-requires-qualification	5	5	contained-in-unmerged-parent-by-verified-ancestry	-
+fix/ghostpay-vault-rekey-lock-revocation-20261120	81598d93dd82cc440526c866d42b55be0657895b	3	152	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+fix/ghostpay-webhook-signer-timestamp-width-20261121	7b1d10fdd9558ce92a0a7ac9d8d86c73727c5eef	4	66	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+fix/mobile-588-memo-assertion-20261124	a929b178a6626a9912f5d081b8a3e8c6847374ae	3	34	source-differences-require-semantic-review	3	3	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/pages-offline-session	f01c69d277c39c76fd3077103c43cc38f7f9c736	3	34	carried-by-pending-integration-requires-qualification	21	21	unresolved-newly-discovered	-
+fix/pos-terminal-reliability-20261124	4ae333d3ffa85eb14c074a543bdc084370dd1e49	20	0	source-differences-require-semantic-review	6	6	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+fix/remediation-b16c7936-5ce634	0b213bd9d43409aaa9671945761e51892aa5d69e	1	1424	source-differences-require-semantic-review	1	1	superseded-by-stronger-main	Retain historical branch and evidence; no separate source import is indicated by the prior source proof.
+fix/remediation-f95457fd-22ecf9	6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a	1	1421	source-differences-require-semantic-review	2	2	unresolved-review-required	Preserve this historical patch; require a new narrowly specified migration design before reconsidering it.
+fix/seller-linked-payment-reconciliation	5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727	11	53	source-differences-require-semantic-review	23	23	unresolved-newly-discovered	Use the newer owner stack; compare its source before declaring semantic supersession.
+future/f01-ghosttips	12a549e3c03c983b5a19ae6b54b11426284e5e4a	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f02-ghoststore	4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f03-private-payment-links	dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec	9	152	source-differences-require-semantic-review	19	19	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+future/f03-private-payment-links-spec	ae0bad1151625fd3453a9c684927145024fa8634	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f04-merchant-dashboard	066731b4d6d19d96469dd18fa082b264f3efed5d	15	152	source-differences-require-semantic-review	5	5	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+future/f05-ghostproof	ccd1b16dea7be84552f40d3bcd0f23b4224699d3	14	152	source-differences-require-semantic-review	8	8	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+future/f06-encrypted-backups	85dcdcbb54e9494c25ad0fbc04a9667cbb278e31	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f07-ghostpayouts	90b86766119d3f72870948ee83d039b989659b5f	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f08-ghostid	50ea73dcf3d4e9593da780ffb34bdfce60a90a15	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f09-ghostpos	ceeb3cfad5f353ea88ca7cc0593d199cf734f588	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f10-private-recurring	4a48f2f09b1334036a6a88bab4e51f958cee46dd	13	152	source-differences-require-semantic-review	8	8	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+future/f11-ghostteams	22891e01c2abffe0ced2384c7ad429f08805534f	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f12-ghostbridge	72a641445124321228edaa241f1bb5ae0dd17f8e	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f13-fiat-conversion	ad773b53615c294ee227f42b4a36f4b83e5d4ff1	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f14-multichain-routing	2c7c48310aa6337b30677299ec04933b37129d46	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f15-private-rpc	83898237e1b602f94f2e959ef761b5bd63db6590	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f16-per-client-identities	4e2917416cf73eb9ca232606000a130db53dc9b0	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f17-private-funds	bb759e7faab75c1120fbf4a86fbf109d06ac8380	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/f18-privacy-modes	5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/fee01-modular-fee-policy	4210e1ae1f41e16b72f790cb02e96410a5a94e92	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p01-tor-onion-hosting	25017e720df43d371f956830ba7fd6cb5f81590f	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p02-rpc-policy	a453777b5b66933571294da3d9aa7be6843070a4	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p03-local-stealth-scanning	ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p04-encrypted-offline-invoices	3090069a59d14932667acce2aeebe10e3d0f18fd	6	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p05-encrypted-local-state	e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p06-key-role-separation	db5b5cdaf08a08fc11ee3e772f96410ff1da6738	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p07-encrypted-device-sync	cb45f9c86ce01d884d24484adde4cff5f6bcbd90	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p08-linkability-analysis	80bc065fa666b31445ad6a1078e0d751dcfe4259	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p09-noncustodial-gas-services	36c5f3579b55f1e71117b8cc6546176392a112c7	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p10-private-submission	8cd3f30f38006668ec6544f88d05084a1d68f369	6	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p11-metadata-timing-policy	7af8c93edbaa98677c5c3f18ed3b8c997bb37b13	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p12-selective-disclosure-proofs	6131e3c28e05438d8c796af74665cf74f51b7453	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p13-confidential-amounts	8846d5553469753d963258023974ea044467cd6c	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p14-shielded-payments	59432dbd4c3802954b0f1879d4bcb02e42ac0449	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p15-anonymous-withdrawals	5da7ed870e85c2d1c46db594db442f26f3a7f339	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p16-shielded-cross-chain	470cc1045cedd44f9797300c65c1ef05a139e5ac	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p17-private-fee-outputs	18fc7f914b57d3c659df4950f0b9fd57520917ee	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/p18-telemetry-release-integrity	70862d040066167bc3ba2d311913b92a6b327fc5	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/p19-optional-fee-gateway	6fda0db00ea5b96b3cfcdc2620f74723229e16d7	5	191	documentation-or-coordination-only	0	0	future-spec-only-out-of-beta-scope	-
+future/t01-staggered-transfers	7b9da145ea5305586d31d9fd1d34f9489ca6909e	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+future/t02-intermediary-routing	b618d324df0a730650a8a6de9e0595e9f96382c0	5	191	documentation-or-coordination-only	0	0	future-spec-only	-
+gh-pages	cc8d07943a11b77fbed825c1ede0c8234140ad1d			source-differences-require-semantic-review	24	24	deployment-artifact-snapshot-out-of-scope	Preserve generated publication history; do not merge it into the source tree.
+ghostpay-cloud-recovery-2026-10-26	2ec98b23942838c7177d91c46c66c3768b4ca493	12	1760	source-differences-require-semantic-review	155	130	documentation-only-relative-to-retained-successor	Preserve the unique documents and route inherited product work to the named source.
+ghostpay-local-lean-boundary-20261027	020ba327e1a26f6d989d428eee19fb12f63dec82	18	1760	source-differences-require-semantic-review	168	143	redundant-to-retained-source-history	Retain evidence documents; use the named retained source for inherited implementation obligations.
+ghostpay-offline-deps-2026-10-27	3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c	13	1760	source-differences-require-semantic-review	159	134	redundant-to-retained-source-history	Preserve the unique documents and route inherited product work to the named source.
+ghostpay-sbom-repro-2026-10-27	b5b04b999e84e7598dcb98adbf3c44e340223d05	14	1760	source-differences-require-semantic-review	161	136	documentation-only-relative-to-retained-source-history	Preserve the unique documents and route inherited product work to the named source.
+gpt/ghostpay-beta-spec-20261109	6697390ff482ba18985de075412ba542e38040ab	0	1197	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+gpt/ghostpay-cli-completion-20261109	3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04	0	1199	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+gpt/ghostpay-product-completion-20261109	3cd1e5544391bad61c943ffab9e5c432d80ea1ee	0	1202	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+haiku/ghostpay-h01-inventory-20261111	747239db1a9b641d761736062c64bfb766d363ed	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+haiku/l1-i18n-20261114	c6a9033449cd9717d022f1c37913f951b1baaa6e	0	811	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+haiku/l2-pkg-20261114	0c8b111cbe899a49b3cb03dc32c375b36ca9768d	0	834	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+haiku/l3-ledger-20261114	8c91051b449248bfc822a6578a3815b3c9d83ce3	0	834	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integrate/ghostpay-export-recovery-acceptance-20261121-539818	4ccb3db334de7d7cada305a11243c9e3efddc4f6	465	185	carried-by-pending-integration-requires-qualification	587	571	unresolved-review-required	-
+integrate/ghostpay-idle-main-scan-20261121-539818	45ece45defd2a26cfb7f471ea4654ba4d1d2266e	119	110	source-differences-require-semantic-review	118	116	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+integrate/ghostpay-recovery-privacy-20261121-5ceb	055d33e042c63edf1d5bbbdd7833d3c1ef93733d	576	66	source-differences-require-semantic-review	588	588	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+integrate/invoice-clipboard-286	068fbc36b80311c107dfd3619d631fca794fac58	5	47	source-differences-require-semantic-review	17	17	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+integration/consolidated-2026-10-21	c206655ebfa747b3dd56b1dc9f4e7f16e641a833	0	1811	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/consolidated-2026-11-14	a89a2e948321314acf97db435e9776d9322a9461	0	612	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-accepted-20261102	f8193502e602c99bb24ff956f142671750b744a0	0	1428	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-adapter-qualification-20261119	429a4de80b9ec53177b17d89d18ce8ec91a08814	3	193	source-differences-require-semantic-review	9	5	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-autonomous-ledger-20261121-5ceb	80dd9eb9669fba0171a037b0b690d17a7e2b655e	1	66	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+integration/ghostpay-beta-consolidated-20261109	364b1f185fcc2adaedab4ce7b4b14e676b1da3b7	0	1168	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-canonical-array-followup-20261124	f0171888c95b48005a6809aedf1e625bf86dfe83	1	34	source-differences-require-semantic-review	2	2	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-completion-20261120	e22c1748a3de6eb02f5be3abe27d634b238c67c6	469	185	source-differences-require-semantic-review	505	491	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+integration/ghostpay-docs-recovery-20261119	4ff80733a3b36019e2f12fc21a8448e7666b6049	30	214	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+integration/ghostpay-historical-promotion-20261118	22af2074a086d9957a18e310ef8572b28d1facd0	1	244	source-differences-require-semantic-review	7	5	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+integration/ghostpay-historical-security-promotion-20261119	4f14d6f167c788f5ae2d019bc8482027495f3c6c	0	226	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-idle-scan-candidate-20261121-fc3db	50ccf5c8b396247b524e5115ebe51575ca79d318	121	110	carried-by-pending-integration-requires-qualification	119	117	unresolved-review-required	-
+integration/ghostpay-idle-session-20261120-r2	f5e04a30bd538b5dba6202885c8e1c3cceb31fa3	96	152	carried-by-pending-integration-requires-qualification	112	110	retained-in-unmerged-recovery-PR372-pending-gates	-
+integration/ghostpay-idle-session-completion-20261119	e2ebb4902e53e2249c6585a1d72be6e1e416c36c	7	211	carried-by-pending-integration-requires-qualification	16	16	unresolved-review-required	-
+integration/ghostpay-main-recovered-fixes-20261120	5a745d4b5fba69b66a9779f88aefc63c253a4f27	88	120	carried-by-pending-integration-requires-qualification	103	101	unresolved-review-required	-
+integration/ghostpay-main-unique-code-20261120	885b9569e6fc99e43bf01d23305494275e10120e	0	161	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-master-consolidation-20261118	bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a	205	196	source-differences-require-semantic-review	487	480	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-mythril-security-closure-20261118	ea47fa75eabb0be2045081ffeb120fc2bfae67ab	2	243	source-differences-require-semantic-review	21	21	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-package-fixes-20261124	01d4007d032c8902c144c09094dbbe75c0b086cf	0	6	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-pages-completion-20261118	198aa5baff22272453733a0f3dcfcac0e0994eec	83	250	carried-by-pending-integration-requires-qualification	284	274	unresolved-review-required	-
+integration/ghostpay-qualified-fixes-20261118	ab4e0da2cfe2a18adac0424896fba0b40fac81a8	0	244	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+integration/ghostpay-recovery-reconciled-20261119	f3bb7c662274c4a4394324c405b49517ad2b1461	92	250	source-differences-require-semantic-review	290	280	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-sweep-consent-20261120	2748c9bfd55bd226c7801c15a7acdd955ab70339	97	152	source-differences-require-semantic-review	112	110	represented-by-owned-draft-PRs-pending-gates	Reconcile the historical Sweep/idle composition through the retained recovery and current idle owner lines.
+integration/ghostpay-tor-qualified-20261121	260caca240f9944c05ce8951a154193709e30a56	6	110	source-differences-require-semantic-review	21	21	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+integration/ghostpay-tron-range-20261120-r2	cff631b5c32a86adfa2d79c342e497e91a8573a5	0	143	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+ledger/consolidation-snapshot-20261124-0418	346080a4a6ddd80aeb6d17e707404fc442955533	7	66	documentation-or-coordination-only	0	0	unresolved-new-or-advanced-head	-
+main	706188000c38b3dde5a3a362370a530870aa7587	0	0	current-main	0	0	main-baseline	-
+maintenance/ghostpay-branch-audit-20261119	55e7799574d9ab978c24e48addf6792f84e76a56	4	213	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+nodata/determined-allen-x5n560	1a7447d58c08363209b6b9b67e9a6afad07d87f3	588	34	source-differences-require-semantic-review	213	213	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+nodata/doc-sweep-20261118	cce7a7f7e548130afba2ef6b2be518ca5b667ade	1	258	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+nodata/eager-babbage-0w6sf6	2693b08ed4b1dae35fad604a2324b790f1eee5dc	0	1742	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+nodata/jolly-rubin-u4zd45	1054daabc5cabe958466ec144582d76137b54910	5	258	source-differences-require-semantic-review	33	33	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+nodata/practical-johnson-e0fbpm	85cc394451313e24104ef7089379e720b4e70526	4	53	source-differences-require-semantic-review	10	10	unique-but-incomplete	Preserve the substantial refund/settlement implementation and obtain a scoped owner reconciliation.
+nodata/wizardly-allen-qwol6u	1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849	1	258	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+nodata/wonderful-darwin-kd1h22	a92658b1ef6b95ff0145b2e1933d0047d51289d5	48	258	source-differences-require-semantic-review	70	70	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+nodata/zealous-hopper-lr0nxe	b2604949ae3cfae493bcfb0213d390a213e63037	4	258	documentation-or-coordination-only	0	0	audit-or-documentation-only	-
+privacy/hardening-recommendations	2bc2098298d90928eb1acafad969f28316bb05fc	2	258	carried-by-pending-integration-requires-qualification	92	92	unresolved-review-required	-
+qa/286-export-notification-verification	64411f2ccda72167dd5498b5d362298909afb7fd	7	34	source-differences-require-semantic-review	50	50	unresolved-newly-discovered	Retain its workflow/results with #570; do not treat it as another runtime feature.
+qa/286-integrated-mask-verification	d362c72e3af34d556c307de8d2292bb496a50ae5	591	66	source-differences-require-semantic-review	601	601	unresolved-newly-discovered	Retain the masking composition and diagnostics with #569/#598.
+qualification/20261124/pages-599	8e0bbe97b84817472b1322a95bbc58cf77d7cd57	13	53	source-differences-require-semantic-review	23	23		Preserve the unique documents and route inherited product work to the named source.
+qualification/20261124/resume-packages-565-568	bc3360e14e10dd014f52dce0a23f3712d2196c0b	2	34	documentation-or-coordination-only	0	0	unresolved-new-or-advanced-head	-
+qualification/f02-merchant-catalog-auth-provider	08faa16e1a03fe8c87f97f02257363750b52c920	5	53	source-differences-require-semantic-review	4	4	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+qualification/merchant-ledger-522-current-main	3ae56a5e0b3df9ce57e9bbf2a44c82b56e432033	5	47	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+qualification/p06-existing-role-inventory-20261123	d242926030fea856e7a368639c059e472e9e9c6b	11	191	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+qualification/pr504-main-package-rollup-20261124	c09d15a3ee2b887f320a130197fb3acba1b4566e	589	5	source-differences-require-semantic-review	213	213	unresolved-reconciliation-candidate	Use as a candidate for the named owner after refreshing current-main source and gates.
+qualification/pr525-main-package-rollup-20261124	dc2bcf2858aaa71ab08da81f4a2c3411bae6e209	8	5	source-differences-require-semantic-review	2	2	unresolved-reconciliation-candidate	Use as a candidate for the named owner after refreshing current-main source and gates.
+qualification/pr531-main-fee-merge-20261124	f8621b33f951662cd92609947235c8e9708fbc26	3	47	source-differences-require-semantic-review	2	2	represented-by-retained-owner-pr-ancestry	Use the newer owner stack; compare its source before declaring semantic supersession.
+qualification/pr531-main-package-rollup-20261124	3349757903d9e44070b2531e129776beca72284e	5	5	source-differences-require-semantic-review	2	2	unresolved-reconciliation-candidate	Use as a candidate for the named owner after refreshing current-main source and gates.
+qualify/ghostpay-hygiene-composition-20261120-9a4ab6	0e19ccc7d52b0d160fb756089e6a843a1d2831d7	12	152	source-differences-require-semantic-review	6	6	retained-in-unmerged-recovery-PR372-pending-gates	Use the named owner; retain original donor provenance without reimplementing its source.
+qualify/ghostpay-native-browsers-20261121-5ceb	b660b2d8f3f84ddf72f684d13913f643f33f2eee	579	66	source-differences-require-semantic-review	598	598	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+recover/ghostpay-canonical-json-descriptors-20261121-r10	fbcf69223a524b8e3d74fb093dfc71d8b91bdc27	8	211	source-differences-require-semantic-review	2	2	retained-in-unmerged-recovery-PR270-pending-gates	Use the named owner; retain original donor provenance without reimplementing its source.
+recover/ghostpay-chain-interop-20261121-5ceb	f717157271fe494eb8094e504e9fec8276d51fcc	1	66	source-differences-require-semantic-review	30	30	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+recover/ghostpay-policy-asset-coverage-20261121-5ceb	821700d172dc638e1c06f35a03ca5f0c215fd46d	27	66	carried-by-pending-integration-requires-qualification	21	21	unresolved-review-required	-
+recover/ghostpay-policy-validation-20261121-5ceb	2e0aff8490086a54fadd52c2fa4d802605b7920e	28	66	carried-by-pending-integration-requires-qualification	28	28	unresolved-review-required	-
+release/ghostpay-beta-qualification-20261119	417f7c71daf8645e1432f2ec8f070110879b80bd	425	185	carried-by-pending-integration-requires-qualification	494	478	unresolved-review-required	-
+repair/ghostpay-270-policy-fixture-20261119	dc821780e05483d1b35062a74b07be7ed9ca2f1c	243	192	carried-by-pending-integration-requires-qualification	453	445	unresolved-review-required	-
+repair/ghostpay-276-artifact-races-20261119	8cbae85c95fa707210704ee72bb4416b36e5a4d7	7	193	carried-by-pending-integration-requires-qualification	2	2	unresolved-review-required	-
+repair/ghostpay-analyzer-recovered-20261119	e4d54a6829fcc861de7af1669c0e0f64f62aa137	326	190	carried-by-pending-integration-requires-qualification	470	462	unresolved-review-required	-
+repair/ghostpay-btc-lifecycle-20261121-5ceb	4fc5c3dceb682067d6ebc7da1759cbeadd20dddf	577	66	source-differences-require-semantic-review	591	591	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+repair/ghostpay-cookie-dependency-20261121-5ceb	d3c2228c53cbda4ee650ec91776af8bb1c02674d	1	66	source-differences-require-semantic-review	3	3	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+repair/ghostpay-final-lint-20261119	73d7ccda4fd448dec1682082d633c90de9fa0d7a	338	190	carried-by-pending-integration-requires-qualification	473	465	unresolved-review-required	-
+repair/ghostpay-history-pool-values-20261118	ca61cc889c6a5ca6f264cf787e2d2e698f594ea8	0	237	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+repair/ghostpay-history-scanner-20261118	6c11242abca5a3f20d933266c723d71b2e75d39b	0	239	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+repair/ghostpay-native-fee-recovered-20261119	cbc96840c3dc4fede90afff55b4dfd94f66784da	318	190	carried-by-pending-integration-requires-qualification	463	455	unresolved-review-required	-
+repair/ghostpay-pr-231-20261118	4085622463411d3ba27f4efb7b73a70575170535	7	243	carried-by-pending-integration-requires-qualification	14	14	unresolved-review-required	-
+repair/ghostpay-pr-87-20261119	6b07e403dd26a8c8e12dfab82dedb0c36002b043	9	243	source-differences-require-semantic-review	71	69	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+repair/ghostpay-privacy-browser-lifecycle-20261121-539818	8ce7f1db452167311876bd0707778c2e9c64f3df	462	185	carried-by-pending-integration-requires-qualification	585	569	unresolved-review-required	-
+repair/ghostpay-qr-surrogates-20261119	ac7b7a11f00896d105fa7a06e44e218046bdc56c	339	185	carried-by-pending-integration-requires-qualification	473	465	unresolved-review-required	-
+repair/ghostpay-r31-journal-readback-test-typecheck-20261122	4e1fa09571f9b04fb1e96d01bdd9d516188def73	13	66	source-differences-require-semantic-review	4	4	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+repair/ghostpay-settings-import-expectations-20261121-539818	82ab06f1bb6fc4b9df2b4ac87679a4029987a284	94	120	source-differences-require-semantic-review	104	102	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+repair/ghostpay-tron-main-20261121-5ceb	500ece7a7c99b566ecaad5a8dd0d54fd0022395a	9	66	carried-by-pending-integration-requires-qualification	5	5	unresolved-review-required	-
+research/privacy-evidence-matrix-20261110	a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e	0	1747	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+resume/account-privacy-20261124	86450d8d459ccf4a6925742d082e1c7ad0905e75	590	66	source-differences-require-semantic-review	594	594	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+resume/ghostpay-i18n-completeness-20261124	7d6d48eff443b604f384835c207adcfbe014b624	1	34	source-differences-require-semantic-review	2	2	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+resume/privacy-minimal-typecheck-20261124	c8f892f2aaa4423450689a4d7f91dff24230ed8b	5	34	source-differences-require-semantic-review	15	15	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+resume/recovery-native-20261124	f637214e6f3825181dcffbd79f746a21bcc84bba	127	110	source-differences-require-semantic-review	121	119	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+resume/seller-reconciliation-20261124	0c7f680d0791668a68c3a92d7d4ba44087dcf2b8	12	53	source-differences-require-semantic-review	23	23	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+review/427-440-wallet-journal-readback-regression	3c21b02194c97c41e6efaffead5520b10697f229	10	66	source-differences-require-semantic-review	4	4	unresolved-review-required	Use the newer owner stack; compare its source before declaring semantic supersession.
+review/ghostpay-sweep-quote-lifecycle-20261119	63ff40d57af879a3d82166450f63aadb7bf0d5ff	11	193	carried-by-pending-integration-requires-qualification	15	15	unresolved-review-required	-
+security/mythril-full-remediation-20261118	16c48521f99903ccd2e584df5d00a9dec5ef754c	9	258	source-differences-require-semantic-review	22	22	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+snapshot/ghostpay-privacy-8be15289-20261120	d6819796a9542acc488b896786faffe83b913d9b	426	185	carried-by-pending-integration-requires-qualification	523	507	unresolved-review-required	-
+test/ghostpay-first-sign-after-sleep	4b077d2b13f956cfcf9bce1726f929cca40c7394	124	110	source-differences-require-semantic-review	118	116	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+test/ghostpay-hygiene-lint-20261120-9a4ab6	95e60ce4948b7430865dafbd1ad01434310a75f7	11	152	carried-by-pending-integration-requires-qualification	4	4	unresolved-review-required	-
+test/ghostpay-policy-review-races-20261121-r1	d981b19ff34c400251c2c398643a337a4205b06c	35	66	carried-by-pending-integration-requires-qualification	30	30	unresolved-review-required	-
+test/ghostpay-privacy-fixtures-20261120-9a4ab6	26b45165c1d6de9e23f5b943ed46f3aa0908f45c	454	185	carried-by-pending-integration-requires-qualification	585	569	unresolved-review-required	-
+test/ghostpay-recovery-interoperability-20261120-9a4ab6	37760c3655c48fa190c0f2324072cb506cf1b88d	240	193	source-differences-require-semantic-review	457	444	unresolved-review-required	Preserve the owner source; qualify current-main composition and required reviews/gates.
+test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121	28f1e4bd0960a0d57ba2636b6456e7c1b3096e94	461	185	carried-by-pending-integration-requires-qualification	585	569	unresolved-review-required	-
+test/gp-pages-04-frozen-page-sweep-resume	9303aecc53c170c09537782f445a3b6bc71be465	129	110	source-differences-require-semantic-review	120	118	unresolved-newly-discovered	Preserve the owner source; qualify current-main composition and required reviews/gates.
+test/receipt-print-action-532	cb977e4b31047e65ccbe8835c8e45e1cff3cfc84	14	53	source-differences-require-semantic-review	10	10	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+test/seller-accepted-late-reorg	711168f18e5d808df4e3153da8898cd86fae5266	5	53	source-differences-require-semantic-review	20	20	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+ui/merchant-dashboard-records	37a714cfedec93749083d5cf5b46fa8adcd9bfa1	12	53	source-differences-require-semantic-review	29	29	unresolved-current-owner-pr	Use the newer owner stack; compare its source before declaring semantic supersession.
+verify/policy-prompt-two-tabs-20261124	f5bc0d6c71260e11fc89b28c42c65446e31d335f	44	53	source-differences-require-semantic-review	45	45	unresolved-current-owner-pr	Preserve the owner source; qualify current-main composition and required reviews/gates.
+work/future-feature-coordination-20261120	c6f73ebb177fc76aa74172b86e3f173263c64195	4	152	documentation-or-coordination-only	0	0	audit-documentation-only	-
+work/ghostpay-consolidation-review-20261025	a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523	0	1758	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+work/ghostpay-pr26-qa-2026-10-24	77e7d7b6dd21da1995259c8950141db0d34bcb6e	0	1775	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-
+work/ghostpay-required-v1-candidate-20261120	74dccc419bf5c82b21875d205ed5a97d0c4e69b6	428	185	carried-by-pending-integration-requires-qualification	542	526	unresolved-review-required	-
+work/ghostpay-required-v11-candidate-20261120	8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9	429	185	carried-by-pending-integration-requires-qualification	581	565	unresolved-review-required	-
+work/local-reconstruction-2026-10-24	bd320d530c725c0edc820b496ea298d741c7ba9e	0	1784	included-in-main-by-ancestry	0	0	included-in-main-by-ancestry	-

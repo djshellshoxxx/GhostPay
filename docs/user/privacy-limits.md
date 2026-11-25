@@ -37,7 +37,7 @@ GhostPay needs an RPC provider (a server that reads the blockchain for you). You
 | **Anyone with your invoice link** | The whole invoice (it is a bearer link). Anyone with two of your invoices can tell they come from one seller. |
 | **Anyone with a payment receipt** | Payer-side facts, the one-time address, amount and your signing key. Share receipts only with who needs them. |
 | **Public chain analyst** | Everything in "What stays public", plus any link you create by sweeping carelessly. |
-| **Anyone using your computer or phone later** | Your RPC and relayer addresses (stored unencrypted, including any key you put in an RPC web address), which chains you scan and how far, and possibly your invoice links in browser history. Not your encrypted keys or notes without your passphrase. |
+| **Anyone using your computer or phone later** | Your RPC and relayer addresses (stored unencrypted, including any key you put in an RPC web address), which chains you scan and how far, possibly your invoice links in browser history, and, if you paid from this browser, the wallet address and transaction hashes of your payment attempts (kept until you clear them). Not your encrypted keys or notes without your passphrase. |
 | **Wallet provider or extension** | Transaction requests, chain, connected accounts. |
 | **Fee recipient (project owner)** | Aggregate fees on-chain; nothing beyond public chain data. |
 

@@ -1,13 +1,16 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { verifyReceipt } from '../lib/receipts';
 import { ReceiptPanel } from './ReceiptPanel';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 beforeEach(clearSession);
 
 function verifiedMatch(txHash?: string): ScanMatch {
@@ -76,6 +79,36 @@ describe('ReceiptPanel', () => {
     await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
     expect((await screen.findByRole('alert')).textContent).toContain('Receipt invoice digest is invalid');
     expect(screen.queryByLabelText('Signed receipt JSON')).toBeNull();
+  });
+
+  it('prints only the selected signed receipt when several scan matches have receipts', async () => {
+    const seller = generateSession();
+    const user = userEvent.setup();
+    render(<>
+      <ReceiptPanel match={verifiedMatch(`0x${'c'.repeat(64)}`)} sellerSignerPublicKey={seller.signerPublicKey} />
+      <ReceiptPanel match={verifiedMatch(`0x${'e'.repeat(64)}`)} sellerSignerPublicKey={seller.signerPublicKey} />
+    </>);
+    const panels = screen.getAllByRole('region', { name: 'Seller-signed receipt' });
+    for (const panel of panels) {
+      fireEvent.change(within(panel).getByLabelText('Invoice digest (entered manually)'), { target: { value: `0x${'d'.repeat(64)}` } });
+      await user.click(within(panel).getByRole('button', { name: 'Sign receipt' }));
+      await within(panel).findByLabelText('Signed receipt JSON');
+    }
+    const receipts = screen.getAllByRole('article');
+    const selected: Element[][] = [];
+    vi.spyOn(window, 'print').mockImplementation(() => {
+      selected.push([...document.querySelectorAll('[data-print-target]')]);
+    });
+    await user.click(screen.getAllByRole('button', { name: 'Print receipt' })[1]!);
+    expect(selected).toEqual([[receipts[1]]]);
+    expect(receipts[0]?.hasAttribute('data-print-target')).toBe(false);
+    act(() => { window.dispatchEvent(new Event('afterprint')); });
+    expect(document.querySelector('[data-print-target]')).toBeNull();
+    await user.click(screen.getAllByRole('button', { name: 'Print receipt' })[0]!);
+    expect(selected).toEqual([[receipts[1]], [receipts[0]]]);
+    act(() => { window.dispatchEvent(new Event('afterprint')); });
+    expect(document.querySelector('[data-print-target]')).toBeNull();
+    expect(screen.getAllByLabelText('Signed receipt JSON')).toHaveLength(2);
   });
 
   it('withholds receipt controls for non-verified matches and unavailable metadata', () => {

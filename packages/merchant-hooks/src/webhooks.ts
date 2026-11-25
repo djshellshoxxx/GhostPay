@@ -72,7 +72,7 @@ function checkSecret(secret: Uint8Array): void {
  */
 export function signWebhook(secret: Uint8Array, body: string, ctx: { now: number; nonce: string }): string {
   checkSecret(secret);
-  if (!NONCE_RE.test(ctx.nonce) || !Number.isSafeInteger(ctx.now) || ctx.now < 0) throw new HooksError('bad-nonce');
+  if (!NONCE_RE.test(ctx.nonce) || !Number.isSafeInteger(ctx.now) || ctx.now < 0 || !TS_RE.test(String(ctx.now))) throw new HooksError('bad-nonce');
   return `t=${ctx.now},n=${ctx.nonce},v1=${macOf(secret, ctx.now, ctx.nonce, body)}`;
 }
 

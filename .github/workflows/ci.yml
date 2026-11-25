@@ -108,7 +108,7 @@ jobs:
       - name: Build profile and emitted-output guard regressions
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
       - name: Merchant amount parsing and POS parity regressions
-        run: node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+        run: node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs examples/pos-terminal/session.test.mjs
       - name: Locale catalog completeness and template safety
         run: node scripts/i18n/check.mjs
       - run: npm audit --omit=dev --audit-level=high
@@ -191,6 +191,7 @@ jobs:
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
                 node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs
+                REQUIRE_ANVIL=1 node --test scripts/recovery/*.test.mjs
               fi
               ;;
           esac
@@ -268,6 +269,17 @@ jobs:
       - run: npm run test:e2e --workspace @ghostpay/web
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
+      - name: Native reconciliation IndexedDB check
+        if: matrix.profile == 'full'
+        working-directory: apps/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: full
+        run: |
+          set -euo pipefail
+          GHOSTPAY_CHROMIUM="$(node --input-type=module -e "import { chromium } from '@playwright/test'; process.stdout.write(chromium.executablePath());")"
+          test -x "$GHOSTPAY_CHROMIUM"
+          export GHOSTPAY_CHROMIUM
+          node scripts/test-reconciliation-idb.mjs
       - name: Record the build used by the successful browser run
         env:
           BUILD_PROFILE: ${{ matrix.profile }}
@@ -329,6 +341,88 @@ jobs:
           path: apps/web/test-results
           if-no-files-found: ignore
           retention-days: 7
+
+  ghostid-native:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [default-full, opt-in-full, lean-with-flag]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      # Each scenario has its own runner and build. Ordinary E2E artifact identity is unchanged.
+      - name: Qualify the scoped offline profile build
+        env:
+          GHOSTPAY_GHOSTID_SCENARIO: ${{ matrix.scenario }}
+          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.scenario == 'lean-with-flag' && 'lean' || 'full' }}
+          VITE_GHOSTID_OFFLINE_REVIEW: ${{ matrix.scenario == 'default-full' && '0' || '1' }}
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/ghostid-${{ matrix.scenario }}.json
+        run: |
+          set -euo pipefail
+          GHOSTPAY_CHROMIUM="$(node --input-type=module -e "import { chromium } from '@playwright/test'; process.stdout.write(chromium.executablePath());")"
+          test -x "$GHOSTPAY_CHROMIUM"
+          export GHOSTPAY_CHROMIUM
+          npm run test:e2e --workspace @ghostpay/web -- e2e/future-ghostid.spec.ts --project=desktop --reporter=line,json
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const report = JSON.parse(readFileSync(process.env.PLAYWRIGHT_JSON_OUTPUT_FILE, 'utf8'));
+          const scenario = process.env.GHOSTPAY_GHOSTID_SCENARIO;
+          const exclusion = 'the offline profile picker is absent from the default full and lean builds';
+          const review = 'reviews local files offline and preserves an independently stored origin pin';
+          assert.ok(['default-full', 'opt-in-full', 'lean-with-flag'].includes(scenario));
+          const expectedTitle = scenario === 'opt-in-full' ? review : exclusion;
+          assert.equal(report.errors.length, 0);
+          assert.equal(report.stats.expected, 1);
+          assert.equal(report.stats.skipped, 1);
+          assert.equal(report.stats.unexpected, 0);
+          assert.equal(report.stats.flaky, 0);
+          const specs = [];
+          function collect(suites) {
+            for (const suite of suites) {
+              specs.push(...suite.specs);
+              collect(suite.suites ?? []);
+            }
+          }
+          collect(report.suites);
+          assert.deepEqual(specs.map((spec) => spec.title).sort(), [exclusion, review].sort());
+          assert.ok(specs.every((spec) => spec.file.endsWith('future-ghostid.spec.ts')));
+          const cases = specs.flatMap((spec) => spec.tests.map((test) => ({ title: spec.title, test })));
+          assert.equal(cases.length, 2);
+          assert.ok(cases.every(({ test }) => test.projectName === 'desktop'));
+          const passed = cases.filter(({ test }) => test.status === 'expected');
+          const skipped = cases.filter(({ test }) => test.status === 'skipped');
+          assert.equal(passed.length, 1);
+          assert.equal(skipped.length, 1);
+          assert.equal(passed[0].title, expectedTitle);
+          assert.notEqual(skipped[0].title, expectedTitle);
+          assert.equal(passed[0].test.expectedStatus, 'passed');
+          assert.equal(passed[0].test.results.length, 1);
+          assert.equal(passed[0].test.results[0].status, 'passed');
+          console.log(JSON.stringify({ scenario, source: process.env.GITHUB_SHA,
+            profile: process.env.GHOSTPAY_LOCAL_BUILD_PROFILE,
+            preview: process.env.VITE_GHOSTID_OFFLINE_REVIEW,
+            passed: passed[0].title, intentionallySkipped: skipped[0].title }));
+          NODE
+      - name: Retain native profile-review evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ghostid-native-${{ matrix.scenario }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ghostid-${{ matrix.scenario }}.json
+            apps/web/test-results
+          if-no-files-found: warn
+          retention-days: 14
 
   lean-candidate:
     needs: changes

@@ -1,0 +1,42 @@
+[
+  {
+    "branch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+    "head": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+    "prior_main": "706188000c38b3dde5a3a362370a530870aa7587",
+    "current_main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "current_different_paths": [
+      "packages/ux-schedule/src/scheduled.ts"
+    ],
+    "diff": "diff --git a/packages/ux-schedule/src/scheduled.ts b/packages/ux-schedule/src/scheduled.ts\nindex 0e94c51a..1add3370 100644\n--- a/packages/ux-schedule/src/scheduled.ts\n+++ b/packages/ux-schedule/src/scheduled.ts\n@@ -160,9 +160,13 @@ export function confirm(p: ScheduledPayment, ack: Acknowledgement, clock: Clock)\n \n /** Cancel a non-terminal payment. */\n export function cancel(p: ScheduledPayment, clock: Clock): Result<ScheduledPayment> {\n-  const t = tick(p, clock);\n+  // A terminal record needs no clock read, even when its clock is unavailable.\n+  if (isTerminal(p.state)) return err('bad_state', `cannot cancel from state ${p.state}`);\n+  // Check expiry and stamp cancellation using the same clock instant.\n+  const now = readClock(clock);\n+  const t = tick(p, () => now);\n   if (isTerminal(t.state)) return err('bad_state', `cannot cancel from state ${t.state}`);\n-  return ok({ ...t, state: 'cancelled', stateChangedAtMs: readClock(clock) });\n+  return ok({ ...t, state: 'cancelled', stateChangedAtMs: now });\n }\n \n /** The \"due, needs user confirm\" item surfaced to the UI. */\n"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+    "head": "9bdc9cbade90995e3207b72535a7818f909c2684",
+    "prior_main": "706188000c38b3dde5a3a362370a530870aa7587",
+    "current_main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "current_different_paths": [
+      "apps/web/src/lib/format.ts"
+    ],
+    "diff": "diff --git a/apps/web/src/lib/format.ts b/apps/web/src/lib/format.ts\nindex 18dad7e4..cda0c3c5 100644\n--- a/apps/web/src/lib/format.ts\n+++ b/apps/web/src/lib/format.ts\n@@ -15,6 +15,7 @@ export function formatUnits(value: bigint, decimals: number): string {\n \n /** Strictly parses a decimal string into base units. Returns undefined for anything unexpected (never rounds). */\n export function parseUnits(text: string, decimals: number): bigint | undefined {\n+  if (typeof text !== 'string' || !Number.isInteger(decimals) || decimals < 0 || decimals > 36) return undefined;\n   const m = DECIMAL_RE.exec(text.trim());\n   if (m === null) return undefined;\n   const whole = m[1] as string;\n@@ -48,6 +49,8 @@ export function shortHex(value: string, head = 8, tail = 6): string {\n \n /** `mm:ss` or `h:mm:ss` countdown label from milliseconds (never negative). */\n export function formatCountdown(ms: number): string {\n+  // Runtime JavaScript callers can bypass the number type. Do not coerce malformed durations.\n+  if (typeof ms !== 'number' || !Number.isFinite(ms)) return 'invalid time';\n   const total = Math.max(0, Math.ceil(ms / 1000));\n   const h = Math.floor(total / 3600);\n   const m = Math.floor((total % 3600) / 60);\n@@ -62,6 +65,8 @@ export function formatCountdown(ms: number): string {\n  * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).\n  */\n export function formatUnix(seconds: number): string {\n+  // Reject runtime-invalid values before arithmetic; coercion can mislabel dates or run hostile hooks.\n+  if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return 'invalid time';\n   const date = new Date(seconds * 1000);\n   if (Number.isNaN(date.getTime())) return 'invalid time';\n   return date.toISOString().replace('T', ' ').replace(/\\.\\d+Z$/, ' UTC');\n"
+  },
+  {
+    "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+    "head": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+    "prior_main": "706188000c38b3dde5a3a362370a530870aa7587",
+    "current_main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "current_different_paths": [
+      "packages/ux-schedule/src/scheduled.ts"
+    ],
+    "diff": "diff --git a/packages/ux-schedule/src/scheduled.ts b/packages/ux-schedule/src/scheduled.ts\nindex 0e94c51a..1add3370 100644\n--- a/packages/ux-schedule/src/scheduled.ts\n+++ b/packages/ux-schedule/src/scheduled.ts\n@@ -160,9 +160,13 @@ export function confirm(p: ScheduledPayment, ack: Acknowledgement, clock: Clock)\n \n /** Cancel a non-terminal payment. */\n export function cancel(p: ScheduledPayment, clock: Clock): Result<ScheduledPayment> {\n-  const t = tick(p, clock);\n+  // A terminal record needs no clock read, even when its clock is unavailable.\n+  if (isTerminal(p.state)) return err('bad_state', `cannot cancel from state ${p.state}`);\n+  // Check expiry and stamp cancellation using the same clock instant.\n+  const now = readClock(clock);\n+  const t = tick(p, () => now);\n   if (isTerminal(t.state)) return err('bad_state', `cannot cancel from state ${t.state}`);\n-  return ok({ ...t, state: 'cancelled', stateChangedAtMs: readClock(clock) });\n+  return ok({ ...t, state: 'cancelled', stateChangedAtMs: now });\n }\n \n /** The \"due, needs user confirm\" item surfaced to the UI. */\n"
+  },
+  {
+    "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+    "head": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+    "prior_main": "706188000c38b3dde5a3a362370a530870aa7587",
+    "current_main": "cc090bf80bbf35c1db81ecbe6acae694a518bed0",
+    "current_different_paths": [
+      "packages/ux-guide/src/profiles.ts"
+    ],
+    "diff": "diff --git a/packages/ux-guide/src/profiles.ts b/packages/ux-guide/src/profiles.ts\nindex b6a18547..ce98bf8b 100644\n--- a/packages/ux-guide/src/profiles.ts\n+++ b/packages/ux-guide/src/profiles.ts\n@@ -104,6 +104,7 @@ export function diffSettings(from: ProfileSettings, to: ProfileSettings): Settin\n \n /** Profile whose settings equal `settings` exactly, or `custom`. */\n export function detectProfile(settings: ProfileSettings): ProfileId | 'custom' {\n+  if (Object.keys(settings).length !== Object.keys(SETTINGS.everyday).length) return 'custom';\n   for (const id of PROFILE_IDS) {\n     if (diffSettings(settings, SETTINGS[id]).length === 0) return id;\n   }\n"
+  }
+]

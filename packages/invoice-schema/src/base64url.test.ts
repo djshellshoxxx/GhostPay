@@ -24,6 +24,21 @@ describe('base64url', () => {
     expect(() => decodeBase64Url('QUF')).toThrow(Base64UrlError);
     expect(decodeBase64Url('QUE')).toEqual(Uint8Array.of(0x41, 0x41));
   });
+  it('rejects non-string runtime inputs with a fixed decoder error', () => {
+    const inputs: unknown[] = [
+      undefined,
+      null,
+      0,
+      false,
+      [],
+      { length: 0 },
+      new Uint8Array([0x41]),
+      { length: 2, charCodeAt: () => 0x51 },
+    ];
+    for (const input of inputs) {
+      expect(() => decodeBase64Url(input as string)).toThrow(Base64UrlError);
+    }
+  });
   it('empty string is empty bytes', () => {
     expect(decodeBase64Url('')).toEqual(new Uint8Array(0));
     expect(encodeBase64Url(new Uint8Array(0))).toBe('');

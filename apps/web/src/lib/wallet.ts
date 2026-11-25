@@ -1,6 +1,6 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
+import { attemptTxDigest, beginAttempt, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import type { MessageKey } from '../i18n/catalog';
@@ -268,6 +268,8 @@ export interface TxRequest {
 }
 
 const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
+/** Longest wait for recording a returned hash before handing it to the caller anyway. */
+const FINISH_WAIT_MS = 10_000;
 
 export interface WalletAttemptOptions {
   readonly kind: AttemptInput['kind'];
@@ -279,8 +281,21 @@ export interface WalletAttemptOptions {
   readonly scope?: string;
   /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
   readonly logicalAction?: boolean;
-  /** Explicit journal store; policy operations use durable browser storage under an exclusive lock. */
+  /** Observes the immediate provider hand-off after the durable attempt is written. */
+  readonly onWalletRequest?: () => void;
+  /** Explicit journal store (tests, policy). Default: the durable browser journal shared by all tabs. */
   readonly storage?: AttemptStorage;
+  /** Journal lock; defaults to `navigator.locks` (missing locks refuse before any wallet request). */
+  readonly lockManager?: AttemptLockManager;
+  /**
+   * The caller already holds `ATTEMPT_JOURNAL_LOCK` around this call (Web Locks are not reentrant, so requesting it
+   * again would deadlock): journal writes then run in place. Only for a caller that really holds it.
+   */
+  readonly journalLockHeld?: boolean;
+}
+/** Journal key of an invoice payment: payer- and calldata-independent, the same for every tab and account. */
+export function paymentAttemptKey(chainId: number, invoiceScope: string): string {
+  return keccak256(toBytes(JSON.stringify([chainId, 'invoice-payer', 'payment', invoiceScope])));
 }
 export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, options?: WalletAttemptOptions): string {
   const call = [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()];
@@ -289,9 +304,10 @@ export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, 
   if (logicalTransaction && (options.kind !== 'transaction' || typeof options.scope !== 'string' || !/^[A-Za-z0-9:._/-]{1,1024}$/.test(options.scope))) {
     throw new UserFacingError({ key: 'policy.withdraw.logicalScope' });
   }
+  if (payment) return paymentAttemptKey(s.chainId, options.scope);
   return keccak256(toBytes(JSON.stringify([
-    s.chainId, payment ? 'invoice-payer' : logicalTransaction ? 'logical-relayer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
-    payment ? options.scope : logicalTransaction ? ['logical-transaction-v1', options.scope] : options?.scope === undefined ? call : [options.scope, ...call],
+    s.chainId, logicalTransaction ? 'logical-relayer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    logicalTransaction ? ['logical-transaction-v1', options.scope] : options?.scope === undefined ? call : [options.scope, ...call],
   ])));
 }
 /** Returned hash is preserved even if tab storage fails after broadcast. */
@@ -343,31 +359,99 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
     dispose,
   };
 }
-/** Sends one transaction through the wallet. An initiated wallet request cannot be cancelled by this page. */
+interface StartedRequest {
+  readonly attempt: WalletAttempt | undefined;
+  readonly pending: Promise<unknown>;
+}
+/**
+ * Sends one transaction through the wallet. An initiated wallet request cannot be cancelled by this page.
+ * On the durable journal the final authority check, the `unknown` record and the provider call run in one synchronous
+ * step inside the cross-tab journal lock; the lock is released as soon as the request has started (never across the
+ * wallet prompt), and the returned hash is recorded under the lock again.
+ */
 export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurrent?: () => void, options?: WalletAttemptOptions): Promise<Hex> {
   const authority = walletAuthority(s, assertCurrent);
   try {
     await recheckWallet(s, authority.assert);
     authority.assert();
-    const storage = options?.storage ?? browserAttemptStorage();
-    const attempt = storage === undefined ? undefined : beginAttempt({
+    const explicitStorage = options?.storage;
+    const journaled = explicitStorage !== undefined || browserAttemptStorage() !== undefined;
+    const input: AttemptInput | undefined = !journaled ? undefined : {
       key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
-    }, storage);
-    // No await between this final authority check, the journal write, and provider invocation.
-    authority.assert();
+      txDigest: attemptTxDigest(s.chainId, s.account, tx.to, tx.data, tx.value),
+    };
+    const params = [{ from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` }];
+    const invoke = (attempt: WalletAttempt | undefined): StartedRequest => {
+      authority.assert();
+      const pending = call(s.wallet.provider, 'eth_sendTransaction', params);
+      pending.catch(() => undefined);
+      try { options?.onWalletRequest?.(); } catch { /* UI notification cannot interrupt tracking the wallet response. */ }
+      return { attempt, pending };
+    };
+    const access: JournalAccess = {
+      ...(explicitStorage === undefined ? {} : { storage: explicitStorage }),
+      ...(options?.lockManager === undefined ? {} : { lockManager: options.lockManager }),
+      ...(options?.journalLockHeld === true ? { lockHeld: true } : {}),
+    };
+    const box: { started?: StartedRequest; abandoned?: boolean; unsent?: WalletAttempt } = {};
+    const refuseIfAbandoned = (): void => {
+      // A lock manager that settles before running its callback must never start a request this call already refused (QA-1).
+      if (box.abandoned === true) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+    };
+    if (input === undefined) box.started = invoke(undefined);
+    else {
+      try {
+        // Keep the provider promise out of the journal lock so a wallet prompt never holds the lock.
+        await withAttemptJournal((store) => {
+          refuseIfAbandoned();
+          authority.assert();
+          return beginAttempt(input, store);
+        }, access, (attempt) => {
+          refuseIfAbandoned();
+          // invoke() throws only from its authority check, before the provider is called: the committed record is unsent.
+          try { box.started = invoke(attempt); } catch (e) { box.unsent = attempt; throw e; }
+        });
+      } catch (e) {
+        if (box.started !== undefined) { /* The provider was invoked: a failing lock wrapper cannot erase the request. */ }
+        else {
+          box.abandoned = true;
+          const unsent = box.unsent;
+          if (unsent !== undefined) {
+            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5). If removal
+            // fails the record stays: refusing a retry is the safe direction.
+            try { await withAttemptJournal((store) => { removeUnsentAttempt(unsent, store); }, access); } catch { /* kept */ }
+          }
+          throw e;
+        }
+      }
+    }
+    const started = box.started;
+    if (started === undefined) {
+      box.abandoned = true;
+      throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
+    }
     let hash: unknown;
     try {
-      hash = await call(s.wallet.provider, 'eth_sendTransaction', [
-        { from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` },
-      ]);
+      hash = await started.pending;
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
       throw new WalletSubmissionUnknownError(e instanceof WalletCallError ? e.rpcCode : undefined);
     }
     if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new WalletSubmissionUnknownError(undefined, true);
     const normalized = hash.toLowerCase() as Hex;
+    const attempt = started.attempt;
     if (attempt !== undefined) {
-      try { finishAttempt(attempt, normalized, storage); } catch { throw new WalletBroadcastError(normalized); }
+      // The hash is recorded under the lock, which another tab may hold across a wallet prompt (policy actions). Never
+      // keep a returned hash from the caller meanwhile: after a bounded wait surface it as a broadcast whose follow-up
+      // failed, and let the queued write still record it when the lock frees (JRNL-L1).
+      const finishing = withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, { ...access, unboundedWait: true });
+      finishing.catch(() => undefined);
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const waited = new Promise<'timeout'>((resolve) => { timer = setTimeout(() => { resolve('timeout'); }, FINISH_WAIT_MS); });
+      try {
+        if (await Promise.race([finishing.then(() => 'recorded' as const), waited]) === 'timeout') throw new WalletBroadcastError(normalized);
+      } catch { throw new WalletBroadcastError(normalized); }
+      finally { clearTimeout(timer); }
     }
     return normalized;
   } finally { authority.dispose(); }
@@ -418,20 +502,33 @@ export interface SeenTx {
   readonly input: Hex;
   readonly value: bigint;
   readonly chainId: bigint | undefined;
+  /** Account nonce when the RPC gave a canonical quantity; not part of the preview comparison. */
+  readonly nonce: bigint | undefined;
 }
 
-function parseSeenTx(v: unknown): SeenTx | undefined {
+function optionalQuantity(v: unknown): bigint | undefined {
+  try { return parseQuantity(v); } catch { return undefined; }
+}
+
+/** Shape-checks an `eth_getTransactionByHash` answer; `undefined` for null, a typed error for anything malformed. */
+export function parseSeenTx(v: unknown): SeenTx | undefined {
   if (v === null) return undefined;
   if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
   try {
+    const hash = o['hash'];
+    const input = o['input'] ?? o['data'];
+    if (typeof hash !== 'string' || typeof input !== 'string') {
+      throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
+    }
     return {
-      hash: String(o['hash']).toLowerCase() as Hex,
+      hash: hash.toLowerCase() as Hex,
       from: toAccount(o['from']),
       to: o['to'] === null ? null : toAccount(o['to']),
-      input: String(o['input'] ?? o['data']).toLowerCase() as Hex,
+      input: input.toLowerCase() as Hex,
       value: parseQuantity(o['value']),
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
+      nonce: optionalQuantity(o['nonce']),
     };
   } catch {
     throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
@@ -450,6 +547,7 @@ export async function verifySubmission(
   expected: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint; readonly chainId: number },
   sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
   attempts = 6,
+  onVerified?: (seen: SeenTx) => void,
 ): Promise<SubmissionCheck> {
   const expFrom = getAddress(expected.from);
   const expTo = getAddress(expected.to);
@@ -462,6 +560,7 @@ export async function verifySubmission(
       if (seen.input !== expected.data.toLowerCase()) throw new SubmissionMismatchError('call data');
       if (seen.value !== expected.value) throw new SubmissionMismatchError('value');
       if (seen.chainId !== undefined && seen.chainId !== BigInt(expected.chainId)) throw new SubmissionMismatchError('chain');
+      onVerified?.(seen);
       return 'verified';
     }
     if (i < attempts - 1) await sleep(1500);
@@ -489,8 +588,16 @@ export async function pollReceipt(
       const o = r as Record<string, unknown>;
       let to: Address | undefined;
       try {
+        const receiptHash = o['transactionHash'];
+        if (typeof receiptHash !== 'string' || !HASH_RE.test(receiptHash)) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
+        if (receiptHash.toLowerCase() !== hash.toLowerCase()) throw new SubmissionMismatchError('hash');
         to = o['to'] === null || o['to'] === undefined ? undefined : toAccount(o['to']);
         const status = parseQuantity(o['status']);
+        if (status !== 0n && status !== 1n) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
         if (to !== undefined && to !== getAddress(expectedTo)) throw new SubmissionMismatchError('receipt destination');
         return { status: status === 1n ? 'success' : 'reverted', blockNumber: parseQuantity(o['blockNumber']) };
       } catch (e) {
@@ -503,4 +610,4 @@ export async function pollReceipt(
   return undefined;
 }
 
-// i18n-use: error.wallet.invoiceChainMismatch error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork error.wallet.theWalletDidNotReturnAValidTransactionHashThe error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue error.wallet.theWalletNetworkChangedReconnectAndReviewAgain error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue error.wallet.theWalletReturnedAnInvalidAccount error.wallet.theWalletReturnedAnInvalidChainId error.wallet.theWalletReturnedAnInvalidSignature error.wallet.theWalletReturnedNoAccounts error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet error.wallet.youRejectedTheRequestInYourWallet error.wallet.yourRPCReturnedAnUnexpectedReceiptShape error.wallet.yourRPCReturnedAnUnexpectedTransactionShape policy.withdraw.logicalScope transaction.code transaction.field.chain transaction.field.data transaction.field.destination transaction.field.hash transaction.field.receiptDestination transaction.field.sender transaction.field.unknown transaction.field.value transaction.submissionMismatch transaction.walletBroadcast transaction.walletUnknown wallet.warning.conflictingIdentity wallet.warning.duplicateName wallet.warning.missingRdns wallet.warning.mixedScript wallet.warning.nonAscii
+// i18n-use: error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew error.wallet.invoiceChainMismatch error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork error.wallet.theWalletDidNotReturnAValidTransactionHashThe error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue error.wallet.theWalletNetworkChangedReconnectAndReviewAgain error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue error.wallet.theWalletReturnedAnInvalidAccount error.wallet.theWalletReturnedAnInvalidChainId error.wallet.theWalletReturnedAnInvalidSignature error.wallet.theWalletReturnedNoAccounts error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet error.wallet.youRejectedTheRequestInYourWallet error.wallet.yourRPCReturnedAnUnexpectedReceiptShape error.wallet.yourRPCReturnedAnUnexpectedTransactionShape policy.withdraw.logicalScope transaction.code transaction.field.chain transaction.field.data transaction.field.destination transaction.field.hash transaction.field.receiptDestination transaction.field.sender transaction.field.unknown transaction.field.value transaction.submissionMismatch transaction.walletBroadcast transaction.walletUnknown wallet.warning.conflictingIdentity wallet.warning.duplicateName wallet.warning.missingRdns wallet.warning.mixedScript wallet.warning.nonAscii

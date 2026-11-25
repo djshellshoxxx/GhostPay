@@ -1,0 +1,43 @@
+{
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "results": [
+    {
+      "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "gate": "normal-clean-tree-pages-build",
+      "command": [
+        "bash",
+        "scripts/pages/build-pages.sh",
+        "/workspace/scratch/f80482f352bc/selected-final-qualification/pages-normal"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/GhostPay-followups",
+      "exit_code": 0,
+      "seconds": 23.753,
+      "log": "/workspace/scratch/f80482f352bc/selected-final-qualification/pages-normal.log",
+      "sha256": "6e88df43b8ebc8ddb1992283febccb680004558b1f17d3fd3da48cd53221fc00",
+      "build_info": {
+        "app": "ghostpay-web",
+        "version": "0.1.0",
+        "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "tree": "8add357748674afb128926a797982badb54bac6b",
+      "pages_evidence": {
+        "format": "ghostpay-pages-site/1",
+        "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+        "profile": "lean",
+        "base": "relative (./)",
+        "paymentsEnabledChainIds": [],
+        "status": "DEMO: payments disabled on every chain (no deployment manifest)",
+        "release": true,
+        "origin": null,
+        "sharedOrigin": true,
+        "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "lockfileSha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+        "sha256sumsSha256": "f1749082f9140e7efa3e2b139326dadc6a4403379f00323a35a2a797302da74e",
+        "files": 16,
+        "limits": "GitHub Pages cannot send HTTP headers: only the meta CSP applies (no frame-ancestors, nosniff, COOP, Permissions-Policy). The origin is shared with every other Pages site of the account (GP-PAGES-01). Not an audited or production host."
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "base": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "parents": [
+    "d75cbb00c2312f300c6e7ea4b7abd3a9011352d5",
+    "c38f3c2cd692b44f512c596cab4732b7ed04f5ce"
+  ],
+  "head": "70df75359a807bf833da82f43229452d6ab59976",
+  "tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+  "conflicts": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "removed_conflict_markers": 3,
+  "both_registry_sequences_and_multiplicities_preserved": true,
+  "exact_nonshared_entries": [
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "entry": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b"
+    },
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "apps/web/src/lib/deployment.ts",
+      "entry": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79"
+    },
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "apps/web/src/lib/hardening.test.ts",
+      "entry": "100644 blob 5c62abd6c7899bc2625a6608ac2b7ffd85a64b0c"
+    },
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md",
+      "entry": "100644 blob dd460742737d5b2517752feaeb102a9901bc8066"
+    },
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "docs/handoffs/deployment-diagnostic-recovery-20261124/QUALIFICATION.json",
+      "entry": "100644 blob 83c58c0371946f1e791b19e3dad65f5f2e71cd79"
+    },
+    {
+      "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+      "path": "docs/handoffs/deployment-diagnostic-recovery-20261124/run-logs.tar.gz",
+      "entry": "100644 blob 49288788f0c57c09f562eedf2318f18c7009e765"
+    }
+  ]
+}

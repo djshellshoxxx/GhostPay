@@ -66,7 +66,7 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   await importer.getByRole('button', { name: 'Use pasted text' }).click();
   await expect(page.getByRole('heading', { name: 'Review scanned invoice' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Review payment' })).toHaveCount(0);
-  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
   expect(page.url()).toBe(location);
   await page.getByText('Scan an invoice QR', { exact: true }).click();
   await page.getByText('Scan an invoice QR', { exact: true }).click();
@@ -78,7 +78,7 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
   await expect(page.getByText('Local QR preview only')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
-  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
   expect(page.url()).toBe(location);
   expect(bad.map(message => message.text())).toEqual([]);
 });
@@ -114,7 +114,14 @@ test('egress: parsing and reviewing an invoice makes no request except same-orig
 
 test('hostile text in line items and memo is rendered inert', async ({ page }) => {
   const dialogs: string[] = [];
+  let leavingUnbackedSeller = false;
+  let leaveWarnings = 0;
   page.on('dialog', (d) => {
+    if (leavingUnbackedSeller && d.type() === 'beforeunload') {
+      leaveWarnings += 1;
+      void d.accept();
+      return;
+    }
     dialogs.push(d.message());
     void d.dismiss();
   });
@@ -122,7 +129,11 @@ test('hostile text in line items and memo is rendered inert', async ({ page }) =
   await page.goto('/');
   await generateKeys(page);
   const link = await createInvoice(page, { description: evil, memo: evil });
+  // The sole-copy guard warns before this intentional fresh navigation with synthetic keys.
+  leavingUnbackedSeller = true;
   await openFresh(page, link);
+  leavingUnbackedSeller = false;
+  expect(leaveWarnings).toBe(1);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(page.getByText(evil, { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();

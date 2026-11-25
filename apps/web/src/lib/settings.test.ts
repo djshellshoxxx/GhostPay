@@ -64,7 +64,7 @@ describe('sanitizeSettings', () => {
     expect(t.relayerUrl).toBe('');
     expect(t.delayMinSec).toBe(DEFAULT_SETTINGS.delayMinSec);
     expect(t.lockTimeoutMin).toBe(DEFAULT_SETTINGS.lockTimeoutMin);
-    expect(t.theme).toBe('system');
+    expect(t.theme).toBe(DEFAULT_SETTINGS.theme);
     expect(sanitizeSettings({ relayerUrl: 5 }).relayerUrl).toBe('');
   });
 });

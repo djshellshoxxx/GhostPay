@@ -4,7 +4,7 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
@@ -19,6 +19,7 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { BrowserChecks } from './components/BrowserChecks';
 import { notifyAppLock } from './lib/appLock';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
@@ -117,8 +118,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (settings.theme === 'system') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', settings.theme);
+    root.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
@@ -207,6 +207,21 @@ export function AppShell(props: AppShellProps): ReactNode {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [services, settings.lockTimeoutMin]);
+
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
+  useEffect(() => {
+    if (!loadedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (!hasSession() || sessionHasExternalCopy()) return;
+      e.preventDefault(); e.returnValue = true;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [loadedKeys]);
 
   useEffect(() => {
     if (first.current) {
@@ -311,6 +326,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       </main>
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
       <footer className="site-footer">
+        <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
           <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>

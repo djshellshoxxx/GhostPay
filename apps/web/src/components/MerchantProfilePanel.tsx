@@ -4,6 +4,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { fetchMerchantProfile, readProfileFromSearch, startEmbedHost } from '../lib/embedHost';
 import { forgetMerchantKey, MERCHANT_PIN_PREFIX, merchantProfileUrl, readMerchantKey, rememberMerchantKey, type MerchantKey } from '../lib/merchantIdentity';
 import { useServices } from '../lib/services';
+import { OfflineProfileReview } from '../features/future/ghostid/OfflineProfileReview';
 import { Field, Mono, Notice } from './Common';
 import { MerchantTemplateIssuer } from './MerchantTemplateIssuer';
 import { merchantTemplateAmount } from '../lib/merchantTemplate';
@@ -132,6 +133,7 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
   return (
     <details open={profile !== undefined || url !== ''} className="card">
       <summary>{t('merchantProfile.load.title')}</summary>
+      {import.meta.env.VITE_GHOSTID_OFFLINE_REVIEW === '1' && <OfflineProfileReview nowMs={services.nowMs} />}
       <Field label={t('merchantProfile.load.url')} hint={t('merchantProfile.load.privacy')}>
         {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="text" inputMode="url" maxLength={2048} autoComplete="off" spellCheck={false} value={url} onChange={(event) => { cancel(); setUrl(event.target.value); setProfile(undefined); setOrigin(undefined); setFailed(false); }} />}
       </Field>

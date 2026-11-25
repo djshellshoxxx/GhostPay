@@ -35,13 +35,16 @@ export function placeScanMatch(list: readonly ScanMatch[], m: ScanMatch): number
  * (F1): the seller is told that each record was checked on its own and only received amounts count.
  */
 export function sharedRouterAddresses(list: readonly ScanMatch[]): ReadonlySet<string> {
-  const seen = new Set<string>();
+  // The scan may deliver the same router announcement again with updated receipt status.
+  // Only a different announcement ID can establish that two distinct router records named an address.
+  const seen = new Map<string, string>();
   const shared = new Set<string>();
   for (const m of list) {
     if (!m.viaRouter) continue;
     const address = m.stealthAddress.toLowerCase();
-    if (seen.has(address)) shared.add(address);
-    seen.add(address);
+    const previousId = seen.get(address);
+    if (previousId !== undefined && previousId !== m.announcement.id) shared.add(address);
+    seen.set(address, m.announcement.id);
   }
   return shared;
 }

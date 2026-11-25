@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
   delayMinSec: 120,
   delayMaxSec: 900,
   lockTimeoutMin: 15,
-  theme: 'system',
+  theme: 'dark',
   autoClearFragment: true,
   invoiceLinkClipboardDelaySec: 0,
   pinnedSigners: Object.freeze([]),
@@ -116,7 +116,7 @@ export function sanitizeSettings(raw: unknown): Settings {
   const lock = o['lockTimeoutMin'];
   const lockTimeoutMin = typeof lock === 'number' && Number.isInteger(lock) && lock >= 1 && lock <= 240 ? lock : DEFAULT_SETTINGS.lockTimeoutMin;
   const t = o['theme'];
-  const theme = t === 'light' || t === 'dark' || t === 'system' ? t : 'system';
+  const theme = t === 'light' || t === 'dark' || t === 'system' ? t : DEFAULT_SETTINGS.theme;
   const pins = Array.isArray(o['pinnedSigners'])
     ? (o['pinnedSigners'] as unknown[]).filter((p): p is string => typeof p === 'string' && /^(?:02|03)[0-9a-f]{64}$/.test(p)).slice(0, 50)
     : [];
