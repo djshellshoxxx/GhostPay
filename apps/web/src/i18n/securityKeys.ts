@@ -1021,6 +1021,15 @@ export const SECURITY_KEY_GROUPS = {
     'common.notice.error',
     'common.notice.ok',
   ],
+  /** A wallet backup that may remain on the clipboard, and the explicit choice to empty it without a check. */
+  recoveryClipboardCleanup: [
+    'clipboard.backup.unverified.title',
+    'clipboard.backup.unverified.body',
+    'clipboard.backup.retry',
+    'clipboard.backup.empty',
+    'clipboard.backup.empty.hint',
+    'clipboard.backup.empty.failed',
+  ],
   settingsTrustAndPrivacy: [
     'settings.invoiceClipboard.label',
     'settings.invoiceClipboard.hint',

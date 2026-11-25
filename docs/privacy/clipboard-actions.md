@@ -4,7 +4,7 @@ Settings → Safety and appearance offers **Off** (default), **30 seconds** or *
 
 ## Inventory
 
-The table counts programmatic copy call sites in the Pages source on #553 (`068fbc36b80311c107dfd3619d631fca794fac58`). Several screens also expose their payload through the shared QR frame. Each call to the shared control is counted once.
+The table counts programmatic copy call sites in the Pages source on #553 (`068fbc36b80311c107dfd3619d631fca794fac58`). A recount after merging main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61` found the same 23 `CopyButton` and three `SecretBackup` sites, and no other `navigator.clipboard` caller outside the helper. Several screens also expose their payload through the shared QR frame. Each call to the shared control is counted once.
 
 | Copy surface | Payload copied | Call sites |
 | --- | --- | ---: |
@@ -28,7 +28,10 @@ The first 23 sites use `CopyButton`. The three backup sites use `SecretBackup` a
 
 ## Copy and cleanup behavior
 
-- **Off** makes no cleanup reads or writes. Hiding a backup, locking a wallet or leaving its view removes the visible backup. Those actions no longer issue an unconditional empty write. To request automatic clearing, choose the delay before copying.
+- **Off** makes no timed cleanup reads or writes for the 23 shared buttons. To request automatic clearing, choose the delay before copying.
+- **Confirmed wallet backups are always checked**, whatever the delay. Hide, automatic hiding, Lock, leaving the view and the app lock empty the clipboard only while it still holds exactly the copied backup as its single plain-text item. Newer or different content, including text copied later in another application, is left alone. A backup write that settles after Hide or leaving is checked at once. A later successful copy from any GhostPay button replaces the backup, so nothing stays tracked. A saved delay adds a timed check.
+- When the browser refuses the read or the clear (no user activation, an unfocused page, a denied permission or no `readText`), GhostPay changes nothing and shows an app-wide notice that a copied backup may still be on the clipboard. The next click or key press in the page retries once; capture-phase handling lets a click that copies again win. The notice offers **Check clipboard again** and an explicit **Empty clipboard**.
+- **Decision (#286): no automatic blind clear.** An empty write without a matching read could erase newer clipboard content, which #286 forbids, so GhostPay never issues one on its own. **Empty clipboard** is the only unchecked write. It runs only from that explicit click, whose hint says it also removes anything copied after the backup. When the browser refuses it as well, the notice stays and says so. Main's earlier unconditional clear (G2-02) is replaced by this checked clear.
 - A successful copy starts its own delay. An acknowledged copy keeps its timer across navigation in the same page. If a newer copy is pending when the old deadline arrives, the helper waits for the outcome. A successful recopy gets a fresh deadline. If the newer write fails, the old cleanup rechecks ownership and clipboard contents.
 - The timer holds a digest and text length. Cleanup compares the text twice. When the browser exposes item formats, cleanup also requires exactly one plain-text item. A denied read, a changed value, or extra formats leave the clipboard untouched. A denied initial copy shows the existing localized failure message.
 - A subsequent app copy waits for any already-dispatched copy or clear. A queued copy whose control has since unmounted or changed is discarded. A write already submitted to the browser may still complete after unmount.
@@ -36,4 +39,4 @@ The first 23 sites use `CopyButton`. The three backup sites use `SecretBackup` a
 
 ## Acceptance evidence
 
-`SensitiveClipboard.test.tsx` exercises both controls through React using a mocked clipboard and fake timers. `clipboardPrivacy.test.ts` covers comparison failures, formats, revocation and write ordering. The seeded `CopyButton.clipboard.fuzz.test.tsx` from #553 exercises delayed and denied acknowledgments. `sensitive-clipboard.spec.ts` exercises Seller Keys, pairing and a saved preference change through browser navigation. The existing Create Invoice browser spec remains owned by #553. Exact-head results and integration status belong to the pull request.
+`SensitiveClipboard.test.tsx` exercises both controls through React using a mocked clipboard and fake timers. `clipboardPrivacy.test.ts` covers comparison failures, formats, revocation and write ordering, plus the backup checks, refusals, pending newer writes and the explicit empty request. `SecretBackup.test.tsx`, `SecretBackup.views.test.tsx` and the Bitcoin, Solana and TRON view tests cover Hide, automatic hiding, Lock, the app lock, leaving the view, newer content, the notice and the single activation retry. The seeded `CopyButton.clipboard.fuzz.test.tsx` from #553 exercises delayed and denied acknowledgments. `sensitive-clipboard.spec.ts` exercises Seller Keys, pairing and a saved preference change through browser navigation. The existing Create Invoice browser spec remains owned by #553. Exact-head results and integration status belong to the pull request.

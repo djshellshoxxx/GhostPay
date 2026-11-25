@@ -19,7 +19,7 @@ Source: `apps/web/src/features/btc/network.ts`. The app refuses a server whose g
 
 1. Open **Bitcoin** in the web app and choose a test network.
 2. Create a wallet. The app generates a random 32-byte seed. It is not stored, and it stays hidden until you press **Show backup seed**. It hides again after 60 seconds or as soon as the tab is hidden; you can show it again while the wallet is loaded. Write it down offline.
-3. **Copy seed** asks first: other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. Clipboard cleanup is off by default. In Settings, choose 30 or 60 seconds to have GhostPay check and clear matching clipboard text. The browser may deny access, and clipboard history and synced copies may remain.
+3. **Copy seed** asks first: other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. Hiding, automatic hiding, Lock, the app lock and leaving the view empty the clipboard if it still holds the backup, and leave anything copied since alone. When the browser does not let GhostPay check or clear the clipboard at the time (for example when the app locks itself while you are away), GhostPay leaves it unchanged, says so, and tries once more at your next click or key press in the page; you can also choose **Empty clipboard**, which removes whatever the clipboard holds. A delay chosen in Settings (30 or 60 seconds) adds a timed check. Clipboard history and synced copies may remain.
 4. Share the `tsp1...` address, the `bitcoin:?sp=...` link or the QR code.
 5. The keys stay in page memory. They are wiped when you press **Lock**, when the app locks, or when you leave the view.
 

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import { cancelClipboardCleanup, copyClipboardText, type ClipboardPort } from './clipboardPrivacy';
+import {
+  cancelClipboardCleanup, clearCopiedRecovery, copiedRecoveryUnverified, copyClipboardText, emptyClipboardOnRequest, type ClipboardPort,
+} from './clipboardPrivacy';
 
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
@@ -197,4 +199,123 @@ it('an older native write that applies at settlement cannot replace a later user
   expect(value).toBe('newer address');
   await vi.advanceTimersByTimeAsync(1);
   expect(value).toBe('');
+});
+
+describe('confirmed wallet backups', () => {
+  afterEach(async () => { await emptyClipboardOnRequest(); });
+  const recovery = { recovery: true } as const;
+
+  it('Hide, Lock and leaving empty an unchanged backup with the timer off, and leave newer content alone', async () => {
+    const c = fakeClipboard();
+    await copyClipboardText('seed', c.port, 0, undefined, recovery);
+    await clearCopiedRecovery();
+    expect(c.value()).toBe('');
+    expect(c.write.mock.calls).toEqual([['seed'], ['']]);
+    // Cleared once: a second Hide neither reads nor writes.
+    await clearCopiedRecovery();
+    expect(c.read).toHaveBeenCalledTimes(2);
+
+    await copyClipboardText('seed', c.port, 0, undefined, recovery);
+    c.overwrite('copied later in another app');
+    await clearCopiedRecovery();
+    expect(c.value()).toBe('copied later in another app');
+    expect(c.write.mock.calls).toEqual([['seed'], [''], ['seed']]);
+    expect(copiedRecoveryUnverified()).toBe(false);
+    // The backup is gone from the clipboard, so nothing stays tracked.
+    await clearCopiedRecovery();
+    expect(c.read).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(['read', 'missing read', 'clear'] as const)('reports a refused %s, changes nothing, and empties only on an explicit request', async (failure) => {
+    const c = fakeClipboard();
+    const port = failure === 'missing read' ? { writeText: c.write } as unknown as ClipboardPort : c.port;
+    await copyClipboardText('seed', port, 0, undefined, recovery);
+    if (failure === 'read') c.read.mockRejectedValueOnce(new DOMException('Denied', 'NotAllowedError'));
+    if (failure === 'clear') c.write.mockRejectedValueOnce(new DOMException('Denied', 'NotAllowedError'));
+    await clearCopiedRecovery();
+    expect(copiedRecoveryUnverified()).toBe(true);
+    expect(c.value()).toBe('seed');
+    expect(await emptyClipboardOnRequest()).toBe(true);
+    expect(c.value()).toBe('');
+    expect(copiedRecoveryUnverified()).toBe(false);
+  });
+
+  it('keeps the warning when the explicit request is refused too', async () => {
+    const c = fakeClipboard();
+    await copyClipboardText('seed', c.port, 0, undefined, recovery);
+    c.read.mockRejectedValueOnce(new Error('denied'));
+    await clearCopiedRecovery();
+    c.write.mockRejectedValueOnce(new Error('denied'));
+    expect(await emptyClipboardOnRequest()).toBe(false);
+    expect(copiedRecoveryUnverified()).toBe(true);
+    expect(c.value()).toBe('seed');
+  });
+
+  it('a later successful app copy ends tracking; a failed one keeps the backup tracked', async () => {
+    const c = fakeClipboard();
+    await copyClipboardText('seed', c.port, 0, undefined, recovery);
+    await copyClipboardText('address', c.port, 0);
+    await clearCopiedRecovery();
+    expect(c.read).not.toHaveBeenCalled();
+    expect(c.value()).toBe('address');
+
+    await copyClipboardText('seed', c.port, 0, undefined, recovery);
+    c.write.mockRejectedValueOnce(new Error('denied'));
+    await expect(copyClipboardText('address', c.port, 0)).rejects.toThrow('denied');
+    await clearCopiedRecovery();
+    expect(c.value()).toBe('');
+  });
+
+  it.each([true, false])('a check that meets a pending newer write waits for it (newer write succeeds: %s)', async (succeeds) => {
+    let value = '';
+    let settle!: () => void;
+    const port: ClipboardPort = {
+      readText: () => Promise.resolve(value),
+      writeText: (next: string) => {
+        if (next !== 'address') { value = next; return Promise.resolve(); }
+        // Applied when it settles, as some browsers do.
+        return new Promise<void>((resolve, reject) => {
+          settle = () => { if (succeeds) { value = next; resolve(); } else reject(new Error('denied')); };
+        });
+      },
+    };
+    await copyClipboardText('seed', port, 0, undefined, recovery);
+    const later = copyClipboardText('address', port, 0).catch(() => undefined);
+    await clearCopiedRecovery();
+    expect(value).toBe('seed');
+    settle();
+    await later;
+    await vi.waitFor(() => { expect(value).toBe(succeeds ? 'address' : ''); });
+  });
+
+  it('the opt-in delay clears an unchanged backup without Hide as well', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard();
+    await copyClipboardText('seed', c.port, 30_000, undefined, recovery);
+    await vi.advanceTimersByTimeAsync(29_999);
+    expect(c.read).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(c.value()).toBe('');
+  });
+
+  it('saving another delay cancels the timer, but Hide still empties an unchanged backup', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard();
+    await copyClipboardText('seed', c.port, 30_000, undefined, recovery);
+    cancelClipboardCleanup();
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(c.read).not.toHaveBeenCalled();
+    await clearCopiedRecovery();
+    expect(c.value()).toBe('');
+  });
+
+  it('never empties a clipboard without a tracked backup', async () => {
+    const c = fakeClipboard();
+    await copyClipboardText('address', c.port, 0);
+    c.overwrite('unrelated');
+    await clearCopiedRecovery();
+    expect(await emptyClipboardOnRequest()).toBe(true);
+    expect(c.value()).toBe('unrelated');
+    expect(c.write).toHaveBeenCalledExactlyOnceWith('address');
+  });
 });

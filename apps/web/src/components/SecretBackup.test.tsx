@@ -2,15 +2,19 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
-import { BACKUP_VISIBLE_MS, englishBackupText, SecretBackup } from './SecretBackup';
+import { emptyClipboardOnRequest } from '../lib/clipboardPrivacy';
+import { BACKUP_VISIBLE_MS, CopiedBackupNotice, englishBackupText, SecretBackup } from './SecretBackup';
 
 const SECRET = 'ab'.repeat(32);
+/** The system clipboard as the stub sees it: a refused write leaves it unchanged. */
+let clipboardText = '';
 const writeText = vi.fn<(text: string) => Promise<void>>();
+const readText = vi.fn<() => Promise<string>>();
 let visibility: DocumentVisibilityState = 'visible';
 
 function setup() {
   const reveal = vi.fn(() => SECRET);
-  render(<SecretBackup reveal={reveal} text={englishBackupText('seed')} />);
+  render(<><CopiedBackupNotice /><SecretBackup reveal={reveal} text={englishBackupText('seed')} /></>);
   return { reveal };
 }
 
@@ -18,19 +22,17 @@ const click = (name: string): void => {
   fireEvent.click(screen.getByRole('button', { name }));
 };
 
-/** Clicks and lets the clipboard promise settle. */
-async function clickAndSettle(name: string): Promise<void> {
+/** Lets pending clipboard promises settle, including the checks that read the clipboard before clearing it. */
+async function settle(): Promise<void> {
   await act(async () => {
-    click(name);
-    await Promise.resolve();
+    for (let i = 0; i < 10; i++) await Promise.resolve();
   });
 }
 
-/** Lets pending clipboard promises settle. */
-async function settle(): Promise<void> {
-  await act(async () => {
-    await Promise.resolve();
-  });
+/** Clicks and lets the clipboard promises settle. */
+async function clickAndSettle(name: string): Promise<void> {
+  click(name);
+  await settle();
 }
 
 /** Shows the backup and copies it, confirmed. */
@@ -41,17 +43,26 @@ async function copyBackup(): Promise<void> {
   expect(screen.getByRole('status').textContent).toMatch(/Copied/);
 }
 
+const written = (): string[] => writeText.mock.calls.map(([value]) => value);
+const NOTICE = 'A copied backup may still be on the clipboard';
+
 describe('SecretBackup', () => {
   beforeEach(() => {
+    clipboardText = '';
     writeText.mockReset();
-    writeText.mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    writeText.mockImplementation((text) => { clipboardText = text; return Promise.resolve(); });
+    readText.mockReset();
+    readText.mockImplementation(() => Promise.resolve(clipboardText));
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     visibility = 'visible';
     Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => visibility });
   });
-  afterEach(() => {
+  afterEach(async () => {
     cleanup();
     vi.useRealTimers();
+    // Forget a tracked backup left by a test, so the module state does not leak into the next one.
+    writeText.mockImplementation(() => Promise.resolve());
+    await emptyClipboardOnRequest();
   });
 
   it('keeps the backup out of the page until asked for, and can show it again while loaded', () => {
@@ -65,8 +76,9 @@ describe('SecretBackup', () => {
     expect(screen.getByText(SECRET)).toBeTruthy();
     click('Hide seed');
     expect(screen.queryByText(SECRET)).toBeNull();
-    // Nothing was copied, so Hide leaves the clipboard alone.
+    // Nothing was copied, so Hide neither reads nor writes the clipboard.
     expect(writeText).not.toHaveBeenCalled();
+    expect(readText).not.toHaveBeenCalled();
     click('Show backup seed');
     expect(reveal).toHaveBeenCalledTimes(2);
     expect(screen.getByText(SECRET)).toBeTruthy();
@@ -96,7 +108,7 @@ describe('SecretBackup', () => {
     expect(screen.queryByText(SECRET)).toBeNull();
   });
 
-  it('copies only after a warned second click, and Hide leaves the clipboard alone by default', async () => {
+  it('copies only after a warned second click, and Hide empties the clipboard while it still holds the backup', async () => {
     setup();
     click('Show backup seed');
     click('Copy seed');
@@ -108,11 +120,22 @@ describe('SecretBackup', () => {
 
     click('Copy seed');
     await clickAndSettle('Copy anyway');
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(SECRET);
+    expect(written()).toEqual([SECRET]);
     expect(screen.getByRole('status').textContent).toMatch(/Copied/);
-    click('Hide seed');
+    await clickAndSettle('Hide seed');
     expect(screen.queryByText(SECRET)).toBeNull();
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(SECRET);
+    expect(written()).toEqual([SECRET, '']);
+    expect(clipboardText).toBe('');
+  });
+
+  it('Hide leaves text copied after the backup alone', async () => {
+    setup();
+    await copyBackup();
+    clipboardText = 'copied later in another application';
+    await clickAndSettle('Hide seed');
+    expect(clipboardText).toBe('copied later in another application');
+    expect(written()).toEqual([SECRET]);
+    expect(screen.queryByText(NOTICE)).toBeNull();
   });
 
   it('reports a failed copy and then leaves the clipboard alone', async () => {
@@ -122,8 +145,9 @@ describe('SecretBackup', () => {
     click('Copy seed');
     await clickAndSettle('Copy anyway');
     expect(screen.getByRole('status').textContent).toMatch(/Copy failed: select the text manually/);
-    click('Hide seed');
+    await clickAndSettle('Hide seed');
     expect(writeText).toHaveBeenCalledTimes(1);
+    expect(readText).not.toHaveBeenCalled();
   });
 
   it('works without a clipboard API', async () => {
@@ -156,9 +180,9 @@ describe('SecretBackup', () => {
     expect(keys.hide).toBe('Hide keys');
   });
 
-  it('ignores a stale successful copy after Hide and a new reveal', async () => {
+  it('ignores a stale successful copy after Hide and a new reveal, and empties the late write while unchanged', async () => {
     let finishCopy!: () => void;
-    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    writeText.mockImplementationOnce((text) => new Promise<void>((resolve) => { finishCopy = () => { clipboardText = text; resolve(); }; }));
     setup();
     click('Show backup seed');
     click('Copy seed');
@@ -170,7 +194,7 @@ describe('SecretBackup', () => {
     await settle();
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.getByRole('button', { name: 'Copy seed' })).toBeTruthy();
-    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET]);
+    expect(written()).toEqual([SECRET, '']);
   });
 
   it('ignores a stale failed copy after Hide and a new reveal', async () => {
@@ -186,12 +210,12 @@ describe('SecretBackup', () => {
     rejectCopy(new Error('permission refused'));
     await settle();
     expect(screen.queryByRole('status')).toBeNull();
-    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET]);
+    expect(written()).toEqual([SECRET]);
   });
 
   it('prevents duplicate confirmations while a copy is pending and keeps Hide available', async () => {
     let finishCopy!: () => void;
-    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    writeText.mockImplementationOnce((text) => new Promise<void>((resolve) => { finishCopy = () => { clipboardText = text; resolve(); }; }));
     setup();
     click('Show backup seed');
     click('Copy seed');
@@ -209,7 +233,7 @@ describe('SecretBackup', () => {
 
   it('does not clear or relabel a newer copy when an obsolete copy settles', async () => {
     let finishFirst!: () => void;
-    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishFirst = resolve; }));
+    writeText.mockImplementationOnce((text) => new Promise<void>((resolve) => { finishFirst = () => { clipboardText = text; resolve(); }; }));
     setup();
     click('Show backup seed');
     click('Copy seed');
@@ -222,29 +246,45 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenCalledOnce();
     finishFirst();
     await settle();
-    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, SECRET]);
+    expect(written()).toEqual([SECRET, SECRET]);
     expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
-    click('Hide seed');
-    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, SECRET]);
+    await clickAndSettle('Hide seed');
+    expect(written()).toEqual([SECRET, SECRET, '']);
   });
 
-  it('auto-hide and app lock hide the backup while clipboard clearing is off', async () => {
+  it('auto-hide empties an unchanged copy, and the app lock hides a still-mounted reveal', async () => {
     vi.useFakeTimers();
     setup();
     await copyBackup();
     act(() => { vi.advanceTimersByTime(BACKUP_VISIBLE_MS); });
-    expect(screen.queryByText(SECRET)).toBeNull();
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(SECRET);
     await settle();
+    expect(screen.queryByText(SECRET)).toBeNull();
+    expect(written()).toEqual([SECRET, '']);
     click('Show backup seed');
     expect(screen.getByText(SECRET)).toBeTruthy();
     act(() => { notifyAppLock('idle'); });
     expect(screen.queryByText(SECRET)).toBeNull();
   });
 
-  it('does not schedule a clear for a pending unmounted copy while protection is off', async () => {
+  it('the app lock empties an unchanged copied backup and leaves newer content alone', async () => {
+    setup();
+    await copyBackup();
+    act(() => { notifyAppLock('idle'); });
+    await settle();
+    expect(clipboardText).toBe('');
+    expect(written()).toEqual([SECRET, '']);
+
+    await copyBackup();
+    clipboardText = 'newer text';
+    act(() => { notifyAppLock('manual'); });
+    await settle();
+    expect(clipboardText).toBe('newer text');
+    expect(written()).toEqual([SECRET, '', SECRET]);
+  });
+
+  it('empties a pending copy that settles after its view was left', async () => {
     let finishCopy!: () => void;
-    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    writeText.mockImplementationOnce((text) => new Promise<void>((resolve) => { finishCopy = () => { clipboardText = text; resolve(); }; }));
     setup();
     click('Show backup seed');
     click('Copy seed');
@@ -253,6 +293,51 @@ describe('SecretBackup', () => {
     await settle();
     finishCopy();
     await settle();
-    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET]);
+    expect(written()).toEqual([SECRET, '']);
+    expect(clipboardText).toBe('');
+  });
+
+  it('says so when the browser refuses the check, retries once at the next click, and empties only on request', async () => {
+    setup();
+    await copyBackup();
+    const denied = new DOMException('Document is not focused.', 'NotAllowedError');
+    readText.mockRejectedValueOnce(denied).mockRejectedValueOnce(denied);
+    // The idle lock runs without user activation.
+    act(() => { notifyAppLock('idle'); });
+    await settle();
+    expect(clipboardText).toBe(SECRET);
+    expect(screen.getByText(NOTICE)).toBeTruthy();
+    expect(written()).toEqual([SECRET]);
+    // The next click anywhere tries once more; the browser refuses again.
+    fireEvent.click(document.body);
+    await settle();
+    expect(readText).toHaveBeenCalledTimes(2);
+    expect(screen.getByText(NOTICE)).toBeTruthy();
+    // No further automatic retries, so a browser paste prompt cannot repeat on every click.
+    fireEvent.click(document.body);
+    await settle();
+    expect(readText).toHaveBeenCalledTimes(2);
+    expect(clipboardText).toBe(SECRET);
+    // Check again works once the browser allows it.
+    await clickAndSettle('Check clipboard again');
+    expect(clipboardText).toBe('');
+    expect(screen.queryByText(NOTICE)).toBeNull();
+  });
+
+  it('Empty clipboard is an explicit choice that also removes newer content, and reports a refusal', async () => {
+    setup();
+    await copyBackup();
+    readText.mockRejectedValue(new Error('denied'));
+    await clickAndSettle('Hide seed');
+    expect(screen.getByText(NOTICE)).toBeTruthy();
+    expect(screen.getByText(/including anything you copied after the backup/)).toBeTruthy();
+    clipboardText = 'newer text';
+    writeText.mockRejectedValueOnce(new Error('denied'));
+    await clickAndSettle('Empty clipboard');
+    expect(screen.getByRole('alert').textContent).toMatch(/did not let GhostPay change the clipboard/);
+    expect(clipboardText).toBe('newer text');
+    await clickAndSettle('Empty clipboard');
+    expect(clipboardText).toBe('');
+    expect(screen.queryByText(NOTICE)).toBeNull();
   });
 });

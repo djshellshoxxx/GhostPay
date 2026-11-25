@@ -68,10 +68,12 @@ describe('SolanaView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock leaves the confirmed copy alone by default', async () => {
+  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    // GhostPay empties the clipboard only while it still holds the backup, so the stub reads back the last write.
+    const readText = (): Promise<string> => Promise.resolve(writeText.mock.lastCall?.[0] ?? '');
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
@@ -81,7 +83,8 @@ describe('SolanaView', () => {
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
     expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenCalledOnce();
+    await vi.waitFor(() => { expect(writeText).toHaveBeenLastCalledWith(''); });
+    expect(writeText).toHaveBeenCalledTimes(2);
   });
 
   it('rejects a malformed seed with a message', async () => {

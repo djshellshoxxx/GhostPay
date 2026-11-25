@@ -1,13 +1,32 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
 import { subscribeAppLock } from '../lib/appLock';
-import { copyClipboardText } from '../lib/clipboardPrivacy';
+import {
+  clearCopiedRecovery, copiedRecoveryUnverified, copyClipboardText, emptyClipboardOnRequest, subscribeCopiedRecovery,
+} from '../lib/clipboardPrivacy';
 import { useClipboardDelayMs } from '../state';
 import { Mono, Notice } from './Common';
 
 /** A shown backup hides itself after this many milliseconds (the texts say "a minute"), and as soon as the tab is hidden. */
 export const BACKUP_VISIBLE_MS = 60_000;
+
+/**
+ * Empties the clipboard if it still holds a wallet backup copied by {@link SecretBackup}, whatever the timer preference.
+ * Newer or different clipboard content is left alone. Call it inside a click handler (Hide, Lock) where possible:
+ * browsers allow clipboard access only during user activation, some only in a focused page. When the browser refuses,
+ * {@link CopiedBackupNotice} says so and the next click or key press in this page tries once more. Copies the system
+ * already made (clipboard history, sync to other devices) are out of reach.
+ */
+export function clearCopiedBackup(): void {
+  void clearCopiedRecovery();
+}
+
+// The app lock checks a copied backup too, also after the view that showed it was left: that view, and its own lock,
+// are gone by then. Without user activation the browser usually refuses, and the next click or key press retries.
+subscribeAppLock(() => {
+  clearCopiedBackup();
+});
 
 /** Every text {@link SecretBackup} shows. Build it with {@link localizedBackupText}. */
 export interface SecretBackupText {
@@ -55,7 +74,8 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
 /**
  * A wallet backup (seed or keys) that is not in the page until asked for. It is shown on request, again as often as
  * needed while the wallet is loaded, and hides itself after {@link BACKUP_VISIBLE_MS} or as soon as the page is hidden.
- * Copying takes a second, warned click. The shared clipboard timer follows the saved preference even after unmount.
+ * Copying takes a second, warned click. Hiding, automatic hiding, the app lock and unmounting empty the clipboard while it
+ * still holds the copied backup ({@link clearCopiedBackup}); the saved clipboard delay applies as well, even after unmount.
  * @param props.reveal Produces the backup text; called only when the user asks to see it.
  */
 export function SecretBackup(props: { readonly reveal: () => string; readonly text: SecretBackupText }): ReactNode {
@@ -77,6 +97,7 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     setShown(undefined);
     setCopy('idle');
     setCopyPending(false);
+    clearCopiedBackup();
   }, []);
 
   useEffect(
@@ -87,6 +108,8 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
         generation.current += 1;
         copyRequest.current += 1;
         pending.current = false;
+        // Leaving the view forgets the wallet like Lock does; leaving takes a click, which counts as user activation.
+        clearCopiedBackup();
       };
     },
     [],
@@ -116,7 +139,8 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     const current = (): boolean => mounted.current && generation.current === revealGeneration && copyRequest.current === request;
     void (async () => {
       try {
-        await copyClipboardText(value, navigator.clipboard, delay, current);
+        await copyClipboardText(value, navigator.clipboard, delay, current, { recovery: true });
+        // A write that settles after Hide, Lock or leaving the view is checked by the helper itself.
         if (current()) setCopy('copied');
       } catch {
         if (current()) setCopy('failed');
@@ -161,6 +185,29 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
       >
         {text.hide}
       </button>
+    </Notice>
+  );
+}
+
+/**
+ * App-wide: shown while a copied wallet backup may still be on the clipboard because the browser refused GhostPay's check
+ * or clear. Emptying without the check is offered only as an explicit choice, because it also removes newer content.
+ */
+export function CopiedBackupNotice(): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const unverified = useSyncExternalStore(subscribeCopiedRecovery, copiedRecoveryUnverified, () => false);
+  const [emptyFailed, setEmptyFailed] = useState(false);
+  useEffect(() => { if (!unverified) setEmptyFailed(false); }, [unverified]);
+  if (!unverified) return null;
+  return (
+    <Notice kind="warn" title={t('clipboard.backup.unverified.title')}>
+      <p role="status">{t('clipboard.backup.unverified.body')}</p>
+      <p className="hint">{t('clipboard.backup.empty.hint')}</p>
+      <button type="button" className="btn" onClick={() => { void clearCopiedRecovery(); }}>{t('clipboard.backup.retry')}</button>{' '}
+      <button type="button" className="btn btn-danger" onClick={() => { void emptyClipboardOnRequest().then((ok) => { setEmptyFailed(!ok); }); }}>
+        {t('clipboard.backup.empty')}
+      </button>
+      {emptyFailed && <p role="alert">{t('clipboard.backup.empty.failed')}</p>}
     </Notice>
   );
 }

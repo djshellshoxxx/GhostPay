@@ -8,7 +8,7 @@ import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
 import { RichText } from '../../components/RichText';
-import { localizedBackupText, SecretBackup } from '../../components/SecretBackup';
+import { clearCopiedBackup, localizedBackupText, SecretBackup } from '../../components/SecretBackup';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import type { Translator } from '../../i18n/translator';
 import { subscribeAppLock } from '../../lib/appLock';
@@ -231,6 +231,8 @@ export function SolanaView(): ReactNode {
   };
 
   const lock = (): void => {
+    // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
+    clearCopiedBackup();
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
