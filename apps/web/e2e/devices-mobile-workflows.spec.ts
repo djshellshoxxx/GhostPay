@@ -22,7 +22,7 @@ test('after a camera denial a touch user can import an invoice QR image and revi
   const pay = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true });
   await pay.tap();
   await expect(pay).toHaveAttribute('aria-current', 'page');
-  await page.getByText('Scan an invoice QR', { exact: true }).tap();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).tap();
   const importer = page.getByRole('region', { name: 'Invoice QR import' });
   await importer.getByRole('button', { name: 'Scan with camera' }).tap();
   await expect(importer.getByText(/Camera access was denied/)).toBeVisible();
