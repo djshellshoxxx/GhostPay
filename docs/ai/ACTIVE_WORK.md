@@ -1,3 +1,15 @@
+# Merchant dashboard and accounting completion — 2026-11-25 UTC
+
+Worker: Claude Code session `brave-meitner-974y9e`. Branch `nodata/brave-meitner-974y9e`, base main
+`c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`, resuming the #535 → #543 → #564 → #579 → #618 chain (tip `e564360a`) by merge.
+Owned paths: `apps/web/src/features/future/merchant-dashboard/**`, `apps/web/src/views/MerchantDashboard*.tsx`,
+`apps/web/e2e/merchant-dashboard*.spec.ts`, `apps/web/e2e/dashboardLedger.ts`, dashboard keys in `apps/web/locales/*.json` and
+`apps/web/src/i18n/securityKeys*.ts`, dashboard CSS in `apps/web/src/styles/app.css`, the "Merchant dashboard" section of
+`apps/web/DEVIATIONS.md`, `docs/handoffs/MERCHANT_DASHBOARD_COMPLETION_20261125.md`.
+Not owned (consumed only): payment journal, reconciliation vault/ledger/match, wallet recovery, backup and crypto code; #621, #635, #622.
+Acceptance: asset/date/network filters, exact verified-at-scan totals and report, payment-history CSV with consent, export release
+via existing vault interface only, focus preservation, responsive and loading/empty/error states, unit + browser evidence, hosted CI.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at

@@ -4,17 +4,20 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { downloadText, Field } from '../components/Common';
 import { summarizeDashboardProjection } from '../features/future/merchant-dashboard/analytics';
 import { DashboardExportCoordinator, type DashboardExportFormat, type DashboardExportPreview } from '../features/future/merchant-dashboard/export';
-import { invoiceState, observationTime, readMerchantDashboard, utcRange, type InvoiceState, type LedgerObservation, type ObservationState } from '../features/future/merchant-dashboard/ledger';
+import { assetId, invoiceState, observationTime, readMerchantDashboard, utcRange, type InvoiceState, type LedgerObservation, type ObservationState } from '../features/future/merchant-dashboard/ledger';
+import { releaseIfLedgerUnchanged } from '../features/future/merchant-dashboard/release';
+import { dashboardAssetIds } from '../features/future/merchant-dashboard/report';
 import { selectDashboardRows } from '../features/future/merchant-dashboard/select';
 import type { DashboardContext } from '../features/future/merchant-dashboard/model';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { subscribeAppLock } from '../lib/appLock';
-import { createCurrentReconciliationVault, releaseFromCurrentReconciliationState, subscribeReconciliationChanges, type ReconciliationState } from '../lib/reconciliationVault';
+import { createCurrentReconciliationVault, subscribeReconciliationChanges, type ReconciliationState } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { getSessionPublic, subscribeSession, type SessionPublic } from '../lib/session';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+import { DashboardReportSection, PaymentHistoryExport } from './MerchantDashboardReport';
 
 const PAGE_SIZE = 25;
 const EXPORT_COLUMNS = ['chainId', 'assetId', 'expiresAt', 'expectedAtomic'] as const;
@@ -78,6 +81,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const [query, setQuery] = useState('');
   const [kind, setKind] = useState<'invoices' | 'payments'>('invoices');
   const [status, setStatus] = useState('');
+  const [asset, setAsset] = useState('');
   const [newest, setNewest] = useState(true);
   const [from, setFrom] = useState('');
   const [through, setThrough] = useState('');
@@ -236,6 +240,8 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const dateDescription = range === undefined ? 'dashboard-date-hint dashboard-date-error' : 'dashboard-date-hint';
   const inRange = (seconds: number | undefined): boolean => range !== undefined &&
     (seconds === undefined ? from === '' && through === '' : seconds >= range[0] && seconds < range[1]);
+  const assetOptions = [...dashboardAssetIds(data.projection.rows, data.payments)];
+  if (asset !== '' && !assetOptions.includes(asset)) assetOptions.push(asset);
   const scopedObservations = new Map<string, LedgerObservation[]>();
   for (const payment of data.payments) {
     for (const ref of payment.invoiceRefs) {
@@ -252,11 +258,15 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     if (offset + 100 >= selected.totalMatches) break;
   }
   const invoices = invoiceRows.map((row) => ({ row, state: invoiceState(row, scopedObservations.get(row.invoiceRef) ?? [], now) }))
-    .filter((entry) => inRange(entry.row.expiresAt) && (kind !== 'invoices' || status === '' || entry.state === status))
+    .filter((entry) => inRange(entry.row.expiresAt) && (asset === '' || entry.row.assetId === asset) &&
+      (kind !== 'invoices' || status === '' || entry.state === status))
     .sort((a, b) => (newest ? b.row.expiresAt - a.row.expiresAt : a.row.expiresAt - b.row.expiresAt));
   const payments = data.payments.filter(({ record, state, invoiceRefs }) => {
     const needle = query.trim().toLowerCase();
-    return inRange(state === 'ambiguous' ? undefined : observationTime(record)) && (status === '' || state === status) &&
+    // Conflicting copies have no trusted time or asset, so they only appear without date and asset filters.
+    const trusted = state !== 'ambiguous';
+    return inRange(trusted ? observationTime(record) : undefined) && (asset === '' || (trusted && assetId(record.asset) === asset)) &&
+      (kind !== 'payments' || status === '' || state === status) &&
       (record.transactionHash.includes(needle) || invoiceRefs.some((ref) => ref.includes(needle)));
   }).sort((a, b) => {
     const first = a.state === 'ambiguous' ? undefined : observationTime(a.record);
@@ -266,7 +276,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     return newest ? second - first : first - second;
   });
   const date = new Intl.DateTimeFormat(i18n?.requestedLocale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
-  const hasFilters = query !== '' || status !== '' || from !== '' || through !== '';
+  const hasFilters = query !== '' || status !== '' || asset !== '' || from !== '' || through !== '';
   const totalRecords = kind === 'invoices' ? data.projection.rows.length : data.payments.length;
   const count = kind === 'invoices' ? invoices.length : payments.length;
   const offset = Math.min(page, Math.max(0, Math.ceil(count / PAGE_SIZE) - 1)) * PAGE_SIZE;
@@ -312,6 +322,10 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
           {statuses.map((item) =>
             <option key={item} value={item}>{t(STATUS[item])}</option>)}
         </select>}</Field>
+        <Field label={t('dashboard.asset')}>{(id) => <select id={id} value={asset} onChange={(e) => { change(() => { setAsset(e.target.value); }); }}>
+          <option value="">{t('dashboard.allAssets')}</option>
+          {assetOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+        </select>}</Field>
         <Field label={t('dashboard.sort')}>{(id) => <select id={id} value={newest ? 'newest' : 'oldest'} onChange={(e) => { change(() => { setNewest(e.target.value === 'newest'); }); }}>
           <option value="newest">{t('dashboard.newest')}</option><option value="oldest">{t('dashboard.oldest')}</option>
         </select>}</Field>
@@ -324,6 +338,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
           change(() => {
             setQuery('');
             setStatus('');
+            setAsset('');
             setFrom('');
             setThrough('');
           });
@@ -331,6 +346,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
         }}>{t('dashboard.clearFilters')}</button>}
       </div>
     </fieldset>
+    {range !== undefined && <DashboardReportSection invoices={invoices} payments={payments} registered={data.projection.rows} status={STATUS} />}
     {range === undefined ? <p id="dashboard-date-error" role="alert">{t('dashboard.invalidRange')}</p>
       : count === 0 ? <p role="status">{totalRecords > 0 ? t('dashboard.empty')
         : kind === 'invoices' ? t('dashboard.noInvoices') : t('dashboard.noPayments')}</p>
@@ -392,12 +408,11 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
             void (async () => {
               try {
                 let released = false;
-                await releaseFromCurrentReconciliationState(chain, seller, (latest) => {
-                  if (!current()) return;
-                  if (expiryChanged(data, status, preview.selectedAt, Date.now()) || ledgerFingerprint(latest) !== data.fingerprint) return;
+                await releaseIfLedgerUnchanged(() => createCurrentReconciliationVault(chain, seller), data.fingerprint, ledgerFingerprint, () => {
+                  if (expiryChanged(data, status, preview.selectedAt, Date.now())) return;
                   downloadText('ghostpay-invoices.' + preview.preview.format, file.content, file.mimeType);
                   released = true;
-                });
+                }, current);
                 if (!released && current()) load('background');
               } catch {
                 if (current()) setExportError(true);
@@ -409,6 +424,12 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       </div>}
       {exportError && <p role="alert">{t('dashboard.exportError')}</p>}
     </section>}
+    {kind === 'payments' && range !== undefined && <PaymentHistoryExport
+      key={JSON.stringify([data.fingerprint, data.loadedAt, query, status, asset, from, through, newest])}
+      payments={payments} chain={chain} fingerprint={data.fingerprint} ledgerFingerprint={ledgerFingerprint}
+      openLedger={() => createCurrentReconciliationVault(chain, seller)}
+      stillCurrent={() => !data.context.signal.aborted && getSessionPublic() === session}
+      onStale={() => { load('background'); }} />}
   </div>;
 }
 

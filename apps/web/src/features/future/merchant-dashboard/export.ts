@@ -109,7 +109,7 @@ function cell(row: DashboardRow, column: DashboardExportColumn): string | number
 }
 
 /** Neutralize spreadsheet formulas even after leading spaces/invisible formatting chars. */
-function csvCell(value: string): string {
+export function csvCell(value: string): string {
   const formula = /^[\s\u00a0\u2000-\u200f\u2028\u2029\u2060\ufeff]*[=+\-@]/u.test(value);
   const safe = formula ? "'" + value : value;
   return /[",\r\n]/u.test(safe) ? '"' + safe.replaceAll('"', '""') + '"' : safe;

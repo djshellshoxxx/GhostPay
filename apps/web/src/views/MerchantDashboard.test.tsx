@@ -7,15 +7,14 @@ import { AppLean } from '../AppLean';
 import * as downloads from '../components/Common';
 import { notifyAppLock } from '../lib/appLock';
 import { RECONCILIATION_VAULT_CHANGE_EVENT } from '../lib/reconciliationVault';
-import { clearSession, generateSession } from '../lib/session';
+import { checkpointKeyId } from '../lib/scanClient';
+import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { renderWith } from '../test/render';
 
 const openVault = vi.hoisted(() => vi.fn());
-const releaseState = vi.hoisted(() => vi.fn<typeof import('../lib/reconciliationVault').releaseFromCurrentReconciliationState>());
 vi.mock('../lib/reconciliationVault', async (importOriginal) => ({
   ...await importOriginal<typeof import('../lib/reconciliationVault')>(),
   createCurrentReconciliationVault: openVault,
-  releaseFromCurrentReconciliationState: releaseState,
 }));
 
 // Resolve the callback inside async act so storage continuations and layout effects finish together.
@@ -23,7 +22,7 @@ function settle(action: () => void): Promise<void> {
   return act(() => Promise.resolve(action()));
 }
 
-afterEach(() => { clearSession(); openVault.mockReset(); releaseState.mockReset(); vi.restoreAllMocks(); vi.useRealTimers(); });
+afterEach(() => { clearSession(); openVault.mockReset(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 it('opens the real Pages route and handles loading, empty, stale, error, retry and lock', async () => {
   generateSession();
@@ -63,16 +62,6 @@ it('revokes an export when encrypted storage changes without delivering an inval
   };
   const readState = vi.fn<() => Promise<typeof initial>>().mockResolvedValue(initial);
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
-  releaseState.mockImplementation(async (_chain, _seller, release) => {
-    const latest = await readState();
-    release({
-      ...latest,
-      invoices: latest.invoices.map((invoice) => ({
-        ...invoice, version: 1, nonce: '0'.repeat(32), createdAt: 1, registeredAt: 1000,
-      })),
-    });
-    return true;
-  });
   renderWith(<AppLean />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
@@ -127,7 +116,8 @@ it('clears record filters, returns to page one and revokes the filtered export p
   expect(filters.getByLabelText<HTMLSelectElement>('Sort by date').value).toBe('oldest');
   expect(screen.getByLabelText<HTMLSelectElement>('File format').value).toBe('json');
   expect(screen.queryByRole('button', { name: 'Agree and download' })).toBeNull();
-  expect(releaseState).not.toHaveBeenCalled();
+  // Only the initial read: no release recheck happened for the revoked preview.
+  expect(openVault).toHaveBeenCalledTimes(1);
 
   await user.selectOptions(filters.getByLabelText('Record type'), 'payments');
   expect(screen.getByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
@@ -236,3 +226,91 @@ it.each(['opening', 'ready', 'refreshing', 'error'] as const)(
     });
   },
 );
+
+function scopedRecord(overrides: Record<string, unknown>) {
+  const session = getSessionPublic();
+  if (session === undefined) throw new Error('session required');
+  return {
+    version: 1, id: 'r', chainId: 84532, sellerKeyId: checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey),
+    transactionHash: '0x' + '1'.repeat(64), stealthAddress: '0x' + '2'.repeat(40), blockHash: '0x' + '3'.repeat(64),
+    asset: 'native', blockNumber: '9', blockTimestamp: '2524608000', logIndex: 0, amountMinorUnits: '5',
+    recordedAt: 2_524_608_000_000, evidenceSource: 'verified-router-scan', evidenceStatus: 'verified-at-scan',
+    viewTagMatched: true, provenance: 'live-scan', ...overrides,
+  };
+}
+
+it('filters by asset, reports exact verified-at-scan totals and exports consented payment history', async () => {
+  generateSession();
+  const usdc = '0x' + 'c'.repeat(40);
+  const huge = (2n ** 256n - 1n).toString();
+  const downloaded = vi.spyOn(downloads, 'downloadText').mockImplementation(() => undefined);
+  const ledger = {
+    receipts: [], readOnly: false,
+    invoices: [
+      { invoiceDigest: '0x' + 'a'.repeat(64), chainId: 84532, asset: 'native', expectedNetMinorUnits: huge, expiresAt: 4_000_000_000 },
+      { invoiceDigest: '0x' + 'b'.repeat(64), chainId: 84532, asset: usdc, expectedNetMinorUnits: '7', expiresAt: 4_000_000_000 },
+    ],
+    records: [
+      scopedRecord({ id: 'p1', amountMinorUnits: huge, invoiceDigest: '0x' + 'a'.repeat(64) }),
+      scopedRecord({ id: 'p1', amountMinorUnits: huge, invoiceDigest: '0x' + 'a'.repeat(64) }),
+      scopedRecord({ id: 'p2', logIndex: 1, amountMinorUnits: '3' }),
+      scopedRecord({ id: 'p3', logIndex: 2, amountMinorUnits: '1000', provenance: 'imported-history' }),
+      scopedRecord({ id: 'p4', logIndex: 3, amountMinorUnits: '4', asset: usdc, transactionHash: '0x' + '4'.repeat(64) }),
+    ],
+  };
+  const readState = vi.fn().mockResolvedValue(ledger);
+  openVault.mockResolvedValue({ readState, lock: vi.fn() });
+  renderWith(<AppLean />);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  await user.selectOptions(await screen.findByLabelText('Network'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  const report = within(await screen.findByRole('region', { name: 'Report for this view' }));
+  // The duplicate copy of p1 counts once; the imported observation never counts.
+  expect(report.getByText(`Verified-at-scan payments: 2 · ${(2n ** 256n + 2n).toString()} atomic units`)).toBeTruthy();
+  expect(report.getByText(`Of which locally associated with a registered invoice of this asset: ${huge} atomic units`)).toBeTruthy();
+  expect(report.getByText('Excluded from payment totals: 1 imported, reorganized or review-required observations.')).toBeTruthy();
+
+  const filters = within(screen.getByRole('group', { name: 'Browse records' }));
+  await user.selectOptions(filters.getByLabelText('Asset'), 'erc20:' + usdc);
+  expect(report.getByText('Invoices: 1 · expected 7 atomic units')).toBeTruthy();
+  expect(report.getByText('Verified-at-scan payments: 1 · 4 atomic units')).toBeTruthy();
+  expect(report.queryByText(new RegExp(huge, 'u'))).toBeNull();
+
+  await user.selectOptions(filters.getByLabelText('Record type'), 'payments');
+  expect(screen.getByText('Showing 1–1 of 1')).toBeTruthy();
+  expect(filters.getByLabelText<HTMLSelectElement>('Asset').value).toBe('erc20:' + usdc);
+  await user.click(screen.getByRole('button', { name: 'Preview payment export' }));
+  expect(screen.getByText('Export 1 payment observations (1 verified at scan time) as CSV?')).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Agree and download' }));
+  await waitFor(() => { expect(downloaded).toHaveBeenCalledOnce(); });
+  const [name, content, mime] = downloaded.mock.calls[0]!;
+  expect(name).toBe('ghostpay-payments.csv');
+  expect(mime).toBe('text/csv;charset=utf-8');
+  expect(content).toContain(`eip155:84532,erc20:${usdc},historical,2050-01-01T00:00:00.000Z,9,4,0x${'4'.repeat(64)},3,`);
+  expect(content).not.toContain('0x' + '2'.repeat(40));
+  expect(content).not.toContain(huge);
+  expect(document.activeElement?.textContent).toBe('Preview payment export');
+  // Two reads: the dashboard load and the authenticated release recheck.
+  expect(readState).toHaveBeenCalledTimes(2);
+});
+
+it('withholds the payment history file when the encrypted ledger changed after preview', async () => {
+  generateSession();
+  const downloaded = vi.spyOn(downloads, 'downloadText').mockImplementation(() => undefined);
+  const ledger = { receipts: [], readOnly: false, invoices: [], records: [scopedRecord({})] };
+  const readState = vi.fn().mockResolvedValue(ledger);
+  openVault.mockResolvedValue({ readState, lock: vi.fn() });
+  renderWith(<AppLean />);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  await user.selectOptions(await screen.findByLabelText('Network'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  await user.selectOptions(within(await screen.findByRole('group', { name: 'Browse records' })).getByLabelText('Record type'), 'payments');
+  await user.click(screen.getByRole('button', { name: 'Preview payment export' }));
+  readState.mockResolvedValue({ ...ledger, records: [] });
+  await user.click(screen.getByRole('button', { name: 'Agree and download' }));
+  expect(await screen.findByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
+  expect(downloaded).not.toHaveBeenCalled();
+  expect(readState).toHaveBeenCalledTimes(3);
+});

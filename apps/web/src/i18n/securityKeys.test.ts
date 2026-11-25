@@ -35,6 +35,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'dashboard.scanTotal', 'dashboard.revenueUnavailable',
       'dashboard.state.open', 'dashboard.state.reorged', 'dashboard.state.historical', 'dashboard.state.imported',
       'dashboard.exportDisclosure', 'dashboard.previewCount', 'dashboard.download',
+      'dashboard.reportVerified', 'dashboard.reportExcluded', 'dashboard.paymentExportDisclosure', 'dashboard.paymentPreviewCount',
       'btc.oracle.modeLabel',
       'btc.oracle.none',
       'btc.oracle.http',

@@ -1,22 +1,8 @@
 import { checkpointKeyId, createReconciliationApi, type ReconciliationRecord } from '@ghostpay/ux-vault/portable';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { expect, test, type Page } from '@playwright/test';
-
-async function copyEncryptedLedger(page: Page, ciphertexts: Map<string, string>): Promise<void> {
-  // Opening the dashboard has already created this browser's encrypted reconciliation store.
-  await page.evaluate((entries) => new Promise<void>((resolve, reject) => {
-    const open = indexedDB.open('ghostpay-reconciliation-encrypted', 1);
-    open.onerror = () => reject(new Error('Failed to open encrypted reconciliation database', { cause: open.error }));
-    open.onsuccess = () => {
-      const db = open.result;
-      const tx = db.transaction('vaults', 'readwrite');
-      tx.oncomplete = () => { db.close(); resolve(); };
-      tx.onabort = () => { db.close(); reject(new Error('Encrypted reconciliation fixture transaction aborted', { cause: tx.error })); };
-      for (const [key, ciphertext] of entries) tx.objectStore('vaults').put(ciphertext, key);
-    };
-  }), [...ciphertexts]);
-}
+import { expect, test } from '@playwright/test';
+import { copyEncryptedLedger } from './dashboardLedger';
 
 test('keeps encrypted network totals exact across filtering, refresh and a recorded reorg', async ({ page }) => {
   const spending = new Uint8Array(32).fill(3);
