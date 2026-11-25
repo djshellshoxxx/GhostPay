@@ -18,34 +18,58 @@ function describe(product) {
   return `${product.id} ${product.name} (${product.status})`;
 }
 
-/** Module groups of a lean report: application chunks plus each Worker build's chunks. */
-function moduleGroups(report) {
-  const chunks = Array.isArray(report.chunks) ? report.chunks : [];
-  const workers = Array.isArray(report.workers) ? report.workers.flatMap((w) => (Array.isArray(w?.chunks) ? w.chunks : [])) : [];
-  return [...chunks, ...workers];
+/**
+ * Validates the report's container shapes exactly as localBuildProfile.mjs writes them:
+ * `chunks: Array<{ fileName: string, modules: Array }>` (nonempty), `workers: Array<{ chunks: Array<chunk> }>`
+ * (may be empty) and `publicCopied: string[]` (may be empty). Returns the chunk groups to inspect, each labelled.
+ * Missing or malformed containers are problems; they are never read as empty.
+ */
+function reportGroups(report, problems) {
+  const groups = [];
+  const chunkShape = (chunk, where) => {
+    if (chunk === null || typeof chunk !== 'object' || Array.isArray(chunk)) problems.push(`${where} is not an object`);
+    else if (typeof chunk.fileName !== 'string' || chunk.fileName === '') problems.push(`${where} has no fileName`);
+    else if (!Array.isArray(chunk.modules)) problems.push(`${where} ${chunk.fileName} has no module list`);
+    else return true;
+    return false;
+  };
+  if (!Array.isArray(report.chunks)) problems.push('lean report chunks is missing or not a list');
+  else if (report.chunks.length === 0) problems.push('lean report lists no application chunks');
+  else report.chunks.forEach((chunk, i) => { if (chunkShape(chunk, `lean report chunk ${String(i)}`)) groups.push({ chunk, worker: false }); });
+  if (!Array.isArray(report.workers)) problems.push('lean report workers is missing or not a list');
+  else {
+    report.workers.forEach((w, i) => {
+      if (w === null || typeof w !== 'object' || Array.isArray(w) || !Array.isArray(w.chunks)) {
+        problems.push(`lean report worker ${String(i)} has no chunk list`);
+        return;
+      }
+      w.chunks.forEach((chunk, j) => { if (chunkShape(chunk, `lean report worker ${String(i)} chunk ${String(j)}`)) groups.push({ chunk, worker: true }); });
+    });
+  }
+  if (!Array.isArray(report.publicCopied)) problems.push('lean report publicCopied is missing or not a list');
+  return groups;
 }
 
 /**
  * Checks a parsed ghostpay-lean-build/1 report. Returns { problems, modules } where modules counts rendered modules
  * inspected. A report that cannot prove what it rendered is a problem, never a pass.
+ *
+ * Limitation: this proves which source modules were rendered, by path. It cannot prove that product code copied into
+ * a core module is dormant; that is a separate source and shared-core retention review.
  */
 export function checkReportExclusions(report) {
   const problems = [];
   if (report === null || typeof report !== 'object' || Array.isArray(report)) return { problems: ['lean report is not an object'], modules: 0 };
   if (report.format !== 'ghostpay-lean-build/1') problems.push('lean report has an unexpected format');
   if (report.profile !== 'lean') problems.push('release exclusions are only verified for the lean profile');
-  const groups = moduleGroups(report);
-  if (groups.length === 0) problems.push('lean report lists no chunks to verify');
+  const groups = reportGroups(report, problems);
   let modules = 0;
-  for (const chunk of groups) {
-    if (!Array.isArray(chunk?.modules)) {
-      problems.push(`lean report chunk ${String(chunk?.fileName)} has no module list`);
-      continue;
-    }
+  let appModules = 0;
+  for (const { chunk, worker } of groups) {
     for (const m of chunk.modules) {
       const id = typeof m?.id === 'string' ? m.id : '';
       if (id === '') {
-        problems.push(`lean report chunk ${String(chunk.fileName)} has a module without id`);
+        problems.push(`lean report chunk ${chunk.fileName} has a module without id`);
         continue;
       }
       // The writer always records a number; a missing or malformed length cannot prove the module was tree-shaken.
@@ -56,17 +80,22 @@ export function checkReportExclusions(report) {
       }
       if (rendered === 0) continue;
       modules += 1;
+      if (!worker) appModules += 1;
       const product = stoppedProductForModule(id);
       if (product !== undefined) problems.push(`stopped product ${describe(product)} module rendered into the site: ${id}`);
     }
   }
-  const copied = report.publicCopied === undefined ? [] : report.publicCopied;
-  if (!Array.isArray(copied)) problems.push('lean report publicCopied is not a list');
-  else {
-    for (const name of copied) {
-      const product = typeof name === 'string' ? stoppedProductForModule(`public/${name}`) : undefined;
-      if (typeof name !== 'string') problems.push('lean report publicCopied has a non-string entry');
-      else if (product !== undefined) problems.push(`stopped product ${describe(product)} public file copied into the site: ${name}`);
+  if (Array.isArray(report.chunks) && report.chunks.length > 0 && appModules === 0) {
+    problems.push('lean report has no rendered application module evidence');
+  }
+  if (Array.isArray(report.publicCopied)) {
+    for (const name of report.publicCopied) {
+      if (typeof name !== 'string' || name === '') {
+        problems.push('lean report publicCopied has a non-string or empty entry');
+        continue;
+      }
+      const product = stoppedProductForModule(`public/${name}`);
+      if (product !== undefined) problems.push(`stopped product ${describe(product)} public file copied into the site: ${name}`);
     }
   }
   return { problems, modules };

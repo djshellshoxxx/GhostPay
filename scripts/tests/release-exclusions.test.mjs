@@ -120,7 +120,7 @@ test('a report that cannot prove what it rendered is a failure, not a pass', () 
   assert.deepEqual(checkReportExclusions([]).problems, ['lean report is not an object']);
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { profile: 'full' })).problems.join(), /lean profile/);
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { format: 'other' })).problems.join(), /format/);
-  assert.match(checkReportExclusions(report([], { chunks: [], workers: [] })).problems.join(), /no chunks/);
+  assert.match(checkReportExclusions(report([], { chunks: [], workers: [] })).problems.join(), /no application chunks/);
   assert.match(checkReportExclusions(report([], { chunks: [{ fileName: 'a.js' }] })).problems.join(), /no module list/);
   assert.match(checkReportExclusions(report([], { chunks: [{ fileName: 'a.js', modules: [{ renderedLength: 1 }] }] })).problems.join(), /without id/);
   for (const bad of [undefined, null, -1, Number.NaN, '5', Number.POSITIVE_INFINITY]) {
@@ -130,6 +130,35 @@ test('a report that cannot prove what it rendered is a failure, not a pass', () 
   }
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: 'x' })).problems.join(), /not a list/);
   assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: [7] })).problems.join(), /non-string/);
+  assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { publicCopied: [''] })).problems.join(), /non-string or empty/);
+});
+
+test('report containers must have the writer\'s exact shapes; empty worker and public lists stay legal', () => {
+  const missing = (key) => { const r = report(['src/AppLean.tsx']); delete r[key]; return checkReportExclusions(r).problems.join('\n'); };
+  assert.match(missing('chunks'), /chunks is missing or not a list/);
+  assert.match(missing('workers'), /workers is missing or not a list/);
+  assert.match(missing('publicCopied'), /publicCopied is missing or not a list/);
+  for (const bad of [{}, 'x', 3, null]) {
+    assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { workers: bad })).problems.join(), /workers is missing or not a list/, String(bad));
+    assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { chunks: bad })).problems.join(), /chunks is missing or not a list/, String(bad));
+  }
+  // A valid application chunk with malformed Worker metadata must not pass without Worker evidence.
+  for (const worker of [null, {}, { chunks: 'x' }, { chunks: [{ fileName: 'w.js' }] }, { chunks: [{ modules: [] }] }, { chunks: [7] }]) {
+    const { problems } = checkReportExclusions(report(['src/AppLean.tsx'], { workers: [worker] }));
+    assert.ok(problems.length > 0, JSON.stringify(worker));
+  }
+  assert.match(checkReportExclusions(report(['src/AppLean.tsx'], { chunks: [{ fileName: '', modules: [] }] })).problems.join(), /no fileName/);
+  assert.deepEqual(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [], publicCopied: [] })).problems, []);
+  assert.deepEqual(checkReportExclusions(report(['src/AppLean.tsx'], { workers: [{ chunks: [] }] })).problems, []);
+});
+
+test('a report with no rendered application module is not evidence', () => {
+  assert.match(checkReportExclusions(report([])).problems.join(), /no rendered application module evidence/);
+  const r = report(['src/AppLean.tsx']);
+  r.chunks[0].modules[0].renderedLength = 0;
+  assert.match(checkReportExclusions(r).problems.join(), /no rendered application module evidence/);
+  // Worker modules alone do not count as application evidence.
+  assert.match(checkReportExclusions(report([])).problems.join(), /application/);
 });
 
 test('stopped-product public files copied into the site fail', () => {
