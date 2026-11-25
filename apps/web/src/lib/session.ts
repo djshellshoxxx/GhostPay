@@ -50,7 +50,7 @@ interface Custody {
   /**
    * A copy outside this browser profile. `verified`: the keys were imported (a keystore, or hex with its signing key), or a
    * downloaded keystore was opened again with its passphrase and holds exactly these keys. `unverified`: a keystore was
-   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it lifts the backup gate, not the wipe.
+   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it grants neither verification nor permission to wipe.
    */
   readonly external: 'none' | 'unverified' | 'verified';
   /**
