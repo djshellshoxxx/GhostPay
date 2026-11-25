@@ -3338,7 +3338,7 @@
   "releaseExclusion": {
     "pr": 673,
     "head": "e2bd32c55155f345e52630910135bf32ed1318a0",
-    "checks": "Fresh exact-head check-runs: 39 success, 3 skipped, 0 pending or failed; all six workflow groups qualified (verify workflow runs separately before integration). No submitted reviews; draft, 35 ahead/0 behind.",
+    "checks": "39 success, 3 skipped; all 6 exact-head workflows completed successfully: CI 45699534807, Pages 45699534875, Beta 45699534838, Hosting 45699534911, CLI 45699534976, CodeQL 45699527307. No submitted reviews; draft, 35 ahead/0 behind.",
     "verification": "Source confirms previous empty per-chunk/Worker provenance gap fixed; new regression tests through full verifier. Owner reports 54/54 Node tests, lean build 364 rendered modules/17 files; not independently executed. Retain draft and existing owner; separate source dormancy and shared-core retention requirements. Four distinct core repair source files and four regression files differ from main; inspected all eight patches. ICU adjacent quoted literals, accessibility Unicode truncation, locale fallback and QR assembly rollback remain useful in-scope donor changes. Do not duplicate; existing owner retains queue."
   },
   "historicalCompositions": {
@@ -3412,5 +3412,18 @@
         "updated": "2026-11-25T21:05:06Z"
       }
     ]
-  }
+  },
+  "deltaDispositions": [
+    {
+      "pr": 653,
+      "head": "2021b0b4c72ea8a16b6c14bd21a03d27ee82b5df",
+      "disposition": "out-of-scope for beta/v1.0 under no new hosted privacy-service programs directive; preserve draft and all refs; no integration, service development or deployment without explicit owner authorization",
+      "evidence": "New Node/SQLite reference HTTP service and workspace, unchanged client, optional and not deployed per PR body. Scope hold comment https://github.com/djshellshoxxx/GhostPay/pull/653#issuecomment-7175890975"
+    },
+    {
+      "pr": 665,
+      "head": "2be20088f80574161edd7ae2f852c11f5e8ccc27",
+      "disposition": "existing W5 owner, independent synthetic payment-state verifier; no ordinary CI execution of the harness claimed; do not duplicate or modify owned paths"
+    }
+  ]
 }
