@@ -187,3 +187,10 @@ low/info, and remain filler work.
   it (522/552/638/724). Not a product defect. Worker asked for the one-line test adaptation (insert the Read click
   before line 741; no assertion removed). This is exactly the kind of cross-feature regression the "requalify after
   merging main" rule exists to catch.
+- 2026-11-25T08:58Z — FC-02 fix pushed: #649 head `790de53e` (+2 lines in `pages-devnet.spec.ts`, comment + Read
+  click; handoff note); main still `60824005`. Host memory critical (≈0.07–0.11 GB free physical): Claude Code stopped
+  both coordinator CI watchers; CI now checked by one-off reads only (08:55Z: #648 17/42 ok, #650 20/41 ok, #649 just
+  started; no failures). FC-05a: merge `dc435811` (local; #244 onto `60824005`, ACTIVE_WORK union, 39 non-doc paths all
+  BTC/catalog/DEVIATIONS/e2e), but `build:libs` crashed twice in `tsc` (access violation 3221225477) under memory
+  pressure. Decision: no further local heavy runs for FC-05a; push with an explicit "local validation not run"
+  record and qualify on hosted CI plus an independent read-only review.
