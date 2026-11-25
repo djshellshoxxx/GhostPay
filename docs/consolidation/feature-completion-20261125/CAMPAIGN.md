@@ -180,3 +180,10 @@ low/info, and remain filler work.
   out under load and passed with `--testTimeout=120000`; FC-02 one load-dependent lifecycle test passed in
   isolation. Hosted CI on Linux is the qualifying gate for all three. Stale worker CI-watch/poll loops (12) were
   stopped by the coordinator. FC-05a (#244) assigned to worker fc03 in its existing worktree.
+- 2026-11-25T08:40Z — FC-02 #649 `e88377a4`: hosted `Pages artifact on anvil (browser)` failed
+  (run 45574817966, job 139070143297) at `e2e/pages-devnet.spec.ts:741` (`prepareDirectSweep` → Sign disabled).
+  Cause: semantic interaction with #641 (main `60824005`, commit `6a6886f1`), which added a second sweep after
+  re-navigating to Sweep without the explicit Read click FC-02's consent model requires; every other sweep step has
+  it (522/552/638/724). Not a product defect. Worker asked for the one-line test adaptation (insert the Read click
+  before line 741; no assertion removed). This is exactly the kind of cross-feature regression the "requalify after
+  merging main" rule exists to catch.
