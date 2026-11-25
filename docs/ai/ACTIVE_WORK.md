@@ -1,3 +1,31 @@
+# P0-KEYS — GhostPay-independent recovery of the seller keystore backup (2026-11-25 UTC)
+
+Worker: Claude Code session (Opus 5.5), local worktree `.claude/worktrees/p0-keys-recovery`. Branch
+`claude/p0-keys-independent-recovery`, exact base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Gap: the reference recovery script reads only the Spec 18 `ghostpay-stealth-*` files. The seller keystore
+(`ghostpay-keystore.json`, v1, scrypt + AES-256-GCM) can only be opened by GhostPay code itself. This adds an
+independent reader so that file can be verified and used to recover one-time payment keys without GhostPay code,
+the original browser profile, device or storage. The keystore format and the app are unchanged.
+Owned paths: additive seller-keystore reader and `--expected-meta-address` in
+`scripts/recovery/stealth-export-recover.mjs`; new `scripts/recovery/seller-keystore-recover.test.mjs`; new
+`test-vectors/generate-seller-keystore.mjs`, `test-vectors/seller-keystore-v1.json` and their README entry; new
+`docs/specs/18-seller-keystore-v1-format.md`; additive sections in `docs/user/recover-stealth-payment-keys.md`; new
+`apps/web/e2e/independent-keystore-recovery.spec.ts`; this claim; new
+`docs/handoffs/P0_KEYS_INDEPENDENT_KEYSTORE_RECOVERY_20261125.md` (checkpoint).
+Not owned (active elsewhere, not edited): #641 seller-keystore verify/restore UI and codec (`SellerKeys.tsx`,
+`session.ts`, `keyVault.ts`, `keystore*.ts`, `portable-errors.ts`, `recovery.spec.ts`, `pages-devnet.spec.ts`,
+`product-guide.md`, locales); #622 archive, master backup and in-app Spec 18 recovery (`paymentKeyExport*`,
+`StealthExport*`, `Scan.tsx`); #635 late reconciliation; #636 merchant dashboard; #588 mobile engines.
+Acceptance: the reader accepts every keystore GhostPay writes (fixed vector and freshly written files from the built
+`@ghostpay/ux-vault` codec, including production N=2^17), and the codec accepts the vector. The reader recovers the same
+one-time keys as the Spec 18 master-backup vectors. Wrong passphrase, tampering, truncation, oversize, unsupported
+versions and another seller's backup are refused with fixed codes. No seller secret is printed; the passphrase is
+never read from argv or the environment. Recovery runs in an isolated directory with only the script and two noble
+packages readable. A browser-downloaded keystore is decoded after its profile is closed. No new dependency,
+primitive, endpoint or contract change.
+
+---
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
