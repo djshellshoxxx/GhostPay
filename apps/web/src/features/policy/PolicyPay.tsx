@@ -100,7 +100,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         setLocked(true);
       }
       if (e instanceof UserFacingError && (e.translation?.key === 'policy.pay.tokenNotWithdrawable' || e.translation?.key === 'policy.pay.committedAssetNotWithdrawable')) invalidateReview();
-      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e, t) });
+      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid') : userMessage(e, t) });
     } finally {
       setBusy(false);
     }

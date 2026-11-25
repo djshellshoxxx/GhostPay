@@ -418,3 +418,13 @@ describe('snapshot / restore', () => {
     expect(parseSnapshot({ ...good, records: [{ ...rec, coalesceKey: 'ok' }] }).ok).toBe(true);
   });
 });
+
+it('keeps invoice identifiers and key material out of OS notification titles and localization arguments', () => {
+  for (const label of ['invoice-winter-sample', 'violet maple test key', '76219.843', EVM]) {
+    const { q } = mk({ discreet: false, lockScreenLabel: label });
+    expect(q.push(rcv(label.replaceAll(' ', '-'), { params: { label, address: EVM, amount: '76219.843' } })).outcome).toBe('added');
+    const [alert] = q.takeAlerts();
+    expect(alert).toMatchObject({ title: 'Notification', body: 'Open the app to see more.', args: {}, redacted: true });
+    expect(JSON.stringify(alert)).not.toContain(label);
+  }
+});
