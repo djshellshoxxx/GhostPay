@@ -1,3 +1,11 @@
+# payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
+
+Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.
+Owned paths: `packages/payment-uri/src/invoice-link.ts`, additive cases in `packages/payment-uri/src/{negative,vectors}.test.ts`, `packages/payment-uri/DEVIATIONS.md` item 10, this entry. No `apps/web` changes.
+Acceptance: `parseInvoiceLink`/`buildInvoiceLink` reject whole `.` path segments like `..`, and `origin` omits the scheme's default port; package tests, typecheck and lint pass.
+
+---
+
 # Seller-key restoration on phones, tablets and other devices (2026-11-25 UTC)
 
 Worker: Claude Code session `ghostpay-backup-60`; branch `claude/mobile-restore`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
