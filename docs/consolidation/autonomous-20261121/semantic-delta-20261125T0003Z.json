@@ -1,0 +1,110 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T00:03:40Z (cycle start; live reads followed)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "95fb69188e197586b3b8d9250832ba5b2bb54291:docs/consolidation/autonomous-20261121/semantic-delta-20261124T2303Z.json",
+  "summary": {
+    "branches": 712,
+    "openPrs": 246,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      12
+    ],
+    "prPages": [
+      100,
+      100,
+      46
+    ],
+    "independentRefMatches": 712,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 196,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 0
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "sha": "95fb69188e197586b3b8d9250832ba5b2bb54291",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "retired": [],
+  "newlyDiscovered": [
+    {
+      "branch": "automation/20261124/bug/nl-amount-locale-prefix-r11",
+      "sha": "4a13cffec3765e41c006659e16e092d0f961c0a5",
+      "pr": 633,
+      "disposition": "unresolved-active-BUG-only-owner",
+      "checkEvidence": "All returned applicable checks successful, three skipped (release/deploy); independent review and owner coordination remain."
+    }
+  ],
+  "newlyFinal": [],
+  "unresolvedReview": [
+    {
+      "pr": 226,
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "parentPr": 224,
+      "parentHead": "1054daabc5cabe958466ec144582d76137b54910",
+      "disposition": "unique-eligible-bounded-audit-helper-recovery-pending-owner-coordination-and-fresh-gates",
+      "proof": {
+        "mainBlob": "363bcb74a452c61c275378bca71688e32ed8178d",
+        "mainRegression": "absent",
+        "sourceBlob": "c52764ea925032721f934758dad6b68920f5436b",
+        "testBlob": "afc1c97fed4a43d66dd9070c0fe0fd8891f15c6b",
+        "prospectiveTree": "3b4a64557fe9f85efa94d4add42ce2c3f1f874e5",
+        "baseTree": "34c33cc2fc639c0f084269f7744ab31df111451a",
+        "exactTreeDiff": [
+          "docs/audits/poc/static-server.mjs",
+          "docs/audits/poc/static-server.test.mjs"
+        ],
+        "otherEntries": "unchanged by recursive changed-subtree readback"
+      },
+      "notes": "Loopback audit helper only, not deployed Pages backend. Existing donor enforces lexical/canonical containment, regular-file requirement and errors before success headers. Both donor paths copied exactly and independently Git-hash checked; Node 22.16.0 original suite 8/8, 0 skipped/failed. Detached tree only; no candidate commit/ref, no authority claim, no full repository or browser qualification. #224 and #226 remain open; preserve donor histories and claims and coordinate before candidate publication."
+    },
+    {
+      "pr": 225,
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "disposition": "held-policy-dependent-unwired-tool",
+      "notes": "Main lacks proposed checker and tests. Parent #212 explicitly requires owner decision before wiring any disposition checker. Do not confuse #468 evidence summarizer with this checker, replace current gate, or enable it."
+    }
+  ],
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "snyk": "success",
+      "reviews": 0
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "scheduledResearch": 45485137780,
+    "branchProtection": "main reports no enforced contexts; administrative endpoint 403"
+  },
+  "testEvidence": {
+    "command": "node --test static-server.test.mjs",
+    "node": "v22.16.0",
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "scope": "exact donor source and tests, synthetic temporary filesystem and loopback only",
+    "checkout": "git ls-remote failed DNS resolution (exit 128)"
+  },
+  "remaining": "#614 independent approval first; prepared #616/#617 reconciliations, #384 regression recovery, #217 policy coordination, BTC regression obligations, #226 bounded recovery owner coordination. No main merge, deployment, force push, deletion or application branch write."
+}
