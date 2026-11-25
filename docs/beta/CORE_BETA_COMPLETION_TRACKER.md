@@ -1,6 +1,6 @@
 # GhostPay core functional-beta completion tracker
 
-**Issue #286, exports and notifications.** Candidate `2596686489c5984603c9562d565285f7a91ecfe3` passed direct privacy-boundary checks and independent source review. Release acceptance requires the hosted web tests, browser recovery round trip and integration review. See [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) for the current results.
+**Issue #286 item 5, exports and notifications.** Donor [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) is integrated onto current main on `claude/w-export-privacy-286-20261125`, with fixed recovery-friendly download names and three further live-region fixes from independent review. Release acceptance still requires hosted CI at the exact head and integration through the shared queue; see the integration PR for current results.
 
 
 Date: 2026-11-11 (UTC). Branch `claude/nice-ritchie-8vivls`, [PR #114](https://github.com/djshellshoxxx/GhostPay/pull/114), stacked on the

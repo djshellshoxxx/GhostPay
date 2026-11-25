@@ -108,6 +108,13 @@ tag and reconciliation vaults encrypt stored contents; scope identifiers, existe
 observable. Unlocked contents are available to the running page. Locking does not delete saved data, and exported
 files must be deleted separately from site storage.
 
+Downloaded files get fixed names such as `ghostpay-keystore.json`, `ghostpay-receipt.json` or `ghostpay-tags.gpa`. A
+name never contains an address, amount, transaction hash, date or invoice detail, so two downloads of the same kind
+share a name (the browser may add a number) and the contents identify the file on import. The name and the browser's
+download history still show that a GhostPay file was saved. The contents are what you chose to export: an encrypted
+backup stays encrypted, a receipt or public record does not. Screen-reader announcements and error alerts say what
+happened without reading out a transaction hash, amount or address; the value stays visible on the page.
+
 A second RPC adds comparison and availability while sharing queries with another operator. Explorer lookups also
 reveal the requested address or transaction. A valid receipt signature is a field attestation, and restored history
 is not fresh payment verification. See the [shipped privacy page](../../apps/web/privacy.html) and
