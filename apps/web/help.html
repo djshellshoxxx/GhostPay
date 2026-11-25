@@ -7,8 +7,9 @@
     <meta name="referrer" content="no-referrer" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
     <title>GhostPay help — invoices, receipts and recovery</title>
-    <meta name="description" content="How to create and review GhostPay invoices, understand payment evidence, save receipts, restore backups and transfer public configuration." />
+    <meta name="description" content="Plain-language and technical guide to GhostPay invoices, payments, receipts, keys and backups, wallets, RPC settings, merchant status and privacy limits." />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./appearance.css" />
     <link rel="stylesheet" href="./help.css" />
   </head>
   <body>
@@ -16,7 +17,7 @@
     <header class="site-header">
       <div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div>
       <h1>Invoices, receipts and recovery</h1>
-      <p class="intro">A practical guide to the current web interface. This page works without JavaScript. Keep your existing app tab open if it holds keys or work you have not saved.</p>
+      <p class="intro">A guide to the web app: what each step does, what it proves, what it does not, and what is still planned. This page works without JavaScript. Keep your app tab open if it holds keys or unsaved work.</p>
     </header>
     <nav class="site-nav" aria-label="Site">
       <ul>
@@ -28,115 +29,407 @@
     </nav>
     <main id="content" tabindex="-1">
       <aside class="notice" aria-label="Development status">
-        <p><strong>Experimental, testnet development.</strong> The app requires verified deployment information before ordinary payments can proceed. A listed network or a successful local test does not mean a public deployment is qualified. Mainnet EVM payments remain disabled.</p>
+        <p><strong>Experimental, testnet development. Not audited.</strong> GhostPay has not had an independent professional audit. Use test networks and test funds only. A listed network, a successful local test or a running app does not mean a deployment is qualified. Mainnet EVM payments are disabled.</p>
       </aside>
+
       <h2>On this page</h2>
       <ul class="contents">
-        <li><a href="#start">Set up and back up</a></li>
+        <li><a href="#start-here">Start here (plain language)</a></li>
+        <li><a href="#how-payment-works">How a payment works</a></li>
+        <li><a href="#keys-backups">Keys and backups</a></li>
+        <li><a href="#wallet">Connect a wallet</a></li>
         <li><a href="#invoice">Create an invoice</a></li>
-        <li><a href="#pay">Review and pay</a></li>
-        <li><a href="#evidence">Understand payment evidence</a></li>
+        <li><a href="#pay">Pay an invoice</a></li>
+        <li><a href="#evidence">What counts as evidence</a></li>
         <li><a href="#receipts">Receipts and QR codes</a></li>
         <li><a href="#files">Choose the correct file</a></li>
-        <li><a href="#devices">Exchange public configuration</a></li>
-        <li><a href="#merchants">Merchant workflow</a></li>
+        <li><a href="#devices">Share public configuration and settings</a></li>
+        <li><a href="#rpc">RPC and network configuration</a></li>
+        <li><a href="#privacy-summary">Privacy in brief</a></li>
+        <li><a href="#merchants">Merchant guidance</a></li>
+        <li><a href="#help-tips">Contextual help in the app</a></li>
+        <li><a href="#glossary">Technical glossary</a></li>
+        <li><a href="#accessibility">Accessibility and layout</a></li>
         <li><a href="#troubleshooting">Troubleshooting</a></li>
         <li><a href="#technology">Technology and attribution</a></li>
       </ul>
-      <section aria-labelledby="start">
-        <h2 id="start">1. Set up and back up</h2>
-        <p>In <strong>Seller keys</strong>, generate a key set or import your existing encrypted keystore. A new key set initially lives in the current tab. The spending key controls funds, the viewing key discovers payments, and the signing key signs invoices and seller receipts.</p>
-        <ol>
-          <li>Download the encrypted keystore before depending on the keys. The export form requires at least 14 characters and rejects weak passphrases; it also offers a generated suggestion.</li>
-          <li>Keep the keystore and passphrase in separate protected places. Confirm that the file imports in a separate browser profile before clearing your original session.</li>
-          <li>If you use the encrypted browser vault, retain a separate file backup. Clearing site data removes local storage; a browser vault is not an external backup.</li>
-          <li>Back up optional local tags and reconciliation data separately. Their files do not replace the seller keystore. The full build offers a guided key/tag checklist; the lean build keeps the narrower keystore flow.</li>
-        </ol>
-        <p>In <strong>Settings</strong>, choose the RPC providers used for chain requests. A second independent provider can expose disagreement, but sends queries to another operator. Choose providers whose availability and data practices fit your needs.</p>
+
+      <p class="legend"><strong>Status labels used in this guide:</strong>
+        <span class="status status-implemented">Implemented</span> works in the stated build, subject to the gates described;
+        <span class="status status-experimental">Experimental</span> testnet or gated, not for real funds;
+        <span class="status status-planned">Planned</span> described in the project but not reachable in the app;
+        <span class="status status-unsupported">Unsupported</span> disabled or refused by the app.</p>
+
+      <section aria-labelledby="start-here">
+        <h2 id="start-here">Start here (plain language)</h2>
+        <p>GhostPay lets someone ask to be paid in a crypto asset without publishing their main wallet address for each sale. The seller makes a signed invoice. The buyer pays it from their own wallet. The payment goes to a fresh address made for that one payment. The seller later finds it with a private viewing key that stays in the seller's browser.</p>
+        <p>Two things are always true. First, the blockchain is public: anyone can see that a payment happened, roughly how much, and when. Second, GhostPay does not verify who the seller is. Check the people and records you rely on through channels you trust.</p>
       </section>
+
+      <section aria-labelledby="how-payment-works">
+        <h2 id="how-payment-works">1. How a payment works</h2>
+        <p>The diagram below shows the normal order of steps. It is also written as lists, so a screen reader or a text-only view gets the same information.</p>
+        <div class="flow-lanes">
+          <section class="flow-lane" aria-labelledby="lane-seller">
+            <h3 id="lane-seller">Seller</h3>
+            <ol class="flow">
+              <li><strong>Set up keys once.</strong> Create a key set and download an encrypted keystore. See section 2.</li>
+              <li><strong>Create an invoice.</strong> Choose the network, asset, exact amount, line items, expiry and fee policy. The invoice is signed with the invoice-signing key.</li>
+              <li><strong>Share the original file or link.</strong> Use any channel you trust. Anyone holding a bearer link can read it.</li>
+              <li><strong>Find the payment.</strong> Use <em>Scan and receive</em> with your viewing key. Scanning sends queries to the RPC provider you chose.</li>
+              <li><strong>Review and keep records.</strong> Optionally match the payment to the invoice, keep the receipt, and export backups.</li>
+            </ol>
+          </section>
+          <section class="flow-lane" aria-labelledby="lane-buyer">
+            <h3 id="lane-buyer">Buyer</h3>
+            <ol class="flow">
+              <li><strong>Open the invoice.</strong> Paste or open the original link or file. GhostPay checks its format, signature and expiry.</li>
+              <li><strong>Check the deployment.</strong> Payment needs a verified deployment for that network. If none is present, the app blocks the payment.</li>
+              <li><strong>Connect a wallet.</strong> Choose the account and let the wallet switch to the invoice's network. See section 3.</li>
+              <li><strong>Approve in the wallet.</strong> Read each wallet prompt. Approve only the action shown. A token payment may first need an approval or a signed permit.</li>
+              <li><strong>Keep the reference.</strong> Save the transaction reference and the local record. Check the state shown before deciding anything else.</li>
+            </ol>
+          </section>
+        </div>
+        <p class="flow-handoff">Hand-off: the seller sends the invoice to the buyer. The buyer returns the transaction reference or a receipt. Neither side should treat a message as proof of settlement without the checks in section 6.</p>
+
+        <h3>In more detail</h3>
+        <p>An invoice asks for a payment. It does not prove one happened. The payment goes to a one-time stealth address derived for that payment. The seller's viewing key lets the seller's browser recognise payments made to such addresses. The seller then reconciles what was found with the invoice. Reconciliation is a local suggestion until the seller confirms it.</p>
+        <details>
+          <summary>Technical details: stealth addresses and announcements</summary>
+          <div class="technical">
+            <p>The seller publishes a meta-address (a pair of public keys). A payer derives a one-time address from it and sends funds there. An announcement records enough data for the viewing key holder to detect the payment. This follows the ERC-5564 stealth address pattern, and the public registry follows ERC-6538. The contracts also route payments through GhostPay's router, which takes a 0.25% fee. Section 6 and the glossary explain what each state means.</p>
+          </div>
+        </details>
+      </section>
+
+      <section aria-labelledby="keys-backups">
+        <h2 id="keys-backups">2. Keys and backups</h2>
+        <p>A key set has three keys. The <strong>spending key</strong> controls funds at the one-time addresses. The <strong>viewing key</strong> lets your browser find payments. The <strong>invoice-signing key</strong> signs invoices and receipts; it is optional for some flows. Anyone with the spending key can move funds at its one-time addresses, and losing it can lose them. Anyone with the viewing key can see your incoming payments, but cannot spend them.</p>
+        <p>A new key set exists only in the current tab until you export it or save an encrypted copy in this browser. Reloading or closing the tab without a backup loses it. Download the keystore before you depend on the keys, and confirm that it imports in another browser profile.</p>
+        <ol>
+          <li>Choose a passphrase of at least 14 characters. GhostPay also estimates strength and can refuse weak passphrases; it offers a generated suggestion.</li>
+          <li>Store the keystore file and its passphrase in separate protected places.</li>
+          <li>Optionally save the encrypted browser vault. It is a convenience copy in this browser, not a backup: clearing site data removes it.</li>
+          <li>Keep other backups separate. Tag archives, reconciliation history and public configuration do not replace the keystore.</li>
+        </ol>
+        <h3>Which backup restores what</h3>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="backup-table-caption">
+          <table>
+            <caption id="backup-table-caption">Backup files, what they restore, and what they do not</caption>
+            <thead><tr><th scope="col">File or action</th><th scope="col">Restores</th><th scope="col">Does not restore</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Encrypted keystore (download in Seller keys)</th><td>Spending, viewing and signing keys, by file or QR import</td><td>Tags, scan history, settings, pinned signers, wallet attempt records</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Browser vault (optional, this browser only)</th><td>The keystore ciphertext, unlocked by its passphrase</td><td>Anything after clearing site data. Keep a separate keystore file</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Public seller configuration (QR, text or file)</th><td>Preview and comparison of public keys and supported networks on another device</td><td>Any private key. Preview only: it cannot change your keys</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Reconciliation history backup (encrypted)</th><td>Scan history rows, for the same viewing key only</td><td>Keys. Imported observations are untrusted until rescanned</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Tag archive (.gpa file with passphrase)</th><td>Local tags, and optionally encrypted reconciliation history, into this browser</td><td>Seller keys, settings, wallet attempts</td><td><span class="status status-implemented">Implemented</span> full build only</td></tr>
+              <tr><th scope="row">Settings exchange (preferences file or QR)</th><td>Delay range, idle-lock timeout, theme and address-bar clearing. primary and second-provider RPC URLs, relayer URL and pinned signer keys only if you tick them</td><td>Keys</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Single-payment stealth key export (Scan)</th><td>The private key of one payment, encrypted, or raw after a confirmation. Raw keys are sensitive</td><td>Other payments or the seller's key set</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Master stealth backup (one file for every stealth key)</th><td>Not available in the app</td><td>Everything</td><td><span class="status status-planned">Planned</span> library code only</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <details>
+          <summary>Technical details: key protection</summary>
+          <div class="technical">
+            <p>Keystores use scrypt (N = 2^17) to derive a key from the passphrase, after NFKC normalisation, and AES-256-GCM for authenticated encryption. Idle lock is 15 minutes by default (range 1 to 240) and clears keys from memory; it does not erase stored records. Saved records live in this browser's IndexedDB, localStorage or sessionStorage as described in <a href="./privacy.html#local">privacy and local data</a>.</p>
+          </div>
+        </details>
+      </section>
+
+      <section aria-labelledby="wallet">
+        <h2 id="wallet">3. Connect a wallet</h2>
+        <p>A wallet holds the account that pays. GhostPay does not hold it, and typing an address does not connect a wallet.</p>
+        <ol>
+          <li>Open the Pay view. GhostPay lists browser wallets that announce themselves. It uses the default browser provider only if no wallet announces.</li>
+          <li>Choose the account. GhostPay asks the wallet to switch to the invoice's network. It asks once per connection and does not add networks to the wallet.</li>
+          <li>Read each wallet prompt. A token payment may require an approval (exact to the invoice amount) or a signed permit before the payment itself. A permit is signed data, not a transaction.</li>
+          <li>Disconnecting stops new requests from GhostPay. It does not cancel a request that the wallet has already received.</li>
+        </ol>
+        <p>Wallet support is listed in the table in section 10. WalletConnect is <span class="status status-planned">Planned</span> and not wired into the app. Hardware-wallet behaviour depends on the wallet you use and is not verified by this project.</p>
+        <details>
+          <summary>Technical details: how requests are sent</summary>
+          <div class="technical">
+            <p>Discovery uses EIP-6963 announcements, with the injected <code>window.ethereum</code> object only as a fallback. Chain switching uses <code>wallet_switchEthereumChain</code> once for the invoice's chain. Token approvals are exact to the invoice amount, and revocation sets the allowance to zero. Permits use <code>eth_signTypedData_v4</code> when the token supports them.</p>
+          </div>
+        </details>
+      </section>
+
       <section aria-labelledby="invoice">
-        <h2 id="invoice">2. Create an invoice</h2>
-        <p>Use <strong>Create invoice</strong> to choose the supported chain, asset, fixed token amount, expiry and fee policy. Review the gross payment, fee and net amount. Optional memo and line items belong to the invoice; encryption protects them only according to the link's selected mode.</p>
-        <p>A link that includes its decryption key is a bearer link: anyone holding it can read its contents. A passphrase-protected link needs the separate passphrase. Preserve the complete original link or file; a screenshot of selected fields does not preserve its signed data.</p>
-        <p>Optional registration for local matching starts off. It lets the seller later review a proposed association between an invoice and eligible scan evidence; it does not automatically mark an invoice paid.</p>
+        <h2 id="invoice">4. Create an invoice</h2>
+        <p>Use <strong>Create invoice</strong> to set the network, the asset, the exact amount, the line items, the expiry and the fee policy. A fixed token amount must be greater than zero. Each invoice needs at least one line item with a description, a quantity and a unit price. Memo text is limited to 500 characters. Expiry defaults to 24 hours and can be set from 1 to 2160 hours.</p>
+        <p>The fee policy decides who bears GhostPay's 0.25% router fee. <em>Seller pays</em> is the default: the payer sends the invoice amount and the seller receives the net amount. <em>Payer pays</em> adds the fee to the amount the payer sends, so the seller may receive up to one base unit more than the net figure.</p>
+        <h3>Link modes</h3>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="link-table-caption">
+          <table>
+            <caption id="link-table-caption">Invoice protection modes</caption>
+            <thead><tr><th scope="col">Mode</th><th scope="col">What the link contains</th><th scope="col">Who can read it</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Plain</th><td>The invoice in readable form</td><td>Anyone who gets the link or file</td></tr>
+              <tr><th scope="row">Bearer (encrypted, key in the link)</th><td>Encrypted contents. The decryption key follows <code>#</code> in the link</td><td>Anyone holding the <strong>complete</strong> link. Treat it like a password</td></tr>
+              <tr><th scope="row">Passphrase-protected</th><td>Encrypted contents with no key in the link</td><td>Only people who have the link <strong>and</strong> the passphrase</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A passphrase protects the invoice contents. It does not change whether the invoice can be paid. The browser sends the part after <code>#</code> only to your own page, not to a server, and GhostPay clears it from the address bar after loading by default. The link can still exist in chat history, screenshots, clipboard contents or a browser history entry.</p>
+        <p><strong>Gas buffer (full build, token invoices only).</strong> A seller may accept an optional extra native-coin amount that the payer sends in the same transaction, so the one-time address can be swept without a linked wallet. The buffer is never refunded. It publicly links the payment, the one-time address and the payer, and its amount is an estimate, not a guarantee. Lean builds do not accept invoices with a buffer policy.</p>
+        <p><strong>Matching is off by default.</strong> If you register an invoice for local matching, GhostPay can later suggest that a scanned payment corresponds to it. You confirm each suggestion. Registration never marks an invoice as paid.</p>
+        <p><span class="status status-experimental">Experimental</span> Fiat-quoted invoices need a price feed and are available only in the full build on testnet feeds. Do not use them for real pricing.</p>
+        <details>
+          <summary>Technical details: envelope and fragments</summary>
+          <div class="technical">
+            <p>An encrypted invoice is an envelope with a version prefix (<code>gpi=v1.</code>) placed after <code>#</code>. Passphrase protection uses scrypt (N = 2^17) with AES-256-GCM. The envelope header is not authenticated until decryption succeeds, so do not rely on its visible fields alone. Plain envelopes carry no key at all.</p>
+          </div>
+        </details>
       </section>
+
       <section aria-labelledby="pay">
-        <h2 id="pay">3. Review and pay</h2>
+        <h2 id="pay">5. Pay an invoice</h2>
         <ol>
-          <li>Open or paste the original invoice in <strong>Pay</strong>. Check its signature, seller signing key, network, asset, exact amounts and expiry.</li>
-          <li>Inspect the deployment and transaction review. A valid invoice signature alone does not establish the seller's identity; compare a previously trusted signing key when available.</li>
-          <li>Connect the intended wallet account on the intended chain. For a token payment, an approval or permit authorizes token use; it is separate from the payment itself.</li>
-          <li>Read each wallet request and authorize only the reviewed action. Changing the wallet, chain or invoice can invalidate the previous review.</li>
-          <li>Keep any returned transaction reference and the original local receipt. Check the displayed verification and confirmation state before deciding what happened.</li>
+          <li>Open or paste the original invoice in <strong>Pay</strong>. Confirm the seller's signing key, network, asset, exact amounts and expiry against a source you trust. A valid signature shows that the invoice fields were signed by that key. It does not show who controls the key.</li>
+          <li>Connect the wallet on the invoice's network (section 3). If the invoice has expired, GhostPay blocks the payment.</li>
+          <li>Approve only the wallet prompts you understand. A rejected prompt (user refusal) is a clean stop.</li>
+          <li>After the transaction is sent, GhostPay shows its state. Save the transaction reference and the local record before you close the tab.</li>
         </ol>
-        <p><strong>An unknown broadcast outcome may already have been sent.</strong> A timeout, disconnected provider or closed wallet prompt is not evidence that nothing happened. Check the wallet and transaction references before clearing an attempt or starting another payment. Clearing a local attempt cannot cancel a transaction.</p>
+        <p><strong>An unknown outcome may already be on-chain.</strong> After a transaction is sent, any failure other than a user rejection is recorded as <em>unknown</em>. A timeout, disconnected provider or closed prompt does not prove nothing was sent. Check the wallet and the transaction reference before you start another payment. Clearing a local record only removes it from this browser. It cannot cancel a transaction.</p>
+        <details>
+          <summary>Technical details: states GhostPay records</summary>
+          <div class="technical">
+            <p>The app tracks a transaction through prepared, awaiting authorization, signed, broadcast attempted, broadcast unknown, pending confirmation, confirmed, failed, replaced, reorganised, unsupported and verification incomplete. A post-broadcast check reports whether the node already sees the transaction. A node that does not see it yet is shown as "not visible yet", not as a failure.</p>
+          </div>
+        </details>
       </section>
+
       <section aria-labelledby="evidence">
-        <h2 id="evidence">4. Understand payment evidence</h2>
-        <table>
-          <caption>These checks answer different questions</caption>
-          <thead><tr><th scope="col">Result</th><th scope="col">Meaning</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Valid invoice</th><td>The invoice passes its format and signature checks. It is a payment request, not evidence of settlement.</td></tr>
-            <tr><th scope="row">Valid seller receipt signature</th><td>The signing key signed those receipt fields. Binding it to an invoice checks their consistency. It does not independently establish payment or a person's identity.</td></tr>
-            <tr><th scope="row">Observed payment or announcement</th><td>A provider, scan or saved record reports an event. Discovery and imported history must not be treated as verified settlement.</td></tr>
-            <tr><th scope="row">Verified payment evidence</th><td>The supported flow checked the relevant chain, transaction, receipt, recipient, asset and amount. Read its finality and provider limitations; a later reorganization can invalidate earlier evidence.</td></tr>
-          </tbody>
-        </table>
-        <p>A block explorer is a useful external view of a transaction. Its operator receives your lookup, its indexing may lag, and providers can disagree. Its display is not a substitute for the app's supported checks or an independent chain verification.</p>
+        <h2 id="evidence">6. What counts as evidence</h2>
+        <p>These checks answer different questions. None of them alone shows that the seller is who they claim to be.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="evidence-table-caption">
+          <table>
+            <caption id="evidence-table-caption">Evidence states and what each one means</caption>
+            <thead><tr><th scope="col">State</th><th scope="col">What it means</th><th scope="col">What it does not mean</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Valid invoice</th><td>Its format and signature checks pass for the key shown</td><td>Settlement. It is a request for payment</td></tr>
+              <tr><th scope="row">Valid seller receipt signature</th><td>The signing key signed those receipt fields</td><td>Independent payment verification or the seller's identity</td></tr>
+              <tr><th scope="row">Observed or claimed payment</th><td>Found by scanning or recorded from a wallet or provider. The app shows it as claimed until it is final</td><td>Verified settlement</td></tr>
+              <tr><th scope="row">Pending (received, not final)</th><td>The payment is seen, but has not reached the finality the app requires</td><td>Final. A reorganisation can still remove it</td></tr>
+              <tr><th scope="row">Verified</th><td>The app checked the chain, transaction, recipient, asset and amount, and the transaction is final</td><td>Protection from future reorganisations beyond the stated finality, or from your provider being wrong</td></tr>
+              <tr><th scope="row">Imported history</th><td>A record restored from a backup</td><td>Anything. It is untrusted until rescanned</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Reconciliation statuses you may see include: an exact local match proposed (awaiting your confirmation), an ambiguous match that is not confirmed, no registered invoice matching the payment, a payment linked to a verified observation, an imported historical record that needs rescanning, and an observation invalidated after a reorganisation. Do not rely on an observation that the app marks invalidated.</p>
+        <p>A block explorer is a useful external view. Its operator receives your lookup, its indexing may lag, and providers can disagree. It is not a substitute for the app's checks.</p>
       </section>
+
       <section aria-labelledby="receipts">
-        <h2 id="receipts">5. Receipts and QR codes</h2>
-        <p>An eligible result in <strong>Scan and receive</strong> can offer a seller receipt. Load the original signed invoice when binding that receipt, review the matching fields and give the required consent. The lean build requires that validated invoice binding. In the full build, a manually typed digest remains an annotation rather than proof that an invoice was validated.</p>
-        <p><strong>Download and preserve the original digital receipt file.</strong> A QR code is a convenient representation of serialized data. A QR image may be incomplete, degraded or separated from its invoice and verification context; it is not a better long-term record than the original file. Reimport the original receipt in the invoice's receipt-verification controls when you need to check it again.</p>
-        <p>A payer's local transaction record and a seller-signed receipt are different records. Neither should silently turn an observed or unknown payment into a verified one. Keep the invoice, receipt and relevant transaction references together in a place you control.</p>
+        <h2 id="receipts">7. Receipts and QR codes</h2>
+        <p>A seller receipt is a signed, canonical JSON record of payment fields. Binding a receipt to an invoice means loading the original signed invoice, checking the matching fields, and giving consent. A bound receipt is stronger evidence of consistency than a loose one, but it still does not prove settlement by itself.</p>
+        <p>In the full build, a manually typed digest can be signed into a receipt. The app labels it <em>seller-supplied, not matched</em>. Treat it as a note, not as proof that the invoice was checked. The lean build refuses signing a receipt that is not bound to an invoice.</p>
+        <p>To check a receipt later, reimport the original receipt JSON in the Pay view. This requires a prepared payment and your consent. The verification checks the signature and the expected invoice fields. A receipt does not decrypt or restore keys.</p>
+        <p><strong>Keep the original file.</strong> A QR code is a representation of the data, and a photo or screenshot of it may be incomplete or separated from its context. The original receipt file is the record to keep.</p>
       </section>
+
       <section aria-labelledby="files">
-        <h2 id="files">6. Choose the correct file</h2>
-        <table>
-          <caption>What each import expects</caption>
-          <thead><tr><th scope="col">Import</th><th scope="col">Expected file and purpose</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Seller keys</th><td>The encrypted GhostPay keystore and its passphrase. It restores secret keys; treat the file as sensitive even though it is encrypted.</td></tr>
-            <tr><th scope="row">Public seller configuration</th><td>The public configuration exported by your other device. It previews public-key consistency and supported chains. It cannot restore secret keys.</td></tr>
-            <tr><th scope="row">Invoice for receipt creation</th><td>The original signed invoice link or saved text file, plus its passphrase when required. It binds receipt fields to that invoice. The pasted URL is parsed locally, not fetched.</td></tr>
-            <tr><th scope="row">Receipt verification</th><td>The original signed receipt JSON. It checks the signature and expected invoice/payment fields; it is not an encrypted key backup.</td></tr>
-            <tr><th scope="row">Reconciliation restore</th><td>An encrypted reconciliation backup for the same seller viewing key. Review the merge preview before applying; imported observations require fresh verification.</td></tr>
-            <tr><th scope="row">Tag archive restore</th><td>The separate tag archive from the full build and its required unlock information. Read its preview and scope; it does not restore the seller keys.</td></tr>
-          </tbody>
-        </table>
-        <p>An incorrect, oversized or malformed file is refused. Choose the intended file and retry, including selecting the same file after correcting a passphrase or other input. Cancelling a review or switching key/network context can invalidate pending work.</p>
+        <h2 id="files">8. Choose the correct file</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="files-table-caption">
+          <table>
+            <caption id="files-table-caption">What each import expects</caption>
+            <thead><tr><th scope="col">Import</th><th scope="col">Expected file and purpose</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Seller keys</th><td>The encrypted keystore and its passphrase. It restores secret keys. Treat the file as sensitive even though it is encrypted</td></tr>
+              <tr><th scope="row">Public seller configuration</th><td>The configuration exported from your other device, by file or camera. It cannot restore secret keys</td></tr>
+              <tr><th scope="row">Invoice for receipt binding</th><td>The original signed invoice link or file, plus its passphrase if it is protected</td></tr>
+              <tr><th scope="row">Receipt verification</th><td>The original signed receipt JSON</td></tr>
+              <tr><th scope="row">Reconciliation restore</th><td>The encrypted reconciliation backup, for the same viewing key. Review the preview before applying it</td></tr>
+              <tr><th scope="row">Tag archive (full build)</th><td>The .gpa file and its passphrase. It does not restore seller keys</td></tr>
+              <tr><th scope="row">Settings exchange</th><td>Preferences, plus any RPC, relayer or signer sections you chose to export</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>An incorrect, oversized or malformed file is refused. Choose the intended file and try again. Cancelling a review, or switching keys or network, can invalidate pending work.</p>
       </section>
+
       <section aria-labelledby="devices">
-        <h2 id="devices">7. Exchange public configuration</h2>
-        <p>Seller public configuration can be exported as QR, text or a file. Compare the public keys on both devices before relying on the preview. A checksum detects accidental changes; it does not authenticate who sent the data or prove freshness.</p>
-        <p>Settings exchange carries only the saved delay range, idle-lock timeout, theme and address-bar-clearing preference. RPC/relayer URLs and pinned signer trust remain local. Apply imported preferences only after reviewing them.</p>
-        <p>Camera use begins when you request it. If permission is denied or the camera is unavailable, use the supported paste/file alternative. A public registry scan only previews public data; publishing a registry entry is a separate wallet action.</p>
+        <h2 id="devices">9. Share public configuration and settings</h2>
+        <p>Public seller configuration can be exported as QR, text or a file. It contains public keys, the supported networks and a check value. Compare the public keys on both devices before you rely on the preview. The check value detects accidental changes. It does not authenticate the sender or prove the data is recent.</p>
+        <p>Settings exchange carries preferences by default: the delay range, idle-lock timeout, theme and address-bar clearing. Primary and second-provider RPC URLs, the relayer URL and pinned signer keys are <strong>optional sections</strong>. They are not ticked by default, so review each one before you export. Anything you tick leaves the device in the export file or QR code.</p>
+        <p>Camera use starts only when you request it. If the camera is unavailable or permission is refused, use the file import instead.</p>
       </section>
+
+      <section aria-labelledby="rpc">
+        <h2 id="rpc">10. RPC and network configuration</h2>
+        <p>An RPC URL is the address of a node provider. Your browser asks it for chain data such as balances, transactions and logs. GhostPay ships no hard-coded EVM RPC endpoints. You enter a primary URL and may add a second one for comparison.</p>
+        <ul>
+          <li><strong>Use an https:// address.</strong> The Settings check does not accept plain http, including localhost, on this path.</li>
+          <li><strong>Test</strong> sends one chain-identity request (<code>eth_chainId</code>) to the address in the field, when you click it. It can test a value you have not saved. It sends no credentials and does not follow redirects.</li>
+          <li><strong>A second provider is optional.</strong> When set, the reads that verify a deployment are compared with the primary. If the two disagree, the check fails and payments stay blocked until a later check agrees. Scanning withholds the checkpoint for any page where the providers disagree and scans that page again. The app does not retry a disagreement. Scanning also asks the second provider for block heights and blocks, to cap each page and corroborate anchors. Outside the deployment check and scanning, other calls, including transaction sends, use the primary only. A second provider also sends these queries to a second operator.</li>
+          <li><strong>What a provider learns:</strong> your IP address, the addresses and transaction data your requests name, and when you ask. A provider can log this. Choose an operator you trust, or run your own node if you can.</li>
+          <li><strong>Do not put secrets in a URL you save.</strong> Saved settings are stored in this browser without encryption, and a key in a path or query string is visible there.</li>
+        </ul>
+        <h3>Networks and features</h3>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="network-table-caption">
+          <table>
+            <caption id="network-table-caption">Networks and features, with their status</caption>
+            <thead><tr><th scope="col">Network or feature</th><th scope="col">Status and gate</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">EVM testnets: Ethereum Sepolia, Base Sepolia, OP Sepolia, Arbitrum Sepolia, Polygon Amoy, BNB testnet, Avalanche Fuji</th><td><span class="status status-experimental">Experimental</span> Payments, scanning and sweeps need a verified deployment manifest for the network. This repository ships none, so payments are blocked as delivered</td></tr>
+              <tr><th scope="row">EVM mainnets</th><td><span class="status status-unsupported">Unsupported</span> Disabled in the configuration</td></tr>
+              <tr><th scope="row">Bitcoin testnet4, signet and regtest</th><td><span class="status status-experimental">Experimental</span> Full build only. Mainnet is <span class="status status-unsupported">Unsupported</span></td></tr>
+              <tr><th scope="row">Solana devnet, testnet and localnet</th><td><span class="status status-experimental">Experimental</span> Full build only. Mainnet is <span class="status status-unsupported">Unsupported</span></td></tr>
+              <tr><th scope="row">TRON nile, shasta and local</th><td><span class="status status-experimental">Experimental</span> Full build only</td></tr>
+              <tr><th scope="row">Scan transport: direct</th><td><span class="status status-implemented">Implemented</span> Queries go straight to your RPC provider</td></tr>
+              <tr><th scope="row">Scan transport: local proxy</th><td><span class="status status-experimental">Experimental</span></td></tr>
+              <tr><th scope="row">Scan transport: Tor Browser label</th><td><span class="status status-unsupported">Unsupported</span> as routing The label does not route the app through Tor. Use it only if you have configured and verified Tor yourself</td></tr>
+              <tr><th scope="row">Sweep: direct</th><td><span class="status status-implemented">Implemented</span> Needs native gas at the one-time address. No GhostPay fee is charged</td></tr>
+              <tr><th scope="row">Sweep: relayer</th><td><span class="status status-experimental">Experimental</span> Needs a relayer URL you set (empty by default). No hosted relayer is part of this project. A relayer sees the requested destination, amount, fee and timing</td></tr>
+              <tr><th scope="row">Policy accounts</th><td><span class="status status-experimental">Experimental</span> Behind a build flag, testnet only. Their fee is not enforced yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The published Pages copy is a reduced build. It omits the Bitcoin, Solana and TRON views, policy accounts, the tag archive, fiat pricing and the merchant profile panel. Use the full build from source to test those.</p>
+        <details>
+          <summary>Technical details: endpoint validation and fail-closed behaviour</summary>
+          <div class="technical">
+            <p>Endpoint validation accepts https (and wss, which the browser transport refuses). Requests omit credentials and refuse redirects. The optional second provider is used for verification only when it is set. The app's verification check compares each covered read and does not retry, so a mismatch is not hidden. The library also contains a reconciled client that retries once after a short pause for tip races; the app does not use it. On a mismatch the deployment becomes unverified, so payments stop.</p>
+          </div>
+        </details>
+      </section>
+
+      <section aria-labelledby="privacy-summary">
+        <h2 id="privacy-summary">11. Privacy in brief</h2>
+        <p>Stealth addresses reduce address reuse for the seller. They do not hide the public transaction graph. Moving funds from a one-time address to a wallet you already use can link the payment to that wallet. The <a href="./privacy.html">privacy page</a> has a feature-by-feature matrix showing what each action reveals, where data is stored, and what is not yet protected.</p>
+        <p>The app has no analytics, telemetry, third-party scripts or remote fonts. Outbound requests go to the page's own host and to endpoints you enter or choose in the app, such as RPC, scan, relayer, wallet and chain-node addresses, plus a merchant profile URL when you press Load. These statements describe the app code. They do not describe your hosting provider, network, browser or extensions.</p>
+      </section>
+
       <section aria-labelledby="merchants">
-        <h2 id="merchants">8. Merchant workflow</h2>
-        <p>The web workflow is seller setup, invoice creation, scanning, explicit local reconciliation and receipt handling. Confirm the chain evidence and amount before treating a proposed invoice match as accepted. Restoring a saved history does not independently reverify it.</p>
-        <p>Subscription schedules, installments, webhooks and shop integrations have separate developer/operator modules. They are not a promise of automatic customer debits or a complete merchant dashboard in this interface. Fixture refund records do not execute a refund. Production merchant authority and integrations require their own acceptance evidence.</p>
+        <h2 id="merchants">12. Merchant guidance</h2>
+        <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Plan your bookkeeping outside the app until the features below are available.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="merchant-table-caption">
+          <table>
+            <caption id="merchant-table-caption">Merchant capabilities and their status</caption>
+            <thead><tr><th scope="col">Capability</th><th scope="col">Status</th><th scope="col">Notes</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Per-invoice payment summary in the scan ledger</th><td><span class="status status-implemented">Implemented</span> Both builds</td><td>Shows linked amounts for each registered invoice. It is not an accounts dashboard</td></tr>
+              <tr><th scope="row">Merchant profile: load a published profile by URL</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Loads only when you press Load</td></tr>
+              <tr><th scope="row">Merchant profile: issue an invoice template</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Needs the session key to match the profile's signer</td></tr>
+              <tr><th scope="row">Publish a merchant profile</th><td><span class="status status-planned">Planned</span></td><td>No reachable publish path in the app</td></tr>
+              <tr><th scope="row">Aggregate merchant dashboard (totals and records)</th><td><span class="status status-planned">Planned</span></td><td>Not in the current interface</td></tr>
+              <tr><th scope="row">Subscriptions and installments</th><td><span class="status status-planned">Planned</span> for the app</td><td>Available in the command-line tools only</td></tr>
+              <tr><th scope="row">Webhooks</th><td><span class="status status-planned">Planned</span> delivery</td><td>Command-line tools can sign and verify payloads. The app does not deliver them</td></tr>
+              <tr><th scope="row">Refund execution</th><td><span class="status status-unsupported">Unsupported</span></td><td>Refund records can be inspected. GhostPay refuses to execute a refund</td></tr>
+              <tr><th scope="row">Point-of-sale terminal and NFC</th><td><span class="status status-planned">Planned</span></td><td>Library code only. No screen in the app</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Do not treat a template, a profile or a bookkeeping entry as a completed sale. Confirm each payment with the checks in section 6.</p>
       </section>
+
+      <section aria-labelledby="help-tips">
+        <h2 id="help-tips">13. Contextual help in the app</h2>
+        <p>Some controls in the app have a small <span class="kbd">?</span> button. Its explanation is also available to screen readers.</p>
+        <ul>
+          <li><strong>Keyboard:</strong> press <span class="kbd">Tab</span> to reach the button. Press <span class="kbd">Enter</span> or <span class="kbd">Space</span> to keep the explanation open, and press again to close it.</li>
+          <li><strong>Mouse and touch:</strong> hover, or tap the button. Tapping elsewhere closes an explanation you opened.</li>
+          <li><strong>Escape</strong> closes an open explanation without changing the control it describes.</li>
+          <li><strong>Explanations never cover a control.</strong> They take space in the page flow and wrap on narrow screens.</li>
+        </ul>
+        <p>On this page, sections marked <em>Technical details</em> are disclosures. Open them with the keyboard or mouse. They work without JavaScript.</p>
+      </section>
+
+      <section aria-labelledby="glossary">
+        <h2 id="glossary">14. Technical glossary</h2>
+        <p>Terms are listed in the order a reader is likely to need them. The app's own wording may differ slightly.</p>
+        <dl class="glossary">
+          <dt id="term-announcement">Announcement</dt>
+          <dd>An on-chain record that helps a viewing-key holder notice a stealth payment. It is public.</dd>
+          <dt id="term-bearer">Bearer link</dt>
+          <dd>An invoice link that contains its own decryption key. Whoever holds the complete link can read it.</dd>
+          <dt id="term-eip1193">EIP-1193 provider</dt>
+          <dd>The standard interface a browser wallet exposes so that apps can request accounts, chains and signatures.</dd>
+          <dt id="term-eip6963">EIP-6963</dt>
+          <dd>A standard that lets several installed wallets announce themselves to a page, so the app can list them.</dd>
+          <dt id="term-eip2612">Permit (EIP-2612)</dt>
+          <dd>A signed message that authorises a token allowance without a separate approval transaction. Signing it does not move funds by itself.</dd>
+          <dt id="term-finality">Finality</dt>
+          <dd>The point after which a transaction is treated as settled, according to the rules the app applies. Before that point a reorganisation can remove it.</dd>
+          <dt id="term-fragment">Fragment</dt>
+          <dd>The part of a URL after <code>#</code>. Browsers do not send it to the server in the request.</dd>
+          <dt id="term-idle-lock">Idle lock</dt>
+          <dd>Clears keys from memory after a period without input. Default 15 minutes. Stored records are not erased.</dd>
+          <dt id="term-invoice-signature">Invoice signature</dt>
+          <dd>A signature by the seller's invoice-signing key over the invoice fields. It proves the key signed them, not who holds the key.</dd>
+          <dt id="term-keystore">Keystore</dt>
+          <dd>The encrypted file that holds a key set, protected by a passphrase.</dd>
+          <dt id="term-manifest">Deployment manifest</dt>
+          <dd>The verified description of a payment deployment on one network. Without one, the app blocks payments on that network.</dd>
+          <dt id="term-meta-address">Meta-address</dt>
+          <dd>The public keys a seller publishes. Payers derive one-time addresses from it.</dd>
+          <dt id="term-observation">Observation</dt>
+          <dd>A record that a payment-like event was seen. An observation is not settlement until it is verified.</dd>
+          <dt id="term-one-time-address">One-time (stealth) address</dt>
+          <dd>An address derived for a single payment. Funds sent to it can be found with the viewing key.</dd>
+          <dt id="term-rpc">RPC endpoint</dt>
+          <dd>The address of a node provider that answers chain queries. It sees the queries you send.</dd>
+          <dt id="term-reorg">Reorganisation (reorg)</dt>
+          <dd>A change to the chain's recent history that can remove or replace transactions.</dd>
+          <dt id="term-receipt-binding">Receipt binding</dt>
+          <dd>Checking that a receipt's fields match a specific signed invoice.</dd>
+          <dt id="term-relayer">Relayer</dt>
+          <dd>A service that submits a transaction for you in exchange for a fee. A relayer sees what it submits.</dd>
+          <dt id="term-scrypt">scrypt</dt>
+          <dd>A password-based key derivation function. The app uses N = 2^17 for passphrase-protected data, which makes guessing expensive.</dd>
+          <dt id="term-aes-gcm">AES-256-GCM</dt>
+          <dd>An authenticated encryption scheme. Tampered ciphertext fails to decrypt.</dd>
+          <dt id="term-nfkc">NFKC</dt>
+          <dd>Unicode normalisation applied to passphrases, so visually identical text gives the same key.</dd>
+          <dt id="term-spending-key">Spending key</dt>
+          <dd>The private key that controls funds at one-time addresses. Keep it secret and backed up.</dd>
+          <dt id="term-viewing-key">Viewing key</dt>
+          <dd>The private key that lets your browser find payments. Anyone with it can see your incoming payments, but not spend them.</dd>
+          <dt id="term-signing-key">Invoice-signing key</dt>
+          <dd>The key that signs invoices and receipts.</dd>
+          <dt id="term-sweep">Sweep</dt>
+          <dd>Moving funds from a one-time address to a destination you choose. The destination can link the payment to that address.</dd>
+          <dt id="term-testnet">Testnet</dt>
+          <dd>A test network with worthless funds. All payment paths in this build are testnet only.</dd>
+          <dt id="term-unknown">Unknown outcome</dt>
+          <dd>A state for a sent transaction whose result the app cannot confirm. Check the wallet and chain before acting again.</dd>
+        </dl>
+      </section>
+
+      <section aria-labelledby="accessibility">
+        <h2 id="accessibility">15. Accessibility and layout</h2>
+        <ul>
+          <li>Every page works with a keyboard. Focus is always visible, and the <em>Skip to help</em> link is the first stop.</li>
+          <li>Diagrams are written as ordered lists, so no information depends on colour or position alone. Status labels always include text.</li>
+          <li>Tables scroll horizontally inside their own box at narrow widths. The page itself does not scroll sideways at 320 CSS pixels or at 200 percent browser zoom.</li>
+          <li>Motion is removed when your system asks for reduced motion. The app uses system fonts only, so no font file is downloaded.</li>
+          <li>This page loads its own stylesheet, favicon and no script. Printing hides navigation and shows the disclosures.</li>
+        </ul>
+      </section>
+
       <section aria-labelledby="troubleshooting">
-        <h2 id="troubleshooting">9. Troubleshooting</h2>
-        <table>
-          <caption>Choose the next step from the actual state</caption>
-          <thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Payment disabled</th><td>Read the deployment/network explanation. Selecting a listed testnet does not supply a verified deployment. Do not remove the gate to continue.</td></tr>
-            <tr><th scope="row">Provider failure or disagreement</th><td>Check the configured endpoint and chain. A provider response or explorer page may be stale. Refresh evidence before approving an action.</td></tr>
-            <tr><th scope="row">Unknown or pending broadcast</th><td>Inspect the wallet and known transaction references. An unknown result may already be on-chain; a second submission can duplicate the action.</td></tr>
-            <tr><th scope="row">Storage unavailable</th><td>Check this browser's site-storage permissions. Retry a transient failure before clearing site data, which deletes saved local records. Export backups first when available.</td></tr>
-            <tr><th scope="row">Backup will not unlock</th><td>Use the matching file, passphrase and seller key scope. Public configuration and receipt files cannot restore secret keys.</td></tr>
-            <tr><th scope="row">Some text remains English</th><td>Security-sensitive translations keep their English source until reviewed. Changing language does not change signed invoice or receipt bytes.</td></tr>
-          </tbody>
-        </table>
-        <p>The full and lean builds intentionally expose different feature sets. Experimental policy-account recovery is not an available lost-key recovery service. GhostPay does not offer calendar/timestamp-server selection or notarization certificates.</p>
+        <h2 id="troubleshooting">16. Troubleshooting</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="trouble-table-caption">
+          <table>
+            <caption id="trouble-table-caption">Choose the next step from the state you see</caption>
+            <thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Payments are blocked</th><td>Check the network status in section 10. As delivered, no verified deployment is bundled, so payments stay blocked. Do not bypass the check.</td></tr>
+              <tr><th scope="row">Providers disagree</th><td>Check each endpoint and wait for a later check. Removing the secondary provider stops the comparison, so you lose that protection. Do not approve a payment while the disagreement remains.</td></tr>
+              <tr><th scope="row">Unknown outcome after sending</th><td>Look up the transaction in your wallet and on the chain before retrying. A second payment can duplicate the first.</td></tr>
+              <tr><th scope="row">Storage is unavailable</th><td>Check this browser's site-storage permissions and retry. Export backups before you clear site data.</td></tr>
+              <tr><th scope="row">The backup will not unlock</th><td>Use the matching file, the correct passphrase and the right key scope. Public configuration and receipt files cannot restore secret keys.</td></tr>
+              <tr><th scope="row">A tooltip or disclosure is hidden</th><td>Use the keyboard or pointer to open it again. Press Escape to close it.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
+
       <section aria-labelledby="technology">
-        <h2 id="technology">10. Technology and attribution</h2>
-        <p>The <a href="https://github.com/djshellshoxxx/GhostPay">GhostPay source repository</a> contains the implementation, development status, issue tracker and release evidence. Opening it contacts GitHub; the running app remains in its original tab.</p>
+        <h2 id="technology">17. Technology and attribution</h2>
+        <p>The <a href="https://github.com/djshellshoxxx/GhostPay">GhostPay source repository</a> contains the implementation, development status, issue tracker and release evidence. Opening it contacts GitHub; the running app stays in its original tab.</p>
         <p>GhostPay builds on independent projects and standards. Their authors do not endorse or audit GhostPay by being listed here.</p>
         <ul>
           <li><a href="https://eips.ethereum.org/EIPS/eip-5564">ERC-5564 stealth addresses</a> and <a href="https://eips.ethereum.org/EIPS/eip-6538">ERC-6538 public meta-address registry</a>: the official standards list their authors and specifications.</li>
