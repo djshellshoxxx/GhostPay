@@ -15,6 +15,7 @@ Client side of the "Hide amount" option: a backend-neutral `ConfidentialBackend`
 | `DecryptScheduler` (random gaps, one owner per job, per-job transport hook) | `src/decrypt.ts` | tested |
 | `classifyPayment`, `wrapWarnings`, copy keys and forbidden-wording check | `src/payment.ts`, `src/copy.ts` | tested |
 | CT-2 Fhenix / CT-3 Inco | not built | `getBackend` throws `BACKEND_UNAVAILABLE` (spike-gated) |
+| P13 client core (internal, default off): exact amounts, strict assets, `SecretAmount`, disclosures, gate, lifecycle, encrypted records, invoice mapping, fixture plans | `src/future/p13/` | tested (unit/property + Chromium `npm run test:browser`); **not exported, no settlement, not independently reviewed** ([record](../../docs/future/modules/P13-confidential-amounts/IMPLEMENTATION.md)) |
 
 ## Use
 
