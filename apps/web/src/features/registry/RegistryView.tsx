@@ -1,4 +1,5 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
@@ -52,6 +53,7 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 /** ERC-6538 registry: publish your meta-address (explicit consent) and look up a payee's meta-address. */
 export function RegistryView(): ReactNode {
   const app = useApp();
+  const walletDisclosure = useWalletDisclosure();
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -132,7 +134,8 @@ export function RegistryView(): ReactNode {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     const guard = captureAuthority();
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId).then(
+    // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
+    connectWallet(w, chainId, guard, undefined, { disclosure: walletDisclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);

@@ -96,7 +96,8 @@ and [seller privacy](seller-privacy.md).
   publish talks to its own RPC provider and services, with its own network settings. GhostPay's transport, local proxy,
   Tor Browser setting, second RPC and request checks do not apply to that traffic, and GhostPay can neither see nor
   check it. The wallet and its provider can see your accounts, the chain, each request you approve and, unless you hide
-  it yourself, your IP address. Use the wallet's own network and privacy settings to control this.
+  it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
+  hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
 
 ## Specific limits to remember
 

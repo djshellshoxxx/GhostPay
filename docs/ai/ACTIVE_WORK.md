@@ -7,6 +7,17 @@ Acceptance (M1): saved scan privacy settings that are present but not exactly va
 Acceptance (M2): every scan request (custom endpoint transport including retries and chain re-checks, the app RPC client, the indexer fetch and the second RPC) re-checks the saved scan privacy settings and the RPC URLs it started with, before sending and after the answer; a change in this or another tab stops the scan with a typed error and discards the delayed answer. Submitted hashes, checkpoints and recovery records are not touched.
 Out of scope: wallet-extension traffic (explained, not controlled), Tor/proxy certification, new transports, F14 routing.
 
+# External wallet disclosure gate on main (#287 item 3; owner gate 4) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-wallet-disclosure-287-20261125`, base main `e6faa19b`. Previous claimant `feature-completion-06` ("FC-07") exited without a branch; ghostpay-backup-60 (W3) and ghostpay-42 informed.
+Donors (ported by hand, branches untouched): the disclosure parts of #372 `8c196d12` and `8ce7f1db`, and #589 `902464ad`/`697cb731` + #606 `f941ac01` (head of `codex/recover-wallet-disclosure-qualification-20261124`). Not ported: their retention (ghostpay-42, #676), invoice metadata (W4) and addressReuse (superseded by #674) files, and the donor-only connect hardening (extra `eth_accounts` re-read).
+PR A (this branch): `apps/web/src/lib/walletDisclosure*.ts`, `apps/web/src/lib/walletCallSummary*.ts`, an optional `disclosure` gate in `apps/web/src/lib/wallet.ts` (`connectWallet`, `sendViaWallet`, `signTypedDataViaWallet`, `walletAuthority`, new `observeWalletLifecycle`), `apps/web/src/lib/wallet.disclosure.test.ts`, the `wallet.disclosure.*` catalog keys and security-key group. No call site passes a gate yet, so app behavior is unchanged.
+PR B (next, separate PR): `components/WalletDisclosure.tsx` provider and dialog, AppShell wiring, Pay/Registry call sites and their tests and e2e fixtures. W3 owns the docs/scan wording on wallet-extension RPC traffic.
+Not owned: #675 (`WalletBroadcastError`/`PostBroadcastError` messages), the payment-attempt journal internals, Sweep, scan.
+Acceptance: without a gate, identical requests and call sequences (existing wallet, payExec, pay, policy, journal and Pay/Registry view suites pass); with a gate, nothing reaches the wallet before an explicit approval, the exact reviewed bytes are sent, the approval is re-checked immediately before the provider call and never after a returned hash, wallet changes cancel an open review; full hosted CI; independent review; merge through the lock queue.
+
+---
+
 # Local destination-reuse warnings consolidated onto main (#287 item 1) — 2026-11-25 UTC
 
 Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-reuse-287-20261125`, base main `32ae3977`. Slice assigned by coordinator `feature-completion-06`.
