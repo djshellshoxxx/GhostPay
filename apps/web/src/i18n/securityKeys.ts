@@ -181,6 +181,21 @@ export const SECURITY_KEY_GROUPS = {
     'settings.scanLanes.floodHint',
     'settings.scanLanes.transfersHint',
   ],
+  // Spec 12 local spend tracking: what the server learns about this wallet's outputs, and what spent status means.
+  bitcoinSpentStatus: [
+    'btc.scan.providerCheckLabel',
+    'btc.scan.providerCheckHint',
+    'btc.scan.providerCheckLight',
+    'btc.scan.spentStatus.local',
+    'btc.scan.spentStatus.provider',
+    'btc.scan.spentStatus.unknown',
+    'btc.scan.providerCheckLightLabel',
+    'btc.scan.mode.local',
+    'btc.scan.mode.provider',
+    'btc.scan.mode.light',
+    'btc.scan.unknownCount',
+    'btc.scan.spentEvidenceChanged',
+  ],
   supportedChainOutcomes: [
     'btc.verification.check.header',
     'btc.verification.check.transactions',

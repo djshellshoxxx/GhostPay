@@ -1,0 +1,21 @@
+{
+  "pullRequestHead": "ef08170a83d86d194b8ce4186299e791027e461e",
+  "testedMergeCommit": "278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+  "testedTree": "0074dde6081e45188c45feb39503c64243ef99b8",
+  "runId": 44472294258,
+  "jobId": 135384438299,
+  "jobURL": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294258/job/135384438299",
+  "name": "Integration",
+  "bitcoinRegtestSteps": 9,
+  "conclusion": "success",
+  "excerpts": [
+    "2026-11-19T06:32:51.6269290Z  Test Files  1 passed (1)",
+    "2026-11-19T06:32:51.6270003Z       Tests  5 passed (5)",
+    "2026-11-19T06:32:52.2618789Z RESULT btc: PASS (9 steps)",
+    "2026-11-19T06:33:21.6633157Z RESULT solana: PASS (10 steps)",
+    "2026-11-19T06:33:21.6728445Z PASS  evm  (58s)",
+    "2026-11-19T06:33:21.6728692Z PASS  btc  (1s)",
+    "2026-11-19T06:33:21.6728887Z PASS  solana  (29s)",
+    "2026-11-19T06:33:24.1432606Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294258/artifacts/14505480534"
+  ]
+}

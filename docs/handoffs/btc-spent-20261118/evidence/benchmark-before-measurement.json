@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+  "node": "v22.23.5",
+  "fixture": "scanner input validation and local watch filtering; no network or block cryptography",
+  "blocks": 500,
+  "inputsPerBlock": 1000,
+  "inputRecords": 500000,
+  "watchedOutpoints": 10000,
+  "completedBlocks": 500,
+  "spentEvents": 500,
+  "matchedOutputs": 0,
+  "sourceCalls": 1500,
+  "outpointNetworkQueries": 0,
+  "elapsedMs": 3609.801,
+  "retainedHeapDeltaBytesAfterGC": -1416288,
+  "cancellation": {
+    "completedBlocks": 10,
+    "sourceCalls": 30,
+    "elapsedMsIncludingTenBlocks": 86.819,
+    "callsAfterAbort": 0
+  }
+}
