@@ -251,6 +251,20 @@ describe('invoice link', () => {
       fragment: frag,
     });
     expect(parseInvoiceLink(`https://a.example:8443${frag}`).origin).toBe('https://a.example:8443');
+    // The default port is not part of a browser origin; a non-default one (including the other scheme's) is.
+    expect(parseInvoiceLink(`https://a.example:443/pay${frag}`).origin).toBe('https://a.example');
+    expect(parseInvoiceLink(`https://a.example:80/pay${frag}`).origin).toBe('https://a.example:80');
+    expect(parseInvoiceLink(`http://localhost:80/pay${frag}`, { allowLocalDev: true }).origin).toBe(
+      'http://localhost',
+    );
+    expect(parseInvoiceLink(`http://localhost:443/pay${frag}`, { allowLocalDev: true }).origin).toBe(
+      'http://localhost:443',
+    );
+    expect(buildInvoiceLink('https://a.example:443', frag)).toBe(`https://a.example/pay${frag}`);
+    // Dots inside a segment are ordinary characters; only a whole `.` or `..` segment is refused.
+    expect(parseInvoiceLink(`https://a.example/.well-known/pay.v1/${frag}`).path).toBe(
+      '/.well-known/pay.v1/',
+    );
     expect(parseInvoiceLink(`http://localhost:5173/pay${frag}`, { allowLocalDev: true }).host).toBe(
       'localhost',
     );
