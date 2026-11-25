@@ -240,6 +240,11 @@ low/info, and remain filler work.
     qualification ledger (BTC-3/PRIVACY-E2E-01 "addressed by FC-05a, pending hosted CI"), `btc.server.hint`,
     `btc.oracle.resultsNote`. `network-egress-inventory.test.mjs` exit 0; `securityKeys.test.ts` 12/12;
     `catalog.test.ts` 4/4. Typecheck/lint/full suites not run.
+- 2026-11-25T09:40Z — FC-01 #650 `aae8d592` hosted `ts-test (web)` failed 3345/3346: `requestFileInterop.test.ts:39`
+  passphrase variant timed out at the default 60 s (job 139076197195). It passed in 45.1 s in the earlier run
+  (job 139018307768): a scrypt-bound test with ~25% margin on a congested runner. Fix requested: per-test
+  `180_000` timeout matching the repository convention for scrypt-heavy tests (BackupPanel, TagArchive, keystore);
+  no assertion change.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
