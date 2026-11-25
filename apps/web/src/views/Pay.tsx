@@ -3,6 +3,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { BroadcastReference } from '../components/BroadcastReference';
+import { TransactionStatusLine } from '../components/TransactionStatusLine';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
@@ -1275,7 +1276,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
-      {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
+      {status !== '' && <TransactionStatusLine status={status} />}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
