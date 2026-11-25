@@ -266,6 +266,15 @@ low/info, and remain filler work.
   line 46 guard references refreshed (coordinator spot-checked `sweep.ts:35,93,94,159`, `spend.ts:79,86,222,312`),
   browser-network-isolation rows aligned with the JSON; inventory test 4/4. Ordering constraint: FC-05a-T states R13 is
   implemented by FC-05a, so it must merge only after #656.
+- 2026-11-25T09:52Z — **Owner clarification** on main `c365dc41` (AGENTS.md, docs-only): F02 GhostStore and F04 merchant
+  dashboard are now also deferred and disabled for beta/v1.0 (with F08/F11/F12/F14; F01/F09/F13 archived). Shared-core
+  privacy mechanisms must be retained, explicitly including private links/QR, consent, RPC provider disclosure, sweep
+  linkability warnings, local filtering and truthful network disclosures; no chain-scope expansion and no activation of
+  experimental/unqualified capabilities. Campaign check: FC-01 = private links/QR (shared core, owner-approved);
+  FC-02 = consent/RPC disclosure/sweep linkability (shared core); FC-03 = corrections to existing Solana/TRON PoC
+  libraries with added mainnet refusals (no scope expansion, nothing activated); FC-05a = reduces disclosure of the
+  existing full-profile Bitcoin feature (automatic provider query → local detection + opt-in consent). None touches
+  F02/F04. All remain eligible. Docs-only drift (`AGENTS.md`), no overlap with FC branches.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
