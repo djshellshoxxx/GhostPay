@@ -194,3 +194,19 @@ low/info, and remain filler work.
   BTC/catalog/DEVIATIONS/e2e), but `build:libs` crashed twice in `tsc` (access violation 3221225477) under memory
   pressure. Decision: no further local heavy runs for FC-05a; push with an explicit "local validation not run"
   record and qualify on hosted CI plus an independent read-only review.
+- 2026-11-25T09:05Z — FC-05a pushed as draft **#656** `8e7b1915` (merge `dc435811` + handoff); independent read-only
+  review requested.
+- 2026-11-25T09:10Z — **Owner stop-work directive** landed on main (`5cced8ef`, AGENTS.md; `595a184b`, catalog):
+  F01 GhostTips, F09 GhostPOS, F13 fiat conversion ARCHIVED; F08 GhostID, F11 GhostTeams, F12 GhostBridge,
+  F14 multi-chain routing DEFERRED; none of the seven may be implemented, completed, merged or counted. Campaign
+  check: FC-02 (Sweep consent, core), FC-03 (corrections to the pre-existing Solana/TRON PoC libraries/CLI from
+  PR #14, 2026-10-22; no routing, bridging or chain selection, so not F14), FC-05a (Spec 12 in `docs/specs`, not a
+  future-catalog module) are unaffected. FC-01 is the F03 future-catalog slice ("FUTURE ONLY / NOT APPROVED"; the
+  catalog requires an explicit owner instruction before activation) and was paused.
+- 2026-11-25T09:14Z — **Owner decision:** "this is a primary feature of ghostpay. this is staying in." FC-01 (F03 signed
+  invoice request file) is approved to go live; recorded on PR #650 (comment 7158077523). Scope: the request-file slice
+  only, not the rest of the broader F03 proposal.
+- Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
+  `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
+  a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
+  post-merge main CI covers the merged tree. Any source change on main still requires re-merge and requalification.
