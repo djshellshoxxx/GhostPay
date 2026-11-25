@@ -88,7 +88,8 @@ for (const width of widths) {
       if (['font', 'stylesheet', 'image'].includes(request.resourceType()) && !request.url().startsWith('data:') && new URL(request.url()).origin !== ORIGIN) badAssets.push(request.url());
     });
     page.on('response', (response) => {
-      if (['font', 'stylesheet', 'image'].includes(response.request().resourceType()) && !response.ok()) badAssets.push(response.url());
+      // 304 means a revalidated, still-valid cached copy when the same context navigates again; only failures count.
+      if (['font', 'stylesheet', 'image'].includes(response.request().resourceType()) && !response.ok() && response.status() !== 304) badAssets.push(response.url());
     });
     await checkPages(page);
     expect(badAssets).toEqual([]);

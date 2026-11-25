@@ -3168,3 +3168,14 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ## Issue 364 — Pages visual and responsive qualification
 
 Worker: Codex. Branch: `fix/364-responsive-pages`. Base: C1 #504 at `1a7447d58c08363209b6b9b67e9a6afad07d87f3` (main `f76904301cff0b24d65ea4e31cbf37d470db4d95`). Reuse #387/#512; do not edit the parent branch. Own shared app/static presentation styles, theme assets and references, affected layout regressions and a scoped handoff. Verify supported navigation, RPC controls, local assets, contrast, focus and reduced motion at 320/375/768/1280/1920 CSS pixels and native 200% zoom. Payment logic, deployment and other issue workstreams are outside this claim.
+
+# Issue 364 static help, privacy and Circuit Drift documentation — 2026-11-25 (isolated)
+
+- Worker: single lead agent in this session (no delegated writers; read-only source-verification agents only). Owner of issue #364 documentation scope per the user's request on 2026-11-25.
+- Branch: `nodata/amazing-dijkstra-rgkp6o`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+- Consolidated: PR #583 (`fix/364-responsive-pages`, head `c1980912`) commits `268115be`, `f1a25a18`, `c1980912` cherry-picked as `7de6f2f0`, `90816802`, `99c54bef`. PR #583 is superseded by this branch once merged; it is not closed by this worker.
+- Owned paths: `apps/web/help.html`, `apps/web/privacy.html`, the `<noscript>` block of `apps/web/index.html`, `apps/web/public/help.css`, `apps/web/public/appearance.css`, `apps/web/e2e/static-help.spec.ts`, `apps/web/e2e/responsive-pages.spec.ts` (test-harness fix only), `docs/handoffs/HELP_DOCS_364_20261125.md`, and this claim.
+- Not touched: application logic, views, lib, state, contracts, relayer, build profile scripts, deployments, workflows. Payment recovery, encrypted backups, merchant accounting, invoice interoperability and POS owners keep their branches.
+- Fix: `responsive-pages.spec.ts` counted a 304 revalidation as a failed asset. 304 now passes; failures (4xx/5xx) still fail. Reproduced with a same-context navigation probe.
+- Acceptance: static help and privacy pages cover EL5, EL10 and technical explanations, buyer/seller diagrams with text equivalents, backup and recovery, wallet connection, invoices and receipts, merchant status, RPC/network configuration, privacy matrix, glossary, and disclosure-based contextual help. Every feature carries an implemented, experimental, planned or unsupported label checked against source. Responsive at 320/375/768/1280/1920 CSS px and 200% zoom, no horizontal overflow, no remote fonts or scripts, CSP unchanged, axe clean on help and privacy pages, existing unit and e2e tests green.
+- Verification plan: vitest for the touched components, `static-help` and `responsive-pages` Playwright specs on desktop plus mobile projects, typecheck, lint, build with scan-bundle, `node scripts/check-*` guards that cover help assets. Independent review before merge.
