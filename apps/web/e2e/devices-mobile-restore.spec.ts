@@ -99,8 +99,10 @@ test('a keystore written by the independent codec restores on this device, refus
   await keysView(page).getByRole('button', { name: 'Unlock saved vault' }).tap();
   await expect(metaAddress(page)).toHaveText(VECTOR.meta.metaAddress, { timeout: 90_000 });
   await expect(keysView(page).getByText(VECTOR.meta.signer, { exact: true })).toBeVisible();
-  expect(await wouldWarnOnExit(page)).toBe(false);
-  // Nothing asked to stay on the page during the reload either.
+  // Keys unlocked from this browser's own vault have no copy known outside the profile in this session, so leaving
+  // warns again (SEC-40): the vault is not a backup.
+  expect(await wouldWarnOnExit(page)).toBe(true);
+  // The reload itself happened with no keys loaded, so nothing asked to stay on the page.
   expect(dialogs).toEqual([]);
 });
 
