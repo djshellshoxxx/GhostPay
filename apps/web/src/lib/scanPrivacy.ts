@@ -328,6 +328,8 @@ export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { read
   // Not part of the scan: Sweep reads the found address's balance and prepares/sends the sweep via the Settings RPC.
   const sweepIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
   rows.push({ party: { key: 'scanPrivacy.disclosure.sweepParty' }, learns: { key: privatePathForbidsDirect(s) ? 'scanPrivacy.disclosure.sweepOnRequest' : 'scanPrivacy.disclosure.sweepAuto', values: { ip: sweepIp } } });
+  // A connected wallet talks to its own provider: none of these settings or checks reach that traffic.
+  rows.push({ party: { key: 'scanPrivacy.disclosure.walletParty' }, learns: { key: 'scanPrivacy.disclosure.wallet' } });
   rows.push({ party: { key: 'scanPrivacy.disclosure.everyoneParty' }, learns: s.transport === 'direct'
     ? { key: 'scanPrivacy.disclosure.everyone' }
     : { key: 'scanPrivacy.disclosure.everyonePrivate', values: { notice: { key: 'scanPrivacy.disclosure.firstUseNotice' } } } });
@@ -355,6 +357,7 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
   }
   const sweepHow = privatePathForbidsDirect(s) ? 'but only when you press "Read balance from the Settings RPC" in Sweep' : 'because Sweep reads its balance as soon as you open it';
   rows.push({ party: 'Settings RPC (Sweep)', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; the one-time address of a found payment, ${sweepHow}. Signing a sweep also reads from it, and a direct sweep is sent through it. These requests go to the RPC in Settings directly, not through the scan path.` });
+  rows.push({ party: 'Your wallet (extension or app)', learns: 'Not covered by these settings: a wallet you connect to pay, sign or publish uses its own RPC provider and network settings. The wallet and its provider can see your accounts, the chain, each request you approve and your IP address. GhostPay cannot route, check or see that traffic.' });
   rows.push({ party: 'Everyone', learns: `Nothing on-chain is hidden: payer, amount, token, timing and the announcement are public.${s.transport === 'direct' ? '' : ` ${FIRST_USE_NOTICE}`}` });
   return rows;
 }
@@ -786,6 +789,6 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
 
 // i18n-use: error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr error.scanPrivacy.indexerURLIsNotAValidURL error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270 error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed
 
-// i18n-use: scanPrivacy.blocked.settingsUnreadable scanPrivacy.blocked.routeChanged scanPrivacy.disclosure.unreadableParty scanPrivacy.disclosure.unreadable
+// i18n-use: scanPrivacy.blocked.settingsUnreadable scanPrivacy.blocked.routeChanged scanPrivacy.disclosure.unreadableParty scanPrivacy.disclosure.unreadable scanPrivacy.disclosure.walletParty scanPrivacy.disclosure.wallet
 // i18n-use: scanPrivacy.blocked.requirePrivatePath scanPrivacy.blocked.proxyEndpoint scanPrivacy.blocked.indexerChain scanPrivacy.blocked.indexerMissing scanPrivacy.blocked.endpointRejected scanPrivacy.blocked.indexerRejected
 // i18n-use: scanPrivacy.disclosure.windowsFixed scanPrivacy.disclosure.windowsExact scanPrivacy.disclosure.ipDirect scanPrivacy.disclosure.ipTorBrowser scanPrivacy.disclosure.ipProxyExit scanPrivacy.disclosure.logsIndexer scanPrivacy.disclosure.logsRpc scanPrivacy.disclosure.rpcParty scanPrivacy.disclosure.rpc scanPrivacy.disclosure.indexerParty scanPrivacy.disclosure.indexer scanPrivacy.disclosure.proxyParty scanPrivacy.disclosure.proxy scanPrivacy.disclosure.torExitParty scanPrivacy.disclosure.torExit scanPrivacy.disclosure.torBrowserNotice scanPrivacy.disclosure.secondParty scanPrivacy.disclosure.secondWindowsFixed scanPrivacy.disclosure.secondWindowsExact scanPrivacy.disclosure.secondDirectIp scanPrivacy.disclosure.second scanPrivacy.disclosure.sweepParty scanPrivacy.disclosure.sweepAuto scanPrivacy.disclosure.sweepOnRequest scanPrivacy.disclosure.everyoneParty scanPrivacy.disclosure.everyone scanPrivacy.disclosure.everyonePrivate scanPrivacy.disclosure.firstUseNotice

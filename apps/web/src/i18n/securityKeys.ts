@@ -130,6 +130,8 @@ export const SECURITY_KEY_GROUPS = {
     'scanPrivacy.blocked.routeChanged',
     'scanPrivacy.disclosure.unreadableParty',
     'scanPrivacy.disclosure.unreadable',
+    'scanPrivacy.disclosure.walletParty',
+    'scanPrivacy.disclosure.wallet',
     'scanPrivacy.blocked.proxyEndpoint',
     'scanPrivacy.blocked.indexerChain',
     'scanPrivacy.blocked.indexerMissing',

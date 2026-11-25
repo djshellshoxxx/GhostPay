@@ -75,8 +75,8 @@ describe('scan privacy message data', () => {
 
   it('keeps all new security copy in source English for unreviewed catalogs, even if a supplied draft claims otherwise', () => {
     const keys = SECURITY_KEY_GROUPS.scanPrivacyDisclosure;
-    // 38 plus W3's settingsUnreadable, routeChanged and the two unreadable-settings disclosure keys.
-    expect(keys).toHaveLength(42);
+    // 38 plus W3's settingsUnreadable, routeChanged, the two unreadable-settings and the two wallet-traffic disclosure keys.
+    expect(keys).toHaveLength(44);
     for (const catalog of [es, ja, ar]) {
       expect(isReviewed(catalog._meta.locale)).toBe(false);
       const fakeDraft = { locale: catalog._meta.locale, messages: Object.fromEntries(keys.map((key) => [key, `unapproved:${key}`])) };
