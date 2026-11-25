@@ -4,6 +4,34 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
+  walletDisclosure: [
+    'wallet.disclosure.title',
+    'wallet.disclosure.intro',
+    'wallet.disclosure.accountAccess',
+    'wallet.disclosure.method',
+    'wallet.disclosure.chain',
+    'wallet.disclosure.account',
+    'wallet.disclosure.destination',
+    'wallet.disclosure.contractCall',
+    'wallet.disclosure.arguments',
+    'wallet.disclosure.nativeValue',
+    'wallet.disclosure.typedAmount',
+    'wallet.disclosure.typedRecipient',
+    'wallet.disclosure.primaryType',
+    'wallet.disclosure.unknown',
+    'wallet.disclosure.details',
+    'wallet.disclosure.contractEffects',
+    'wallet.disclosure.payloadHint',
+    'wallet.disclosure.continue',
+    'wallet.disclosure.cancel',
+    'wallet.disclosure.invalid',
+    'wallet.disclosure.cancelled',
+    'wallet.disclosure.unavailable',
+    'wallet.disclosure.busy',
+    'wallet.disclosure.expiry',
+    'wallet.disclosure.domainChain',
+  ],
   browserCapabilityLimits: ['app.checks.limits'],
   // #287 item 4: retention of on-screen invoice and payment-proof previews (consent, scope and preserved records).
   metadataRetention: [
@@ -160,6 +188,12 @@ export const SECURITY_KEY_GROUPS = {
   ],
   scanPrivacyDisclosure: [
     'scanPrivacy.blocked.requirePrivatePath',
+    'scanPrivacy.blocked.settingsUnreadable',
+    'scanPrivacy.blocked.routeChanged',
+    'scanPrivacy.disclosure.unreadableParty',
+    'scanPrivacy.disclosure.unreadable',
+    'scanPrivacy.disclosure.walletParty',
+    'scanPrivacy.disclosure.wallet',
     'scanPrivacy.blocked.proxyEndpoint',
     'scanPrivacy.blocked.indexerChain',
     'scanPrivacy.blocked.indexerMissing',

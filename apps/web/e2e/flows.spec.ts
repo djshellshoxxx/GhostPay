@@ -19,6 +19,7 @@ test.afterEach(async ({ page }, info) => {
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 import { CORS, RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
+import { approveWalletDisclosures } from './walletDisclosure';
 
 interface WalletControls {
   holdSend: boolean;
@@ -31,6 +32,8 @@ interface WalletControls {
 
 /** An EIP-6963 wallet injected before any page script runs. */
 async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: number; permitCalls?: number }): Promise<void> {
+  // Each wallet request is first shown in the in-page disclosure dialog; these flows approve it as a user would.
+  await approveWalletDisclosures(page);
   await page.exposeFunction('__recordTx', (tx: SentTx) => {
     state.sent = tx;
     state.sendCalls = (state.sendCalls ?? 0) + 1;

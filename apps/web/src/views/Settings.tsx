@@ -422,8 +422,10 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
       const next = { ...cfg, endpoints, indexerUrls };
-      setCfg(next);
-      const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      const savedPrivacy = saveScanPrivacy(browserStorage(), next);
+      // A successful save replaces settings that could not be read: show what is saved now, without the lock.
+      setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
+      const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
