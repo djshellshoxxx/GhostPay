@@ -1,0 +1,125 @@
+{
+  "checkpoint": "2026-11-25T16Z",
+  "runStartedUtc": "2026-11-25T16:06:29Z",
+  "priorLedger": "3b1973670072220437f17429d294ab9a65f34bb8",
+  "priorSnapshot": "docs/consolidation/autonomous-20261121/owner-scope-reconciliation-20261125T15Z.json",
+  "main": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+  "mainTree": "c6a649d00c166c2113640e3afc33057866ff1fae",
+  "branchCount": 794,
+  "openPRCount": 259,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    94,
+    0
+  ],
+  "prPageLengths": [
+    100,
+    100,
+    59,
+    0
+  ],
+  "frozenRefsVerified": 34,
+  "originalRefsVerified": 34,
+  "branchDelta": {
+    "added": [],
+    "removed": [],
+    "changed": {
+      "automation/ghostpay-integration-lock": "878b775f330a83a8b80873fa03a4886e948cf7cc",
+      "claude/w3-provider-privacy-boundary": "3842a1e195f179bb46dbb8bb06308e79b2891add",
+      "claude/w-export-privacy-286-20261125": "9680b0131b506f799ae0d07d4c5b1fca977f1f34",
+      "claude/w-retention-287-20261125": "46543280e1e43a04ef52493814d462311a52a990",
+      "claude/w-reuse-287-20261125": "1e7519ac00ea001562d492064956a83e12e91553",
+      "claude/w-wallet-disclosure-287-20261125": "1e2ee72c6c0ff17ce597ae01b1ceb302608a13cb",
+      "dependabot/npm_and_yarn/npm-major-1ddf9439d6": "812bbfba8172a28081eff4f442cc530fd516a9dd",
+      "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e": "fb9c4b6f618f80b2d9f2b2aff3d1f2fa41e06558",
+      "integration/ghostpay-autonomous-ledger-20261121-5ceb": "3b1973670072220437f17429d294ab9a65f34bb8",
+      "main": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "nodata/eloquent-shannon-gfv6t9": "c827a4f617916b9c35adc3a74969246254eb3e99",
+      "nodata/optimistic-maxwell-epuo8f": "bfafde5020b3615a2821e548b46014d46e8e3b41"
+    }
+  },
+  "prDelta": {
+    "closedMerged": [
+      642
+    ],
+    "added": [],
+    "changed": [
+      677,
+      676,
+      675,
+      674,
+      673,
+      672,
+      493,
+      380,
+      87
+    ],
+    "reconstruct": "Use corresponding branch heads above with prior full snapshot; unchanged PR base metadata not reasserted."
+  },
+  "p13": {
+    "pr": 642,
+    "mergedHead": "3c8dd9de67f4f045f9c6de50528aa927ddf3ee66",
+    "exactTreeMatch": true,
+    "checks": "39 success, 3 skipped",
+    "review": "Default off; settlement refused, local cleartext fixture only; no root export, no web dependency. Not crypto review or activation qualification.",
+    "postMergeHead": "c827a4f617916b9c35adc3a74969246254eb3e99",
+    "postMergeWork": "22 paths changed since merged head, including owner claim, QA tests, audit fixes A1-A11 and payment provenance B1. Not merged; preserve existing owner."
+  },
+  "mainChecks": {
+    "hosting": 45646170452,
+    "codeql": 45646169580,
+    "ci": 45646170439,
+    "status": "hosting and CodeQL passed, CI queued at read"
+  },
+  "policy": {
+    "pr659": "ea94ba7cf2dd5865da4199ed04294f9a71496798",
+    "pr667": "67a241c7589fd97b085c83efd4bfca4147a4114d",
+    "status": "nonmergeable, 38 behind; zero submitted reviews. CI and CodeQL passed on old head. Sole overlapping path ACTIVE_WORK.md. STOP_WORK file missing from main; read candidate; explicit owner directive binding. Existing W1 owner to reconcile, requalify and obtain approval."
+  },
+  "lease": {
+    "generation": 28,
+    "status": "released",
+    "sha": "878b775f330a83a8b80873fa03a4886e948cf7cc"
+  },
+  "nearFinished": {
+    "donorAncestors": [
+      568,
+      574,
+      576,
+      581
+    ],
+    "pr614": "c03598fe5923ddee8f9276c794b3197c501b2004",
+    "ahead": 2,
+    "behind": 99,
+    "uniquePaths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/NEAR_FINISHED_INTEGRATION_20261124.md",
+      "docs/handoffs/NEAR_FINISHED_RECONCILIATION_20261124.md"
+    ],
+    "disposition": "All original donor heads exact ancestors of main; current PR has documentation-only residual vs merge base. Retain scope hold; do not reapply runtime fixes."
+  },
+  "releaseExclusion": {
+    "pr": 673,
+    "head": "bfafde5020b3615a2821e548b46014d46e8e3b41",
+    "status": "No exclusion script delta from f3e5cf24; rebased onto main. Fresh six workflow groups pending; separate core retention and dormancy verification still required."
+  },
+  "heldMixed": [
+    371,
+    592,
+    614,
+    616,
+    617,
+    621
+  ],
+  "limitations": [
+    "Local git DNS failure; no local tests.",
+    "No lease taken, no main merges, deployment or archive mutation.",
+    "Global semantic unresolved total unverified."
+  ]
+}
