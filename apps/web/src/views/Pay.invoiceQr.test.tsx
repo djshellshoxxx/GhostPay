@@ -211,7 +211,7 @@ describe('Pay invoice QR intake', () => {
     vi.spyOn(invoices, 'openFragment').mockImplementation((fragment, options) => fragment === first.fragment ? pending : original(fragment, options));
     await scanText(first.fragment, user);
     if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR'));
-    if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear invoice QR' }));
+    if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear imported invoice' }));
     if (change === 'session') act(() => { clearSession(); });
     if (change === 'fragment') act(() => { setHash(second.fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
     if (change === 'input') fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'another candidate' } });
@@ -235,7 +235,7 @@ describe('Pay invoice QR intake', () => {
       await user.click(screen.getByRole('button', { name: 'Scan with camera' }));
       await waitFor(() => { expect(getUserMedia).toHaveBeenCalledOnce(); });
       if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR'));
-      if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear invoice QR' }));
+      if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear imported invoice' }));
       if (change === 'session') act(() => { clearSession(); });
       if (change === 'fragment') act(() => { setHash(fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
       if (change === 'unmount') unmount();

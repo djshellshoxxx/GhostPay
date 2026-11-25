@@ -5,6 +5,15 @@ import type { MessageKey } from './catalog';
  */
 export const SECURITY_KEY_GROUPS = {
   browserCapabilityLimits: ['app.checks.limits'],
+  paymentRequestFiles: [
+    'requestFile.downloadHint',
+    'requestFile.downloadFailed',
+    'requestFile.hint',
+    'requestFile.ready',
+    'requestFile.rejected',
+    'requestFile.tooLarge',
+    'requestFile.invalid',
+  ],
   bitcoinOracleSources: [
     'btc.oracle.modeLabel',
     'btc.oracle.none',
@@ -1961,6 +1970,14 @@ export const NEUTRAL_KEY_LIST = [
   'app.checks.pass',
   'app.checks.warn',
   'app.checks.fail',
+  'requestFile.download',
+  'requestFile.summarySuffix',
+  'requestFile.label',
+  'requestFile.reading',
+  'requestFile.reviewAria',
+  'requestFile.reviewHeading',
+  'requestFile.open',
+  'requestFile.clear',
   'sellerKeys.verify.heading',
   'sellerKeys.verify.file',
   'sellerKeys.verify.passphrase',

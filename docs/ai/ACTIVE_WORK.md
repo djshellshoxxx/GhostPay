@@ -1,3 +1,15 @@
+# FC-01 — F03 signed invoice request-file interchange onto current main
+
+Worker `fc01`, branch `claude/fc01-f03-request-file-20261125`, base main
+`f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`; donor PR #310 head
+`dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec`, merged with `--no-ff`. Owned paths: the F03 request-file
+components, `requestFileInterop.test.ts`, `Pay.requestFile.test.tsx`, `Pay.invoiceQr.test.tsx`, F03 hunks of
+`apps/web/src/views/{Pay,CreateInvoice}.tsx`, F03 keys in `securityKeys.ts` and the four locale catalogs,
+`apps/web/e2e/payment-request-file.spec.ts`, `packages/invoice-schema/{src/requestFile*,src/index.ts,README.md}`, and
+`docs/consolidation/feature-completion-20261125/FC-01-f03-request-file.md`. Journal and attempt code are excluded.
+Acceptance: file selection never connects a wallet or submits payment; opened requests pass the existing
+signature, signer, passphrase, expiry and review flow and the #500 pre-send checks; hosted CI green.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
@@ -1008,6 +1020,99 @@ Owned paths: `apps/web/src/styles/print.css` and new `apps/web/e2e/print-targets
 Evidence: GP-BUG-02 in PR #312, independently source-confirmed; `print.css` applies `body * {visibility:hidden!important}` globally whereas `app.css` receipt override lacks `!important`. A bill sheet is mounted only during bill printing; a receipt print target is otherwise suppressed.
 Acceptance: reproduce both print modes with print-media computed styles in a browser fixture; ensure receipt is visible without a bill, bill is visible without a receipt, and bill remains exclusive when both exist; all other UI stays print-hidden; retain sensitive-data print restrictions; source review against exact main files; run available tests or record unexecuted checks; preserve the branch as draft pending hosted qualification and separate review. No contracts, workflows, dependencies, Pages settings or deployments.
 Status: implementation and six print-media fixture cases committed. Exact-source static/PostCSS syntax checks passed; repository Playwright, typecheck, lint, hosted CI and independent verification remain outstanding. Lock metadata is separate; no shared integration or protected-main merge attempted.
+
+# F03 current-main reconciliation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; fresh integration reviewer: `f03_main_reconciliation_review`.
+Task branch: `continuation/f03-main-reconciliation-20261120`.
+Feature input: `1de98f6c9371010883253450446e6f7294da84fa` (`future/f03-private-payment-links`, PR #310).
+Main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3`; common base:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`. Separate source-pinned audit evidence remains
+at `9a0e268034ee2321c5e333c35a3aa1825b1c8f63` on `audit/f03-browser-qualification-20261120`.
+
+Owned changes: combine the additive ownership registries and add
+`docs/future/modules/F03-private-payment-links/round3/` reconciliation evidence/handoff.
+The reviewer owns only `round3/RECONCILIATION_REVIEW.md`; all source is read-only for it.
+Incoming main source/tests/docs are preserved exactly, as is the adopted F03 memo-test blob
+`085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f`. No unrelated source repair is authorized by this
+claim. Extend ownership before any demonstrated regression requires a fix.
+
+Acceptance: verify actual heads and merge preview, retain every incoming/base ownership entry,
+confirm main ancestry and the exact union of both inputs, inspect the small shared QR/build/profile
+and payment-URI integration surface, run appropriate focused regression gates, and obtain fresh
+independent review. The preview conflicts only in `docs/ai/ACTIVE_WORK.md`. Publish with an
+expected-head lease and retain actual-current-head full/lean browser qualification. Existing
+1de98f6c CI observations remain historical after any integration; no pass transfers automatically.
+No force update, merge to main, live transaction or deployment.
+
+Status: reviewed integration `f0968b9541dbd3234a6b0516023773845c04c4e4`, exact-tree API
+equivalent `7c30385a44d1cac76e9137eea9fc522865ac53f0`. Fresh source/standards/spec checks
+report zero findings. All 15 local commands passed: payment-URI 206 tests/coverage, package
+build/typecheck/lint, shared-web/F03/QR 294 tests, whole-web typecheck, scoped typed lint,
+full/lean static builds and original scans, both six-case collections, and scoped publication
+checks. Command records distinguish raw/normalized console bytes and preserve source pins.
+See `round3/QUALIFICATION.md` under this feature for the executed gates and successor prompt.
+Actual new published-head full/lean browser execution and required CI remain pending.
+
+# PR #310 invoice-file memo browser checks — 2026-11-20
+
+Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.
+Task branch: `fix/pr310-invoice-file-memo`; publication target: existing PR #310
+branch `future/f03-private-payment-links`.
+Base: `976d26ee791836c176431c8a5d0b825486f78caf`; observed main:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/e2e/payment-request-file.spec.ts`, this additive claim,
+and `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+Acceptance: match complete labeled memo text in the payment-review region;
+ensure locked and superseded memo absence checks detect labeled text; pass all
+six invoice-file browser cases in both original full and lean configurations,
+web typecheck and scoped typed lint; retain all existing assertions and gates.
+Evidence: CI run `44692101562`, full job `136181689920` and lean job `136181689927`,
+each failed the same four memo checks. Reinspect the PR head before publication.
+Scope: test assertions only; preserve the F03 implementation and other workers.
+Status: independent source review, full web typecheck, scoped typed lint, original
+full/lean collection (six cases each), secret scan and whitespace check pass.
+Local Chromium is blocked before assertions by socket permissions; hosted full/lean
+browser qualification is required. See `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+
+# F03 payment request interchange — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.
+Branch: `future/f03-private-payment-links`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (fresh origin/main clone).
+Authorization: the owner explicitly requested selection and implementation of one future feature,
+continuation of an existing branch if present, and fresh independent audits after completion.
+Git branch inventory and connector search found no existing F03 branch at discovery.
+Owned paths: new invoice-schema request-file module/tests/exports; new browser request-file
+components/tests; minimal CreateInvoice/Pay integration; additive English catalog entries;
+F03 specification, user guide, audit and handoff documents. No dependency, contract or fee changes.
+Acceptance: the same signed envelope round-trips unchanged through URL, QR and bounded JSON file;
+local explicit import preserves signature, signer, chain, expiry and payment review; stale reads
+cannot replace current intent; affected-package gates, browser checks and fresh audits pass.
+Existing invoice, QR and privacy work is preserved. No main merge or deployment is authorized.
+
+Fresh audit generation: `f03_audit_standards`, `f03_audit_spec`, `f03_audit_privacy`.
+Reviewed implementation: `f472030a1d9a993db1ba7a1a33f9a208c28ebf13`.
+Owned audit paths: respectively `docs/future/modules/F03-private-payment-links/audits/`
+`STANDARDS.md`, `SPEC.md`, and `PRIVACY_SECURITY.md`. Production source is read-only
+for all three auditors. Acceptance: full selected-feature source review, actual evidence limits,
+concrete findings and independent follow-up on coordinator repairs. Root owns serial broad gates.
+Audit repair: `f03_audit_spec` additionally owns focused app-lock regression additions in
+`apps/web/src/views/Pay.requestFile.test.tsx`; root owns the minimal production repair.
+Existing implementation is frozen until the new regression demonstrates the reported omission.
+Catalog qualification repair: `f03_audit_standards` additionally owns additive `requestFile.*`
+entries in `apps/web/locales/{ar,es,ja}.json`, using the existing unreviewed-English fallback
+convention, and its report follow-up. The 45 missing-key failures are recorded before edits.
+No existing translation or reviewed-security digest may change. Root owns final catalog check;
+the separate specification/privacy workers independently review this bounded repair.
+Status: selected implementation and fresh audits complete. The shared medium app-lock finding
+is repaired with four independently RED/GREEN regressions; combined focused suite 114/114 and
+full invoice-schema 813/813 with original coverage thresholds pass. Final product checkpoint
+`e543d25fc7f3b65460518f4b3df4c513d34a1215` is published as exact-tree equivalent
+`bd128598f1b4c5291dad5c003a4775ad47bbb888` in draft PR #310. Catalog, typed lint, typecheck,
+full/lean static builds and original bundle scans pass. Actual Chromium execution remains
+blocked locally and hosted checks remain pending. See the source map, audit reports, evidence
+and successor prompt in `docs/future/modules/F03-private-payment-links/{QUALIFICATION,HANDOFF}.md`.
 
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 

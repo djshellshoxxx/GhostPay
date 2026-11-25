@@ -1,0 +1,103 @@
+{
+  "kind": "local static build inventory; no browser execution",
+  "source_local_commit": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "profile": "full",
+  "file_count": 19,
+  "files": [
+    {
+      "path": "_headers",
+      "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+      "bytes": 1761
+    },
+    {
+      "path": "assets/ar-B7hqN6M8.js",
+      "sha256": "b96e832600bf1db9be47abaf08560fa86bd86543440515b56b813d33b7f1c70c",
+      "bytes": 305263
+    },
+    {
+      "path": "assets/es-EiI9qdRS.js",
+      "sha256": "fcf3f4ac4aa94474cbf8831b52e50d584ea3e562dea5a53483313de1df8d8d2f",
+      "bytes": 251960
+    },
+    {
+      "path": "assets/index-DIBrKHyN.js",
+      "sha256": "517b1d83bad770fb07c5fbcd6f061999d09cf0f2a7b260c23ff88eb39894a05d",
+      "bytes": 1789070
+    },
+    {
+      "path": "assets/ja-Blk8DGS3.js",
+      "sha256": "83955f103046d3f2ea6d8051a3756c4c9446ca7d9c545857a52672115792e1b8",
+      "bytes": 298707
+    },
+    {
+      "path": "assets/jsQR-Ct1FLwmy.js",
+      "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f",
+      "bytes": 129988
+    },
+    {
+      "path": "assets/rolldown-runtime-XKyaHtl9.js",
+      "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+      "bytes": 726
+    },
+    {
+      "path": "assets/scan.worker-C1_YVxLJ.js",
+      "sha256": "b47609236445ce9651164a2ae2ebf8b095ef1a6ab2ca136860435bc0b83f6d26",
+      "bytes": 100387
+    },
+    {
+      "path": "assets/scanner.worker-aBRK3D4k.js",
+      "sha256": "03b6482738650680fb02b7272232a207fb2d49a195ad960628683fd7e881f7b5",
+      "bytes": 62152
+    },
+    {
+      "path": "assets/style-sbKVpGL7.css",
+      "sha256": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+      "bytes": 11944
+    },
+    {
+      "path": "build-info.json",
+      "sha256": "53d7a38ff35cb0a9be6cd57680ae7a02c23f25d5f6b44d9dc6f368e287f44b36",
+      "bytes": 145
+    },
+    {
+      "path": "deployments/README.md",
+      "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d",
+      "bytes": 861
+    },
+    {
+      "path": "favicon.svg",
+      "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+      "bytes": 332
+    },
+    {
+      "path": "ghostpay-embed-v1.js",
+      "sha256": "ad77f44216d452869e856a029d7b17cb31045ba0f28ec4859f5dc400ae3b84cd",
+      "bytes": 2742
+    },
+    {
+      "path": "ghostpay-embed-v2.js",
+      "sha256": "ec302ad63d57348c3b7d6ea6be0975e8eea188364c80dc1cee4be8a8624ed7ab",
+      "bytes": 13939
+    },
+    {
+      "path": "help.css",
+      "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+      "bytes": 3283
+    },
+    {
+      "path": "help.html",
+      "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1",
+      "bytes": 16853
+    },
+    {
+      "path": "index.html",
+      "sha256": "aa5ebdab53c5d8d512b2cf5bccbfbb4db4c72cbc5bb35da3b7923c0a286b690d",
+      "bytes": 3369
+    },
+    {
+      "path": "privacy.html",
+      "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7",
+      "bytes": 8029
+    }
+  ]
+}

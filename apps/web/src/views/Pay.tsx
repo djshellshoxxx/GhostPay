@@ -4,6 +4,7 @@ import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
+import { PaymentRequestFileInput } from '../components/PaymentRequestFileInput';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -98,7 +99,9 @@ function invoiceQrFragment(text: string, baseUrl: string): string | undefined {
   if (fragment === undefined || !/^#gpi=v1\.[A-Za-z0-9_-]+$/.test(fragment) || fragment.length > FRAGMENT_PREFIX.length + encodedLimit) return undefined;
   return fragment;
 }
+// i18n-use: requestFile.rejected requestFile.reviewAria requestFile.reviewHeading requestFile.open
 interface InvoiceQrPreview {
+  readonly source: 'qr' | 'file';
   readonly fragment: string;
   readonly result: OpenFragmentResult;
   readonly revision: number;
@@ -153,8 +156,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
   const [paste, setPaste] = useState('');
   const [invoiceQrPreview, setInvoiceQrPreview] = useState<InvoiceQrPreview | undefined>();
-  const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
+  const [invoiceQrError, setInvoiceQrError] = useState<{ readonly source: 'qr' | 'file'; readonly message: DisplayMessage } | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
+  const [invoiceCameraReset, setInvoiceCameraReset] = useState(0);
   const invoiceQrRevision = useRef(0);
   const invoiceQrMounted = useRef(true);
   const invoiceQrDisclosure = useRef<HTMLDetailsElement | null>(null);
@@ -209,6 +213,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setInvoiceQrError(undefined);
   }, []);
   const resetInvoiceQr = useCallback((): void => { invalidateInvoiceQr(); setInvoiceQrReset((value) => value + 1); }, [invalidateInvoiceQr]);
+  const beginInvoiceFile = (): (() => boolean) => {
+    invalidateInvoiceQr();
+    // Choosing a file supersedes a running camera or QR parser without remounting this file reader.
+    setInvoiceCameraReset((value) => value + 1);
+    const revision = invoiceQrRevision.current;
+    return () => invoiceQrRevision.current === revision;
+  };
   const disclosureClosed = (records: readonly MutationRecord[]): boolean => records.some((record) => record.attributeName === 'open' && record.oldValue !== null);
   const invoiceQrIsOpen = (): boolean => {
     // Native toggle events can coalesce. Consume queued close records before a callback or confirmation can act.
@@ -229,7 +240,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     return () => { invoiceQrMounted.current = false; invoiceQrRevision.current += 1; };
   }, []);
 
-  const importInvoiceQr = async (text: string, signal: AbortSignal): Promise<boolean> => {
+  const importInvoiceQr = async (text: string, signal: AbortSignal, source: 'qr' | 'file' = 'qr'): Promise<boolean> => {
     const revision = invoiceQrRevision.current;
     const scope = invoiceQrScope;
     const assertSession = captureSessionVersionGuard();
@@ -242,17 +253,17 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (candidate === undefined) {
       // Name another GhostPay QR family so the user can take it to the right screen; never act on it here.
       const other = otherQrFamily(text);
-      setInvoiceQrError(other === undefined ? { key: 'pay.error.invoiceQrLink' } : { key: 'pay.error.invoiceQrOtherFamily', values: { family: other } });
+      setInvoiceQrError({ source, message: other === undefined ? { key: 'pay.error.invoiceQrLink' } : { key: 'pay.error.invoiceQrOtherFamily', values: { family: other } } });
       return false;
     }
     try {
       const result = await openFragment(candidate, { pinnedSigners: pinned });
       if (!current()) return false;
       if (result.status === 'ok' && !supportsInvoice(result.parsed.invoice, supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
-      setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
+      setInvoiceQrPreview({ source, fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
-      if (current()) setInvoiceQrError(captureUserMessage(error));
+      if (current()) setInvoiceQrError({ source, message: captureUserMessage(error) });
       return false;
     }
   };
@@ -974,19 +985,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </form>
         )}
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
-          <summary>{t('pay.scan.summary')}</summary>
+          <summary><span>{t('pay.scan.summary')}</span>{' '}{t('requestFile.summarySuffix')}</summary>
           <p>{t('pay.scan.intro')}</p>
-          <CameraImporter key={invoiceQrReset} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
-          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
-          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{displayMessage(invoiceQrError, t)}</Notice>}
+          <PaymentRequestFileInput key={invoiceQrReset} scopeKey={invoiceQrScope} onInputChange={beginInvoiceFile} onText={(text, signal) => importInvoiceQr(text, signal, 'file')} />
+          <CameraImporter key={`${invoiceQrReset}:${invoiceCameraReset}`} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
+          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('requestFile.clear')}</button>
+          {invoiceQrError !== undefined && <Notice kind="error" title={t(invoiceQrError.source === 'file' ? 'requestFile.rejected' : 'pay.scan.rejected')}>{displayMessage(invoiceQrError.message, t)}</Notice>}
           {invoiceQrPreview !== undefined && (
-            <section aria-label={t('pay.scan.reviewAria')}>
-              <h3>{t('pay.scan.reviewHeading')}</h3>
+            <section aria-label={t(invoiceQrPreview.source === 'file' ? 'requestFile.reviewAria' : 'pay.scan.reviewAria')}>
+              <h3>{t(invoiceQrPreview.source === 'file' ? 'requestFile.reviewHeading' : 'pay.scan.reviewHeading')}</h3>
               {invoiceQrPreview.result.status === 'needsPassphrase'
                 ? <p>{t('pay.scan.needsPassphrase')}</p>
                 : <p>{invoiceQrPreview.result.parsed.verification.signatureValid ? t('pay.scan.chainValid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) }) : t('pay.scan.chainInvalid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) })}</p>}
               <p>{t('pay.scan.openNote')}</p>
-              <button type="button" className="btn" onClick={openInvoiceQr}>{t('pay.scan.open')}</button>
+              <button type="button" className="btn" onClick={openInvoiceQr}>{t(invoiceQrPreview.source === 'file' ? 'requestFile.open' : 'pay.scan.open')}</button>
             </section>
           )}
         </details>

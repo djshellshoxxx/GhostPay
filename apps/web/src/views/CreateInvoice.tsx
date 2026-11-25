@@ -5,6 +5,7 @@ import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
+import { PaymentRequestDownload } from '../components/PaymentRequestDownload';
 import { ContextHelp } from '../components/ContextHelp';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
@@ -378,6 +379,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          <PaymentRequestDownload fragment={visibleCreated.fragment} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
