@@ -5,7 +5,6 @@ import { generateKeys } from './helpers';
 // Restoring seller keys on a phone or tablet from a backup made somewhere else. Runs in the touch-device projects of
 // both Playwright configs (Chromium descriptors, and native WebKit for iPhone/iPad in playwright.mobile.config.ts).
 // These are browser-engine and viewport emulations with synthetic keys, not physical-device evidence.
-const BASE_URL = 'http://localhost:4173';
 const VECTOR = JSON.parse(KEYSTORE_V1) as { meta: { metaAddress: string; signer: string }; ciphertext: string };
 const EXPORT_PASS = 'violet comet maple lantern harbor';
 const VAULT_PASS = 'quiet orchard ember signal rowan';
@@ -34,15 +33,19 @@ function damaged(text: string): string {
 
 /** Another device: its own browser context (separate storage), desktop-sized, light scheme, no animated QR stepping. */
 async function otherDevice(browser: Browser): Promise<BrowserContext> {
-  return browser.newContext({ baseURL: BASE_URL, viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2, colorScheme: 'light', reducedMotion: 'reduce' });
+  const { baseURL } = test.info().project.use;
+  return browser.newContext({ ...(baseURL === undefined ? {} : { baseURL }), serviceWorkers: 'block', viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2, colorScheme: 'light', reducedMotion: 'reduce' });
 }
+
+/** True when leaving the page now would raise the browser's leave-page warning (the app cancels beforeunload). */
+const wouldWarnOnExit = (page: Page): Promise<boolean> => page.evaluate(() => !window.dispatchEvent(new Event('beforeunload', { cancelable: true })));
 
 /** Generates seller keys on the other device, downloads the encrypted keystore and returns its public identity. */
 async function sellerWithBackupQr(dp: Page): Promise<{ meta: string; signer: string; frame: Locator }> {
   await dp.goto('/');
   const meta = await generateKeys(dp);
   const signer = (await keysView(dp).locator('h3', { hasText: 'Invoice-signing public key' }).locator('xpath=following-sibling::p[1]').textContent())?.trim() ?? '';
-  expect(signer).toMatch(/^0?x?[0-9a-f]{66}$/);
+  expect(signer).toMatch(/^[0-9a-f]{66}$/);
   await dp.getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(EXPORT_PASS);
   await dp.getByLabel('Repeat passphrase', { exact: true }).fill(EXPORT_PASS);
   const download = dp.waitForEvent('download', { timeout: 90_000 });
@@ -81,6 +84,8 @@ test('a keystore written by the independent codec restores on this device, refus
   await decryptAndLoad(page, KEYSTORE_V1_PASSPHRASE);
   await expect(metaAddress(page)).toHaveText(VECTOR.meta.metaAddress, { timeout: 60_000 });
   await expect(keysView(page).getByText(VECTOR.meta.signer, { exact: true })).toBeVisible();
+  // An imported keystore is a verified external copy, so leaving would not warn.
+  expect(await wouldWarnOnExit(page)).toBe(false);
 
   // Keep them on this device: an encrypted browser vault that unlocks to the same keys after a reload.
   await keysView(page).getByLabel('New vault passphrase (14+ characters)').fill(VAULT_PASS);
@@ -94,7 +99,8 @@ test('a keystore written by the independent codec restores on this device, refus
   await keysView(page).getByRole('button', { name: 'Unlock saved vault' }).tap();
   await expect(metaAddress(page)).toHaveText(VECTOR.meta.metaAddress, { timeout: 90_000 });
   await expect(keysView(page).getByText(VECTOR.meta.signer, { exact: true })).toBeVisible();
-  // An imported keystore is a verified external copy: neither the reload nor anything else asked to stay on the page.
+  expect(await wouldWarnOnExit(page)).toBe(false);
+  // Nothing asked to stay on the page during the reload either.
   expect(dialogs).toEqual([]);
 });
 
