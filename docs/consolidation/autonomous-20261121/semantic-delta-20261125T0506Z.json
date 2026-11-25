@@ -1,0 +1,198 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T05:06:29Z (run start; subsequent reads)",
+  "priorDelta": "a1fdc04a257f660f07a6ad01961aa9105aeb37b0:docs/consolidation/autonomous-20261121/semantic-delta-20261125T0401Z.json",
+  "mainAtComposition": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+  "mainAtFinalRefresh": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+  "mainTree": "fc0fc1eb674a3bac265da6bc7b40d494e71adb0b",
+  "summary": {
+    "branches": 725,
+    "openPrs": 257,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      25,
+      0
+    ],
+    "prPages": [
+      100,
+      100,
+      57,
+      0
+    ],
+    "provisionalClassifiedCarried": 516,
+    "newVerifiedIntegrated": [
+      638
+    ],
+    "caveat": "No fresh global semantic classification or second independent ref census; do not double-count earlier dispositions."
+  },
+  "mergedByOtherWorker": {
+    "pr": 638,
+    "head": "cefdbd9d6b05c4bcca81f8e11119469ac654480a",
+    "mergeCommit": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+    "tree": "fc0fc1eb674a3bac265da6bc7b40d494e71adb0b",
+    "exactTreeMatch": true,
+    "checks": {
+      "success": 34,
+      "skipped": 3
+    },
+    "paths": 10
+  },
+  "ancestry": [
+    {
+      "pr": 406,
+      "head": "506604288e31c195c852fa2e8896e131da34bc3b",
+      "ahead": 0,
+      "behind": 875
+    },
+    {
+      "pr": 411,
+      "head": "482d36ad436f4b27b2d86ff9a2c22daf150000ad",
+      "ahead": 0,
+      "behind": 871,
+      "disposition": "open but ancestor; preserve owner"
+    },
+    {
+      "pr": 576,
+      "head": "4ae333d3ffa85eb14c074a543bdc084370dd1e49",
+      "ahead": 0,
+      "behind": 802
+    }
+  ],
+  "recomposition": {
+    "pr": 614,
+    "originalHead": "c03598fe5923ddee8f9276c794b3197c501b2004",
+    "commit": "e65435cc768edd9e1b55583e2dbf4e8fcaf8e644",
+    "tree": "835271e774abd4eab9e531cf32746bec8b562285",
+    "registryBlob": "4def75bfd82a425720191c7fa42a45eeae1f9710",
+    "parents": [
+      "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+      "c03598fe5923ddee8f9276c794b3197c501b2004"
+    ],
+    "paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/NEAR_FINISHED_INTEGRATION_20261124.md",
+      "docs/handoffs/NEAR_FINISHED_RECONCILIATION_20261124.md"
+    ],
+    "nonDocEntriesIdentical": 3278,
+    "registryProof": "Both variants preserve exact old registry prefix; append complete main and candidate suffixes (1669 and 8977 characters); verified remote blob content and complete untruncated tree.",
+    "handoffComment": 7153478634,
+    "qualification": "Detached; no ref moved; independent review and fresh checks required. Old head 8 success,13 skipped,zero reviews."
+  },
+  "candidateReview": [
+    {
+      "pr": 643,
+      "head": "61bcc57af51b89ca2d9e0f40c7b0572ed10028bd",
+      "tree": "687fda05a968f5b06bce41fb108fe1bb6c1052b1",
+      "changedPathsFromPriorMain": 36,
+      "overlapWith638": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "checks": {
+        "success": 17,
+        "skipped": 3,
+        "queued": 19,
+        "in_progress": 1
+      },
+      "disposition": "active standalone metadata package owner; preserve scope and qualify"
+    },
+    {
+      "pr": 644,
+      "head": "7af7ebf5b14797adc94a25d6820a40ddcaa134a7",
+      "tree": "0bb295b87a9c44b3fe159846d927e68ccf1d7d29",
+      "changedPathsFromPriorMain": 35,
+      "overlapWith638": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "checks": {
+        "success": 26,
+        "skipped": 3,
+        "queued": 9,
+        "in_progress": 3
+      },
+      "disposition": "active standalone privacy profiles owner"
+    },
+    {
+      "pr": 645,
+      "head": "3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7",
+      "checks": {
+        "success": 14,
+        "skipped": 4,
+        "queued": 11,
+        "in_progress": 3
+      },
+      "disposition": "stacked registry qualification; existing owner"
+    },
+    {
+      "pr": 635,
+      "head": "0c2e4e00c55465d95f07191ce53fe70570332969",
+      "overlapWith638": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "checks": {
+        "success": 39,
+        "skipped": 3,
+        "neutral": 1
+      }
+    },
+    {
+      "pr": 641,
+      "head": "963abf09a7d2f5b6d8f10c6b2606b4b9d5b45eba",
+      "overlapWith638": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "checks": {
+        "success": 21,
+        "skipped": 3,
+        "queued": 16
+      }
+    }
+  ],
+  "security": {
+    "p616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "codeql": "failure 7 high alerts"
+    },
+    "p617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "codeql": "failure 7 high alerts"
+    },
+    "newMainRuns": [
+      {
+        "id": 45550136003,
+        "status": "queued",
+        "event": "push",
+        "name": "CI"
+      },
+      {
+        "id": 45550135561,
+        "status": "queued",
+        "event": "dynamic",
+        "name": "Push on main"
+      },
+      {
+        "id": 45550628755,
+        "status": "queued",
+        "event": "schedule",
+        "name": "Research"
+      }
+    ],
+    "branchProtection": "403 detailed endpoint; no bypass"
+  },
+  "lock": {
+    "sha": "e6865193bfdd9a0c2dd89bb15d92b8521adce3a8",
+    "generation": 21,
+    "status": "released at observed snapshot"
+  },
+  "tests": {
+    "native": 0,
+    "environment": "git ls-remote failed DNS; Node 22.16 available; session.test.mjs imports exact workspace dependencies not available in this checkout",
+    "sourceChecks": "complete tree comparison, exact merge tree match, additive registry composition and remote readback"
+  },
+  "next": "Coordinator adopt/review #614 detached candidate on refreshed main; fresh hosted gates. Preserve #638 workflow/test files on #616/#617 reconciliation; prior CodeQL failure remains. Retain #635/#641 combined qualification and all prior obligations. No force, deployment, merge, owner branch update or automation change."
+}
