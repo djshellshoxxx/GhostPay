@@ -839,7 +839,7 @@
     "create.link.label": "Link",
     "create.link.copy": "Copy link",
     "create.qr.caption": "QR code containing the invoice link",
-    "create.qr.multipartNote": "This invoice is too long for one QR code, so it is shown as {total} parts. The payer must scan every part with GhostPay’s “Scan an invoice QR”; ordinary camera apps cannot read multi-part codes. The link above still works on its own.",
+    "create.qr.multipartNote": "This invoice is too long for one QR code, so it is shown as {total} parts. The payer must scan every part with GhostPay’s “Scan an invoice QR or open a request file”; ordinary camera apps cannot read multi-part codes. The link above still works on its own.",
     "create.buffer.label": "Gas buffer policy",
     "create.buffer.off": "No policy (standard invoice)",
     "create.buffer.declined": "Decline gas buffers",

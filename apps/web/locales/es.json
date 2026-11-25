@@ -839,7 +839,7 @@
     "create.link.label": "Enlace",
     "create.link.copy": "Copiar enlace",
     "create.qr.caption": "Código QR con el enlace de la factura",
-    "create.qr.multipartNote": "Esta factura es demasiado larga para un solo código QR, así que se muestra en {total} partes. El pagador debe escanear todas las partes con «Escanear un QR de factura» de GhostPay; las apps de cámara normales no leen códigos de varias partes. El enlace de arriba sigue funcionando por sí solo.",
+    "create.qr.multipartNote": "Esta factura es demasiado larga para un solo código QR, así que se muestra en {total} partes. El pagador debe escanear todas las partes con «Scan an invoice QR or open a request file» de GhostPay; las apps de cámara normales no leen códigos de varias partes. El enlace de arriba sigue funcionando por sí solo.",
     "create.buffer.label": "Política de margen de gas",
     "create.buffer.off": "Sin política (factura estándar)",
     "create.buffer.declined": "Rechazar márgenes de gas",
