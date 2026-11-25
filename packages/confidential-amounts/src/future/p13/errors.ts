@@ -74,6 +74,12 @@ function failure(e: unknown): { readonly ok: false; readonly code: P13Code; read
   return { ok: false, code: 'P13_INTERNAL', retryable: false };
 }
 
+/** Returns the value of a successful result or rethrows the failure as a {@link P13Error}. */
+export function unwrap<T>(r: ModuleResult<T>): T {
+  if (r.ok) return r.value;
+  throw new P13Error(r.code, 'operation refused', r.retryable);
+}
+
 /** Runs `fn` and converts a thrown error into a failed {@link ModuleResult}. */
 export function toResult<T>(fn: () => T): ModuleResult<T> {
   try {

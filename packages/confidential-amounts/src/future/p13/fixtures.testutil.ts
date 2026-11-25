@@ -1,4 +1,5 @@
 /** Deterministic synthetic P13 fixtures. Addresses are made up; nothing here refers to a deployed contract. */
+import { createInvoice, type Invoice, type NewInvoice } from '@ghostpay/invoice-schema';
 import type { ConfidentialAssetV1 } from './asset.js';
 import { PINNED_MANIFEST_DIGESTS, REQUIRED_TRUST_IDS } from './asset.js';
 
@@ -46,4 +47,39 @@ export function seededBytes(seed: number): (n: number) => Uint8Array {
     }
     return out;
   };
+}
+
+/** Compressed secp256k1 points 3G, 4G (meta-address) and 7G (invoice signer); public test constants. */
+export const META = 'st:eth:0x02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f902e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13';
+export const SIGNER = '025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc';
+/** Fixed clock: 2027-01-15T08:00:00Z. */
+export const NOW = 1_800_000_000;
+
+/** Ordinary (unchanged schema) invoice input for the CT-M fixture asset's underlying token. */
+export function invoiceInput(overrides: Partial<NewInvoice> = {}): NewInvoice {
+  return {
+    chainId: 31337,
+    metaAddress: META,
+    fiat: { currency: 'USD', minorUnits: '1500' },
+    token: CTM_ASSET.underlying.asset,
+    amountPolicy: { mode: 'fixed_token', tokenAmount: '15000000000000000000' },
+    quote: { source: 'fixed:test', timestamp: NOW, expiresAt: NOW + 600, maxSlippageBps: 0 },
+    expiresAt: NOW + 3600,
+    lineItems: [{ description: 'Test item', quantity: '1', unitMinorUnits: '1500' }],
+    tax: { rateBps: 0, minorUnits: '0' },
+    feePolicy: 'seller_pays',
+    signer: SIGNER,
+    ...overrides,
+  };
+}
+
+/** Deterministic invoice (nonce from {@link seededBytes}). */
+export function sampleInvoice(overrides: Partial<NewInvoice> = {}, seed = 7): Invoice {
+  const bytes = seededBytes(seed);
+  return createInvoice(invoiceInput(overrides), {
+    getRandomValues<T extends ArrayBufferView | null>(array: T): T {
+      if (array !== null) new Uint8Array(array.buffer, array.byteOffset, array.byteLength).set(bytes(array.byteLength));
+      return array;
+    },
+  });
 }
