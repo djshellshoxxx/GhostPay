@@ -117,8 +117,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (settings.theme === 'system') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', settings.theme);
+    root.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
