@@ -233,7 +233,7 @@ export function walletMirror(wallet: { sent: Record<string, unknown> | undefined
     }
     if (method === 'eth_getTransactionReceipt') {
       if (sent === undefined) return null;
-      return { to: sent['to'], status: statusFor(String(sent['to'])), blockNumber: '0x10' };
+      return { transactionHash: `0x${'9'.repeat(64)}`, to: sent['to'], status: statusFor(String(sent['to'])), blockNumber: '0x10' };
     }
     return undefined;
   };

@@ -362,6 +362,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <ContextHelp id="register-matching-help" label={t('help.about', { control: t('create.matching.label') })}>{t('help.merchantRegistration')}</ContextHelp>
         </fieldset>
 
+        <Notice kind="warn">{t('ledger.late.beforeCreate')}</Notice>
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
