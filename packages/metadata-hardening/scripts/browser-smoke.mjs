@@ -259,10 +259,24 @@ try {
     await new Promise((r) => setTimeout(r, 200)); // violation events are queued tasks
     return { allowed, blocked, inline: window.__inline === true, violations: window.__violations };
   });
-  const reached = routed.slice(before);
-  ok(reached.some((u) => u.startsWith('https://allowed.example')), 'D: a listed connect origin never reached the network layer');
-  ok(!reached.some((u) => u.startsWith('https://blocked.example')), 'D: CSP did not stop a request to an unlisted origin');
-  ok(cspResult.violations.some((v) => v.startsWith('connect-src') && v.includes('blocked.example')), `D: no connect-src violation recorded (${cspResult.violations.join(', ')})`);
+  // Compare parsed host names, never URL prefixes: this is a test of which hosts were contacted.
+  const hostOf = (u) => {
+    try {
+      return new URL(u).hostname;
+    } catch {
+      return '';
+    }
+  };
+  const reachedHosts = new Set(routed.slice(before).map(hostOf));
+  ok(reachedHosts.has('allowed.example'), 'D: a listed connect origin never reached the network layer');
+  ok(!reachedHosts.has('blocked.example'), 'D: CSP did not stop a request to an unlisted origin');
+  ok(
+    cspResult.violations.some((v) => {
+      const [directive = '', blockedUri = ''] = v.split('|');
+      return directive.startsWith('connect-src') && hostOf(blockedUri) === 'blocked.example';
+    }),
+    `D: no connect-src violation recorded (${cspResult.violations.join(', ')})`,
+  );
   ok(cspResult.inline === false, 'D: inline script ran despite script-src self');
   ok(!cspConsole.some((m) => /ignored|unrecognized|invalid|directive.*not/i.test(m) && !/Refused to/i.test(m)), `D: Chromium reported CSP parse problems: ${cspConsole.join(' | ')}`);
 

@@ -23,7 +23,7 @@ The package's documented pure-logic scope is implemented and hardened. Work was 
 | `node --test scripts/agent/*.test.mjs`, `node scripts/agent/package-map.mjs --check` | 12/12 pass, map current |
 | `node scripts/agent/affected.mjs` | affected workspaces: this package only (no dependents) |
 | `node scripts/browser-smoke.mjs` (Chromium 158.0.8127.36) | pass: Node/browser parity, anchor lint equals DOMParser on 33 samples, SRI never more permissive than Chromium (17 cases), CSP accepted and enforced, no network request |
-| Hosted CI (CodeQL, workflow groups) | **pending**: not available from this session until the PR exists |
+| Hosted CI | CodeQL reported 2 high alerts on earlier heads, both `js/incomplete-url-substring-sanitization` at `scripts/browser-smoke.mjs:263-264` (`startsWith('https://allowed.example')` in a test assertion about which hosts were contacted). Fixed by comparing parsed host names, same smoke run still passes. Other jobs: CLI x3, beta acceptance, secrets-and-egress, CodeQL python passed on `67b93985`; the rest were still queued when this was written. **Re-check on the final head.** |
 
 Independent AI review (read-only agents given only the diff and the spec, not a human audit):
 
