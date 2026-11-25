@@ -1,6 +1,6 @@
 # Handoff: `@ghostpay/metadata-hardening` standalone completion (2026-11-25)
 
-Source-pinned. Base `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`; branch `nodata/gracious-pascal-vdb581`. Code and tests: commit `c50da473f0c683082fb49cdcd16106e15add3a45`. Later commits on the branch are documentation only unless stated here. Draft PR: https://github.com/djshellshoxxx/GhostPay/pull/643. Nothing is merged; no consumer of the package exists.
+Source-pinned. Base `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`; branch `nodata/gracious-pascal-vdb581`. Code and tests: commit `cb17118a3b0d8c393c9ecd5daff0cee78899fe3a`. Later commits on the branch are documentation only unless stated here. Draft PR: https://github.com/djshellshoxxx/GhostPay/pull/643. Nothing is merged; no consumer of the package exists.
 
 ## Result
 
@@ -13,22 +13,22 @@ The package's documented pure-logic scope is implemented and hardened. Work was 
 
 ## Evidence
 
-| Gate | Result on `c50da473f0c683082fb49cdcd16106e15add3a45` |
+| Gate | Result on `cb17118a3b0d8c393c9ecd5daff0cee78899fe3a` |
 |---|---|
 | `npm run typecheck`, `npm run lint`, `npm run build` (package) | clean |
-| `npm test` (package) | 28 files, 394 tests passed, 0 skipped (125 before) |
-| Coverage | 99.68 % statements, 99.29 % branches, 100 % functions, 100 % lines (before 99.48 / 98.85 / 100 / 100; thresholds 95 / 90 / 95 / 95 untouched) |
+| `npm test` (package) | 28 files, 403 tests passed, 0 skipped (125 before) |
+| Coverage | 99.6 % statements, 99.08 % branches, 100 % functions, 100 % lines (before 99.48 / 98.85 / 100 / 100; thresholds 95 / 90 / 95 / 95 untouched) |
 | New tests against the old sources | 14 of 14 new files fail, 141 of 250 tests red (run in a temporary detached worktree of `c8e131c1`) |
 | `bash scripts/scan-secrets.sh` | OK |
 | `node --test scripts/agent/*.test.mjs`, `node scripts/agent/package-map.mjs --check` | 12/12 pass, map current |
 | `node scripts/agent/affected.mjs` | affected workspaces: this package only (no dependents) |
-| `node scripts/browser-smoke.mjs` (Chromium 158.0.8127.36) | pass: Node/browser parity, anchor lint equals DOMParser on 15 samples, SRI never more permissive than Chromium (17 cases), CSP accepted and enforced, no network request |
+| `node scripts/browser-smoke.mjs` (Chromium 158.0.8127.36) | pass: Node/browser parity, anchor lint equals DOMParser on 33 samples, SRI never more permissive than Chromium (17 cases), CSP accepted and enforced, no network request |
 | Hosted CI (CodeQL, workflow groups) | **pending**: not available from this session until the PR exists |
 
 Independent AI review (read-only agents given only the diff and the spec, not a human audit):
 
 1. Error-handling review of `97cbaa6f`: 12 findings, all reproduced against the built package. Fixed in the next code commit with a regression test each (`src/review-findings.test.ts`): non-canonical address/topic forms failed open (`0X` prefix), `roundGross`/`bucketGasLimit` range overflow, `verifySri` accepting trailing text, `planChange` with `inputAddresses: null`, `failover` mutating state before failing, spoofable byte-array check, empty-range derivation skipping validation, `parseHardeningJson('null')`, inconsistent tagMode error code, tx field names echoed, `parseEndpoint` empty `?`/`#`, arrays with holes, PSBT key type and hex checks. Left as documented design: `classifyMetadata` returns a rejected result (not a throw) for a non-integer length; unknown settings ids are dropped; callback causes are discarded to avoid leaking caller data; `target` character references are not decoded.
-2. Correctness and compatibility review: `<REVIEW2>`
+2. Correctness and compatibility review (read-only, no shell; traced the code by hand): findings overlapping review 1 (0X prefix, `isBytes` spoofing, `roundGross` overflow) were already fixed in the working tree. New and fixed with regression tests: the anchor lint could under-report because a fake `<a ` inside a comment, script or another tag's attribute swallowed or shifted real anchors (now a full tag tokenizer that skips comments, declarations and raw-text elements; checked on 33 samples against Chromium's parser); `padPrivatePart({})` was off by one (an existing test pinned the wrong value 245; corrected to 246 with an end-to-end regression); `dedupeLogs` rejected the `bigint` block numbers `chain-adapters` produces (now accepted); `validateHardening` and `normalizeHardening` disagreed about missing ids (validate now needs complete maps). Left as is on purpose: `roleForRequest('eth_getLogs', undefined, ...)` returns `scan` (documented original behaviour pinned by an existing test; real callers always pass the filter); `target` character references are handled conservatively. Wiring doc item 12 corrected to say rendered HTML, not JSX.
 
 ## Not done / blockers
 
