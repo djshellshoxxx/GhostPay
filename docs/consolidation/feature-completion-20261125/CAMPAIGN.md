@@ -228,6 +228,18 @@ low/info, and remain filler work.
   (`integrate.sh` in the coordinator scratchpad) gates on exact head, ≥30 checks with none pending/failed, and
   main ancestry or docs-only non-overlapping drift, then acquires the lock, merges with `--match-head-commit`,
   verifies the merge commit's parents and releases the lock.
+- 2026-11-25T09:35Z — round-2 follow-ups prepared locally (unpushed; review requested):
+  - **FC-04** `claude/fc04-hardening-tests-20261125` `a52ecc89` on main `595a184b`: recovered #271's missing
+    `quote.test.ts` absurd-decimals case (`Recovered-from: 429a4de8`; #271's TRON hardening cases already on main);
+    RCPT-L1 proxy test now reaches the guarded reads; RCPT-L2 `verify.ts` snapshots `status`/`facts`/fields once
+    (read-count and changing-getter tests failed 2/11 on the old code, then pass). `ux-receipts` 164/164, coverage
+    99.75/98.29/98.07/99.68; tsc/eslint clean; chain-adapters `quote.test.ts` 23/23.
+  - **FC-03-T** `claude/fc03-t-chain-text-20261125` `a2b14ca8` on `a13ab24d`: neutral `CHAIN_DISABLED` text; doc
+    `K`→`Z` and ADR-0017 pointer. chain-solana `stealth.test.ts` 19/19, `adapter.test.ts` 5/5.
+  - **FC-05a-T** `claude/fc05a-t-btc-text-20261125` `cf3e0ff6` on `8e7b1915`: docs, egress inventory, threat model,
+    qualification ledger (BTC-3/PRIVACY-E2E-01 "addressed by FC-05a, pending hosted CI"), `btc.server.hint`,
+    `btc.oracle.resultsNote`. `network-egress-inventory.test.mjs` exit 0; `securityKeys.test.ts` 12/12;
+    `catalog.test.ts` 4/4. Typecheck/lint/full suites not run.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
