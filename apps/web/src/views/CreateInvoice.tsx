@@ -369,7 +369,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {visibleCreated !== undefined && (
-        <div className="result" aria-live="polite">
+        <div className="result">
           <h3>{t('create.result.title')}</h3>
           <p>{t('reuse.invoiceMeta')}</p>
           <Notice kind="warn" title={t('create.bearer.title')}>

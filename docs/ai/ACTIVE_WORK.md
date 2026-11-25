@@ -351,6 +351,25 @@ scan settings, and distinguish application results from live Tor qualification.
 Network transport, wallet, scanner, hosted onion acceptance and release controls
 remain with their existing owners (#241, #308, #320, #363, #436).
 
+## Issue #286 · private export and notification surfaces
+
+Worker: Codex on `codex/286-private-export-surfaces`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Pages download boundary, policy/adapter/schema error presentation, React and i18n diagnostics, the ux-notify lock-screen formatter, and associated regressions and qualification notes. Keep clipboard, masking, idle-lock, serialization, import and recovery workers' changes separate. Acceptance requires fixed filenames and lock-screen copy, public diagnostics and titles, and exact preservation of explicitly exported bytes. Hosted checks and independent review gate integration.
+
+## Issue #286 item 5 · privacy-safe exports and notifications onto current main (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-export-privacy-286-20261125`, base main
+`32ae3977`, donor #570 `codex/286-private-export-surfaces` @ `55781533` merged with `--no-ff` (not rebased).
+Assigned by the feature-completion coordinator (`feature-completion-06`) after its shared-core privacy triage.
+Owned paths: the Pages download boundary (`apps/web/src/components/Common.tsx` download helpers), the call sites'
+fixed file names, donor #570's error/announcement/diagnostic surfaces, `packages/ux-notify` lock-screen title, and
+their regressions and docs. Not owned: clipboard (W4 #668), CreateInvoice's Copy-link row, privacy-minimal invoices
+(W4), masking (#569), vault/session isolation (#571/#655), RPC disclosure (W3), wallet disclosure (FC-07), address
+reuse (newghostpay-ae).
+Acceptance: no address, hash, amount, invoice detail, date or key in any suggested download name; exported bytes
+unchanged and importable; recovery file names stay recognizable; no secret in notifications, alerts, live regions,
+titles, URLs or console; hosted CI green at the exact head; independent review; merge via the shared queue.
+
+
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
 Coordinator: 20261124T0037Z, one sequential ChatGPT coordinator; no delegated workers or independent approval. Branch `automation/20261124T0037Z/coordinator/scan-source-rollup`, exact parent #527 `482d6ab973389083126dd8794f2b21d096a04977`, main/merge base `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Own only this isolated branch, the additive claim and `docs/handoffs/SCAN_SOURCE_ROLLUP_20261124.md`. Preserve all donor commits from #520, #523 and #527; no new production edits or donor branch writes. The parent stack passed all five hosted workflow groups; main-targeting qualification and independent review remain required. Acceptance: main-relative comparison preserves exact three source/test blobs, no unrelated changes, main-targeting draft with explicit supersession-for-integration (not closing donor PRs), no shared ref update. No integration lock acquired; generation 12 was released at observation. No merge, deployment, release, real funds or policy changes.

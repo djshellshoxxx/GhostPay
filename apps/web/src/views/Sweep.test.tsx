@@ -677,6 +677,25 @@ describe('Sweep', () => {
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
     });
 
+    // #286 item 5: the error alert is spoken aloud, so it names no transaction hash. The expected hash stays on screen in
+    // the recorded attempt (outside any live region), with its copy button, so the user can still look it up.
+    it('keeps the expected hash of an uncertain direct sweep out of the alert and on screen in the attempt', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      const expected = keccak256(sink.raws?.[0] as `0x${string}`);
+      const alerts = screen.getAllByRole('alert');
+      expect(alerts.some((a) => /may already have been broadcast/.test(a.textContent ?? ''))).toBe(true);
+      for (const alert of alerts) expect(alert.textContent).not.toMatch(/0x[0-9a-f]{64}/i);
+      const shown = screen.getAllByText(expected);
+      expect(shown.length).toBeGreaterThan(0);
+      for (const node of shown) expect(node.closest('[role="status"], [role="alert"], [aria-live]')).toBeNull();
+      expect(screen.getAllByRole('button', { name: 'Copy hash' }).length).toBeGreaterThan(0);
+    });
+
     it('the replacement lock is persisted before handoff: a reload during its send shows the new hash and stays disarmed', async () => {
       const sink: RawSink = { calls: [], raws: [], failSends: 1, sendHang: true };
       const user = await toSweep({ raw: sink });
