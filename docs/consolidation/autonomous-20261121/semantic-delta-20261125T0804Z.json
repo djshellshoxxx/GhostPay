@@ -1,0 +1,132 @@
+{
+  "observation": "2026-11-25T08:04Z",
+  "previous": "acca82f82ff5695880f271e7063799a79a462f80",
+  "main": "60824005b89611aea2b16d3355378eebf072eedb",
+  "tree": "7834d749556a8d2f70a73c591835116b01f8bf30",
+  "lease": {
+    "sha": "312f65d1e3836e5188d42b62b67b1d169210c000",
+    "generation": 22,
+    "status": "released",
+    "acquired": false
+  },
+  "branch_count": 734,
+  "open_pr_count": 263,
+  "prior_provisional_dispositions": 516,
+  "classification_note": "Historical count not re-derived; no new global unresolved estimate. Paginated all live branch/open PR refs, distinct names/numbers; no second matching-refs census. Preserve previous unresolved and retired obligations.",
+  "main_ci": {
+    "ci": 45572346307,
+    "hosting": 45572346313,
+    "codeql": 45572345459,
+    "status": "CI and Hosting queued, CodeQL running; not qualified"
+  },
+  "new_merges": [
+    {
+      "pr": 640,
+      "head": "1ca401122f48add886e970f473be62a86f2c69cb",
+      "merge": "5dc05bd6b73effef3d6fd3443a2e2fdde1103d3a",
+      "tree": "099fe1d906a12ea2d8cc08588e5ca2b92503efcf",
+      "checks": "39 success, 3 skipped",
+      "donor583": {
+        "head": "c1980912f87f0293b7a15f2419505a6719c5f3a8",
+        "ancestry": false,
+        "replayed_commits": [
+          [
+            "268115be",
+            "7de6f2f0"
+          ],
+          [
+            "f1a25a18",
+            "90816802"
+          ],
+          [
+            "c1980912",
+            "99c54bef"
+          ]
+        ],
+        "evidence": "20 per-commit file patches: 17 identical patch strings; 3 context differences only, ordered added/deleted lines exact. All 19 changed donor paths inspected mechanically; six exact path blobs, zoom worker renamed to .mjs with identical blob; native 200% zoom assertions retained. Later changes not exhaustively behaviorally requalified."
+      }
+    },
+    {
+      "pr": 641,
+      "head": "f30d9d547faef2ec5ac8e99c42c54d69116f9c5c",
+      "merge": "60824005b89611aea2b16d3355378eebf072eedb",
+      "tree": "7834d749556a8d2f70a73c591835116b01f8bf30",
+      "checks": "39 success, 3 skipped (check-runs API)",
+      "donors": [
+        {
+          "pr": 530,
+          "head": "88f7d1b496a1452f062d472d78e99b5401c61e35"
+        },
+        {
+          "pr": 540,
+          "head": "8daebb0fa4a1cc1f771dbe724dede67f00028298"
+        },
+        {
+          "pr": 573,
+          "head": "56fb25aa2ff098737dbc181fa88c0aac06425c8e"
+        },
+        {
+          "pr": 629,
+          "head": "4b1ed14ccfac12b5574b8817873ce299ecb86ddf"
+        }
+      ],
+      "evidence": "Both merge trees exact to reviewed heads; all four donor heads verified ancestor using compare merge base. #540/#573/#629 remain open despite ancestry; no closure attempted. Broader idle-lock and independent recovery remain separate."
+    }
+  ],
+  "integration": {
+    "595": {
+      "head": "534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c",
+      "status": "still open, prior teardown repair not integrated"
+    },
+    "614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "checks": "8 success, 13 skipped",
+      "reviews": 0,
+      "detached": "3b7fb99c69a03a8e4e9ae982fe710b2c6cc7ecef",
+      "tree": "bf8b26b82455897f719dd97364b3aa03100bfb8a",
+      "registry": "97d667ab78c9b918eee921bec91f81f281cdd3c8",
+      "evidence": "Untruncated 4554/4556 entry comparison: only 3 Markdown paths differ; entire current main and #614 registry ordered subsequences retained; remote blob readback; no ref move",
+      "handoff_comment": 7156567332
+    },
+    "615": {
+      "merged": true,
+      "merge": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+      "security": "historical high alerts remain unresolved"
+    },
+    "616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "checks": "36 success, 3 skipped, CodeQL failure 7 high"
+    },
+    "617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "checks": "36 success, 3 skipped, CodeQL failure 7 high"
+    }
+  },
+  "new_prs": [
+    {
+      "pr": 654,
+      "title": "FC-01 follow-up: request-file vs wallet-attempt journal regression and independent qualification",
+      "head": "9b6aec9192cc89f496138bd4ecc49e28e5c869b7",
+      "base": "claude/fc01-f03-request-file-20261125",
+      "disposition": "Existing FC01 owner stack, test-only regression; do not duplicate"
+    },
+    {
+      "pr": 653,
+      "title": "feat(light-indexer): optional reference service for the public /v1/logs announcement API",
+      "head": "fba325f787df6017448f70825b5bd654b59f19fb",
+      "base": "main",
+      "disposition": "Optional reference indexer service, outside static Pages beta; no deployment or scope approval inferred"
+    }
+  ],
+  "docs_followup": {
+    "path": "apps/web/help.html",
+    "line": 321,
+    "issue": "Standalone POS example now implemented; current help groups POS/NFC planned and says library code only; distinguish example from app-integrated POS/NFC.",
+    "handoff_comment": 7156569573
+  },
+  "limitations": [
+    "Git ls-remote failed DNS resolution; no fresh local tests.",
+    "No independent #614 review, no merge lease acquired, no product ref updated. No new deployment or gate bypass."
+  ],
+  "next": "Check new main push CI, coordinate #614 adoption and genuine review, preserve #615/616/617 alert investigation, #595 repair, distinct scan padding, and all existing owners; no duplicate PRs."
+}
