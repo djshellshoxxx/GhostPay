@@ -26,6 +26,15 @@ Not modified: `packages/merchant-hooks`, `packages/merchant-ledger`, `packages/i
 - A feed report is labelled as a server notification, not on-chain proof. Manual demo amounts are labelled not verified.
 - The payment link (bearer secret) is never written to storage, announcements or notices; it is held in memory and cleared when a sale closes.
 
+## AI-assisted review
+
+A separate reviewer agent read the diff (not an independent human or external audit). Resolved:
+- The default invoice reference was shared (`pos-sale`), so a delayed feed report for a previous sale could credit the next one. Each sale without a reference now gets `pos-<session id>`; a regression test covers the delayed report.
+- A completing payment's announcement was replaced immediately; it is now announced after commit and only while the sale is still awaiting.
+- A failing storage write rewrote its notice every tick and hid other notices; it now warns once.
+- The customer and live-region wording for a fully recorded sale now says "recorded", because demo amounts can reach it.
+The reviewer's first finding (missing restored-sale title) referred to an intermediate file state; the title and its tests were already present.
+
 ## Verification (local)
 
 See the PR description for the exact commands and results on the final commit.

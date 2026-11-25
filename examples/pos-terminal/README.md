@@ -10,7 +10,7 @@ Static point-of-sale page: amount + payment link in, QR out, countdown (300 s), 
 
 ## Operating the terminal
 
-- **Start a sale**: amount (type it or use the keypad), currency, optional invoice reference (your backend's invoice id, used to match payment reports; default `pos-sale`) and the payment link. Errors are announced, the field is marked invalid and receives focus.
+- **Start a sale**: amount (type it or use the keypad), currency, optional invoice reference (your backend's invoice id, used to match payment reports; without one the sale gets its own `pos-<session id>` and feed reports cannot match it, so a delayed report for an earlier sale never counts toward a new one) and the payment link. Errors are announced, the field is marked invalid and receives focus.
 - **Customer screen**: shows the amount due, remaining balance, an m:ss countdown and the QR. On a tablet wider than 900 px it sits beside the operator controls; **Show customer screen** fills the screen with it for a tablet turned toward the customer. **Back to operator** or Escape returns. Status changes and the last minute are announced to screen readers.
 - **Cancel / New sale**: cancelling keeps the recorded partial total on screen. **New sale** clears amounts, reference and link and keeps the selected currency. Nothing from a closed sale counts toward the next one.
 

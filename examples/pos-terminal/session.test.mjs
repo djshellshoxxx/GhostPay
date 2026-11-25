@@ -42,7 +42,7 @@ function memoryStorage() {
 }
 
 function open(input = {}, now = T0, nextId = ids()) {
-  const r = startSale(IDLE_SESSION, { amount: '12.50', currency: 'USD', link: LINK, ...input }, now, nextId);
+  const r = startSale(IDLE_SESSION, { amount: '12.50', currency: 'USD', link: LINK, invoiceId: 'pos-sale', ...input }, now, nextId);
   assert.equal(r.error, undefined, `unexpected start error ${r.error}`);
   return r.session;
 }
@@ -172,7 +172,7 @@ describe('presentation, countdown and the customer display', () => {
       expired: tickSession(s, T0 + SALE_TTL_SECONDS).session,
       cancelled: cancelSale(s, T0 + 1),
     };
-    const titles = { paid: 'Paid. Thank you', expired: 'Payment request expired', cancelled: 'Sale cancelled' };
+    const titles = { paid: 'Payment recorded. Thank you', expired: 'Payment request expired', cancelled: 'Sale cancelled' };
     for (const [status, session] of Object.entries(outcomes)) {
       assert.equal(session.sale.status, status);
       assert.equal(session.link, undefined, 'the bearer link is dropped when the sale ends');
@@ -217,12 +217,27 @@ describe('cancellation and reset', () => {
     assert.equal(first.sale.status, 'paid');
     const reset = newSale(first);
     assert.equal(reset, IDLE_SESSION);
-    const second = startSale(reset, { amount: '1.25', currency: 'USD', link: LINK + '2' }, T0 + 5, nextId).session;
+    const second = startSale(reset, { amount: '1.25', currency: 'USD', link: LINK + '2', invoiceId: 'pos-sale-2' }, T0 + 5, nextId).session;
     assert.notEqual(second.sale.sessionId, first.sale.sessionId);
     assert.equal(second.sale.paidMinor, 0n);
     assert.equal(second.verifiedMinor, 0n);
     assert.deepEqual(second.seen, []);
     assert.equal(amountsText(second), '0.00 / 1.25 USD');
+  });
+
+  test('without a reference each sale gets its own invoice id, so a delayed report for the previous sale cannot credit the next', () => {
+    const nextId = ids();
+    const clock = fakeClock();
+    const server = mockMerchantServer(clock);
+    const start = (link) => startSale(IDLE_SESSION, { amount: '10.00', currency: 'USD', link }, clock.now(), nextId).session;
+    const first = start(LINK);
+    assert.equal(first.sale.invoiceId, 'pos-0000000000000001');
+    const delayed = server.pay(first.sale.invoiceId, 'USD', 600n); // previous sale's report, delivered late
+    const second = start(LINK + '2');
+    assert.equal(second.sale.invoiceId, 'pos-0000000000000002');
+    const r = applyFeedMessage(second, delayed, clock.advance(1));
+    assert.equal(r.outcome, 'wrong-sale');
+    assert.equal(r.session.sale.paidMinor, 0n);
   });
 });
 
@@ -368,7 +383,7 @@ describe('payment completion from the verified payment feed', () => {
       (due, wallet) => {
         const clock = fakeClock();
         const server = mockMerchantServer(clock);
-        let s = startSale(IDLE_SESSION, { amount: due.toString(), currency: 'JPY', link: LINK }, T0, ids()).session;
+        let s = startSale(IDLE_SESSION, { amount: due.toString(), currency: 'JPY', link: LINK, invoiceId: 'pos-sale' }, T0, ids()).session;
         const payments = [];
         for (const [i, { amount, at }] of [...wallet].sort((a, b) => a.at - b.at).entries()) {
           clock.set(T0 + at);

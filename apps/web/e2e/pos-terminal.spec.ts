@@ -158,7 +158,7 @@ test('POS completes a sale only from the payment feed, ignores replays and flags
   await expect(page.locator('#amounts')).toHaveText('10.00 / 10.00 USD');
   await expect(page.locator('#verification')).toContainText("server's payment feed");
   await expect(page.locator('#verification')).toContainText('not on-chain proof');
-  await expect(page.locator('#customer-title')).toHaveText('Paid. Thank you');
+  await expect(page.locator('#customer-title')).toHaveText('Payment recorded. Thank you');
   await expect(page.locator('#qr svg')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'New sale' })).toBeFocused();
   await postFeed(page, feedBody('evt_4', 'inv-e2e', '1500', 'invoice.over'));

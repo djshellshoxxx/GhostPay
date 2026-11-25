@@ -16,6 +16,7 @@ let timer;
 let lastStatus = session.sale.status;
 let announcedMinute = false;
 let stored = null; // last value written to sessionStorage (null: unknown), to skip identical writes every tick
+let storageWarned = false;
 
 function newSessionId() {
   const b = new Uint8Array(8);
@@ -49,7 +50,9 @@ function persist() {
     else sessionStorage.setItem(STORAGE_KEY, text);
     stored = text;
   } catch {
-    setNotice('This browser cannot keep the sale across a reload. Keep this page open until the sale ends.');
+    // Warn once: the countdown persists every second and must not overwrite later notices.
+    if (!storageWarned) setNotice('This browser cannot keep the sale across a reload. Keep this page open until the sale ends.');
+    storageWarned = true;
   }
 }
 
@@ -91,7 +94,7 @@ function announceTransition(status) {
   const due = session.sale.dueMinor === undefined ? '' : `${formatMinor(session.sale.dueMinor, cur)} ${cur}`;
   const text = {
     awaiting: `Sale started. ${due} due.`,
-    paid: `Payment complete. ${amountsText(session)}.`,
+    paid: `Payment recorded in full. ${amountsText(session)}.`,
     expired: 'Sale expired. The payment request is closed.',
     cancelled: 'Sale cancelled.',
     idle: 'Ready for a new sale.',
@@ -229,11 +232,13 @@ function onFeedMessage(raw) {
   const now = nowSeconds();
   const r = applyFeedMessage(session, raw, now);
   if (r.outcome === 'bad-clock') { showError(clockError); return; }
-  if (r.outcome === 'counted') {
-    setNotice('');
-    announce(`Payment of ${formatMinor(r.deltaMinor, session.sale.currency)} ${session.sale.currency} reported.`);
-  } else if (FEED_NOTICES[r.outcome] !== undefined) setNotice(FEED_NOTICES[r.outcome]);
+  const { currency } = session.sale;
+  if (r.outcome === 'counted') setNotice('');
+  else if (FEED_NOTICES[r.outcome] !== undefined) setNotice(FEED_NOTICES[r.outcome]);
   if (r.session !== session) commit(r.session, now);
+  // After commit, so a completing payment is not announced and then immediately replaced by the transition message.
+  if (r.outcome === 'counted' && session.sale.status === 'awaiting')
+    announce(`Payment of ${formatMinor(r.deltaMinor, currency)} ${currency} reported.`);
 }
 
 if (typeof BroadcastChannel === 'function') {

@@ -12,7 +12,6 @@ export const MAX_SEEN_EVENTS = 64;
 /** Upper bound on one feed message and on the stored record (bytes of UTF-16 code units, checked before parsing). */
 export const MAX_FEED_BYTES = 4096;
 const MAX_RECORD_CHARS = 8192;
-const DEFAULT_INVOICE_ID = 'pos-sale';
 /** Same identifier rule as merchant-hooks webhook ids, so a feed invoiceId can match the terminal's reference. */
 const ID_RE = /^[A-Za-z0-9_.:-]{1,128}$/;
 const SESSION_ID_RE = /^[0-9a-f]{16}$/;
@@ -66,12 +65,15 @@ export function startSale(session, input, now, newSessionId) {
   const link = String(input.link ?? '').trim();
   const linkError = checkLink(link);
   if (linkError !== undefined) return fail('bad-link', linkError);
-  const invoiceId = String(input.invoiceId ?? '').trim() || DEFAULT_INVOICE_ID;
-  if (!ID_RE.test(invoiceId)) return fail('bad-invoice');
+  const reference = String(input.invoiceId ?? '').trim();
+  if (reference !== '' && !ID_RE.test(reference)) return fail('bad-invoice');
   const ttlSeconds = input.ttlSeconds ?? SALE_TTL_SECONDS;
+  const sessionId = newSessionId();
+  // Without a reference the sale gets its own id, so a delayed report for an earlier sale can never match it.
+  const invoiceId = reference || `pos-${sessionId}`;
   let result;
   try {
-    result = reduce(session.sale, { type: 'start', sessionId: newSessionId(), invoiceId, currency, dueMinor, ttlSeconds }, now);
+    result = reduce(session.sale, { type: 'start', sessionId, invoiceId, currency, dueMinor, ttlSeconds }, now);
   } catch (error) {
     if (error instanceof Error && error.message === 'bad-ttl') return fail('bad-ttl');
     if (error instanceof Error && error.message === 'bad-time-policy') return fail('bad-clock');
@@ -277,7 +279,7 @@ export function formatCountdown(seconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-const TITLES = { idle: 'Welcome', awaiting: 'Scan to pay', paid: 'Paid. Thank you', expired: 'Payment request expired', cancelled: 'Sale cancelled' };
+const TITLES = { idle: 'Welcome', awaiting: 'Scan to pay', paid: 'Payment recorded. Thank you', expired: 'Payment request expired', cancelled: 'Sale cancelled' };
 
 /** What the customer-facing screen shows. The QR appears only for an awaiting sale whose link is in memory. */
 export function customerView(session, now) {
