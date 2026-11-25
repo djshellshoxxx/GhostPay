@@ -6,6 +6,15 @@ Acceptance: `parseInvoiceLink`/`buildInvoiceLink` reject whole `.` path segments
 
 ---
 
+# Seller-key restoration on phones, tablets and other devices (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60`; branch `claude/mobile-restore`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
+Resumes the mobile qualification stack with ancestry: #588 `46150f4c` → #597 `a929b178` (all hosted checks green at a929b178). Original branches untouched.
+Owned paths: new `apps/web/e2e/devices-mobile-restore.spec.ts`, its `testMatch` entry in `apps/web/playwright.mobile.config.ts`,
+restore rows in `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md` and `docs/qr/PHYSICAL_DEVICE_ACCEPTANCE.md` (D4 to D6),
+the device-restore section of `docs/user/product-guide.md`, and this entry. No production, crypto-format or workflow-gate changes.
+Acceptance: in Chromium (Pixel, Galaxy Tab, and the default-config iPhone/iPad descriptors) and native WebKit (iPhone SE, iPad Mini) profiles, a fresh device restores the fixed v1 vector keystore and refuses damage and a wrong passphrase. The restored keys survive vault save, reload and unlock. The encrypted backup QR from a separate desktop context restores the same identity, as one code and as out-of-order multi-part codes. Hosted mobile qualification (lean and full) and full CI pass. Physical-device cases stay pending until recorded.
+
 # P1-LATE stack consolidation onto main — 2026-11-24 UTC
 
 Worker: Claude Code (local, `claude/p1-late-reconciliation`). Base: stack tip PR #625 `694383f7` (contains #533 → #546 → #575 → #599) merged with main `c8e131c1`.
@@ -3291,3 +3300,16 @@ Worker: Codex. Branch: `fix/364-responsive-pages`. Base: C1 #504 at `1a7447d58c0
 Worker: Claude Code cloud session, branch `nodata/gracious-meitner-0yy6do`, base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Preflight: #406 and #576 (issue #400 guards, POS reliability) are merged; open #411 is a stale ancestor of main; open #614 is docs-only. A scan of every remote branch found no POS source blob newer than main. F09 GhostPOS (`future/f09-ghostpos`) remains specification-only and is not implemented here.
 Owned paths: `examples/pos-terminal/**` (new `pos-session.js`, `session.test.mjs`; `index.html`, `pos.js`, `pos.css`, `README.md`), `apps/web/e2e/pos-terminal.spec.ts` (additive scenarios; existing five scenarios unchanged), the POS parity line in `.github/workflows/ci.yml`, this entry, new `docs/handoffs/POS_TERMINAL_COMPLETION_20261125.md`. Not modified: `packages/merchant-hooks`, `packages/merchant-ledger`, `packages/invoice-schema`, `examples/pos-terminal/pos-logic.js` reducer semantics.
 Acceptance: pure lifecycle module with deterministic clock, mock storage and synthetic feed/mock-wallet fixtures covering creation, amount validation and exact precision, presentation, expiry/countdown, cancellation/reset, feed-sourced completion (strict webhook-event validation matching `parseWebhookEvent`, cumulative-to-delta, replay dedup, invoice/currency binding, late rejection, ledger `reconcile` agreement), customer display model, persistence/restore without the bearer link, corrupt-storage recovery; terminal UI keypad, customer screen, live status and focus handling; Playwright desktop and touch-tablet scenarios; existing parity and e2e unchanged and passing.
+
+
+## Mobile browser workflow qualification — 2026-11-23 Pacific
+
+Codex owns branch `codex/qualify-mobile-browser-engines` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Scope is an additive mobile Playwright configuration, mobile-specific regression coverage and an evidence handoff. Reuse existing signed-invoice, injected-wallet, backup, layout and camera tests. Exercise touch navigation and raster QR imports. Preserve the QR and recovery workers' source paths and #373's separate native-engine branch. Record actual browser/OS, device-emulation scope and physical checks still open.
+
+## Mobile qualification resume: exact memo assertion — 2026-11-24 Pacific
+
+Worker: `/root/missed_work_census`, assigned by the resumed-work coordinator. Isolated branch: `fix/mobile-588-memo-assertion-20261124`, based on PR #588 at `46150f4ce0a34da0e23dda36642ba9463ff1e4a1`. The owner branch stays unchanged. Owned paths are `apps/web/e2e/devices-mobile-workflows.spec.ts`, this additive claim, and `docs/handoffs/MOBILE_588_MEMO_ASSERTION_20261124.md`.
+
+Hosted mobile run `45338469535` failed in both profiles. All four devices reached the payment review after QR import, then failed the exact standalone memo-text selector; the production memo paragraph includes its label. Acceptance: reproduce that assertion failure, assert the exact labeled memo in its visible paragraph, and rerun the existing mobile scenarios in available Chromium and WebKit engines. Preserve the review-before-open assertion, camera-denial route, file chooser and backup round trip. Do not change QR/payment production source, parent branches, release gates or deployment. Record runtime limitations and exact source evidence. Integration remains coordinator-owned.
+
+Completion evidence at test-source commit `7d112a5678496d851e8ec22d6603fbb4dec971cf`: original assertion reproduced two failures in the lean Chromium phone/tablet projects; repaired source passed 24/24 selected mobile tests in lean and 24/24 in full across Chromium and native WebKit. Six virtual-camera cases per profile require full Chromium and remain hosted qualification; the first local all-case attempt is explicitly interrupted after one unsupported-camera failure. The changed test passed typed lint, both web builds/typechecks/bundle scans passed, and the secret/whitespace checks passed. Additive evidence is owned under `docs/handoffs/mobile-588-evidence-20261124/`. The coordinator independently reviewed the test correction and found it preserves exact payload verification. Parent branch and production source remain unchanged; no merge or deployment.
