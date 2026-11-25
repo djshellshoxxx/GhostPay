@@ -3,6 +3,7 @@
 // freshly written by the built @ghostpay/ux-vault codec. Every key and passphrase here is TEST-ONLY.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createCipheriv, scryptSync } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -150,6 +151,12 @@ test('other malformed input is refused with fixed codes', async () => {
   await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.meta.signer = `04${o.meta.signer.slice(2)}`; })), 'invalidFile');
   await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.meta.metaAddress = o.meta.metaAddress.replace('st:eth:', 'st:btc:'); })), 'invalidFile');
   await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.ciphertext = `${o.ciphertext}00`; })), 'invalidFile');
+  // Hex is lowercase without a prefix everywhere, as GhostPay's codec requires.
+  await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.kdfParams.salt = o.kdfParams.salt.toUpperCase(); })), 'invalidFile');
+  await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.iv = o.iv.toUpperCase(); })), 'invalidFile');
+  await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.ciphertext = o.ciphertext.toUpperCase(); })), 'invalidFile');
+  await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.iv = `0x${o.iv}`; })), 'invalidFile');
+  await refuses(() => inspectSellerKeystore(edit(VALID, (o) => { o.kdfParams.salt = `0x${o.kdfParams.salt}`; })), 'invalidFile');
   await refuses(() => decryptSellerKeystore(VALID, undefined), 'wrongPassphraseOrModified');
   await refuses(() => decryptSellerKeystore(VALID, ''), 'wrongPassphraseOrModified');
 });
@@ -207,6 +214,32 @@ test('cross-implementation: the built @ghostpay/ux-vault codec and this reader a
     }
   }
   wipe(fresh.spendingKey, fresh.viewingKey, fresh.signingKey);
+});
+
+test('the largest import bounds GhostPay accepts (N=2^18, r=8, p=2, 64-byte salt) open in both readers', async () => {
+  // Written here with node:crypto only, because GhostPay's writer never uses these parameters.
+  const kdf = { N: 2 ** 18, r: 8, p: 2 };
+  const salt = Buffer.alloc(64, 0x6d);
+  const iv = Buffer.alloc(12, 0x6e);
+  const { metaAddress, signer } = K.seller;
+  const key = scryptSync(Buffer.from(PASS, 'utf8'), salt, 32, { ...kdf, maxmem: 2 ** 29 });
+  const c = createCipheriv('aes-256-gcm', key, iv, { authTagLength: 16 });
+  c.setAAD(Buffer.from(`GhostPay.keystore.v1|${metaAddress}|${signer}|${kdf.N}|${kdf.r}|${kdf.p}`, 'utf8'));
+  const body = JSON.stringify({ spendingKey: K.seller.spendingPrivateKey.slice(2), viewingKey: K.seller.viewingPrivateKey.slice(2), signingKey: K.seller.signingPrivateKey.slice(2) });
+  const sealed = Buffer.concat([c.update(body, 'utf8'), c.final(), c.getAuthTag()]);
+  key.fill(0);
+  const text = JSON.stringify({
+    v: 1, kdf: 'scrypt', kdfParams: { ...kdf, salt: salt.toString('hex') }, cipher: 'AES-256-GCM', iv: iv.toString('hex'),
+    meta: { metaAddress, signer }, ciphertext: sealed.toString('hex'),
+  }, null, 2);
+  const r = await decryptSellerKeystore(text, PASS);
+  assert.deepEqual({ N: r.header.kdf.N, r: r.header.kdf.r, p: r.header.kdf.p }, kdf);
+  assert.ok(hex(r.spendingKey) === K.seller.spendingPrivateKey, 'reader restored other keys');
+  wipe(r.spendingKey, r.viewingKey);
+  const { createKeystoreApi } = await import('@ghostpay/ux-vault/portable');
+  const s = await createKeystoreApi().decryptKeystore(text, PASS);
+  assert.ok(hex(s.spendingKey) === K.seller.spendingPrivateKey, 'codec restored other keys');
+  wipe(s.spendingKey, s.viewingKey, s.signingKey);
 });
 
 // --- CLI ------------------------------------------------------------------------------------------------------------
@@ -308,9 +341,31 @@ test('CLI: inspect, wrong passphrase, tampering, unsupported versions and chain 
   const chain = cli([path, '--expected-chain', '1'], PASS);
   assert.equal(chain.status, 2);
   assert.match(chain.stderr, /chain-neutral/);
+  // A master backup header is no more authenticated than a keystore header under --inspect.
+  const masterInspect = cli([fileOf('ghostpay-stealth-master.json', S.files.master.text), '--inspect']);
+  assert.equal(masterInspect.status, 0, masterInspect.stderr);
+  assert.match(JSON.parse(masterInspect.stdout).note, /not authenticated until/);
   const argvPass = cli([path, '--passphrase', PASS], '');
   assert.equal(argvPass.status, 2);
   assert.doesNotMatch(argvPass.stderr, new RegExp(PASS));
+});
+
+test('CLI: one leading UTF-8 byte-order mark is dropped for a keystore, as the app does; Spec 18 files are unchanged', () => {
+  const bom = Buffer.from([0xef, 0xbb, 0xbf]);
+  const keystore = join(dir, 'bom-keystore.json');
+  writeFileSync(keystore, Buffer.concat([bom, Buffer.from(VALID, 'utf8')]));
+  const r = cli([keystore, '--expected-meta-address', K.seller.metaAddress], PASS);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(JSON.parse(r.stdout).metaAddress, K.seller.metaAddress);
+  const twice = join(dir, 'bom2-keystore.json');
+  writeFileSync(twice, Buffer.concat([bom, bom, Buffer.from(VALID, 'utf8')]));
+  assert.match(cli([twice], PASS).stderr, /^error: invalidFile:/);
+  // The Spec 18 formats forbid any non-ASCII character (18a section 1), so their behaviour does not change.
+  const single = join(dir, 'bom-single.json');
+  writeFileSync(single, Buffer.concat([bom, Buffer.from(S.files.single.text, 'utf8')]));
+  const spec18 = cli([single], S.passphrase);
+  assert.equal(spec18.status, 1);
+  assert.match(spec18.stderr, /^error: invalidFile:/);
 });
 
 test('offline recovery of a seller keystore in a fresh directory with no GhostPay packages or repository access', () => {

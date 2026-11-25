@@ -16,7 +16,9 @@ keys and the invoice-signing key.
 - UTF-8 JSON text, at most 8192 bytes. Writers use `JSON.stringify(file, null, 2)`: two-space indentation, keys in the
   order of section 2, no trailing newline. Every valid file is printable ASCII.
 - Strict JSON: a repeated key is rejected, and an unknown or missing key at any level is rejected.
-- A byte-order mark is not part of the format. The reference reader refuses one.
+- A byte-order mark is not part of the format. GhostPay's app reads a selected file with `Blob.text()`, which drops one
+  leading UTF-8 byte-order mark, so a keystore that an editor re-saved with one still imports. The reference script
+  drops exactly one leading mark from a keystore file too. Its reading functions take the text without it.
 
 ## 2. Header
 

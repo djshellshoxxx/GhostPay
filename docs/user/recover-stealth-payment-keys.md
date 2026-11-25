@@ -170,7 +170,8 @@ requests.
    metadata are not authenticated. A master backup or seller keystore is chain-neutral and refuses this option rather
    than pretending to verify a network.
 6. Optional, for a master backup or seller keystore: `--expected-meta-address st:eth:0x...` refuses a file that
-   belongs to another meta-address, before you type a passphrase. It also applies to `--inspect`.
+   belongs to another meta-address, before you type a passphrase. It also applies to `--inspect`, but the header is
+   authenticated only when the file decrypts: a match under `--inspect` does not prove the file is yours.
 
 Exit status: `0` success, `1` refused (the error code is printed, for example `wrongPassphraseOrModified`,
 `keyDoesNotMatch`, `sellerKeysDoNotMatch`, `wrongMetaAddress`, `duplicate`, `tooLarge`, `unsupportedVersion`),
@@ -234,7 +235,7 @@ What this does not do:
 - It does not find payments. You still need each payment's announcement, from a scan or a block explorer.
 - A successful check shows that this file and passphrase open these keys with this script. It says nothing about
   your other copies, and it is not payment confirmation.
-- Refusals use the codes listed under step 5 above. `sellerKeysDoNotMatch` means the file decrypted, but its keys do
+- Refusals use the exit status codes listed above. `sellerKeysDoNotMatch` means the file decrypted, but its keys do
   not match the identity written in it: do not use that file.
 
 ### What a match means

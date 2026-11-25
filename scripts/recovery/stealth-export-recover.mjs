@@ -709,7 +709,8 @@ const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [o
                              a master backup or seller keystore is chain-neutral and refuses this option
   --expected-meta-address <st:eth:0x...>
                              master backup or seller keystore only: refuse a file for another meta-address,
-                             before the passphrase is read (also with --inspect)
+                             before the passphrase is read (also with --inspect). The header is authenticated only
+                             by decryption, so a match under --inspect is not proof the file belongs to you
   --scan-announcement <json> master backup or seller keystore only: derive the one-time address for an announcement
                              given as JSON ({"ephemeralPublicKey","stealthAddress"[,"metadata"]}) or @<path>;
                              repeatable
@@ -837,6 +838,9 @@ async function readPassphrase(stdin, stderr) {
 
 const hex = (bytes) => `0x${bytesToHex(bytes)}`;
 const OWNERSHIP_NOTE = 'A key/address match proves key ownership only; it is not payment confirmation or finality.';
+/** EF BB BF as `readBounded` returns it (latin1). */
+const UTF8_BOM = 'ï»¿';
+const HEADER_ONLY_NOTE = 'Header only: the identity shown is not authenticated until the file is decrypted with its passphrase.';
 
 /** Runs the CLI; returns the exit status. Secrets reach `stdout` only with --reveal-private-keys. */
 export async function main(argv, { stdin = process.stdin, stdout = process.stdout, stderr = process.stderr } = {}) {
@@ -844,7 +848,10 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
   const secrets = [];
   try {
     opts = parseArgs(argv);
-    const text = readBounded(opts.file, LIMITS.keypairFileBytes);
+    const raw = readBounded(opts.file, LIMITS.keypairFileBytes);
+    // GhostPay reads a selected keystore with Blob.text(), which drops one leading UTF-8 byte-order mark, so a keystore
+    // re-saved by an editor that adds one still imports there. Do the same here, for a seller keystore only.
+    const text = raw.startsWith(UTF8_BOM) && detectFormat(raw.slice(UTF8_BOM.length)) === 'sellerKeystore' ? raw.slice(UTF8_BOM.length) : raw;
     const kind = detectFormat(text);
     if (kind === 'unsupported') fail('unsupportedVersion');
     if (kind === undefined) fail('invalidFile');
@@ -900,8 +907,10 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
     } else if (kind === 'master') {
       const header = inspectMasterFile(text).header;
       expectMetaAddress(header.metaAddress);
-      if (opts.inspect) out.header = header;
-      else {
+      if (opts.inspect) {
+        out.header = header;
+        out.note = HEADER_ONLY_NOTE;
+      } else {
         const announcements = announcementsFrom(opts.announcements);
         const passphrase = await readPassphrase(stdin, stderr);
         const master = await decryptMasterFile(text, passphrase);
@@ -918,7 +927,7 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
       expectMetaAddress(header.metaAddress);
       if (opts.inspect) {
         out.header = header;
-        out.note = 'Header only: the meta-address and invoice signer are not authenticated until the file is decrypted with its passphrase.';
+        out.note = HEADER_ONLY_NOTE;
       } else {
         const announcements = announcementsFrom(opts.announcements);
         const passphrase = await readPassphrase(stdin, stderr);
