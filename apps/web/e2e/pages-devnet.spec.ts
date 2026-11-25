@@ -738,6 +738,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect.poll(async () => (await anvil.receipt(fundingHash))?.status).toBe('0x1');
     await nav(rp).getByRole('button', { name: 'Seller keys' }).click();
     await nav(rp).getByRole('button', { name: 'Sweep' }).click();
+    // The balance is read only on request, and remounting Sweep clears it (FC-02 consent model).
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await (await prepareDirectSweep(rp)).click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
     const raw = net.sentRaw.at(-1) as `0x02${string}`;

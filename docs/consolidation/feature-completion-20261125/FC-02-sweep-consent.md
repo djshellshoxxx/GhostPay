@@ -37,3 +37,7 @@ See the PR description for the final per-command results at the head.
 - N3: the disclosure row does not mention the token contract address.
 - N4: ar, es, ja entries are English drafts (no runtime effect while `REVIEWED_LOCALES` is empty).
 - Playwright and full-coverage suites were not run locally; hosted CI is authoritative. Active Codex PRs #586 and #610 also touch Sweep.tsx and are not integrated here.
+
+## #641 interaction
+
+`apps/web/e2e/pages-devnet.spec.ts` (restore in a brand-new profile): #641 added a second sweep after remounting Sweep. Under the consent model the balance must be read again, so a Read click was added before that `prepareDirectSweep`. No assertion was removed. Found by hosted CI (job "Pages artifact on anvil (browser)", run 45574817966) at `e88377a4`; not run locally.
