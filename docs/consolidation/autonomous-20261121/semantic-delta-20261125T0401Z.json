@@ -1,0 +1,241 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T04:01:35Z (run start; subsequent exact-head reads)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "mainTree": "34c33cc2fc639c0f084269f7744ab31df111451a",
+  "priorDelta": "9aeaf2ec406d86b784676d1894b6e29aaa02cb51:docs/consolidation/autonomous-20261121/semantic-delta-20261125T0300Z.json",
+  "summary": {
+    "branches": 723,
+    "openPrs": 256,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      23
+    ],
+    "prPages": [
+      100,
+      100,
+      56
+    ],
+    "independentRefMatches": 723,
+    "refMismatches": 0,
+    "provisionalFinalizedCarried": 516,
+    "provisionalUnresolvedArithmetic": 207,
+    "addedFinalDispositions": 0,
+    "classificationCounts": "516 carried from preceding ledger; 207 is arithmetic provisional remainder, not freshly validated global unresolved count. Net +10 branches and +9 open PRs. Do not label all new branches or changed heads fully reconciled."
+  },
+  "unresolvedReview": [
+    {
+      "pr": 635,
+      "branch": "claude/p1-late-reconciliation",
+      "head": "0c2e4e00c55465d95f07191ce53fe70570332969",
+      "tree": "3a9d8316e519a6d8fef66960222dc27d6869ace7",
+      "disposition": "unique-eligible pending independent approval, coordinated current-base integration and all applicable gates; existing seller owner",
+      "donors": [
+        {
+          "pr": 533,
+          "sha": "90e3fff019d14d8df4c610daf2080a32140686de"
+        },
+        {
+          "pr": 546,
+          "sha": "711168f18e5d808df4e3153da8898cd86fae5266"
+        },
+        {
+          "pr": 575,
+          "sha": "5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727"
+        },
+        {
+          "pr": 599,
+          "sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+        },
+        {
+          "pr": 625,
+          "sha": "694383f7964afbaf0f7a9f8324db200f4d594af6"
+        }
+      ],
+      "ancestry": "All five donor exact heads individually compared to candidate; ahead=0 and merge-base equals donor. #590 selectively imported per PR description; no claim its full branch is included.",
+      "checks": {
+        "success": 39,
+        "skipped": 3,
+        "neutral": 1
+      },
+      "changedPaths": 39,
+      "sourceReview": "Wallet receipt hash binding and status domain 0/1 confirmed in wallet.ts; payExec.ts local receipt and Pay.tsx UI both require verified transaction before included/reverted outcome. No new native execution."
+    },
+    {
+      "pr": 641,
+      "branch": "claude/backup-recovery",
+      "head": "963abf09a7d2f5b6d8f10c6b2606b4b9d5b45eba",
+      "tree": "9a50866e524163746acefd09739e87c3884bc859",
+      "disposition": "unique-but-incomplete qualification; existing GP-PAGES-02 owner",
+      "donors": [
+        {
+          "pr": 530,
+          "sha": "88f7d1b496a1452f062d472d78e99b5401c61e35"
+        },
+        {
+          "pr": 540,
+          "sha": "8daebb0fa4a1cc1f771dbe724dede67f00028298"
+        },
+        {
+          "pr": 573,
+          "sha": "56fb25aa2ff098737dbc181fa88c0aac06425c8e"
+        },
+        {
+          "pr": 629,
+          "sha": "4b1ed14ccfac12b5574b8817873ce299ecb86ddf"
+        }
+      ],
+      "ancestry": "All four exact donor heads individually compared; ahead=0, merge-base equals donor. 24 distinct donor changed paths in chronological union, 7 exact postimages, 17 modified postimages; full semantic review not asserted.",
+      "checks": {
+        "queued": 11,
+        "skipped": 1
+      },
+      "changedPaths": 30,
+      "sourceReview": "Preserves main credential verification API, changes loaded-vault deletion to verifyVaultForCurrentSession, adds typed decrypt failures and equal spending/viewing key rejection. Public encrypt helper itself does not prevalidate key equality/metadata; browser session import already rejects equal keys. Not a demonstrated UI defect; owner may evaluate producer/consumer symmetry and legacy compatibility. Owner reports 375/377 full package run and 58/58 isolated file rerun; keep full native/hosted qualification unresolved."
+    },
+    {
+      "pr": 642,
+      "head": "35c17793e1a8da8b118a428389e226d1b0ff4504",
+      "disposition": "experimental/out-of-scope for Pages beta; draft, owner decisions D1–D8 and independent crypto review outstanding; preserve ref, do not merge or activate",
+      "sourceReview": "40 changed paths, zero apps/web paths; description claims fixture-only and settlement disabled, not independently qualified here."
+    },
+    {
+      "pr": 639,
+      "head": "dc0ede76f4ea0266ac0b2df127ff40772af650d7",
+      "disposition": "documentation-only candidate; active owner; 13 changed files all Markdown; do not close or claim retained before semantic reconciliation"
+    },
+    {
+      "pr": 640,
+      "head": "ecf61d2e89702fe478fe61c6e30b906a3380e6bd",
+      "disposition": "active help/appearance work; 21 changed paths including AppShell, settings and QR tests; not docs-only; coordinate with #641 on AppShell and #614/#617 on QR tests"
+    }
+  ],
+  "composition": {
+    "base": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+    "candidates": [
+      635,
+      641
+    ],
+    "sharedPaths": 7,
+    "sharedNonRegistryPaths": 6,
+    "method": "Parsed both complete PR file patches against exact main source. Verified all old context/removal lines, hunk counts, nonoverlap, applied both sets in memory in reverse line order. All four resulting locale JSON files parsed successfully. No product commit, build, native/browser tests, or independent approval.",
+    "files": [
+      {
+        "path": "apps/web/e2e/pages-devnet.spec.ts",
+        "baseBlob": "0dfe0876cadc7aabc6c3fbf3bc30de88dc718320",
+        "hunks": 6,
+        "contextVerified": true,
+        "disjoint": true
+      },
+      {
+        "path": "apps/web/locales/ar.json",
+        "baseBlob": "18cdf051e9aa2036aa5921cff2363b35883a22b3",
+        "hunks": 4,
+        "contextVerified": true,
+        "disjoint": true
+      },
+      {
+        "path": "apps/web/locales/en.json",
+        "baseBlob": "6569768d485400e0a08bacc176996bad22363d1c",
+        "hunks": 4,
+        "contextVerified": true,
+        "disjoint": true
+      },
+      {
+        "path": "apps/web/locales/es.json",
+        "baseBlob": "ff3c8531ceac4fbda94aaf1c9b6c7dbc1d03d89c",
+        "hunks": 4,
+        "contextVerified": true,
+        "disjoint": true
+      },
+      {
+        "path": "apps/web/locales/ja.json",
+        "baseBlob": "49ea976a394db54f960dbb44548fa17fc685ae12",
+        "hunks": 4,
+        "contextVerified": true,
+        "disjoint": true
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.ts",
+        "baseBlob": "1cf27d36995dda3d77f79fc035715b0451d63635",
+        "hunks": 5,
+        "contextVerified": true,
+        "disjoint": true
+      }
+    ],
+    "remaining": "Union ACTIVE_WORK additively. Preserve both late-payment/credit and backup/reload/restored signing browser assertions. Run combined real Anvil Pages and full/lean tests on actual integrated SHA. Coordinate existing owners; do not create competing PR."
+  },
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0
+    },
+    "p615": {
+      "merged": true,
+      "mergeCommit": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+      "ancestryInMain": true
+    },
+    "p616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "success": 36,
+      "skipped": 3,
+      "codeql": "failure: 7 high alerts"
+    },
+    "p617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "success": 36,
+      "skipped": 3,
+      "codeql": "failure: 7 high alerts"
+    },
+    "main": {
+      "workflowRuns": [
+        [
+          45485137780,
+          "success"
+        ],
+        [
+          45472765175,
+          "failure"
+        ],
+        [
+          45423093766,
+          "success"
+        ],
+        [
+          45415639617,
+          "success"
+        ],
+        [
+          45415639485,
+          "success"
+        ],
+        [
+          45415637708,
+          "success"
+        ]
+      ],
+      "alertApi": "rejected by connector allowlist; actual-main alert persistence unverified",
+      "branchProtection": "metadata protected=false; detailed endpoint 403"
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    }
+  },
+  "testEvidence": {
+    "newRuntimeTests": 0,
+    "sourceCompositionChecks": "27 verified disjoint patch hunks across six overlapping non-registry files; four locale parses",
+    "environment": "git ls-remote failed: could not resolve host github.com; Node 22.16.0, tsc 5.8.3 available"
+  },
+  "remaining": "Retain all prior obligations, #614-first, #615 alert investigation, #616/617 security holds, #226/#384/#217, Bitcoin, Sweep, idle owner, all active workers. No main merge, deployment, branch deletion, force push, lease acquisition, owner branch edits or automation changes."
+}
