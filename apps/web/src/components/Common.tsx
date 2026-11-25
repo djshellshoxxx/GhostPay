@@ -89,27 +89,31 @@ export function downloadText(filename: string, text: string, type: string): void
 }
 
 /**
- * Triggers a local file download of a Blob (Blob URL, no network). A throw from the anchor or the click is rethrown
+ * Triggers a local file download of a Blob (Blob URL, no network). A browser failure is reported with fixed text
  * after the anchor is removed and the URL revoked, so a blocked download leaves neither behind.
  */
 export function downloadBlob(filename: string, blob: Blob): void {
   const a = document.createElement('a');
-  const url = URL.createObjectURL(blob);
+  let url: string | undefined;
   try {
+    url = URL.createObjectURL(blob);
     a.href = url;
-    a.download = filename;
+    // Only a supported file extension can cross into the browser's download history.
+    const extension = /\.(json|svg|gpa|txt|csv|pdf|png|zip)$/i.exec(filename)?.[1]?.toLowerCase();
+    a.download = `export.${extension ?? 'bin'}`;
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
-  } catch (error) {
-    URL.revokeObjectURL(url);
-    throw error;
+  } catch {
+    if (url !== undefined) URL.revokeObjectURL(url);
+    throw new Error('The local download could not be started.');
   } finally {
     a.remove();
   }
   // Allow the browser to consume a successfully initiated download before revocation.
+  const downloadUrl = url;
   setTimeout(() => {
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(downloadUrl);
   }, 1000);
 }
 

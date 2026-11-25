@@ -73,7 +73,7 @@ export class PostBroadcastError extends TransactionOutcomeError {
       phase: 'verification-incomplete', hash,
       ...(code === undefined ? {} : { code }),
       message: { key: 'transaction.postBroadcast', values: {
-        hash, detail,
+        detail,
         diagnostic: code === undefined ? '' : { key: 'transaction.code', values: { code: String(code) } },
       } },
     });

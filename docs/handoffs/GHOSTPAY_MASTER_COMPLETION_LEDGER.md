@@ -1,5 +1,8 @@
 # GhostPay authoritative completion ledger
 
+**Issue #286, exports and notifications.** Two independent source reviewers verified the repairs at `2596686489c5984603c9562d565285f7a91ecfe3`. A direct replay with synthetic data and simulated browser APIs passed 35/35 checks. On the main baseline, 18/32 comparable checks failed. The four locale catalogs passed validation, and 45 edited TypeScript files passed syntax checks. The full and lean browser suites exercise the suggested filename, keystore restore, titles, logs, and announcements. Integration status and runner evidence are tracked in [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570).
+
+
 ## Current status (2026-11-18 consolidation)
 
 This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for

@@ -25,7 +25,7 @@ test.describe('combined backup panel', () => {
     const keystore = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Download encrypted keystore' }).click();
     const downloaded = await keystore;
-    expect(downloaded.suggestedFilename()).toBe('ghostpay-keystore.json');
+    expect(downloaded.suggestedFilename()).toBe('export.json');
     // GP-PAGES-02: a download alone is not Done, because nothing proves that the file reached the disk.
     await expect(keys.getByRole('status').first()).toContainText('Downloaded, not verified');
     await expect(page.getByText('This backup is not verified yet')).toBeVisible();
@@ -48,8 +48,12 @@ test.describe('combined backup panel', () => {
     await tags.getByLabel('Include scan history').uncheck();
     const archive = page.waitForEvent('download', { timeout: 60_000 });
     await tags.getByRole('button', { name: 'Download encrypted tag archive' }).click();
-    expect((await archive).suggestedFilename()).toMatch(/\.gpa$/);
+    expect((await archive).suggestedFilename()).toBe('export.gpa');
     await expect(tags.getByRole('status').first()).toContainText('Downloaded');
+    await expect(tags.getByText(/Archive downloaded:.*SHA-256/)).toBeVisible();
+    for (const announcement of await page.locator('[role="status"], [aria-live="polite"], [aria-live="assertive"]').allTextContents()) {
+      expect(announcement).not.toMatch(/SHA-256|[0-9a-f]{64}/i);
+    }
     await expect(tags.getByRole('status').first()).not.toContainText('Done');
   });
 });

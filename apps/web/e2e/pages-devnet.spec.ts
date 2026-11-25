@@ -83,7 +83,7 @@ async function download(page: Page, testInfo: TestInfo, click: () => Promise<voi
   const pending = page.waitForEvent('download', { timeout: 60_000 });
   await click();
   const d = await pending;
-  expect(d.suggestedFilename()).toBe(name);
+  expect(d.suggestedFilename()).toBe('export.json');
   const path = testInfo.outputPath(name);
   await d.saveAs(path);
   return readFileSync(path, 'utf8');

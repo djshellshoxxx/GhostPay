@@ -1,5 +1,8 @@
 # GhostPay core functional-beta completion tracker
 
+**Issue #286, exports and notifications.** Candidate `2596686489c5984603c9562d565285f7a91ecfe3` passed direct privacy-boundary checks and independent source review. Release acceptance requires the hosted web tests, browser recovery round trip and integration review. See [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) for the current results.
+
+
 Date: 2026-11-11 (UTC). Branch `claude/nice-ritchie-8vivls`, [PR #114](https://github.com/djshellshoxxx/GhostPay/pull/114), stacked on the
 integration candidate [PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98) at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`
 (all 34 hosted checks green on that exact head, observed 2026-11-11). `main` (`14f9b26`) is 581 commits behind the candidate
