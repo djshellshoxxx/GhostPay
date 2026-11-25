@@ -342,6 +342,16 @@ low/info, and remain filler work.
   +240/−0 vs main. Because #660 changes `ux-vault` source, a confirming CI pass is required: **lock gen 26 acquired**
   (`d8bf8be5`, base `32ae3977`, 45-minute lease with heartbeats every ~20 min by a background holder that also watches
   #664 CI). On green: fast-forward `main` to `7b47c3dd` (non-force), release, notify `ghostpay-15`.
+- 2026-11-25T12:15Z — **FC-05b** draft **#669** `8ea606ff` (stacked on FC-05a-T `22c3cb1d`; retarget to main after #664
+  lands). Commits `d40e301f` (current-scan guard, `Recovered-from: ba588c82`; session pending-spend guard),
+  `8d7e608d` (scanner rejects conflicting `spentBy` for one outpoint in a block's spend list; ported #254 tests),
+  `8ea606ff` (handoff). Red→green: pending-spend test; #254's "fee edit during advanced-header save"; a new
+  "retained Sign after a later provider scan reports the input spent at an unchanged tip" (signSweep was called once
+  before the fix); ported scanner duplicate-list test ("promise resolved instead of rejecting" before). #254's
+  same-prefix retained Sign/Broadcast tests already passed on FC-05a (regression coverage). Local: btc-silent-payments
+  typecheck/lint 0; tests 549/558 (9 environment: CRLF adapter-types ×7, bip32 vectors parse on this checkout,
+  headerchain passed on rerun); web btc 267 passed/1 load flake (passed on rerun); coverage not captured locally.
+  Independent fund-safety review requested.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
