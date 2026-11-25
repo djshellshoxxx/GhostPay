@@ -4,6 +4,26 @@
 
 const RECORD_WINDOW_MS = 2_000; // I4 applies once a returned hash had this long in an open page (A5 / R5)
 const SUCCESS_IN_BLOCK = /Status: included in block (\d+)/;
+// A privacy-masked hash as a UI may render it: 0x + leading digits + ellipsis + trailing digits.
+const MASKED_HASH = /0x([0-9a-fA-F]{4,})(?:\u2026|\.{3})([0-9a-fA-F]{4,})/g;
+const FULL_HASH = /0x[0-9a-fA-F]{64}/g;
+
+/** Hashes from `candidates` that `text` shows in full or in masked form (prefix…suffix). */
+export function referencedHashes(text, candidates) {
+  const lower = String(text).toLowerCase();
+  const full = new Set((lower.match(FULL_HASH) ?? []).map((h) => h.toLowerCase()));
+  const masked = [...lower.matchAll(MASKED_HASH)].map((m) => ({ pre: m[1], suf: m[2] }));
+  const out = { full: [], masked: [] };
+  for (const h of candidates) {
+    if (full.has(h)) out.full.push(h);
+    else if (masked.some(({ pre, suf }) => h.slice(2).startsWith(pre) && h.endsWith(suf))) out.masked.push(h);
+  }
+  return out;
+}
+
+/** True when the text shows any hash at all (full or masked), whether or not it is one the harness knows. */
+// Non-global regexes: a /g regex keeps lastIndex between .test() calls and would alternate results.
+const showsAnyHash = (text) => /0x[0-9a-fA-F]{64}/.test(String(text)) || /0x[0-9a-fA-F]{4,}(?:\u2026|\.{3})[0-9a-fA-F]{4,}/.test(String(text));
 
 export class Oracle {
   constructor(world) {
@@ -83,23 +103,41 @@ export class Oracle {
     for (const [tab, o] of Object.entries(obs)) {
       if (o.closed || o.headings === undefined) continue;
       const intent = this.w.intentOfTab[tab];
-      // I1: the checkout's own done panel claiming inclusion.
+      // I1: the checkout's own done panel claiming inclusion. Never passes silently (review gap G1): the claim is
+      // judged against the hashes it displays (full or masked); if it displays none the harness recognises, against
+      // every hash the wallet returned for that intent; with no returned hash at all it is a violation.
       const m = SUCCESS_IN_BLOCK.exec(o.mainText);
-      if (m !== null && intent !== null) {
-        const shownHashes = o.mainHashes.filter((h) => this.w.hashes[intent].has(h));
-        const key = `${intent}:${m[0]}:${shownHashes.join(',')}`;
+      if (m !== null) {
+        const block = Number(m[1]);
+        const known = intent === null ? [...this.w.hashes.X, ...this.w.hashes.C] : [...this.w.hashes[intent]];
+        const ref = referencedHashes(o.mainText, known);
+        let judged = [...ref.full, ...ref.masked];
+        let basis = ref.masked.length > 0 ? 'masked' : 'displayed';
+        if (judged.length === 0) {
+          judged = known;
+          basis = intent === null ? 'intent-unknown' : showsAnyHash(o.mainText) ? 'foreign-or-unrecognised-hash' : 'no-displayed-hash';
+        }
+        const key = `${intent}:${m[0]}:${basis}:${judged.join(',')}`;
+        const okFor = (h) => {
+          const t = this.w.chain.truth(h);
+          return t.state === 'mined' && t.success && t.block === block;
+        };
         if (this.seenSuccess.get(tab) !== key) {
           this.seenSuccess.set(tab, key);
-          for (const h of shownHashes) {
-            const t = this.w.chain.truth(h);
-            const ok = t.state === 'mined' && t.success && t.block === Number(m[1]);
-            if (!ok) (chainMutating ? this.ambiguous.bind(this, 'A1') : this.violation.bind(this, 'I1'))(stepIndex, { tab, intent, hash: h, shown: m[0], truth: t });
+          if (basis !== 'displayed' && basis !== 'masked') this.notes.push({ step: stepIndex, note: `I1 judged without a displayed known hash (${basis})`, tab, intent });
+          // Displayed hashes must each be canonical successful at that block; otherwise at least one known hash must be.
+          const passed = judged.length > 0 && (basis === 'displayed' || basis === 'masked' ? judged.every(okFor) : judged.some(okFor));
+          if (!passed) {
+            const detail = { tab, intent, basis, shown: m[0], judged: judged.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })) };
+            if (chainMutating && judged.length > 0) this.ambiguous('A1', stepIndex, detail);
+            else this.violation('I1', stepIndex, judged.length === 0 ? { ...detail, reason: 'success claimed with no wallet-returned hash for this intent' } : detail);
           }
         } else if (chainMutating) {
-          for (const h of shownHashes) {
+          const stillOk = judged.length > 0 && (basis === 'displayed' || basis === 'masked' ? judged.every(okFor) : judged.some((h) => {
             const t = this.w.chain.truth(h);
-            if (!(t.state === 'mined' && t.success)) this.ambiguous('A1', stepIndex, { tab, intent, hash: h, staleShown: m[0], truth: t });
-          }
+            return t.state === 'mined' && t.success;
+          }));
+          if (!stillOk) this.ambiguous('A1', stepIndex, { tab, intent, basis, staleShown: m[0], judged: judged.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })) });
         }
       }
       // I5b / I7: a checkout for one intent must not present the other intent's hash outside the shared journal.
@@ -113,31 +151,94 @@ export class Oracle {
           else this.violation('I5b', stepIndex, { tab, intent, foreignHash: h, text: o.mainText.slice(0, 300) });
         }
       }
-      // I3: records of every un-cleared handoff are visible on the screens that show the journal.
+      // I3: each un-cleared handoff's OWN record is visible on the screens that show the journal (review gap G2:
+      // identity, not row count). Rows carrying a known hash belong to that hash's intent and cannot stand in for
+      // another intent; hash-less "Outcome unknown" rows are consumed one per expected unknown record.
       const journalScreen = o.headings.some((x) => x === 'Review payment' || x === 'Pay an invoice');
-      if (journalScreen) {
-        const expected = this.expectedRecordIntents();
-        const rows = o.journal.length;
-        if (rows < expected.all.length) {
-          const inv = rows >= expected.nonReject.length ? 'A4' : 'I3';
-          (inv === 'A4' ? this.ambiguous.bind(this) : this.violation.bind(this))(inv, stepIndex, { tab, rows, expected: expected.all, journal: o.journal });
-        }
-      }
+      if (journalScreen) this.checkJournalIdentity(stepIndex, tab, intent, o);
     }
     this.checkRetention(stepIndex, obs);
   }
 
-  /** Intents with at least one wallet handoff after their last deliberate clear. */
-  expectedRecordIntents() {
-    const all = [];
-    const nonReject = [];
+  /**
+   * Records the journal must show: one per intent with a wallet handoff after its last deliberate clear.
+   * `hashes` = returned hashes delivered to a live document (the record should carry one of them);
+   * `mayBeUnknown` = a hash-less unknown row is also acceptable (no delivered hash, or the delivering document ended
+   * inside the record window, R5/A5); `rejectOnly` = only 4001 rejections (A4: record presence not settled).
+   */
+  expectedRecords() {
+    const out = [];
     for (const intent of ['X', 'C']) {
       const since = this.w.lastClearSeq[intent] ?? 0;
       const live = this.handoffsFor(intent).filter((h) => h.seq > since);
-      if (live.length > 0) all.push(intent);
-      if (live.some((h) => h.behaviour !== 'reject')) nonReject.push(intent);
+      if (live.length === 0) continue;
+      const delivered = live.filter((h) => h.hash !== undefined && this.w.deliveredToOpenPage.has(h.hash) && !this.w.clearedHashes.has(h.hash));
+      const settled = delivered.filter((h) => {
+        const end = this.w.docEndedAt.get(`${h.pageId}:${h.doc}`);
+        return end === undefined || end - h.repliedAt >= RECORD_WINDOW_MS;
+      });
+      out.push({
+        intent,
+        hashes: delivered.map((h) => h.hash),
+        mayBeUnknown: settled.length === 0,
+        rejectOnly: live.every((h) => h.behaviour === 'reject'),
+      });
     }
-    return { all, nonReject };
+    return out;
+  }
+
+  /** Back-compat view used by older callers and the summary: which intents must have a record. */
+  expectedRecordIntents() {
+    const rec = this.expectedRecords();
+    return { all: rec.map((r) => r.intent), nonReject: rec.filter((r) => !r.rejectOnly).map((r) => r.intent) };
+  }
+
+  checkJournalIdentity(stepIndex, tab, intent, o) {
+    const expected = this.expectedRecords();
+    if (expected.length === 0) return;
+    const allKnown = [...this.w.hashes.X, ...this.w.hashes.C];
+    const rows = o.journal.map((text) => {
+      const ref = referencedHashes(text, allKnown);
+      const hashes = [...ref.full, ...ref.masked];
+      // A row is a hash-less unknown record when it says so and references no known hash. (A masked account
+      // address such as 0x5555…5555 must not disqualify it, so unrecognised masked tokens are ignored here.)
+      return { text, hashes, unknown: /Outcome unknown/.test(text) && hashes.length === 0 && !/0x[0-9a-fA-F]{64}/.test(text), used: false };
+    });
+    const unknownPool = rows.filter((r) => r.unknown);
+    const competing = expected.filter((e) => e.mayBeUnknown).length;
+    if (competing > 1 && unknownPool.length >= 1) {
+      this.notes.push({ step: stepIndex, note: 'I3 unknown-row identity unjudgeable: several intents may each own a hash-less row; matched by count only', tab, intents: expected.filter((e) => e.mayBeUnknown).map((e) => e.intent) });
+    }
+    for (const e of expected) {
+      const own = rows.find((r) => !r.used && r.hashes.some((h) => e.hashes.includes(h)));
+      if (own !== undefined) {
+        own.used = true;
+        continue;
+      }
+      if (e.mayBeUnknown) {
+        const u = unknownPool.find((r) => !r.used);
+        if (u !== undefined) {
+          u.used = true;
+          continue;
+        }
+      }
+      const detail = {
+        tab,
+        missingIntent: e.intent,
+        expectedHashes: e.hashes,
+        acceptsUnknownRow: e.mayBeUnknown,
+        sendButton: intent === e.intent ? o.sendButton : undefined,
+        journal: o.journal,
+      };
+      if (e.rejectOnly) this.ambiguous('A4', stepIndex, detail);
+      else this.violation('I3', stepIndex, detail);
+    }
+    // Explicitly classified, never silent: a checkout for an intent whose own record IS visible may keep its pay
+    // action enabled, because R20 only requires refusal before the wallet is asked (I2 judges that click).
+    const mine = expected.find((e) => e.intent === intent);
+    if (mine !== undefined && o.sendButton === 'enabled' && !this.violations.some((v) => v.inv === 'I3' && v.step === stepIndex && v.detail.missingIntent === intent)) {
+      this.payEnabledWithRecord = (this.payEnabledWithRecord ?? 0) + 1;
+    }
   }
 
   /** I4: a hash the wallet returned to a page that stayed open long enough must survive until deliberately cleared. */
@@ -149,7 +250,11 @@ export class Oracle {
     const visibleAnywhere = new Set();
     for (const o of open) {
       for (const h of o.storedHashes) visibleAnywhere.add(h);
-      for (const row of o.journal) for (const h of row.match(/0x[0-9a-fA-F]{64}/g) ?? []) visibleAnywhere.add(h.toLowerCase());
+      for (const row of o.journal) {
+        for (const h of row.match(/0x[0-9a-fA-F]{64}/g) ?? []) visibleAnywhere.add(h.toLowerCase());
+        const ref = referencedHashes(row, this.w.wallet.handoffs.map((x) => x.hash).filter(Boolean));
+        for (const h of ref.masked) visibleAnywhere.add(h);
+      }
     }
     for (const h of this.w.wallet.handoffs) {
       if (h.hash === undefined || h.repliedAt === undefined) continue;

@@ -45,9 +45,9 @@ clear actions on X's record whose confirmation dialog was accepted. `truth(h)` =
 
 | Inv | Statement | From |
 |---|---|---|
-| I1 no false success | A visible "included/confirmed/paid" status for X is allowed only while `truth(h)` is mined, successful and canonical for the hash `h` the wallet returned for X. Checked at every settle point after a reload or explicit status check. | R14, R15, R41 |
+| I1 no false success | A visible "included/confirmed/paid" status for X is allowed only while `truth(h)` is mined, successful and canonical for the hash `h` the wallet returned for X. Checked at every settle point after a reload or explicit status check. A claim is never passed silently: it is judged against the hashes it displays (full or privacy-masked `0x1234…abcd`); if it displays no known hash, against every hash the wallet returned for that intent (at least one must be canonical at that block, and the fallback basis is recorded); with no returned hash at all, or on a tab whose intent is unknown and no known hash qualifies, it is a violation. | R14, R15, R41 |
 | I2 uncertainty ≠ retry | `sends(X) ≤ 1 + clears(X)` at all times, across tabs, reloads, reconnects, account events and RPC faults. Dismissing the clear dialog is not a clear. | R4, R13, R19, R20, R25 |
-| I3 unknown stays visible | After a send was handed to the wallet for X with no hash returned, every later load of X shows a blocked/recorded-attempt state, never a fresh ready-to-pay state, until a deliberate clear. | R3, R5, R12 |
+| I3 unknown stays visible | After a send was handed to the wallet for X, every later load of a journal screen shows **X's own** record until a deliberate clear: a row carrying X's returned hash (full or masked), or, when no hash reached a live document or the document ended within the record window (A5), a hash-less "Outcome unknown" row. Rows are matched by identity, not counted: a row with another intent's hash, or a duplicate of one, cannot stand in for X, and each hash-less row satisfies at most one intent. When several intents could each own a hash-less row, identity is unjudgeable and that is recorded explicitly. A pay action left enabled is a violation only together with a missing record; with X's record visible it is classified explicitly as "pay enabled with record" (R20 only requires refusal before the wallet is asked, which I2 judges). | R3, R5, R12, R20 |
 | I4 hash survives | If the wallet returned `h` for X and the page stayed open ≥ the record window, `h` stays retained (visible in the wallet-attempt list or in same-origin storage) after reload, close/reopen and in the other tab, until a deliberate clear. | R3, R19, R46, R49 |
 | I5 stale authority | (a) no fund-moving wallet request carries a `from` other than the wallet's current account or targets a chain other than the wallet's current 84532; (b) a status result for a superseded hash, account or intent never produces a success display for another intent. | R28, R29 |
 | I6 cross-tab | While X has a recorded attempt from tab A, tab B issues zero wallet requests for X unless tab B's user deliberately clears; after one clear, at most one further request. | R19, R23, R25 |
@@ -70,6 +70,14 @@ clear actions on X's record whose confirmation dialog was accepted. `truth(h)` =
 - A6 R19 says "at most one wallet request **per invoice**", while R25 scopes the block to "the same action". If a
   second request for X arrives only from a *different wallet account* (each account within its own limit), the
   harness reports A6 instead of I2: whether switching accounts may pay the same invoice again is not settled.
+
+## Explicit classifications (recorded, not scored)
+
+- `payEnabledWithRecord`: checkout for an intent whose own record is visible keeps its send button enabled (R20).
+- `I1 judged without a displayed known hash (<basis>)`: the fallback basis used for an inclusion claim.
+- `I3 unknown-row identity unjudgeable`: several intents could each own a hash-less row; matched by count only.
+
+Each is listed per run in `results/<run>/SUMMARY.md`; none can turn a missing record or an unsupported claim into a pass.
 
 ## Classification of a failing sequence
 

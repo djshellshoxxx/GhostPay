@@ -194,3 +194,138 @@ test('status vocabulary classifies the app strings it is meant to (en.json wordi
   assert.ok(classify('Status: included in block 501 (not necessarily final yet).').includes('success'));
   assert.deepEqual(classify('The RPC confirmed that this transaction reverted.').includes('success'), false);
 });
+
+// ---- Review gaps G1/G2 (PR #665 source review, 2026-11-25): the oracle must fail or explicitly classify, never pass.
+
+const HX = '0x' + 'a1'.repeat(32);
+const HC = '0x' + 'c3'.repeat(32);
+const mask = (h) => `${h.slice(0, 6)}…${h.slice(-4)}`;
+function g1World() {
+  const w = fakeWorld();
+  w.intentOfTab = { A: 'X', B: 'C' };
+  return w;
+}
+const successObs = (text) => obsOf({ headings: ['Submitted'], mainText: text, mainHashes: (text.match(/0x[0-9a-fA-F]{64}/g) ?? []).map((h) => h.toLowerCase()) });
+
+test('G1: success claimed with no wallet-returned hash and no canonical tx fails I1', () => {
+  const w = g1World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'send' }, { A: successObs('Submitted Status: included in block 501 (not necessarily final yet).') });
+  const v = o.violations.find((x) => x.inv === 'I1');
+  assert.ok(v, 'I1 expected');
+  assert.equal(v.detail.reason, 'success claimed with no wallet-returned hash for this intent');
+});
+
+test('G1: success with no displayed hash is judged against the returned hash (fails when not mined)', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' }); // mempool only
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'send' }, { A: successObs('Submitted Status: included in block 501 (not necessarily final yet).') });
+  assert.equal(o.violations[0]?.inv, 'I1');
+  assert.equal(o.violations[0]?.detail.basis, 'no-displayed-hash');
+  assert.ok(o.notes.some((n) => /without a displayed known hash/.test(n.note)), 'the fallback basis is recorded explicitly');
+});
+
+test('G1: masked hash of a canonical successful tx passes; masked hash of an unmined tx fails', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const block = w.chain.mine([HX]);
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'send' }, { A: successObs(`Transaction hash: ${mask(HX)} Status: included in block ${block} (not necessarily final yet).`) });
+  assert.equal(o.violations.length, 0);
+  const w2 = g1World();
+  w2.hashes.X.add(HX);
+  w2.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const o2 = new Oracle(w2);
+  o2.checkObservations(0, { op: 'send' }, { A: successObs(`Transaction hash: ${mask(HX)} Status: included in block 501 (not necessarily final yet).`) });
+  assert.equal(o2.violations[0]?.inv, 'I1');
+  assert.equal(o2.violations[0]?.detail.basis, 'masked');
+});
+
+test('G1: valid canonical control with a full displayed hash passes', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const block = w.chain.mine([HX]);
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'send' }, { A: successObs(`Transaction hash: ${HX} Status: included in block ${block} (not necessarily final yet).`) });
+  assert.equal(o.violations.length, 0);
+});
+
+test('G1: a foreign/unrecognised displayed hash does not let a non-canonical claim pass', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const o = new Oracle(w);
+  const stranger = '0x' + 'ee'.repeat(32);
+  o.checkObservations(0, { op: 'send' }, { A: successObs(`Transaction hash: ${stranger} Status: included in block 501 (not necessarily final yet).`) });
+  assert.equal(o.violations[0]?.inv, 'I1');
+  assert.equal(o.violations[0]?.detail.basis, 'foreign-or-unrecognised-hash');
+});
+
+test('G1: a tab whose intent is unknown (e.g. after reload) is still judged', () => {
+  const w = g1World();
+  w.intentOfTab.A = null;
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'reload' }, { A: successObs('Status: included in block 501 (not necessarily final yet).') });
+  assert.equal(o.violations[0]?.inv, 'I1');
+});
+
+function g2World() {
+  const w = fakeWorld();
+  w.intentOfTab = { A: 'X', B: 'C' };
+  // X: wallet prompt started, no hash returned (unknown record expected).
+  w.wallet.handoffs.push(handoff(1, 'X', { behaviour: 'hang-broadcast', pageId: 1, doc: 1 }));
+  // C: hash returned to a live page that stayed open (hash row expected).
+  w.wallet.handoffs.push(handoff(2, 'C', { hash: HC, repliedAt: Date.now() - 10_000, pageId: 2, doc: 1 }));
+  w.deliveredToOpenPage.add(HC);
+  w.hashes.C.add(HC);
+  return w;
+}
+const row = { unknownX: 'payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Outcome unknown; check your wallet before retrying.', hashC: `payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: ${HC}` };
+
+test('G2: right row count but wrong intent (two C rows, no X row) fails I3 for X', () => {
+  const w = g2World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.hashC, row.hashC], storedHashes: [HC] }) });
+  const v = o.violations.find((x) => x.inv === 'I3');
+  assert.ok(v, 'I3 expected');
+  assert.equal(v.detail.missingIntent, 'X');
+});
+
+test('G2: an unrelated control row alone cannot satisfy the X record', () => {
+  const w = g2World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.hashC], storedHashes: [HC] }) });
+  assert.deepEqual(o.violations.filter((x) => x.inv === 'I3').map((x) => x.detail.missingIntent), ['X']);
+});
+
+test('G2: X record absent while the X pay action is still enabled fails I3 and records the button state', () => {
+  const w = g2World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ headings: ['Review payment'], journal: [row.hashC], sendButton: 'enabled', storedHashes: [HC] }) });
+  const v = o.violations.find((x) => x.inv === 'I3');
+  assert.equal(v?.detail.sendButton, 'enabled');
+  assert.equal(o.payEnabledWithRecord ?? 0, 0);
+});
+
+test('G2: both own records visible passes; an enabled pay action is then explicitly classified (R20), not silent', () => {
+  const w = g2World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.unknownX, row.hashC], sendButton: 'enabled', storedHashes: [HC] }) });
+  assert.equal(o.violations.length, 0);
+  assert.equal(o.payEnabledWithRecord, 1);
+});
+
+test('G2: a returned-and-recorded hash shown only as a hash-less unknown row fails I3', () => {
+  const w = fakeWorld();
+  w.intentOfTab = { A: 'X', B: null };
+  w.wallet.handoffs.push(handoff(1, 'X', { hash: HX, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1 }));
+  w.deliveredToOpenPage.add(HX);
+  w.hashes.X.add(HX);
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.unknownX], storedHashes: [HX] }) });
+  assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.missingIntent, 'X');
+});

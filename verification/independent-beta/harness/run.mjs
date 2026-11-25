@@ -19,11 +19,10 @@ import { CONTROLS, NAMED, SUFFIX, generated } from './scenarios.mjs';
 import { serveDist } from './serve.mjs';
 
 const require = createRequire(import.meta.url);
-const PINNED_MAIN = 'aaa71a112d90fd39f59b40de9f139e9cfdc62d61';
 const CHROMIUM = process.env.GHOSTPAY_CHROMIUM ?? '/opt/pw-browsers/chromium';
 
 function parseArgs(argv) {
-  const a = { named: false, seeds: [], only: null, concurrency: 3, minimize: false, out: null };
+  const a = { named: false, seeds: [], only: null, concurrency: 3, minimize: false, out: null, candidate: null };
   for (let i = 0; i < argv.length; i += 1) {
     const k = argv[i];
     if (k === '--named') a.named = true;
@@ -31,6 +30,7 @@ function parseArgs(argv) {
     else if (k === '--only') a.only = argv[++i];
     else if (k === '--concurrency') a.concurrency = Math.max(1, Math.min(6, Number(argv[++i])));
     else if (k === '--out') a.out = argv[++i];
+    else if (k === '--candidate') a.candidate = argv[++i];
     else if (k === '--seeds') {
       const [lo, hi] = String(argv[++i]).split('-').map(Number);
       const top = Math.min(hi ?? lo, lo + 199); // hard bound: at most 200 generated sequences per run
@@ -194,6 +194,8 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     violations: oracle.violations.map(({ key, ...v }) => v),
     ambiguities: oracle.ambiguities.map(({ key, ...v }) => v),
     notes: oracle.notes,
+    // Explicit classification (review gap G2): pay action enabled while this intent's own record is visible (R20).
+    payEnabledWithRecord: oracle.payEnabledWithRecord ?? 0,
     trace,
   };
 }
@@ -381,7 +383,11 @@ async function main() {
   const build = JSON.parse(readFileSync(join(DIST, '.w5-build.json'), 'utf8'));
   const dist = distFingerprint();
   if (dist === null || dist.sha256 !== build.dist.sha256) throw new Error('harness: dist changed since build.mjs recorded it; rebuild');
-  const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', PINNED_MAIN, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
+  // The candidate under test (default: origin/main). The run refuses if any production path differs from it, so a
+  // record always describes the unmodified candidate, never a locally edited app.
+  const candidate = execFileSync('git', ['-C', REPO, 'rev-parse', args.candidate ?? 'origin/main'], { encoding: 'utf8' }).trim();
+  const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', candidate, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
+  if (productionDiff !== '') throw new Error(`harness: production paths differ from candidate ${candidate}:\n${productionDiff}`);
   const { chromium } = require('playwright-core');
   const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'];
   const probe = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: launchArgs });
@@ -424,7 +430,7 @@ async function main() {
   const record = {
     runId,
     command: `node verification/independent-beta/harness/run.mjs ${process.argv.slice(2).join(' ')}`.trim(),
-    pinnedMain: PINNED_MAIN,
+    pinnedMain: candidate,
     source,
     productionPathsDifferingFromPinnedMain: productionDiff === '' ? [] : productionDiff.split('\n'),
     build,
