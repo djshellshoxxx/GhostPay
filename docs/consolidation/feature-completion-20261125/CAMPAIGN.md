@@ -51,6 +51,18 @@ newer active owner. Donor branches are merged (not rebased) so their commits and
 | FC-02 | Sweep balance-refresh consent and quote/signing lifecycle | #534 `codex/ghostpay-sweep-balance-integration-20261123` `5c93c3b1` (← #252 `40856224`, #272 commits) | 2026-11-23 | 90 (green on old base) | worker fc02 | Assigned |
 | FC-03 | Solana/TRON meta-address and memo interoperability alignment | #376 `recover/ghostpay-chain-interop-20261121-5ceb` `f7171572` | 2026-11-21 | 90 (green on old base) | worker fc03 | Assigned |
 
+## Round 2 queue (from read-only triage at main `f18e8c0c`, 2026-11-25T05:13Z)
+
+| ID | Feature | Donor (exact head) | Evidence | Remaining |
+|---|---|---|---|---|
+| FC-04 | Historical chain-adapter date/retry and TRON completeness safeguards | #271 `integration/ghostpay-adapter-qualification-20261119` `429a4de8` (contains #250 `22af2074`, which is superseded) | `ts-test (web)` green at head; only failure is `beta acceptance` browser install (apt timeout, infrastructure) | Conflict in `apps/web/src/features/tron/chain.hardening.test.ts`; rerun hosted gates |
+| FC-05 | Bitcoin spent-output detection and private-scan consent (Spec 12, full profile) | #244 `chatgpt/btc-spent-private-scan-20261118` `981cc2f4` (contains #219 `9617e857`); #254 `2b4b1e91` diverges | #219 and #244 all CI green; #244 conflicts only in ACTIVE_WORK | Integrate #244; reconcile #254's divergent spentness evidence; catalog string |
+| FC-06 | Private seller scan checkpoints and durable discovery | #248 `chatgpt/ghostpay-private-scan-completion-20261119` `18b36745` | Red: 8 lint errors, e2e strict-mode duplicate address locator | Catalog conflicts, lint, e2e locator; medium |
+
+Deferred from triage: closed #164 tip `d6f6617e` residual (quote/rpc retry, `check-tx-origin` gate, pool files) needs
+hunk-level review against later main commits `be7e9671`/`bec1410f` first. RCPT-L1/L2 and QA-I1 are unclaimed,
+low/info, and remain filler work.
+
 ## Candidates recorded but not selected yet
 
 | Candidate | Why not now |
@@ -76,3 +88,7 @@ newer active owner. Donor branches are merged (not rebased) so their commits and
 ## Progress log
 
 - 2026-11-25T04:55Z — inventory complete; round 1 assigned (FC-01..03).
+- 2026-11-25T05:05Z — another session (lock generation 21, `claude-gracious-meitner-0yy6do`, lock head `e6865193`)
+  merged #638 POS terminal → main `f18e8c0c`. Round-1 branches start from `c8e131c1` and must merge `f18e8c0c`
+  (or later) and requalify before integration. Read-only round-2 triage (Haiku) launched for #250/#271/#164,
+  #248, BTC Spec 12 (#244/#254/#219), RCPT-L1/L2 and QA-I1.
