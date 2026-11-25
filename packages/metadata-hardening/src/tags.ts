@@ -1,5 +1,6 @@
 import { isAddress } from 'viem';
 import { assertTestnetChain, MetadataHardeningError, randomInt, requireInput, type RandomSource } from './guard.js';
+import { fail, requireBigint, requireRecord } from './validate.js';
 
 /** ERC-5564 canonical announcer (CONTRACTS_SPEC header). */
 export const CANONICAL_ANNOUNCER = '0x55649E01B5Df198D18D95b5cc5051630cfD45564';
@@ -20,6 +21,7 @@ export type TagMode =
  * @throws {MetadataHardeningError} `INVALID_INPUT` for anything else.
  */
 export function parseTagMode(s: string): TagMode {
+  if (typeof s !== 'string') fail('unknown tag mode');
   if (s === 'full') return { kind: 'full' };
   if (s === 'ignore') return { kind: 'ignore' };
   const m = /^mask:([1-7])$/.exec(s);
@@ -27,8 +29,22 @@ export function parseTagMode(s: string): TagMode {
   return { kind: 'mask', bits: Number(m[1]) };
 }
 
+/**
+ * Re-checks a hand-built {@link TagMode}: only the three shapes `parseTagMode` produces, `bits`
+ * an integer 1..7, no extra members. `bits` 0 or 8 would silently mean "no tag" or "full tag".
+ */
+function assertTagMode(mode: unknown): asserts mode is TagMode {
+  requireRecord(mode, 'tag mode');
+  const keys = Object.keys(mode);
+  const ok =
+    ((mode.kind === 'full' || mode.kind === 'ignore') && keys.length === 1) ||
+    (mode.kind === 'mask' && keys.length === 2 && Number.isInteger(mode.bits) && (mode.bits as number) >= 1 && (mode.bits as number) <= 7);
+  if (!ok) fail('unknown tag mode');
+}
+
 /** UI copy for a tag mode. Normative "does NOT" text for MH-TAG-2 (spec). */
 export function describeTagMode(mode: TagMode): string {
+  assertTagMode(mode);
   if (mode.kind === 'full') return 'Full view tag (default). Keeps compatibility with other ERC-5564 wallets.';
   return (
     'Reduced view tag: removes some bits of a shared-secret hash from public data (benefit is marginal). ' +
@@ -56,6 +72,7 @@ function checkByte(b: number): void {
  */
 export function encodeViewTagByte(trueTag: number, mode: TagMode, rng?: RandomSource): number {
   checkByte(trueTag);
+  assertTagMode(mode);
   if (mode.kind === 'full') return trueTag;
   if (mode.kind === 'ignore') return 0;
   const hm = highMask(mode.bits);
@@ -72,6 +89,7 @@ export function encodeViewTagByte(trueTag: number, mode: TagMode, rng?: RandomSo
 export function viewTagAccepts(announced: number, trueTag: number, mode: TagMode): boolean {
   checkByte(announced);
   checkByte(trueTag);
+  assertTagMode(mode);
   if (mode.kind === 'full') return announced === trueTag;
   if (mode.kind === 'ignore') return true;
   const hm = highMask(mode.bits);
@@ -104,6 +122,8 @@ export interface MetadataClass {
  * @param viaRouter True when the announcement `caller` is the router.
  */
 export function classifyMetadata(lengthBytes: number, viaRouter: boolean): MetadataClass {
+  // A truthy non-boolean (the string "false") must not silently mean "via router".
+  if (typeof viaRouter !== 'boolean') fail('viaRouter must be a boolean');
   if (!Number.isInteger(lengthBytes) || lengthBytes < 1) {
     return { accepted: false, amountStatus: 'none', reason: 'EMPTY' };
   }
@@ -126,17 +146,22 @@ export interface SchemePolicy {
  * @security MH-ANN-2 hides nothing: a custom id makes payments easier to find and breaks interop.
  */
 export function resolveSchemePolicy(opts: { unsafeFingerprintScheme?: boolean; extraSchemeId?: bigint } = {}): SchemePolicy {
+  requireRecord(opts, 'options');
   const { extraSchemeId } = opts;
-  if (extraSchemeId === undefined) return { accepted: [1n] };
+  if (extraSchemeId === undefined) return Object.freeze({ accepted: Object.freeze([1n]) });
+  requireBigint(extraSchemeId, 'scheme id');
   if (opts.unsafeFingerprintScheme !== true) {
     throw new MetadataHardeningError('POLICY_REJECTED', 'custom scheme id needs unsafeFingerprintScheme (makes payments easier to find)');
   }
   requireInput(extraSchemeId > 1n && extraSchemeId < 1n << 64n, 'scheme id out of range');
-  return { accepted: [1n, extraSchemeId] };
+  return Object.freeze({ accepted: Object.freeze([1n, extraSchemeId]) });
 }
 
 /** True when `schemeId` is accepted by `policy`. */
 export function isAcceptedScheme(schemeId: bigint, policy: SchemePolicy): boolean {
+  requireBigint(schemeId, 'scheme id');
+  requireRecord(policy, 'scheme policy');
+  requireInput(Array.isArray(policy.accepted) && policy.accepted.every((a) => typeof a === 'bigint'), 'bad scheme policy');
   return policy.accepted.includes(schemeId);
 }
 
@@ -152,7 +177,7 @@ export interface AnnouncerCheck {
  */
 export function validateAnnouncerConfig(chainId: number, announcer: string): AnnouncerCheck {
   assertTestnetChain(chainId);
-  if (!isAddress(announcer, { strict: true })) {
+  if (typeof announcer !== 'string' || !isAddress(announcer, { strict: true })) {
     throw new MetadataHardeningError('INVALID_INPUT', 'announcer is not a valid address');
   }
   return { announcer, canonical: announcer.toLowerCase() === CANONICAL_ANNOUNCER.toLowerCase() };

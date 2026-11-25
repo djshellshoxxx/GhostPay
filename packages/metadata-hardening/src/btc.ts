@@ -1,4 +1,22 @@
 import { assertBtcTestnet, MetadataHardeningError, requireInput, shuffle, type RandomSource } from './guard.js';
+import { fail, isRecord, requireArray, requireBigint, requireRecord } from './validate.js';
+
+const U32_MAX = 0xffff_ffff;
+const MAX_ITEMS = 10_000;
+const MAX_PSBT_RECORDS = 100_000;
+/** Standard scriptPubKey limit is far below this; 10 000 bytes is the consensus script-size cap. */
+const MAX_SCRIPT_HEX = 20_000;
+
+function isU32(v: unknown): v is number {
+  return Number.isInteger(v) && (v as number) >= 0 && (v as number) <= U32_MAX;
+}
+
+/** Bech32/bech32m addresses are case-insensitive; base58 addresses are not. */
+function sameAddress(a: string, b: string): boolean {
+  if (a === b) return true;
+  const bech32 = /^(?:bc|tb|bcrt)1[0-9a-z]+$/i;
+  return bech32.test(a) && bech32.test(b) && a.toLowerCase() === b.toLowerCase();
+}
 
 /** Default dust limit (sat) for a P2WPKH-class output. */
 export const DEFAULT_DUST_SATS = 546n;
@@ -34,14 +52,24 @@ export function planChange(opts: {
   readonly changeAddress?: string;
   readonly inputAddresses?: readonly string[];
 }): ChangePlan {
+  requireRecord(opts, 'options');
   assertBtcTestnet(opts.network);
+  requireBigint(opts.inputTotalSats, 'inputTotalSats');
+  requireBigint(opts.amountSats, 'amountSats');
+  requireBigint(opts.feeSats, 'feeSats');
+  if (opts.dustSats !== undefined) requireBigint(opts.dustSats, 'dustSats');
+  if (opts.changeAddress !== undefined) requireInput(typeof opts.changeAddress === 'string', 'change address must be a string');
+  const inputAddresses = opts.inputAddresses ?? [];
+  requireArray(inputAddresses, 'input addresses', MAX_ITEMS);
+  requireInput(inputAddresses.every((a) => typeof a === 'string'), 'input address must be a string');
   const dust = opts.dustSats ?? DEFAULT_DUST_SATS;
   requireInput(opts.amountSats > 0n && opts.feeSats >= 0n && dust >= 0n, 'amounts out of range');
   const left = opts.inputTotalSats - opts.amountSats - opts.feeSats;
   requireInput(left >= 0n, 'inputs do not cover amount and fee');
   if (left <= dust) return { changeSats: 0n, hasChange: false, dustToFeeSats: left };
   requireInput(opts.changeAddress !== undefined && opts.changeAddress !== '', 'change address required');
-  requireInput(!(opts.inputAddresses ?? []).includes(opts.changeAddress), 'change address must not reuse an input address');
+  const change = opts.changeAddress;
+  requireInput(!(inputAddresses).some((a) => sameAddress(a, change)), 'change address must not reuse an input address');
   return { changeSats: left, hasChange: true, dustToFeeSats: 0n };
 }
 
@@ -57,9 +85,10 @@ export function normalizeFeeRate(
   opts: { readonly step?: number; readonly minRate?: number; readonly cap?: number } = {},
 ): number {
   assertBtcTestnet(network);
+  requireRecord(opts, 'options');
   const step = opts.step ?? 1;
   const minRate = opts.minRate ?? 1;
-  requireInput(Number.isFinite(rate) && rate > 0 && Number.isFinite(step) && step > 0 && Number.isFinite(minRate) && minRate > 0, 'rate out of range');
+  requireInput(typeof rate === 'number' && Number.isFinite(rate) && rate > 0 && Number.isFinite(step) && step > 0 && Number.isFinite(minRate) && minRate > 0, 'rate out of range');
   const cap = opts.cap;
   if (cap !== undefined) {
     requireInput(Number.isFinite(cap) && cap > 0, 'cap out of range');
@@ -84,9 +113,15 @@ export function normalizeFeeRate(
  */
 export function chooseLocktime(network: string, mode: 'zero' | 'height', knownHeight?: number): number {
   assertBtcTestnet(network);
+  requireInput(mode === 'zero' || mode === 'height', 'locktime mode must be zero or height');
   if (mode === 'zero') return 0;
   requireInput(knownHeight !== undefined && Number.isInteger(knownHeight) && knownHeight >= 0 && knownHeight < LOCKTIME_THRESHOLD, 'height out of range');
   return knownHeight;
+}
+
+function checkSequences(sequences: unknown): asserts sequences is readonly number[] {
+  requireArray(sequences, 'sequences', MAX_ITEMS);
+  requireInput(sequences.every(isU32), 'sequence out of range');
 }
 
 /**
@@ -95,6 +130,9 @@ export function chooseLocktime(network: string, mode: 'zero' | 'height', knownHe
  * @throws {MetadataHardeningError} `CONFLICT` if locktime > 0 and every sequence is 0xffffffff.
  */
 export function assertLocktimeEffective(locktime: number, sequences: readonly number[]): void {
+  requireInput(isU32(locktime), 'locktime out of range');
+  checkSequences(sequences);
+  requireInput(locktime === 0 || sequences.length > 0, 'a transaction with a locktime needs inputs');
   if (locktime > 0 && sequences.every((s) => s === 0xffff_ffff)) {
     throw new MetadataHardeningError('CONFLICT', 'locktime is ignored when all inputs are final');
   }
@@ -109,6 +147,8 @@ export function chooseSequence(
   opts: { readonly rbf?: boolean; readonly acknowledgeUnusual?: boolean } = {},
 ): { sequence: number; warning?: string } {
   assertBtcTestnet(network);
+  requireRecord(opts, 'options');
+  requireInput(opts.rbf === undefined || typeof opts.rbf === 'boolean', 'rbf must be a boolean');
   if (opts.rbf !== false) return { sequence: SEQUENCE_RBF };
   if (opts.acknowledgeUnusual !== true) {
     throw new MetadataHardeningError('POLICY_REJECTED', 'disabling RBF needs an explicit acknowledgement');
@@ -118,6 +158,7 @@ export function chooseSequence(
 
 /** MH-BTC-4 R2: all inputs must carry one identical sequence (BIP-78 checks this). */
 export function assertUniformSequences(sequences: readonly number[]): void {
+  checkSequences(sequences);
   if (sequences.length > 0 && sequences.some((s) => s !== sequences[0])) {
     throw new MetadataHardeningError('CONFLICT', 'input sequences differ');
   }
@@ -148,6 +189,7 @@ function cmpStr(a: string, b: string): number {
 }
 
 function apply<T>(items: readonly T[], strategy: OrderStrategy, cmp: (a: T, b: T) => number, rng?: RandomSource): Ordered<T> {
+  requireInput(strategy === 'bip69' || strategy === 'shuffle' || strategy === 'none', 'unknown ordering strategy');
   const idx = items.map((_, i) => i);
   let order: number[];
   if (strategy === 'none') order = idx;
@@ -164,8 +206,9 @@ function apply<T>(items: readonly T[], strategy: OrderStrategy, cmp: (a: T, b: T
  */
 export function orderInputs<T extends OrderableInput>(network: string, inputs: readonly T[], strategy: OrderStrategy, rng?: RandomSource): Ordered<T> {
   assertBtcTestnet(network);
+  requireArray(inputs, 'inputs', MAX_ITEMS);
   for (const i of inputs) {
-    requireInput(/^[0-9a-fA-F]{64}$/.test(i.txid) && Number.isInteger(i.vout) && i.vout >= 0, 'bad input');
+    requireInput(isRecord(i) && typeof i.txid === 'string' && /^[0-9a-fA-F]{64}$/.test(i.txid) && isU32(i.vout), 'bad input');
   }
   return apply(inputs, strategy, (a, b) => cmpStr(a.txid.toLowerCase(), b.txid.toLowerCase()) || a.vout - b.vout, rng);
 }
@@ -178,8 +221,13 @@ export function orderInputs<T extends OrderableInput>(network: string, inputs: r
  */
 export function orderOutputs<T extends OrderableOutput>(network: string, outputs: readonly T[], strategy: OrderStrategy, rng?: RandomSource): Ordered<T> {
   assertBtcTestnet(network);
+  requireArray(outputs, 'outputs', MAX_ITEMS);
   for (const o of outputs) {
-    requireInput(o.amountSats >= 0n && /^([0-9a-fA-F]{2})*$/.test(o.scriptPubKey), 'bad output');
+    requireInput(
+      isRecord(o) && typeof o.amountSats === 'bigint' && o.amountSats >= 0n && typeof o.scriptPubKey === 'string' &&
+        o.scriptPubKey.length <= MAX_SCRIPT_HEX && /^(?:[0-9a-fA-F]{2})*$/.test(o.scriptPubKey),
+      'bad output',
+    );
   }
   return apply(
     outputs,
@@ -203,10 +251,13 @@ export interface PlainPsbt {
   readonly outputs: readonly (readonly PsbtRecord[])[];
 }
 
-// Record numbers per BIP-174 / BIP-370 / BIP-371 as recalled; checked against the BIPs: UNVERIFIED.
-const GLOBAL_KEEP = new Set([0x00, 0x02, 0x03, 0x04, 0x05, 0x06, 0xfb]);
-const INPUT_KEEP = new Set([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x08, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x17, 0x18]);
-const OUTPUT_KEEP = new Set([0x00, 0x01, 0x03, 0x04, 0x05, 0x06]);
+// Record numbers per BIP-174 / BIP-370 / BIP-371, checked against the BIP texts (see README, "Verified").
+// Dropped by design: xpubs, BIP-32 and taproot derivation paths, proprietary (0xfc) and every type
+// not listed (hash preimages 0x0a-0x0d, POR 0x09, MuSig2 BIP-373, silent-payment BIP-375/376): a
+// stripped PSBT cannot finalize hashlock scripts or aggregate those protocols.
+const GLOBAL_KEEP: ReadonlySet<number> = new Set([0x00, 0x02, 0x03, 0x04, 0x05, 0x06, 0xfb]);
+const INPUT_KEEP: ReadonlySet<number> = new Set([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x08, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x17, 0x18]);
+const OUTPUT_KEEP: ReadonlySet<number> = new Set([0x00, 0x01, 0x03, 0x04, 0x05, 0x06]);
 
 /**
  * MH-BTC-6: strips wallet-identifying PSBT records (global xpubs, BIP-32 and taproot derivation
@@ -217,18 +268,31 @@ const OUTPUT_KEEP = new Set([0x00, 0x01, 0x03, 0x04, 0x05, 0x06]);
  */
 export function stripPsbtFingerprints(network: string, psbt: PlainPsbt): { psbt: PlainPsbt; removed: number } {
   assertBtcTestnet(network);
+  requireRecord(psbt, 'psbt');
+  const { inputs, outputs } = psbt;
+  const globalMap: unknown = psbt.global;
+  requireArray(globalMap, 'psbt global map', MAX_PSBT_RECORDS);
+  requireArray(inputs, 'psbt inputs', MAX_ITEMS);
+  requireArray(outputs, 'psbt outputs', MAX_ITEMS);
   let removed = 0;
-  const keep = (recs: readonly PsbtRecord[], allow: Set<number>): PsbtRecord[] =>
-    recs.filter((r) => {
-      const ok = allow.has(r.keyType);
-      if (!ok) removed++;
-      return ok;
-    });
+  /** Validates every record, then returns detached copies of the allowed ones. */
+  const keep = (recs: unknown, allow: ReadonlySet<number>): PsbtRecord[] => {
+    requireArray(recs, 'psbt record map', MAX_PSBT_RECORDS);
+    const out: PsbtRecord[] = [];
+    for (const r of recs) {
+      if (!isRecord(r) || !Number.isInteger(r.keyType) || (r.keyType as number) < 0 || (r.keyType as number) > 255 || typeof r.key !== 'string' || typeof r.value !== 'string') {
+        fail('psbt record is malformed');
+      }
+      if (allow.has(r.keyType as number)) out.push({ keyType: r.keyType as number, key: r.key, value: r.value });
+      else removed++;
+    }
+    return out;
+  };
   return {
     psbt: {
-      global: keep(psbt.global, GLOBAL_KEEP),
-      inputs: psbt.inputs.map((r) => keep(r, INPUT_KEEP)),
-      outputs: psbt.outputs.map((r) => keep(r, OUTPUT_KEEP)),
+      global: keep(globalMap, GLOBAL_KEEP),
+      inputs: inputs.map((r) => keep(r, INPUT_KEEP)),
+      outputs: outputs.map((r) => keep(r, OUTPUT_KEEP)),
     },
     removed,
   };

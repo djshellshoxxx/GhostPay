@@ -1,4 +1,5 @@
 import { assertTestnetChain, randomBelow, requireInput, MetadataHardeningError, type RandomSource } from './guard.js';
+import { requireBigint, requireRecord, UINT256_MAX } from './validate.js';
 
 /** Result of an amount adjustment. All values in token base units. */
 export interface AdjustedAmount {
@@ -33,8 +34,12 @@ export interface RoundOptions {
  * @throws {MetadataHardeningError} `INVALID_INPUT`, `UNSUPPORTED_CHAIN`.
  */
 export function roundGross(amount: bigint, opts: RoundOptions): AdjustedAmount {
+  requireRecord(opts, 'options');
   assertTestnetChain(opts.chainId);
-  requireInput(amount > 0n, 'amount must be positive');
+  requireBigint(amount, 'amount');
+  requireInput(amount > 0n && amount <= UINT256_MAX, 'amount must be positive');
+  // A typo such as "fixed-token" must not fall through to rounding a fixed amount.
+  requireInput(opts.amountPolicyMode === 'fiat_quote' || opts.amountPolicyMode === 'fixed_token', 'unknown amount policy mode');
   requireInput(Number.isInteger(opts.maxSlippageBps) && opts.maxSlippageBps >= 0 && opts.maxSlippageBps <= 10_000, 'slippage out of range');
   const sig = opts.sigFigs ?? 3;
   requireInput(Number.isInteger(sig) && sig >= 1 && sig <= 18, 'sigFigs out of range');
@@ -69,22 +74,29 @@ export interface NoiseOptions {
  * @throws {MetadataHardeningError} `INVALID_INPUT` when `maxBps` is outside 0..100.
  */
 export function addAmountNoise(amount: bigint, opts: NoiseOptions, rng?: RandomSource): AdjustedAmount {
+  requireRecord(opts, 'options');
   assertTestnetChain(opts.chainId);
-  requireInput(amount > 0n, 'amount must be positive');
+  requireBigint(amount, 'amount');
+  requireInput(amount > 0n && amount <= UINT256_MAX, 'amount must be positive');
   requireInput(Number.isInteger(opts.maxBps) && opts.maxBps >= 0 && opts.maxBps <= 100, 'noise bound must be 0..100 bps');
   const max = (amount * BigInt(opts.maxBps)) / 10_000n;
   const surplus = randomBelow(max + 1n, rng);
+  requireInput(amount + surplus <= UINT256_MAX, 'amount with noise exceeds uint256');
   return { amount: amount + surplus, surplus };
 }
 
 /** MH-AMT-2 R2: an invoice is paid when `net >= required` (noise only ever overpays). */
 export function isPaid(net: bigint, required: bigint): boolean {
+  requireBigint(net, 'net amount');
+  requireBigint(required, 'required amount');
   requireInput(net >= 0n && required >= 0n, 'amounts must be non-negative');
   return net >= required;
 }
 
 /** MH-AMT-1 vs MH-AMT-2: pick one. */
 export function assertSingleAmountMode(opts: { rounding: boolean; noise: boolean }): void {
+  requireRecord(opts, 'options');
+  requireInput(typeof opts.rounding === 'boolean' && typeof opts.noise === 'boolean', 'flags must be booleans');
   if (opts.rounding && opts.noise) {
     throw new MetadataHardeningError('CONFLICT', 'amount rounding and amount noise cannot both be on');
   }

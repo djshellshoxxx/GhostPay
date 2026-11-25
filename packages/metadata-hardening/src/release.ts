@@ -9,12 +9,20 @@ import {
   shuffle,
   type RandomSource,
 } from './guard.js';
+import { fail, isRecord, requireArray, requireRecord } from './validate.js';
 
 /** A sweep waiting to be released. */
 export interface PendingSweep {
   readonly id: string;
   /** Signed-order deadline, unix seconds. */
   readonly deadlineSec: number;
+}
+
+const MAX_SWEEPS = 100_000;
+const MAX_ID_LENGTH = 128;
+
+function checkSweepId(id: unknown): asserts id is string {
+  requireInput(typeof id === 'string' && id.length > 0 && id.length <= MAX_ID_LENGTH, 'bad sweep id');
 }
 
 /** One planned release. */
@@ -43,12 +51,16 @@ export interface ReleaseOptions {
  * content or the payer-knows-S1 link.
  */
 export function planRelease(sweeps: readonly PendingSweep[], opts: ReleaseOptions, rng?: RandomSource): ReleaseDecision[] {
+  requireRecord(opts, 'options');
   assertTestnetChain(opts.chainId);
   requireInput(Number.isInteger(opts.windowSec) && opts.windowSec >= 1 && opts.windowSec <= 3600, 'window out of range');
   requireInput(Number.isFinite(opts.nowMs), 'now must be finite');
+  requireArray(sweeps, 'sweeps', MAX_SWEEPS);
   const windowMs = opts.windowSec * 1000;
   const ids = new Set<string>();
   for (const s of sweeps) {
+    requireRecord(s, 'sweep');
+    checkSweepId(s.id);
     requireInput(!ids.has(s.id), 'duplicate sweep id');
     ids.add(s.id);
     requireInput(Number.isFinite(s.deadlineSec), 'deadline must be finite');
@@ -68,9 +80,10 @@ export function planRelease(sweeps: readonly PendingSweep[], opts: ReleaseOption
 }
 
 /** Default body buckets in bytes (spec MH-REL-3 example). */
-export const DEFAULT_BODY_BUCKETS: readonly number[] = [1024, 2048, 4096];
+export const DEFAULT_BODY_BUCKETS: readonly number[] = Object.freeze([1024, 2048, 4096]);
 const MAX_BODY_BYTES = 16 * 1024;
 const PAD_OVERHEAD = 9; // ,"pad":""
+const MAX_BUCKETS = 16;
 const enc = new TextEncoder();
 
 /**
@@ -88,14 +101,17 @@ export function padBody(
   buckets: readonly number[] = DEFAULT_BODY_BUCKETS,
   rng?: RandomSource,
 ): string {
+  requireRecord(body, 'body');
   requireInput(!('pad' in body), 'body already has a pad member');
+  requireArray(buckets, 'buckets', MAX_BUCKETS, 'INVALID_INPUT');
   requireInput(buckets.length > 0 && buckets.every((b) => Number.isInteger(b) && b > 0 && b <= MAX_BODY_BYTES), 'bad buckets');
-  const base = JSON.stringify(body);
+  const base = serializeObject(body);
   const baseLen = enc.encode(base).length;
   const empty = base === '{}';
   const overhead = empty ? PAD_OVERHEAD - 1 : PAD_OVERHEAD;
   const target = buckets.slice().sort((a, b) => a - b).find((b) => b >= baseLen + overhead);
   if (target === undefined) throw new MetadataHardeningError('LIMIT_EXCEEDED', 'body exceeds the largest bucket');
+  assertNoPadMember(base);
   const n = target - baseLen - overhead;
   const bytes = new Uint8Array(Math.ceil(n / 2));
   resolveRng(rng).getRandomValues(bytes);
@@ -104,11 +120,33 @@ export function padBody(
 }
 
 /**
+ * `JSON.stringify` that cannot leak a `TypeError` (BigInt, cycles, throwing getters or `toJSON`)
+ * and cannot return anything but a JSON object text (arrays, strings, `undefined` from `toJSON`).
+ */
+function serializeObject(body: Readonly<Record<string, unknown>>): string {
+  let text: unknown;
+  try {
+    text = JSON.stringify(body);
+  } catch {
+    throw new MetadataHardeningError('INVALID_INPUT', 'body is not JSON-serializable');
+  }
+  if (typeof text !== 'string' || !text.startsWith('{') || !text.endsWith('}')) fail('body must serialize to a JSON object');
+  return text;
+}
+
+/** A `toJSON` that injects its own `pad` would make the padded text carry two. Checked on the final text size only. */
+function assertNoPadMember(base: string): void {
+  const parsed = JSON.parse(base) as unknown;
+  if (!isRecord(parsed) || Object.hasOwn(parsed, 'pad')) fail('body already has a pad member');
+}
+
+/**
  * MH-REL-3 R1: removes `pad` from a parsed body after checking it is bounded lowercase hex.
  *
  * @throws {MetadataHardeningError} `INVALID_INPUT` when `pad` is not a string of 0..16384 hex digits.
  */
 export function stripPad(parsed: Readonly<Record<string, unknown>>): Record<string, unknown> {
+  requireRecord(parsed, 'body');
   const { pad, ...rest } = parsed;
   if (pad === undefined) return rest;
   requireInput(typeof pad === 'string' && pad.length <= MAX_BODY_BYTES && /^[0-9a-f]*$/.test(pad), 'pad must be bounded hex');
@@ -116,6 +154,8 @@ export function stripPad(parsed: Readonly<Record<string, unknown>>): Record<stri
 }
 
 const MAX_RELAYERS = 8;
+/** Upper bound on simultaneously pinned sweeps (memory only; callers `release` finished ones). */
+const MAX_PINS = 4096;
 
 /**
  * MH-REL-4 R1: validates a relayer URL list (1..8 entries, https or loopback http, no credentials,
@@ -124,7 +164,8 @@ const MAX_RELAYERS = 8;
  * @returns Normalised URLs.
  */
 export function validateRelayerUrls(urls: readonly string[]): string[] {
-  requireInput(urls.length >= 1 && urls.length <= MAX_RELAYERS, 'relayer list must have 1..8 entries');
+  requireArray(urls, 'relayer list', MAX_RELAYERS, 'INVALID_INPUT');
+  requireInput(urls.length >= 1, 'relayer list must have 1..8 entries');
   const out = urls.map((u) => parseEndpoint(u));
   requireInput(new Set(out).size === out.length, 'duplicate relayer URL');
   return out;
@@ -150,9 +191,10 @@ export class RelayerPinning {
 
   /** Relayer for `sweepId`; the same URL on every call for that id. */
   public assign(sweepId: string): string {
-    requireInput(sweepId.length > 0 && sweepId.length <= 128, 'bad sweep id');
+    checkSweepId(sweepId);
     const have = this.pins.get(sweepId);
     if (have !== undefined) return have;
+    if (this.pins.size >= MAX_PINS) throw new MetadataHardeningError('LIMIT_EXCEEDED', 'too many pinned sweeps: release finished ones');
     const pick = this.urls[randomInt(this.urls.length, this.rng)] as string;
     this.pins.set(sweepId, pick);
     return pick;
@@ -164,7 +206,7 @@ export class RelayerPinning {
    * @throws {MetadataHardeningError} `POLICY_REJECTED` without `userConfirmed`, `CONFLICT` with one relayer.
    */
   public failover(sweepId: string, userConfirmed: boolean): string {
-    if (!userConfirmed) throw new MetadataHardeningError('POLICY_REJECTED', 'failover needs user confirmation');
+    if (userConfirmed !== true) throw new MetadataHardeningError('POLICY_REJECTED', 'failover needs user confirmation');
     const cur = this.assign(sweepId);
     const others = this.urls.filter((u) => u !== cur);
     if (others.length === 0) throw new MetadataHardeningError('CONFLICT', 'no other relayer configured');
@@ -175,6 +217,7 @@ export class RelayerPinning {
 
   /** Forgets a finished sweep (memory only). */
   public release(sweepId: string): void {
+    checkSweepId(sweepId);
     this.pins.delete(sweepId);
   }
 }
