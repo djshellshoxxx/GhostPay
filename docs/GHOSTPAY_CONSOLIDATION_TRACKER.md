@@ -14,7 +14,7 @@ append rows; keep the starting baseline unchanged.
 | | Value |
 |---|---|
 | Starting baseline (2026-11-25 12:50 UTC) | `origin/main` = `32ae3977b6026991ae0591daf385d3c536e2132f` (Merge PR #660) |
-| Current integration baseline | unchanged: `32ae3977` (no merge to main by this worker yet) |
+| Current integration baseline | `69485773` (Merge PR #642), merged into this branch as `be9ca3a3`; no merge to main by this worker yet |
 | Integration lock | `automation/ghostpay-integration-lock` `d1e2e037`: **released**, generation 26, last owner `claude-feature-completion-20261125` (candidate #664 `7b47c3dd` failed e2e lean, main unchanged) |
 | Remote heads | 791 (`git ls-remote --heads`), incl. 34 frozen `archive/owner-stop-20261125/*` snapshots |
 | Open PRs | 256 (pages 1–3 of the PR list at 13:40 UTC) |
@@ -105,9 +105,9 @@ owner HOLD whose shared-core code is already on main (`seal.ts`, `qrKinds.ts` st
 | P14 RPC provider disclosure evidence | #658 | done (test level T) | open | — | — | owner | owner |
 | #372 privacy-mode foundation: `privacyMode.tsx`, `SensitiveContent.tsx`, `PrivacyQuickHide.tsx`, `PrivateHistory.tsx`, `WalletDisclosure.tsx`, `walletDisclosure.ts`, `useWalletPrivacy.ts` | #372 `055d33e0` | done on branch, **absent from main** | not started (519 commits, 901 behind) | — | UNVERIFIED | coordinator/owner decision: re-cut subset vs. full recovery (section 9) | no |
 | #286 masking and account-switch revocation | #569 → #613; #571 → #598 → #612 | on #372 | blocked on #372 | — | UNVERIFIED | 19 / 12 code conflicts; Pay.tsx overlap with #664 and #584/#586/#610 | no |
-| #287 external wallet disclosure | #589 → #606 → #630 → #632 | on #372 | blocked on #372 | — | UNVERIFIED | main has `onWalletRequest` (#500) only; #632 duplicates #613 fixture | no |
-| #286 export, alert and lock-screen metadata | #570 (own `a61c4755`…`55781533`) | done | **next unit R2 after #664 and #668 land** | — | UNVERIFIED | 3 code conflicts; drop hunks already on main (deployment diagnostic, createRoot handlers); shares Common.tsx/Pay.tsx/locales with W4 and FC | after deps |
-| #287 invoice/receipt timestamp retention | #587 → #609 | done | not started | — | UNVERIFIED | vault format v4/v5 bump: owner confirmation first | owner |
+| #287 external wallet disclosure | #589 → #606 → #630 → #632 | on #372 | home team re-cut onto main: #677 (wallet-library disclosure gate, PR A) | — | UNVERIFIED | main has `onWalletRequest` (#500) only; #632 duplicates #613 fixture | no |
+| #286 export, alert and lock-screen metadata | #570 (own `a61c4755`…`55781533`) | done | **taken by home team: #675** (`claude/w-export-privacy-286-20261125`, 15:32 UTC); R2 dropped here | — | UNVERIFIED | 3 code conflicts; drop hunks already on main (deployment diagnostic, createRoot handlers); shares Common.tsx/Pay.tsx/locales with W4 and FC | after deps |
+| #287 invoice/receipt timestamp retention | #587 → #609 | done | home team: #676 (preview retention controls); #587 vault format still owner decision | — | UNVERIFIED | vault format v4/v5 bump: owner confirmation first | owner |
 | Sole invoice signer kept under idle lock | #577 (own `fb09d2a9` `23639435`) on #544 idle stack | done | blocked on #544 base stack | — | UNVERIFIED | AppShell.tsx conflict; main still wipes at idle (`signerLost`) | owner |
 | Deployment diagnostic neutral reason | #619 | done | **already on main** via #620 | — | — | none (class D) | — |
 | Private seller scan checkpoints (FC-06) | #248 | partial, red | deferred by FC | — | — | Scan.tsx overlap with #635 | owner/FC |
@@ -143,9 +143,12 @@ Pages artifact.
    ([PRIVACY_STACK_MAP.md](consolidation/cloud-lead-20261125/PRIVACY_STACK_MAP.md); small-residual triage in
    [SMALL_RESIDUAL_TRIAGE.md](consolidation/cloud-lead-20261125/SMALL_RESIDUAL_TRIAGE.md)). Ranked: #570 (independent
    of #372), #587 (owner: vault format), #577 (after #544 stack), #589 family and #569/#571 families (after #372).
-3. Next unit R2: recover #570 on top of main once #664 (FC) and #668 (W4) have merged, since they change the same
-   Common.tsx, Pay.tsx, BtcView and locale files. Taking it earlier would force both owners to re-merge.
-4. Owner decisions: section 9.
+3. R2 (#570) dropped: the home team opened #675 for it at 15:32 UTC, together with #674 (destination reuse,
+   consolidates #586/#610), #676 (retention) and #677 (wallet disclosure). Those are class J now.
+4. Main moved to `69485773` (#670 and P13 #642 merged). This branch merged it as `be9ca3a3`; lean build (352 modules)
+   and all guard tests pass on the merged tree. P13 lives in `packages/confidential-amounts/src/future/p13/` and is not
+   rendered in lean. Suggested follow-up (not done, needs review): also deny `packages/*/src/future/**` in the lean guard.
+5. Owner decisions: section 9.
 
 ## 9. Outstanding owner decisions
 
