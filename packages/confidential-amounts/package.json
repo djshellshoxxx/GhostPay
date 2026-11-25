@@ -22,6 +22,7 @@
     "lint": "eslint --config ../../eslint.config.js src"
   },
   "dependencies": {
+    "@ghostpay/invoice-schema": "0.1.0",
     "viem": "2.57.13"
   },
   "optionalDependencies": {
