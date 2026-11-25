@@ -260,6 +260,12 @@ low/info, and remain filler work.
   push (previous head passed: ux-receipts 164/164 with coverage, tsc/eslint clean, quote 23/23).
   FC-05a-T nit commit `f3800a0e` (local; inventory test 4/4); a factual check of two fee-estimate edits
   (`QUALIFICATION-2026-11.md:46`, BTC-4) across CLI/packages is pending with the reviewer.
+- 2026-11-25T09:42Z — FC-05a-T fee-estimate fact check **APPROVE** (no production path in apps/, packages/ incl. CLI,
+  btc-*, chain-*, or scripts/ calls an Esplora fee-estimates endpoint; `EsploraClient.feeRate` has only test callers;
+  the sweep fee rate is user-entered). Final local head `22c3cb1d`: BTC-4 rewritten "Not applicable on current source",
+  line 46 guard references refreshed (coordinator spot-checked `sweep.ts:35,93,94,159`, `spend.ts:79,86,222,312`),
+  browser-network-isolation rows aligned with the JSON; inventory test 4/4. Ordering constraint: FC-05a-T states R13 is
+  implemented by FC-05a, so it must merge only after #656.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
