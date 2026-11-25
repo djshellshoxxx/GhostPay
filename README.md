@@ -8,7 +8,7 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Owner beta scope — 2026-11-25
 
-The owner has stopped and archived GhostStore, GhostTeams, GhostTips, merchant dashboard/analytics, GhostID, GhostPOS, GhostBridge/P2P-Offramp integration, fiat conversion and P07 device synchronization; the earlier multi-chain-routing stop also remains in force. Preserve existing work and keep integrated code dormant. These are excluded from beta and v1.0 and must not be restarted automatically. See [the binding scope and preserved-core boundaries](docs/ai/STOP_WORK_20261125.md) and [the privacy-payment beta proposal](docs/product/PRIVACY_PAYMENT_BETA.md). The scope decision does not claim a qualified or published release; dated status records below are historical evidence.
+The owner has stopped GhostStore, GhostTeams, GhostTips, merchant dashboard/analytics, GhostID, GhostPOS, GhostBridge/P2P-Offramp integration, fiat conversion and P07 device synchronization, each archived or deferred; the earlier multi-chain-routing stop also remains in force. Preserve existing work and keep integrated code dormant. These are excluded from beta and v1.0 and must not be restarted automatically. The core protections those products shared stay in scope, including one-time receiving addresses, encrypted invoices and backups, independent recovery, and disclosure of what RPC providers and other external services can see. See [the binding scope and preserved-core boundaries](docs/ai/STOP_WORK_20261125.md) and [the privacy-payment beta proposal](docs/product/PRIVACY_PAYMENT_BETA.md). The scope decision does not claim a qualified or published release; dated status records below are historical evidence.
 
 ## Status (read this first)
 

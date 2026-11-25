@@ -281,3 +281,59 @@ describe('receipt archive UI', () => {
     expect(screen.getByRole('button', { name: 'Delete archived receipt' })).toBeTruthy();
   });
 });
+
+describe('late transfer status and decisions', () => {
+  it('shows pending and unresolved candidates with a replacement warning and no accept action', async () => {
+    const registered = { ...invoice(1), expiresAt: nowSeconds - 1 };
+    await vault.registerInvoice(registered);
+    const pending = { ...match(), receipt: 'pending' } as const;
+    await open({ matches: [pending, { ...match(2), receipt: 'claimed' }] });
+    expect(await screen.findByText(/Pending transfer evidence/)).toBeTruthy();
+    expect(screen.getByText(/Unverified observation/)).toBeTruthy();
+    expect(screen.getByText(/Check this payment evidence before issuing a replacement/)).toBeTruthy();
+    expect(screen.queryByText(/No linked observation/)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Accept late payment for this invoice' })).toBeNull();
+  });
+
+  it('shows a payment proposed for another invoice only on that invoice', async () => {
+    const [claimed, open2] = [invoice(1), invoice(2)];
+    await vault.registerInvoice(claimed);
+    await vault.registerInvoice(open2);
+    await vault.save({ ...recordFromVerifiedMatch(match(1), keyId), invoiceDigest: claimed.invoiceDigest });
+    await open({ matches: [match(2)] });
+    const card = (digest: string): HTMLElement => screen.getAllByText(digest).map((node) => node.closest('li.card'))
+      .find((li): li is HTMLLIElement => li !== null && li.textContent?.includes('base units of') === true)!;
+    await waitFor(() => expect(card(open2.invoiceDigest).textContent).toContain('Verified on-time transfer'));
+    expect(card(claimed.invoiceDigest).textContent).toContain('Linked to a verified observation');
+    expect(card(claimed.invoiceDigest).textContent).not.toContain('Verified on-time transfer');
+  });
+
+  it('refuses a previously final transfer when its evidence no longer rechecks', async () => {
+    const payment = match();
+    await vault.registerInvoice({ ...invoice(1), expiresAt: nowSeconds - 1 });
+    await vault.observeInvoicePayments([recordFromVerifiedMatch(payment, keyId)]);
+    const verifyLateEvidence = vi.fn(() => Promise.resolve(false));
+    const user = await open({ matches: [payment], freshLateMatches: [payment], verifyLateEvidence });
+    await user.click(screen.getByRole('button', { name: 'Accept late payment for this invoice' }));
+    expect(await screen.findByText(/The RPC could not reverify this payment/)).toBeTruthy();
+    expect(verifyLateEvidence).toHaveBeenCalledWith(payment);
+    expect(screen.queryByRole('button', { name: 'Accept late payment for this invoice' })).toBeNull();
+    expect(await vault.read()).toMatchObject([{ evidenceStatus: 'unverified-at-scan' }]);
+    expect((await vault.read())[0]).not.toHaveProperty('invoiceDigest');
+  });
+
+  it('requires current complete scan evidence and keeps late acceptance distinct from reorg history', async () => {
+    const registered = { ...invoice(1), expiresAt: nowSeconds - 1 };
+    const payment = match();
+    await vault.registerInvoice(registered);
+    const user = await open({ matches: [payment], freshLateMatches: [payment], verifyLateEvidence: () => Promise.resolve(true) });
+    expect((await screen.findAllByText('Verified late transfer — invoice decision pending')).length).toBeGreaterThan(0);
+    expect((await vault.read()).length).toBe(0);
+    await user.click(screen.getByRole('button', { name: 'Accept late payment for this invoice' }));
+    expect(await screen.findByText('Verified late payment accepted by seller.')).toBeTruthy();
+    await vault.invalidateFrom(payment.announcement.blockNumber, [], () => Promise.resolve(`0x${'f'.repeat(64)}`));
+    expect(await screen.findByText(/Reorg invalidated earlier payment evidence/)).toBeTruthy();
+    expect(screen.getByText(/Seller accepted this late payment at/)).toBeTruthy();
+    expect(screen.queryByText('Verified late payment accepted by seller.')).toBeNull();
+  });
+});

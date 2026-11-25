@@ -16,18 +16,18 @@
 
 ## Owner release exclusions — expanded 2026-11-25
 
-The owner has stopped all feature work on **F01, F02, F04, F08/F8, F09, F11, F12, F13, F14 and P07**. F01/F09/F13 retain their earlier permanent-archive status; F08/F11/F12/F14 retain their earlier deferral beyond v1.0; F02/F04/P07 are now archived indefinitely. All ten are excluded from beta and v1.0. Preserve source and history, keep integrated code dormant/disabled, and do not count completion as a release requirement. No automatic resumption: a new explicit owner instruction is required.
+The owner has stopped all feature work on **F01, F02, F04, F08/F8, F09, F11, F12, F13, F14 and P07**. F01/F09/F13 retain their earlier permanent-archive status; F08/F11/F12/F14 retain their earlier deferral beyond v1.0; F02/F04/P07 are now archived indefinitely for a possible future version, and the owner's later shared-core clarification treats F02/F04 as deferred and disabled for beta/v1.0. All ten are excluded from beta and v1.0. Preserve source and history, keep integrated code dormant/disabled, and do not count completion as a release requirement. No automatic resumption: a new explicit owner instruction is required.
 
-P07 is encrypted device synchronization, outside this F-series catalog. It is not F07 GhostPayouts and does not include ordinary encrypted backup/import or local cross-tab payment integrity. F12 stops GhostPay's P2P-Offramp integration only. See [the canonical stop-work directive](../../ai/STOP_WORK_20261125.md) and [binding engineering instructions](../../../AGENTS.md).
+P07 is encrypted device synchronization, outside this F-series catalog. It is not F07 GhostPayouts and does not include ordinary encrypted backup/import or local cross-tab payment integrity. F12 stops GhostPay's P2P-Offramp integration only. Conversational P14 RPC provider disclosure is included in beta/v1.0 and is not F14. Shared-core privacy mechanisms these products relied on stay in scope under the owner's mandatory shared-core clarification. See [the canonical stop-work directive](../../ai/STOP_WORK_20261125.md) and [binding engineering instructions](../../../AGENTS.md).
 
 ## Catalog
 
 | No. | Future spec | Status |
 |---|---|---|
 | 01 | [GhostTips: privacy-first donations and tips](01-ghosttips.md) | **ARCHIVED — STOP WORK** |
-| 02 | [GhostStore: privacy-first static storefronts](02-ghoststore.md) | **ARCHIVED — STOP WORK** |
+| 02 | [GhostStore: privacy-first static storefronts](02-ghoststore.md) | **ARCHIVED, DEFERRED — STOP WORK THROUGH V1.0** |
 | 03 | [Universal private payment links and QR](03-private-payment-links.md) | **FUTURE ONLY** |
-| 04 | [Private local merchant dashboard](04-merchant-dashboard.md) | **ARCHIVED — STOP WORK** |
+| 04 | [Private local merchant dashboard](04-merchant-dashboard.md) | **ARCHIVED, DEFERRED — STOP WORK THROUGH V1.0** |
 | 05 | [GhostProof: selective-disclosure payment evidence](05-ghostproof.md) | **FUTURE ONLY** |
 | 06 | [Encrypted offline backup and complete recovery](06-encrypted-backups.md) | **FUTURE ONLY** |
 | 07 | [GhostPayouts: private multi-recipient payouts](07-ghostpayouts.md) | **FUTURE ONLY** |

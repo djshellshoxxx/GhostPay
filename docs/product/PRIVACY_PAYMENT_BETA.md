@@ -59,7 +59,7 @@ These are six outcomes, not a mandate to merge every referenced branch. Review n
 
 Enact the owner's stops for F01 GhostTips, F02 GhostStore, F04 merchant dashboard, F08 GhostID, F09 GhostPOS, F11 GhostTeams, F12 GhostBridge/P2P-Offramp integration, F13 fiat conversion and P07 device synchronization. Preserve prior F14 multi-chain-routing stop. Preserve branches/history and keep already integrated code dormant/disabled.
 
-**P07 synchronization is not ordinary encrypted backup/import; F07 GhostPayouts is a different identifier.** Local keys, generic signed payment requests and local receipts are shared core even where merchant code also consumes them. Do not delete that core or disable recovery as an indirect consequence of the scope cut. Standalone P2P-Offramp is outside the F12 integration stop.
+**P07 synchronization is not ordinary encrypted backup/import; F07 GhostPayouts is a different identifier.** Local keys, generic signed payment requests and local receipts are shared core even where merchant code also consumes them. Do not delete that core or disable recovery as an indirect consequence of the scope cut. Standalone P2P-Offramp is outside the F12 integration stop. The owner's later [mandatory shared-core privacy clarification](../../AGENTS.md) is binding and lists every retained mechanism; where this proposal reads narrower, the clarification governs.
 
 **Additional recommendation, not an owner order:** defer recurring/subscription billing, payouts, extra chains, advanced privacy profiles, pipeline choreography, optional indexer service, pools and confidential settlement from beta. Retain their work. Product identity as a privacy platform does not authorize automatic activation.
 
