@@ -1,3 +1,41 @@
+# P13 confidential amounts — protocol-neutral client core — 2026-11-25
+
+Worker: Claude Code session `nodata/eloquent-shannon-gfv6t9` (P13 only).
+Branch: `nodata/eloquent-shannon-gfv6t9`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`
+with `future/p13-confidential-amounts` `8846d555` merged for spec ancestry.
+Owned paths: new `packages/confidential-amounts/src/future/p13/**`, new
+`packages/confidential-amounts/browser/**`, additive edits to `packages/confidential-amounts/`
+`package.json`, `README.md`, `DEVIATIONS.md`, new `docs/future/modules/P13-confidential-amounts/IMPLEMENTATION.md`,
+`docs/handoffs/P13_CONFIDENTIAL_AMOUNTS_20261125.md`, lockfile entry for the new workspace dependency, this claim.
+Acceptance: strict amount/asset validation, exact arithmetic, data models, invoice compatibility,
+secret lifecycle, encrypted records with recovery export/import, default-off gate, unsupported-operation
+results and disclosures, each with tests; existing 88 package tests unchanged and passing.
+Out of scope: contracts (incl. the unmerged router return-bomb fix `cd544529`), apps/web wiring,
+settlement activation, deployment, fees, new cryptographic primitives, other modules' files.
+
+# P13 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/p13-confidential-amounts`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/P13-confidential-amounts/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
 # payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
 
 Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.
