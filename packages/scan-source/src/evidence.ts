@@ -37,6 +37,8 @@ export interface ScanEvidenceOptions {
  *   inclusion stays `unverified`: `createLightSource` never requests or checks a receipt or log proof (the
  *   `LightClient` interface has no such method), so `integrity: 'proof'` / `verifiesLogs` is only a capability
  *   flag and is not evidence. It becomes `verified` only when a source actually checks inclusion proofs.
+ *   `blockIdentity: 'verified'` also assumes the light client implementation behind the source is correct; no
+ *   such client in this repository has been audited, so treat it as the intended property, not a guarantee.
  * - `quorum`: sources agreeing is `cross-checked` at best; no inclusion proof.
  *
  * @security `intervalCompleteness` is `unverified` for EVERY input. A verified block header proves a block

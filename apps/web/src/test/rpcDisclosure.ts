@@ -166,6 +166,9 @@ export class DisclosureState {
   public isMatchedHash(h: string): boolean {
     return this.matchedHashes.has(lower(h));
   }
+  public isHead(n: bigint): boolean {
+    return this.headBlock !== undefined && n === this.headBlock;
+  }
   public isEventTopic(t: string): boolean {
     return this.topics.has(lower(t));
   }
@@ -173,9 +176,9 @@ export class DisclosureState {
     return this.seen.has(lower(v));
   }
 
-  /** Whether a block bound reveals scan progress: not on the grid and not the (public) head. */
+  /** Whether a block bound reveals scan progress: not on the grid, and (for an upper bound only) not the public head. */
   public revealsPosition(n: bigint, kind: 'lower' | 'upper'): boolean {
-    if (this.headBlock !== undefined && n === this.headBlock) return false;
+    if (kind === 'upper' && this.headBlock !== undefined && n === this.headBlock) return false;
     const g = this.gridBlocks;
     if (g === undefined || g <= 0) return true;
     const edge = kind === 'lower' ? n : n + 1n;
@@ -261,13 +264,19 @@ function noteHash(s: DisclosureState, a: Acc, h: string): void {
 }
 
 /** Scans calldata (4-byte selector + 32-byte words) for padded addresses. Returns false if the shape is not recognisable. */
-function scanCalldata(s: DisclosureState, a: Acc, data: string): void {
-  if (!HEX_ANY.test(data) || data.length < 10) return;
+function scanCalldata(s: DisclosureState, a: Acc, data: string): boolean {
+  if (!HEX_ANY.test(data) || data.length < 10 || (data.length - 10) % 64 !== 0) return false;
   const body = data.slice(10);
   for (let i = 0; i + 64 <= body.length; i += 64) {
     const word = `0x${body.slice(i, i + 64)}`;
     if (word.slice(2, 26) === '0'.repeat(24) && word.slice(26) !== '0'.repeat(40)) noteAddress(s, a, `0x${word.slice(26)}`);
   }
+  return true;
+}
+
+/** Block parameter of a state read: a named tag or a numeric height. Anything else is not a shape we know. */
+function validBlockParam(p: unknown): boolean {
+  return typeof p === 'string' && BLOCK_TAGS.has(p) ? true : toBigInt(p) !== undefined;
 }
 
 function classifyLogsFilter(s: DisclosureState, a: Acc, f: unknown): boolean {
@@ -333,18 +342,19 @@ export function classifyRequest(method: string, params: readonly unknown[], s: D
       const n = params[0];
       recognised = params.length === 2 && typeof params[1] === 'boolean' && (typeof n === 'string' && BLOCK_TAGS.has(n) ? true : toBigInt(n) !== undefined);
       if (recognised && !(typeof n === 'string' && BLOCK_TAGS.has(n))) {
+        // an exact read at any height other than the head tells the provider where the scan is, grid-aligned or not
         const v = toBigInt(n) as bigint;
-        if (s.revealsPosition(v, 'lower') && s.revealsPosition(v, 'upper')) a.progress = true;
+        if (!s.isHead(v)) a.progress = true;
       }
     } else if (method === 'eth_getLogs') {
       recognised = params.length === 1 && classifyLogsFilter(s, a, params[0]);
     } else if (method === 'eth_getBalance' || method === 'eth_getTransactionCount' || method === 'eth_getCode') {
       const addr = params[0];
-      recognised = params.length === 2 && typeof addr === 'string' && HEX_ADDRESS.test(addr);
+      recognised = params.length === 2 && typeof addr === 'string' && HEX_ADDRESS.test(addr) && validBlockParam(params[1]);
       if (recognised) noteAddress(s, a, addr as string);
     } else if (method === 'eth_call') {
       const c = params[0];
-      recognised = params.length === 2 && typeof c === 'object' && c !== null && !Array.isArray(c);
+      recognised = params.length === 2 && typeof c === 'object' && c !== null && !Array.isArray(c) && validBlockParam(params[1]);
       if (recognised) {
         const o = c as Record<string, unknown>;
         for (const k of Object.keys(o)) if (!['to', 'data', 'input', 'from'].includes(k)) recognised = false;
@@ -357,7 +367,7 @@ export function classifyRequest(method: string, params: readonly unknown[], s: D
         }
         for (const k of ['data', 'input'] as const) {
           const v = o[k];
-          if (typeof v === 'string') scanCalldata(s, a, v);
+          if (typeof v === 'string' && !scanCalldata(s, a, v)) recognised = false;
         }
       }
     } else if (method === 'eth_getTransactionReceipt' || method === 'eth_getTransactionByHash') {
@@ -527,11 +537,16 @@ export function instrumentHttpTransport<T extends HttpTransportLike>(inner: T, r
       let done: ((o: DisclosureOutcome, text?: string) => void) | undefined;
       try {
         const u = new URL(req.url);
-        const known = req.method === 'GET' && /\/v1\/logs$/.test(u.pathname) && req.body === undefined;
+        const known = req.method === 'GET' && u.pathname === '/v1/logs' && req.body === undefined;
         const keys = [...u.searchParams.keys()].sort().join(',');
-        const from = toBigInt(u.searchParams.get('from') ?? undefined);
-        const to = toBigInt(u.searchParams.get('to') ?? undefined);
-        if (known && keys === 'chainId,from,pageSize,to' && from !== undefined && to !== undefined && to >= from) {
+        const dec = (k: string): bigint | undefined => {
+          const v = u.searchParams.get(k);
+          return v !== null && /^\d{1,18}$/.test(v) ? BigInt(v) : undefined;
+        };
+        const from = dec('from');
+        const to = dec('to');
+        const decimalRest = dec('chainId') !== undefined && dec('pageSize') !== undefined;
+        if (known && decimalRest && keys === 'chainId,from,pageSize,to' && from !== undefined && to !== undefined && to >= from) {
           method = 'HTTP GET /v1/logs';
           done = rec.begin('http', role, method, [], 0, {
             classes: ['public-block-range'],
@@ -673,9 +688,13 @@ export function assertSanitized(artifact: unknown, forbidden: readonly string[])
   const text = JSON.stringify(artifact, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v));
   const hay = text.toLowerCase();
   for (const f of forbidden) {
-    if (f.length > 0 && hay.includes(f.toLowerCase())) throw new Error('sanitization failure: forbidden value present');
+    if (f.length === 0) continue;
+    const v = f.toLowerCase();
+    const bare = v.startsWith('0x') ? v.slice(2) : v;
+    if (hay.includes(v) || (bare.length > 0 && hay.includes(bare))) throw new Error('sanitization failure: forbidden value present');
   }
-  if (/0x[0-9a-f]{40}/.test(hay)) throw new Error('sanitization failure: hex identifier present');
+  // any long hex run, with or without 0x, is an address, hash, key or calldata word and must never appear in an artifact
+  if (/[0-9a-f]{32,}/.test(hay)) throw new Error('sanitization failure: hex identifier present');
 }
 
 /** Markdown table for a set of summaries. Counts and class names only. */

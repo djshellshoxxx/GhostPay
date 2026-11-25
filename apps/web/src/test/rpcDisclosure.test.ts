@@ -192,3 +192,75 @@ describe('comparison helpers', () => {
     expect(() => assertSanitized({ calls: 3 }, [SELLER])).not.toThrow();
   });
 });
+
+describe('review fixes', () => {
+  const st = (): DisclosureState => {
+    const x = state();
+    x.headBlock = 5000n;
+    return x;
+  };
+
+  it('reports eth_call calldata that is unreadable or not word-aligned as unknown', () => {
+    const call = (data: string) => classifyRequest('eth_call', [{ to: ROUTER, data }, 'latest'], st()).classes;
+    expect(call('0x12345678')).not.toContain('unknown');
+    expect(call(`0x12345678${'00'.repeat(32)}`)).not.toContain('unknown');
+    expect(call('0x1234')).toContain('unknown');
+    expect(call(`0x12345678${'00'.repeat(31)}`)).toContain('unknown');
+    expect(call('0xzz345678')).toContain('unknown');
+  });
+
+  it('requires a valid block parameter on state reads and eth_call', () => {
+    for (const m of ['eth_getBalance', 'eth_getTransactionCount', 'eth_getCode']) {
+      expect(classifyRequest(m, [ROUTER, 'latest'], st()).classes).not.toContain('unknown');
+      expect(classifyRequest(m, [ROUTER, '0x10'], st()).classes).not.toContain('unknown');
+      expect(classifyRequest(m, [ROUTER, 'someday'], st()).classes).toContain('unknown');
+      expect(classifyRequest(m, [ROUTER, { x: 1 }], st()).classes).toContain('unknown');
+    }
+    expect(classifyRequest('eth_call', [{ to: ROUTER }, 'bogus'], st()).classes).toContain('unknown');
+  });
+
+  it('treats every exact block read away from the head as position-revealing, grid-aligned or not', () => {
+    expect(classifyRequest('eth_getBlockByNumber', ['0x3e8', false], st()).revealsScanProgress).toBe(true);
+    expect(classifyRequest('eth_getBlockByNumber', ['0x3e9', false], st()).revealsScanProgress).toBe(true);
+    expect(classifyRequest('eth_getBlockByNumber', ['0x1388', false], st()).revealsScanProgress).toBe(false);
+    expect(classifyRequest('eth_getBlockByNumber', ['latest', false], st()).revealsScanProgress).toBe(false);
+  });
+
+  it('exempts only an upper bound at the head: a lower bound at the head still reveals position when off the grid', () => {
+    const s2 = st();
+    s2.headBlock = 5001n;
+    const at = (from: string, to: string) => classifyRequest('eth_getLogs', [{ address: ANNOUNCER, topics: [TOPIC], fromBlock: from, toBlock: to }], s2).revealsScanProgress;
+    expect(at('0x1388', '0x1389')).toBe(false); // grid-aligned lower, upper clamped to the head
+    expect(at('0x1389', '0x1389')).toBe(true); // lower sits on the head but off the grid
+  });
+
+  it('flags long hex runs without a 0x prefix and forbidden values written without it', () => {
+    expect(() => assertSanitized({ x: 'ab'.repeat(20) }, [])).toThrow('hex identifier');
+    expect(() => assertSanitized({ x: SELLER.slice(2) }, [SELLER])).toThrow('forbidden');
+    expect(() => assertSanitized({ x: `0x${'cd'.repeat(32)}` }, [])).toThrow('hex identifier');
+    expect(() => assertSanitized({ calls: 12, class: 'public-block-range' }, [SELLER])).not.toThrow();
+  });
+
+  it('pins the indexer path and requires decimal numeric query values', async () => {
+    const run = async (url: string) => {
+      const rec = new DisclosureRecorder('idx', ctx);
+      const t = instrumentHttpTransport({ request: () => Promise.resolve({ status: 200, body: new Uint8Array() }) }, rec, 'indexer');
+      await t.request({ method: 'GET', url, timeoutMs: 1, maxBytes: 1 });
+      return rec.records[0]?.classes;
+    };
+    const q = 'chainId=1&from=1000&pageSize=100&to=1999';
+    expect(await run(`https://idx.example/v1/logs?${q}`)).toEqual(['public-block-range']);
+    expect(await run(`https://idx.example/x/v1/logs?${q}`)).toEqual(['unknown']);
+    expect(await run('https://idx.example/v1/logs?chainId=1&from=0x3e8&pageSize=100&to=1999')).toEqual(['unknown']);
+    expect(await run('https://idx.example/v1/logs?chainId=0x1&from=1000&pageSize=100&to=1999')).toEqual(['unknown']);
+  });
+
+  it('dispose clears comparison sets but keeps records', () => {
+    const rec = new DisclosureRecorder('d', ctx);
+    rec.state.markMatched({ addresses: [SELLER], transactionHashes: [TX] });
+    rec.begin('transport', 'primary', 'eth_chainId', []);
+    rec.dispose();
+    expect(rec.state.isMatchedHash(TX)).toBe(false);
+    expect(rec.records).toHaveLength(1);
+  });
+});

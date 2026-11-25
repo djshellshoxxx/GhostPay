@@ -136,6 +136,9 @@ export async function runDisclosureScenario(i: ScenarioInput): Promise<ScenarioO
     });
   } catch (e) {
     error = e;
+  } finally {
+    // records are kept; the comparison sets (matched addresses, hashes, seen values) are dropped
+    rec.dispose();
   }
   return { rec, matches: result?.matches ?? matches, progress, cursor: result?.cursor, error, discrepancies: result?.discrepancies.length ?? 0, clients: { primary } };
 }

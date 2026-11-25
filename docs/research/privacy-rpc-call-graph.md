@@ -20,8 +20,8 @@ response", and "position readable from the request". A request can have several 
 recognise (method, parameter count, object keys, topic shape) is `unknown`; every scenario asserts zero unknown.
 
 It wraps three existing boundaries and changes no request: chain-adapters `RpcTransport` (sees retries and chain-id
-re-checks), the `RpcClient` surface (for mock clients) and scan-source `HttpTransport` (indexer). It adds no production
-code and no telemetry. "Related to a matched payment" uses the scenario's ground truth, which an observer does not have.
+re-checks), the `RpcClient` surface (for mock clients) and scan-source `HttpTransport` (indexer). It is test code only: it adds
+no production code path and no telemetry. "Related to a matched payment" uses the scenario's ground truth, which an observer does not have.
 
 ## Source-pinned operation inventory (13 lifecycle stages)
 
@@ -47,27 +47,28 @@ addresses (address-specific); `pay.ts`, `txGuard.ts`, `wallet.ts`, `attemptStatu
 ## Measured traffic (mock chain, sanitized)
 
 Columns: calls; address-, transaction- and recipient-specific; calls related to a matched payment; retries; unknown;
-calls whose request reveals scan position; failures; calls per endpoint role.
+calls whose request reveals scan position (conservative: any exact block read away from the head, and any log
+window bound that is off the grid, other than an upper bound at the head); failures; calls per endpoint role.
 
 | Scenario | Calls | Addr | Tx | Recip | Match-dep | Retry | Unknown | Position | Failed | Roles |
 |---|---|---|---|---|---|---|---|---|---|---|
-| A empty scan | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | primary 12 |
-| B public announcements only | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | primary 14 |
-| N non-matching twin of C | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | primary 14 |
-| C one matching payment | 19 | 0 | 2 | 0 | 2 | 0 | 0 | 5 | 0 | primary 19 |
-| N3 non-matching twin of D | 16 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | primary 16 |
-| D three matching payments | 31 | 0 | 6 | 0 | 6 | 0 | 0 | 11 | 0 | primary 31 |
-| E1 wrong view tag | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | primary 14 |
-| E2 unverifiable router claim | 18 | 0 | 2 | 0 | 0 | 0 | 0 | 4 | 0 | primary 18 |
-| N2 non-matching twin of E2 | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | primary 14 |
-| H0 first run (saves checkpoint) | 28 | 0 | 2 | 0 | 2 | 0 | 0 | 5 | 0 | primary 28 |
+| A empty scan | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | primary 12 |
+| B public announcements only | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | primary 14 |
+| N non-matching twin of C | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | primary 14 |
+| C one matching payment | 19 | 0 | 2 | 0 | 2 | 0 | 0 | 9 | 0 | primary 19 |
+| N3 non-matching twin of D | 16 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | primary 16 |
+| D three matching payments | 31 | 0 | 6 | 0 | 6 | 0 | 0 | 15 | 0 | primary 31 |
+| E1 wrong view tag | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | primary 14 |
+| E2 unverifiable router claim | 18 | 0 | 2 | 0 | 0 | 0 | 0 | 8 | 0 | primary 18 |
+| N2 non-matching twin of E2 | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | primary 14 |
+| H0 first run (saves checkpoint) | 28 | 0 | 2 | 0 | 2 | 0 | 0 | 15 | 0 | primary 28 |
 | H resume from checkpoint | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | primary 8 |
-| G fork at checkpoint anchor | 29 | 0 | 2 | 0 | 2 | 0 | 0 | 6 | 0 | primary 29 |
-| I two providers agree | 35 | 0 | 4 | 0 | 4 | 0 | 0 | 11 | 0 | primary 20, secondary 15 |
-| I two providers disagree | 30 | 0 | 4 | 0 | 4 | 0 | 0 | 6 | 0 | primary 18, secondary 12 |
-| K direct (non-router) matching announcement | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | primary 14 |
-| J 12k blocks with one retry | 51 | 0 | 2 | 0 | 2 | 1 | 0 | 5 | 1 | primary 51 |
-| J0 12k blocks, no retry | 49 | 0 | 2 | 0 | 2 | 0 | 0 | 5 | 0 | primary 49 |
+| G fork at checkpoint anchor | 29 | 0 | 2 | 0 | 2 | 0 | 0 | 16 | 0 | primary 29 |
+| I two providers agree | 35 | 0 | 4 | 0 | 4 | 0 | 0 | 15 | 0 | primary 20, secondary 15 |
+| I two providers disagree | 30 | 0 | 4 | 0 | 4 | 0 | 0 | 10 | 0 | primary 18, secondary 12 |
+| K direct (non-router) matching announcement | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | primary 14 |
+| J 12k blocks with one retry | 51 | 0 | 2 | 0 | 2 | 1 | 0 | 29 | 1 | primary 51 |
+| J0 12k blocks, no retry | 49 | 0 | 2 | 0 | 2 | 0 | 0 | 29 | 0 | primary 49 |
 
 Call counts depend on the fixture and on current scanner internals; the tests pin relations (for example "C minus its
 non-matching twin is exactly two transaction-specific requests"), not absolute totals.
@@ -75,7 +76,7 @@ non-matching twin is exactly two transaction-specific requests"), not absolute t
 ## Directly observed (what an endpoint operator receives, in this mock)
 
 1. **No address, recipient filter or token contract is sent during a scan.** Every `eth_getLogs` names only the public
-   announcer and the announcement event topic, spans at most one grid window (1000) and is grid-aligned. Zero
+   announcer and the announcement event topic, spans at most one grid window (1000) and is grid-aligned or clamped to the head. Zero
    address-specific and zero recipient-specific requests in all scenarios.
 2. **A matched router payment is visible.** It adds exactly one `eth_getTransactionReceipt` and one
    `eth_getTransactionByHash` for the payment's transaction hash, each preceded by a fresh head read. A non-matching twin
@@ -118,8 +119,8 @@ workers (#625, #635, #653), and each needs a baseline-versus-change run of these
 
 | Candidate | Baseline (measured) | Risk |
 |---|---|---|
-| Round exact block reads (anchor, page end, confirmation) to the window grid where hash comparison still holds | 1 to 11 position-revealing requests per scan | Anchor read must stay exact for reorg detection; do not weaken |
-| Do not send payment lookups to the second provider until the page agrees | secondary receives the same pair (I) | Weakens independent verification if reordered wrongly |
+| Round exact block reads (anchor, page end, confirmation) to the window grid where hash comparison still holds | 2 to 29 position-revealing requests per scan (conservative count) | Anchor read must stay exact for reorg detection; do not weaken |
+| Do not send payment lookups to the second provider until the page agrees | secondary receives the same pair, before its comparison log reads (I, asserted by test) | Weakens independent verification if reordered wrongly |
 | Hold verification of tag-valid claims until after the page is final | lookups follow each match immediately (D) | Delays payment confirmation display |
 
 Payment verification must not be traded for fewer requests.

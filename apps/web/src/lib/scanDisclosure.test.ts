@@ -258,6 +258,15 @@ describe('I: two providers', () => {
     expect(roleRows(rows('IA'), 'secondary').some((r) => r.revealsScanProgress)).toBe(true);
   });
 
+  it('the secondary receives its payment lookups before its comparison log reads', () => {
+    const sec = roleRows(rows('IA'), 'secondary');
+    const lookups = sec.filter((r) => r.classes.includes('transaction-specific'));
+    const logs = sec.filter((r) => r.method === 'eth_getLogs');
+    expect(lookups.length).toBeGreaterThan(0);
+    expect(logs.length).toBeGreaterThan(0);
+    expect(Math.max(...lookups.map((r) => r.seq))).toBeLessThan(Math.min(...logs.map((r) => r.seq)));
+  });
+
   it('a disagreeing second provider is surfaced and causes no extra provider to be contacted', () => {
     expect(out['ID']?.discrepancies).toBeGreaterThan(0);
     expect(new Set(rows('ID').map((r) => r.role))).toEqual(new Set(['primary', 'secondary']));
