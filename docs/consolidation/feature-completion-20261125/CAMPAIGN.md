@@ -365,6 +365,13 @@ low/info, and remain filler work.
   `ghostpay-58` and `ghostpay-15` no longer reachable — the lock branch history records every acquire/release for
   them): gen 26 held for #664 → then #647 (ghostpay-15) → others on request. Merges only via the lock with non-force
   pushes; no branch the coordinator does not own is touched.
+- 2026-11-25T12:35Z — **shared main-merge queue** (agreed across sessions): #664 coordinator (gen 26 held) → #647
+  ghostpay-15 → #670 newghostpay-ae (`packages/payment-uri/src/invoice-link.ts` fix) → ghostpay-backup-60 test-only
+  follow-up to #647 → W3 privacy-boundary worker (from ghostpay-backup-60, starts ~04:58 PST) when qualified →
+  coordinator follow-ups (FC-05b #669; W4 PRs via W1). Each holder messages the next with release commit + new main.
+- 2026-11-25T12:36Z — owner: when all tasks are finished, work on unfinished privacy features. To avoid overlap with
+  W3, W4 and newghostpay-ae, the Haiku triage agent is compiling AGENTS.md's shared-core privacy list vs main/open PRs/
+  claims; the result will be shared with those workers before any new privacy assignment.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
