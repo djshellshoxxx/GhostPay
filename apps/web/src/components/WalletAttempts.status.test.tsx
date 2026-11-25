@@ -17,6 +17,8 @@ const hash = `0x${'b'.repeat(64)}`;
 const other: `0x${string}` = `0x${'d'.repeat(64)}`;
 const blockHash: `0x${string}` = `0x${'c'.repeat(64)}`;
 
+// Without globals there is no automatic cleanup: unmount so a late migration rejection cannot set state after jsdom teardown.
+afterEach(() => { cleanup(); });
 beforeEach(() => {
   window.localStorage.clear();
   window.sessionStorage.clear();

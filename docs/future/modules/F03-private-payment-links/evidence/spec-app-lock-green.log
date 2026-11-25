@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/apps/web
+
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=false) and opens only after explicit review
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=true) and opens only after explicit review
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > uses the existing passphrase flow without previewing private fields
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > accepts a second file after forgetting the first without refreshing the page
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > clears an earlier preview before rejecting an oversized replacement without reading it
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > cannot let an older file read replace a newer QR preview
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > choosing a file supersedes an older QR parser result
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after clear invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after close invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after hidden invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after session invalidation
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=absent) 319ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=retained) 90ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=absent) 144ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=retained) 118ms
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > discards a pending file when pinned signer policy changes without unmounting Pay
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > preserves the lean invoice gate when a request file contains a full-profile invoice
+
+ Test Files  1 passed (1)
+      Tests  4 passed | 13 skipped (17)
+   Start at  22:41:54
+   Duration  3.71s (import 35%, environment 23%, transform 23%, tests 19%)

@@ -4,6 +4,7 @@ import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
+import { PaymentRequestFileInput } from '../components/PaymentRequestFileInput';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -98,7 +99,9 @@ function invoiceQrFragment(text: string, baseUrl: string): string | undefined {
   if (fragment === undefined || !/^#gpi=v1\.[A-Za-z0-9_-]+$/.test(fragment) || fragment.length > FRAGMENT_PREFIX.length + encodedLimit) return undefined;
   return fragment;
 }
+// i18n-use: requestFile.summary requestFile.rejected requestFile.reviewAria requestFile.reviewHeading requestFile.open
 interface InvoiceQrPreview {
+  readonly source: 'qr' | 'file';
   readonly fragment: string;
   readonly result: OpenFragmentResult;
   readonly revision: number;
@@ -153,8 +156,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
   const [paste, setPaste] = useState('');
   const [invoiceQrPreview, setInvoiceQrPreview] = useState<InvoiceQrPreview | undefined>();
-  const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
+  const [invoiceQrError, setInvoiceQrError] = useState<{ readonly source: 'qr' | 'file'; readonly message: DisplayMessage } | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
+  const [invoiceCameraReset, setInvoiceCameraReset] = useState(0);
+  const [invoiceFileEpoch, setInvoiceFileEpoch] = useState(0);
   const invoiceQrRevision = useRef(0);
   const invoiceQrMounted = useRef(true);
   const invoiceQrDisclosure = useRef<HTMLDetailsElement | null>(null);
@@ -209,6 +214,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setInvoiceQrError(undefined);
   }, []);
   const resetInvoiceQr = useCallback((): void => { invalidateInvoiceQr(); setInvoiceQrReset((value) => value + 1); }, [invalidateInvoiceQr]);
+  // A newer QR input replaces any staged file preview, so the file reader's own status must not outlive it.
+  const invalidateFromCamera = useCallback((): void => { invalidateInvoiceQr(); setInvoiceFileEpoch((value) => value + 1); }, [invalidateInvoiceQr]);
+  const beginInvoiceFile = (): (() => boolean) => {
+    invalidateInvoiceQr();
+    // Choosing a file supersedes a running camera or QR parser without remounting this file reader.
+    setInvoiceCameraReset((value) => value + 1);
+    const revision = invoiceQrRevision.current;
+    return () => invoiceQrRevision.current === revision;
+  };
   const disclosureClosed = (records: readonly MutationRecord[]): boolean => records.some((record) => record.attributeName === 'open' && record.oldValue !== null);
   const invoiceQrIsOpen = (): boolean => {
     // Native toggle events can coalesce. Consume queued close records before a callback or confirmation can act.
@@ -229,7 +243,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     return () => { invoiceQrMounted.current = false; invoiceQrRevision.current += 1; };
   }, []);
 
-  const importInvoiceQr = async (text: string, signal: AbortSignal): Promise<boolean> => {
+  const importInvoiceQr = async (text: string, signal: AbortSignal, source: 'qr' | 'file' = 'qr'): Promise<boolean> => {
     const revision = invoiceQrRevision.current;
     const scope = invoiceQrScope;
     const assertSession = captureSessionVersionGuard();
@@ -242,17 +256,17 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (candidate === undefined) {
       // Name another GhostPay QR family so the user can take it to the right screen; never act on it here.
       const other = otherQrFamily(text);
-      setInvoiceQrError(other === undefined ? { key: 'pay.error.invoiceQrLink' } : { key: 'pay.error.invoiceQrOtherFamily', values: { family: other } });
+      setInvoiceQrError({ source, message: other === undefined ? { key: 'pay.error.invoiceQrLink' } : { key: 'pay.error.invoiceQrOtherFamily', values: { family: other } } });
       return false;
     }
     try {
       const result = await openFragment(candidate, { pinnedSigners: pinned });
       if (!current()) return false;
       if (result.status === 'ok' && !supportsInvoice(result.parsed.invoice, supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
-      setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
+      setInvoiceQrPreview({ source, fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
-      if (current()) setInvoiceQrError(captureUserMessage(error));
+      if (current()) setInvoiceQrError({ source, message: captureUserMessage(error) });
       return false;
     }
   };
@@ -974,19 +988,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </form>
         )}
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
-          <summary>{t('pay.scan.summary')}</summary>
+          <summary>{t('requestFile.summary')}</summary>
           <p>{t('pay.scan.intro')}</p>
-          <CameraImporter key={invoiceQrReset} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
-          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
-          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{displayMessage(invoiceQrError, t)}</Notice>}
+          <PaymentRequestFileInput key={invoiceQrReset} scopeKey={invoiceQrScope} supersededEpoch={invoiceFileEpoch} onInputChange={(reason) => (reason === 'select' ? beginInvoiceFile() : invalidateInvoiceQr())} onText={(text, signal) => importInvoiceQr(text, signal, 'file')} />
+          <CameraImporter key={`${invoiceQrReset}:${invoiceCameraReset}`} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateFromCamera} onText={importInvoiceQr} />
+          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('requestFile.clear')}</button>
+          {invoiceQrError !== undefined && <Notice kind="error" title={t(invoiceQrError.source === 'file' ? 'requestFile.rejected' : 'pay.scan.rejected')}>{displayMessage(invoiceQrError.message, t)}</Notice>}
           {invoiceQrPreview !== undefined && (
-            <section aria-label={t('pay.scan.reviewAria')}>
-              <h3>{t('pay.scan.reviewHeading')}</h3>
+            <section aria-label={t(invoiceQrPreview.source === 'file' ? 'requestFile.reviewAria' : 'pay.scan.reviewAria')}>
+              <h3>{t(invoiceQrPreview.source === 'file' ? 'requestFile.reviewHeading' : 'pay.scan.reviewHeading')}</h3>
               {invoiceQrPreview.result.status === 'needsPassphrase'
                 ? <p>{t('pay.scan.needsPassphrase')}</p>
                 : <p>{invoiceQrPreview.result.parsed.verification.signatureValid ? t('pay.scan.chainValid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) }) : t('pay.scan.chainInvalid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) })}</p>}
               <p>{t('pay.scan.openNote')}</p>
-              <button type="button" className="btn" onClick={openInvoiceQr}>{t('pay.scan.open')}</button>
+              <button type="button" className="btn" onClick={openInvoiceQr}>{t(invoiceQrPreview.source === 'file' ? 'requestFile.open' : 'pay.scan.open')}</button>
             </section>
           )}
         </details>
@@ -1415,4 +1430,4 @@ function FinalPreview(props: {
   );
 }
 
-// i18n-use: error.pay.aGasBufferNeedsAnRPCForThisChainTo help.about help.receiptFile pay.announce.approvalUnverified pay.announce.cancelled pay.announce.connected pay.announce.delayDone pay.announce.paymentUnverified pay.announce.prepared pay.announce.previous pay.announce.revoked pay.announce.scheduled pay.announce.submitted pay.approval.before pay.approval.confirmed pay.approval.confirmedHash pay.approval.confirmedTitle pay.approval.enough pay.approval.exact pay.approval.excess pay.approval.explain pay.approval.needed pay.approval.neededTitle pay.approval.now pay.approval.presentTitle pay.approval.revoke pay.approval.spender pay.buffer.estimate pay.buffer.estimating pay.buffer.label pay.buffer.notAccepted pay.buffer.title pay.cancel pay.cannotProceed pay.chain pay.chain.unknown pay.checkAmount pay.checkoutFee pay.col.description pay.col.qty pay.col.unit pay.connect pay.connected pay.continue pay.copyHash pay.delay.hint pay.delay.label pay.destination pay.destinationNote pay.done.hash pay.done.heading pay.error.expiredWaiting pay.error.invoiceLink pay.error.invoiceQrLink pay.error.invoiceQrOtherFamily pay.error.noManifest pay.error.receiptConsent pay.error.receiptTooLarge pay.error.receiptUpdating pay.error.reviewChanged pay.error.sellerKeysChanged pay.error.supportedInvoice pay.expires pay.feePayer pay.feePayer.payer pay.feePayer.seller pay.feeRecipient pay.fiatNotChecked pay.fiatStated pay.final.bufferNote pay.final.contract pay.final.deadline pay.final.destination pay.final.fee pay.final.feeLine pay.final.gross pay.final.heading pay.final.intro pay.final.method pay.final.native pay.final.net pay.final.netLine pay.final.send pay.final.sendApprove pay.fixed.unknownToken pay.fixedTokenAmount pay.forget pay.gross pay.invoiceTotal pay.lineItems pay.lookingWallets pay.memo.flagged pay.memo.label pay.nativeCoin pay.nativeCoinTitle pay.netReceives pay.noWallet pay.options pay.passphrase.body pay.passphrase.label pay.passphrase.open pay.passphrase.opening pay.passphrase.title pay.paste.hintHistory pay.paste.hintLocal pay.paste.label pay.paste.labelAlt pay.prepare pay.previous.body pay.previous.title pay.pricing pay.pricing.fixed pay.pricing.quote pay.privatePart pay.privatePart.key pay.privatePart.passphrase pay.privatePart.plain pay.public.body pay.public.title pay.read pay.reading pay.receipt.check pay.receipt.checking pay.receipt.consent pay.receipt.download pay.receipt.download.confirm pay.receipt.fileLabel pay.receipt.heading pay.receipt.intro pay.receipt.keyHint pay.receipt.keyLabel pay.receipt.matchInvoiceKey pay.receipt.matchTrustedKey pay.receipt.matches pay.receipt.privacy pay.receipt.rejected pay.receipt.scanLabel pay.rejected.controlsUnavailable pay.rejected.nothingSent pay.rejected.title pay.removeLink pay.router pay.scan.chainInvalid pay.scan.chainValid pay.scan.clear pay.scan.importLabel pay.scan.intro pay.scan.needsPassphrase pay.scan.open pay.scan.openNote pay.scan.rejected pay.scan.reviewAria pay.scan.reviewHeading pay.scan.summary pay.sellerFingerprint pay.sellerFingerprintNote pay.sellerMeta pay.sendNow pay.sent.approvalTitle pay.sent.body pay.sent.paymentTitle pay.signature pay.startDelay pay.status.included pay.status.pending pay.status.permitUnsupported pay.status.reverted pay.status.unverified pay.status.walletWaiting pay.tax pay.title.input pay.title.review pay.token pay.token.nativeNote pay.verify.noRpc pay.verify.notVisible pay.verify.unverified pay.verify.verified pay.waiting.left pay.waiting.notice pay.wallet transaction.approved.announceNotSent transaction.approved.announceUnknown
+// i18n-use: error.pay.aGasBufferNeedsAnRPCForThisChainTo help.about help.receiptFile pay.announce.approvalUnverified pay.announce.cancelled pay.announce.connected pay.announce.delayDone pay.announce.paymentUnverified pay.announce.prepared pay.announce.previous pay.announce.revoked pay.announce.scheduled pay.announce.submitted pay.approval.before pay.approval.confirmed pay.approval.confirmedHash pay.approval.confirmedTitle pay.approval.enough pay.approval.exact pay.approval.excess pay.approval.explain pay.approval.needed pay.approval.neededTitle pay.approval.now pay.approval.presentTitle pay.approval.revoke pay.approval.spender pay.buffer.estimate pay.buffer.estimating pay.buffer.label pay.buffer.notAccepted pay.buffer.title pay.cancel pay.cannotProceed pay.chain pay.chain.unknown pay.checkAmount pay.checkoutFee pay.col.description pay.col.qty pay.col.unit pay.connect pay.connected pay.continue pay.copyHash pay.delay.hint pay.delay.label pay.destination pay.destinationNote pay.done.hash pay.done.heading pay.error.expiredWaiting pay.error.invoiceLink pay.error.invoiceQrLink pay.error.invoiceQrOtherFamily pay.error.noManifest pay.error.receiptConsent pay.error.receiptTooLarge pay.error.receiptUpdating pay.error.reviewChanged pay.error.sellerKeysChanged pay.error.supportedInvoice pay.expires pay.feePayer pay.feePayer.payer pay.feePayer.seller pay.feeRecipient pay.fiatNotChecked pay.fiatStated pay.final.bufferNote pay.final.contract pay.final.deadline pay.final.destination pay.final.fee pay.final.feeLine pay.final.gross pay.final.heading pay.final.intro pay.final.method pay.final.native pay.final.net pay.final.netLine pay.final.send pay.final.sendApprove pay.fixed.unknownToken pay.fixedTokenAmount pay.forget pay.gross pay.invoiceTotal pay.lineItems pay.lookingWallets pay.memo.flagged pay.memo.label pay.nativeCoin pay.nativeCoinTitle pay.netReceives pay.noWallet pay.options pay.passphrase.body pay.passphrase.label pay.passphrase.open pay.passphrase.opening pay.passphrase.title pay.paste.hintHistory pay.paste.hintLocal pay.paste.label pay.paste.labelAlt pay.prepare pay.previous.body pay.previous.title pay.pricing pay.pricing.fixed pay.pricing.quote pay.privatePart pay.privatePart.key pay.privatePart.passphrase pay.privatePart.plain pay.public.body pay.public.title pay.read pay.reading pay.receipt.check pay.receipt.checking pay.receipt.consent pay.receipt.download pay.receipt.download.confirm pay.receipt.fileLabel pay.receipt.heading pay.receipt.intro pay.receipt.keyHint pay.receipt.keyLabel pay.receipt.matchInvoiceKey pay.receipt.matchTrustedKey pay.receipt.matches pay.receipt.privacy pay.receipt.rejected pay.receipt.scanLabel pay.rejected.controlsUnavailable pay.rejected.nothingSent pay.rejected.title pay.removeLink pay.router pay.scan.chainInvalid pay.scan.chainValid pay.scan.importLabel pay.scan.intro pay.scan.needsPassphrase pay.scan.open pay.scan.openNote pay.scan.rejected pay.scan.reviewAria pay.scan.reviewHeading pay.sellerFingerprint pay.sellerFingerprintNote pay.sellerMeta pay.sendNow pay.sent.approvalTitle pay.sent.body pay.sent.paymentTitle pay.signature pay.startDelay pay.status.included pay.status.pending pay.status.permitUnsupported pay.status.reverted pay.status.unverified pay.status.walletWaiting pay.tax pay.title.input pay.title.review pay.token pay.token.nativeNote pay.verify.noRpc pay.verify.notVisible pay.verify.unverified pay.verify.verified pay.waiting.left pay.waiting.notice pay.wallet transaction.approved.announceNotSent transaction.approved.announceUnknown

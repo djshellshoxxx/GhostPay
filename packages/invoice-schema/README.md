@@ -67,6 +67,36 @@ give the single `WrongPassphraseError`.
 
 ## Format
 
+### Local payment request files
+
+`serializePaymentRequestFile(fragment)` wraps an existing invoice fragment without changing it.
+Use the generic filename `PAYMENT_REQUEST_FILE_NAME` (`ghostpay-request.gpr.json`) and
+`application/json`. The file contains exactly:
+
+```json
+{"format":"ghostpay-payment-request","version":1,"fragment":"#gpi=v1.<unchanged-envelope>"}
+```
+
+`parsePaymentRequestFile(text)` returns those three fields after checking the closed schema,
+strict JSON, canonical base64url, the 24 KiB UTF-8 file cap, and the existing 16 KiB decoded-envelope
+cap. Outer JSON whitespace is permitted. The fragment is never trimmed, normalized, re-signed,
+decrypted or rewritten. The synchronous helpers use no network, storage or DOM APIs.
+Callers must decode file bytes with a fatal UTF-8 decoder before parsing.
+
+Parsing the transport **does not authenticate the invoice or seller**. Feed the returned fragment
+through the ordinary explicit import review and `openFragment` checks, including signature status,
+signer pins, passphrase requirements, expiry and payment approval. Invalid invoice content can pass
+the transport wrapper and must still fail at that existing boundary. Request files do not prove
+payment or enforce global single-use, and other wallets need not support this GhostPay format.
+
+`PaymentRequestFileError` extends `InvoiceError` with a fixed message and `reason: 'format' | 'size'`;
+its codes are `FRAGMENT_FORMAT` and `FRAGMENT_TOO_LARGE`, respectively. It retains no source input.
+The wrapper adds no encryption: anyone holding a bearer-key fragment can read its invoice.
+Keep passphrases separate. Download history, file synchronization and forwarded copies can persist
+the request. The file intentionally contains no source origin, trusted-seller claim or extra labels.
+
+### Invoice envelopes
+
 - Canonical JSON: sorted keys, no whitespace, NFC strings, safe non-negative integers only (large values are
   decimal strings), UTF-8. The parser rejects duplicate keys, `__proto__`/`constructor`/`prototype`, floats, huge
   numbers, NaN, deep nesting, and any input that is not byte-for-byte the canonical form.
