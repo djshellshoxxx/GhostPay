@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
@@ -275,9 +276,14 @@ export function AppShell(props: AppShellProps): ReactNode {
     }),
     [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc],
   );
+  // One gate scope for the life of the shell: a connected wallet keeps working across key or settings changes, which
+  // each view's own authority checks handle. Such a change only cancels a review that is open at that moment.
+  const [walletDisclosureScope] = useState(() => ({}));
+  const walletDisclosureRevision = useMemo(() => ({ session, settings }), [session, settings]);
 
   return (
     <AppContext.Provider value={state}>
+      <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
@@ -332,6 +338,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
+      </WalletDisclosureProvider>
     </AppContext.Provider>
   );
 }

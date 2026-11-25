@@ -3,6 +3,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { useWalletDisclosure } from '../components/WalletDisclosure';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
@@ -146,6 +147,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  // Every wallet request from checkout (connect, network switch, permit, send) is shown and approved first.
+  const walletDisclosure = useWalletDisclosure();
   const latestT = useRef(t); latestT.current = t;
   const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
@@ -704,7 +707,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const invoice = parsed?.invoice;
     setError(undefined);
     setStatus({ key: 'pay.status.walletWaiting' });
-    connectWallet(w, chainId).then(
+    connectWallet(w, chainId, undefined, undefined, { disclosure: walletDisclosure }).then(
       (s) => {
         try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;

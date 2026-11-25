@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { request } from 'node:http';
 import type { BrowserContext, Page, Route } from '@playwright/test';
 import { getAddress, type Address, type Hex } from 'viem';
+import { approveWalletDisclosures } from '../walletDisclosure';
 
 /*
  * Node-side harness for the real-chain browser journey. The browser never talks to anvil directly: the app is configured
@@ -183,6 +184,8 @@ export class DevnetWallet {
   }
 
   async inject(page: Page): Promise<void> {
+    // Each wallet request is first shown in the in-page disclosure dialog; the devnet journeys approve it as a user would.
+    await approveWalletDisclosures(page);
     await page.exposeFunction('__devnetWallet', (method: string, params: unknown[]) => this.handle(method, params));
     await page.addInitScript((info) => {
       const w = window as unknown as { __devnetWallet: (method: string, params: unknown[]) => Promise<{ result?: unknown; error?: { code: number; message: string } }> };

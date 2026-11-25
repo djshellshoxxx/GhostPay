@@ -18,6 +18,10 @@ import ar from '../../locales/ar.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
 import ja from '../../locales/ja.json';
+import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 beforeEach(() => {
   clearSession();
