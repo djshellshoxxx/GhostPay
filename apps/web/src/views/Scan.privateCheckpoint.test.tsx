@@ -286,8 +286,15 @@ describe('private seller checkpoint UI', () => {
       expect(lock).toHaveBeenCalled();
       expect(getSessionPublic()).toBe(retainedSession);
       expect(automatic.checked).toBe(false);
-      await screen.findByText(/Paused\. Resume from the last durably saved checkpoint/);
+      const previousRuns = stage === 'RPC setup' ? 0 : 1;
+      expect(runner).toHaveBeenCalledTimes(previousRuns);
+      // The shell clears presentation writers on a lock. The scanner must reload
+      // the durable checkpoint, not restore the previous operation's terminal UI.
+      // Direct cancellation still has its own explicit Paused-status regression.
+      await screen.findByText(/Not started\. With no compatible history/);
       await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false));
+      expect([...s.saved.data.entries()]).toEqual(before);
+      expect(screen.queryByText(s.mine.stealthAddress)).toBeNull();
       await act(async () => {
         release();
         await gate;
@@ -295,12 +302,15 @@ describe('private seller checkpoint UI', () => {
       });
       expect([...s.saved.data.entries()]).toEqual(before);
       expect(screen.queryByText(/Finished\./)).toBeNull();
+      expect(screen.queryByText(s.mine.stealthAddress)).toBeNull();
+      expect(runner).toHaveBeenCalledTimes(previousRuns);
       expect(getSessionPublic()).toBe(retainedSession);
       s.saved.setGate(undefined);
       await user.click(screen.getByRole('button', { name: 'Start scan' }));
       await screen.findByText(/Finished\./);
       expect(screen.getByText(s.mine.stealthAddress)).toBeTruthy();
-      expect(automatic.checked).toBe(false);
+      expect(runner).toHaveBeenCalledTimes(previousRuns + 1);
+      expect(screen.getByLabelText<HTMLInputElement>('Keep checking for new payments while this page is open').checked).toBe(false);
     } finally { release(); }
   });
 
@@ -311,6 +321,7 @@ describe('private seller checkpoint UI', () => {
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     await screen.findByText(/Finished\./);
     const retainedSession = getSessionPublic();
+    const before = [...s.saved.data.entries()];
     const automatic = screen.getByLabelText<HTMLInputElement>('Keep checking for new payments while this page is open');
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     try {
@@ -322,10 +333,20 @@ describe('private seller checkpoint UI', () => {
         vi.advanceTimersByTime(AUTO_RESCAN_MAX_MS);
       });
       expect(automatic.checked).toBe(false);
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false);
       expect(runner).toHaveBeenCalledTimes(1);
       expect(getSessionPublic()).toBe(retainedSession);
+      expect([...s.saved.data.entries()]).toEqual(before);
     } finally { vi.useRealTimers(); }
+    // A newly scoped checkpoint read is asynchronous; the immediate timer
+    // safety checks above must not depend on its completion.
+    await screen.findByText(/Saved scan history is available/);
+    await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false));
+    expect(screen.getByLabelText<HTMLInputElement>('Keep checking for new payments while this page is open').checked).toBe(false);
+    expect(screen.queryByText(s.mine.stealthAddress)).toBeNull();
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+    expect(runner).toHaveBeenCalledTimes(1);
+    expect(getSessionPublic()).toBe(retainedSession);
+    expect([...s.saved.data.entries()]).toEqual(before);
   });
 
   it.each(['RPC opening', 'manifest readback'] as const)('cancels noncooperative %s promptly and allows a fresh scan', async (stage) => {
