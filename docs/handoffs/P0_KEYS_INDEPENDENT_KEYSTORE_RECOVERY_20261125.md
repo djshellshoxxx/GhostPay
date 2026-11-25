@@ -7,7 +7,7 @@ Resume from this file if the session stops. Update it after every milestone.
 | Branch | `claude/p0-keys-independent-recovery` (local worktree `.claude/worktrees/p0-keys-recovery`) |
 | Base | main `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f` (rebased from `c8e131c1` on 2026-11-25; only POS terminal commits came in) |
 | Qualified source | `27abc3a606965d1119642a7f4930b3b9cbf0c5df` (all local results below are for this tree unless a row says otherwise) |
-| PR | draft, see the PR row at the end |
+| PR | draft https://github.com/djshellshoxxx/GhostPay/pull/647 |
 | Owner claim | top entry of `docs/ai/ACTIVE_WORK.md` on this branch |
 
 ## Discovery (2026-11-25 04:40 UTC, main `c8e131c1`)
