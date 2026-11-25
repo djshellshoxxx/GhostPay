@@ -46,6 +46,21 @@ Acceptance: all source IDs covered, hard dependency graph acyclic, real code
 reuse documented, independent branch/spec publication verified, documentation-only
 diffs. No implementation, main merge, deployment, activation, fee decisions or release
 changes. Feature branches append their own claim before their specification commit.
+
+# Issue #287 item 4 · local metadata retention controls, presentation slice (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-retention-287-20261125`, base main
+`32ae3977`. Claim confirmed with no overlap by `newghostpay-ae` (#670, #674 address reuse) and `ghostpay-backup-60`
+(W3, #672; it keeps the `saveScanPrivacy` handler in Settings.tsx). Ported, not merged, from the diverged 2026-11-20
+privacy candidate line (`Recovered-from:` trailers); donor branches stay untouched.
+Owned paths: `apps/web/src/lib/metadataRetention*`, `lib/useInvoicePreviewRetention.ts`,
+`components/MetadataRetentionControls*`, the retention hunks in `CreateInvoice.tsx`, `PaymentRequestQr.tsx`, `Pay.tsx`
+and `Settings.tsx`, the `retention.*` catalog keys and `metadataRetention` security group, spec 19.
+Not owned: invoice metadata minimization and CreateInvoice's Copy-link row (W4), persistent timestamp retention in
+the reconciliation vault (#383/#587/#609; a later slice), merchant template issuer (full profile, deferred-adjacent).
+Acceptance: default-off preferences; preview, count and explicit confirmation; stale plans clear nothing; only
+presentation copies close and every saved record stays; hosted CI green at the exact head; merge via the shared queue.
+
 # payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
 
 Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.

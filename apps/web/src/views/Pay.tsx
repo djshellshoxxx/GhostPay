@@ -385,6 +385,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
   latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
+  // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
+  // payment and scope instead, so an ordinary rerender cannot restart its age.
+  const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
@@ -1353,7 +1356,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
         </div>
       )}
 
