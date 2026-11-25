@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAddress } from 'viem/utils';
-import { checkDestinationReuse } from './destinationReuse';
+import { checkDestinationReuse, isOwnOneTimeAddress } from './destinationReuse';
 
 const payer = '0x8ba1f109551bd432803012645ac136ddd64dba72';
 const address = '0x5aeda56215b167893e80b4fe645ba6d5bab767de';
@@ -44,8 +44,41 @@ describe('local EVM destination history', () => {
       expect(checkDestinationReuse(seller, chain, address, false)).toBeUndefined();
       expect(checkDestinationReuse(seller, chain, address, true)).toBeUndefined();
       expect(checkDestinationReuse(seller, chain, '  ' + getAddress(address) + ' ', false)).toBe('repeat-sweep');
-      expect(checkDestinationReuse({ ...seller, metaAddress: 'synthetic-profile-b' }, chain, address, false)).toBeUndefined();
+      // A second seller profile sweeping to the same wallet links the two profiles: reported, not treated as fresh.
+      expect(checkDestinationReuse({ ...seller, metaAddress: 'synthetic-profile-b' }, chain, address, false)).toBe('other-profile-sweep');
+      expect(checkDestinationReuse({ ...seller, metaAddress: 'synthetic-profile-b' }, chain, other, false)).toBeUndefined();
     }
+  });
+
+  it('reports a destination swept by another seller profile, ahead of the same profile repeating it', () => {
+    const profileB = { ...seller, metaAddress: 'synthetic-profile-b' };
+    expect(checkDestinationReuse(seller, 84532, address, true)).toBeUndefined();
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBe('repeat-sweep');
+    expect(checkDestinationReuse(profileB, 84532, address, true)).toBe('other-profile-sweep');
+    // Both profiles have now used it: either profile sees the cross-profile link first.
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBe('other-profile-sweep');
+    expect(checkDestinationReuse(profileB, 84532, address, false)).toBe('other-profile-sweep');
+    // Another network is a separate scope; invoice and sweep histories never answer for each other.
+    expect(checkDestinationReuse(profileB, 11155111, address, false)).toBeUndefined();
+    expect(checkDestinationReuse(invoice, 84532, address, false)).toBeUndefined();
+    const raw = storage.getItem('ghostpay.destination-review.v1')!;
+    for (const secret of ['synthetic-profile', address.slice(2), getAddress(address).slice(2)]) expect(raw).not.toContain(secret);
+  });
+
+  it('recognises another one-time address of these keys without storing or requesting anything', () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const own = [getAddress(address), other];
+    expect(isOwnOneTimeAddress(address, own)).toBe(true);
+    expect(isOwnOneTimeAddress(`  ${getAddress(other)} `, own)).toBe(true);
+    expect(isOwnOneTimeAddress(payer, own)).toBe(false);
+    expect(isOwnOneTimeAddress(address, [])).toBe(false);
+    for (const bad of ['', '0x123', address + '0', '0x5Aeda56215b167893e80b4fe645ba6d5bab767de', 7 as unknown as string]) {
+      expect(isOwnOneTimeAddress(bad, own)).toBe(false);
+    }
+    expect(isOwnOneTimeAddress(address, [5 as unknown as string, address])).toBe(true);
+    expect(records.size).toBe(0);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('rejects malformed input without storing a record', () => {
@@ -63,7 +96,8 @@ describe('local EVM destination history', () => {
     expect(records.size).toBe(0);
     checkDestinationReuse(invoice, 84532, address, true);
     const key = 'ghostpay.destination-review.v1';
-    for (const raw of [address.slice(2), payer.slice(2), invoice.invoiceDigest]) {
+    // Neither the lowercase nor the EIP-55 spelling of any identifier may appear.
+    for (const raw of [address.slice(2), getAddress(address).slice(2), payer.slice(2), getAddress(payer).slice(2), invoice.invoiceDigest]) {
       expect(storage.getItem(key)).not.toContain(raw);
     }
     expect(persistentWrite).not.toHaveBeenCalled();

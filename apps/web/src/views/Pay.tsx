@@ -177,9 +177,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
-  const destinationReviews = useRef(new WeakMap<BuiltPayment, {
+  const [destinationReviews] = useState(() => ({ current: new WeakMap<BuiltPayment, {
     session: typeof app.session; notice: DestinationNotice;
-  }>());
+  }>() }));
   const reviewWallet = useRef<WalletSession | undefined>(undefined);
   const [walletChanged, setWalletChanged] = useState(false);
   useLayoutEffect(() => {
@@ -789,10 +789,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setGranted(undefined);
         setApprovalHash(undefined);
         if (!mounted.current) return;
-        const notice = reviewWallet.current !== wallet ? undefined : checkDestinationReuse(
-          { kind: 'invoice', payer: wallet.account, invoiceDigest: bytesToHex(invoiceDigest(invoice)) },
-          wallet.chainId, b.preview.stealth, true,
-        );
+        // Advisory only: nothing here may throw into the payment flow.
+        let notice: DestinationNotice | undefined;
+        try {
+          notice = reviewWallet.current !== wallet ? undefined : checkDestinationReuse(
+            { kind: 'invoice', payer: wallet.account, invoiceDigest: bytesToHex(invoiceDigest(invoice)) },
+            wallet.chainId, b.preview.stealth, true,
+          );
+        } catch { notice = 'unavailable'; }
         if (notice !== undefined) destinationReviews.current.set(b, { session: app.session, notice });
         setBuilt(b);
         setBuiltFor(invoice);

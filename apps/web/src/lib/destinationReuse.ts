@@ -2,12 +2,13 @@ import { bytesToHex, isAddress, keccak256, toBytes } from 'viem/utils';
 
 const STORAGE_KEY = 'ghostpay.destination-review.v1';
 const LIMIT = 128;
-const ENTRY = /^[0-9a-f]{64}(?:\.[0-9a-f]{64})?$/;
+/** Every record is `<scoped destination>.<invoice or seller profile>`, both salted keccak-256. */
+const ENTRY = /^[0-9a-f]{64}\.[0-9a-f]{64}$/;
 
 type Candidate =
   | { readonly kind: 'invoice'; readonly payer: string; readonly invoiceDigest: string }
   | { readonly kind: 'sweep'; readonly metaAddress: string };
-export type DestinationNotice = 'same-invoice' | 'different-invoice' | 'repeat-sweep' | 'unavailable';
+export type DestinationNotice = 'same-invoice' | 'different-invoice' | 'repeat-sweep' | 'other-profile-sweep' | 'unavailable';
 
 interface History {
   salt: string;
@@ -41,16 +42,19 @@ export function checkDestinationReuse(
     const previous = read(storage);
     if (previous === undefined && !remember) return undefined;
     const history = previous ?? { salt: bytesToHex(crypto.getRandomValues(new Uint8Array(16))).slice(2), entries: [] };
-    const account = candidate.kind === 'invoice' ? candidate.payer.toLowerCase() : candidate.metaAddress;
     const digest = (parts: readonly (number | string)[]): string => keccak256(toBytes(JSON.stringify(parts))).slice(2);
-    const tag = digest([history.salt, candidate.kind, account, chainId, address.toLowerCase()]);
-    let entry = tag;
+    // Invoice: the destination is scoped to the payer account, the suffix to the signed invoice.
+    // Sweep: the destination is scoped to the network only and the suffix to the seller profile, so a destination
+    // used by another seller profile in this tab is recognised too (that sweep links the two profiles on-chain).
+    const tag = candidate.kind === 'invoice'
+      ? digest([history.salt, 'invoice', candidate.payer.toLowerCase(), chainId, address.toLowerCase()])
+      : digest([history.salt, 'sweep-destination', chainId, address.toLowerCase()]);
+    const entry = tag + '.' + digest([tag, candidate.kind === 'invoice' ? candidate.invoiceDigest : candidate.metaAddress]);
+    const elsewhere = history.entries.some((e) => e.startsWith(tag + '.') && e !== entry);
+    const again = history.entries.includes(entry);
     let notice: DestinationNotice | undefined;
-    if (candidate.kind === 'invoice') {
-      entry = tag + '.' + digest([tag, candidate.invoiceDigest]);
-      if (history.entries.some((e) => e.startsWith(tag + '.') && e !== entry)) notice = 'different-invoice';
-      else if (history.entries.includes(entry)) notice = 'same-invoice';
-    } else if (history.entries.includes(tag)) notice = 'repeat-sweep';
+    if (candidate.kind === 'invoice') notice = elsewhere ? 'different-invoice' : again ? 'same-invoice' : undefined;
+    else notice = elsewhere ? 'other-profile-sweep' : again ? 'repeat-sweep' : undefined;
     if (remember) {
       const entries = [...history.entries.filter((e) => e !== entry), entry].slice(-LIMIT);
       try { storage.setItem(STORAGE_KEY, JSON.stringify({ salt: history.salt, entries })); }
@@ -61,4 +65,16 @@ export function checkDestinationReuse(
     // Optional advisory history can never veto a transaction, even when storage is denied or full.
     return 'unavailable';
   }
+}
+
+/**
+ * True when a sweep destination is another one-time address that received a payment for these keys (from the
+ * current scan's matches). Sweeping into it links both payments on-chain, and that payment's payer knows the address.
+ * Local comparison only; malformed input is never a match.
+ */
+export function isOwnOneTimeAddress(destination: string, ownAddresses: readonly string[]): boolean {
+  const address = typeof destination === 'string' ? destination.trim() : '';
+  if (address.length !== 42 || !isAddress(address)) return false;
+  const wanted = address.toLowerCase();
+  return ownAddresses.some((own) => typeof own === 'string' && own.toLowerCase() === wanted);
 }

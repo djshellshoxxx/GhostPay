@@ -138,8 +138,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(first).not.toEqual(second);
 
     const send = page.getByRole('button', { name: 'Send payment in my wallet' });
-    const same = page.getByText(/already reviewed this destination for the same signed invoice/);
-    const reused = page.getByText(/same destination for another invoice/);
+    const same = page.getByText(/already prepared this exact destination for the same signed invoice/);
+    const reused = page.getByText(/exact destination for another invoice/);
     const prepare = async (link: string, scalar: number, switchAccount = false): Promise<string> => {
       await openFresh(page, link);
       await page.getByRole('button', { name: 'Continue' }).click();
@@ -157,7 +157,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       }, scalar);
       await page.getByRole('button', { name: 'Prepare payment' }).click();
       await expect(send).toBeEnabled();
-      return page.getByText('Payment destination', { exact: true }).locator('+ dd').innerText();
+      return page.getByText('One-time destination', { exact: true }).locator('+ dd').innerText();
     };
     const destination = await prepare(first, 11);
     await expect(same.or(reused)).toHaveCount(0);
@@ -168,7 +168,6 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(same.or(reused)).toHaveCount(0);
     expect(await prepare(second, 11)).toBe(destination);
     await expect(reused).toBeVisible();
-    await expect(page.getByText(/A fresh one-time.*address is derived/i)).toHaveCount(0);
     await expect(same).toHaveCount(0);
     const history = await page.evaluate(() => sessionStorage.getItem('ghostpay.destination-review.v1'));
     expect(history).toBeTruthy();

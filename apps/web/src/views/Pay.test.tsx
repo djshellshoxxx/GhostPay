@@ -529,7 +529,7 @@ describe('Pay: sending', () => {
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
     expect(screen.getByText('payNative')).toBeTruthy();
-    expect(screen.getByText('Payment destination')).toBeTruthy();
+    expect(screen.getByText('One-time destination')).toBeTruthy();
     expect(screen.getByText(new RegExp(`to ${FAKE_FEE_RECIPIENT}`))).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();

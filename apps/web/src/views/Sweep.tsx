@@ -3,7 +3,7 @@ import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
-import { checkDestinationReuse } from '../lib/destinationReuse';
+import { checkDestinationReuse, isOwnOneTimeAddress } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -134,7 +134,13 @@ export function Sweep(): ReactNode {
   }
 
   const target: SweepTarget = { chainId, token: tokenAddr, owner: sel.match.stealthAddress, announcement: sel.match.announcement };
-  const reuseNotice = checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false);
+  // Another one-time address of these keys outranks the history notice: it links two payments and a payer knows it.
+  // The selected address itself is refused by checkDestination, so only the other matches are compared.
+  const otherOwnAddresses = app.matches.map((m) => m.stealthAddress).filter((a) => a.toLowerCase() !== sel.match.stealthAddress.toLowerCase());
+  const reuseNotice = isOwnOneTimeAddress(destination, otherOwnAddresses)
+    ? 'own-payment' as const
+    : checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, destination, false);
+  // Advisory bookkeeping only: checkDestinationReuse never throws, so it cannot veto a handoff.
   const rememberDestination = (address: string): void => {
     checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, address, true);
   };
@@ -210,6 +216,8 @@ export function Sweep(): ReactNode {
         const lock: SweepLock = { chainId, owner: target.owner, order, status: 'unknown-after-handoff' };
         beginSweepAttempt(lock);
         handoff.lock = lock;
+        // Remembered at handoff, after the lock is persisted: a relayer timeout may still move the funds there.
+        rememberDestination(dest);
       };
       let submitted: string;
       try {
@@ -225,7 +233,6 @@ export function Sweep(): ReactNode {
         if (permitKey !== undefined) throw new UserFacingError(sweepPermitSuggestsDirect(permitKey) ? { key: 'sweep.permit.withFallback', values: { reason: { key: permitKey }, fallback: { key: 'sweep.permit.directFallback' } } } : { key: permitKey });
         throw e;
       }
-      rememberDestination(dest);
       setHash(submitted);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
@@ -268,7 +275,7 @@ export function Sweep(): ReactNode {
         res = await directSweep({
           target, manifest: loaded, destination: dest, amount: balance, rpc,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
+          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); rememberDestination(dest); },
         });
       } catch (e) {
         // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
@@ -276,7 +283,6 @@ export function Sweep(): ReactNode {
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
-      rememberDestination(dest);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
