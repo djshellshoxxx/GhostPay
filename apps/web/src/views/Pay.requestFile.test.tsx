@@ -141,18 +141,28 @@ describe('Pay request-file intake', () => {
   it('keeps the QR importer input when the page is hidden with no file involved', async () => {
     await openInput();
     const region = screen.getByRole('region', { name: 'Invoice QR import' });
-    fireEvent.change(within(region).getByLabelText('Or paste QR text'), { target: { value: 'half-typed qr text' } });
+    const pasted = within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    fireEvent.change(pasted, { target: { value: 'half-typed qr text' } });
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
     act(() => { document.dispatchEvent(new Event('visibilitychange')); });
-    expect(within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('half-typed qr text');
+    // Re-query after the event: a remounted importer would leave the earlier node detached with its old value.
+    const after = within(screen.getByRole('region', { name: 'Invoice QR import' })).getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    expect(after.isConnected).toBe(true);
+    expect(after).toBe(pasted);
+    expect(after.value).toBe('half-typed qr text');
   });
 
   it('keeps the QR importer input when the app locks with no file involved', async () => {
     await openInput();
     const region = screen.getByRole('region', { name: 'Invoice QR import' });
-    fireEvent.change(within(region).getByLabelText('Or paste QR text'), { target: { value: 'half-typed qr text' } });
+    const pasted = within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    fireEvent.change(pasted, { target: { value: 'half-typed qr text' } });
     act(() => { notifyAppLock('idle'); });
-    expect(within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('half-typed qr text');
+    // Re-query after the event: a remounted importer would leave the earlier node detached with its old value.
+    const after = within(screen.getByRole('region', { name: 'Invoice QR import' })).getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    expect(after.isConnected).toBe(true);
+    expect(after).toBe(pasted);
+    expect(after.value).toBe('half-typed qr text');
   });
 
   it('clears the file-ready status when a newer QR input replaces the preview', async () => {

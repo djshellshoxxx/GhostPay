@@ -31,8 +31,12 @@ Union of both sides, no key dropped:
 ## Changes beyond the merge (`fd5ba475`) after independent review
 
 - D1: the file input now reports `onInputChange('select' | 'invalidate')`. Only 'select' remounts the camera
-  importer. Hide, lock and disclosure close no longer wipe the QR importer's pasted text and status.
-  Tests: hide and lock keep pasted text (red before the fix).
+  importer. Hide and lock no longer remount it, so its pasted text survives. A staged QR preview is still
+  cleared on hide or lock (`invalidateInvoiceQr` clears whichever preview is staged), which is stricter than
+  main and intended. Closing the disclosure still remounts the importer through `resetInvoiceQr`, exactly as on main.
+  Tests: hide and lock keep the same pasted textarea node connected with its value (re-queried after the event).
+  The first versions of these tests failed against the pre-fix wiring (3 failed, observed locally with the
+  `Pay.tsx` wiring reverted); the re-query version is stricter and was not separately re-run red.
 - N1: a newer QR input clears the file input's "ready" status (`supersededEpoch`). Test (red before).
 - N2: a refused file shows one alert. The child shows a polite status and the view shows the alert.
 - N4: the bearer warning is tied to the download button with `aria-describedby`.
@@ -69,5 +73,6 @@ See the PR description for the final table. Heavy commands ran through the machi
 - N3, N5 and N7 were noted by the independent review and are not fixed here.
 - Full web coverage suite and Playwright were not run locally. Hosted CI is authoritative.
 - Request files are bearer documents with the same access as the invoice link. The format adds no encryption.
-- Draft locales (es, ja, ar) show the English F03 strings until native review.
+- Draft locales (es, ja, ar) show the English F03 strings, including the new scan/open summary and Clear labels,
+  until native review (`REVIEWED_LOCALES` is empty).
 - #310 is superseded by this PR only once it merges.
