@@ -27,7 +27,7 @@ GhostPay needs an RPC provider (a server that reads the blockchain for you). You
 
 | Who | What they learn |
 |---|---|
-| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address when you open Sweep (the app reads its balance), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. |
+| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address (and, for a token balance, the token contract) when you press "Read balance from the Settings RPC" in Sweep (opening Sweep alone does not read it), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. |
 | **A Bitcoin (Esplora) server** | Every block you scan, each output that matched you (it is asked whether it was spent), and what you broadcast. |
 | **A Solana or TRON node** (experimental) | The balance check for each address that matched you. |
 | **The relayer operator**, if you use one | The one-time address, your destination, token, amount, fee, your internet address (stored only as a short-lived hash for rate limiting) and the timing. It can refuse or delay your request. It cannot change the destination or amount you signed. |
@@ -79,6 +79,25 @@ provider learns per query; they do not make you anonymous. Decoy-batched reads, 
 amount rounding exist as libraries but are **not switched on in the web app or the relayer**, so do not assume they
 protect you. See the [threat model](../threat-model/PRIVACY_THREAT_MODEL.md#8-mitigations-available-today-honestly-rated)
 and [seller privacy](seller-privacy.md).
+
+### What the scan privacy settings cover, and what they do not
+
+- They apply to the requests GhostPay sends while scanning: to the scan RPC or your local proxy, the optional indexer
+  and the second RPC. Before each of those requests, and again when its answer arrives, the app checks that the saved
+  scan privacy settings and the RPC addresses the scan started with are unchanged. If you change them, in this tab or
+  another one, the scan stops: nothing more goes out on the old route and late answers from it are ignored. Start the
+  scan again. Requests that were already sent cannot be recalled.
+- If the saved settings cannot be read exactly as saved (for example, after a manual edit, or because the browser
+  refused to read site storage), GhostPay does not guess and does not fall back to Direct. Scanning stays blocked, the
+  second RPC is not contacted and Sweep reads a balance only when you ask, until you review and save the settings.
+- Sweep, paying an invoice and checking a receipt use the RPC in Settings directly, not the scan path (see the table
+  above).
+- **Your wallet's own traffic is outside them.** A browser wallet or wallet app that you connect to pay, sign or
+  publish talks to its own RPC provider and services, with its own network settings. GhostPay's transport, local proxy,
+  Tor Browser setting, second RPC and request checks do not apply to that traffic, and GhostPay can neither see nor
+  check it. The wallet and its provider can see your accounts, the chain, each request you approve and, unless you hide
+  it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
+  hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
 
 ## Specific limits to remember
 
