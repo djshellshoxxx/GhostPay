@@ -74,11 +74,14 @@ test.describe('help guide coverage', () => {
     await expect(page.locator('.flow-lanes .flow > li')).toHaveCount(10);
   });
 
-  test('the privacy matrix names every status label used by the guide', async ({ page }) => {
+  test('the privacy matrix uses only the status labels defined by the guide legend', async ({ page }) => {
+    await page.goto('/help.html');
+    const legend = (await page.locator('.legend .status').allTextContents()).map((s) => s.trim()).sort();
+    expect(legend).toEqual(['Experimental', 'Implemented', 'Planned', 'Unsupported']);
     await page.goto('/privacy.html');
     await expect(page.getByRole('table', { name: 'What each feature stores, exposes and leaves unprotected' })).toBeVisible();
-    for (const status of ['Implemented', 'Experimental', 'Unsupported']) {
-      await expect(page.locator('.matrix .status', { hasText: status }).first()).toBeVisible();
-    }
+    const used = new Set((await page.locator('.matrix .status').allTextContents()).map((s) => s.trim()));
+    expect(used.size).toBeGreaterThan(1);
+    for (const status of used) expect(legend).toContain(status);
   });
 });

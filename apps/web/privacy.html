@@ -68,7 +68,7 @@
                 <th scope="row">Pay an invoice <span class="status status-experimental">Experimental</span> on testnets, gated</th>
                 <td>Wallet attempt records with transaction references, in localStorage and IndexedDB</td>
                 <td>Your wallet; the RPC provider (queries and your IP address); the public chain (sender, one-time recipient, amount, time)</td>
-                <td>An unknown outcome may already be on-chain. Clearing a local record cannot cancel a transaction</td>
+                <td>An unknown outcome may already be on-chain. Clearing a local record cannot cancel a transaction. A gas buffer, if the invoice accepts one, is sent in the same transaction, publicly links the payment, the one-time address and the payer, and is never refunded</td>
               </tr>
               <tr>
                 <th scope="row">Scan and receive <span class="status status-experimental">Experimental</span> on testnets, gated</th>
@@ -137,7 +137,7 @@
                 <td>Test networks only. Mainnet is <span class="status status-unsupported">Unsupported</span></td>
               </tr>
               <tr>
-                <th scope="row">Route scanning through Tor Browser <span class="status status-unsupported">Unsupported as routing</span></th>
+                <th scope="row">Route scanning through Tor Browser <span class="status status-unsupported">Unsupported</span> as routing</th>
                 <td>Nothing</td>
                 <td>Selecting the label does not route the app through Tor</td>
                 <td>Use Tor only if you have configured and verified it yourself, and understand its limits</td>

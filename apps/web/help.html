@@ -124,7 +124,7 @@
               <tr><th scope="row">Public seller configuration (QR, text or file)</th><td>Preview and comparison of public keys and supported networks on another device</td><td>Any private key. Preview only: it cannot change your keys</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
               <tr><th scope="row">Reconciliation history backup (encrypted)</th><td>Scan history rows, for the same viewing key only</td><td>Keys. Imported observations are untrusted until rescanned</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
               <tr><th scope="row">Tag archive (.gpa file with passphrase)</th><td>Local tags, and optionally encrypted reconciliation history, into this browser</td><td>Seller keys, settings, wallet attempts</td><td><span class="status status-implemented">Implemented</span> full build only</td></tr>
-              <tr><th scope="row">Settings exchange (preferences file or QR)</th><td>Delay range, idle-lock timeout, theme and address-bar clearing. RPC URLs, relayer URL and pinned signer keys only if you tick them</td><td>Keys</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
+              <tr><th scope="row">Settings exchange (preferences file or QR)</th><td>Delay range, idle-lock timeout, theme and address-bar clearing. primary and second-provider RPC URLs, relayer URL and pinned signer keys only if you tick them</td><td>Keys</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
               <tr><th scope="row">Single-payment stealth key export (Scan)</th><td>The private key of one payment, encrypted, or raw after a confirmation. Raw keys are sensitive</td><td>Other payments or the seller's key set</td><td><span class="status status-implemented">Implemented</span> both builds</td></tr>
               <tr><th scope="row">Master stealth backup (one file for every stealth key)</th><td>Not available in the app</td><td>Everything</td><td><span class="status status-planned">Planned</span> library code only</td></tr>
             </tbody>
@@ -173,6 +173,7 @@
           </table>
         </div>
         <p>A passphrase protects the invoice contents. It does not change whether the invoice can be paid. The browser sends the part after <code>#</code> only to your own page, not to a server, and GhostPay clears it from the address bar after loading by default. The link can still exist in chat history, screenshots, clipboard contents or a browser history entry.</p>
+        <p><strong>Gas buffer (full build, token invoices only).</strong> A seller may accept an optional extra native-coin amount that the payer sends in the same transaction, so the one-time address can be swept without a linked wallet. The buffer is never refunded. It publicly links the payment, the one-time address and the payer, and its amount is an estimate, not a guarantee. Lean builds do not accept invoices with a buffer policy.</p>
         <p><strong>Matching is off by default.</strong> If you register an invoice for local matching, GhostPay can later suggest that a scanned payment corresponds to it. You confirm each suggestion. Registration never marks an invoice as paid.</p>
         <p><span class="status status-experimental">Experimental</span> Fiat-quoted invoices need a price feed and are available only in the full build on testnet feeds. Do not use them for real pricing.</p>
         <details>
@@ -252,7 +253,7 @@
       <section aria-labelledby="devices">
         <h2 id="devices">9. Share public configuration and settings</h2>
         <p>Public seller configuration can be exported as QR, text or a file. It contains public keys, the supported networks and a check value. Compare the public keys on both devices before you rely on the preview. The check value detects accidental changes. It does not authenticate the sender or prove the data is recent.</p>
-        <p>Settings exchange carries preferences by default: the delay range, idle-lock timeout, theme and address-bar clearing. RPC URLs, the relayer URL and pinned signer keys are <strong>optional sections</strong>. They are not ticked by default, so review each one before you export. Anything you tick leaves the device in the export file or QR code.</p>
+        <p>Settings exchange carries preferences by default: the delay range, idle-lock timeout, theme and address-bar clearing. Primary and second-provider RPC URLs, the relayer URL and pinned signer keys are <strong>optional sections</strong>. They are not ticked by default, so review each one before you export. Anything you tick leaves the device in the export file or QR code.</p>
         <p>Camera use starts only when you request it. If the camera is unavailable or permission is refused, use the file import instead.</p>
       </section>
 
@@ -262,7 +263,7 @@
         <ul>
           <li><strong>Use an https:// address.</strong> The Settings check does not accept plain http, including localhost, on this path.</li>
           <li><strong>Test</strong> sends one chain-identity request (<code>eth_chainId</code>) to the address in the field, when you click it. It can test a value you have not saved. It sends no credentials and does not follow redirects.</li>
-          <li><strong>A second provider is optional.</strong> It is compared with the primary. If the two disagree, GhostPay reports a disagreement and blocks payments until they agree. Using a second provider also sends your queries to a second operator.</li>
+          <li><strong>A second provider is optional.</strong> When set, the reads that verify a deployment are compared with the primary. If the two disagree, the check fails and payments stay blocked until a later check agrees. Scanning withholds the checkpoint for any page where the providers disagree and scans that page again. The app does not retry a disagreement. Other calls, including block-number and transaction-send requests, use the primary only. A second provider also sends the same queries to a second operator.</li>
           <li><strong>What a provider learns:</strong> your IP address, the addresses and transaction data your requests name, and when you ask. A provider can log this. Choose an operator you trust, or run your own node if you can.</li>
           <li><strong>Do not put secrets in a URL you save.</strong> Saved settings are stored in this browser without encryption, and a key in a path or query string is visible there.</li>
         </ul>
@@ -279,7 +280,7 @@
               <tr><th scope="row">TRON nile, shasta and local</th><td><span class="status status-experimental">Experimental</span> Full build only</td></tr>
               <tr><th scope="row">Scan transport: direct</th><td><span class="status status-implemented">Implemented</span> Queries go straight to your RPC provider</td></tr>
               <tr><th scope="row">Scan transport: local proxy</th><td><span class="status status-experimental">Experimental</span></td></tr>
-              <tr><th scope="row">Scan transport: Tor Browser label</th><td><span class="status status-unsupported">Unsupported as routing</span> The label does not route the app through Tor. Use it only if you have configured and verified Tor yourself</td></tr>
+              <tr><th scope="row">Scan transport: Tor Browser label</th><td><span class="status status-unsupported">Unsupported</span> as routing The label does not route the app through Tor. Use it only if you have configured and verified Tor yourself</td></tr>
               <tr><th scope="row">Sweep: direct</th><td><span class="status status-implemented">Implemented</span> Needs native gas at the one-time address. No GhostPay fee is charged</td></tr>
               <tr><th scope="row">Sweep: relayer</th><td><span class="status status-experimental">Experimental</span> Needs a relayer URL you set (empty by default). No hosted relayer is part of this project. A relayer sees the requested destination, amount, fee and timing</td></tr>
               <tr><th scope="row">Policy accounts</th><td><span class="status status-experimental">Experimental</span> Behind a build flag, testnet only. Their fee is not enforced yet</td></tr>
@@ -290,7 +291,7 @@
         <details>
           <summary>Technical details: endpoint validation and fail-closed behaviour</summary>
           <div class="technical">
-            <p>Endpoint validation accepts https (and wss, which the browser transport refuses). Requests omit credentials and refuse redirects. The optional second provider is used for verification only when it is set. On a mismatch the app raises a provider-disagreement error and the deployment becomes unverified, so payments stop. There is no automatic retry that would hide the disagreement.</p>
+            <p>Endpoint validation accepts https (and wss, which the browser transport refuses). Requests omit credentials and refuse redirects. The optional second provider is used for verification only when it is set. The app's verification check compares each covered read and does not retry, so a mismatch is not hidden. The library also contains a reconciled client that retries once after a short pause for tip races; the app does not use it. On a mismatch the deployment becomes unverified, so payments stop.</p>
           </div>
         </details>
       </section>
@@ -416,7 +417,7 @@
             <thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead>
             <tbody>
               <tr><th scope="row">Payments are blocked</th><td>Check the network status in section 10. As delivered, no verified deployment is bundled, so payments stay blocked. Do not bypass the check.</td></tr>
-              <tr><th scope="row">Providers disagree</th><td>Check each endpoint. Wait for them to agree, or remove the secondary provider. Do not approve a payment while the disagreement remains.</td></tr>
+              <tr><th scope="row">Providers disagree</th><td>Check each endpoint and wait for a later check. Removing the secondary provider stops the comparison, so you lose that protection. Do not approve a payment while the disagreement remains.</td></tr>
               <tr><th scope="row">Unknown outcome after sending</th><td>Look up the transaction in your wallet and on the chain before retrying. A second payment can duplicate the first.</td></tr>
               <tr><th scope="row">Storage is unavailable</th><td>Check this browser's site-storage permissions and retry. Export backups before you clear site data.</td></tr>
               <tr><th scope="row">The backup will not unlock</th><td>Use the matching file, the correct passphrase and the right key scope. Public configuration and receipt files cannot restore secret keys.</td></tr>
