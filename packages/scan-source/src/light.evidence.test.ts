@@ -105,7 +105,7 @@ describe('light source evidence (PRIV-T07)', () => {
     expect(ids(r)).not.toContain(`${blockHash(1500n)}:2`);
     expect(describeScanEvidence(s, { lightClient: { verifiesLogs: true } })).toStrictEqual({
       blockIdentity: 'verified',
-      recordInclusion: 'verified',
+      recordInclusion: 'unverified',
       intervalCompleteness: 'unverified',
     });
   });

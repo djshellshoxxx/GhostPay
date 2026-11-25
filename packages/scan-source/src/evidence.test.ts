@@ -14,7 +14,7 @@ describe('describeScanEvidence table', () => {
     ['indexer', 'unverified', { blockIdentity: 'cross-checked', recordInclusion: U, intervalCompleteness: U }],
     ['pir2', 'unverified', { blockIdentity: U, recordInclusion: U, intervalCompleteness: U }],
     ['light', 'unverified', { blockIdentity: 'verified', recordInclusion: U, intervalCompleteness: U }],
-    ['light', 'proof', { blockIdentity: 'verified', recordInclusion: 'verified', intervalCompleteness: U }],
+    ['light', 'proof', { blockIdentity: 'verified', recordInclusion: U, intervalCompleteness: U }],
     ['quorum', 'quorum', { blockIdentity: 'cross-checked', recordInclusion: U, intervalCompleteness: U }],
   ];
   it.each(table)('%s/%s', (kind, integrity, want) => {
@@ -27,10 +27,10 @@ describe('describeScanEvidence table', () => {
       intervalCompleteness: U,
     });
   });
-  it('light proof with a client that verifies logs: inclusion verified, completeness still not', () => {
+  it('a capability flag is not evidence: light proof with a client claiming verifiesLogs still leaves inclusion and completeness unverified', () => {
     expect(describeScanEvidence({ kind: 'light', integrity: 'proof' }, { lightClient: { verifiesLogs: true } })).toStrictEqual({
       blockIdentity: 'verified',
-      recordInclusion: 'verified',
+      recordInclusion: U,
       intervalCompleteness: U,
     });
   });
@@ -62,15 +62,10 @@ describe('describeScanEvidence invariants', () => {
       }),
     );
   });
-  it('property: record inclusion is verified only for a light source with proof integrity', () => {
+  it('property: record inclusion is never verified by any kind, integrity label or light-client flag', () => {
     fc.assert(
       fc.property(arbKind, arbIntegrity, arbLc, (kind, integrity, lightClient) => {
-        const e = describeScanEvidence({ kind, integrity }, lightClient ? { lightClient } : {});
-        if (e.recordInclusion === 'verified') {
-          expect(kind).toBe('light');
-          expect(integrity).toBe('proof');
-          expect(lightClient?.verifiesLogs ?? true).toBe(true);
-        }
+        expect(describeScanEvidence({ kind, integrity }, lightClient ? { lightClient } : {}).recordInclusion).toBe(U);
       }),
     );
   });

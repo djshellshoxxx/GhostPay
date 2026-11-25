@@ -34,7 +34,9 @@ export interface ScanEvidenceOptions {
  *   consistency, not chain authentication, and only the head hash is compared with a third source, not the
  *   block hash of each record: all `unverified`.
  * - `light`: returned heads and blocks are confirmed by the light client's header chain (`verified`). Record
- *   inclusion is `verified` only when `integrity === 'proof'` (and, if given, `lightClient.verifiesLogs`).
+ *   inclusion stays `unverified`: `createLightSource` never requests or checks a receipt or log proof (the
+ *   `LightClient` interface has no such method), so `integrity: 'proof'` / `verifiesLogs` is only a capability
+ *   flag and is not evidence. It becomes `verified` only when a source actually checks inclusion proofs.
  * - `quorum`: sources agreeing is `cross-checked` at best; no inclusion proof.
  *
  * @security `intervalCompleteness` is `unverified` for EVERY input. A verified block header proves a block
@@ -51,9 +53,9 @@ export function describeScanEvidence(source: Pick<PublicLogSource, 'kind' | 'int
     case 'indexer':
     case 'quorum':
       return { blockIdentity: 'cross-checked', recordInclusion: 'unverified', intervalCompleteness };
-    case 'light': {
-      const proves = source.integrity === 'proof' && (o.lightClient === undefined || o.lightClient.verifiesLogs);
-      return { blockIdentity: 'verified', recordInclusion: proves ? 'verified' : 'unverified', intervalCompleteness };
-    }
+    case 'light':
+      // `o.lightClient` is accepted for API stability but deliberately unused: a flag is not a proof check.
+      void o;
+      return { blockIdentity: 'verified', recordInclusion: 'unverified', intervalCompleteness };
   }
 }
