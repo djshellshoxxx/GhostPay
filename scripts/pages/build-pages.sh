@@ -137,8 +137,6 @@ rm -f "$work/dist/_headers"
 rm -rf "$work/dist/deployments"
 : >"$work/dist/.nojekyll"
 mv "$work/dist" "$site"
-# Owner stop-work containment (AGENTS.md 2026-11-25): no stopped or deferred product module or file may be emitted.
-node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die "release-exclusion check failed"
 
 # Label the mirror (ADR-0015 item 5): a static, script-free banner above the app root, worded for the payment state.
 cp "$ROOT/scripts/pages/assets/pages-mirror.css" "$site/pages-mirror.css"
@@ -177,6 +175,9 @@ for (const name of readdirSync(dir)) {
 process.stdout.write(createHash('sha256').update(JSON.stringify(out)).digest('hex'));
 NODE
 )"
+# Owner stop-work containment (AGENTS.md 2026-11-25): no stopped or deferred product module or file may be emitted.
+# Runs on the final site, after the last site mutation (mirror stylesheet and banner) and before checksums/evidence.
+node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die "release-exclusion check failed"
 node --input-type=module - "$site" "$evidence" "$commit" "$manifests_sha" "$ROOT" "$deployments" "$origin" "$shared" "$dev" <<'NODE'
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';

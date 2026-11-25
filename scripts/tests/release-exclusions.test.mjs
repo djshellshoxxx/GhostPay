@@ -215,11 +215,26 @@ test('CLI exits 0 on a clean report and 1 listing every stopped module', () => {
   }
 });
 
-test('build-pages.sh runs the verifier on the assembled site before anything reaches the output directory', () => {
-  const script = readFileSync(fileURLToPath(new URL('../pages/build-pages.sh', import.meta.url)), 'utf8');
-  const assemble = script.indexOf('mv "$work/dist" "$site"');
-  const verify = script.indexOf('node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die');
-  const publish = script.indexOf('mv "$site" "$out/site"');
-  assert.ok(assemble > 0 && verify > assemble && publish > verify, `assemble ${assemble} verify ${verify} publish ${publish}`);
-  assert.match(script, /^set -euo pipefail$/m);
+test('build-pages.sh runs the verifier on the final site: after every site mutation, before checksums and publish', () => {
+  const lines = readFileSync(fileURLToPath(new URL('../pages/build-pages.sh', import.meta.url)), 'utf8').split('\n');
+  const at = (pred, what) => {
+    const i = lines.findIndex(pred);
+    assert.ok(i >= 0, `${what} not found`);
+    return i;
+  };
+  const verify = at((l) => l.startsWith('node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die'), 'verifier');
+  assert.equal(lines.filter((l) => l.includes('verify-release-exclusions.mjs')).length, 1, 'exactly one verifier invocation');
+  // Every shell line that creates, copies, moves or rewrites something under "$site" must come before the verifier.
+  const mutations = lines.map((l, i) => [l, i]).filter(([l]) => /(?:^|\s)(?:cp|mv|rm|mkdir|touch|ln|tee|sed)\b.*"\$site|>\s*"\$site|node --input-type=module - "\$site\//.test(l));
+  assert.ok(mutations.length >= 3, `expected site mutations, saw ${String(mutations.length)}`);
+  const publish = at((l) => l.startsWith('mv "$site" "$out/site"'), 'publish');
+  for (const [l, i] of mutations) {
+    if (i === publish) continue;
+    assert.ok(i < verify, `site mutation after the exclusion check (line ${String(i + 1)}): ${l}`);
+  }
+  // The block that writes SHA256SUMS and pages-evidence.json (and calls verifySite) starts after the verifier.
+  const checksums = at((l) => l.includes("writeFileSync(join(evidence, 'SHA256SUMS')"), 'SHA256SUMS');
+  const finalBlock = at((l) => l.startsWith('node --input-type=module - "$site" "$evidence"'), 'final verification block');
+  assert.ok(verify < finalBlock && finalBlock < checksums && checksums < publish, `verify ${String(verify)} block ${String(finalBlock)} sums ${String(checksums)} publish ${String(publish)}`);
+  assert.ok(lines.includes('set -euo pipefail'));
 });
