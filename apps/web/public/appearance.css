@@ -35,6 +35,7 @@
   a, legend { color: var(--accent); }
   input[type='checkbox'], input[type='radio'] { accent-color: var(--accent); }
 }
-@media print { :root { color-scheme: light; } }
-/* Forced colours: the system palette replaces author colours, so follow the system scheme instead of forcing dark. */
+/* Forced colours replace author colours. Ignore a dark default or explicit dark choice and follow the system scheme.
+   Declared before print so that print (light) wins when both apply, including in pages that load no print.css. */
 @media (forced-colors: active) { :root { color-scheme: light dark; } }
+@media print { :root { color-scheme: light; } }
