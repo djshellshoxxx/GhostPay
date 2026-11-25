@@ -35,7 +35,7 @@ is a documented limitation (DEVIATIONS P13-7, owner decision D6). This is not an
 | `node scripts/agent/package-map.mjs --check`; `node --test scripts/agent/*.test.mjs` | `02647f93` | current; 12/12 pass |
 | `git diff --check c8e131c1..HEAD` (own files) | `f8337b06` | clean; the merged spec file has one trailing blank line (not edited) |
 
-Full suite (interim, still running when this line was written): typecheck passed in all workspaces; lint 0 errors in 67 workspaces (1 pre-existing warning, below); tests finished for 9 workspaces with 0 failing. The final result is recorded in a follow-up commit; until then it is pending, not passed.
+Full suite (`c2c9849f`, finished; exit 1): typecheck passed in all workspaces; lint 0 errors in 67 workspaces (1 pre-existing warning, below); vitest passed in all 68 workspaces (13,592 tests passed, 125 skipped, 0 failed). Node script tests: 253 pass, 1 skip, **1 fail**: `scripts/testnet/verify-sources.test.mjs` case 25 exits 127 with `cast: command not found`, because Foundry is not installed in this container; forge tests for the three Foundry projects were skipped for the same reason. This branch changes no file under `scripts/` and no Solidity. Hosted CI (with Foundry) is the authority for both. The `confidential-amounts` changes after `c2c9849f` (review fixes) were re-run separately at `f8337b06` (table above).
 
 Not run: Foundry (no Solidity change), `confidential-contracts` Hardhat tests (untouched), apps/web e2e (web unchanged
 and does not import P13), Firefox/WebKit, any public testnet. Skips are not passes.
