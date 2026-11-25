@@ -1,7 +1,7 @@
 # Send or open a payment request file
 
-This feature is implemented on `future/f03-private-payment-links`. Check the feature's audit and
-qualification report before integrating it into a release.
+Status: experimental, testnet-only and not audited, like the rest of GhostPay (see the README "Status" section).
+The request file is a convenience wrapper around the signed invoice link; it adds no encryption and no new trust.
 
 ## Send a request
 

@@ -46,7 +46,7 @@ async function downloadRequest(page: Page): Promise<Buffer> {
 
 async function openImport(page: Page): Promise<void> {
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   await page.waitForLoadState('networkidle');
 }
 
@@ -177,7 +177,7 @@ test('successive request files open their own signed terms without a page refres
   await expect(review.getByText('Memo: Synthetic request B', { exact: true })).toBeVisible();
   await expect(page.getByText('Synthetic request A', { exact: false })).toHaveCount(0);
   await page.getByRole('button', { name: 'Forget this invoice', exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   await uploadRequest(page, first);
   await page.getByRole('button', { name: OPEN, exact: true }).click();
   await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();

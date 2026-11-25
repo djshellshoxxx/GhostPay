@@ -204,6 +204,8 @@ describe('local payment request file intake', () => {
     act(() => { document.dispatchEvent(new Event('visibilitychange')); });
     expect(signal?.aborted).toBe(true);
     expect(changed).toHaveBeenCalledTimes(2);
+    expect(changed).toHaveBeenNthCalledWith(1, 'select');
+    expect(changed).toHaveBeenNthCalledWith(2, 'invalidate');
     await act(async () => { open.resolve(true); await open.promise; });
     expect(screen.queryByText(READY)).toBeNull();
   });

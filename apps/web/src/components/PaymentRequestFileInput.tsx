@@ -15,8 +15,13 @@ export interface PaymentRequestFileInputProps {
    * Clear the previous preview before inspecting a replacement. The optional returned guard binds this
    * read to the parent's input revision, so another source (such as QR) can supersede a slow file read.
    */
-  readonly onInputChange?: () => void | (() => boolean);
+  readonly onInputChange?: (reason: InputChangeReason) => void | (() => boolean);
+  /** Bump to discard this input's pending read and status when another import source supersedes it. */
+  readonly supersededEpoch?: number;
 }
+
+/** 'select' starts a new file read; 'invalidate' is a lock, hide or disclosure close with no file involved. */
+export type InputChangeReason = 'select' | 'invalidate';
 
 interface ImportRequest {
   readonly controller: AbortController;
@@ -28,7 +33,7 @@ interface ImportRequest {
 type FileMessage = { readonly key: MessageKey; readonly error: boolean };
 
 /** Selected files stay in memory and enter the same explicit preview as QR input. No URL is followed. */
-export function PaymentRequestFileInput({ onText, scopeKey, onInputChange }: PaymentRequestFileInputProps): ReactNode {
+export function PaymentRequestFileInput({ onText, scopeKey, onInputChange, supersededEpoch }: PaymentRequestFileInputProps): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const root = useRef<HTMLDivElement | null>(null);
   const live = useRef(false);
@@ -58,7 +63,7 @@ export function PaymentRequestFileInput({ onText, scopeKey, onInputChange }: Pay
     // Closing and immediately reopening a disclosure must not revive the old read before toggle fires.
     if (closed(observer.current?.takeRecords() ?? [])) {
       discard();
-      inputChanged.current?.();
+      inputChanged.current?.('invalidate');
       return false;
     }
     if (pending.current !== request || request.controller.signal.aborted || request.scope !== currentScope.current || !visible()) return false;
@@ -70,7 +75,7 @@ export function PaymentRequestFileInput({ onText, scopeKey, onInputChange }: Pay
 
   useEffect(() => {
     live.current = true;
-    const invalidate = (): void => { discard(); inputChanged.current?.(); };
+    const invalidate = (): void => { discard(); inputChanged.current?.('invalidate'); };
     // A payer or a session retaining its sole key copy can lock without changing session identity.
     const unsubscribeLock = subscribeAppLock(invalidate);
     const watch = new MutationObserver((records) => { if (closed(records)) invalidate(); });
@@ -91,14 +96,14 @@ export function PaymentRequestFileInput({ onText, scopeKey, onInputChange }: Pay
       document.removeEventListener('visibilitychange', visibilityChanged);
     };
   }, [discard]);
-  useEffect(() => { discard(); }, [scopeKey, discard]);
+  useEffect(() => { discard(); }, [scopeKey, supersededEpoch, discard]);
 
   const choose = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.currentTarget.files?.[0];
     // Snapshot before resetting: same-file retries work and a late result cannot erase a newer selection.
     event.currentTarget.value = '';
     discard();
-    const guard = inputChanged.current?.();
+    const guard = inputChanged.current?.('select');
     const parentCurrent = typeof guard === 'function' ? guard : undefined;
     if (file === undefined || !visible()) return;
     if (!Number.isSafeInteger(file.size) || file.size < 1) {
@@ -152,8 +157,9 @@ export function PaymentRequestFileInput({ onText, scopeKey, onInputChange }: Pay
       <Field label={t('requestFile.label')} hint={t('requestFile.hint')}>
         {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="application/json,.gpr.json,.json" onChange={choose} />}
       </Field>
-      {message !== undefined && (message.error
+      {message !== undefined && (message.error && message.key !== 'requestFile.rejected'
         ? <Notice kind="error">{t(message.key)}</Notice>
+        // The owning view shows the single alert with the specific refusal reason; this stays a polite status.
         : <p role="status">{t(message.key)}</p>)}
     </div>
   );

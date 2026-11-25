@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { AttemptResolution } from '../lib/attemptStatus';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt } from '../lib/duplicateAttemptJournal';
 import { mockRpc } from '../test/mockRpc';
@@ -17,6 +17,8 @@ const hash = `0x${'b'.repeat(64)}`;
 const other: `0x${string}` = `0x${'d'.repeat(64)}`;
 const blockHash: `0x${string}` = `0x${'c'.repeat(64)}`;
 
+// Without globals there is no automatic cleanup: unmount so a late migration rejection cannot set state after jsdom teardown.
+afterEach(() => { cleanup(); });
 beforeEach(() => {
   window.localStorage.clear();
   window.sessionStorage.clear();

@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
+import { ATTEMPT_JOURNAL_KEY, readAttempts } from '../lib/duplicateAttemptJournal';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { ServicesContext } from '../lib/services';
@@ -39,7 +40,7 @@ async function openInput() {
   const rendered = renderApp(makeServices({ discoverWallets, loadManifest, createRpc, fetchFn }));
   const user = userEvent.setup();
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
-  await user.click(screen.getByText('Scan an invoice QR'));
+  await user.click(screen.getByText('Scan an invoice QR or open a request file'));
   loadManifest.mockClear(); createRpc.mockClear(); discoverWallets.mockClear(); fetchFn.mockClear();
   return { ...rendered, user, discoverWallets, loadManifest, createRpc, fetchFn };
 }
@@ -63,7 +64,11 @@ describe('Pay request-file intake', () => {
     expect(loadManifest).not.toHaveBeenCalled();
     expect(createRpc).not.toHaveBeenCalled();
     expect(fetchFn).not.toHaveBeenCalled();
-    expect(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1')).toBeNull();
+    // The attempt journal lives in localStorage since #500; selecting and previewing a file must not touch it.
+    expect(ATTEMPT_JOURNAL_KEY).toBe('ghostpay.wallet-attempts.v1');
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBeNull();
+    expect(window.sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBeNull();
+    expect(readAttempts()).toEqual([]);
     await user.click(screen.getByRole('button', { name: 'Open request file' }));
     expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy();
     expect(screen.getByText('Fixed: 0.5 ETH')).toBeTruthy();
@@ -96,7 +101,7 @@ describe('Pay request-file intake', () => {
     await user.click(await screen.findByRole('button', { name: 'Open request file' }));
     await screen.findByText('Fixed: 0.5 ETH');
     await user.click(screen.getByRole('button', { name: 'Forget this invoice' }));
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     selectFile(requestFile(second.fragment));
     await user.click(await screen.findByRole('button', { name: 'Open request file' }));
     expect(await screen.findByText('Fixed: 0.75 ETH')).toBeTruthy();
@@ -133,6 +138,43 @@ describe('Pay request-file intake', () => {
     expect(await screen.findByText('Fixed: 0.75 ETH')).toBeTruthy();
   });
 
+  it('keeps the QR importer input when the page is hidden with no file involved', async () => {
+    await openInput();
+    const region = screen.getByRole('region', { name: 'Invoice QR import' });
+    fireEvent.change(within(region).getByLabelText('Or paste QR text'), { target: { value: 'half-typed qr text' } });
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    act(() => { document.dispatchEvent(new Event('visibilitychange')); });
+    expect(within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('half-typed qr text');
+  });
+
+  it('keeps the QR importer input when the app locks with no file involved', async () => {
+    await openInput();
+    const region = screen.getByRole('region', { name: 'Invoice QR import' });
+    fireEvent.change(within(region).getByLabelText('Or paste QR text'), { target: { value: 'half-typed qr text' } });
+    act(() => { notifyAppLock('idle'); });
+    expect(within(region).getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('half-typed qr text');
+  });
+
+  it('clears the file-ready status when a newer QR input replaces the preview', async () => {
+    const first = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const second = await makeParsed({ token: 'native', tokenAmount: '0.75' });
+    const { user } = await openInput();
+    selectFile(requestFile(first.fragment));
+    await screen.findByText('Request file is ready for review.');
+    await scanText(second.fragment, user);
+    await screen.findByRole('button', { name: 'Open scanned invoice' });
+    expect(screen.queryByText('Request file is ready for review.')).toBeNull();
+  });
+
+  it('shows one alert when the file is refused', async () => {
+    const { fragment } = await makeParsed();
+    await openInput();
+    vi.spyOn(invoices, 'openFragment').mockRejectedValueOnce(new Error('refused'));
+    selectFile(requestFile(fragment));
+    await screen.findAllByText('Request file was not accepted.');
+    expect(screen.getAllByRole('alert')).toHaveLength(1);
+  });
+
   it('choosing a file supersedes an older QR parser result', async () => {
     const first = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const second = await makeParsed({ token: 'native', tokenAmount: '0.75' });
@@ -155,7 +197,7 @@ describe('Pay request-file intake', () => {
     const { user, discoverWallets, createRpc } = await openInput();
     selectFile(requestFile(fragment, () => read.promise));
     if (action === 'clear') await user.click(screen.getByRole('button', { name: 'Clear imported invoice' }));
-    if (action === 'close') await user.click(screen.getByText('Scan an invoice QR'));
+    if (action === 'close') await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     if (action === 'session') act(() => { clearSession(); });
     if (action === 'hidden') {
       vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
@@ -222,7 +264,7 @@ describe('Pay request-file intake', () => {
     const view = (pinnedSigners: readonly string[]) => <ServicesContext.Provider value={services}><AppContext.Provider value={{ ...app, settings: { ...DEFAULT_SETTINGS, pinnedSigners } }}><Pay /></AppContext.Provider></ServicesContext.Provider>;
     const { rerender } = render(view([]));
     const user = userEvent.setup();
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     const read = deferred<ArrayBuffer>();
     selectFile(requestFile(fragment, () => read.promise));
     rerender(view([parsed.invoice.signer]));
@@ -245,7 +287,7 @@ describe('Pay request-file intake', () => {
     };
     render(<ServicesContext.Provider value={services}><AppContext.Provider value={app}><Pay supportedOnly /></AppContext.Provider></ServicesContext.Provider>);
     const user = userEvent.setup();
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     selectFile(requestFile(created.fragment));
     expect(await screen.findByText('This build supports fixed-amount invoices without a seller buffer policy.')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Open request file' })).toBeNull();

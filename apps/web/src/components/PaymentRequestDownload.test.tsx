@@ -53,4 +53,11 @@ describe('payment request download', () => {
     rerender(<PaymentRequestDownload fragment="#gpi=v1.e30" />);
     expect(screen.queryByRole('alert')).toBeNull();
   });
+
+  it('ties the bearer warning to the download button', () => {
+    render(<PaymentRequestDownload fragment="#gpi=v1.e30" />);
+    const button = screen.getByRole('button', { name: 'Download payment request' });
+    const hint = document.getElementById(button.getAttribute('aria-describedby') ?? '');
+    expect(hint?.textContent).toMatch(/same access as the invoice link/);
+  });
 });
