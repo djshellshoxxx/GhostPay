@@ -4,7 +4,7 @@ import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { attemptTxDigest, beginAttempt, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
-import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
+import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, requireApproval, walletRequestParams, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR } from '../i18n/source';
 import type { Translator } from '../i18n/translator';
@@ -244,8 +244,10 @@ export async function connectWallet(
   const provider = wallet.provider;
   let approval: WalletDisclosureApproval | undefined;
   let changed = false;
-  let requestingAccounts = false;
-  let switching = false;
+  // While a disclosed wallet call and the reads that verify its outcome run, account and network events are
+  // expected (granting access announces the account, the approved switch announces its chain); the reads below
+  // check the actual state. Outside these windows any event refuses: it falls between an approval and its request.
+  let expectingEvents = false;
   const check = (): void => {
     assertCurrent?.();
     if (changed || signal?.aborted === true || wallet.provider !== provider) {
@@ -253,44 +255,53 @@ export async function connectWallet(
     }
     approval?.assertCurrent();
   };
-  // Only a disclosed connection observes the wallet while it connects: an account or network change between an
-  // approved review and the wallet request it named cancels that request. Without a gate nothing changes.
+  // Only a disclosed connection observes the wallet while it connects. Without a gate nothing changes.
   const stop = disclosure === undefined ? (): void => undefined : observeWalletLifecycle(provider, (event) => {
-    // Granting access may announce the initial account or network, and the approved switch announces its chain.
-    if (event === 'disconnect' || (!requestingAccounts && !(event === 'chainChanged' && switching))) changed = true;
+    if (event === 'disconnect' || !expectingEvents) changed = true;
   });
   try {
     check();
     if (disclosure !== undefined) approval = await reviewWalletRequest(provider, disclosure, prepareWalletConnection(expectedChainId).disclosure, check, signal);
     check();
-    requestingAccounts = true;
+    expectingEvents = disclosure !== undefined;
     const requested = firstAccount(await call(provider, 'eth_requestAccounts'));
-    requestingAccounts = false;
+    // The approval was used by the request it named; an expiry afterwards cannot take back access already granted.
+    approval = undefined;
     check();
     const listed = firstAccount(await call(provider, 'eth_accounts'));
     check();
     if (requested !== listed) throw new UserFacingError({ key: 'error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue' });
     let chainId = await readChainId(provider, check);
     check();
+    expectingEvents = false;
     if (chainId !== expectedChainId) {
-      const switchParams = [{ chainId: `0x${expectedChainId.toString(16)}` }];
+      let switchParams: unknown[] = [{ chainId: `0x${expectedChainId.toString(16)}` }];
       if (disclosure !== undefined) {
         // A network switch needs its own approval; the account-access approval cannot authorize it.
-        approval = undefined;
-        approval = await reviewWalletRequest(provider, disclosure, prepareWalletChainSwitch(expectedChainId, requested).disclosure, check, signal);
+        const prepared = prepareWalletChainSwitch(expectedChainId, requested);
+        approval = await reviewWalletRequest(provider, disclosure, prepared.disclosure, check, signal);
+        switchParams = walletRequestParams(prepared) ?? switchParams;
       }
       check();
       try {
-        switching = true;
+        expectingEvents = disclosure !== undefined;
         await call(provider, 'wallet_switchEthereumChain', switchParams);
       } catch (e) {
         if (e instanceof UserFacingError) throw e;
-      } finally { switching = false; }
+      }
+      approval = undefined;
       chainId = await readChainId(provider);
       check();
       if (chainId !== expectedChainId) {
         throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
       }
+      if (disclosure !== undefined) {
+        // A disclosed switch was reviewed for this account: confirm the wallet still reports it afterwards.
+        const finalAccount = firstAccount(await call(provider, 'eth_accounts'));
+        check();
+        if (finalAccount !== requested) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+      }
+      expectingEvents = false;
     }
     return { wallet, account: requested, chainId, ...(disclosure === undefined ? {} : { disclosure }) };
   } finally { stop(); }
@@ -341,7 +352,7 @@ async function reviewWalletRequest(provider: Eip1193Provider, disclose: WalletDi
     signal?.addEventListener('abort', abort, { once: true });
     stop = observeWalletLifecycle(provider, abort);
     if (operation.signal.aborted) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
-    const approval = await disclose(request, operation.signal);
+    const approval = requireApproval(await disclose(request, operation.signal));
     check();
     if (operation.signal.aborted) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
     approval.assertCurrent();
@@ -448,8 +459,9 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
   const onChanged = (): void => { changed = true; operation.abort(); };
   let stop: () => void;
   if (s.disclosure !== undefined) {
-    // A shown disclosure must be cancellable by any wallet change: a provider that cannot be observed in full refuses,
-    // and callbacks become inert before untrusted removal can reenter them.
+    // A shown disclosure must be cancellable by any wallet change: a provider with only one of `on`/`removeListener`
+    // refuses, and callbacks become inert before untrusted removal can reenter them. A request-only provider (neither)
+    // cannot be observed; the wallet recheck after approval still re-reads its account and network.
     stop = observeWalletLifecycle(provider, onChanged);
   } else {
     const events = ['accountsChanged', 'chainChanged', 'disconnect'];
@@ -500,9 +512,10 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   const authority = walletAuthority(s, assertCurrent);
   try {
     authority.assert();
-    // The approval is checked again immediately before the provider call, never after it returns a hash.
-    const approval = disclose === undefined || disclosed === undefined ? undefined : await disclose(disclosed.disclosure, authority.signal);
-    const check = (): void => { authority.assert(); approval?.assertCurrent(); };
+    // The approval is checked again immediately before the provider call, never after it returns a hash. A gate that
+    // answers without a usable approval cancels.
+    const approval = disclose === undefined || disclosed === undefined ? undefined : requireApproval(await disclose(disclosed.disclosure, authority.signal));
+    const check = (): void => { authority.assert(); if (approval !== undefined) approval.assertCurrent(); };
     check();
     await recheckWallet(s, check);
     check();
@@ -513,7 +526,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       txDigest: attemptTxDigest(s.chainId, s.account, captured.to, captured.data, captured.value),
     };
     // A disclosed request sends exactly the reviewed parameters; they equal the undisclosed form field for field.
-    const params = disclosed?.params ?? [{ from: s.account, to: captured.to, data: captured.data, value: `0x${captured.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` }];
+    const params = (disclosed === undefined ? undefined : walletRequestParams(disclosed)) ?? [{ from: s.account, to: captured.to, data: captured.data, value: `0x${captured.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` }];
     const invoke = (attempt: WalletAttempt | undefined): StartedRequest => {
       check();
       const pending = call(s.wallet.provider, 'eth_sendTransaction', params);
@@ -598,14 +611,14 @@ export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: st
   const authority = walletAuthority(s, assertCurrent);
   try {
     authority.assert();
-    const approval = disclose === undefined || disclosed === undefined ? undefined : await disclose(disclosed.disclosure, authority.signal);
-    const check = (): void => { authority.assert(); approval?.assertCurrent(); };
+    const approval = disclose === undefined || disclosed === undefined ? undefined : requireApproval(await disclose(disclosed.disclosure, authority.signal));
+    const check = (): void => { authority.assert(); if (approval !== undefined) approval.assertCurrent(); };
     check();
     await recheckWallet(s, check);
     check();
-    const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', disclosed?.params ?? [s.account, typedDataJson]);
-    // An unused signature is safe to discard, so an approval that expired while the wallet was open refuses it.
-    check();
+    const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', (disclosed === undefined ? undefined : walletRequestParams(disclosed)) ?? [s.account, typedDataJson]);
+    // The approval was used by the request it named; the wallet account and network must still be the reviewed ones.
+    authority.assert();
     if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidSignature' });
     return sig as Hex;
   } finally { authority.dispose(); }

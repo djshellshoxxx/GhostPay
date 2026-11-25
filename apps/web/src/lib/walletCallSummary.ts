@@ -21,9 +21,14 @@ function collectFields(input: AbiParameter, value: unknown, name: string, fields
   }
 }
 
-/** Only label canonical calldata from a locally known ABI. A decoded call describes arguments, not its eventual effects. */
-export function summarizeWalletCall(calldata: Hex, abi: Abi = coreAbi): WalletCallSummary | undefined {
-  if (calldata.length < 10) return undefined;
+/**
+ * Only label canonical calldata from a locally known ABI: the built-in router, ERC-20 and ERC-6538 entries plus an
+ * optional extra ABI (the built-in entry wins on a shared selector). A decoded call describes arguments, not its
+ * eventual effects.
+ */
+export function summarizeWalletCall(calldata: Hex, extraAbi?: Abi): WalletCallSummary | undefined {
+  if (typeof calldata !== 'string' || calldata.length < 10) return undefined;
+  const abi: Abi = extraAbi === undefined ? coreAbi : [...coreAbi, ...extraAbi];
   try {
     const item = getAbiItem({ abi, name: calldata.slice(0, 10).toLowerCase() });
     if (item?.type !== 'function' || item.stateMutability === 'view' || item.stateMutability === 'pure') return undefined;

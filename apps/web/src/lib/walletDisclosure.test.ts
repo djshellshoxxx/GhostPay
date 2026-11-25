@@ -34,8 +34,12 @@ describe('bounded immutable wallet request descriptions', () => {
     expect(Object.isFrozen(request.params)).toBe(true);
     expect(Object.isFrozen(request.params?.[0])).toBe(true);
   });
+  // Real permits (apps/web/src/lib/pay.ts typedDataJson) declare EIP712Domain and the message type explicitly.
+  const DOMAIN_TYPE = [{ name: 'name', type: 'string' }, { name: 'version', type: 'string' }, { name: 'chainId', type: 'uint256' }, { name: 'verifyingContract', type: 'address' }];
+  const PERMIT_TYPE = [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }, { name: 'value', type: 'uint256' }, { name: 'nonce', type: 'uint256' }, { name: 'deadline', type: 'uint256' }];
   it('shows only known typed-message fields and preserves the original signing bytes', () => {
-    const json = '{"primaryType":"Permit","domain":{"verifyingContract":"'+TARGET+'"},"message":{"spender":"'+RECIPIENT+'","value":"17","note":"\u202eprivate ✓"}}';
+    const json = JSON.stringify({ types: { EIP712Domain: DOMAIN_TYPE, Permit: [...PERMIT_TYPE, { name: 'note', type: 'string' }] }, primaryType: 'Permit',
+      domain: { verifyingContract: TARGET }, message: { spender: RECIPIENT, value: '17', note: '\u202eprivate ✓' } });
     const request = prepareWalletSignature(84532, ACCOUNT, json);
     expect(request.disclosure).toMatchObject({ account: ACCOUNT, chainId: 84532, destination: TARGET, primaryType: 'Permit', typedAmount: '17', typedRecipient: RECIPIENT });
     expect(request.params).toEqual([ACCOUNT, json]);
@@ -44,7 +48,7 @@ describe('bounded immutable wallet request descriptions', () => {
     expect(request.disclosure.requestJson).toContain('\\u202e');
   });
   it.each([1, '1', '0x1'])('separately summarizes the signed domain chain %s without substituting the wallet chain', (chainId) => {
-    const json = JSON.stringify({ domain: { chainId, verifyingContract: TARGET }, message: { value: '17' } });
+    const json = JSON.stringify({ types: { EIP712Domain: DOMAIN_TYPE }, domain: { chainId, verifyingContract: TARGET }, message: { value: '17' } });
     const request = prepareWalletSignature(84532, ACCOUNT, json);
     expect(request.disclosure.chainId).toBe(84532);
     expect(request.disclosure.domainChainId).toBe('1');
@@ -53,9 +57,28 @@ describe('bounded immutable wallet request descriptions', () => {
   });
   it('does not invent a signature domain chain for absent, malformed or unbounded values', () => {
     for (const chainId of [undefined, -1, 1.5, '1e9', '0x', '0x' + 'f'.repeat(65), '9'.repeat(78), {}]) {
-      const request = prepareWalletSignature(84532, ACCOUNT, JSON.stringify({ domain: { chainId } }));
+      const request = prepareWalletSignature(84532, ACCOUNT, JSON.stringify({ types: { EIP712Domain: DOMAIN_TYPE }, domain: { chainId } }));
       expect(request.disclosure.domainChainId).toBeUndefined();
     }
+  });
+  it('labels only fields the wallet will sign: declared, of a fitting type, and unambiguous', () => {
+    const other = '0x3333333333333333333333333333333333333333';
+    const label = (value: unknown): ReturnType<typeof prepareWalletSignature>['disclosure'] => prepareWalletSignature(84532, ACCOUNT, JSON.stringify(value)).disclosure;
+    // An undeclared field is ignored by the wallet when signing, so it is never shown as the recipient.
+    expect(label({ types: { Permit: [{ name: 'spender', type: 'address' }] }, primaryType: 'Permit', message: { to: other, spender: RECIPIENT } }).typedRecipient).toBe(RECIPIENT);
+    // A present but invalid value does not fall through to another field.
+    expect(label({ types: { T: [{ name: 'amount', type: 'uint256' }] }, primaryType: 'T', message: { amount: 1e30, value: '1' } }).typedAmount).toBeUndefined();
+    // Two candidates, or a declared field of the wrong type, stay unknown.
+    expect(label({ types: { T: [{ name: 'to', type: 'address' }, { name: 'spender', type: 'address' }] }, primaryType: 'T', message: { to: other, spender: RECIPIENT } }).typedRecipient).toBeUndefined();
+    expect(label({ types: { T: [{ name: 'value', type: 'string' }] }, primaryType: 'T', message: { value: '17' } }).typedAmount).toBeUndefined();
+    // Domain fields count only when EIP712Domain declares them with the right type.
+    expect(label({ types: {}, domain: { verifyingContract: TARGET, chainId: 1 } })).not.toHaveProperty('destination');
+    expect(label({ types: { EIP712Domain: [{ name: 'verifyingContract', type: 'string' }, { name: 'chainId', type: 'string' }] }, domain: { verifyingContract: TARGET, chainId: 1 } }))
+      .not.toHaveProperty('domainChainId');
+    // A duplicate field declaration is ambiguous; above uint256 is not an amount.
+    expect(label({ types: { T: [{ name: 'value', type: 'uint256' }, { name: 'value', type: 'uint8' }] }, primaryType: 'T', message: { value: '1' } }).typedAmount).toBeUndefined();
+    expect(label({ types: { T: [{ name: 'value', type: 'uint256' }] }, primaryType: 'T', message: { value: (1n << 256n).toString() } }).typedAmount).toBeUndefined();
+    expect(label({ types: { T: [{ name: 'value', type: 'uint256' }] }, primaryType: 'T', message: { value: ((1n << 256n) - 1n).toString() } }).typedAmount).toBe(((1n << 256n) - 1n).toString());
   });
   it('leaves unsupported typed-message semantics unknown rather than guessing', () => {
     const request = prepareWalletSignature(84532, ACCOUNT, '{"message":{"value":"-1","to":"not an address"}}');

@@ -5,6 +5,7 @@ import { UserFacingError } from './errors';
 
 /** Upper bound for the complete JSON request shown before any provider interaction. */
 export const WALLET_DISCLOSURE_MAX_BYTES = 65_536;
+/** How long an open review may wait for a decision, and how long an approval stays usable after it was given. */
 export const WALLET_DISCLOSURE_MS = 120_000;
 export type WalletDisclosureMethod = 'eth_requestAccounts' | 'wallet_switchEthereumChain' | 'eth_sendTransaction' | 'eth_signTypedData_v4';
 
@@ -36,6 +37,7 @@ export interface PreparedWalletRequest {
 
 const refused = (): UserFacingError => new UserFacingError({ key: 'wallet.disclosure.invalid' });
 const cancelled = (): UserFacingError => new UserFacingError({ key: 'wallet.disclosure.cancelled' });
+const UINT256_LIMIT = 1n << 256n;
 function chain(value: number): number {
   if (!Number.isSafeInteger(value) || value < 1) throw refused();
   return value;
@@ -52,6 +54,24 @@ function prepared(method: WalletDisclosureMethod, fields: Omit<WalletDisclosureR
   return Object.freeze({ method, ...(params === undefined ? {} : { params }), disclosure: Object.freeze({ method, ...fields, requestJson }) });
 }
 
+/**
+ * The parameters to hand to the wallet: a plain, unfrozen copy with exactly the reviewed values, so a wallet that edits
+ * its arguments in place (for example to add a gas field) cannot fail on a frozen object.
+ */
+export function walletRequestParams(request: PreparedWalletRequest): unknown[] | undefined {
+  return request.params === undefined ? undefined : JSON.parse(JSON.stringify(request.params)) as unknown[];
+}
+
+/**
+ * A gate must answer with a usable approval. Anything else (a gate resolving `undefined`, a missing or non-callable
+ * `assertCurrent`) is treated as a cancelled review, never as permission.
+ */
+export function requireApproval(value: unknown): WalletDisclosureApproval {
+  const assertCurrent = typeof value === 'object' && value !== null ? (value as { assertCurrent?: unknown }).assertCurrent : undefined;
+  if (typeof assertCurrent !== 'function') throw cancelled();
+  return Object.freeze({ assertCurrent: () => { (assertCurrent as () => void).call(value); } });
+}
+
 export function prepareWalletConnection(chainId: number): PreparedWalletRequest {
   return prepared('eth_requestAccounts', { chainId: chain(chainId) });
 }
@@ -63,7 +83,7 @@ export function prepareWalletTransaction(chainId: number, from: string, tx: { re
   const data = tx.data;
   const value = tx.value;
   if (typeof data !== 'string' || data.length > WALLET_DISCLOSURE_MAX_BYTES || !/^0x(?:[0-9a-fA-F]{2})*$/.test(data)
-    || typeof value !== 'bigint' || value < 0n || value >= (1n << 256n)) throw refused();
+    || typeof value !== 'bigint' || value < 0n || value >= UINT256_LIMIT) throw refused();
   const contractCall = summarizeWalletCall(data as Hex, abi);
   const fields = { chainId: chain(chainId), account: account(from), destination: to, nativeValueWei: value.toString(),
     ...(contractCall === undefined ? {} : { contractCall }) };
@@ -77,27 +97,60 @@ function knownAddress(value: unknown): string | undefined {
 }
 function knownAmount(value: unknown): string | undefined {
   const text = typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? String(value) : value;
-  return typeof text === 'string' && /^(?:0|[1-9][0-9]{0,77})$/.test(text) ? text : undefined;
+  return typeof text === 'string' && /^(?:0|[1-9][0-9]{0,77})$/.test(text) && BigInt(text) < UINT256_LIMIT ? text : undefined;
 }
 function knownDomainChain(value: unknown): string | undefined {
   const normalized = knownAmount(value);
   const text = normalized ?? (typeof value === 'string' && /^0x[0-9a-fA-F]{1,64}$/.test(value) ? value : undefined);
   if (text === undefined) return undefined;
   const id = BigInt(text);
-  return id < (1n << 256n) ? id.toString() : undefined;
+  return id < UINT256_LIMIT ? id.toString() : undefined;
 }
+/** The declared fields of one EIP-712 struct type, or `undefined` when the declaration is missing or ambiguous. */
+function declaredFields(types: Record<string, unknown> | undefined, name: string | undefined): ReadonlyMap<string, string> | undefined {
+  if (types === undefined || name === undefined || !Object.prototype.hasOwnProperty.call(types, name)) return undefined;
+  const list = types[name];
+  if (!Array.isArray(list)) return undefined;
+  const fields = new Map<string, string>();
+  for (const entry of list) {
+    const field = record(entry);
+    const fieldName = field?.['name'];
+    const fieldType = field?.['type'];
+    if (typeof fieldName !== 'string' || typeof fieldType !== 'string' || fields.has(fieldName)) return undefined;
+    fields.set(fieldName, fieldType);
+  }
+  return fields;
+}
+const isAddressType = (type: string): boolean => type === 'address';
+const isUintType = (type: string): boolean => /^uint(?:8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)?$/.test(type);
+/** The one declared field among `names` with a fitting type; none or several give `undefined` (shown as unknown). */
+function singleField(fields: ReadonlyMap<string, string> | undefined, names: readonly string[], fits: (type: string) => boolean): string | undefined {
+  if (fields === undefined) return undefined;
+  const hits = names.filter((name) => { const type = fields.get(name); return type !== undefined && fits(type); });
+  return hits.length === 1 ? hits[0] : undefined;
+}
+/**
+ * Labels only what the wallet will actually sign: fields declared in `types[primaryType]` and `types.EIP712Domain` with
+ * a fitting type. A present but invalid value, an undeclared field or several candidates are left unknown.
+ */
 export function prepareWalletSignature(chainId: number, from: string, typedDataJson: string): PreparedWalletRequest {
   if (typeof typedDataJson !== 'string' || typedDataJson.length > WALLET_DISCLOSURE_MAX_BYTES) throw refused();
   let data: Record<string, unknown> | undefined;
   try { data = record(JSON.parse(typedDataJson) as unknown); } catch { throw refused(); }
   if (data === undefined) throw refused();
+  const types = record(data['types']);
   const domain = record(data['domain']);
   const message = record(data['message']);
-  const destination = knownAddress(domain?.['verifyingContract']);
-  const domainChainId = knownDomainChain(domain?.['chainId']);
-  const typedRecipient = knownAddress(message?.['destination']) ?? knownAddress(message?.['to']) ?? knownAddress(message?.['spender']);
-  const typedAmount = knownAmount(message?.['amount']) ?? knownAmount(message?.['value']);
   const primaryType = typeof data['primaryType'] === 'string' && /^[A-Za-z_][A-Za-z0-9_]{0,127}$/.test(data['primaryType']) ? data['primaryType'] : undefined;
+  const messageFields = declaredFields(types, primaryType);
+  const domainFields = declaredFields(types, 'EIP712Domain');
+  const destination = domainFields?.get('verifyingContract') === 'address' ? knownAddress(domain?.['verifyingContract']) : undefined;
+  const domainChainType = domainFields?.get('chainId');
+  const domainChainId = domainChainType !== undefined && isUintType(domainChainType) ? knownDomainChain(domain?.['chainId']) : undefined;
+  const recipientField = singleField(messageFields, ['destination', 'to', 'spender'], isAddressType);
+  const typedRecipient = recipientField === undefined ? undefined : knownAddress(message?.[recipientField]);
+  const amountField = singleField(messageFields, ['amount', 'value'], isUintType);
+  const typedAmount = amountField === undefined ? undefined : knownAmount(message?.[amountField]);
   return prepared('eth_signTypedData_v4', {
     chainId: chain(chainId), account: account(from),
     ...(destination === undefined ? {} : { destination }),
@@ -122,20 +175,31 @@ interface Pending extends PendingWalletDisclosure {
   readonly cleanup: () => void;
 }
 
-/** One prompt at a time; approval is short-lived, bound to this host lifecycle, and cannot survive another request. */
+/**
+ * One prompt at a time. A prompt waits at most {@link WALLET_DISCLOSURE_MS} for a decision; an approval then stays usable
+ * for the same time from the moment it was given, is bound to this host lifecycle and cannot survive another request.
+ */
 export class WalletDisclosureController {
   private active = false;
   private allowed = false;
   private revision = 0;
+  private mounts = 0;
   private pending: Pending | undefined;
   private readonly listeners = new Set<() => void>();
   public readonly subscribe = (listener: () => void): (() => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   public readonly getSnapshot = (): PendingWalletDisclosure | undefined => this.pending;
-  private emit(): void { for (const listener of [...this.listeners]) listener(); }
+  private emit(): void {
+    // A failing subscriber must not leave a prompt half created or block the others.
+    for (const listener of [...this.listeners]) {
+      try { listener(); } catch { /* Presentation errors never approve or keep a request. */ }
+    }
+  }
   public mount(): () => void {
     if (this.active) throw refused();
     this.active = true;
-    return () => { this.active = false; this.allowed = false; this.revoke(); };
+    const mount = ++this.mounts;
+    // Only the unmount of the current mount deactivates the controller; a stale one is a no-op.
+    return () => { if (this.mounts !== mount || !this.active) return; this.active = false; this.allowed = false; this.revoke(); };
   }
   public allowPresentation(allowed: boolean): void {
     this.allowed = allowed;
@@ -163,12 +227,14 @@ export class WalletDisclosureController {
     if (signal?.aborted === true || started === undefined) return Promise.reject(cancelled());
     const revision = ++this.revision;
     let observed = started;
+    let approvedAt: Clock | undefined;
     let expired = false;
     const assertCurrent = (): void => {
       const now = clock();
+      const since = approvedAt ?? started;
       if (expired || !this.active || !this.allowed || this.revision !== revision || signal?.aborted === true || now === undefined
         || now.wall < observed.wall || now.monotonic < observed.monotonic
-        || now.wall - started.wall >= WALLET_DISCLOSURE_MS || now.monotonic - started.monotonic >= WALLET_DISCLOSURE_MS) {
+        || now.wall - since.wall >= WALLET_DISCLOSURE_MS || now.monotonic - since.monotonic >= WALLET_DISCLOSURE_MS) {
         expired = true;
         throw cancelled();
       }
@@ -182,7 +248,12 @@ export class WalletDisclosureController {
         cleanup: () => { clearTimeout(timer); signal?.removeEventListener('abort', onAbort); },
         reject: () => { reject(cancelled()); },
         approve: () => {
-          try { assertCurrent(); resolve(Object.freeze({ assertCurrent })); } catch { reject(cancelled()); }
+          try {
+            assertCurrent();
+            // The usable window restarts at the decision: reading time is not taken from the time in the wallet.
+            approvedAt = observed;
+            resolve(Object.freeze({ assertCurrent }));
+          } catch { reject(cancelled()); }
         },
       });
       this.pending = pending;

@@ -122,8 +122,9 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     const controller = presenter();
     const session = { ...await connectWallet(info(provider), 84532), disclosure: controller.request };
     provider.calls.length = 0;
-    const json = JSON.stringify({ primaryType: 'Permit', domain: { chainId: 84532, verifyingContract: tx.to },
-      message: { spender: tx.to, value: '9007199254740993' } });
+    const json = JSON.stringify({ types: { EIP712Domain: [{ name: 'chainId', type: 'uint256' }, { name: 'verifyingContract', type: 'address' }],
+      Permit: [{ name: 'spender', type: 'address' }, { name: 'value', type: 'uint256' }] }, primaryType: 'Permit',
+    domain: { chainId: 84532, verifyingContract: tx.to }, message: { spender: tx.to, value: '9007199254740993' } });
     const stale = signTypedDataViaWallet(session, json);
     const oldPreview = controller.getSnapshot()!;
     provider.emit('chainChanged');
@@ -151,8 +152,8 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     const session = await operation;
     const actual = provider.calls.find((call) => call.method === 'wallet_switchEthereumChain');
     expect(JSON.parse(preview)).toEqual(actual);
-    // Main's connection keeps its call sequence; recheckWallet re-reads the account before every later send or signature.
-    expect(provider.calls.map((call) => call.method)).toEqual(['eth_requestAccounts', 'eth_accounts', 'eth_chainId', 'net_version', 'wallet_switchEthereumChain', 'eth_chainId', 'net_version']);
+    // A disclosed switch was reviewed for one account: it is read again after the switch.
+    expect(provider.calls.map((call) => call.method)).toEqual(['eth_requestAccounts', 'eth_accounts', 'eth_chainId', 'net_version', 'wallet_switchEthereumChain', 'eth_chainId', 'net_version', 'eth_accounts']);
     expect(session.disclosure).toBe(controller.request);
     expect(provider.countListeners()).toBe(0);
   });
@@ -174,7 +175,7 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     expect(provider.calls.some((call) => call.method === 'wallet_switchEthereumChain')).toBe(false);
     approve(controller);
     await expect(operation).resolves.toMatchObject({ account: provider.account, chainId: 84532, disclosure: controller.request });
-    expect(provider.calls.at(-1)?.method).toBe('net_version');
+    expect(provider.calls.at(-1)?.method).toBe('eth_accounts');
     expect(provider.countListeners()).toBe(0);
   });
 
