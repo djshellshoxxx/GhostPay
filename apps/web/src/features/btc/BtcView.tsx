@@ -102,6 +102,18 @@ export function BtcView(
   /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
   const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
+  /**
+   * Outputs ("txid:vout" -> height of the block that holds them) of a transaction this session asked the server to
+   * broadcast. Local spentness sees only confirmed blocks, so a rescan cannot show a mempool spend: these stay
+   * unsweepable until a later complete local scan no longer lists them, a reorganization cuts the scan, or the
+   * session is locked or its wallet replaced. Memory only; the ref is what retained handlers read.
+   */
+  const pendingSpendsRef = useRef<ReadonlyMap<string, number>>(new Map());
+  const [pendingSpends, setPendingSpendsState] = useState<ReadonlyMap<string, number>>(new Map());
+  const setPendingSpends = (next: ReadonlyMap<string, number>): void => {
+    pendingSpendsRef.current = next;
+    setPendingSpendsState(next);
+  };
   const [headerStorage] = useState(() => (props.headerStore === undefined ? defaultHeaderStore() : { storeFor: props.headerStore, persistent: true }));
   /** The checked header chain of the network it was loaded for (public data; kept across lock). */
   const chainRef = useRef<{ readonly netId: BtcNetworkId; readonly chain: HeaderChain } | undefined>(undefined);
@@ -201,6 +213,7 @@ export function BtcView(
       if (walletRef.current !== undefined) wipeWallet(walletRef.current);
       forgetSeed();
       resetFlow();
+      setPendingSpends(new Map());
       walletRef.current = w;
       if (offerBackup) seedRef.current = hexToBytes(hex);
       setHasBackup(offerBackup);
@@ -226,20 +239,28 @@ export function BtcView(
 
   /** Both payment inclusion and sufficient spentness evidence must remain current. */
   const spentStatus = scan?.spentStatus === 'local' && checkedTip !== undefined && scan.toHeight !== checkedTip ? 'unknown' : scan?.spentStatus;
-  const sweepable = (f: FoundPayment): boolean => spentStatus !== undefined && spentStatus !== 'unknown' && checkedTip !== undefined && f.height <= checkedTip;
+  const sweepable = (f: FoundPayment): boolean =>
+    spentStatus !== undefined && spentStatus !== 'unknown' && checkedTip !== undefined && f.height <= checkedTip && !pendingSpends.has(`${f.txid}:${String(f.vout)}`);
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => sweepable(f) && picked.has(`${f.txid}:${String(f.vout)}`));
+  const pendingCount = scan === undefined ? 0 : scan.found.filter((f) => pendingSpends.has(`${f.txid}:${String(f.vout)}`)).length;
 
-  /** Inputs of the review all sit in blocks the checked header chain reaches. */
+  /**
+   * A retained handler may use only outputs and spend coverage from the current scan, the live header chain and the
+   * live pending-spend set, never the render it was created in. Recovered-from: ba588c82 (PR #254).
+   */
   const inputsChecked = (r: SweepReview | undefined): boolean => {
     // The live chain too: a running check updates it in place before React state catches up.
     const live = chainRef.current?.netId === net.id ? chainRef.current.chain : undefined;
+    const current = scanRef.current;
     return (
       r !== undefined &&
       live !== undefined &&
-      (scan?.spentStatus !== 'local' || scan.toHeight === live.tipHeight) &&
+      current !== undefined &&
+      (current.spentStatus === 'local' || current.spentStatus === 'provider') &&
+      (current.spentStatus !== 'local' || current.toHeight >= live.tipHeight) &&
       r.inputs.every((i) => {
-        const f = scan?.found.find((x) => x.txid === i.txid && x.vout === i.vout);
-        return f !== undefined && sweepable(f) && live.hashAt(f.height) === f.blockHash;
+        const f = current.found.find((x) => x.txid === i.txid && x.vout === i.vout);
+        return f !== undefined && f.height <= live.tipHeight && live.hashAt(f.height) === f.blockHash && !pendingSpendsRef.current.has(`${i.txid}:${String(i.vout)}`);
       })
     );
   };
@@ -271,6 +292,8 @@ export function BtcView(
     scanRef.current = next;
     setScan(next);
     clearFlowState();
+    // A reorganization that cut the scan invalidates the session's pending-spend marks; an advance of the tip does not.
+    if (next === undefined || next.toHeight < current.toHeight) setPendingSpends(new Map());
     return [
       next === undefined
         ? { kind: 'warn', text: { key: 'btc.headers.scanDiscarded' } }
@@ -466,6 +489,12 @@ export function BtcView(
         }
         scanRef.current = res;
         setScan(res);
+        // A complete local scan that covers a pending output's block and no longer lists it has seen the spend confirmed.
+        if (res.spentStatus === 'local' && pendingSpendsRef.current.size > 0) {
+          const listed = new Set(res.found.map((f) => `${f.txid}:${String(f.vout)}`));
+          const remaining = new Map([...pendingSpendsRef.current].filter(([id, height]) => listed.has(id) || height < res.fromHeight || height > res.toHeight));
+          if (remaining.size !== pendingSpendsRef.current.size) setPendingSpends(remaining);
+        }
         setScanNote({ key: 'btc.scan.scanned', values: { from: String(res.fromHeight), to: String(res.toHeight) } });
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
@@ -486,7 +515,10 @@ export function BtcView(
 
   /** Authority edits invalidate pending sign/broadcast work; an attempted request keeps its public reference. */
   const clearSigning = (): void => {
-    invalidate();
+    // Header checks must finish reconciling any shared-chain change before old scan results can become usable.
+    // A busy scan/check has already invalidated prior signing or broadcast work when it began.
+    // Recovered-from: ba588c82 (PR #254).
+    if (!scanningRef.current) invalidate();
     setApproved(false);
     setSigned(undefined);
     setBroadcastOutcome((current) => current?.phase === 'broadcast-attempted' && current.reference !== undefined
@@ -532,6 +564,14 @@ export function BtcView(
       try {
         const c = client();
         requested = true;
+        // From the moment the request may reach the server, these inputs may be spent: whatever the outcome.
+        const heights = new Map<string, number>(scanRef.current?.found.map((f) => [`${f.txid}:${String(f.vout)}`, f.height] as const));
+        const next = new Map(pendingSpendsRef.current);
+        for (const i of review?.inputs ?? []) {
+          const id = `${i.txid}:${String(i.vout)}`;
+          next.set(id, heights.get(id) ?? 0);
+        }
+        setPendingSpends(next);
         setBroadcastOutcome(referencedBroadcastOutcome('broadcast-attempted', signed.txid));
         const id = await c.broadcast(signed.rawHex);
         if (live()) setBroadcastOutcome(referencedBroadcastOutcome(id === signed.txid ? 'pending-confirmation' : 'verification-incomplete', signed.txid));
@@ -555,6 +595,7 @@ export function BtcView(
     setProviderCheck(false);
     setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
     resetFlow();
+    setPendingSpends(new Map());
   };
 
   // The app lock reaches these keys too: they live outside the tag vault and the EVM session. A seed typed into the
@@ -804,6 +845,7 @@ export function BtcView(
                   <p role="note">
                     {t(oracleKind === 'none' ? 'btc.scan.singleProvider' : 'btc.oracle.resultsNote')}
                   </p>
+                  {pendingCount > 0 && <Notice kind="warn">{t('btc.scan.pendingSpend', { count: String(pendingCount) })}</Notice>}
                   {scan.found.some((f) => checkedTip === undefined || f.height > checkedTip) && (
                     <Notice kind="warn">{checkedTip === undefined ? t('btc.headers.uncheckedNone') : t('btc.headers.uncheckedResults', { height: String(checkedTip) })}</Notice>
                   )}

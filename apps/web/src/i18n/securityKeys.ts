@@ -186,6 +186,7 @@ export const SECURITY_KEY_GROUPS = {
     'btc.scan.mode.light',
     'btc.scan.unknownCount',
     'btc.scan.spentEvidenceChanged',
+    'btc.scan.pendingSpend',
   ],
   supportedChainOutcomes: [
     'btc.verification.check.header',
