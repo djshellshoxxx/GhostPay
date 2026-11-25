@@ -6,7 +6,7 @@ import base from './playwright.config';
 function mobile(name: string, device: string, browserName: 'chromium' | 'webkit') {
   const descriptor = devices[device];
   if (descriptor === undefined) throw new Error(`Missing mobile device descriptor: ${device}`);
-  const testMatch = [/devices\.spec\.ts$/, /devices-mobile-workflows\.spec\.ts$/, /flows\.spec\.ts$/];
+  const testMatch = [/devices\.spec\.ts$/, /devices-mobile-workflows\.spec\.ts$/, /devices-mobile-restore\.spec\.ts$/, /flows\.spec\.ts$/];
   if (browserName === 'chromium') testMatch.push(/qr-camera\.spec\.ts$/);
   return {
     name,
