@@ -216,6 +216,10 @@ low/info, and remain filler work.
   outspend query — conservative overstatement of disclosure) and, for **FC-05b**, a session "pending spend" guard
   (default local mode cannot see mempool spends, so a rescan right after a broadcast shows the swept inputs as
   sweepable; a second sweep conflicts with the user's own transaction; disclosed by `btc.scan.spentStatus.local`).
+- 2026-11-25T09:22Z — hosted runners congested (#649 static at 14/41 for ~25 min). To avoid adding ~40 jobs per PR to
+  the shared queue, round-2 small follow-ups are prepared as local commits and held unpushed until the four ready PRs
+  merge: fc01 → FC-05a-T (stacked on #656) and FC-03-T (stacked on #648, neutral `CHAIN_DISABLED` text);
+  fc02 → FC-04 (recover #271's still-missing regression tests; RCPT-L1/L2 in `packages/ux-receipts`).
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
