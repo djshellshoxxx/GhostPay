@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-local-p1-late-reconciliation",
   "token": "48bd9fbe-7a06-468d-b702-97f4cb9acc19",
   "generation": 24,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-25T08:37:17.000Z",
   "heartbeat_at": "2026-11-25T09:52:01.000Z",
   "expires_at": "2026-11-25T10:37:02.000Z",
-  "transport": "git-push-nonforce"
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-25T10:26:55.000Z"
 }
