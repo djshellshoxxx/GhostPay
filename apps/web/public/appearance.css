@@ -36,3 +36,5 @@
   input[type='checkbox'], input[type='radio'] { accent-color: var(--accent); }
 }
 @media print { :root { color-scheme: light; } }
+/* Forced colours: the system palette replaces author colours, so follow the system scheme instead of forcing dark. */
+@media (forced-colors: active) { :root { color-scheme: light dark; } }
