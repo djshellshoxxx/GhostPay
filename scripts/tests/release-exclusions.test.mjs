@@ -189,6 +189,71 @@ test('emitted site files are checked by name and symlinks are refused', () => {
   }
 });
 
+/** A site with one application chunk and one Worker chunk, plus a matching report. */
+function siteWithReport() {
+  const dir = mkdtempSync(join(tmpdir(), 'gp-release-prov-'));
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'index.html'), '<!doctype html>');
+  writeFileSync(join(dir, 'pages-mirror.css'), '');
+  writeFileSync(join(dir, 'assets', 'index-abc.js'), '');
+  writeFileSync(join(dir, 'assets', 'scanner.worker-def.js'), '');
+  const r = report(['src/AppLean.tsx']);
+  r.chunks[0].fileName = 'assets/index-abc.js';
+  r.workers[0].chunks[0].fileName = 'assets/scanner.worker-def.js';
+  return { dir, r };
+}
+
+test('site provenance: report chunks and emitted executables must match exactly', () => {
+  const { dir, r } = siteWithReport();
+  try {
+    assert.deepEqual(checkSiteExclusions(dir, r), { problems: [], files: 4 });
+    // An emitted executable the report does not prove (script, module or wasm) fails.
+    for (const stray of ['assets/extra.js', 'assets/x.mjs', 'assets/y.cjs', 'assets/z.wasm', 'tips.js']) {
+      writeFileSync(join(dir, stray), '');
+      assert.match(checkSiteExclusions(dir, r).problems.join('\n'), /emitted executable has no lean report module proof/, stray);
+      rmSync(join(dir, stray));
+    }
+    // A report chunk that was not emitted fails.
+    rmSync(join(dir, 'assets', 'scanner.worker-def.js'));
+    assert.match(checkSiteExclusions(dir, r).problems.join('\n'), /was not emitted into the site: assets\/scanner\.worker-def\.js/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('site provenance: chunk names must be unique safe relative paths', () => {
+  const { dir, r } = siteWithReport();
+  try {
+    for (const bad of ['../outside.js', '/abs/index.js', 'assets\\index-abc.js', 'assets/../index.js', './assets/index-abc.js', 'assets//a.js']) {
+      const copy = structuredClone(r);
+      copy.chunks[0].fileName = bad;
+      assert.match(checkSiteExclusions(dir, copy).problems.join('\n'), /not a safe relative path/, bad);
+    }
+    const dup = structuredClone(r);
+    dup.workers[0].chunks[0].fileName = 'assets/index-abc.js';
+    assert.match(checkSiteExclusions(dir, dup).problems.join('\n'), /listed twice/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('the full verifier applies site provenance when a site directory is given', () => {
+  const { dir, r } = siteWithReport();
+  const reportDir = mkdtempSync(join(tmpdir(), 'gp-release-rep-'));
+  try {
+    const path = join(reportDir, 'report.json');
+    writeFileSync(path, JSON.stringify(r));
+    assert.deepEqual(verifyReleaseExclusions(path, dir).problems, []);
+    writeFileSync(join(dir, 'assets', 'unlisted.js'), '');
+    assert.match(verifyReleaseExclusions(path, dir).problems.join('\n'), /no lean report module proof: assets\/unlisted\.js/);
+    const cli = spawnSync(process.execPath, [CLI, path, dir], { encoding: 'utf8' });
+    assert.equal(cli.status, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(reportDir, { recursive: true, force: true });
+  }
+});
+
 test('CLI exits 0 on a clean report and 1 listing every stopped module', () => {
   const dir = mkdtempSync(join(tmpdir(), 'gp-release-excl-cli-'));
   try {

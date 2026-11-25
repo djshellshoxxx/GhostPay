@@ -101,10 +101,23 @@ export function checkReportExclusions(report) {
   return { problems, modules };
 }
 
-/** Checks emitted file names under siteDir. Symlinks are reported, never followed. */
-export function checkSiteExclusions(siteDir) {
+const EXECUTABLE = /\.(?:[cm]?js|wasm)$/i;
+
+/** A report chunk name must be a plain relative POSIX path inside the site: no absolute, backslash or dot segments. */
+function safeChunkName(name) {
+  return typeof name === 'string' && name !== '' && !name.startsWith('/') && !name.includes('\\')
+    && name.split('/').every((part) => part !== '' && part !== '.' && part !== '..');
+}
+
+/**
+ * Checks the emitted site directory: product file names, symlinks, and, when the parsed report is given, provenance.
+ * Provenance: every report chunk (application and Worker) has a unique safe relative name and exists as a file in the
+ * site, and every emitted executable (.js/.mjs/.cjs/.wasm) is one of those chunks. The lean build refuses executable
+ * public files (copyPublicFiltered rejectExecutable), so no other executable is legitimate and none is allowlisted.
+ */
+export function checkSiteExclusions(siteDir, report) {
   const problems = [];
-  let files = 0;
+  const emitted = [];
   const walk = (dir) => {
     for (const name of readdirSync(dir).sort()) {
       const full = join(dir, name);
@@ -113,14 +126,31 @@ export function checkSiteExclusions(siteDir) {
       if (st.isSymbolicLink()) problems.push(`${rel}: symlink in site output`);
       else if (st.isDirectory()) walk(full);
       else {
-        files += 1;
+        emitted.push(rel);
         const product = stoppedProductForModule(`site/${rel}`);
         if (product !== undefined) problems.push(`stopped product ${describe(product)} file emitted into the site: ${rel}`);
       }
     }
   };
   walk(siteDir);
-  return { problems, files };
+  if (report !== undefined && report !== null && typeof report === 'object') {
+    const chunkNames = [];
+    for (const list of [report.chunks, ...(Array.isArray(report.workers) ? report.workers.map((w) => w?.chunks) : [])]) {
+      if (Array.isArray(list)) for (const chunk of list) chunkNames.push(chunk?.fileName);
+    }
+    const seen = new Set();
+    for (const name of chunkNames) {
+      if (!safeChunkName(name)) problems.push(`lean report chunk name is not a safe relative path: ${JSON.stringify(name)}`);
+      else if (seen.has(name)) problems.push(`lean report chunk name is listed twice: ${name}`);
+      else seen.add(name);
+    }
+    const files = new Set(emitted);
+    for (const name of seen) if (!files.has(name)) problems.push(`lean report chunk was not emitted into the site: ${name}`);
+    for (const rel of emitted) {
+      if (EXECUTABLE.test(rel) && !seen.has(rel)) problems.push(`emitted executable has no lean report module proof: ${rel}`);
+    }
+  }
+  return { problems, files: emitted.length };
 }
 
 /** Full check of a lean report file and, optionally, its emitted site directory. */
@@ -132,7 +162,7 @@ export function verifyReleaseExclusions(reportPath, siteDir) {
     return { problems: [`cannot read lean report: ${e instanceof Error ? e.message : String(e)}`], modules: 0, files: 0 };
   }
   const fromReport = checkReportExclusions(report);
-  const fromSite = siteDir === undefined ? { problems: [], files: 0 } : checkSiteExclusions(siteDir);
+  const fromSite = siteDir === undefined ? { problems: [], files: 0 } : checkSiteExclusions(siteDir, report);
   return { problems: [...fromReport.problems, ...fromSite.problems], modules: fromReport.modules, files: fromSite.files };
 }
 
