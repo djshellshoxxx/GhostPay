@@ -3164,3 +3164,11 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ### 2026-11-24 bounded deployment diagnostic completion
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
+
+# Haiku-only repository maintenance — 2026-11-25 UTC
+
+- Worker: lead coordinator (Claude Code session `claude/...` maintenance branch) with three Haiku-delegated workers (housekeeping, README verification, feature-status reconciliation). Base `origin/main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Branch `docs/maintenance-haiku-20261125`.
+- Owned paths: `docs/maintenance/` (new reports only), `docs/ai/WORKFLOW.md`, `docs/INDEX.md`, top-level `docs/*.md` link/name repairs, package and root `README.md` link/name repairs, and this additive claim.
+- Explicitly not claimed: any `packages/*/src`, `apps/*/src`, lockfiles, CI, dependencies, `DEVIATIONS.md`, `docs/handoffs/`, `docs/consolidation/`, `docs/evidence/`, `docs/audits/`, `docs/adr/`, or any file touched by an open PR.
+- Acceptance: documentation-only; no executable behavior, dependency, release or security-policy change; links verified; inventories and reconciliation reports carry source-pinned evidence and do not mark unmerged work as merged.
+- Integration: draft PR only; no merges, no force-pushes, no closing of issues or PRs.
