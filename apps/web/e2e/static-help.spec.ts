@@ -81,11 +81,12 @@ test.describe('help guide coverage', () => {
       ['Aggregate merchant dashboard (totals and records)', 'Archived indefinitely; ordinary invoice status and reconciliation remain available'],
       ['Subscriptions and installments', 'Outside the browser payment and recovery scope'],
       ['Point-of-sale terminal and NFC', 'Terminal product archived; ordinary invoice QR exchange remains available'],
-    ]) {
+    ] as const) {
       const row = merchant.getByRole('row').filter({
         has: page.getByRole('rowheader', { name, exact: true }),
       });
       await expect(row).toHaveCount(1);
+      await expect(row).toBeVisible();
       await expect(row.getByRole('cell').first()).toHaveText('Unsupported beta and v1.0');
       await expect(row.getByRole('cell').last()).toHaveText(notes);
     }
