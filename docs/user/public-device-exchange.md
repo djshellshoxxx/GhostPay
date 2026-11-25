@@ -5,7 +5,7 @@ GhostPay has three separate public exchange flows. Camera access starts only whe
 | Screen | What is shared | What importing does |
 |---|---|---|
 | Seller keys → Public seller config | Scheme-1 meta-address, invoice-signing **public** key, and configured supported testnet chain IDs | Shows an untrusted preview and compares it with loaded keys. It changes no keys, settings, signer trust, or payment state. |
-| Settings → Transfer nonsecret preferences | Saved delay range, idle-lock timeout, theme and address-bar-clearing preference | Shows a review. **Apply imported preferences** explicitly saves only those fields. RPC and relayer URLs, credentials, and pinned signer trust stay local. |
+| Settings → Transfer nonsecret preferences | Saved delay range, idle-lock timeout, theme and address-bar-clearing preference | Preferences are exported by default. RPC URLs, the relayer URL and pinned signer keys are optional sections that are **not ticked by default**; a ticked section is included in the export, and URL credentials travel with the URL. Shows a review. **Apply imported preferences** saves only the fields you accept. |
 | Public registry → Read a public meta-address QR | A public scheme-1 meta-address | Shows an untrusted preview. Reading or copying it does not publish to the registry or change the meta-address loaded on this device. |
 
 ## Seller public config
@@ -18,7 +18,7 @@ A different-key preview is labelled as different and is never installed. With no
 
 ## Preferences and registry
 
-Settings exports only saved preferences. Review the imported values before applying them; saving other preferences invalidates the old import preview and hides any outdated export QR. **Discard preview** leaves saved preferences unchanged.
+Settings exports saved preferences by default, and optional RPC, relayer and signer sections only when you tick them. Review the imported values before applying them; saving other preferences invalidates the old import preview and hides any outdated export QR. **Discard preview** leaves saved preferences unchanged.
 
 The registry accepts a canonical public meta-address or the bounded version-1 `ghostpay-public-meta` JSON envelope. **Clear scanned preview**, a network change, or a seller-key change removes the current scan review. Publishing a registry entry is a separate wallet action with its own consent and transaction review.
 
