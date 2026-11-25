@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { sanitizeDisplayText } from '../lib/sanitize';
+import { neutralDownloadName } from '../lib/downloadNames';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { ContextHelp } from './ContextHelp';
 
@@ -98,9 +99,8 @@ export function downloadBlob(filename: string, blob: Blob): void {
   try {
     url = URL.createObjectURL(blob);
     a.href = url;
-    // Only a supported file extension can cross into the browser's download history.
-    const extension = /\.(json|svg|gpa|txt|csv|pdf|png|zip)$/i.exec(filename)?.[1]?.toLowerCase();
-    a.download = `export.${extension ?? 'bin'}`;
+    // Only a fixed, value-free name can cross into the browser's download history (#286 item 5).
+    a.download = neutralDownloadName(filename);
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();

@@ -34,7 +34,7 @@ export async function exportArchive(
     const records = await vault.snapshot();
     const createdAt = (options.now ?? Date.now)();
     const bytes = await encodeArchive({ createdAt, keyVersion: await vault.keyVersion(), records, history: options.history ?? {} }, passphrase, options);
-    return { bytes, filename: 'export.gpa', recordCount: records.length, sha256: bytesToHex(sha256(bytes)) };
+    return { bytes, filename: 'ghostpay-tags.gpa', recordCount: records.length, sha256: bytesToHex(sha256(bytes)) };
   } finally {
     viewingKey.fill(0);
   }
