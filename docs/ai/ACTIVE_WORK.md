@@ -46,6 +46,10 @@ signature, signer, passphrase, expiry and review flow and the #500 pre-send chec
 - Worker: fc03 session (feature-completion campaign), task FC-05a. Branch: `claude/fc05a-btc-spentness-20261125`. Base: `60824005b89611aea2b16d3355378eebf072eedb` (origin/main). Donor: PR #244 head `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f` (contains #219 `9617e857`), merged `--no-ff`. PR #254 is NOT merged (FC-05b).
 - Owned paths: `apps/web/src/features/btc/**`, `packages/btc-silent-payments/src/scan/**`, `apps/web/e2e/btc-spent-consent.spec.ts`, `apps/web/e2e/btc-worker.spec.ts`, the donor's locale/securityKeys hunks, this claim, `docs/consolidation/feature-completion-20261125/FC-05a-btc-spentness.md`.
 - Acceptance: unknown never becomes spent or sweepable without complete canonical header-covered coverage; consent revocation stops network use; chain change invalidates evidence; non-BTC paths equal current main unless the feature needs them; `spend.preview.network.test.ts` still present and passing. Full profile only, testnet, proof of concept.
+# FC-04 hardening regression tests and receipt follow-ups (2026-11-25)
+
+- Worker: fc02 (Claude Code), branch `claude/fc04-hardening-tests-20261125`, base `origin/main` `595a184b381980a440165832f51a83e8dfd3e8a8`. Owned paths: `packages/chain-adapters/src/quote.test.ts`, `packages/ux-receipts/src/verify.ts`, `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, `docs/consolidation/feature-completion-20261125/FC-04-hardening-tests.md`, this entry.
+- Acceptance: recover the missing #271 quote decimals regression test; close RCPT-L1 and RCPT-L2 test-first; keep coverage thresholds; local only until the coordinator approves a push.
 
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
