@@ -27,10 +27,12 @@ All names are fixed and never contain an address, key, chain or date.
 | `ghostpay-stealth-keypairs.json` | Several payments' one-time private keys (selected or all discovered on one chain) | Private-key body only (passphrase); header public |
 | `ghostpay-stealth-master.json` | Your master **spending and viewing** keys | Private-key body only (passphrase); header public |
 | `ghostpay-stealth-private-key.txt` | One payment's private key as plain text | **No: anyone with the file can spend** |
+| `ghostpay-keystore.json` | Your seller keys: spending, viewing and invoice-signing (the seller keystore) | Keys encrypted (passphrase); meta-address and invoice signer public |
 
 The master backup is separate from the older encrypted seller keystore (the file *Back up (encrypted)* downloads, see
 [Set up a stealth meta-address](set-up-stealth-meta-address.md)). The master backup never contains the
-invoice-signing key; payment-key files never contain master keys.
+invoice-signing key; payment-key files never contain master keys. The reference script reads the seller keystore too:
+see [Recover from the seller keystore without GhostPay](#recover-from-the-seller-keystore-without-ghostpay).
 
 ### Network disclosure when creating a payment-key export
 
@@ -165,11 +167,14 @@ requests.
 
 5. Optional: `--expected-chain <id>` refuses a payment archive, public record or raw-key file labelled for another
    chain. It also applies to `--inspect`. This checks the recorded identifier, not live chain state; public and raw
-   metadata are not authenticated. A master backup is chain-neutral and refuses this option rather than pretending
-   to verify a network.
+   metadata are not authenticated. A master backup or seller keystore is chain-neutral and refuses this option rather
+   than pretending to verify a network.
+6. Optional, for a master backup or seller keystore: `--expected-meta-address st:eth:0x...` refuses a file that
+   belongs to another meta-address, before you type a passphrase. It also applies to `--inspect`.
 
 Exit status: `0` success, `1` refused (the error code is printed, for example `wrongPassphraseOrModified`,
-`keyDoesNotMatch`, `duplicate`, `tooLarge`, `unsupportedVersion`), `2` usage error.
+`keyDoesNotMatch`, `sellerKeysDoNotMatch`, `wrongMetaAddress`, `duplicate`, `tooLarge`, `unsupportedVersion`),
+`2` usage error.
 
 ### Recover a payment that is in no archive (master backup)
 
@@ -189,6 +194,48 @@ printed**; keep using the encrypted master file.
 
 The script does not search the chain for announcements. Finding them is a scan (GhostPay's *Scan and receive*, or any
 ERC-5564 scheme-1 compatible scanner given your viewing key).
+
+### Recover from the seller keystore without GhostPay
+
+The script also reads `ghostpay-keystore.json`, the seller keystore that *Back up (encrypted)* downloads. Use it to
+check a keystore backup, or to recover payment keys from it, without GhostPay, the original browser profile, its
+storage or the device it was made on. The byte-level rules are in
+[the keystore format reference](../specs/18-seller-keystore-v1-format.md).
+
+1. See which seller the file belongs to, without the passphrase:
+
+   ```sh
+   node scripts/recovery/stealth-export-recover.mjs ghostpay-keystore.json --inspect
+   ```
+
+   The meta-address and invoice signer shown are read from the file. Step 2 confirms them.
+2. Decrypt and check the file. Pass the meta-address you expect (Seller keys shows it as *Your meta-address
+   (public)*), so another seller's keystore is refused before you type a passphrase:
+
+   ```sh
+   node scripts/recovery/stealth-export-recover.mjs ghostpay-keystore.json --expected-meta-address st:eth:0x...
+   ```
+
+   On success the script prints the meta-address, both public keys and the invoice signer. It confirms that all three
+   keys decrypted, are in range and distinct, and match them. It never prints the spending, viewing or
+   invoice-signing key.
+3. To recover one payment, add `--scan-announcement` with that payment's announcement, exactly as for a master backup
+   above. Add `--reveal-private-keys` only when you need that payment's one-time key for a wallet:
+
+   ```sh
+   node scripts/recovery/stealth-export-recover.mjs ghostpay-keystore.json \
+     --scan-announcement '{"ephemeralPublicKey":"0x02...","stealthAddress":"0x..."}' --reveal-private-keys
+   ```
+
+What this does not do:
+
+- It does not restore invoice signing. To sign invoices again, open Seller keys in any browser profile, choose
+  *Import an encrypted keystore* and select the file.
+- It does not find payments. You still need each payment's announcement, from a scan or a block explorer.
+- A successful check shows that this file and passphrase open these keys with this script. It says nothing about
+  your other copies, and it is not payment confirmation.
+- Refusals use the codes listed under step 5 above. `sellerKeysDoNotMatch` means the file decrypted, but its keys do
+  not match the identity written in it: do not use that file.
 
 ### What a match means
 
@@ -261,6 +308,14 @@ The standalone test copies the script and only its two noble dependencies into a
 the child process's filesystem reads to that directory. It checks all five formats, recovers the expected archive
 keys, verifies that unlisted payments are absent, and derives an archive-omitted key from the master backup without
 printing the master secrets. This is separate from browser or external wallet-device acceptance.
+
+`scripts/recovery/seller-keystore-recover.test.mjs` checks the seller keystore reader against
+`test-vectors/seller-keystore-v1.json` (TEST-ONLY). Both GhostPay's codec and the script must accept the valid files and
+refuse every invalid one; the one exception is documented in the format reference. Files freshly written by the built
+codec, including one at the production cost, must open in the script. The test also checks that the script derives the
+same one-time keys as the master-backup vectors, and recovers a payment in an isolated directory.
+`apps/web/e2e/independent-keystore-recovery.spec.ts` downloads a keystore in one browser profile and closes it. The
+script then recovers a payment key from that file, and a fresh profile imports the same file.
 
 The anvil test runs when Foundry (`anvil`, `cast`) is found through `ANVIL_BIN`/`CAST_BIN`, `PATH` or
 `~/.foundry/bin`. It skips otherwise, unless `REQUIRE_ANVIL=1`, where a missing tool fails the test.
