@@ -330,6 +330,11 @@ low/info, and remain filler work.
     `privateScanStore.ts` (365 lines) and `privateScanLifecycle.ts` are not on main. Class: substantial (semantic merge
     with P1-LATE checkpoint logic). Keep deferred; coordinate with the P1-LATE owner before assigning.
   - Integration-log entry pre-drafted (coordinator scratchpad) for the post-merge record.
+- 2026-11-25T11:36Z — **candidate #664 `d4bdd022` qualified: 40/40 hosted checks success, 3 skipped, 0 failed**
+  (combination of #648, #661, #650, #649, #656, #662, #663 on main `aaa71a11`). Lock gen 25 still held by
+  `claude-ghostpay-backup-60` for #657/#660; not requested early (holder's turn). When they release, merge the new main
+  into the candidate (#660 changes `ux-vault` source, so a confirming CI run is required), then acquire the lock and
+  fast-forward. FC-05b assigned to worker fc03 (stacked on FC-05a-T), brief in coordinator scratchpad.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
