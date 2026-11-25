@@ -108,3 +108,24 @@ low/info, and remain filler work.
 - 2026-11-25T06:05Z — round-1 merges exist on main `f18e8c0c`: FC-01 `225383a9`, FC-02 `5613341b`,
   FC-03 `166a9b11` (local refs; workers asked to push and open draft PRs so hosted CI overlaps the serialized
   local queue). Independent read-only Opus reviews launched against those exact merge commits.
+- 2026-11-25T06:25Z — draft PRs: FC-01 #650, FC-02 #649, FC-03 #648.
+  - FC-03 review of `166a9b11`: APPROVE-WITH-NITS (no blocking defect; byte-identity with web Solana/TRON code,
+    independent vectors, fail-closed mainnet/MEMO_NOT_BOUND verified). Requested before merge: library string
+    overload must refuse mainnet `st:sol:`; `solana-stealth` encoder unknown-cluster guard (pre-existing, encodes
+    mainnet); stale `gpsol:` docs; `@security` warning on memo-less TRON exports; registry formatting.
+  - FC-02 review of `5613341b`: APPROVE-WITH-NITS (consent-only balance reads and pre-handoff review re-check
+    verified by tracing). Requested before merge: misleading default "RPC required" text and silent no-RPC Read;
+    misleading "Vault check cancelled" on review change, Read disabled while busy; three user docs; two race tests.
+  - FC-01 review of `225383a9`: APPROVE-WITH-NITS (file import reaches only the existing openFragment → review →
+    expiry → #500 `assertNoPaymentAttempt` path; no wallet/RPC from file selection; exact union merge; strict codec).
+    Requested before merge: file-input invalidation must not reset the QR camera importer on hide/lock (regression
+    vs main); journal-absence assertion moved from sessionStorage to the #500 localStorage journal; Arabic clear-label
+    guard retargeted and one-sentence summary key; stale user doc; small a11y/alert nits.
+- 2026-11-25T07:20Z — hosted CI on original heads: FC-03 #648 `f79aa67c` 39/39 green; FC-02 #649 `5613341b`
+  39/39 green; FC-01 #650 `225383a9` all green except `ts-test (web)`: 3331/3331 tests passed but one unhandled
+  rejection (`window is not defined` at `WalletAttempts.tsx:104` from `WalletAttempts.status.test.tsx`, late
+  `migrateBrowserAttempts` rejection after jsdom teardown; run 45557873026). Main CI at `f18e8c0c` is green and no
+  other recent failed run shows it; treated as a likely pre-existing #500 race, under investigation by fc01.
+  Review-fix commits: FC-03 `2a6b33b7`, FC-01 `fd5ba475` + `041ed17c`; follow-up reviews requested.
+  Main moved to `5dc05bd6` (#640 help pages, merged by another session); all three branches merge cleanly and the
+  workers are merging it so CI qualifies the actual integration candidates.
