@@ -34,14 +34,17 @@ it('binds registry history to the connected account and chain, then conceals it 
   renderApp(makeServices({ createRpc, discoverWallets: () => Promise.resolve([{ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: wallet }]) }));
   const user = userEvent.setup();
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Public registry' }));
-  const journal = screen.getByRole('region', { name: 'Wallet attempt journal' });
-  expect(within(journal).queryByText(wallet.account)).toBeNull();
-  expect(within(journal).queryByText(hash)).toBeNull();
+  const disconnectedJournal = screen.getByRole('region', { name: 'Wallet attempt journal' });
+  expect(within(disconnectedJournal).queryByText(wallet.account)).toBeNull();
+  expect(within(disconnectedJournal).queryByText(hash)).toBeNull();
   await user.click(screen.getByRole('checkbox'));
   await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
   await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByRole('button', { name: 'Review publish transaction' });
+  // WalletAttempts remounts the journal on a wallet-scope change.
+  expect(disconnectedJournal.isConnected).toBe(false);
+  const journal = screen.getByRole('region', { name: 'Wallet attempt journal' });
   expect(within(journal).getByText(wallet.account)).toBeTruthy();
   expect(within(journal).getByText(hash)).toBeTruthy();
   expect(within(journal).queryByText(otherAccount)).toBeNull();
@@ -50,9 +53,11 @@ it('binds registry history to the connected account and chain, then conceals it 
   await user.click(within(journal).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
   expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(stored);
   await user.click(screen.getByRole('checkbox'));
-  expect(within(journal).queryByText(wallet.account)).toBeNull();
-  expect(within(journal).queryByText(hash)).toBeNull();
-  expect(within(journal).queryByRole('button', { name: 'Clear this attempt after checking my wallet' })).toBeNull();
+  expect(journal.isConnected).toBe(false);
+  const withdrawnJournal = screen.getByRole('region', { name: 'Wallet attempt journal' });
+  expect(within(withdrawnJournal).queryByText(wallet.account)).toBeNull();
+  expect(within(withdrawnJournal).queryByText(hash)).toBeNull();
+  expect(within(withdrawnJournal).queryByRole('button', { name: 'Clear this attempt after checking my wallet' })).toBeNull();
   expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(stored);
   expect(createRpc).not.toHaveBeenCalled();
   expect(wallet.sent).toBeUndefined();
