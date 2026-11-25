@@ -4,7 +4,7 @@
 //                                                       [--minimize] [--out verification/independent-beta/results/<id>]
 // Exit status: 0 = no product-defect candidates, 1 = candidates found, 2 = harness error.
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { join } from 'node:path';
@@ -41,8 +41,11 @@ function parseArgs(argv) {
   return a;
 }
 
-/** One scenario in one fresh browser context (= one fresh browser profile with two tabs). */
-async function runScenario(browser, origin, scenario, { withSuffix = true } = {}) {
+/**
+ * One scenario in one fresh persistent browser profile (its own Chromium process) with two payer tabs. The profile
+ * directory survives a `restart` step, so a restart is a genuine browser relaunch over the same site data.
+ */
+async function runScenario(launcher, origin, scenario, { withSuffix = true } = {}) {
   const chain = new SyntheticChain();
   const rng = new Rng(scenario.seed ?? hashName(scenario.name));
   const rpc = new MockRpc(chain);
@@ -77,17 +80,22 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
   });
   world.wallet = wallet;
   const oracle = new Oracle(world);
-  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 } });
-  const trace = [];
-  const started = Date.now();
-  let harnessError = null;
-  try {
+  const userDataDir = mkdtempSync(join(os.tmpdir(), 'w5-profile-'));
+  let context = null;
+  const boot = async () => {
+    context = await launcher.launch(userDataDir);
     await rpc.install(context, origin);
     await context.addInitScript(BROWSER_SHIM);
     await context.addInitScript(settingsInitScript());
     await context.exposeBinding('__w5wallet', (source, payload) => wallet.handle(source.page, payload));
-    const newTab = async (label) => {
-      const p = await context.newPage();
+  };
+  const trace = [];
+  const started = Date.now();
+  let harnessError = null;
+  try {
+    await boot();
+    const newTab = async (label, existing) => {
+      const p = existing ?? (await context.newPage());
       pageIds.set(p, (pageCounter += 1));
       docs.set(p, 0);
       // A document ends when the page loads the next one or closes; I4's record window is measured to that end.
@@ -110,11 +118,18 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
     };
     // Seller role in its own tab: fresh keys + two invoices, then the tab is closed (no beforeunload), so the two
     // payer tabs A and B start as ordinary checkout tabs of the same browser profile.
-    const seller = await context.newPage();
+    const seller = context.pages()[0] ?? (await context.newPage());
     world.links = await sellerSetup(seller, origin);
-    await seller.close({ runBeforeUnload: false });
     await newTab('A');
     await newTab('B');
+    await seller.close({ runBeforeUnload: false });
+    // Browser restart: every tab and in-flight wallet reply of the old process is gone; site data persists.
+    world.restart = async () => {
+      await context.close();
+      await boot();
+      await newTab('A', context.pages()[0]);
+      await newTab('B');
+    };
     const steps = withSuffix ? [...scenario.steps, ...SUFFIX] : scenario.steps;
     for (let i = 0; i < steps.length; i += 1) {
       const step = steps[i];
@@ -142,7 +157,8 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
   } catch (e) {
     harnessError = String(e?.stack ?? e);
   } finally {
-    await context.close().catch(() => undefined);
+    await context?.close().catch(() => undefined);
+    rmSync(userDataDir, { recursive: true, force: true });
   }
   return {
     name: scenario.name,
@@ -261,6 +277,10 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       oracle.checkStatusResult(i, step.intent, hash, r);
       return { ...r, hash };
     }
+    case 'restart':
+      await world.restart();
+      world.intentOfTab = { A: null, B: null };
+      return { restarted: true };
     case 'wait':
       await new Promise((ok) => setTimeout(ok, Math.min(step.ms, 10_000)));
       return {};
@@ -349,7 +369,22 @@ async function main() {
   if (dist === null || dist.sha256 !== build.dist.sha256) throw new Error('harness: dist changed since build.mjs recorded it; rebuild');
   const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', PINNED_MAIN, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
   const { chromium } = require('playwright-core');
-  const browser = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'] });
+  const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'];
+  const probe = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: launchArgs });
+  const chromiumVersion = probe.version();
+  await probe.close();
+  // `browser` is a launcher: each scenario gets its own persistent profile and Chromium process.
+  const browser = {
+    version: () => chromiumVersion,
+    launch: (dir) =>
+      chromium.launchPersistentContext(dir, {
+        executablePath: CHROMIUM,
+        headless: true,
+        args: launchArgs,
+        serviceWorkers: 'block',
+        viewport: { width: 1280, height: 900 },
+      }),
+  };
   const server = await serveDist(DIST);
   let list = [];
   if (args.named) list.push(...NAMED);
@@ -371,7 +406,6 @@ async function main() {
     }
   } finally {
     await server.close();
-    await browser.close();
   }
   const record = {
     runId,

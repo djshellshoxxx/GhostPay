@@ -150,6 +150,26 @@ export const NAMED = [
       { op: 'mine' },
     ],
   },
+  {
+    name: 'N11-browser-restart-after-hash',
+    why: 'R19/R3: hash returned, then the whole browser restarts; the hash survives and no tab may pay X again',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+      { op: 'restart' },
+      { op: 'mine' },
+    ],
+  },
+  {
+    name: 'N12-browser-restart-before-hash',
+    why: 'R5/R12: wallet prompt open, browser restarts (reply lost); the unknown record survives and blocks repeats',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'hang-broadcast' },
+      { op: 'restart' },
+      { op: 'mine' },
+    ],
+  },
 ];
 
 /** Random middle step alphabet with weights; every op is bounded (no unbounded waits or loops). */
@@ -168,7 +188,8 @@ function randomStep(rng) {
   if (r < 0.76) return { op: 'account' };
   if (r < 0.79) return { op: 'chain', to: rng.pick(['other', 'invoice']) };
   if (r < 0.85) return { op: 'release' };
-  if (r < 0.92) return { op: 'clear', tab, intent: 'X', accept: rng.next() < 0.5 };
+  if (r < 0.90) return { op: 'clear', tab, intent: 'X', accept: rng.next() < 0.5 };
+  if (r < 0.93) return { op: 'restart' };
   return { op: 'check', tab, intent: 'X' };
 }
 
