@@ -926,16 +926,16 @@
         "isUnspent"
       ],
       "trigger": "A matched output is validated or refreshed.",
-      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>.",
+      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>, each only after the consent described under authorization.",
       "transport": "http-get",
       "sensitiveData": [
         "exact matched transaction IDs",
         "outpoints",
         "ownership interest"
       ],
-      "automatic": true,
-      "authorization": "Automatic within an explicitly started scan or spend validation.",
-      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; public matched-output queries still reveal what is checked to that source.",
+      "automatic": false,
+      "authorization": "Opt-in only. The per-outpoint /outspend check runs only when the user enables the provider spent check; /hex and /merkle-proof reads run only in light-oracle mode after explicit consent. By default confirmed spends are derived locally from scanned block inputs and no outpoint is sent. Addressed by FC-05a (#656), pending hosted CI.",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; when consented, matched-output queries still reveal what is checked to that source.",
       "failureBehavior": "Invalid proof/spentness stops qualification; do not describe these reads as unlinkable or silently switch endpoint.",
       "profile": [
         "full"
@@ -1031,12 +1031,11 @@
       ],
       "symbols": [
         "feeRate",
-        "isUnspent",
         "broadcast",
         "signSweep"
       ],
       "trigger": "User requests review/sign/broadcast of selected outputs.",
-      "destination": "Selected Esplora /fee-estimates, outspend/proof paths and POST /tx.",
+      "destination": "Selected Esplora /fee-estimates and POST /tx. Spent and proof reads happen only in a scan the user explicitly consented to, not as part of sweep review.",
       "transport": "http-get-and-post",
       "sensitiveData": [
         "chosen inputs",
@@ -1046,7 +1045,7 @@
         "network timing"
       ],
       "automatic": true,
-      "authorization": "Explicit review/sign/broadcast with dependent validation requests.",
+      "authorization": "Explicit review/sign/broadcast.",
       "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Existing selected node remains the only broadcast target; public-chain input consolidation remains visible.",
       "failureBehavior": "No automatic second endpoint or retry of an ambiguous broadcast found; keep input/fee/signature checks.",
       "profile": [
