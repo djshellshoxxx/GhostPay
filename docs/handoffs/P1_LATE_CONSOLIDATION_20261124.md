@@ -33,10 +33,43 @@ Left out of scope: #591/#604 opt-in invoice-draft recovery and offline controls;
   `tsc` (different workspace each time) under Node 26.13.1 on Windows. That is an environment fault, not a type
   error, and no local test result is claimed.
 
+## Independent review and audit (session subagent, read-only, at `0c2e4e00`)
+
+No high or medium findings. Pending, unverified, imported and invalidated evidence is never credited. Accept-late
+saves only after a successful recheck under the CAS guard. `lateAcceptedAt` survives reorg invalidation.
+Contradictory duplicates fail closed. Receipt hashes are bound to the submitted hash.
+
+| Finding (low) | Disposition | Regression test (fails without fix) |
+|---|---|---|
+| Invoice card showed another invoice's exact or ambiguous proposal state (`ReconciliationLedger.tsx` `invoiceEvidenceStates`) | Fixed: state shown only on invoices the proposal names; `none` stays "possible payment" | `ReconciliationLedger.invoices.test.tsx` "shows a payment proposed for another invoice only on that invoice" |
+| Accept-late recheck ignored a changed saved RPC or privacy route (`Scan.tsx`) | Fixed: shared `assertScanRoute` (same as stealth export) before and after each await; `lateReview` cleared with the scan owner | `Scan.test.tsx` "refuses a late-payment recheck after the saved RPC changes, without contacting the old route" |
+| Policy payment showed "(confirmed)" from a receipt alone (`PolicyPay.tsx`) | Fixed: requires `verification === 'verified'` (L2-F3) | `PolicyPay.unverified.test.tsx` |
+| Manual link of a record with no block time is credited as on-time | Kept by design: evidence is router-verified and final; the copy routes it to manual review; blocking it would leave the payment unlinkable (reissue/double-pay risk) | — |
+| A failed recheck (even a transient RPC error) marks invoice-relevant records at or above that block unverified | Kept by design: fails closed with "Unverified observation. Scan again"; a rescan restores credit | — |
+
+Security pass on the branch diff: no `innerHTML`/`eval`/`Math.random`/console logging, no new egress, dependencies or
+workflow changes; secret material only in test fixtures; `bash scripts/scan-secrets.sh` OK.
+
+## Fuzz coverage (seeded fast-check)
+
+- `packages/ux-vault/src/reconciliation-amounts.fuzz.test.ts`: credit equals an independently written rule across
+  mixed evidence states, provenance, legacy/on-time/late timing and acceptance (400 runs); noise never changes a summary
+  (300); order and repeat delivery invariance (300); contradictory seller decision fails closed (50). Mutation check:
+  crediting unaccepted late payments is caught with a minimal counterexample.
+- `apps/web/src/lib/walletReceipt.fuzz.test.ts`: hostile `eth_getTransactionReceipt` and `eth_getTransactionByHash`
+  answers (1500 runs each) give a typed `UserFacingError` or an answer bound to the submitted hash with binary status;
+  both outcomes are asserted reachable. Mutation check: removing the receipt-hash binding is caught.
+
+## Local results (Node 26.13.1, Windows, 4 GB RAM; single worker, no coverage)
+
+- `ux-vault`: typecheck 0, lint 0, reconciliation tests 23/23.
+- `apps/web`: typecheck 0, lint 0. Focused suites: see the next section.
+- `PolicyView.guard.test.tsx` "fails closed when the attempt journal cannot be read" fails locally at the unchanged
+  head `57819c4f` too (passes in hosted CI): local environment, not this change.
+
 ## Status
 
-- Done: consolidation, merge with main, payer outcome binding, hosted qualification.
-- In progress: independent review of the stack diff.
-- Next: address demonstrated review findings, acquire integration lock generation 21, merge #635, verify the main
-  revision, release the lock, mark #533/#546/#575/#599/#625 and #590's outcome commit superseded.
+- Done: consolidation, merge with main, payer outcome binding, review fixes, fuzz tests.
+- Next: focused web suite result, push, hosted CI, integration lock generation 21, merge #635, verify main, release
+  the lock, mark #533/#546/#575/#599/#625 and #590's outcome commit superseded.
 - Blockers: none known.

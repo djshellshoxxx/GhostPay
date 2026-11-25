@@ -253,16 +253,17 @@ export function Scan(): ReactNode {
         assertScopeCurrent();
         // A stopped scan can still export its matches. Reuse only its verified client.
         // Check the saved route again before sending an address or returning an export.
+        const assertScanRoute = (): void => {
+          guardSession();
+          if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
+            throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+          }
+        };
         const exportRpc: ExportRpc = {
           chainId: rpc.chainId,
           request: (method, params) => rpc.request(method, params),
-          assertCurrent: () => {
-            guardSession();
-            if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
-                (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
-              throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
-            }
-          },
+          assertCurrent: assertScanRoute,
         };
         setScanOwner({ ...scope, exportRpc });
         let found: ScanMatch[] = [...seed];
@@ -372,7 +373,7 @@ export function Scan(): ReactNode {
               matches,
               verify: async (match) => {
                 // Recheck only through the route this scan used; a changed RPC or privacy selection needs a new scan.
-                exportRpc.assertCurrent();
+                assertScanRoute();
                 const { announcement, metadata } = match;
                 if (!matches.includes(match) || metadata === undefined || announcement.blockTimestamp === undefined) return false;
                 const evidence = await verifyClaimedPayment({
@@ -380,11 +381,11 @@ export function Scan(): ReactNode {
                   claim: { ...match, metadata },
                   ...(secondary === undefined ? {} : { secondaryClient: secondary }),
                 });
-                exportRpc.assertCurrent();
+                assertScanRoute();
                 if (evidence.status !== 'received' || !evidence.final) return false;
                 const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
                 const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
-                exportRpc.assertCurrent();
+                assertScanRoute();
                 return blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
                   block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
                   block.timestamp?.toString() === announcement.blockTimestamp);

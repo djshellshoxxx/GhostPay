@@ -5,7 +5,7 @@ import { parseSeenTx, pollReceipt } from './wallet';
 
 const hash = `0x${'ab'.repeat(32)}` as const;
 const router = '0x1111111111111111111111111111111111111111' as const;
-const noSleep = async (): Promise<void> => undefined;
+const noSleep = (): Promise<void> => Promise.resolve();
 const hex = (bytes: number): fc.Arbitrary<string> =>
   fc.uint8Array({ minLength: bytes, maxLength: bytes }).map((b) => `0x${Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')}`);
 
@@ -24,7 +24,7 @@ describe('wallet RPC answers under generated hostile input', () => {
     let accepted = 0;
     let rejected = 0;
     await fc.assert(fc.asyncProperty(fc.oneof({ weight: 6, arbitrary: receipt }, { weight: 1, arbitrary: fc.anything() }), async (answer) => {
-      const rpc = { request: async (): Promise<unknown> => answer };
+      const rpc = { request: (): Promise<unknown> => Promise.resolve(answer) };
       let result: Awaited<ReturnType<typeof pollReceipt>>;
       try {
         result = await pollReceipt(rpc, hash, router, noSleep, 1);
@@ -36,10 +36,15 @@ describe('wallet RPC answers under generated hostile input', () => {
       if (answer === null) return void expect(result).toBeUndefined();
       accepted++;
       const o = answer as Record<string, unknown>;
-      expect(String(o['transactionHash']).toLowerCase()).toBe(hash);
-      expect(['0x0', '0x1', '0x00', '0x01']).toContain(String(o['status']).toLowerCase());
-      expect(result?.status).toBe(BigInt(String(o['status'])) === 1n ? 'success' : 'reverted');
-      if (o['to'] !== null && o['to'] !== undefined) expect(String(o['to']).toLowerCase()).toBe(router);
+      const text = (key: string): string => {
+        const value = o[key];
+        expect(typeof value).toBe('string');
+        return (value as string).toLowerCase();
+      };
+      expect(text('transactionHash')).toBe(hash);
+      expect(['0x0', '0x1', '0x00', '0x01']).toContain(text('status'));
+      expect(result?.status).toBe(BigInt(text('status')) === 1n ? 'success' : 'reverted');
+      if (o['to'] !== null && o['to'] !== undefined) expect(text('to')).toBe(router);
     }), { numRuns: 1500, seed: 20261124 });
     // The corpus must reach both outcomes, or the property above is vacuous.
     expect(accepted).toBeGreaterThan(20);
