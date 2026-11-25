@@ -1,0 +1,12 @@
+# Deviations and open points (@ghostpay/light-indexer)
+
+Specs: `docs/remote/privacy-specs/network-privacy.md` 4.7 (`IndexerSource`) and 4.8 (HTTP wire), `docs/specs/10-feature5-stage1-private-scanning.md` section 2. Contract implemented: `docs/specs/indexer-logs-api-v1.md`. Decision: ADR-0030.
+
+1. **Location and storage.** Network-privacy 4.7 places the server reference implementation in `packages/pir-two-server/src/indexer`, sharing the PIR page database. It is a separate workspace with its own SQLite header/announcement store instead: PIR shards are immutable once finalized, while `/v1/logs` must roll back on reorgs, and `pir-two-server` is a PoC excluded from the lean build. No PIR code or data is shared.
+2. **Body size.** Network-privacy 4.8 says all indexer/PIR responses have fixed-size bodies per route (NP-P-5). `/v1/logs` bodies are bounded (`maxResponseBytes`), not padded. The body is a deterministic function of the public window, identical for every client that requests it, so its size does not depend on who asks; padding is kept a PIR property.
+3. **Extra request parameter.** `cursor` (continuation, deterministic from public data) is added to `chainId&from&to&pageSize`. The reference client never sends it.
+4. **Extra response fields.** `version`, `chainId`, `announcer`, `coverage`, `next`, `head` and `omitted` are added; `headers` (number, hash, parentHash) carries the continuity data the client already requires. The emitter is a page-level field (`announcer`), not per record; a client cannot prove it from an indexer record anyway (only a receipt from its own RPC can).
+5. **Not entirely raw.** Logs outside the reference client's structural limits (33-byte ephemeral key, 1..4096-byte metadata, 64-bit scheme id) or undecodable are not served but counted in `omitted`, to bound storage and responses under announcer spam. The client would drop them (`skipped`) in any case.
+6. **Server-side grid.** NP-S-3 window alignment is a client rule; the server additionally rejects windows off its `alignBlocks` grid (default 1000, `1` disables it) so every client sends the same windows.
+7. **Node version.** `node:sqlite` needs Node >= 22.13 (the repository allows >= 22) and is experimental there; it prints an ExperimentalWarning at start.
+8. **Not built.** Rate limiting, TLS termination, multi-chain serving from one process, metrics export, backfill parallelism, mainnet. Default `confirmations = 0` (a lag makes the reference client's newest window fail `CONTINUITY`).
