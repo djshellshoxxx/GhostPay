@@ -10,6 +10,7 @@ import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { keccak_256 } from '@noble/hashes/sha3.js';
 import {
   addressOfPoint,
   decryptMasterFile,
@@ -98,6 +99,25 @@ test('restored keys equal the Spec 18 master backup and recover every vector pay
     }
   } finally {
     wipe(r.spendingKey, r.viewingKey, m.spendingKey, m.viewingKey, other.spendingKey, other.viewingKey);
+  }
+});
+
+test("security: a revealed one-time key plus the payer's ephemeral secret yields the master spending key", async () => {
+  // Why the guide and usage text say a revealed payment key must never reach that payment's payer: the payer chose
+  // the ephemeral scalar r, so they know h = keccak256(r * P_view) and can compute p_spend = (k - h) mod n.
+  const n = secp256k1.Point.Fn.ORDER;
+  const a1 = byId('a1');
+  const r = await decryptSellerKeystore(VALID, PASS);
+  const d = deriveFromAnnouncement(r, a1.announcement);
+  try {
+    assert.equal(d.owned, true);
+    const viewingPublicKey = secp256k1.getPublicKey(r.viewingKey, true);
+    const shared = secp256k1.getSharedSecret(bytes(a1.ephemeralPrivateKey), viewingPublicKey, true);
+    const h = BigInt(hex(keccak_256(shared))) % n;
+    const k = BigInt(hex(d.privateKey));
+    assert.ok(((k - h) % n + n) % n === BigInt(K.seller.spendingPrivateKey), 'the documented reconstruction does not hold');
+  } finally {
+    wipe(r.spendingKey, r.viewingKey, d.privateKey);
   }
 });
 
@@ -348,6 +368,13 @@ test('CLI: inspect, wrong passphrase, tampering, unsupported versions and chain 
   const argvPass = cli([path, '--passphrase', PASS], '');
   assert.equal(argvPass.status, 2);
   assert.doesNotMatch(argvPass.stderr, new RegExp(PASS));
+  // --inspect never decrypts, so it cannot derive a payment: asking for both is a usage error, not a silent success.
+  for (const file of [path, fileOf('ghostpay-stealth-master.json', S.files.master.text)]) {
+    const both = cli([file, '--inspect', '--scan-announcement', announcementArg(byId('a1'))]);
+    assert.equal(both.status, 2, both.stdout);
+    assert.match(both.stderr, /--inspect and --scan-announcement/);
+    assert.equal(both.stdout, '');
+  }
 });
 
 test('CLI: one leading UTF-8 byte-order mark is dropped for a keystore, as the app does; Spec 18 files are unchanged', () => {
@@ -360,6 +387,12 @@ test('CLI: one leading UTF-8 byte-order mark is dropped for a keystore, as the a
   const twice = join(dir, 'bom2-keystore.json');
   writeFileSync(twice, Buffer.concat([bom, bom, Buffer.from(VALID, 'utf8')]));
   assert.match(cli([twice], PASS).stderr, /^error: invalidFile:/);
+  // A re-saved keystore of a later version is still named as an unsupported version, not as a broken file.
+  const future = join(dir, 'bom-v2-keystore.json');
+  writeFileSync(future, Buffer.concat([bom, Buffer.from(edit(VALID, (o) => { o.v = 2; }), 'utf8')]));
+  const v2 = cli([future], PASS);
+  assert.equal(v2.status, 1);
+  assert.match(v2.stderr, /^error: unsupportedVersion:/);
   // The Spec 18 formats forbid any non-ASCII character (18a section 1), so their behaviour does not change.
   const single = join(dir, 'bom-single.json');
   writeFileSync(single, Buffer.concat([bom, Buffer.from(S.files.single.text, 'utf8')]));

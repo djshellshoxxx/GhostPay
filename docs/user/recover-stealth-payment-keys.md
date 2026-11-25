@@ -64,6 +64,11 @@ key. The same restriction applies to an encrypted payment-key file once that ser
 A payment private key by itself controls its one-time address; combining it with the private viewing key crosses
 that boundary. Encrypting the private-key body protects its stored key material but does not change this cryptographic relationship.
 
+**The payer can do the same.** The payer chose that payment's ephemeral secret, so the payer already knows its tweak
+without your viewing key. Never send a payment's private key, raw-key file or decrypted payment-key file to the person
+who paid it, for example as a refund. Anyone who has both the key and the payer's ephemeral secret can compute your
+master spending key. To return money, send it from the one-time address instead.
+
 ## Before you start
 
 1. Work offline if you can: disconnect the network, or use a machine you trust that is not shared.
@@ -140,7 +145,7 @@ requests.
    from the network before supplying the backup or passphrase. No GhostPay packages, browser storage or hosted
    service are required at recovery time.
 2. Use `--inspect` to check public information without entering the passphrase. Combining it with
-   `--reveal-private-keys` returns a usage error before the file is opened.
+   `--reveal-private-keys` or `--scan-announcement` returns a usage error before the file is opened.
 
    ```sh
    node scripts/recovery/stealth-export-recover.mjs ghostpay-stealth-keypairs.json --inspect

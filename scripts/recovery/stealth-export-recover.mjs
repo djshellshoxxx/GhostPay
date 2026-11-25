@@ -682,29 +682,37 @@ export function parseRawPrivateKeyText(text) {
  * (which has no `format`), by its integer `v`: 1 is read, any other integer is an unsupported keystore version.
  */
 export function detectFormat(text) {
-  if (typeof text !== 'string') return undefined;
-  if (text.startsWith(`${RAW_LINES[0]}\n`)) return 'rawPrivateKey';
-  if (text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return undefined;
+  return classify(text).kind;
+}
+
+/** `kind` as detectFormat reports it, plus `keystoreFamily` for any seller keystore version, supported or not. */
+function classify(text) {
+  const none = { kind: undefined, keystoreFamily: false };
+  if (typeof text !== 'string') return none;
+  if (text.startsWith(`${RAW_LINES[0]}\n`)) return { kind: 'rawPrivateKey', keystoreFamily: false };
+  if (text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return none;
   let v;
   try {
     v = parseStrictJson(text);
   } catch {
-    return undefined;
+    return none;
   }
   const obj = typeof v === 'object' && v !== null && !Array.isArray(v) ? v : undefined;
   const format = obj?.format;
-  if (format === PUBLIC_FORMAT) return 'public';
-  if (format === KEYPAIR_FORMAT) return 'keypair';
-  if (format === MASTER_FORMAT) return 'master';
-  if (typeof format === 'string' && /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/.test(format)) return 'unsupported';
-  if (obj !== undefined && format === undefined && typeof obj.v === 'number') return obj.v === 1 ? 'sellerKeystore' : 'unsupported';
-  return undefined;
+  const spec18 = (kind) => ({ kind, keystoreFamily: false });
+  if (format === PUBLIC_FORMAT) return spec18('public');
+  if (format === KEYPAIR_FORMAT) return spec18('keypair');
+  if (format === MASTER_FORMAT) return spec18('master');
+  if (typeof format === 'string' && /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/.test(format)) return spec18('unsupported');
+  if (obj !== undefined && format === undefined && typeof obj.v === 'number') return { kind: obj.v === 1 ? 'sellerKeystore' : 'unsupported', keystoreFamily: true };
+  return none;
 }
 
 // --- CLI ------------------------------------------------------------------------------------------------------------
 
 const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [options]
-  --inspect                  validate and print public information only (incompatible with --reveal-private-keys)
+  --inspect                  validate and print public information only (incompatible with --reveal-private-keys
+                             and --scan-announcement)
   --expected-chain <id>      require this chain in a payment, public or raw-key file (also with --inspect)
                              a master backup or seller keystore is chain-neutral and refuses this option
   --expected-meta-address <st:eth:0x...>
@@ -718,7 +726,9 @@ const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [o
 The passphrase is read from standard input, or from a no-echo prompt on a terminal. It is never accepted as an
 argument or environment variable.
 Keep payment private keys away from a holder of your private viewing key: together with the public announcement,
-they allow reconstruction of the master spending key and spending of your other discoverable scheme-1 payments.`;
+they allow reconstruction of the master spending key and spending of your other discoverable scheme-1 payments.
+The payer of a payment can do the same with that payment's key, because the payer chose its ephemeral secret:
+never send a revealed payment key to the payer (for example, as a refund). Send funds instead.`;
 
 class UsageError extends Error {}
 
@@ -747,6 +757,8 @@ function parseArgs(argv) {
     else throw new UsageError('only one file may be given');
   }
   if (opts.inspect && opts.reveal) throw new UsageError('--inspect and --reveal-private-keys cannot be used together');
+  // --inspect never decrypts, so a derivation request would otherwise be ignored while the run still succeeded.
+  if (opts.inspect && opts.announcements.length > 0) throw new UsageError('--inspect and --scan-announcement cannot be used together');
   if (opts.file === undefined) throw new UsageError('a file is required');
   return opts;
 }
@@ -850,8 +862,9 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
     opts = parseArgs(argv);
     const raw = readBounded(opts.file, LIMITS.keypairFileBytes);
     // GhostPay reads a selected keystore with Blob.text(), which drops one leading UTF-8 byte-order mark, so a keystore
-    // re-saved by an editor that adds one still imports there. Do the same here, for a seller keystore only.
-    const text = raw.startsWith(UTF8_BOM) && detectFormat(raw.slice(UTF8_BOM.length)) === 'sellerKeystore' ? raw.slice(UTF8_BOM.length) : raw;
+    // re-saved by an editor that adds one still imports there. Do the same here, for any seller keystore version (so a
+    // later version is still reported as unsupported); Spec 18 files keep refusing every non-ASCII byte.
+    const text = raw.startsWith(UTF8_BOM) && classify(raw.slice(UTF8_BOM.length)).keystoreFamily ? raw.slice(UTF8_BOM.length) : raw;
     const kind = detectFormat(text);
     if (kind === 'unsupported') fail('unsupportedVersion');
     if (kind === undefined) fail('invalidFile');
