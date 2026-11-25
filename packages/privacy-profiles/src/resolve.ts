@@ -33,7 +33,8 @@ const setValue = (sel: Selection, id: OptionId, value: string): Selection => {
   const values: Partial<Record<OptionId, string>> = { ...sel.values };
   if (value === OPTION_CATALOGUE[id].defaultValue) delete values[id];
   else values[id] = value;
-  return { preset: sel.preset, values, acks: sel.acks };
+  // Copy acks too: results are frozen in place, so sharing the caller's array would freeze it.
+  return { preset: sel.preset, values, acks: [...sel.acks] };
 };
 
 /** Changes one option; label becomes `custom`. Operator options and unknown values leave the selection unchanged. */
@@ -45,24 +46,28 @@ export function setOption(
 ): { selection: Selection; evaluation: Evaluation } {
   const sel = normalizeSelection(selIn).selection;
   const def = Object.prototype.hasOwnProperty.call(OPTION_CATALOGUE, id) ? OPTION_CATALOGUE[id] : undefined;
+  // The wrapper is frozen shallowly: on rejection `selection` is the caller's own object and must not be frozen by us.
   if (!def || !def.values.some((v) => v.value === value)) {
     const issue: Issue = { code: 'E_UNKNOWN_VALUE', key: 'privacy.err.unknownValue', options: def ? [id] : [] };
-    return { selection: sel, evaluation: withIssue(evaluate(sel, ctx), issue) };
+    return Object.freeze({ selection: sel, evaluation: withIssue(evaluate(sel, ctx), issue) });
   }
   if (!def.userSelectable) {
     const issue: Issue = { code: 'E_NOT_SELECTABLE', key: 'privacy.err.notSelectable', options: [id] };
-    return { selection: sel, evaluation: withIssue(evaluate(sel, ctx), issue) };
+    return Object.freeze({ selection: sel, evaluation: withIssue(evaluate(sel, ctx), issue) });
   }
   const selection: Selection = deepFreeze({ ...setValue(sel, id, value), preset: 'custom' });
-  return { selection, evaluation: evaluate(selection, ctx) };
+  return Object.freeze({ selection, evaluation: evaluate(selection, ctx) });
 }
 
 /** Records an acknowledgement. Unknown keys are ignored. Result keeps acks sorted and unique. */
 export function acknowledge(selIn: Selection, ack: AckKey): Selection {
   const { selection: sel, problems } = normalizeSelection(selIn);
-  if (!(ACK_KEYS as readonly string[]).includes(ack)) return problems.length === 0 ? sel : deepFreeze({ ...sel });
-  const acks = [...new Set([...sel.acks.filter((a): a is AckKey => typeof a === 'string'), ack])].sort();
-  return deepFreeze({ preset: sel.preset, values: { ...sel.values }, acks });
+  const kept = sel.acks.filter((a): a is AckKey => typeof a === 'string');
+  if (!(ACK_KEYS as readonly string[]).includes(ack)) {
+    // A well-formed selection is returned as is. A repaired one is copied: its `values` may still be the caller's object.
+    return problems.length === 0 ? sel : deepFreeze({ preset: sel.preset, values: { ...sel.values }, acks: [...kept].sort() });
+  }
+  return deepFreeze({ preset: sel.preset, values: { ...sel.values }, acks: [...new Set([...kept, ack])].sort() });
 }
 
 const FORBIDDEN = new Set(['experimental', 'test-only', 'stub', 'watch']);
