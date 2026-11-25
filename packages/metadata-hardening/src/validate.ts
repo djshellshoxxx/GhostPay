@@ -12,12 +12,19 @@ export function fail(message: string): never {
   throw new MetadataHardeningError('INVALID_INPUT', message);
 }
 
+/** `%TypedArray%.prototype[@@toStringTag]`: reads the internal [[TypedArrayName]] slot, so it cannot be faked. */
+// eslint-disable-next-line @typescript-eslint/unbound-method -- a getter, only ever invoked through `.call(value)`
+const typedArrayName = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Uint8Array.prototype) as object, Symbol.toStringTag)?.get as
+  | ((this: unknown) => string | undefined)
+  | undefined;
+
 /**
- * True for a `Uint8Array` including one from another realm (iframe, `vm` context).
- * `ArrayBuffer.isView` cannot be spoofed with a `Symbol.toStringTag`.
+ * True for a real `Uint8Array` (including a Node `Buffer`, and one from another realm such as an
+ * iframe or `vm` context). Not fooled by a `Symbol.toStringTag` override or by an object that only
+ * inherits from `Uint8Array.prototype`.
  */
 export function isBytes(v: unknown): v is Uint8Array {
-  return v instanceof Uint8Array || (ArrayBuffer.isView(v) && Object.prototype.toString.call(v) === '[object Uint8Array]');
+  return typedArrayName === undefined ? v instanceof Uint8Array : typedArrayName.call(v) === 'Uint8Array';
 }
 
 /** Asserts `v` is a `Uint8Array` of `min..max` bytes. */
@@ -60,6 +67,7 @@ export function requireArray(
 ): asserts v is readonly unknown[] {
   if (!Array.isArray(v)) fail(`${what} must be an array`);
   if (v.length > max) throw new MetadataHardeningError(overflow, `${what} has too many entries`);
+  for (let i = 0; i < v.length; i++) if (!(i in v)) fail(`${what} must not have holes`);
 }
 
 /** Asserts `v` is a function. */

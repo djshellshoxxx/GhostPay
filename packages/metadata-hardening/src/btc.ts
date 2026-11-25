@@ -4,6 +4,7 @@ import { fail, isRecord, requireArray, requireBigint, requireRecord } from './va
 const U32_MAX = 0xffff_ffff;
 const MAX_ITEMS = 10_000;
 const MAX_PSBT_RECORDS = 100_000;
+const HEX_BYTES = /^(?:[0-9a-fA-F]{2})*$/;
 /** Standard scriptPubKey limit is far below this; 10 000 bytes is the consensus script-size cap. */
 const MAX_SCRIPT_HEX = 20_000;
 
@@ -59,7 +60,7 @@ export function planChange(opts: {
   requireBigint(opts.feeSats, 'feeSats');
   if (opts.dustSats !== undefined) requireBigint(opts.dustSats, 'dustSats');
   if (opts.changeAddress !== undefined) requireInput(typeof opts.changeAddress === 'string', 'change address must be a string');
-  const inputAddresses = opts.inputAddresses ?? [];
+  const inputAddresses = opts.inputAddresses === undefined ? [] : opts.inputAddresses;
   requireArray(inputAddresses, 'input addresses', MAX_ITEMS);
   requireInput(inputAddresses.every((a) => typeof a === 'string'), 'input address must be a string');
   const dust = opts.dustSats ?? DEFAULT_DUST_SATS;
@@ -280,10 +281,10 @@ export function stripPsbtFingerprints(network: string, psbt: PlainPsbt): { psbt:
     requireArray(recs, 'psbt record map', MAX_PSBT_RECORDS);
     const out: PsbtRecord[] = [];
     for (const r of recs) {
-      if (!isRecord(r) || !Number.isInteger(r.keyType) || (r.keyType as number) < 0 || (r.keyType as number) > 255 || typeof r.key !== 'string' || typeof r.value !== 'string') {
+      if (!isRecord(r) || !isU32(r.keyType) || typeof r.key !== 'string' || typeof r.value !== 'string' || !HEX_BYTES.test(r.key) || !HEX_BYTES.test(r.value)) {
         fail('psbt record is malformed');
       }
-      if (allow.has(r.keyType as number)) out.push({ keyType: r.keyType as number, key: r.key, value: r.value });
+      if (allow.has(r.keyType)) out.push({ keyType: r.keyType, key: r.key, value: r.value });
       else removed++;
     }
     return out;

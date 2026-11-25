@@ -103,7 +103,8 @@ export interface HardeningReport {
  *
  * @remarks Errors block (mutually exclusive or invalid pair); warnings are dependency notes. Each
  * id must be absent (off) or a real boolean; a string such as `"false"` is rejected, not treated as on.
- * @throws {MetadataHardeningError} `INVALID_INPUT` for a malformed settings object.
+ * @throws {MetadataHardeningError} `INVALID_INPUT` for a malformed settings object, including a
+ * `tagMode` that is not `full`, `ignore` or `mask:1..7`.
  */
 export function validateHardening(s: HardeningSettings): HardeningReport {
   requireRecord(s, 'settings');
@@ -116,18 +117,12 @@ export function validateHardening(s: HardeningSettings): HardeningReport {
   const on = (id: MhId): boolean => Object.hasOwn(enabled, id) && enabled[id] === true;
   const errors: string[] = [];
   const warnings: string[] = [];
-  let tagModeValid = true;
-  try {
-    parseTagMode(s.tagMode);
-  } catch {
-    tagModeValid = false;
-    errors.push('tagMode must be full, ignore or mask:1 .. mask:7.');
-  }
+  parseTagMode(s.tagMode); // malformed settings: INVALID_INPUT, like every other wrong-typed field
   if (on('MH-AMT-1') && on('MH-AMT-2')) errors.push('MH-AMT-1 and MH-AMT-2: pick one.');
   if (on('MH-FEE-1') && on('MH-FEE-2')) errors.push('MH-FEE-1 and MH-FEE-2 are mutually exclusive.');
   if (on('MH-TAG-1') && on('MH-TAG-2')) errors.push('MH-TAG-1 (keep tag) and MH-TAG-2 (drop/mask tag) conflict.');
-  if (tagModeValid && on('MH-TAG-2') && s.tagMode === 'full') errors.push('MH-TAG-2 needs tagMode ignore or mask:k.');
-  if (tagModeValid && !on('MH-TAG-2') && s.tagMode !== 'full') errors.push('tagMode other than full needs MH-TAG-2.');
+  if (on('MH-TAG-2') && s.tagMode === 'full') errors.push('MH-TAG-2 needs tagMode ignore or mask:k.');
+  if (!on('MH-TAG-2') && s.tagMode !== 'full') errors.push('tagMode other than full needs MH-TAG-2.');
   if (on('MH-INV-1') && !on('MH-INV-2')) warnings.push('MH-INV-1 padding is moot without MH-INV-2 encryption.');
   if (on('MH-ANN-3') && !on('MH-FEE-1')) warnings.push('MH-ANN-3 only works with MH-FEE-1: the router forces 57-byte metadata.');
   if (on('MH-FEE-1') && on('MH-ANN-3')) warnings.push('Scanner must read the amount from the token transfer (unverified until read).');
@@ -203,5 +198,6 @@ export function parseHardeningJson(text: string): HardeningSettings {
   } catch {
     throw new MetadataHardeningError('INVALID_INPUT', 'settings are not valid JSON');
   }
+  requireRecord(parsed, 'settings'); // JSON null / arrays / scalars are corrupt storage, not "no settings"
   return normalizeHardening(parsed);
 }

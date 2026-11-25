@@ -49,6 +49,7 @@ export function roundGross(amount: bigint, opts: RoundOptions): AdjustedAmount {
     if (digits <= s) return { amount, surplus: 0n, sigFigsUsed: s };
     const step = 10n ** BigInt(digits - s);
     const rounded = ((amount + step - 1n) / step) * step;
+    if (rounded > UINT256_MAX) continue; // a coarser grid would overflow the token's value range
     const surplus = rounded - amount;
     if (surplus * 10_000n <= amount * BigInt(opts.maxSlippageBps)) {
       return { amount: rounded, surplus, sigFigsUsed: s };

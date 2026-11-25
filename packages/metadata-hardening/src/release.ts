@@ -203,13 +203,20 @@ export class RelayerPinning {
   /**
    * Re-pins to a different relayer only after the user confirmed.
    *
-   * @throws {MetadataHardeningError} `POLICY_REJECTED` without `userConfirmed`, `CONFLICT` with one relayer.
+   * An id that was never assigned is pinned to a random relayer. Nothing changes when it throws.
+   *
+   * @throws {MetadataHardeningError} `POLICY_REJECTED` without `userConfirmed === true`, `CONFLICT` with one relayer.
    */
   public failover(sweepId: string, userConfirmed: boolean): string {
     if (userConfirmed !== true) throw new MetadataHardeningError('POLICY_REJECTED', 'failover needs user confirmation');
-    const cur = this.assign(sweepId);
+    checkSweepId(sweepId);
+    // Every check runs before the pin table is touched: a failed failover leaves no trace.
+    if (this.urls.length < 2) throw new MetadataHardeningError('CONFLICT', 'no other relayer configured');
+    const cur = this.pins.get(sweepId);
+    if (cur === undefined && this.pins.size >= MAX_PINS) {
+      throw new MetadataHardeningError('LIMIT_EXCEEDED', 'too many pinned sweeps: release finished ones');
+    }
     const others = this.urls.filter((u) => u !== cur);
-    if (others.length === 0) throw new MetadataHardeningError('CONFLICT', 'no other relayer configured');
     const pick = others[randomInt(others.length, this.rng)] as string;
     this.pins.set(sweepId, pick);
     return pick;

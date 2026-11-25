@@ -148,9 +148,9 @@ describe('MH-BTC-5 ordering: untrusted inputs and invariants', () => {
 
 describe('MH-BTC-6 stripPsbtFingerprints: malformed PSBT maps', () => {
   const psbt: PlainPsbt = {
-    global: [{ keyType: 0x00, key: '', value: 'aa' }, { keyType: 0x01, key: 'xpub', value: 'bb' }, { keyType: 0xfc, key: 'proprietary', value: 'cc' }],
-    inputs: [[{ keyType: 0x01, key: '', value: 'aa' }, { keyType: 0x06, key: 'pk', value: 'path' }, { keyType: 0x16, key: 'pk', value: 'taproot path' }]],
-    outputs: [[{ keyType: 0x02, key: 'pk', value: 'path' }, { keyType: 0x03, key: '', value: '01' }]],
+    global: [{ keyType: 0x00, key: '', value: 'aa' }, { keyType: 0x01, key: 'a1b2', value: 'bb' }, { keyType: 0xfc, key: 'c3d4', value: 'cc' }],
+    inputs: [[{ keyType: 0x01, key: '', value: 'aa' }, { keyType: 0x06, key: 'a1', value: '0102' }, { keyType: 0x16, key: 'a1', value: '0304' }]],
+    outputs: [[{ keyType: 0x02, key: 'a1', value: '0102' }, { keyType: 0x03, key: '', value: '01' }]],
   };
   it('keeps only needed records and counts what it removed, without mutating', () => {
     const frozen = JSON.parse(JSON.stringify(psbt)) as PlainPsbt;
@@ -164,7 +164,7 @@ describe('MH-BTC-6 stripPsbtFingerprints: malformed PSBT maps', () => {
     expect(frozen.global).toHaveLength(3);
   });
   it('fails typed on malformed structure instead of leaking TypeError', () => {
-    for (const v of [undefined, null, 5, 'x', [], {}, { global: 'x', inputs: [], outputs: [] }, { global: [], inputs: [5], outputs: [] }, { global: [], inputs: [], outputs: {} }, { global: [null], inputs: [], outputs: [] }, { global: [{ keyType: '0', key: '', value: '' }], inputs: [], outputs: [] }, { global: [{ keyType: 1.5, key: '', value: '' }], inputs: [], outputs: [] }, { global: [{ keyType: 256, key: '', value: '' }], inputs: [], outputs: [] }]) {
+    for (const v of [undefined, null, 5, 'x', [], {}, { global: 'x', inputs: [], outputs: [] }, { global: [], inputs: [5], outputs: [] }, { global: [], inputs: [], outputs: {} }, { global: [null], inputs: [], outputs: [] }, { global: [{ keyType: '0', key: '', value: '' }], inputs: [], outputs: [] }, { global: [{ keyType: 1.5, key: '', value: '' }], inputs: [], outputs: [] }, { global: [{ keyType: 2 ** 32, key: '', value: '' }], inputs: [], outputs: [] }]) {
       expect(codeOf(() => stripPsbtFingerprints(NET, v as never))).toBe('INVALID_INPUT');
     }
   });

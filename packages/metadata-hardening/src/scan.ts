@@ -18,8 +18,9 @@ const MAX_USER_ADDRESSES = 100_000;
 const MAX_TOPIC_SLOTS = 8;
 const MAX_TOPIC_OR_LIST = 1024;
 const MAX_FILTER_ADDRESSES = 1024;
-const ADDRESS_HEX = /^0x[0-9a-fA-F]{40}$/;
-const TOPIC_HEX = /^0x[0-9a-fA-F]{0,64}$/;
+/** `0x` or `0X`: a node may accept either; an unrecognised form must never be skipped. */
+const ADDRESS_HEX = /^0[xX][0-9a-fA-F]{40}$/;
+const TOPIC_HEX = /^0[xX][0-9a-fA-F]{0,64}$/;
 
 /** 64-hex (32-byte) lowercase form of a user address, for topic comparison. */
 function topicForm(address40: string): string {
@@ -37,9 +38,9 @@ function ownedAddresses(list: unknown): Set<string> {
   return out;
 }
 
-/** Topic value as 64 lowercase hex digits when it is hex (short values left-padded, as an RPC would). */
+/** Topic value as 64 lowercase hex digits (short values left-padded, as an RPC would). */
 function topicKey(v: string): string {
-  return TOPIC_HEX.test(v) ? v.slice(2).toLowerCase().padStart(64, '0') : v.toLowerCase();
+  return v.slice(2).toLowerCase().padStart(64, '0');
 }
 
 interface ParsedFilter {
@@ -56,8 +57,8 @@ function readFilter(filter: unknown): ParsedFilter {
   if (address !== undefined) {
     const list = typeof address === 'string' ? [address] : address;
     requireArray(list, 'filter address', MAX_FILTER_ADDRESSES, 'INVALID_INPUT');
-    requireInput(list.every((a) => typeof a === 'string'), 'filter address must be a string');
-    addresses = list;
+    requireInput(list.every((a) => typeof a === 'string' && ADDRESS_HEX.test(a)), 'filter address must be 20-byte hex');
+    addresses = list as readonly string[];
   }
   const slots: (readonly string[] | null)[] = [];
   if (topics !== undefined) {
@@ -69,8 +70,8 @@ function readFilter(filter: unknown): ParsedFilter {
       }
       const vals = typeof t === 'string' ? [t] : t;
       requireArray(vals, 'topic', MAX_TOPIC_OR_LIST, 'INVALID_INPUT');
-      requireInput(vals.every((v) => typeof v === 'string'), 'topic must be a string');
-      slots.push(vals);
+      requireInput(vals.every((v) => typeof v === 'string' && TOPIC_HEX.test(v)), 'topic must be hex of at most 32 bytes');
+      slots.push(vals as readonly string[]);
     }
   }
   return { addresses, topics: slots };
@@ -78,7 +79,7 @@ function readFilter(filter: unknown): ParsedFilter {
 
 /** True when any address or topic of the parsed filter names one of `mine`. */
 function namesOwned(f: ParsedFilter, mine: ReadonlySet<string>): boolean {
-  if (f.addresses.some((a) => (ADDRESS_HEX.test(a) ? mine.has(a.slice(2).toLowerCase()) : false))) return true;
+  if (f.addresses.some((a) => mine.has(a.slice(2).toLowerCase()))) return true;
   const mine32 = new Set([...mine].map(topicForm));
   return f.topics.some((slot) => slot !== null && slot.some((v) => mine32.has(topicKey(v))));
 }
@@ -87,8 +88,9 @@ function namesOwned(f: ParsedFilter, mine: ReadonlySet<string>): boolean {
  * MH-SCAN-1 R1: no part of the `getLogs` filter may reference a user address.
  *
  * @remarks Spec R1 names `topic2`/`topic3`; this checks every place an address can appear (the
- * contract `address`, and every topic slot, padded or not, any case, in or-lists), a strict
- * superset: the announcer is never a user address, so there is no false positive.
+ * contract `address`, and every topic slot, padded or not, any case, `0x`/`0X`, in or-lists), a
+ * strict superset: the announcer is never a user address, so there is no false positive. A value
+ * that is not hex of the right size is rejected (`INVALID_INPUT`), never skipped.
  *
  * @param filter The `getLogs` filter about to be sent.
  * @param userAddresses Addresses the user owns (stealth or otherwise); 20-byte hex.

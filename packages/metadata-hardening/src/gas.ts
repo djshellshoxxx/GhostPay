@@ -34,27 +34,35 @@ export function bucketGasLimit(estimate: bigint, opts: GasBucketOptions): bigint
   const headroom = opts.headroomBps ?? 0;
   requireInput(Number.isInteger(headroom) && headroom >= 0 && headroom <= 10_000, 'headroom out of range');
   const padded = (estimate * BigInt(10_000 + headroom) + 9_999n) / 10_000n;
-  return ((padded + bucket - 1n) / bucket) * bucket;
+  const result = ((padded + bucket - 1n) / bucket) * bucket;
+  if (result > MAX_GAS) throw new MetadataHardeningError('LIMIT_EXCEEDED', 'gas limit exceeds 2^64 - 1');
+  return result;
 }
 
 const ALLOWED_TX_FIELDS: ReadonlySet<string> = new Set(['from', 'to', 'data', 'value', 'chainId', 'gas']);
-/** A field name safe to print: a plain identifier. Anything else could carry control characters or secrets. */
-const PRINTABLE_FIELD = /^[A-Za-z_][A-Za-z0-9_]{0,31}$/;
+/**
+ * Transaction field names safe to print (JSON-RPC, EIP-1559/2930/4844/7702). Anything else is
+ * withheld: a key can be any caller text, including a secret-shaped identifier or control characters.
+ */
+const KNOWN_TX_FIELDS: ReadonlySet<string> = new Set([
+  'nonce', 'gasPrice', 'gasLimit', 'maxFeePerGas', 'maxPriorityFeePerGas', 'maxFeePerBlobGas', 'type', 'accessList', 'authorizationList',
+  'blobVersionedHashes', 'blobs', 'kzgProofs', 'input', 'chain', 'hash', 'r', 's', 'v', 'yParity', 'blockHash', 'blockNumber', 'transactionIndex',
+]);
 
 /**
  * MH-WAL-1 R3: a payer tx request may carry only the existing fields plus `gas`. Exotic fee
  * fields would themselves be a fingerprint.
  *
  * @remarks Checks own enumerable string keys (what a JSON-RPC serialiser would send). The message
- * names the first offending field only when it is a plain identifier of at most 32 characters, so
- * a hostile key cannot inject log lines or smuggle data into logs.
+ * names the first offending field only when it is a known transaction field name; any other key is
+ * "(name withheld)", so a hostile key cannot inject log lines or smuggle data into logs.
  * @throws {MetadataHardeningError} `POLICY_REJECTED` naming the first offending field.
  */
 export function assertOnlyAllowedTxFields(tx: Readonly<Record<string, unknown>>): void {
   requireRecord(tx, 'transaction request');
   for (const k of Object.keys(tx)) {
     if (!ALLOWED_TX_FIELDS.has(k)) {
-      throw new MetadataHardeningError('POLICY_REJECTED', `tx field not allowed: ${PRINTABLE_FIELD.test(k) ? k : '(name withheld)'}`);
+      throw new MetadataHardeningError('POLICY_REJECTED', `tx field not allowed: ${KNOWN_TX_FIELDS.has(k) ? k : '(name withheld)'}`);
     }
   }
 }

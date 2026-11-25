@@ -9,15 +9,14 @@ import { findUnsafeAnchors, sriDigest, verifySri } from './web.js';
 const ME = `0x${'ab'.repeat(20)}`;
 
 describe('edge cases found while closing coverage gaps', () => {
-  it('validateHardening reports (not throws) an unknown tagMode string and skips the dependent rules', () => {
-    const r = validateHardening({ enabled: defaultHardening().enabled, tagMode: 'bogus' });
-    expect(r.errors).toEqual(['tagMode must be full, ignore or mask:1 .. mask:7.']);
+  it('validateHardening throws INVALID_INPUT for an unknown tagMode string', () => {
+    expect(() => validateHardening({ enabled: defaultHardening().enabled, tagMode: 'bogus' })).toThrow(MetadataHardeningError);
   });
   it('padBody rejects a toJSON that injects its own pad member', () => {
     expect(() => padBody({ toJSON: () => ({ pad: 'xx' }) })).toThrow(MetadataHardeningError);
   });
-  it('assertNoUserAddressFilter ignores values that are not hex (they cannot name an address)', () => {
-    expect(() => assertNoUserAddressFilter({ address: 'not-an-address', topics: ['not-hex', ['also-not-hex']] }, [ME])).not.toThrow();
+  it('assertNoUserAddressFilter rejects values that are not hex instead of skipping them', () => {
+    expect(() => assertNoUserAddressFilter({ address: 'not-an-address', topics: ['not-hex', ['also-not-hex']] }, [ME])).toThrow(MetadataHardeningError);
   });
   it('the anchor lint stops cleanly when the input ends right after "="', () => {
     for (const s of ['<a target=', '<a target= ', '<a target=\n', '<a rel =', '<a ="']) expect(findUnsafeAnchors(s)).toEqual([]);

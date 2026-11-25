@@ -72,7 +72,8 @@ function readAnchorAttrs(s: string, start: number, out: AnchorAttrs): number {
  *
  * @remarks A forward tokeniser over markup text, linear in its length: a lint aid, not an HTML
  * parser. `index` is the ordinal of the anchor among all anchors. It does not skip comments or
- * `<script>` bodies (conservative), does not decode character references in `rel`, and does not
+ * `<script>` bodies (conservative), does not decode character references in `target` or `rel`
+ * (so `target="&#95;blank"` is missed), and does not
  * understand JSX: run it over rendered HTML. Only the `_blank` keyword is checked (ASCII
  * case-insensitive, exact); `rel` tokens split on HTML whitespace only, so a no-break space does
  * not separate tokens.
@@ -222,9 +223,12 @@ export function verifySri(bytes: Uint8Array, integrity: string): boolean {
   if (typeof integrity !== 'string' || integrity.length > MAX_INTEGRITY_LENGTH) return false;
   const entries: { algo: SriAlgo; value: string }[] = [];
   for (const token of integrity.split(/[ \t\n\f\r]+/)) {
-    const parts = (token.split('?')[0] ?? '').split('-');
-    const algo = asciiLower(parts[0] ?? '');
-    if (isSriAlgo(algo)) entries.push({ algo, value: parts[1] ?? '' });
+    const bare = token.split('?')[0] ?? '';
+    const dash = bare.indexOf('-');
+    const algo = asciiLower(dash < 0 ? bare : bare.slice(0, dash));
+    // Everything after the first "-" is the value, so trailing text after the hash can never match
+    // (the spec reads only the segment up to the next "-").
+    if (isSriAlgo(algo)) entries.push({ algo, value: dash < 0 ? '' : bare.slice(dash + 1) });
   }
   if (entries.length === 0) return false;
   const best = Math.max(...entries.map((e) => STRENGTH[e.algo]));

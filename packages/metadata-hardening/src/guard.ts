@@ -122,6 +122,10 @@ export function parseEndpoint(url: string): string {
   if (typeof url !== 'string' || url.length > MAX_ENDPOINT_LENGTH) {
     throw new MetadataHardeningError('INVALID_INPUT', 'endpoint is not a valid URL');
   }
+  // Even an empty "?" or "#" is a query/fragment marker the normaliser would silently drop.
+  if (url.includes('?') || url.includes('#')) {
+    throw new MetadataHardeningError('INVALID_INPUT', 'endpoint must be https, without credentials, query or fragment');
+  }
   let u: URL;
   try {
     u = new URL(url);

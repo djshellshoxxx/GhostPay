@@ -130,14 +130,7 @@ function deriveSigner(seed: Uint8Array, mode: SignerMode, chainId: number | unde
 export function deriveInvoiceKeys(seed: Uint8Array, index: number, options: DeriveOptions = {}): InvoiceKeys {
   checkSeed(seed);
   requireInput(Number.isInteger(index) && index >= 0 && index <= U32_MAX, 'index out of range');
-  checkRecord(options, 'options');
-  const { chainId } = options;
-  if (chainId !== undefined) assertTestnetChain(chainId);
-  const signerMode = options.signerMode === undefined ? 'per-invoice' : options.signerMode;
-  requireInput(SIGNER_MODES.includes(signerMode), 'unknown signer mode');
-  if (signerMode === 'per-chain' && chainId === undefined) {
-    throw new MetadataHardeningError('INVALID_INPUT', 'per-chain signer needs a chain id');
-  }
+  const { chainId, signerMode } = checkOptions(options);
   // Work on a private copy: the caller's buffer is never read after return and a cross-realm
   // array is normalised to this realm's Uint8Array for the hash primitives.
   const root = Uint8Array.from(seed);
@@ -146,6 +139,19 @@ export function deriveInvoiceKeys(seed: Uint8Array, index: number, options: Deri
   } finally {
     root.fill(0);
   }
+}
+
+/** Validates and defaults the option bag; shared so an empty range is checked exactly like a single key. */
+function checkOptions(options: DeriveOptions): { chainId: number | undefined; signerMode: SignerMode } {
+  checkRecord(options, 'options');
+  const { chainId } = options;
+  if (chainId !== undefined) assertTestnetChain(chainId);
+  const signerMode = options.signerMode === undefined ? 'per-invoice' : options.signerMode;
+  requireInput(SIGNER_MODES.includes(signerMode), 'unknown signer mode');
+  if (signerMode === 'per-chain' && chainId === undefined) {
+    throw new MetadataHardeningError('INVALID_INPUT', 'per-chain signer needs a chain id');
+  }
+  return { chainId, signerMode };
 }
 
 function derive(seed: Uint8Array, index: number, chainId: number | undefined, signerMode: SignerMode): InvoiceKeys {
@@ -190,7 +196,8 @@ export function deriveInvoiceKeyRange(
   count: number,
   options: DeriveOptions = {},
 ): InvoiceKeys[] {
-  checkRecord(options, 'options');
+  checkSeed(seed);
+  checkOptions(options);
   requireInput(Number.isInteger(count) && count >= 0 && count <= MAX_RANGE, 'count out of range');
   requireInput(Number.isInteger(from) && from >= 0 && from + count - 1 <= U32_MAX, 'range out of bounds');
   const out: InvoiceKeys[] = [];
