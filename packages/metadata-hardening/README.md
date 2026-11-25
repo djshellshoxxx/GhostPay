@@ -79,13 +79,13 @@ No export was removed or renamed and no signature changed (two functions and two
 - `parseEndpoint('https://h//')` returns `https://h` (was `https://h/`). `buildConnectSources`/`buildCsp` reject a host outside CSP host-source grammar (`;`, `,`, quotes, `_`), a raw `?`/`#`, control characters and non-strings.
 - `findUnsafeAnchors`: a `target` is `_blank` only as an exact keyword (was a prefix match); `rel` splits on HTML whitespace only (a no-break space is no longer a separator); `<a-x>` is not an anchor; a `>` inside a quoted value no longer ends the tag; a non-string throws instead of returning `[]`.
 - `verifySri`: algorithm names are case-insensitive; a recognised algorithm with a malformed value counts as the strongest set and fails; a non-`Uint8Array` throws `INVALID_INPUT`.
-- `assertNoUserAddressFilter` also rejects a user address in `address` and any topic slot, and needs `userAddresses` to be 20-byte hex. `roleForRequest` sends a filter it cannot read to `query`. `alignedScanRange` caps `maxRequests` at 10 000. `dedupeLogs` rejects a log without an integer `blockNumber` and leaves `seen` untouched on error.
-- `buildDirectPayment` rejects an unknown `asset.kind` and an `amount` above 2^256-1; `roundGross` needs `amountPolicyMode` to be `fiat_quote` or `fixed_token`; `classifyMetadata` needs a boolean `viaRouter`; `RelayerPinning.failover` needs `userConfirmed === true`; `assertLocktimeEffective` with a locktime and no inputs is `INVALID_INPUT` (was `CONFLICT`); `coarsenExpiry` refuses a result above 2^53 (`LIMIT_EXCEEDED`).
-- `planChange` compares bech32 addresses case-insensitively for the reuse check. `assertOnlyAllowedTxFields` names the offending field only when it is a plain identifier of at most 32 characters.
+- `assertNoUserAddressFilter` also rejects a user address in `address` and any topic slot (`0x` or `0X`), needs `userAddresses` to be 20-byte hex, and rejects an address or topic that is not canonical hex instead of skipping it. `roleForRequest` sends a filter it cannot read to `query`. `alignedScanRange` caps `maxRequests` at 10 000. `dedupeLogs` rejects a log without an integer `blockNumber` and leaves `seen` untouched on error.
+- `buildDirectPayment` rejects an unknown `asset.kind` and an `amount` above 2^256-1; `roundGross` needs `amountPolicyMode` to be `fiat_quote` or `fixed_token` and never returns more than uint256 max; `bucketGasLimit` throws `LIMIT_EXCEEDED` above 2^64-1; `classifyMetadata` needs a boolean `viaRouter`; `RelayerPinning.failover` needs `userConfirmed === true`; `assertLocktimeEffective` with a locktime and no inputs is `INVALID_INPUT` (was `CONFLICT`); `coarsenExpiry` refuses a result above 2^53 (`LIMIT_EXCEEDED`).
+- `planChange` compares bech32 addresses case-insensitively for the reuse check and rejects `inputAddresses: null`. `parseEndpoint` rejects an empty `?` or `#` and strips every trailing slash (was one). Custom padding buckets above 16384 bytes or more than 16 are rejected. Arrays with holes are rejected. `verifySri` ignores nothing after the hash: `sha384-<hash>-x` never matches. `parseHardeningJson('null')` is `INVALID_INPUT` (corrupt storage, not "no settings"); `validateHardening` throws `INVALID_INPUT` for an unknown `tagMode`. `stripPsbtFingerprints` needs hex `key`/`value` and accepts any key type up to 2^32-1 (unknown types are dropped as before). `assertOnlyAllowedTxFields` names the offending field only when it is a known transaction field (`maxFeePerGas`, `nonce`, ...); any other key is "(name withheld)".
 
 ## Verification
 
-Commands, from this directory (all run on commit `97cbaa6f68d7a8b1342be45ea7c2446fc090158e`):
+Commands, from this directory (all run on commit `c50da473f0c683082fb49cdcd16106e15add3a45`):
 
 ```bash
 npm run typecheck && npm run lint && npm run build && npm test   # unit, property, fuzz, environment; coverage thresholds enforced
@@ -94,8 +94,8 @@ node scripts/browser-smoke.mjs                                   # manual: real 
 
 | Check | Result |
 |---|---|
-| Tests | 27 files, 377 tests, 0 failed, 0 skipped (125 existed before this work) |
-| Coverage | statements 99.67 %, branches 99.28 %, functions 100 %, lines 100 % (before: 99.48 / 98.85 / 100 / 100; enforced thresholds 95 / 90 / 95 / 95 unchanged) |
+| Tests | 28 files, 394 tests, 0 failed, 0 skipped (125 existed before this work) |
+| Coverage | statements 99.68 %, branches 99.29 %, functions 100 %, lines 100 % (before: 99.48 / 98.85 / 100 / 100; enforced thresholds 95 / 90 / 95 / 95 unchanged) |
 | Typecheck, lint, build | clean |
 | Defect evidence | the 14 new test files fail against the pre-change sources (141 of their 250 tests red); they pass now |
 | Real browser | Chromium 158.0.8127.36, headless: Node and browser results byte-identical for a 15-result deterministic scenario; `findUnsafeAnchors` equals the browser's own HTML parser (DOMParser) on 15 tricky samples (quoted `>`, duplicate attributes, NBSP in `rel`, unquoted values, custom elements, Unicode, unterminated tag); `verifySri` was never more permissive than Chromium's SRI enforcement on 17 cases; a `buildCsp` string gave no parse warning, blocked an unlisted `connect-src` origin and an inline script; the library made no network request |
@@ -112,9 +112,10 @@ Verified in this pass against primary sources (previously UNVERIFIED): PSBT key 
 - Browsers: real run on Chromium only. Pure ES2022 plus `TextEncoder`, `URL`, `btoa`, `crypto.getRandomValues`, `BigInt` and `Object.hasOwn` (Chrome 93, Firefox 92, Safari 15.4 or newer, by feature support, not by test).
 - `verifySri` is stricter than browsers in five cases (malformed or bare strongest token next to a valid weaker one, empty or all-unknown metadata, a no-break space as separator): it returns `false` where Chromium loads the file. It is never looser.
 - `buildCsp` emits the six documented directives only. `base-uri` and `form-action` do not fall back to `default-src`; adding them is a deployment decision (follow-up).
-- `findUnsafeAnchors` is a lint over HTML text: it does not skip comments or scripts, decode character references, understand JSX, or check named targets other than `_blank`.
+- `findUnsafeAnchors` is a lint over HTML text: it does not skip comments or scripts, decode character references (`target="&#95;blank"` is missed), understand JSX, or check named targets other than `_blank`.
 - `stripPsbtFingerprints` drops hash-preimage records (0x0a to 0x0d), proof-of-reserves (0x09), MuSig2 (BIP-373) and silent-payment (BIP-375/376) records: a stripped PSBT cannot finalise hashlock scripts or aggregate those protocols. BIP-370 version consistency is not checked.
 - BIP-69 vectors, silent-payment output ordering with shuffled outputs and BIP-326 are as before (see UNVERIFIED).
+- By design: `classifyMetadata` returns `accepted: false` (not a throw) for a non-integer length, so a scanner drops such an announcement; `normalizeHardening` drops unknown ids without a report (forward compatibility; a misspelt id is a silent no-op); failures inside caller callbacks (`canonicalize`, `keyOf`) and the viem encoder are reported with fixed text and the original cause is discarded on purpose (it can embed caller data).
 - The key-derivation scheme in `derive.ts` is unreviewed by a cryptographer. Reviews so far are AI-assisted self-reviews, not an independent audit.
 
 ## Integration still required

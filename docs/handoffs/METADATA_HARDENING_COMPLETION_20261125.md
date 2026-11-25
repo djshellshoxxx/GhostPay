@@ -1,6 +1,6 @@
 # Handoff: `@ghostpay/metadata-hardening` standalone completion (2026-11-25)
 
-Source-pinned. Base `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`; branch `nodata/gracious-pascal-vdb581`. Code and tests: commit `97cbaa6f68d7a8b1342be45ea7c2446fc090158e`. Later commits on the branch are documentation only unless stated here. Draft PR: `<PR_URL>`. Nothing is merged; no consumer of the package exists.
+Source-pinned. Base `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`; branch `nodata/gracious-pascal-vdb581`. Code and tests: commit `c50da473f0c683082fb49cdcd16106e15add3a45`. Later commits on the branch are documentation only unless stated here. Draft PR: https://github.com/djshellshoxxx/GhostPay/pull/643. Nothing is merged; no consumer of the package exists.
 
 ## Result
 
@@ -13,11 +13,11 @@ The package's documented pure-logic scope is implemented and hardened. Work was 
 
 ## Evidence
 
-| Gate | Result on `97cbaa6f68d7a8b1342be45ea7c2446fc090158e` |
+| Gate | Result on `c50da473f0c683082fb49cdcd16106e15add3a45` |
 |---|---|
 | `npm run typecheck`, `npm run lint`, `npm run build` (package) | clean |
-| `npm test` (package) | 27 files, 377 tests passed, 0 skipped (125 before) |
-| Coverage | 99.67 % statements, 99.28 % branches, 100 % functions, 100 % lines (before 99.48 / 98.85 / 100 / 100; thresholds 95 / 90 / 95 / 95 untouched) |
+| `npm test` (package) | 28 files, 394 tests passed, 0 skipped (125 before) |
+| Coverage | 99.68 % statements, 99.29 % branches, 100 % functions, 100 % lines (before 99.48 / 98.85 / 100 / 100; thresholds 95 / 90 / 95 / 95 untouched) |
 | New tests against the old sources | 14 of 14 new files fail, 141 of 250 tests red (run in a temporary detached worktree of `c8e131c1`) |
 | `bash scripts/scan-secrets.sh` | OK |
 | `node --test scripts/agent/*.test.mjs`, `node scripts/agent/package-map.mjs --check` | 12/12 pass, map current |
@@ -25,7 +25,10 @@ The package's documented pure-logic scope is implemented and hardened. Work was 
 | `node scripts/browser-smoke.mjs` (Chromium 158.0.8127.36) | pass: Node/browser parity, anchor lint equals DOMParser on 15 samples, SRI never more permissive than Chromium (17 cases), CSP accepted and enforced, no network request |
 | Hosted CI (CodeQL, workflow groups) | **pending**: not available from this session until the PR exists |
 
-Independent review: `<REVIEW_SUMMARY>`
+Independent AI review (read-only agents given only the diff and the spec, not a human audit):
+
+1. Error-handling review of `97cbaa6f`: 12 findings, all reproduced against the built package. Fixed in the next code commit with a regression test each (`src/review-findings.test.ts`): non-canonical address/topic forms failed open (`0X` prefix), `roundGross`/`bucketGasLimit` range overflow, `verifySri` accepting trailing text, `planChange` with `inputAddresses: null`, `failover` mutating state before failing, spoofable byte-array check, empty-range derivation skipping validation, `parseHardeningJson('null')`, inconsistent tagMode error code, tx field names echoed, `parseEndpoint` empty `?`/`#`, arrays with holes, PSBT key type and hex checks. Left as documented design: `classifyMetadata` returns a rejected result (not a throw) for a non-integer length; unknown settings ids are dropped; callback causes are discarded to avoid leaking caller data; `target` character references are not decoded.
+2. Correctness and compatibility review: `<REVIEW2>`
 
 ## Not done / blockers
 
