@@ -46,3 +46,39 @@ test.describe('help without JavaScript', () => {
     await expect(page.getByRole('heading', { name: 'What stays in this browser', exact: true })).toBeVisible();
   });
 });
+
+test.describe('help guide coverage', () => {
+  test('the guide covers every required topic and has no inline styles or scripts', async ({ page }) => {
+    await page.goto('/help.html');
+    for (const heading of [
+      'Start here (plain language)',
+      'How a payment works',
+      'Keys and backups',
+      'Connect a wallet',
+      'Create an invoice',
+      'Pay an invoice',
+      'What counts as evidence',
+      'Receipts and QR codes',
+      'RPC and network configuration',
+      'Privacy in brief',
+      'Merchant guidance',
+      'Contextual help in the app',
+      'Technical glossary',
+      'Accessibility and layout',
+    ]) {
+      // Numbered headings ("1. How a payment works") match as substrings.
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+    }
+    await expect(page.locator('[style]')).toHaveCount(0);
+    await expect(page.locator('script')).toHaveCount(0);
+    await expect(page.locator('.flow-lanes .flow > li')).toHaveCount(10);
+  });
+
+  test('the privacy matrix names every status label used by the guide', async ({ page }) => {
+    await page.goto('/privacy.html');
+    await expect(page.getByRole('table', { name: 'What each feature stores, exposes and leaves unprotected' })).toBeVisible();
+    for (const status of ['Implemented', 'Experimental', 'Unsupported']) {
+      await expect(page.locator('.matrix .status', { hasText: status }).first()).toBeVisible();
+    }
+  });
+});

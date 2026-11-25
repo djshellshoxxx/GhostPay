@@ -22,7 +22,7 @@
     <noscript>
       <header class="site-header">
         <h1>GhostPay</h1>
-        <p>Stealth-address payments. Unaudited software.</p>
+        <p>Stealth-address payments. Experimental, unaudited testnet software.</p>
       </header>
       <nav class="site-nav" aria-label="Help without JavaScript">
         <ul>
@@ -33,16 +33,56 @@
       <main id="content">
         <h2>This app needs JavaScript</h2>
         <p>
-          The GhostPay web interface uses JavaScript and the Web Crypto API to create keys, open signed invoices,
-          review transactions and scan payments. This page cannot perform those actions while JavaScript is disabled.
-          The project also has separate command-line and operator tools; their supported commands are documented
-          through the <a href="./help.html#technology">source and attribution guide</a>.
+          The GhostPay web app uses JavaScript and the Web Crypto API to create keys, open signed invoices, review
+          transactions and scan for payments. With JavaScript off, this page cannot do those things. The help and
+          privacy pages linked above work without it. Enabling JavaScript does not enable a network whose deployment
+          has not been verified.
         </p>
+        <h2>In plain words</h2>
         <p>
-          Use a compatible graphical browser on a secure origin to run the web app. The help and privacy pages
-          linked above work without JavaScript. Browser support and deployment verification are separate requirements:
-          enabling JavaScript does not enable a network whose deployment has not been verified.
+          A seller asks to be paid with a signed invoice. The buyer pays from their own wallet to a new address made for
+          that one payment. The seller later finds the payment with a private key kept in their browser. The blockchain
+          is public, so the payment itself can still be seen by anyone.
         </p>
+        <h2>Buyer and seller steps</h2>
+        <div class="flow-lanes">
+          <section class="flow-lane" aria-labelledby="noscript-seller">
+            <h3 id="noscript-seller">Seller</h3>
+            <ol class="flow">
+              <li><strong>Set up keys and save an encrypted keystore.</strong></li>
+              <li><strong>Create a signed invoice</strong> with the network, amount, line items and expiry.</li>
+              <li><strong>Share the original invoice</strong> through a channel you trust.</li>
+              <li><strong>Find and review the payment</strong> with your viewing key, then keep the records.</li>
+            </ol>
+          </section>
+          <section class="flow-lane" aria-labelledby="noscript-buyer">
+            <h3 id="noscript-buyer">Buyer</h3>
+            <ol class="flow">
+              <li><strong>Open the original invoice</strong> and check its network, amount and expiry.</li>
+              <li><strong>Connect your wallet</strong> on the invoice's network.</li>
+              <li><strong>Approve only the reviewed action</strong> in your wallet.</li>
+              <li><strong>Keep the transaction reference</strong> and check the state the app shows.</li>
+            </ol>
+          </section>
+        </div>
+        <h2>More detail</h2>
+        <p>
+          Test with test networks and test funds only. A verified deployment is required before payments can proceed,
+          and a listed network does not prove that one exists. Read the
+          <a href="help.html">help guide</a> for backups, wallet steps, RPC settings and what each status means, and the
+          <a href="privacy.html">privacy matrix</a> for what each feature reveals.
+        </p>
+        <details>
+          <summary>Technical summary</summary>
+          <div class="technical">
+            <p>
+              Invoices can be plain, bearer-encrypted (the key follows the # in the link and never reaches a server), or
+              passphrase-protected (scrypt N = 2^17 with AES-256-GCM). Keystores use the same scrypt and AES-GCM
+              parameters. Payments route through a router contract that takes a 0.25% fee on each router payment, and
+              scanning uses your viewing key against public announcements.
+            </p>
+          </div>
+        </details>
         <h2>Keep the original records</h2>
         <p>
           Save the original invoice and digital receipt files. A transaction hash is a reference used to look up a
