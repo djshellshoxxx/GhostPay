@@ -12,6 +12,7 @@ import {
   createIndexerScanClient,
   createWindowedScanClient,
   describeScanDisclosure,
+  describeScanDisclosureMessages,
   loadScanPrivacy,
   planScan,
   saveScanPrivacy,
@@ -452,12 +453,16 @@ describe('describeScanDisclosure', () => {
         expect(sweep, JSON.stringify(s)).toHaveLength(1);
         expect(sweep[0]!.learns).toMatch(/one-time address/);
         expect(sweep[0]!.learns).toMatch(/not through the scan path/);
+        expect(sweep[0]!.learns).toContain('only when you press "Read balance from the Settings RPC"');
+        expect(sweep[0]!.learns).not.toContain('as soon as you open');
+        expect(describeScanDisclosureMessages(s, { hasSecondary }).find((row) => row.party.key === 'scanPrivacy.disclosure.sweepParty')?.learns.key)
+          .toBe('scanPrivacy.disclosure.sweepOnRequest');
         expect(rows.at(-1)!.party).toBe('Everyone');
       }
     }
     const learns = (s: ScanPrivacySettings): string => describeScanDisclosure(s, { hasSecondary: false }).find((r) => r.party === 'Settings RPC (Sweep)')!.learns;
-    expect(learns(base())).toMatch(/^your IP address;.*reads its balance as soon as you open it/);
-    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*as soon as you open it/);
+    expect(learns(base())).toMatch(/^your IP address;.*only when you press/);
+    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press/);
     expect(learns({ ...proxy, requireProxy: true })).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press "Read balance from the Settings RPC"/);
   });
   function base(): ScanPrivacySettings { return { ...DEFAULT_SCAN_PRIVACY }; }
