@@ -40,7 +40,7 @@ Commit SHAs are the rebased ones.
 | 6 | Docs (format reference, user guide, vector README) | done | `d16be26a` | n/a |
 | 6b | Independent review fixes (BOM, inspect note, bounds tests) | done | `ba87cb98` | n/a |
 | 7 | Local gates | done | `27abc3a6` | see the gates table |
-| 8 | Draft PR, hosted CI | in progress | | |
+| 8 | Draft PR #647, hosted CI | done | `2bb16151` | see the hosted CI table |
 
 Local gates at `27abc3a6` (Windows, Node v26.13.1):
 
@@ -54,9 +54,20 @@ Local gates at `27abc3a6` (Windows, Node v26.13.1):
 | Action pins | `bash scripts/check-actions-pinned.sh` | OK, 114 references |
 | Vector check against GhostPay's codec | in the recovery suite | the built codec opens the vector and refuses 25 of 26 refusals; the 26th is the documented body |
 
+Hosted CI, PR #647 head `2bb161516c` (workflow run 45555288488; source identical to `27abc3a6` plus this checkpoint):
+35 checks pass, 0 fail, 3 skipped by design on PRs (Deploy to GitHub Pages, Post-deployment smoke test, Release
+gates). Read from the job logs:
+
+| Job | What ran | Result |
+|---|---|---|
+| `ts-test (rest-0)` (job 139008754636) | `REQUIRE_ANVIL=1 node --test scripts/recovery/*.test.mjs` | 41 tests, 41 pass, 0 skipped; both anvil spend cases ran |
+| `e2e (full)` (job 139008754328) | full desktop suite, pinned Chromium | new spec passed (4.5 s); suite 124 passed, 2 skipped |
+| `e2e (lean)` (job 139008754281) | lean desktop suite | new spec passed (3.6 s); suite 112 passed, 4 skipped |
+| `Pages artifact on anvil (browser)`, `beta acceptance`, `ts-test (web)`, `ts-typecheck`, `ts-lint`, `secrets-and-egress`, CodeQL, Snyk | as configured | pass |
+
 Independent review (code-reviewer subagent, read-only): no critical or high findings. It reported a BOM asymmetry
 with the app's `Blob.text()`, a missing header-only note on master `--inspect`, a wrong doc cross-reference and test
-gaps (hex case, upper import bounds). All were fixed in `e72978a8`. It also noted an accepted behaviour change: a
+gaps (hex case, upper import bounds). All were fixed in `ba87cb98`. It also noted an accepted behaviour change: a
 master backup's header is now validated before announcements and the passphrase are read, so a file with both a bad
 header and a bad announcement reports `invalidFile` first.
 
@@ -73,12 +84,12 @@ here is listed as not run, with the reason.
 
 ## Remaining and blockers
 
-- Hosted CI on the PR head: `ts-test (rest-0)` runs the recovery suites with `REQUIRE_ANVIL=1`; `e2e (full)`,
-  `e2e (lean)` and the Pages workflow run the new browser spec. Check them before calling this qualified.
-- Independent human or second-model review before marking the PR ready. The read-only review above was AI-assisted.
+- Independent human review before marking the PR ready and merging. The read-only review above was AI-assisted.
+  Merging stays with the owner and the repository's gates; nothing here is merged.
+- If main moves, rebase and re-check that #641/#622 still leave `scripts/recovery/*` untouched.
 - Not in this work: Firefox/WebKit (no tooling on main), mobile engines (#588), in-app keystore verification and
   restore (#641), archive, master and in-app Spec 18 recovery (#622).
 
 ## Next action
 
-Watch hosted CI on the draft PR; fix any failure in owned paths only.
+Owner review of draft PR #647. No further work is planned in this scope unless review asks for it.
