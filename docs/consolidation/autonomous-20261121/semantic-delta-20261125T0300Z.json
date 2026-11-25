@@ -1,0 +1,155 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T02:59:07Z (run start; subsequent live reads)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "0c2a5457e305a8500ae1ee1c92defdb284088d9c:docs/consolidation/autonomous-20261121/semantic-delta-20261125T0203Z.json",
+  "summary": {
+    "branches": 713,
+    "openPrs": 247,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      13
+    ],
+    "prPages": [
+      100,
+      100,
+      47
+    ],
+    "independentRefMatches": 713,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 197,
+    "addedProvisionalDispositions": 0,
+    "classificationCounts": "Carry forward; no new final classification or claim of fresh all-head divergence."
+  },
+  "unresolvedReview": [
+    {
+      "branch": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "head": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "disposition": "unique-but-incomplete; related idle and credential API compositions must preserve both regression sets; existing owner",
+      "tree": "64ae98aa2616d52ee213d040f33c6a8d896fc83b",
+      "scope": "19 actual tip paths, compared using four complete recursive untruncated trees (4757/5138/4465/4809 entries). This is a tip review, not exhaustive ancestry classification of the broad #238 base.",
+      "mainTree": "34c33cc2fc639c0f084269f7744ab31df111451a",
+      "source": {
+        "mainSession": "7bae80c52ded70c1f79a53e9042da7b0e8c4a5bc",
+        "donorSession": "89e07663e3534eeada13d7af8aef64301b131f7e",
+        "successorSession": "a5e257722752faf19699f5fa508e82d573c49d42",
+        "p577Session": "87c25210d0abc66890bc458173d180e9d7fa01bc",
+        "mainIdleClockNamedTests": 5,
+        "donorIdleClockNamedTests": 20,
+        "p256IdleClockNamedTests": 20,
+        "donorSessionTests": 16,
+        "successorSessionTests": 16,
+        "mainSessionIdleTest": "absent",
+        "mainIdleE2E": "absent"
+      },
+      "residual": "Main retains verifyCredentialForCurrentSession but not subscribeSessionExpiryCheck/suspendSession/captureSessionBackupGuard. Donor has both. #256/#365/#367/#577 share session.idleLock.test.ts blob 6687571e30c952245c8a62c24e4b75b598a8d88d, containing stronger vault/raw access assertions but not the donor's explicit requireSecretExportAuthorization with valid keystore and verifyCredentialForCurrentSession rejection assertions (donor test blob 87f8a011c74cfe50b1101e54c19f8e3a13d9c0d6). #256/#577 session code lacks the main credential export. Preserve both test sets and credential API on current main; check all actual owned paths, requalify. No demonstrated live bypass or execution claim.",
+      "successors": [
+        {
+          "pr": 256,
+          "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+          "tree": "59ea7d1a5318aac0f2d749e473e85df083a6a534",
+          "checks": {
+            "success": 34,
+            "failure": 2,
+            "skipped": 3
+          },
+          "failures": [
+            "e2e (lean)",
+            "e2e (full)"
+          ]
+        },
+        {
+          "pr": 365,
+          "head": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+          "tree": "560681ed5d8ef492769edbb8ad70e5554f7ac4a4",
+          "checks": {
+            "success": 33,
+            "skipped": 3
+          },
+          "base": "integration/ghostpay-main-recovered-fixes-20261120"
+        },
+        {
+          "pr": 367,
+          "head": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+          "tree": "06ec877e16b1f74b2add19a29e4bd7a8cf9afabc"
+        },
+        {
+          "pr": 577,
+          "head": "2363943571de84bfd5da0b3f167699f34eb53ce7",
+          "tree": "2ab86fbf8d59d8b4b25b8d7fc046ca50f5de426a",
+          "ownerHandoff": "https://github.com/djshellshoxxx/GhostPay/pull/577#issuecomment-7151497994"
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0,
+      "mergeable": true
+    },
+    "p615": {
+      "merged": true,
+      "mergeCommit": "7b4af29882ad2e7acefdcb83d5a949cd516d100f"
+    },
+    "p616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "mergeable": false,
+      "codeql": "failure: 7 high alerts"
+    },
+    "p617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "mergeable": false,
+      "codeql": "failure: 7 high alerts"
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "main": {
+      "workflowRuns": [
+        [
+          45485137780,
+          "success"
+        ],
+        [
+          45472765175,
+          "failure"
+        ],
+        [
+          45423093766,
+          "success"
+        ],
+        [
+          45415639617,
+          "success"
+        ],
+        [
+          45415639485,
+          "success"
+        ],
+        [
+          45415637708,
+          "success"
+        ]
+      ],
+      "branchMetadata": "protected=false, no enforced contexts; retain cooperative gate; main CodeQL analysis success is not alert clearance"
+    }
+  },
+  "testEvidence": {
+    "newTestsExecuted": 0,
+    "environment": "git ls-remote failed: Could not resolve host: github.com; Node 22.16.0 and TypeScript 5.8.3 available; no full checkout or test execution",
+    "qualification": "source and historical hosted check read only"
+  },
+  "remaining": "Preserve all prior obligations including #226/#384/#217, Bitcoin, Sweep and CodeQL. #614-first with genuine independent approval; no lease acquired, no main merge, no deployments, no new automation."
+}
