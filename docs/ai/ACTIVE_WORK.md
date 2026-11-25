@@ -1,3 +1,16 @@
+# SEC-1 follow-up — in-app payment-key warnings name the payer (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-15` (the PR #647 session). Branch `claude/sec1-payer-key-warning`, base main
+`aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. Finding (from the #647 audit): in scheme 1 the payer chose the ephemeral
+secret, so the payer knows the tweak and can compute the master spending key from a revealed one-time key. The
+in-app warnings cover only viewing-key holders. Owned paths: the values of `stealthExport.details.futureDeposits` and
+`stealthExport.raw.confirm.body` in `apps/web/locales/{en,es,ja,ar}.json` (all four hold the same English today), new
+`apps/web/src/i18n/stealthExportPayerWarning.test.ts`, this entry. Not owned: StealthExport components (#622 and
+earlier owners), other locale keys. Acceptance: both warnings name the payer and say never to send the key; no
+catalog keeps a stale English copy; the i18n check has 0 errors; i18n and StealthExportPayment tests pass.
+
+---
+
 # P1-LATE stack consolidation onto main — 2026-11-24 UTC
 
 Worker: Claude Code (local, `claude/p1-late-reconciliation`). Base: stack tip PR #625 `694383f7` (contains #533 → #546 → #575 → #599) merged with main `c8e131c1`.
