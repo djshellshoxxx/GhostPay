@@ -114,20 +114,28 @@ export function deriveWithEphemeral(
  * @remarks ADR-0017 section 3, identical to `@ghostpay/solana-stealth`: r is sampled uniformly in [1, L-1];
  * R = r*B; Z = r*V; h = SHA-512(dst("shared") || R || Z || S) mod L; P = S + h*B;
  * view_tag = SHA-256(dst("view-tag") || R || Z)[0]. All recipient points must be canonical and of prime order
- * (see `decodePrimeOrderPoint`). A text meta-address may be for any cluster (the cluster is not part of the
- * derivation); callers bound to one cluster use `decodeMetaAddress(text, cluster)` first, as the adapter does.
+ * (see `decodePrimeOrderPoint`). A text meta-address for devnet, testnet or localnet is accepted (the cluster is not part
+ * of the derivation); a mainnet one is refused with `CHAIN_DISABLED`. Callers bound to one cluster use
+ * `decodeMetaAddress(text, cluster)` first, as the adapter does.
  *
  * @param meta `st:sol:` meta-address or decoded keys.
  * @param rng Optional random source (tests only).
  * @returns Address, announcement and its parts.
- * @throws {SolanaStealthError} `INVALID_META_ADDRESS`, `LEGACY_META_ADDRESS`, `INVALID_POINT`, `KEY_REUSE`, `RNG_*`.
+ * @throws {SolanaStealthError} `INVALID_META_ADDRESS`, `LEGACY_META_ADDRESS`, `INVALID_POINT`, `KEY_REUSE`,
+ * `CHAIN_DISABLED` (a text meta-address for mainnet), `RNG_*`.
  * @security r is discarded after use; reuse of r for two payments links them.
  */
 export function deriveStealthPayment(
   meta: string | SolanaMetaKeys,
   rng?: RandomSource,
 ): DerivedSolanaStealthPayment {
-  const keys = typeof meta === 'string' ? decodeMetaAddress(meta) : meta;
+  let keys: SolanaMetaKeys;
+  if (typeof meta === 'string') {
+    const decoded = decodeMetaAddress(meta);
+    // Testnet-only proof of concept: a text meta-address bound to mainnet is never derived for.
+    if (decoded.cluster === 'mainnet') return fail('CHAIN_DISABLED');
+    keys = decoded;
+  } else keys = meta;
   const r = randomScalar(rng);
   try {
     return deriveWithEphemeral(keys, r);

@@ -181,3 +181,18 @@ describe('degenerate cases', () => {
     );
   });
 });
+
+describe('deriveStealthPayment is testnet-only for text meta-addresses', () => {
+  it('refuses a mainnet st:sol: meta-address with CHAIN_DISABLED', () => {
+    const keys = generateStealthKeys(rng);
+    const mainnet = encodeMetaAddress({ ...keys, cluster: 'mainnet' });
+    expect(() => deriveStealthPayment(mainnet, rng)).toThrow(expect.objectContaining({ code: 'CHAIN_DISABLED' }));
+  });
+  it('still derives for devnet, testnet and localnet', () => {
+    const keys = generateStealthKeys(rng);
+    for (const cluster of ['devnet', 'testnet', 'localnet'] as const) {
+      const pay = deriveStealthPayment(encodeMetaAddress({ ...keys, cluster }), rng);
+      expect(decodeAddress(pay.stealthAddress)).toEqual(pay.stealthPublicKey);
+    }
+  });
+});

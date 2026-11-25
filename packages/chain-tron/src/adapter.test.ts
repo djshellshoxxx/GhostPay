@@ -32,6 +32,11 @@ describe('Tron adapter skeleton', () => {
   it('rejects empty chain id', () => {
     expect(() => createTronAdapter('', empty)).toThrow(TronError);
   });
+  it('refuses mainnet chain ids unconditionally (ADR-0019)', () => {
+    for (const id of ['tron-mainnet', 'mainnet', 'TRON-MAINNET', 'tron-Mainnet-1']) {
+      expect(() => createTronAdapter(id, empty)).toThrow(expect.objectContaining({ name: 'TronError', code: 'INVALID_INPUT' }));
+    }
+  });
   it('parseRecipient round-trips', () => {
     const { keys, meta } = fixture();
     const r = createTronAdapter('tron-nile', empty).parseRecipient(meta);

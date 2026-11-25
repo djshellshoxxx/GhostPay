@@ -140,11 +140,13 @@ export const TRON_FEES: FeeCapability = Object.freeze({
  * @param source Injected announcement source (no network in this package).
  * @returns Adapter whose fees are all `not_enforceable`; its payment requests quote but never build (see
  * {@link TronAdapterError}).
- * @throws {TronError} `INVALID_INPUT` for an empty chain id.
+ * @throws {TronError} `INVALID_INPUT` for an empty chain id or any chain id naming mainnet.
  * @security Skeleton only: unaudited, testnet proof of concept.
  */
 export function createTronAdapter(chainId: string, source: TronAnnouncementSource): TronChainAdapter {
   if (typeof chainId !== 'string' || chainId.length === 0) return fail('INVALID_INPUT');
+  // ADR-0019: mainnet is refused unconditionally (testnet proof of concept).
+  if (chainId.toLowerCase().includes('mainnet')) return fail('INVALID_INPUT');
   return {
     family: 'tron',
     chainId,

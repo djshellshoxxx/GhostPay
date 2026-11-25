@@ -55,6 +55,9 @@ export type TronAnnouncementCheck =
  * @throws {TronError} `INVALID_META_ADDRESS`, `LEGACY_META_ADDRESS`.
  * @throws {GhostPayCryptoError} From core-crypto (RNG, zero hash).
  * @security Ephemeral scalar handling is core-crypto's; nothing secret is returned.
+ * @security WARNING: do not combine the returned address with `buildTrc20TransferRequest` to send funds. That
+ * composes a transfer with no announcement memo bound to the same transaction, which the recipient cannot
+ * discover; the adapter blocks exactly this with `MEMO_NOT_BOUND` (ADR-0019). Testnet proof of concept only.
  */
 export function deriveTronStealthPayment(metaAddress: string, rng?: RandomSource): TronStealthPayment {
   const p = deriveStealthPayment(toSchemeOneMetaAddress(metaAddress), rng);

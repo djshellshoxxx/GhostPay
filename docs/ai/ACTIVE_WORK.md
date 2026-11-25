@@ -928,7 +928,8 @@ Owned paths: new `apps/web/src/lib/browserChecks.ts`, `apps/web/src/lib/browserC
 Scope: startup and resumed/runtime local capability checks, displayed at the bottom of every shared browser-app view with a mobile-friendly disclosure. Distinguish checks of secure context, WebCrypto SHA-256 known answer and temporary storage round trip from independent client artifact verification, chain/funds safety and recovery guarantees. No network requests or telemetry, no wallet, key or payment changes.
 Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
 Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
-# Solana/TRON interoperability recovery — 2026-11-21 UTC
+
+# Solana/TRON interoperability recovery — 2026-11-21 UTC (HISTORICAL: donor claim, its branch lease is not active; superseded by the FC-03 claim at the top of this file)
 
 Worker: `/root/chain_interop_recovery`, delegated by coordinator `5ceb6203640a-root`.
 Owned branch: `recover/ghostpay-chain-interop-20261121-5ceb`.

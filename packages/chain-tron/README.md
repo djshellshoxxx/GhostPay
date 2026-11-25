@@ -21,7 +21,7 @@ refused with `LEGACY_META_ADDRESS`: it is the EVM meta-address, which need not b
 
 ## Verification (run in this package)
 - `tsc --noEmit`: clean. `eslint`: clean.
-- `vitest run --coverage` (2026-11-18, after the fail-closed `build()`): 6 files, 54 tests passing; coverage statements 100% (166/166), branches 100% (105/105), functions 100% (38/38), lines 100% (139/139). Thresholds 95/90/95/95 unchanged.
+- `vitest run --coverage` (FC-03 local re-run, 2026-11-25, after the mainnet chain-id guard): 6 files, 55 tests passing; coverage statements 100% (168/168), branches 100% (107/107), functions 100% (38/38), lines 100% (140/140). Thresholds 95/90/95/95 unchanged. (Donor 2026-11-18 figures were 54 tests, 166/105/38/139.)
 - Property tests (fast-check): encode/decode round trip, EVM round trip, single-character mutation always rejected (500 runs), non-0x41 prefix rejected, stealth round trip against core-crypto (25 seeds), amount ABI round trip.
 
 ## Unverified
