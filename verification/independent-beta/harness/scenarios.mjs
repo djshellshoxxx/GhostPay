@@ -170,6 +170,16 @@ export const NAMED = [
       { op: 'mine' },
     ],
   },
+  {
+    name: 'N13-disclosure-cancelled-send',
+    why: 'disclosure gate (#287 item 3): cancelling the wallet disclosure for the send must send nothing; whatever the journal then shows, uncertainty must not turn into a payment or an unbounded retry',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok', disclosure: 'cancel' },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+    ],
+  },
 ];
 
 /**

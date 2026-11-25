@@ -31,6 +31,42 @@ export function classify(text) {
 const HASH_RE = /0x[0-9a-fA-F]{64}/g;
 export const hashesIn = (text) => [...new Set((String(text).match(HASH_RE) ?? []).map((h) => h.toLowerCase()))];
 
+/**
+ * Wallet disclosure gate (main since #287 item 3): every wallet request is first shown in an in-page "Review wallet
+ * disclosure" dialog. The harness user reads it and presses "Continue to wallet", as a real user would, except when
+ * the scenario asked to cancel the next fund-moving request ("Cancel wallet request"). Matching is by visible English
+ * text (apps/web/locales/en.json wallet.disclosure.*), never by production modules. Every dialog shown is recorded.
+ */
+function disclosureShim() {
+  const shown = [];
+  window.__w5disclosures = shown;
+  window.__w5cancelNextSend = false;
+  const seen = new WeakSet();
+  const handle = () => {
+    for (const dialog of document.querySelectorAll('[role="dialog"], dialog')) {
+      if (seen.has(dialog) || !/Review wallet disclosure/.test(dialog.textContent ?? '')) continue;
+      const buttons = [...dialog.querySelectorAll('button')];
+      const go = buttons.find((b) => b.textContent?.trim() === 'Continue to wallet');
+      const stop = buttons.find((b) => b.textContent?.trim() === 'Cancel wallet request');
+      if (go === undefined && stop === undefined) continue;
+      seen.add(dialog);
+      const text = dialog.textContent ?? '';
+      const method = dialog.querySelector('dd code')?.textContent?.trim() ?? (text.match(/\b(eth_[A-Za-z0-9_]+|wallet_[A-Za-z0-9_]+|net_version|personal_sign)\b/)?.[1] ?? '?');
+      const fundMoving = /^(eth_sendTransaction|eth_signTypedData|eth_signTypedData_v4|eth_sign|personal_sign|wallet_sendCalls)$/.test(method);
+      const cancel = fundMoving && window.__w5cancelNextSend === true;
+      if (cancel) window.__w5cancelNextSend = false;
+      shown.push({ method, action: cancel ? 'cancel' : 'continue', at: Date.now() });
+      const target = cancel ? stop : go;
+      // After the observer callback, so the framework has committed the dialog before the click arrives.
+      setTimeout(() => {
+        if (target?.isConnected) target.click();
+      }, 0);
+    }
+  };
+  new MutationObserver(handle).observe(document, { childList: true, subtree: true });
+}
+export const DISCLOSURE_SHIM = `(${disclosureShim.toString()})();`;
+
 /** Settings every load starts with: the harness RPC for 84532 (same key the repository's E2E helpers use). */
 export function settingsInitScript() {
   return `try { localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': ${JSON.stringify(RPC_URL)} } })); } catch {}`;
@@ -197,6 +233,7 @@ export async function observe(page) {
     for (const s of clone.querySelectorAll('section[aria-label="Wallet attempt journal"]')) s.remove();
     const mainText = (clone.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 8000);
     const mainHashes = [...new Set(mainText.match(/0x[0-9a-fA-F]{64}/g) ?? [])].map((h) => h.toLowerCase());
+    const disclosures = [...(window.__w5disclosures ?? [])];
     const sendBtn = [...document.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Send payment in my wallet');
     // Generic storage dump: no knowledge of GhostPay's schema is used, only "does this hash survive anywhere".
     const store = [];
@@ -242,6 +279,7 @@ export async function observe(page) {
       journal,
       mainText,
       mainHashes,
+      disclosures,
       sendButton: sendBtn === undefined ? 'absent' : sendBtn.disabled ? 'disabled' : 'enabled',
       storedHashes: hashes,
     };

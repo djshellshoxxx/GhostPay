@@ -13,7 +13,7 @@ import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
 import { MockRpc } from './rpc.mjs';
 import { BROWSER_SHIM, WalletController } from './wallet.mjs';
-import { checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
+import { DISCLOSURE_SHIM, checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
 import { Oracle } from './oracle.mjs';
 import { CONTROLS, NAMED, SUFFIX, generated } from './scenarios.mjs';
 import { serveDist } from './serve.mjs';
@@ -87,6 +87,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     context = await launcher.launch(userDataDir);
     await rpc.install(context, origin);
     await context.addInitScript(BROWSER_SHIM);
+    await context.addInitScript(DISCLOSURE_SHIM);
     await context.addInitScript(settingsInitScript());
     await context.exposeBinding('__w5wallet', (source, payload) => wallet.handle(source.page, payload));
   };
@@ -153,7 +154,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
       oracle.checkHandoffs(i);
       oracle.checkObservations(i, step, obs);
       rec.obs = Object.fromEntries(
-        Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { headings: o.headings.slice(0, 4), statuses: o.statuses, alerts: o.alerts, journal: o.journal, sendButton: o.sendButton }]),
+        Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { headings: o.headings.slice(0, 4), statuses: o.statuses, alerts: o.alerts, journal: o.journal, sendButton: o.sendButton, disclosures: (o.disclosures ?? []).length, cancelledDisclosures: (o.disclosures ?? []).filter((d) => d.action === 'cancel').length }]),
       );
       rec.handoffs = wallet.handoffs.length;
       trace.push(rec);
@@ -215,6 +216,7 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       const beforeC = oracle.handoffsFor('C').length;
       const before = wallet.handoffs.length;
       wallet.nextSend = step.behaviour;
+      if (step.disclosure === 'cancel') await page.evaluate(() => { window.__w5cancelNextSend = true; });
       const clicked = await clickSend(page);
       if (clicked !== 'clicked') wallet.nextSend = 'ok';
       if (step.mineOnSubmit === true) {
