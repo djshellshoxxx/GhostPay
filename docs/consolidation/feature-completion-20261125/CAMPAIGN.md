@@ -145,3 +145,9 @@ low/info, and remain filler work.
   Review-fix commits: FC-03 `2a6b33b7`, FC-01 `fd5ba475` + `041ed17c`; follow-up reviews requested.
   Main moved to `5dc05bd6` (#640 help pages, merged by another session); all three branches merge cleanly and the
   workers are merging it so CI qualifies the actual integration candidates.
+- 2026-11-25T07:30Z — follow-up reviews: FC-03 fix delta `f79aa67c..2a6b33b7` **APPROVE** (all six items verified;
+  merge `bd70cd2f` patch-id identical to pre-merge delta). FC-01 fix delta `225383a9..041ed17c` **APPROVE**
+  (D1–D4, N1/N2/N4/N6 verified; `WalletAttempts.status.test.tsx` gains `afterEach(cleanup)`, component unchanged;
+  merge `ace2f873` clean union with main). One final batched push each (FC-03: retired-derivation doc, error-text
+  accuracy, object-overload mainnet refusal, claim paths; FC-01: post-event re-query in the two D1 tests, handoff
+  accuracy, three docs) before integration, to avoid repeated 40-minute CI cycles.
