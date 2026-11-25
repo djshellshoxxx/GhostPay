@@ -1,6 +1,7 @@
 import { CtError } from './errors.js';
 import type { ConfidentialBackend, CtBackendId, CtBackendInfo } from './types.js';
 import type { CleartextLedger } from './backends/ledger.js';
+import type { CtManifest } from './manifest.js';
 import type { ZamaSdkPort } from './backends/zama.js';
 import { CT1_INFO } from './backends/zama.js';
 import { CTM_INFO } from './backends/cleartext.js';
@@ -9,6 +10,11 @@ import { CTM_INFO } from './backends/cleartext.js';
 export interface BackendDeps {
   /** CT-1: SDK port. Required for `ct1-zama`. */
   readonly zamaPort?: ZamaSdkPort;
+  /**
+   * CT-1: manifest the backend checks its GhostPay router, operator and tokens against. Default
+   * `CT1_MANIFEST`, which pins no GhostPay contract, so every CT-1 builder refuses (fail closed).
+   */
+  readonly manifest?: CtManifest;
   /** CT-M: simulated chain. Required for `ctm-cleartext`. */
   readonly ledger?: CleartextLedger;
 }
@@ -29,7 +35,7 @@ export async function getBackend(id: CtBackendId, deps: BackendDeps = {}): Promi
     case 'ct1-zama': {
       if (!deps.zamaPort) throw new CtError('BACKEND_UNAVAILABLE', 'ct1-zama needs a ZamaSdkPort');
       const { ZamaBackend } = await import('./backends/zama.js');
-      return new ZamaBackend(deps.zamaPort);
+      return new ZamaBackend(deps.zamaPort, deps.manifest);
     }
     case 'ctm-cleartext': {
       if (!deps.ledger) throw new CtError('BACKEND_UNAVAILABLE', 'ctm-cleartext needs a CleartextLedger');

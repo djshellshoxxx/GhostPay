@@ -128,9 +128,11 @@ describe('verifyManifestOnChain (CT-PAY-4)', () => {
     if (!base) throw new Error('fixture');
     const hashes: Record<string, Hex | null> = { ...base.codeHashes };
     for (const r of roles) hashes[r] = keccak256(CODE);
-    return { ...CT1_MANIFEST, chains: { '11155111': { ...base, codeHashes: hashes, ghostpay: { router: '0x00000000000000000000000000000000000000A1', tokens: [] } } } };
+    const ghostpay = { router: '0x00000000000000000000000000000000000000A1', tokens: ['0x00000000000000000000000000000000000000b2'] } as const;
+    return { ...CT1_MANIFEST, chains: { '11155111': { ...base, codeHashes: hashes, ghostpay } } };
   };
-  const allRoles = ['acl', 'coprocessor', 'kmsVerifier', 'inputVerifier', 'wrappersRegistry', 'router'];
+  // A manifest is fully pinned only with a router AND at least one token (B2): `token:<address>` roles.
+  const allRoles = ['acl', 'coprocessor', 'kmsVerifier', 'inputVerifier', 'wrappersRegistry', 'router', 'token:0x00000000000000000000000000000000000000b2'];
 
   it('passes when every code hash is pinned and matches', async () => {
     const r = await verifyManifestOnChain(11155111, () => Promise.resolve(CODE), {}, pinned(allRoles));
@@ -164,5 +166,14 @@ describe('parseAddress', () => {
     expect(parseAddress('0x00000000000000000000000000000000000000a1', 'x')).toBe('0x00000000000000000000000000000000000000A1');
     expect(() => parseAddress('0x12', 'x')).toThrow(/x must be an address/);
     expect(() => parseAddress(5 as unknown as string, 'x')).toThrow(CtError);
+  });
+
+  it('B9: refuses a mixed-case address with a wrong EIP-55 checksum; lowercase and correct checksum pass', () => {
+    const good = '0x52908400098527886E0F7030069857D2E4169EE7';
+    expect(parseAddress(good, 'x')).toBe(good);
+    expect(parseAddress(good.toLowerCase(), 'x')).toBe(good);
+    // flip the case of one letter: still hex, but the checksum no longer matches
+    const bad = '0x52908400098527886e0F7030069857D2E4169EE7';
+    expect(() => parseAddress(bad, 'x')).toThrow(/x must be an address/);
   });
 });

@@ -63,7 +63,13 @@ export function isConfidentialMetadata(m: Uint8Array): boolean {
   return parseConfidentialMetadata(m) !== null;
 }
 
-/** @internal Asserts a 32-byte non-zero handle. */
-export function assertHandle(handle: Hex, label: string): void {
-  if (!/^0x[0-9a-fA-F]{64}$/.test(handle)) throw new CtError('INVALID_INPUT', `${label} must be a 32-byte handle`);
+/**
+ * @internal Asserts a 32-byte handle that is non-zero unless `allowZero`.
+ * @param allowZero Accept the zero handle (only for user decryption, where it means "never set" and decrypts to 0).
+ */
+export function assertHandle(handle: Hex, label: string, allowZero = false): void {
+  if (typeof handle !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(handle)) {
+    throw new CtError('INVALID_INPUT', `${label} must be a 32-byte handle`);
+  }
+  if (!allowZero && BigInt(handle) === 0n) throw new CtError('INVALID_INPUT', `${label} must not be the zero handle`);
 }

@@ -19,6 +19,8 @@ import { CtError } from './errors.js';
 import { DEST, NOW, PAYER, ROUTER, TOKEN, EPH, payParams } from './fixtures.testutil.js';
 
 const H: Hex = `0x${'cd'.repeat(32)}`;
+const ZERO = '0x0000000000000000000000000000000000000000' as const;
+const ZERO_HANDLE: Hex = `0x${'00'.repeat(32)}`;
 const here = dirname(fileURLToPath(import.meta.url));
 const abiDir = join(here, '..', '..', 'confidential-contracts', 'abi');
 const haveArtifacts = existsSync(join(abiDir, 'GhostPayConfidentialRouter.json'));
@@ -59,6 +61,19 @@ describe('operator window (CT-PAY-2)', () => {
     expectCode(() => assertOperatorWindow(1.5, 1), 'INVALID_INPUT');
     expectCode(() => assertOperatorWindow(2 ** 49, 2 ** 49 - 10), 'INVALID_INPUT');
   });
+  it('B3: refuses a nowSec that is not plausible unix seconds (milliseconds, near-uint48, pre-2020)', () => {
+    const ms = 1_764_000_000_000;
+    expectCode(() => assertOperatorWindow(ms + 900, ms), 'INVALID_INPUT');
+    expectCode(() => encodeSetOperator({ token: TOKEN, operator: ROUTER, until: ms + 600, nowSec: ms }), 'INVALID_INPUT');
+    const nearMax = 2 ** 48 - 901;
+    expectCode(() => assertOperatorWindow(nearMax + 900, nearMax), 'INVALID_INPUT');
+    expectCode(() => assertOperatorWindow(1_000_000 + 900, 1_000_000), 'INVALID_INPUT');
+    expectCode(() => assertOperatorWindow(2 ** 32 + 1, 2 ** 32), 'INVALID_INPUT');
+    expectCode(() => assertOperatorWindow(NOW + 1, Number.NaN), 'INVALID_INPUT');
+    // boundaries of the accepted range
+    expect(() => assertOperatorWindow(1_600_000_000 + 900, 1_600_000_000)).not.toThrow();
+    expect(() => assertOperatorWindow(2 ** 32 - 1 + 900, 2 ** 32 - 1)).not.toThrow();
+  });
   it('encodeSetOperator encodes the token call', () => {
     const tx = encodeSetOperator({ token: TOKEN, operator: ROUTER, until: NOW + 600, nowSec: NOW });
     expect(tx.to).toBe(TOKEN);
@@ -94,6 +109,26 @@ describe('payConfidential calldata', () => {
     expectCode(() => encodePayConfidential(payParams(), { handle: '0x12', inputProof: '0x' }), 'INVALID_INPUT');
   });
 
+  it('B7: encodePayConfidential applies the chain guard to p.chainId', () => {
+    const enc = { handle: H, inputProof: '0x1234' as Hex };
+    expectCode(() => encodePayConfidential(payParams({ chainId: 1 }), enc), 'MAINNET_REFUSED');
+    expectCode(() => encodePayConfidential(payParams({ chainId: 8453 }), enc), 'MAINNET_REFUSED');
+    expectCode(() => encodePayConfidential(payParams({ chainId: 84532 }), enc), 'CHAIN_NOT_SUPPORTED');
+    expectCode(() => encodePayConfidential(payParams({ chainId: 0 }), enc), 'INVALID_INPUT');
+    expect(encodePayConfidential(payParams({ chainId: 11155111 }), enc).to).toBe(ROUTER);
+    expect(encodePayConfidential(payParams({ chainId: 31337 }), enc).to).toBe(ROUTER);
+  });
+
+  it('B7: refuses zero addresses as stealth, router, token or payer', () => {
+    for (const k of ['stealth', 'router', 'token', 'payer'] as const) {
+      expectCode(() => validatePayParams(payParams({ [k]: ZERO })), 'INVALID_INPUT');
+    }
+  });
+
+  it('B7: refuses the zero handle as encrypted gross', () => {
+    expectCode(() => encodePayConfidential(payParams(), { handle: ZERO_HANDLE, inputProof: '0x' }), 'INVALID_INPUT');
+  });
+
   it('assertAmount / assertEphemeralKey', () => {
     expect(() => assertAmount(0n, 'a', true)).not.toThrow();
     expectCode(() => assertAmount(0n, 'a', false), 'INVALID_INPUT');
@@ -114,6 +149,19 @@ describe('transfer, unwrap and finalize calldata', () => {
     const tx = encodeUnwrap({ token: TOKEN, from: PAYER, to: DEST, amountHandle: H });
     expect(decodeFunctionData({ abi: TOKEN_ABI, data: tx.data }).args).toEqual([PAYER, DEST, H]);
     expectCode(() => encodeUnwrap({ token: TOKEN, from: PAYER, to: DEST, amountHandle: '0x1' }), 'INVALID_INPUT');
+  });
+  it('B7: refuses zero receivers, senders, targets and zero handles', () => {
+    expectCode(() => encodeConfidentialTransfer({ token: TOKEN, to: ZERO, amountHandle: H }), 'INVALID_INPUT');
+    expectCode(() => encodeConfidentialTransfer({ token: ZERO, to: DEST, amountHandle: H }), 'INVALID_INPUT');
+    expectCode(() => encodeConfidentialTransfer({ token: TOKEN, to: DEST, amountHandle: ZERO_HANDLE }), 'INVALID_INPUT');
+    expectCode(() => encodeUnwrap({ token: TOKEN, from: PAYER, to: ZERO, amountHandle: H }), 'INVALID_INPUT');
+    expectCode(() => encodeUnwrap({ token: TOKEN, from: ZERO, to: DEST, amountHandle: H }), 'INVALID_INPUT');
+    expectCode(() => encodeUnwrap({ token: ZERO, from: PAYER, to: DEST, amountHandle: H }), 'INVALID_INPUT');
+    expectCode(() => encodeUnwrap({ token: TOKEN, from: PAYER, to: DEST, amountHandle: ZERO_HANDLE }), 'INVALID_INPUT');
+    expectCode(() => encodeFinalizeUnwrap({ token: TOKEN, requestId: ZERO_HANDLE, cleartext: 1n, decryptionProof: '0x' }), 'INVALID_INPUT');
+    expectCode(() => encodeFinalizeUnwrap({ token: ZERO, requestId: H, cleartext: 1n, decryptionProof: '0x' }), 'INVALID_INPUT');
+    expectCode(() => encodeSetOperator({ token: ZERO, operator: ROUTER, until: NOW + 600, nowSec: NOW }), 'INVALID_INPUT');
+    expectCode(() => encodeSetOperator({ token: TOKEN, operator: ZERO, until: NOW + 600, nowSec: NOW }), 'INVALID_INPUT');
   });
   it('finalizeUnwrap', () => {
     const tx = encodeFinalizeUnwrap({ token: TOKEN, requestId: H, cleartext: 42n, decryptionProof: '0xaabb' });

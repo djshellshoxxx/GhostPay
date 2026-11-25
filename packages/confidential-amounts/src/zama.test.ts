@@ -5,10 +5,16 @@ import { CT1_INFO, ZamaBackend, type ZamaSdkPort, type ZamaSession } from './bac
 import { createZamaSdkPort, loadZamaSdk, type ZamaSdkModules } from './backends/zama-sdk.js';
 import { NOT_PROTECTED_KEYS } from './copy.js';
 import { CtError } from './errors.js';
+import { CT1_MANIFEST, type CtManifest } from './manifest.js';
 import { DEST, NOW, PAYER, ROUTER, STEALTH, STEALTH_KEY, TOKEN, makeSigner, payParams } from './fixtures.testutil.js';
 
 const H: Hex = `0x${'ab'.repeat(32)}`;
 const PROOF: Hex = '0xfeedbeef';
+/** The shipped manifest pins no GhostPay contract (fail closed); these tests pin ROUTER and TOKEN on every chain. */
+const PINNED: CtManifest = {
+  ...CT1_MANIFEST,
+  chains: Object.fromEntries(Object.entries(CT1_MANIFEST.chains).map(([k, c]) => [k, { ...c, ghostpay: { router: ROUTER, tokens: [TOKEN] } }])),
+};
 
 interface Rec {
   opens: { chainId: number; stealthKey?: Hex }[];
@@ -50,7 +56,7 @@ describe('CT-1 Zama backend (injected port)', () => {
 
   it('encrypts client-side for (router, payer) and builds payConfidential calldata', async () => {
     const { port, rec } = fakePort();
-    const b = new ZamaBackend(port);
+    const b = new ZamaBackend(port, PINNED);
     const p = payParams({ chainId: 11155111, gross: 123_456n, bufferWei: 9n });
     const tx = await b.buildPayCalldata(p);
     expect(rec.encrypted).toEqual([{ contractAddress: ROUTER, userAddress: PAYER, value: 123_456n }]);
@@ -64,9 +70,11 @@ describe('CT-1 Zama backend (injected port)', () => {
     expect(tx.data.includes((123_456n).toString(16).padStart(8, '0'))).toBe(false);
   });
 
-  it('closes the session even if encryption fails', async () => {
+  it('closes the session even if encryption fails, and does not leak the cause', async () => {
     const { port, rec } = fakePort({ encrypt: () => Promise.reject(new Error('boom')) });
-    await expect(new ZamaBackend(port).encryptAmount({ chainId: 11155111, contract: ROUTER, user: PAYER, amount: 1n })).rejects.toThrow('boom');
+    const err = await new ZamaBackend(port, PINNED).encryptAmount({ chainId: 11155111, contract: ROUTER, user: PAYER, amount: 1n }).catch((e: unknown) => e);
+    expect(err).toMatchObject({ code: 'BACKEND_UNAVAILABLE' });
+    expect((err as Error).message).not.toContain('boom');
     expect(rec.closed).toBe(1);
   });
 
@@ -103,20 +111,20 @@ describe('CT-1 Zama backend (injected port)', () => {
 
   it('finalizeUnwrap fetches the public proof', async () => {
     const { port, rec } = fakePort();
-    const tx = await new ZamaBackend(port).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H });
+    const tx = await new ZamaBackend(port, PINNED).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H });
     expect(decodeFunctionData({ abi: TOKEN_ABI, data: tx.data }).args).toEqual([H, 55n, PROOF]);
     expect(rec.closed).toBe(1);
   });
 
   it('finalizeUnwrap maps failures to PROOF_UNAVAILABLE', async () => {
     const { port } = fakePort({ decryptPublic: () => Promise.reject(new Error('x')) });
-    await expect(new ZamaBackend(port).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H })).rejects.toMatchObject({ code: 'PROOF_UNAVAILABLE' });
+    await expect(new ZamaBackend(port, PINNED).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H })).rejects.toMatchObject({ code: 'PROOF_UNAVAILABLE' });
     const { port: p2 } = fakePort({ decryptPublic: () => Promise.reject(new CtError('ACL_DENIED', 'x')) });
-    await expect(new ZamaBackend(p2).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H })).rejects.toMatchObject({ code: 'ACL_DENIED' });
+    await expect(new ZamaBackend(p2, PINNED).finalizeUnwrap({ chainId: 11155111, token: TOKEN, requestId: H })).rejects.toMatchObject({ code: 'ACL_DENIED' });
   });
 
   it('pure builders', () => {
-    const b = new ZamaBackend(fakePort().port);
+    const b = new ZamaBackend(fakePort().port, PINNED);
     const op = b.buildSetOperator({ chainId: 11155111, token: TOKEN, operator: ROUTER, until: NOW + 900, nowSec: NOW });
     expect(op.to).toBe(TOKEN);
     expect(() => b.buildSetOperator({ chainId: 11155111, token: TOKEN, operator: ROUTER, until: NOW + 901, nowSec: NOW })).toThrow(/within 900/);

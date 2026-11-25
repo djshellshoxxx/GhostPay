@@ -35,6 +35,8 @@ interface TokenState {
   readonly operators: Map<string, Map<string, number>>;
   readonly unwrapRequests: Map<Hex, string>;
   readonly underlying: Map<string, bigint>;
+  /** Underlying held by the wrapper (OZ `inferredTotalSupply` at rate 1): grows on wrap, shrinks on `finalizeUnwrap`. */
+  held: bigint;
 }
 
 interface RouterState {
@@ -44,9 +46,21 @@ interface RouterState {
 }
 
 const lc = (a: string): string => a.toLowerCase();
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+/** `GhostPayConfidentialRouter.MAX_TOKENS`. */
+const MAX_ROUTER_TOKENS = 8;
 const revert = (msg: string): never => {
   throw new CtError('LEDGER_REVERT', msg);
 };
+
+/** @internal Runs a calldata decoder; any decode failure becomes a `LEDGER_REVERT` with `reason`. */
+function decodeOrRevert<T>(decode: () => T, reason: string): T {
+  try {
+    return decode();
+  } catch {
+    return revert(reason);
+  }
+}
 
 /**
  * CT-M: an in-memory simulation of `GhostPayConfidentialRouter` + an ERC-7984 wrapper token
@@ -76,18 +90,41 @@ export class CleartextLedger {
       operators: new Map(),
       unwrapRequests: new Map(),
       underlying: new Map(),
+      held: 0n,
     });
   }
 
-  /** Registers a router with an immutable fee recipient and accepted-token set. */
+  /**
+   * Registers a router with an immutable fee recipient and accepted-token set. Mirrors the
+   * `GhostPayConfidentialRouter` constructor: `ZeroAddress` for a zero fee recipient or token,
+   * `InvalidStealth` if the fee recipient is the router, `InvalidTokenList` for 0 or more than 8 tokens or a duplicate.
+   */
   public deployRouter(router: Address, feeRecipient: Address, tokens: readonly Address[]): void {
-    this.#routers.set(lc(router), { feeRecipient: lc(feeRecipient), tokens: new Set(tokens.map(lc)), epochStart: new Map() });
+    const routerAddr = lc(router);
+    const recipient = lc(feeRecipient);
+    if (recipient === ZERO_ADDRESS) revert('ZeroAddress');
+    if (recipient === routerAddr) revert('InvalidStealth');
+    if (tokens.length === 0 || tokens.length > MAX_ROUTER_TOKENS) revert('InvalidTokenList');
+    const accepted = new Set<string>();
+    for (const t of tokens.map(lc)) {
+      if (t === ZERO_ADDRESS) revert('ZeroAddress');
+      if (accepted.has(t)) revert('InvalidTokenList');
+      accepted.add(t);
+    }
+    this.#routers.set(routerAddr, { feeRecipient: recipient, tokens: accepted, epochStart: new Map() });
   }
 
-  /** Test helper: wraps `amount` underlying tokens into confidential `token` for `to` (public amount in reality). */
+  /**
+   * Test helper: wraps `amount` underlying tokens into confidential `token` for `to` (public amount in reality).
+   * Like `ERC7984ERC20Wrapper.wrap`: `ERC7984InvalidReceiver` for the zero address and
+   * `ERC7984TotalSupplyOverflow` once the underlying held by the wrapper would exceed 2^64-1.
+   */
   public wrap(token: Address, to: Address, amount: bigint): void {
     const t = this.#token(token);
     if (amount < 0n || amount > UINT64_MAX) revert('amount out of range');
+    if (lc(to) === ZERO_ADDRESS) revert('ERC7984InvalidReceiver');
+    if (t.held + amount > UINT64_MAX) revert('ERC7984TotalSupplyOverflow');
+    t.held += amount;
     this.#credit(t, token, lc(to), amount);
   }
 
@@ -169,8 +206,10 @@ export class CleartextLedger {
   // ---- router -------------------------------------------------------------------------------
 
   #routerCall(routerAddr: string, router: RouterState, tx: CtTx, sender: string, now: number): LedgerReceipt {
-    const call = decodeFunctionData({ abi: ROUTER_ABI, data: tx.data });
+    // `receive` and `fallback` revert NoDirectETH for plain ETH and unknown selectors.
+    const call = decodeOrRevert(() => decodeFunctionData({ abi: ROUTER_ABI, data: tx.data }), 'NoDirectETH');
     if (call.functionName === 'flushFees') {
+      if (tx.value !== 0n) revert('non-payable function');
       const [tokenArg] = call.args;
       return this.#flush(routerAddr, router, lc(tokenArg), now);
     }
@@ -225,7 +264,9 @@ export class CleartextLedger {
   // ---- token --------------------------------------------------------------------------------
 
   #tokenCall(tokenAddr: string, token: TokenState, tx: CtTx, sender: string, now: number): LedgerReceipt {
-    const call = decodeFunctionData({ abi: TOKEN_ABI, data: tx.data });
+    // ERC-7984 has no payable function and no fallback.
+    if (tx.value !== 0n) revert('non-payable function');
+    const call = decodeOrRevert(() => decodeFunctionData({ abi: TOKEN_ABI, data: tx.data }), 'unsupported token function');
     const events: LedgerEvent[] = [];
     switch (call.functionName) {
       case 'setOperator': {
@@ -242,12 +283,14 @@ export class CleartextLedger {
       case 'confidentialTransfer': {
         const [to, amount] = call.args;
         if (!this.#rec(amount).allowed.has(sender)) revert('ERC7984UnauthorizedUseOfEncryptedAmount');
+        if (lc(to) === ZERO_ADDRESS) revert('ERC7984InvalidReceiver');
         const h = this.#move(token, tokenAddr, sender, lc(to), this.#rec(amount).value, events);
         return { events, returned: h };
       }
       case 'unwrap': {
         const [from, to, amount] = call.args;
         if (!this.#rec(amount).allowed.has(sender)) revert('ERC7984UnauthorizedUseOfEncryptedAmount');
+        if (lc(to) === ZERO_ADDRESS) revert('ERC7984InvalidReceiver');
         if (lc(from) !== sender && !this.#isOperator(token, lc(from), sender, now)) revert('ERC7984UnauthorizedSpender');
         const burned = this.#move(token, tokenAddr, lc(from), null, this.#rec(amount).value, events);
         this.#rec(burned).publicDecryptable = true;
@@ -259,10 +302,13 @@ export class CleartextLedger {
         const [id, cleartext, proof] = call.args;
         const receiver = token.unwrapRequests.get(id);
         if (receiver === undefined) revert('InvalidUnwrapRequest');
-        token.unwrapRequests.delete(id);
+        // OZ deletes before `checkSignatures`, but a failed check reverts the whole call. This ledger has no
+        // rollback, so it verifies first and consumes the request only on success.
         const pd = this.publicDecrypt(id);
         if (proof !== pd.proof || cleartext !== pd.cleartext) revert('invalid decryption proof');
+        token.unwrapRequests.delete(id);
         const r = receiver as string;
+        token.held -= cleartext;
         token.underlying.set(r, (token.underlying.get(r) ?? 0n) + cleartext);
         return { events, returned: null };
       }
