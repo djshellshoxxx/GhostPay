@@ -147,6 +147,8 @@ describe('SellerKeys operation supersession', () => {
       await user.click(button(VERIFY));
       await waitFor(() => { expect(verify).toHaveBeenCalledOnce(); });
       expect(button(EXPORT).disabled).toBe(false);
+      // The superseded export's progress text is retired with it; verification reports in its own panel.
+      expect(screen.queryByText(/^Encrypting/)).toBeNull();
       const currentNotices = notices();
 
       await settle(exportGate, outcome, SYNTHETIC);

@@ -322,6 +322,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     if (verifyFile === undefined) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
     if (verifyFile.size > MAX_KEYSTORE_BYTES) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'error.keystore.fileTooLarge' } }); return; }
     const controller = startOperation('verify');
+    // Retire a superseded operation's progress text (for example "Encrypting…"); verification reports in its panel.
+    setMessage(undefined);
     const selected = verifyFile; const passphrase = verifyPass;
     // The result is for the keys loaded now: a seller change during reading or checking retires it.
     const unchanged = captureSessionVersionGuard();
