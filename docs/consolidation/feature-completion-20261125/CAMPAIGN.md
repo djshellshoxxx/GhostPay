@@ -245,6 +245,12 @@ low/info, and remain filler work.
   (job 139018307768): a scrypt-bound test with ~25% margin on a congested runner. Fix requested: per-test
   `180_000` timeout matching the repository convention for scrypt-heavy tests (BackupPanel, TagArchive, keystore);
   no assertion change.
+- 2026-11-25T09:38Z — FC-01 timeout fix pushed: #650 head `3851f02b` (`180_000` on the interop `it.each`, comment;
+  no assertion change; verified by coordinator). Reviews: FC-03-T `a2b14ca8` **APPROVE**; FC-05a-T `cf3e0ff6`
+  **APPROVE-WITH-NITS** (all changed statements match code: outspend only via provider check, hex/merkle-proof only in
+  consented light mode, sweep only POSTs /tx). Nits being folded in locally before push: inventory `automatic`
+  convention, stale sweep-preflight flow and missing `inclusion.ts` path, transient "pending CI" text, pre-existing
+  `/fee-estimates` overstatement, BTC-2 partial status, R13 matrix status, `specs/12:20` consent qualifier.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
