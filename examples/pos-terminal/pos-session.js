@@ -11,7 +11,8 @@ export const SALE_TTL_SECONDS = 300;
 export const MAX_SEEN_EVENTS = 64;
 /** Upper bound on one feed message and on the stored record (bytes of UTF-16 code units, checked before parsing). */
 export const MAX_FEED_BYTES = 4096;
-const MAX_RECORD_CHARS = 8192;
+// Allow all 64 permitted 128-character report IDs plus the bounded record fields and JSON framing.
+const MAX_RECORD_CHARS = 9216;
 /** Same identifier rule as merchant-hooks webhook ids, so a feed invoiceId can match the terminal's reference. */
 const ID_RE = /^[A-Za-z0-9_.:-]{1,128}$/;
 const SESSION_ID_RE = /^[0-9a-f]{16}$/;
