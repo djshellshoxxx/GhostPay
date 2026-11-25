@@ -79,3 +79,14 @@ Spec: `docs/future/modules/P13-confidential-amounts/SPEC.md`; record: `.../IMPLE
   are not qualified.
 - **P13-9 No invoice-schema change.** The `amountVisibility` field proposed in `confidential-tokens.md` 5.2 is not added;
   P13 maps unchanged `fixed_token` invoices only (fiat-quoted, native ETH, other token/network refused).
+
+## P13 audit follow-up (2026-11-25, `docs/audits/P13_CONFIDENTIAL_AMOUNTS_QA_20261125.md`)
+
+- **P13-10 Evidence requires provenance.** `interpretEvidence` now takes the receipt `logs` and `pinned` router, token,
+  stealth address and handle; without the pinned router's `ConfidentialPayment` and the pinned token's
+  `ConfidentialTransfer(router, stealth, handle)` the result is `unknown/unverified-source` (finding B1).
+- **P13-11 Record cap on writes.** `ConfidentialRecordStore` takes `{ maxRecords }` (default and maximum 10,000);
+  `create` and `importBackup` refuse beyond it, reads tolerate twice the cap, and `exportBackupPages` splits exports
+  into 1,000-record backups. Nothing deletes records yet: an archival design is still needed.
+- **P13-12 Stricter lifecycle and inputs.** `authorized -> cancelled` is removed; `RecordPatch` has no `sessionEpoch`;
+  inputs to `create`, `update`, `interpretEvidence` and `checkFeeRequest` are snapshotted once and type-checked.

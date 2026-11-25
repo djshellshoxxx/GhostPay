@@ -118,6 +118,13 @@ exposure and transport (CT-07); D5 fee design for confidential payments (CT-03; 
 backup inclusion and monotonic counter (P05); D7 Zama licensing; D8 independent audit scope and the unmerged router
 fix `cd544529`.
 
-## 9. Verification
+## 9. Audit follow-up (2026-11-25)
+
+Fuzz, stress, two-tab browser QA, an AI-assisted security audit and a bug search found 22 issues (1 high, 6 medium,
+7 low, 8 info) across P13 and the PoC; 21 are fixed with regression tests and 1 is accepted (A12). The most important change:
+a payment is verified only with on-chain provenance from the pinned router and token (B1). Report:
+[`docs/audits/P13_CONFIDENTIAL_AMOUNTS_QA_20261125.md`](../../../audits/P13_CONFIDENTIAL_AMOUNTS_QA_20261125.md).
+
+## 10. Verification
 
 See the handoff `docs/handoffs/P13_CONFIDENTIAL_AMOUNTS_20261125.md` for exact commands, SHAs and results.
