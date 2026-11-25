@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { WalletAttempts } from './WalletAttempts';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt, readAttempts } from '../lib/duplicateAttemptJournal';
 import { mockRpc } from '../test/mockRpc';
 
 beforeEach(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
-afterEach(() => { vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 it('keeps unknown outcomes until the user explicitly confirms clearing', async () => {
   beginAttempt({ key: `0x${'a'.repeat(64)}`, chainId: 1, account: `0x${'1'.repeat(40)}`, kind: 'payment' }, window.localStorage);
   render(<WalletAttempts />);

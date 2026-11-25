@@ -20,8 +20,12 @@ async function historyFixture() {
   await vault.unlock(new Uint8Array(32).fill(1));
   const base = { version: 1, ...scope, transactionHash: '0x' + 'cd'.repeat(32), blockHash: '0x' + 'ef'.repeat(32), blockNumber: '100', stealthAddress: '0x' + '12'.repeat(20), logIndex: 1, asset: 'native', amountMinorUnits: '42', viewTagMatched: true, recordedAt: NOW * 1000, evidenceStatus: 'verified-at-scan', evidenceSource: 'verified-router-scan' } as const;
   const first: ReconciliationRecord = { ...base, id: `${scope.sellerKeyId}:${scope.chainId}:${base.transactionHash}:${base.stealthAddress}:${base.blockHash}:1` };
-  const second: ReconciliationRecord = { ...first, logIndex: 2, id: first.id.slice(0, -1) + '2' };
-  await vault.save(first); await vault.save(second);
+  const replacementHash = '0x' + 'ba'.repeat(32);
+  const second: ReconciliationRecord = { ...first, blockHash: replacementHash, logIndex: 2,
+    id: `${scope.sellerKeyId}:${scope.chainId}:${base.transactionHash}:${base.stealthAddress}:${replacementHash}:2` };
+  await vault.save(first);
+  await vault.invalidateFrom(100n, [], () => Promise.resolve(replacementHash));
+  await vault.save(second);
   const data = await vault.exportEncrypted(); vault.lock();
   return { first, second, io: makeIo({ state: data, key: '01'.repeat(32), wrong: '02'.repeat(32) }) };
 }
