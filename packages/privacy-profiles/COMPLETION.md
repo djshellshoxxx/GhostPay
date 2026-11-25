@@ -60,7 +60,7 @@ Run from `packages/privacy-profiles` on Node 22, vitest 5.0.5, at the head of th
 | Typecheck | `npm run typecheck` | pass |
 | Lint | `npm run lint` | pass |
 | Build | `npm run build` (also `node scripts/gen-matrix.mjs` and `--chain`) | pass |
-| Tests | `npx vitest run --coverage --maxWorkers=1` | 14 files, 502 tests: 502 passed, 0 failed, 0 skipped (55 s with coverage, 22 s without) |
+| Tests | `npx vitest run --coverage --maxWorkers=1` | 15 files, 547 tests: 547 passed, 0 failed, 0 skipped (60 s with coverage, about 25 s without) |
 | Secret scan | `bash scripts/scan-secrets.sh` | OK |
 | Affected workspaces | `node scripts/agent/affected.mjs --checks typecheck,lint,test` | only this workspace; no dependents, so no dependent regression tests exist to run |
 
@@ -73,11 +73,13 @@ Coverage (thresholds 95 / 90 / 95 / 95, unchanged):
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
 | Baseline | 97.07 | 93.93 | 98.95 | 98.66 |
-| Now | 96.99 | 93.49 | 98.39 | 98.99 |
+| Now | 97.07 | 93.12 | 98.52 | 98.81 |
 
-Aggregate statement, branch and function coverage is slightly lower than the baseline because the new modules carry defensive branches that cannot be reached with shipped data (for example the `requiresAny` path: the evaluator supports it but no catalogue value uses it). Every threshold still passes.
+Branch coverage is 0.8 points lower than the baseline because the new modules carry defensive branches that cannot be reached with shipped data (for example the `requiresAny` path: the evaluator supports it but no catalogue value uses it). Every threshold still passes and none was changed.
 
-Mutation checks (manual script, 18 deliberate breaks, each must fail a test): 18 of 18 killed. The first run killed 17; the survivor (a conflict rule demoted to a warning) exposed that `rules.test.ts` accepted either bucket, and the test was strengthened.
+Mutation checks (manual script, 30 deliberate breaks of the safeguards added here and of existing rules, each must fail a test): 30 of 30 killed. Two rounds found weak tests that were then strengthened: a conflict rule demoted to a warning passed `rules.test.ts` (it accepted either bucket), and a "junk config" test was refused for the wrong reason (a different label) rather than for being invalid.
+
+Independent review: one read-only reviewer agent was given the diff and the spec, not my conclusions. It reported 16 findings (6 medium, 10 low). I reproduced each as a failing test first (34 of 43 new tests failed against the reviewed code), then fixed 15; the 16th (move `definitions.ts` out of the bundle) is declined with reasons in DEVIATIONS.md item 17. The most important finding: `createSnapshot` reviewed the raw input but stored a differently normalised config (inherited properties and over-long lists were read one way and dropped the other), so the accept step could approve one thing and store another. That is now one code path. This is an AI-assisted review, not an independent professional audit.
 
 Not run: the full repository suite, anvil-backed tests, Foundry, web e2e and the CI workflows. They do not exercise this package (nothing imports it) and CI runs them on the pull request.
 
@@ -92,7 +94,12 @@ Not run: the full repository suite, anvil-backed tests, Foundry, web e2e and the
 7. `honestLabel` and `valueDef` threw on malformed arguments (found by the public-API totality sweep).
 8. Any stored version other than 1 reset silently to the default; the strict path now refuses it with an error.
 9. Rule severity was untested (see mutation checks).
-10. During development: a capability claim listed `missing-capability` with an empty `missing` list when the capability came from a rule rather than the value definition. Fixed before the first commit that contained it; covered by `claims.test.ts`.
+10. During development: a capability claim listed `missing-capability` with an empty `missing` list when the capability came from a rule rather than the value definition; and a look-alike object claiming to be a `Set` granted every capability. Both fixed with tests.
+11. Found by the independent review (all with regression tests in `review-findings.test.ts`):
+    - Inputs were read through the prototype chain by the evaluator but own-only by the config code; a polluted `Object.prototype.acks` acknowledged everything.
+    - `createSnapshot` evaluated the raw input but stored a normalised config; invalid entries, lists over 64 entries and a preset label that did not match the values were accepted or silently reshaped, and `snapshotIsCurrent` called refused input current.
+    - Guard lists were mutable (`TESTNET_CHAIN_IDS.push(1)` removed the chain guard for chain 1; `ACK_KEYS.push(...)` made `sanitizeSelection` accept a forged acknowledgement). The sweep for this also found `STEP_ASSETS`.
+    - A description marked a value `asserted` with no hint that acknowledgements or consents were missing; capability members were never validated (a symbol made `createSnapshot` throw); `missing` for rule-derived capabilities was a hand-copied table; `honestLabel` of garbage looked like an empty real label; a repaired selection could still freeze a caller's nested object; the Shielded preset was described as having no sponsors although its exit-gas preference can rely on a pool relayer.
 
 ## Remaining integration requirements
 

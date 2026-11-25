@@ -90,8 +90,7 @@ const KEYS: Readonly<Record<ConfigErrorCode, ErrorKey>> = {
   E_CONFIG_DUPLICATE: 'privacy.err.config.duplicate',
 };
 
-/** Error keys this module can emit. */
-export const CONFIG_ERROR_KEYS: readonly ErrorKey[] = deepFreeze([...Object.values(KEYS)].sort());
+export { CONFIG_ERROR_KEYS } from './keys.js';
 
 const cerr = (code: ConfigErrorCode, path: string): ConfigError => ({ code, key: KEYS[code], path });
 
@@ -180,6 +179,18 @@ function build(
   const acks = list<AckKey>(fields.acks, 'acks', isAckKey, 'E_CONFIG_ACK');
   const consents = list<ConsentKey>(fields.consents, 'consents', isConsentKey, 'E_CONFIG_CONSENT');
   return deepFreeze({ preset, values, acks, consents });
+}
+
+/**
+ * Normalised config of any value together with every problem found, using the same strict rules as {@link parseConfig}
+ * without the version field. Only own properties count. A value that is not an object gives the empty config and an error.
+ * Review and snapshot code calls this so that what it evaluates is exactly what it stores.
+ */
+export function inspectConfig(x: unknown): { readonly config: ProfileConfig; readonly errors: readonly ConfigError[] } {
+  if (!isRecord(x)) return deepFreeze({ config: emptyConfig(), errors: [cerr('E_CONFIG_NOT_OBJECT', '')] });
+  const errors: ConfigError[] = [];
+  const config = build(fieldsOf(x), errors);
+  return deepFreeze({ config, errors });
 }
 
 /** Reads the five config fields of any object as own properties only (inherited ones are not fields). */

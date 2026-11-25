@@ -83,5 +83,5 @@ export const STEP_CATALOGUE: Readonly<Record<StepKind, StepDef>> = deepFreeze({
 });
 
 /** Asset kinds a step may handle (helper for validators). */
-export const STEP_ASSETS: readonly string[] = ANY_ASSET;
+export const STEP_ASSETS: readonly string[] = deepFreeze([...ANY_ASSET]);
 export type { Pred };

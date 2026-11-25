@@ -29,8 +29,23 @@ export function defaultSelection(): Selection {
   return deepFreeze({ preset: 'standard', values: {}, acks: [] });
 }
 
+/**
+ * Copy of a `values` object that shares nothing with the caller's: strings are kept, `undefined` entries are dropped, and
+ * anything else becomes `null`, which `evaluate` still reports as an unknown value. Results are frozen in place, so a
+ * nested object of the caller's must never end up inside one.
+ */
+function cloneValues(values: Selection['values']): Partial<Record<OptionId, string>> {
+  const out: Record<string, string | null> = {};
+  for (const k of Object.keys(values)) {
+    const v = (values as Record<string, unknown>)[k];
+    if (typeof v === 'string') out[k] = v;
+    else if (v !== undefined) out[k] = null;
+  }
+  return out;
+}
+
 const setValue = (sel: Selection, id: OptionId, value: string): Selection => {
-  const values: Partial<Record<OptionId, string>> = { ...sel.values };
+  const values = cloneValues(sel.values);
   if (value === OPTION_CATALOGUE[id].defaultValue) delete values[id];
   else values[id] = value;
   // Copy acks too: results are frozen in place, so sharing the caller's array would freeze it.
@@ -65,9 +80,9 @@ export function acknowledge(selIn: Selection, ack: AckKey): Selection {
   const kept = sel.acks.filter((a): a is AckKey => typeof a === 'string');
   if (!(ACK_KEYS as readonly string[]).includes(ack)) {
     // A well-formed selection is returned as is. A repaired one is copied: its `values` may still be the caller's object.
-    return problems.length === 0 ? sel : deepFreeze({ preset: sel.preset, values: { ...sel.values }, acks: [...kept].sort() });
+    return problems.length === 0 ? sel : deepFreeze({ preset: sel.preset, values: cloneValues(sel.values), acks: [...kept].sort() });
   }
-  return deepFreeze({ preset: sel.preset, values: { ...sel.values }, acks: [...new Set([...kept, ack])].sort() });
+  return deepFreeze({ preset: sel.preset, values: cloneValues(sel.values), acks: [...new Set([...kept, ack])].sort() });
 }
 
 const FORBIDDEN = new Set(['experimental', 'test-only', 'stub', 'watch']);

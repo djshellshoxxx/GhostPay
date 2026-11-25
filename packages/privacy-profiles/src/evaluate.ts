@@ -13,6 +13,7 @@ import {
 import { OPTION_IDS, TESTNET_BTC_NETWORKS, TESTNET_CHAIN_IDS } from './types.js';
 import type {
   AckKey,
+  Capability,
   Context,
   ErrorKey,
   Evaluation,
@@ -23,6 +24,7 @@ import type {
   OptionId,
   Pred,
   RuleDef,
+  RuleId,
   Selection,
   StrengthClass,
   TrustParty,
@@ -40,6 +42,13 @@ interface State {
 const RELAY_LIKE: ReadonlySet<TrustParty> = new Set<TrustParty>([
   'sweep-relayer', 'payer-sponsor', 'bundler', 'pool-relayer', 'railgun-broadcaster', 'zama-decrypt-relayer', 'payjoin-directory',
 ]);
+/** The self-test capability each network profile option needs before it may leave `direct` (R-29, NP-T-5). */
+export const SELFTEST_CAP: Readonly<Partial<Record<OptionId, Capability>>> = deepFreeze({
+  'net.rpcProfile': 'selftest-ok:rpc',
+  'net.relayerProfile': 'selftest-ok:relayer',
+});
+/** Leak id `honestLabel` reports when it was not given an evaluation: everything may still be visible. */
+export const UNKNOWN_EVALUATION: LeakKey = 'profiles:unknown-evaluation';
 const INVALID_SELECTION: ErrorKey = 'privacy.err.invalidSelection';
 const INVALID_CONTEXT: ErrorKey = 'privacy.err.invalidContext';
 const NOT_SELECTABLE: ErrorKey = 'privacy.err.notSelectable';
@@ -53,7 +62,8 @@ export function valueDef(id: OptionId, value: string): ValueDef | undefined {
   return has(OPTION_CATALOGUE, id) ? OPTION_CATALOGUE[id].values.find((v) => v.value === value) : undefined;
 }
 
-function inScope(def: OptionDef, ctx: Context): boolean {
+/** True when an option is evaluated for the context's action (the settings view covers every option). */
+export function inScope(def: OptionDef, ctx: Context): boolean {
   return ctx.action === 'settings' || def.actions.includes(ctx.action);
 }
 
@@ -103,10 +113,11 @@ function scanOptions(name: string, st: State): OptionId[] {
       case 'env':
         if (def.group === 'network' && vd.env && !vd.env.includes(st.ctx.env)) out.push(id);
         break;
-      case 'selftest':
-        if (id === 'net.rpcProfile' && !st.ctx.capabilities.has('selftest-ok:rpc')) out.push(id);
-        if (id === 'net.relayerProfile' && !st.ctx.capabilities.has('selftest-ok:relayer')) out.push(id);
+      case 'selftest': {
+        const needed = SELFTEST_CAP[id];
+        if (needed !== undefined && !st.ctx.capabilities.has(needed)) out.push(id);
         break;
+      }
       case 'relay-direct':
         if (direct && applies && trustOf(id, vd, st).some((t) => RELAY_LIKE.has(t))) out.push(id);
         break;
@@ -316,6 +327,25 @@ export function evaluateWithApplied(selIn: Selection, ctxIn: Context): { readonl
   return deepFreeze({ evaluation, applied });
 }
 
+/**
+ * Capabilities the `then` clause of a `requires` rule still needs, given the effective values and context: a missing
+ * capability counts when it sits in an unsatisfied `all`, or in an `any` where no alternative holds. Anything that is not a
+ * capability test (an option value, an environment) cannot be met by adding a capability and contributes nothing.
+ */
+export function unmetCapabilities(ruleId: RuleId, effective: Readonly<Record<OptionId, string>>, ctxIn: Context): readonly Capability[] {
+  const rule = RULES.find((r) => r.id === ruleId);
+  if (!rule || rule.kind !== 'requires' || !rule.then) return [];
+  const { context: ctx } = normalizeContext(ctxIn);
+  const st: State = { sel: { preset: 'custom', values: {}, acks: [] }, ctx, vals: { ...effective }, active: {} as Record<OptionId, boolean> };
+  const need = (p: Pred): Capability[] => {
+    if ('cap' in p) return ctx.capabilities.has(p.cap) ? [] : [p.cap];
+    if ('all' in p) return p.all.flatMap(need);
+    if ('any' in p) return p.any.some((q) => evalPred(q, st)) ? [] : p.any.flatMap(need);
+    return [];
+  };
+  return [...new Set(need(rule.then))].sort();
+}
+
 /** Adds one extra blocking issue to an evaluation (used by option setters). */
 export function withIssue(ev: Evaluation, issue: Issue): Evaluation {
   const blocking = [...ev.blocking, issue].sort(cmpIssue);
@@ -340,10 +370,13 @@ export function explain(selIn: Selection, ctxIn: Context): readonly { option: Op
 
 /** Honest label keys for an evaluation: fixed headline, trust parties and what stays visible. Never prose. */
 export function honestLabel(ev: Evaluation): { readonly headline: WarningKey; readonly trusts: readonly TrustParty[]; readonly stillVisible: readonly LeakKey[]; readonly warnings: readonly WarningKey[] } {
-  // Total on garbage: anything that is not an evaluation gives the bare headline with empty lists. Build labels only
-  // from `evaluate()` results; an empty list from garbage is not a statement that nothing stays visible.
+  // Total on garbage: anything that is not an evaluation gives the headline and an explicit unknown marker in
+  // `stillVisible`, never an empty list (which for a real label means "nothing beyond the default stays visible").
   const list = (x: unknown): unknown[] => (Array.isArray(x) ? x : []);
   const rec: Record<string, unknown> = isRecord(ev) ? ev : {};
+  if (!Array.isArray(rec['trust']) || !Array.isArray(rec['doesNotHide']) || !Array.isArray(rec['warnings'])) {
+    return deepFreeze({ headline: 'privacy.warn.noAnonymity', trusts: [], stillVisible: [UNKNOWN_EVALUATION], warnings: [] });
+  }
   const keys = list(rec['warnings']).flatMap((w) => (isRecord(w) && typeof w['key'] === 'string' ? [w['key'] as WarningKey] : []));
   return deepFreeze({
     headline: 'privacy.warn.noAnonymity',

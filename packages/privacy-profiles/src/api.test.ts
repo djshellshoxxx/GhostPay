@@ -23,6 +23,17 @@ describe('public API', () => {
   it('exposes the new configuration, consent, snapshot, claims and definition checks', () => {
     for (const name of ADDED_EXPORTS) expect(api, name).toHaveProperty(name);
   });
+  it('every exported list and table is deeply frozen', () => {
+    const open: string[] = [];
+    const walk = (x: unknown, path: string, seen = new Set<unknown>()): void => {
+      if (typeof x !== 'object' || x === null || seen.has(x) || x instanceof Set || x instanceof Map) return;
+      seen.add(x);
+      if (!Object.isFrozen(x)) open.push(path);
+      for (const k of Reflect.ownKeys(x)) walk((x as Record<PropertyKey, unknown>)[k], `${path}.${String(k)}`, seen);
+    };
+    for (const [name, value] of Object.entries(api)) if (typeof value === 'object') walk(value, name);
+    expect(open).toEqual([]);
+  });
   it('does not leak internals (unfrozen evaluator, input guards, freeze helper)', () => {
     for (const name of ['evaluateRaw', 'normalizeSelection', 'normalizeContext', 'deepFreeze', 'isRecord', 'isSet']) expect(api).not.toHaveProperty(name);
   });

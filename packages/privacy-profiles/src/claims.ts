@@ -11,13 +11,14 @@
  * @security A description is not a guarantee of protection. The headline is always `privacy.warn.noAnonymity`.
  */
 import { toConfig } from './config.js';
-import type { ProfileConfig } from './config.js';
+import type { ConsentKey, ProfileConfig } from './config.js';
 import { deepFreeze } from './freeze.js';
-import { evaluateWithApplied, honestLabel } from './evaluate.js';
+import { SELFTEST_CAP, honestLabel, unmetCapabilities } from './evaluate.js';
 import type { AppliedValue } from './evaluate.js';
 import { normalizeContext } from './input.js';
+import { reviewConfig } from './snapshot.js';
 import { applyPreset } from './resolve.js';
-import type { Capability, Context, Downgrade, Issue, LeakKey, Maturity, OptionId, PresetId, StrengthClass, TrustParty, WarningKey } from './types.js';
+import type { AckKey, Capability, Context, Downgrade, Evaluation, Issue, LeakKey, Maturity, OptionId, PresetId, StrengthClass, TrustParty, WarningKey } from './types.js';
 
 /**
  * What can honestly be said about one value:
@@ -52,6 +53,15 @@ export interface ConfigDescription {
   readonly verified: false;
   readonly headline: 'privacy.warn.noAnonymity';
   readonly evaluationOk: boolean;
+  /**
+   * Acknowledgements and consents are separate from claims: a value can be `asserted` and the configuration still not
+   * ready. `ready` is true only for a valid configuration with no blocking issue and nothing missing.
+   */
+  readonly requiredAcks: readonly AckKey[];
+  readonly missingAcks: readonly AckKey[];
+  readonly requiredConsents: readonly ConsentKey[];
+  readonly missingConsents: readonly ConsentKey[];
+  readonly ready: boolean;
   readonly claims: readonly ValueClaim[];
   readonly trust: readonly TrustParty[];
   /** What the effective values leave visible. Never empty for a non-default value. */
@@ -69,27 +79,26 @@ const CONTEXT_CODES = new Set(['E_WRONG_CHAIN', 'E_WRONG_ENV', 'E_WRONG_ASSET'])
 const CAPABILITY_CODES = new Set(['E_CAPABILITY', 'E_SELFTEST']);
 
 const CAP_KEY_PREFIX = 'privacy.err.requires.cap.';
-const RULE_CAPS: Readonly<Record<string, readonly Capability[]>> = {
-  'privacy.err.requires.sweepRelayer': ['sweep-relayer'],
-  'privacy.err.requires.sellerCt': ['seller-accepts-ct'],
-};
 
-/** Capabilities a capability-type issue says are absent: from its key, or from the option it names. */
-function issueCaps(i: Issue, option: OptionId): Capability[] {
-  if (i.key.startsWith(CAP_KEY_PREFIX)) return [i.key.slice(CAP_KEY_PREFIX.length) as Capability];
-  const fixed = RULE_CAPS[i.key];
-  if (fixed) return [...fixed];
-  if (i.key === 'privacy.err.requires.multiEndpoint') return [option === 'relayer.multi' ? 'multi-relayer' : 'multi-rpc'];
-  if (i.code === 'E_SELFTEST') return [option === 'net.relayerProfile' ? 'selftest-ok:relayer' : 'selftest-ok:rpc'];
-  return [];
-}
-
-/** Capabilities the value needs that the context does not assert: from its definition and from the rules that fired. */
-function missingOf(a: AppliedValue, caps: ReadonlySet<Capability>, issues: readonly Issue[]): Capability[] {
+/**
+ * Capabilities the value needs that the context does not assert: from its definition, from the value-level capability
+ * issues, from the self-test its network profile needs, and from the `requires` rule that fired for it (derived from the
+ * rule's own `then` clause, so there is no second copy of the rule data here). A rule that names several options reports
+ * its unmet capabilities for each of them.
+ */
+function missingOf(a: AppliedValue, caps: ReadonlySet<Capability>, evaluation: Evaluation, ctx: Context): Capability[] {
   const missing: Capability[] = a.def.requires.filter((c) => c !== 'test-mode');
   const any = a.def.requiresAny;
   if (any && !any.some((c) => caps.has(c))) missing.push(...any);
-  for (const i of issues) if (CAPABILITY_CODES.has(i.code) && i.options.includes(a.option)) missing.push(...issueCaps(i, a.option));
+  for (const i of evaluation.blocking) {
+    if (!CAPABILITY_CODES.has(i.code) || !i.options.includes(a.option)) continue;
+    if (i.key.startsWith(CAP_KEY_PREFIX)) missing.push(i.key.slice(CAP_KEY_PREFIX.length) as Capability);
+    if (i.code === 'E_SELFTEST') {
+      const needed = SELFTEST_CAP[a.option];
+      if (needed !== undefined) missing.push(needed);
+    }
+    if (i.ruleId !== undefined) missing.push(...unmetCapabilities(i.ruleId, evaluation.effective, ctx));
+  }
   return [...new Set(missing)].filter((c) => !caps.has(c)).sort();
 }
 
@@ -108,17 +117,17 @@ function statusOf(a: AppliedValue, issues: readonly Issue[]): ClaimStatus {
 
 /** Describes a configuration in a context. Total, deterministic, deeply frozen. */
 export function describeConfig(cfg: ProfileConfig, ctx: Context): ConfigDescription {
-  const { evaluation, applied } = evaluateWithApplied(cfg, ctx);
+  const review = reviewConfig(cfg, ctx);
+  const { evaluation, applied } = review;
   const caps = normalizeContext(ctx).context.capabilities;
-  const issues = evaluation.blocking;
   const claims: ValueClaim[] = applied.map((a) => ({
     option: a.option,
     value: a.value,
     maturity: a.def.maturity,
     strength: a.def.strength,
-    status: statusOf(a, issues),
+    status: statusOf(a, evaluation.blocking),
     requires: a.def.requires,
-    missing: missingOf(a, caps, issues),
+    missing: missingOf(a, caps, evaluation, ctx),
     trust: a.trust,
   }));
   const label = honestLabel(evaluation);
@@ -127,6 +136,11 @@ export function describeConfig(cfg: ProfileConfig, ctx: Context): ConfigDescript
     verified: false as const,
     headline: label.headline as 'privacy.warn.noAnonymity',
     evaluationOk: evaluation.ok,
+    requiredAcks: evaluation.requiredAcks,
+    missingAcks: evaluation.requiredAcks.filter((a) => !review.config.acks.includes(a)),
+    requiredConsents: review.requiredConsents.map((r) => r.key),
+    missingConsents: review.missingConsents,
+    ready: review.ready,
     claims,
     trust: label.trusts,
     stillVisible: label.stillVisible,
