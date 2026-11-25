@@ -1,13 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "released",
-  "owner": "claude-feature-completion-20261125",
-  "token": "670e1f60-b0a0-49af-b0a6-ec61ae0af3e3",
-  "generation": 26,
+  "status": "held",
+  "owner": "claude-newghostpay-ae",
+  "token": "6413ed9b-8b8f-4e9a-98a0-f4237bd43800",
+  "generation": 27,
   "base_sha": "32ae3977b6026991ae0591daf385d3c536e2132f",
-  "acquired_at": "2026-11-25T12:11:01.279Z",
-  "heartbeat_at": "2026-11-25T12:33:22.274Z",
-  "expires_at": "2026-11-25T13:18:22.274Z",
-  "transport": "git-push-nonforce",
-  "released_at": "2026-11-25T12:40:45.657Z"
+  "acquired_at": "2026-11-25T14:00:30.000Z",
+  "heartbeat_at": "2026-11-25T14:00:30.000Z",
+  "expires_at": "2026-11-25T14:45:30.000Z",
+  "transport": "git-push-nonforce"
 }
