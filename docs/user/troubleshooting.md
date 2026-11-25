@@ -18,7 +18,7 @@
 | A payment shows up but the balance is zero | The match is a claim, not a payment (anyone can post announcements) | Check the one-time address balance. Do not deliver goods. |
 | Sweep says "not read yet" | The balance is read only when you press **Read balance from the Settings RPC** | Press the button (it contacts your Settings RPC with the one-time address). |
 | Sweep says balance unknown, or that no RPC is configured | No RPC configured for that chain, or the read failed | Add an RPC in Settings, then press the button again. |
-| Sweep says "The review changed; nothing was sent" | Destination, balance, provider, chain, payment or fee mode changed while signing | Review the details again, then sign again. |
+| Sweep says "The review changed while signing, before handoff" | Destination, balance, provider, chain, payment or fee mode changed while signing | Review the details again, then sign again. |
 | Relayer sweep not available | No relayer URL set, token has no `permit`, or relayer does not list the token | Use the direct sweep (needs native coin for gas) or set a relayer. |
 | Relayer returns an error class such as `fee_below_quote`, `quote_expired`, `rate_limited_ip`, `breaker_open`, `budget_exhausted` | Quote older than its lifetime, rate limits, relayer paused itself, or out of daily budget | Request a fresh quote; wait; or use another relayer or the direct path. |
 | Keystore will not import | Wrong passphrase or not a GhostPay keystore | There is no recovery. Try other passphrases you may have used. |

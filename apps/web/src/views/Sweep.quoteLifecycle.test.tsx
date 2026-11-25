@@ -418,7 +418,7 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
   });
 });
 
-const REVIEW_CHANGED = 'The review changed; nothing was sent. Review and sign again.';
+const REVIEW_CHANGED = 'The review changed while signing, before handoff. No transaction or order was sent. Review and sign again.';
 
 describe('Sweep review-change messaging and read availability', () => {
   it.each(['relayed', 'direct'] as const)('says the review changed (not a vault cancellation) when the recipient is edited during %s signing', async (flow) => {

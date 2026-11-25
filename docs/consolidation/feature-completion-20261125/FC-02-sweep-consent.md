@@ -17,7 +17,7 @@ Worker fc02, branch `claude/fc02-sweep-consent-20261125`, base `origin/main` `f1
 ## Changes beyond the merge (review follow-ups L1 to L3)
 
 - L1: before any click the balance row shows "not read yet" (`sweep.balanceNotRead`); "unknown" only after a request. A request with no RPC for the chain sends nothing and shows `sweep.balanceRead.noRpc`.
-- L2: a changed review during signing now says `sweep.reviewChanged` ("The review changed; nothing was sent. Review and sign again.") instead of the vault-cancelled text. The Read button is disabled while `busy`.
+- L2: a changed review during signing now says `sweep.reviewChanged` ("The review changed while signing, before handoff. No transaction or order was sent. Review and sign again.") instead of the vault-cancelled text. The Read button is disabled while `busy`.
 - L3: user docs updated: `docs/user/privacy-limits.md`, `docs/user/sweep-and-gas-privacy.md`, `docs/user/troubleshooting.md`.
 - New keys in all four catalogs (English text in ar, es, ja, per catalog convention), `securityKeys.ts` (`sweepReviewAndOutcomes`), and the `i18n-use` marker in Sweep.tsx.
 - Tests added: not-read-yet and no-RPC notice (Sweep.privacy.test.tsx); review-changed message for relayed and direct, Read disabled while busy, out-of-order read results (latest wins), handoff evidence retained after a balance refresh and after an app lock (Sweep.quoteLifecycle.test.tsx). Existing "balance changed during signing" cases now invalidate the balance with an idle app lock because the Read button is disabled while signing; they still assert nothing is sent and the journal is unchanged.
@@ -29,7 +29,10 @@ See the PR description for the final per-command results at the head.
 
 ## Known limitations (no change made)
 
-- N1: scope is derived at render time; a hardening option would be to derive it only in handlers.
+- N1: balance and quote are invalidated by passive effects (a render with a changed scope can briefly show the old value before the effect clears it). Hardening option: store the balance and quote together with the scope they were read for, and treat them as undefined whenever the current scope differs.
+- No "reading..." state is shown while a balance read is in flight (the row stays "not read yet" or "unknown" until it resolves).
+- In the signing matrix tests the "balance" case label now means balance invalidation via an idle app lock, because Read is disabled while signing; the label is misleading.
+- The review-changed message says no transaction or order was sent: for a direct sweep cancelled before handoff, the configured RPC may already have received a nonce read, fee reads and a dry run naming the old destination and amount.
 - N2: `scanPrivacy.disclosure.sweepAuto` is now an unused key (kept for catalog stability).
 - N3: the disclosure row does not mention the token contract address.
 - N4: ar, es, ja entries are English drafts (no runtime effect while `REVIEWED_LOCALES` is empty).
