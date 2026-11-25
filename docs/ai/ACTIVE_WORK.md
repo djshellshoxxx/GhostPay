@@ -3986,3 +3986,10 @@ are included. Add `apps/web/src/views/Settings.savedReconciliation.test.tsx`
 for focused retention and stale-test regressions without changing the exact
 recovered partial-import test. The independent reviewer owns final source
 review and unchanged-assertion reruns on the committed repair head.
+
+
+## 2026-11-25 UTC — Account privacy signer-pin fixture continuation
+
+- Worker: single connected GitHub coordinator; isolated branch `automation/20261125T0637Z/qa/account-privacy-signer-pin`; exact base #645 `3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7`; main observed `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`.
+- Scope: only `apps/web/src/views/Pay.signer.test.tsx`, additive ownership and source-pinned handoff. Recover the existing #630/#386 donor patch, not a new implementation. Preserve #645/#612/#598/#571 ancestry and other wallet/Pay/Scan/Sweep owners' production paths. No shared integration, deployment, dependency or workflow edits.
+- Acceptance: the revoked-pin test retains selected seller and trust/warning assertions, and requires no actionable Continue (absent or disabled). Fresh full web unit/coverage and applicable hosted qualification; no claims of independent review or locally executed tests. Release narrow claim after publication; other failures remain open.
