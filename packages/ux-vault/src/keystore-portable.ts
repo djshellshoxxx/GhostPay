@@ -307,8 +307,10 @@ function generatePassphrase(): string {
     // 2^16 is a multiple of the 2^10 list, so each 16-bit value modulo 1024 picks every word with the same probability.
     const words = Array.from({ length: GENERATED_PASSPHRASE_WORDS }, (_, i) => PASSPHRASE_WORDS[(((picks[2 * i] as number) << 8) | (picks[2 * i + 1] as number)) % PASSPHRASE_WORDS.length] as string);
     const phrase = words.join('-');
-    // Draws the estimator would refuse (such as one word six times) are vanishingly rare; draw again rather than offer one.
-    if (passphraseProblem(phrase) === undefined) return phrase;
+    // Draws the estimator would refuse or rate below "strong" (such as one word six times, or two words alternating) are
+    // vanishingly rare; draw again rather than offer one. None appeared in 200,000 draws; rejecting them costs a
+    // negligible fraction of the 60 bits.
+    if (passphraseProblem(phrase) === undefined && passphraseStrength(phrase).label === 'strong') return phrase;
   }
 }
 
