@@ -44,7 +44,7 @@ Each new test was shown failing against the pre-change source (source reverted t
 - Local `build:libs` incomplete; the full CI suite is the authority.
 
 ## Final round (second review)
-- Object overload of chain-solana `deriveStealthPayment` refuses a decoded mainnet `SolanaMetaAddress` with `CHAIN_DISABLED` before any RNG draw (test counts draws; red then green: "expected function to throw an error, but it didn't"). The `CHAIN_DISABLED` message now reads "devnet, testnet and localnet only" (red then green).
+- Object overload of chain-solana `deriveStealthPayment` refuses a decoded mainnet `SolanaMetaAddress` with `CHAIN_DISABLED` before any RNG draw (test counts draws; red then green: "expected function to throw an error, but it didn't"). The `CHAIN_DISABLED` message is now neutral for both callers (the object overload and `createSolanaAdapter`): "this testnet proof of concept refuses mainnet".
 - `docs/remote/chain-ports/solana-impl.md` states the ADR-0017 derivation (Z=r*V, no cofactor step, SHA-256 view tag); `packages/solana-stealth/README.md` says the base64url memo is rejected as `INVALID_ANNOUNCEMENT` (only `gpsol:` meta-addresses get `LEGACY_META_ADDRESS`).
 - FC-03 claim owned paths extended; `DEVIATIONS.md` restored to the donor's status text (transient local results live only here).
 - Local, final round: chain-solana typecheck exit 0, lint exit 0; cli `chain-commands.test.ts` 45/45; chain-solana 108/115 (the 7 failures are the CRLF-sensitive `adapter-types.test.ts`).
