@@ -131,7 +131,10 @@ Pages artifact.
 | `a362824a` | `node --test scripts/tests/release-exclusions.test.mjs` | 10/10 |
 | `a362824a` | `node --test scripts/pages/*.test.mjs scripts/tests/*.test.mjs` | 341 pass, 1 skip |
 | `a362824a` | lean build + verifier; planted GhostID/POS report | clean (352 modules); planted fails with 2 problems |
-| `8cb200f1` | `node scripts/agent/affected.mjs --run --checks typecheck,lint,test` | see PR body (filled in when the run completes) |
+| `8cb200f1` | `node scripts/agent/affected.mjs --run --checks typecheck,lint,test` (web, cli, i18n, ux-i18n, ux-intake) | typecheck and lint pass; web 3372 pass / 13 skip (247 files), i18n 570, ux-intake 230, ux-i18n 115, cli 2 + 3: all pass with coverage thresholds |
+| `8cb200f1` | node script tests (same run) | 1 failure: `scripts/testnet/verify-sources.test.mjs` case 25, `cast: command not found` (Foundry not installed in this container; environment, untouched by this diff) |
+| `b8674475` | `node --test scripts/tests/release-exclusions.test.mjs apps/web/scripts/localBuildProfile.test.mjs` | 48/48 after review fixes; symlink-CLI and checkout-path cases fail on the previous code |
+| `b8674475` | real lean build + verifier | clean: 352 rendered modules, 18 files |
 
 ## 8. Remaining blockers and next units
 
