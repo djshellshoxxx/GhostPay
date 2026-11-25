@@ -25,8 +25,10 @@ export interface ReconciliationRecord {
   /** Seller-entered association only; no invoice content is loaded or verified here. */
   readonly invoiceDigest?: string;
   readonly recordedAt: number;
-  readonly evidenceStatus: 'verified-at-scan' | 'invalidated-after-reorg';
-  readonly evidenceSource: 'verified-router-scan';
+  readonly evidenceStatus: 'verified-at-scan' | 'pending-at-scan' | 'unverified-at-scan' | 'invalidated-after-reorg';
+  /** Explicit seller decision, kept even if this exact inclusion is later invalidated. */
+  readonly lateAcceptedAt?: number;
+  readonly evidenceSource: 'verified-router-scan' | 'router-scan-candidate';
 }
 
 
@@ -133,6 +135,15 @@ export interface Cutoff {
   /** Null: recorded before cutoff times existed, so it covers every observation at or above `from`. */
   readonly at: number | null;
 }
+interface ScannedPaymentPage {
+  readonly finalizedThrough?: bigint;
+  readonly resumed?: boolean;
+  readonly from: bigint;
+  readonly through: bigint;
+  readonly canonicalHash: (height: bigint) => Promise<string>;
+  readonly retryFrom?: (height: bigint) => void;
+}
+
 export interface ReconciliationVaultHandle {
 unlock(key: Uint8Array): Promise<void>;
 lock(): void;
@@ -142,7 +153,10 @@ save(value: ReconciliationRecord, actionGuard?: () => void): Promise<void>;
 confirmProposal(value: ReconciliationRecord | VaultRecord, invoiceDigest: string, options?: {
     readonly current?: readonly ReconciliationRecord[];
     readonly guard?: () => void;
+    readonly acceptLate?: boolean;
 }): Promise<void>;
+observeInvoicePayments(values: readonly ReconciliationRecord[], actionGuard?: () => void, page?: ScannedPaymentPage): Promise<void>;
+quarantineInvoicePayments(from: bigint, actionGuard?: () => void): Promise<void>;
 proposals(current?: readonly ReconciliationRecord[]): Promise<ReadonlyMap<string, MatchProposal>>;
 registerInvoice(value: RegisteredInvoice): Promise<void>;
 removeInvoice(invoiceDigest: string): Promise<void>;
@@ -187,7 +201,7 @@ function validateReconciliationRecord(value: unknown): ReconciliationRecord {
   if (!isObject(value)) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryIsNotAnObject' });
   const allowed = new Set([
     'version', 'id', 'sellerKeyId', 'chainId', 'transactionHash', 'blockNumber', 'blockHash', 'logIndex',
-    'stealthAddress', 'asset', 'amountMinorUnits', 'viewTagMatched', 'invoiceDigest', 'blockTimestamp', 'recordedAt', 'evidenceStatus', 'evidenceSource',
+    'stealthAddress', 'asset', 'amountMinorUnits', 'viewTagMatched', 'invoiceDigest', 'blockTimestamp', 'recordedAt', 'evidenceStatus', 'evidenceSource', 'lateAcceptedAt',
   ]);
   if (Object.keys(value).some((key) => !allowed.has(key))) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasUnsupportedFields' });
   const hex32 = /^0x[0-9a-f]{64}$/;
@@ -206,8 +220,18 @@ function validateReconciliationRecord(value: unknown): ReconciliationRecord {
   if (typeof value.viewTagMatched !== 'boolean') return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidViewTagFlag' });
   if (value.invoiceDigest !== undefined && (typeof value.invoiceDigest !== 'string' || !hex32.test(value.invoiceDigest) || value.invoiceDigest !== value.invoiceDigest.toLowerCase())) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidInvoiceDigest' });
   if (!Number.isSafeInteger(value.recordedAt) || (value.recordedAt as number) <= 0 || (value.recordedAt as number) > 8_640_000_000_000_000) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidTimestamp' });
-  if (value.evidenceStatus !== 'verified-at-scan' && value.evidenceStatus !== 'invalidated-after-reorg') return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidEvidenceStatus' });
-  if (value.evidenceSource !== 'verified-router-scan') return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidEvidenceSource' });
+  if (value.evidenceStatus !== 'verified-at-scan' && value.evidenceStatus !== 'invalidated-after-reorg' &&
+      value.evidenceStatus !== 'pending-at-scan' && value.evidenceStatus !== 'unverified-at-scan')
+    return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidEvidenceStatus' });
+  if ((value.evidenceSource !== 'verified-router-scan' && value.evidenceSource !== 'router-scan-candidate') ||
+      (value.evidenceStatus === 'verified-at-scan' && value.evidenceSource !== 'verified-router-scan') ||
+      (value.evidenceStatus === 'pending-at-scan' && value.evidenceSource !== 'router-scan-candidate'))
+    return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidEvidenceSource' });
+  if (value.lateAcceptedAt !== undefined &&
+      (value.invoiceDigest === undefined || value.blockTimestamp === undefined || value.evidenceSource !== 'verified-router-scan' ||
+       typeof value.lateAcceptedAt !== 'number' || !Number.isSafeInteger(value.lateAcceptedAt) ||
+       value.lateAcceptedAt <= 0 || value.lateAcceptedAt > 8_640_000_000_000_000))
+    return fail({ key: 'error.reconciliationLedger.theLedgerTimestampIsInvalid' });
   const expectedId = `${value.sellerKeyId}:${String(value.chainId)}:${value.transactionHash}:${value.stealthAddress}:${value.blockHash}:${String(value.logIndex)}`;
   if (value.id !== expectedId) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryIdentityDoesNotMatchItsEvidence' });
   return value as unknown as ReconciliationRecord;
@@ -334,6 +358,10 @@ function proposeInvoiceMatch(
   context: readonly ContextRecord[],
 ): MatchProposal {
   if (!eligible(record)) return { kind: 'none' };
+  // A direct router call carries a single payment. A conflicting copy of its inclusion cannot be credited again.
+  if (context.some((other) => other.id !== record.id && other.chainId === record.chainId &&
+      other.sellerKeyId === record.sellerKeyId && other.transactionHash === record.transactionHash &&
+      verifiedLiveObservation(other))) return { kind: 'none' };
   const byId = new Map<string, ContextRecord>();
   for (const item of [...context, record]) byId.set(item.id, item);
   const all = [...byId.values()];
@@ -345,7 +373,11 @@ function proposeInvoiceMatch(
   if (candidates.length === 0) return { kind: 'none' };
   if (candidates.length > 1) return { kind: 'ambiguous', candidates, reason: 'multiple-invoices' };
   const invoice = candidates[0]!;
-  const competing = all.filter((r) => r.id !== record.id && eligible(r) && candidate(invoice, r));
+  const competing = all.filter((r) => r.id !== record.id && (
+    (eligible(r) || ((r.evidenceStatus === 'pending-at-scan' || r.evidenceStatus === 'unverified-at-scan') &&
+      r.provenance !== 'imported-history' && r.invoiceDigest === undefined)) &&
+    candidate(invoice, r)
+  ));
   if (competing.length > 0) return { kind: 'ambiguous', candidates, reason: 'multiple-payments' };
   // Wall-clock scan time cannot establish invoice timing. Missing legacy block time stays ambiguous.
   if (record.blockTimestamp === undefined)
@@ -547,10 +579,21 @@ function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): Ar
  * was replaced) is refused for good; a precautionary invalidation without a tombstone (an imported observation under a
  * reorg cutoff) is replaced by this fresh verified observation of the same block hash.
  */
+function sameTransfer(a: ReconciliationRecord, b: ReconciliationRecord): boolean {
+  return a.blockNumber === b.blockNumber && a.asset === b.asset && a.amountMinorUnits === b.amountMinorUnits;
+}
+
 function withSaved(document: Document, record: ReconciliationRecord): Document {
   if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
   if (document.tombstones.includes(record.id)) fail({ key: 'error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg' });
   const prior = document.records.find((r) => r.id === record.id);
+  if (prior?.provenance === 'live-scan' && prior.evidenceStatus === 'verified-at-scan' && !sameTransfer(prior, record))
+    fail({ key: 'error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved' });
+  if (prior?.evidenceStatus === 'unverified-at-scan' && prior.evidenceSource === 'verified-router-scan')
+    fail({ key: 'error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved' });
+  if (document.records.some((other) => other.id !== record.id && other.transactionHash === record.transactionHash &&
+      verifiedLiveObservation(other)))
+    fail({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' });
   if (
     prior?.invoiceDigest !== undefined &&
     record.invoiceDigest !== undefined &&
@@ -568,11 +611,14 @@ function withSaved(document: Document, record: ReconciliationRecord): Document {
   )
     fail({ key: 'error.reconciliationLedger.theLedgerTimestampIsInvalid' });
   const blockTimestamp = record.blockTimestamp ?? (keepTime ? prior?.blockTimestamp : undefined);
+  const { lateAcceptedAt: _discardedDecision, ...observation } = record;
+  void _discardedDecision;
   const next: VaultRecord = {
-    ...record,
+    ...observation,
     ...(keepTime ? { recordedAt: Math.min(prior.recordedAt, record.recordedAt) } : {}),
     ...(blockTimestamp === undefined ? {} : { blockTimestamp }),
     ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
+    ...(prior?.lateAcceptedAt === undefined ? {} : { lateAcceptedAt: prior.lateAcceptedAt }),
     provenance: 'live-scan',
   };
   const records =
@@ -794,7 +840,7 @@ class ReconciliationVault {
     this.guard(revision);
     return { text, document: text === null ? empty() : await this.decrypt(text) };
   }
-  private async change(update: (document: Document) => Document, actionGuard: () => void = () => undefined): Promise<void> {
+  private async change(update: (document: Document) => Document, actionGuard: () => void = () => undefined, skipUnchanged = false): Promise<void> {
     const revision = this.revision;
     const guard = (): void => {
       this.guard(revision);
@@ -805,7 +851,9 @@ class ReconciliationVault {
     for (let attempt = 0; attempt < 4; attempt++) {
       const { text, document } = await this.snapshot();
       guard();
-      const next = await this.encrypt(update(document));
+      const updated = update(document);
+      if (skipUnchanged && updated === document) return;
+      const next = await this.encrypt(updated);
       guard();
       if (await this.store.compareAndSwap(scopeKey(this.scope), text, next, guard)) {
         guard();
@@ -836,7 +884,187 @@ class ReconciliationVault {
       fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
     if (record.evidenceStatus !== 'verified-at-scan')
       fail({ key: 'error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved' });
-    await this.change((document) => withSaved(document, record), actionGuard);
+    await this.change((document) => {
+      if (record.invoiceDigest !== undefined && record.blockTimestamp !== undefined &&
+          document.invoices.some((invoice) => (invoice.invoiceDigest === record.invoiceDigest || candidate(invoice, record)) &&
+            BigInt(record.blockTimestamp!) >= BigInt(invoice.expiresAt)))
+        fail({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' });
+      return withSaved(document, record);
+    }, actionGuard);
+  }
+  /** Persist only scan observations relevant to a registered invoice or an already saved inclusion. */
+  public async observeInvoicePayments(
+    values: readonly ReconciliationRecord[], actionGuard?: () => void, page?: ScannedPaymentPage,
+  ): Promise<void> {
+    if (values.length > MAX_RECONCILIATION_RECORDS)
+      fail({ key: 'error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit' });
+    const observations = new Map<string, ReconciliationRecord>();
+    const disputed = new Set<string>();
+    for (const value of values) {
+      const record = { ...validateReconciliationRecord(value) };
+      if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId ||
+          record.invoiceDigest !== undefined || record.lateAcceptedAt !== undefined ||
+          record.evidenceStatus === 'invalidated-after-reorg')
+        fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
+      const first = observations.get(record.id);
+      if (first === undefined) observations.set(record.id, record);
+      else if (!sameTransfer(first, record) || first.blockTimestamp !== record.blockTimestamp ||
+          first.evidenceStatus !== record.evidenceStatus || first.evidenceSource !== record.evidenceSource)
+        disputed.add(record.id);
+    }
+    if (disputed.size > 0) {
+      // A contradictory page cannot advance the checkpoint or restore credit by delivery order.
+      await this.change((document) => {
+        let changed = false;
+        const records = document.records.map((record): VaultRecord => {
+          if (!disputed.has(record.id) || record.provenance !== 'live-scan' ||
+              record.evidenceStatus === 'invalidated-after-reorg' || record.evidenceStatus === 'unverified-at-scan') return record;
+          changed = true;
+          return { ...record, evidenceStatus: 'unverified-at-scan' };
+        });
+        return changed ? { ...document, records } : document;
+      }, actionGuard, true);
+      fail({ key: 'error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved' });
+    }
+    const missing = new Map<string, VaultRecord>();
+    const checkedHashes = new Map<string, string | undefined>();
+    if (page !== undefined) {
+      const { document } = await this.snapshot();
+      for (const record of document.records) {
+        const block = BigInt(record.blockNumber);
+        if (block >= page.from && block <= page.through && record.evidenceStatus !== 'invalidated-after-reorg' &&
+          record.provenance === 'live-scan' && !observations.has(record.id) &&
+          (record.invoiceDigest !== undefined || document.invoices.some((invoice) => candidate(invoice, record)))) {
+          missing.set(record.id, record);
+        }
+      }
+      const queue = [...new Set([...missing.values()].map((record) => record.blockNumber))];
+      const check = async (): Promise<void> => {
+        for (let height = queue.shift(); height !== undefined; height = queue.shift()) {
+          actionGuard?.();
+          let hash: string | undefined;
+          try {
+            const canonical = await page.canonicalHash(BigInt(height));
+            if (/^0x[0-9a-fA-F]{64}$/.test(canonical)) hash = canonical.toLowerCase();
+          } catch { /* A missing or disputed block leaves the old evidence unresolved. */ }
+          checkedHashes.set(height, hash);
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(CANONICAL_READS_IN_FLIGHT, queue.length) }, check));
+    }
+    let retryHeight: bigint | undefined;
+    await this.change((document) => {
+      retryHeight = undefined; // A concurrent write may have resolved the observation before this attempt.
+      if (document.invoices.length === 0 && document.records.length === 0) return document;
+      const records = new Map(document.records.map((record) => [record.id, record]));
+      const tombstones = new Set(document.tombstones);
+      let changed = false;
+      for (const record of document.records) {
+        const checked = missing.get(record.id);
+        if (checked === undefined || checked.blockNumber !== record.blockNumber ||
+            checked.provenance !== record.provenance || checked.recordedAt !== record.recordedAt ||
+            checked.evidenceStatus !== record.evidenceStatus || checked.lateAcceptedAt !== record.lateAcceptedAt) continue;
+        const hash = checkedHashes.get(record.blockNumber);
+        const replaced = hash !== undefined && hash !== record.blockHash;
+        const evidenceStatus = replaced ? 'invalidated-after-reorg' : 'unverified-at-scan';
+        if (replaced) tombstones.add(record.id);
+        if (record.evidenceStatus !== evidenceStatus) {
+          records.set(record.id, { ...record, evidenceStatus });
+          changed = true;
+        }
+      }
+      const byTransaction = new Map<string, Set<string>>();
+      const index = (record: ReconciliationRecord): void => {
+        const ids = byTransaction.get(record.transactionHash) ?? new Set<string>();
+        ids.add(record.id);
+        byTransaction.set(record.transactionHash, ids);
+      };
+      for (const record of records.values()) {
+        if (record.provenance === 'live-scan' && record.evidenceStatus !== 'invalidated-after-reorg') index(record);
+      }
+      for (const record of observations.values()) {
+        const prior = records.get(record.id);
+        const related = document.invoices.some((invoice) => candidate(invoice, record) &&
+          (record.evidenceStatus !== 'verified-at-scan' || record.blockTimestamp === undefined ||
+           BigInt(record.blockTimestamp) >= BigInt(invoice.expiresAt)));
+        const conflicting = [...(byTransaction.get(record.transactionHash) ?? [])]
+          .filter((id) => id !== record.id).map((id) => records.get(id)!);
+        if (tombstones.has(record.id) || prior?.evidenceStatus === 'invalidated-after-reorg' ||
+            (prior?.provenance === 'imported-history' && prior.invoiceDigest !== undefined) ||
+            (prior === undefined && !related && conflicting.length === 0)) continue;
+        if (conflicting.length > 0) {
+          for (const other of conflicting) {
+            if (other.evidenceStatus === 'unverified-at-scan') continue;
+            records.set(other.id, { ...other, evidenceStatus: 'unverified-at-scan' });
+            changed = true;
+          }
+          if ((!document.saturated || prior !== undefined) && prior?.evidenceStatus !== 'unverified-at-scan') {
+            records.set(record.id, { ...(prior ?? record), evidenceStatus: 'unverified-at-scan', provenance: 'live-scan' });
+            index(record);
+            changed = true;
+          }
+          continue;
+        }
+        if (prior !== undefined && prior.provenance === 'live-scan') {
+          const sameFacts = sameTransfer(prior, record) &&
+            (prior.blockTimestamp === undefined || prior.blockTimestamp === record.blockTimestamp);
+          if (!sameFacts || (prior.evidenceSource === 'verified-router-scan' && record.evidenceStatus !== 'verified-at-scan')) {
+            if (prior.evidenceStatus !== 'unverified-at-scan')
+              records.set(prior.id, { ...prior, evidenceStatus: 'unverified-at-scan' });
+            changed ||= prior.evidenceStatus !== 'unverified-at-scan';
+            continue;
+          }
+          if (prior.evidenceStatus === record.evidenceStatus && prior.blockTimestamp === record.blockTimestamp)
+            continue;
+        }
+        // Read-only vaults can lose credit, but cannot acquire or revive a payment.
+        if (document.saturated) continue;
+        records.set(record.id, {
+          ...record,
+          recordedAt: prior?.recordedAt ?? record.recordedAt,
+          ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
+          ...(prior?.lateAcceptedAt === undefined ? {} : { lateAcceptedAt: prior.lateAcceptedAt }),
+          provenance: 'live-scan',
+        });
+        index(record);
+        changed = true;
+      }
+      // Check the final CAS snapshot. A missing log and a present but unverifiable transfer both need a replay.
+      if (page !== undefined) {
+        for (const record of records.values()) {
+          if (record.provenance !== 'live-scan' || record.evidenceStatus === 'invalidated-after-reorg') continue;
+          const height = BigInt(record.blockNumber);
+          const lacksDepth = page.finalizedThrough !== undefined && height > page.finalizedThrough;
+          if (lacksDepth && (record.invoiceDigest !== undefined || document.invoices.some((invoice) => candidate(invoice, record)))) {
+            // A lower tip can remove confirmations even behind a still-canonical checkpoint.
+            if (record.evidenceStatus === 'verified-at-scan') {
+              records.set(record.id, { ...record, evidenceStatus: 'unverified-at-scan' });
+              changed = true;
+            }
+          } else if (record.invoiceDigest === undefined || record.evidenceStatus !== 'unverified-at-scan' ||
+              (height < page.from && !page.resumed) || height > page.through) continue;
+          if (retryHeight === undefined || height < retryHeight) retryHeight = height;
+        }
+      }
+      return changed ? {
+        ...document, records: [...records.values()],
+        tombstones: [...tombstones].slice(0, MAX_RECONCILIATION_RECORDS),
+        saturated: document.saturated || tombstones.size > MAX_RECONCILIATION_RECORDS,
+      } : document;
+    }, actionGuard, true);
+    if (retryHeight !== undefined) page?.retryFrom?.(retryHeight);
+  }
+  /** An unconfirmed rollback withholds current verification without creating permanent tombstones. */
+  public async quarantineInvoicePayments(from: bigint, actionGuard?: () => void): Promise<void> {
+    await this.change((document) => {
+      const affected = (record: VaultRecord): boolean => record.provenance === 'live-scan' &&
+        (record.evidenceStatus === 'verified-at-scan' || record.evidenceStatus === 'pending-at-scan') &&
+        BigInt(record.blockNumber) >= from &&
+        (record.invoiceDigest !== undefined || document.invoices.some((invoice) => candidate(invoice, record)));
+      if (!document.records.some(affected)) return document;
+      return { ...document, records: document.records.map((record) =>
+        affected(record) ? { ...record, evidenceStatus: 'unverified-at-scan' } : record) };
+    }, actionGuard, true);
   }
   /**
    * Links a verified observation to a registered invoice only if local matching, re-run on the current encrypted
@@ -845,7 +1073,7 @@ class ReconciliationVault {
   public async confirmProposal(
     value: ReconciliationRecord | VaultRecord,
     invoiceDigest: string,
-    options: { readonly current?: readonly ReconciliationRecord[]; readonly guard?: () => void } = {},
+    options: { readonly current?: readonly ReconciliationRecord[]; readonly guard?: () => void; readonly acceptLate?: boolean } = {},
   ): Promise<void> {
     const { provenance, ...plain } = value as VaultRecord;
     if (provenance !== undefined && provenance !== 'live-scan') fail({ key: 'error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically' });
@@ -862,7 +1090,20 @@ class ReconciliationVault {
         fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
       return current;
     });
+    const late = options.acceptLate === true;
+    if (late && !context.some((item) => item.id === record.id && item.evidenceStatus === 'verified-at-scan' &&
+        item.blockNumber === record.blockNumber && item.blockTimestamp === record.blockTimestamp &&
+        item.asset === record.asset && item.amountMinorUnits === record.amountMinorUnits))
+      fail({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' });
     await this.change((document) => {
+      if (document.records.some((prior) => prior.transactionHash === record.transactionHash &&
+          prior.lateAcceptedAt !== undefined && prior.invoiceDigest !== invoiceDigest))
+        fail({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' });
+      const before = document.records.find((r) => r.id === record.id);
+      if (before?.evidenceStatus === 'invalidated-after-reorg')
+        fail({ key: 'error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg' });
+      if (before?.invoiceDigest !== undefined || before?.evidenceStatus === 'unverified-at-scan')
+        fail({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' });
       const saved = withSaved(document, record);
       const current = saved.records.find((r) => r.id === record.id)!;
       // Unsaved scan results can make a pairing ambiguous too. Saved provenance/invalidation wins on duplicates.
@@ -871,13 +1112,16 @@ class ReconciliationVault {
         ...saved.records,
         ...context.filter((r) => !stored.has(r.id)),
       ]);
-      if (proposal.kind !== 'exact' || proposal.invoice.invoiceDigest !== invoiceDigest)
+      const proposed = late
+        ? proposal.kind === 'ambiguous' && proposal.reason === 'late-observation' ? proposal.candidates[0] : undefined
+        : proposal.kind === 'exact' ? proposal.invoice : undefined;
+      if (proposed?.invoiceDigest !== invoiceDigest)
         throw new UserFacingError(
           { key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' },
         );
       return {
         ...saved,
-        records: saved.records.map((r) => (r.id === record.id ? { ...r, invoiceDigest } : r)),
+        records: saved.records.map((r) => (r.id === record.id ? { ...r, invoiceDigest, ...(late ? { lateAcceptedAt: this.now() } : {}) } : r)),
       };
     }, options.guard);
   }
@@ -979,7 +1223,7 @@ class ReconciliationVault {
     this.guard(revision);
     // Already invalid observations stay invalid; only the valid ones need their block checked.
     const heights = new Set(
-      [...before.records.filter((r) => r.evidenceStatus === 'verified-at-scan'), ...observedRecords]
+      [...before.records.filter((r) => r.evidenceStatus !== 'invalidated-after-reorg'), ...observedRecords]
         .filter((r) => BigInt(r.blockNumber) >= block)
         .map((r) => r.blockNumber),
     );
@@ -1103,7 +1347,17 @@ function recordFromVerifiedMatch(
   invoiceDigest?: string,
   recordedAt = Date.now(),
 ): ReconciliationRecord {
-  if (match.receipt !== 'verified' || !match.viaRouter || match.metadata === undefined) return fail({ key: 'error.reconciliationLedger.onlyAVerifiedRouterScanMatchWithParsedMetadataCan' });
+  if (match.receipt !== 'verified') return fail({ key: 'error.reconciliationLedger.onlyAVerifiedRouterScanMatchWithParsedMetadataCan' });
+  return recordFromObservedMatch(match, sellerKeyId, invoiceDigest, recordedAt);
+}
+
+function recordFromObservedMatch(
+  match: VerifiedReconciliationMatch,
+  sellerKeyId: string,
+  invoiceDigest?: string,
+  recordedAt = Date.now(),
+): ReconciliationRecord {
+  if (!match.viaRouter || match.metadata === undefined) return fail({ key: 'error.reconciliationLedger.onlyAVerifiedRouterScanMatchWithParsedMetadataCan' });
   const transactionHash = match.announcement.transactionHash?.toLowerCase();
   if (transactionHash === undefined) return fail({ key: 'error.reconciliationLedger.thisVerifiedScanMatchHasNoTransactionHashAndCannot' });
   if (!/^[0-9a-f]{64}$/.test(sellerKeyId)) return fail({ key: 'error.reconciliationLedger.theCurrentSellerKeyScopeIsInvalid' });
@@ -1137,10 +1391,10 @@ function recordFromVerifiedMatch(
     viewTagMatched: match.tagMatches,
     ...(invoiceDigest === undefined ? {} : { invoiceDigest }),
     recordedAt,
-    evidenceStatus: 'verified-at-scan',
-    evidenceSource: 'verified-router-scan',
+    evidenceStatus: match.receipt === 'verified' ? 'verified-at-scan' : match.receipt === 'pending' ? 'pending-at-scan' : 'unverified-at-scan',
+    evidenceSource: match.receipt === 'verified' ? 'verified-router-scan' : 'router-scan-candidate',
   };
   return validateReconciliationRecord(record);
 }
-  return { recordFromVerifiedMatch, inspectReconciliationEnvelope, MAX_RECONCILIATION_RECORDS, MAX_REGISTERED_INVOICES, MATCH_CLOCK_SKEW_MS, MAX_VAULT_BYTES, MAX_ARCHIVED_RECEIPTS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords, validateRegisteredInvoice, registrationFromInvoice, proposeInvoiceMatch, ReconciliationVault: ReconciliationVault as ReconciliationVaultConstructor };
+  return { recordFromVerifiedMatch, recordFromObservedMatch, matchesInvoiceEvidence: candidate, inspectReconciliationEnvelope, MAX_RECONCILIATION_RECORDS, MAX_REGISTERED_INVOICES, MATCH_CLOCK_SKEW_MS, MAX_VAULT_BYTES, MAX_ARCHIVED_RECEIPTS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords, validateRegisteredInvoice, registrationFromInvoice, proposeInvoiceMatch, ReconciliationVault: ReconciliationVault as ReconciliationVaultConstructor };
 }
