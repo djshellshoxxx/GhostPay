@@ -1,0 +1,97 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "branch": "chatgpt/btc-spent-private-scan-20261118",
+  "note": "Logical implementation commits were transported with blob and tree SHA equality checks. Original PR219 remains unchanged in ancestry. This maps local evidence pins to reachable published equivalents; subsequent packet-only commits are identified in the PR.",
+  "commits": [
+    {
+      "local": "e27ce7f60fb0e21788f09df0f188b3b3490bcad2",
+      "remote": "85b9e4358d243bb1e4ea4cde9d9a7b4f4980feff",
+      "tree": "5eab0278b03164b6e2d9c6e9bd01ef9a20cc0664",
+      "subject": "Merge remote-tracking branch 'origin/pr-219' into chatgpt/btc-spent-private-scan-20261118"
+    },
+    {
+      "local": "878f3be72f61539f81a11037ed2bf85747562c33",
+      "remote": "0c5d1ae59c71f6d9ed9e3f63089fff98e40f3f65",
+      "tree": "8e138816800c7b0766e0970daeb00a1c88a19215",
+      "subject": "docs: claim scoped Bitcoin spentness completion"
+    },
+    {
+      "local": "531b62a1478a397a293e815d33f8f9f2aba81cf3",
+      "remote": "08667d2b25483bec62f4fde849728189b6b2af3b",
+      "tree": "bbc611418e833111c4e900838a29bef87d41df6b",
+      "subject": "fix(btc): bind spend inputs to transaction data and active consent"
+    },
+    {
+      "local": "50a259f0aa5f858b49045cc11ff7f0d3753dc946",
+      "remote": "482ea643ed8fb8db1da3d7976bab7a4ebe9b5a2d",
+      "tree": "24d9eb49b494026c78ce393871da4bf689ed31bd",
+      "subject": "fix(btc): invalidate spentness evidence after chain changes"
+    },
+    {
+      "local": "97df65f27ec118485dc8b32560a21854636f9920",
+      "remote": "ca3036a93a2e540342437492c721be6476f6abcc",
+      "tree": "7882428f571b8ec608fd1a0b372ea4ee2f1aa802",
+      "subject": "fix(btc): enforce scan consent at worker network boundaries"
+    },
+    {
+      "local": "1f254527e374338f1f1a949cc4b52213c2076c0c",
+      "remote": "d5739cc474dd2ef23685f3a49517d997920c8b9e",
+      "tree": "8a98a7d281580628e519145c6587ab0184c83bdb",
+      "subject": "fix(btc): retain canonical spend evidence and local coverage"
+    },
+    {
+      "local": "1f115e972d7c67e02953a0e4db62ef80434f72f5",
+      "remote": "5d60d6a064bc66dcd7f850b72b8709b56a02c29a",
+      "tree": "f9b7519bff97b636b00c6cc68e6395c6fedcbbbb",
+      "subject": "fix(btc): keep incomplete and historical spentness unknown"
+    },
+    {
+      "local": "451772f9898a01f14459ec8d9d63f0ec8ee8053e",
+      "remote": "326ab32ba686f829c9838ea2ea0aa7af76d336fa",
+      "tree": "12f82e81fa7d4afc946378bd733ce9fa337b5f7d",
+      "subject": "fix(btc): withhold local spentness until header coverage is complete"
+    },
+    {
+      "local": "6f5134de3443e36845fc9f150060d6a083aea86c",
+      "remote": "abebdcd814cacc3c0fbc9900c16bf73695939c2e",
+      "tree": "2ba0463274d1d2e6b58b001dce26ca9848094ca8",
+      "subject": "docs(btc): define private spentness evidence and refresh semantics"
+    },
+    {
+      "local": "91d3a51707b9c515990c31a89505c3bf9a443aa6",
+      "remote": "785d68708e91fb2dd4191242fc699c125844e9be",
+      "tree": "c0ed954f957f98d09c021c8db91e8738cc9ee627",
+      "subject": "fix(btc): make spentness consent revocable and keep unknown outputs unsweepable"
+    },
+    {
+      "local": "985d5284397894841eacd2b944e212f1339bbc87",
+      "remote": "472014aabb28510015ef2d11e6909310606724fc",
+      "tree": "23b3312439a9476d59502167c6563a1c4e4f88cb",
+      "subject": "test(btc): cover private spent checks and encrypted restart in Chromium"
+    },
+    {
+      "local": "69be50ee78ccb813ab326d83dfa8c1c1280bb764",
+      "remote": "fc7286122cb4ca7e2993077c470c00ee7e3bf264",
+      "tree": "83efaa636d2eb29c02fb6fbb22babef84f54abcb",
+      "subject": "docs(btc): stage source-pinned qualification packet"
+    },
+    {
+      "local": "fe9582626be39d1b52bed6ec84645c4d2acdf28f",
+      "remote": "01ec3d9f359f48215a3cf251d208437105af9c4f",
+      "tree": "6f16bcf66d99e845ef9af7a50503201ba172ce1d",
+      "subject": "docs(btc): record independent spentness and privacy review"
+    },
+    {
+      "local": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+      "remote": "ef08170a83d86d194b8ce4186299e791027e461e",
+      "tree": "0074dde6081e45188c45feb39503c64243ef99b8",
+      "subject": "Merge current main into Bitcoin spentness continuation"
+    },
+    {
+      "local": "10c3993d4d7a215c57b936ee2b1967741d247675",
+      "remote": "4a878e302beac5cca52d20e17cdd756f3fbebb0d",
+      "tree": "6506216897d158f8fa31813dd1e69cf6739df920",
+      "subject": "fix(btc): retain validated worker result element types"
+    }
+  ]
+}

@@ -277,6 +277,14 @@ describe('local spent tracking (getSpends)', () => {
     return events;
   }
 
+  it('reports a repeated consumed outpoint once and retains its earliest block evidence', async () => {
+    const input = { txid: fakeTxid('watched-once'), vout: 1, spentBy: fakeTxid('first-spender') };
+    const events = await spendsOf({ source: withSpends({ 101: [input, input], 102: [{ ...input, spentBy: fakeTxid('later-spender') }] }),
+      watchOutpoints: new Set([`${input.txid}:1`]),
+    });
+    expect(events).toEqual([{ ...input, height: 101, blockHash: blockHashOf(101) }]);
+  });
+
   it('reports spends of watched outpoints and of outpoints found earlier in this run, ignores the rest', async () => {
     const watched = `${fakeTxid('mine-earlier')}:1`;
     const source = withSpends({
