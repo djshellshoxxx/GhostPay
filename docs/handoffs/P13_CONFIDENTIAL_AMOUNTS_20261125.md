@@ -1,6 +1,12 @@
 # P13 confidential amounts: handoff 2026-11-25
 
-- Repository: djshellshoxxx/GhostPay. Draft PR: https://github.com/djshellshoxxx/GhostPay/pull/642 (do not merge).
+- Repository: djshellshoxxx/GhostPay. PR: https://github.com/djshellshoxxx/GhostPay/pull/642.
+- Owner decision 2026-11-25: merge into main as **dormant** code once CI is green, without waiting for an independent
+  review. This does not activate anything: the module stays unexported and off by default, settlement stays refused,
+  and activation still requires owner decisions D1–D8 plus an independent cryptographic review.
+- Main `c365dc41` merged into the branch at `833ee872` (owner stop-work directive in AGENTS.md; P13 is not among the
+  archived/deferred products). ACTIVE_WORK conflict resolved additively; P13 checks re-run there: 321/321 tests, coverage
+  98.95/94.86/100/99.6, typecheck, lint, build, browser qualification, secret scan, action pins and package map all pass.
 - Branch `nodata/eloquent-shannon-gfv6t9`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`; spec ancestry
   `future/p13-confidential-amounts` `8846d555` merged (`7e208062`, ACTIVE_WORK conflict resolved additively, 0 lines dropped).
 - Commits: `307e7050` claim, `fb9d97e3` units/asset/secret/disclosure/gate/lifecycle, `0eac8491` records/store/invoice/plan,
@@ -56,7 +62,7 @@ and does not import P13), Firefox/WebKit, any public testnet. Skips are not pass
 | Browser integration | 10 | core qualified in Chromium; no apps/web wiring (by design while off) |
 | Automated testing | 50 | 233 unit/property/negative + 1 browser qualification; no contract-backed CT-M, multi-browser, fuzzing or independent vectors |
 | Independent security qualification | 0 | self/AI-assisted review only |
-| Main-branch integration | 0 | draft PR, not merged |
+| Main-branch integration | merge approved | owner approved merging the dormant code once CI is green; the merge commit is recorded on the PR |
 | Overall feature completion | 25 | weighted; confidential settlement itself is not started |
 
 ## Next independent task

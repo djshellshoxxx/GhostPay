@@ -1,6 +1,7 @@
 # P13 confidential amounts: implementation record (client core, phase 1)
 
-Status: **experimental, default off, testnet/fixture only, not independently reviewed, not merged, not deployed.**
+Status: **experimental, default off, testnet/fixture only, not independently reviewed, not deployed.** The owner approved
+merging it into main as dormant code on 2026-11-25. That merge does not activate it or count as independent review.
 Nothing here authorizes settlement, deployment, real funds, pricing or a confidentiality claim to users.
 Spec: [SPEC.md](SPEC.md) (normative), [COMMON.md](../COMMON.md). Branch `nodata/eloquent-shannon-gfv6t9`,
 base main `c8e131c1`, spec ancestry `8846d555` merged. Test evidence and SHAs: section 9.
