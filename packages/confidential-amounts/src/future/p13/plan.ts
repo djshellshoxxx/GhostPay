@@ -18,7 +18,7 @@ import {
 import { buildDisclosure, classifyRoute, disclosureDigest, type PublicField } from './disclosure.js';
 import { decideOperation } from './gate.js';
 import { mapInvoiceAmounts } from './invoice.js';
-import { guarded, type EpochSource, type OperationContext } from './lifecycle.js';
+import { assertLive, guarded, type EpochSource, type OperationContext } from './lifecycle.js';
 import type { ConfidentialRecordV1, RecordAmounts, RecordSummary } from './record.js';
 import { summarize } from './record.js';
 import type { ConfidentialRecordStore } from './store.js';
@@ -124,7 +124,7 @@ export async function prepareConfidentialPlan(input: PrepareInput, deps: PlanDep
         createdAt: nowSec,
         updatedAt: nowSec,
       };
-      await deps.store.create(record);
+      await deps.store.create(record, () => assertLive(input.ctx, deps.epoch, deps.clockMs()));
       return {
         schema: 'ghostpay.confidential-plan/v1',
         planDigest,
@@ -148,7 +148,8 @@ export interface ReviewView {
 
 /**
  * Marks a prepared plan reviewed (gate `review`) and returns the amounts for local display.
- * The review is bound to the session epoch; a later epoch invalidates it on reload.
+ * Only plans prepared in the current session epoch are reviewable; after a lock, account switch or reload the user
+ * re-prepares (a fresh plan digest bound to the new epoch) or cancels the stale plan.
  */
 export async function reviewPlan(
   recordId: string,
@@ -163,10 +164,12 @@ export async function reviewPlan(
       check(cur !== undefined, 'P13_RECORD_INVALID', 'record not found');
       unwrap(decideOperation('review', gate, chainIdOf(cur.asset)));
       check(cur.sessionEpoch === ctx.sessionEpoch, 'P13_STALE', 'plan was prepared in another session');
-      const next = await deps.store.update(recordId, expectedRevision, {
-        state: 'reviewed',
-        updatedAt: Math.max(cur.updatedAt, Math.floor(deps.clockMs() / 1000)),
-      });
+      const next = await deps.store.update(
+        recordId,
+        expectedRevision,
+        { state: 'reviewed', updatedAt: Math.max(cur.updatedAt, Math.floor(deps.clockMs() / 1000)) },
+        () => assertLive(ctx, deps.epoch, deps.clockMs()),
+      );
       return { summary: summarize(next), amounts: next.amounts };
     }),
   );
@@ -190,10 +193,12 @@ export async function cancelPlan(
     guarded(ctx, deps.epoch, deps.clockMs, async () => {
       const cur = await deps.store.load(recordId);
       check(cur !== undefined, 'P13_RECORD_INVALID', 'record not found');
-      const next = await deps.store.update(recordId, expectedRevision, {
-        state: 'cancelled',
-        updatedAt: Math.max(cur.updatedAt, Math.floor(deps.clockMs() / 1000)),
-      });
+      const next = await deps.store.update(
+        recordId,
+        expectedRevision,
+        { state: 'cancelled', updatedAt: Math.max(cur.updatedAt, Math.floor(deps.clockMs() / 1000)) },
+        () => assertLive(ctx, deps.epoch, deps.clockMs()),
+      );
       return summarize(next);
     }),
   );

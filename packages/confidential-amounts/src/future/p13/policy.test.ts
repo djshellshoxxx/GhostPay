@@ -75,6 +75,18 @@ describe('disclosures and copy', () => {
     expect(buildDisclosure('ct1-zama').relayerOrigin).toBe('https://relayer.testnet.zama.org');
   });
 
+  it('the consent digest covers the displayed wording, not only the keys', () => {
+    const copy = P13_COPY as Record<string, string>;
+    const original = copy['P13_SETTLEMENT_OFF'] ?? '';
+    try {
+      copy['P13_SETTLEMENT_OFF'] = `${original} Edited.`;
+      expect(disclosureDigest(buildDisclosure('ctm-cleartext'))).not.toBe(CTM_CONSENT);
+    } finally {
+      copy['P13_SETTLEMENT_OFF'] = original;
+    }
+    expect(disclosureDigest(buildDisclosure('ctm-cleartext'))).toBe(CTM_CONSENT);
+  });
+
   it('the consent digest changes whenever the disclosure changes', () => {
     const d = buildDisclosure('ctm-cleartext');
     expect(disclosureDigest(d)).toBe(CTM_CONSENT);
@@ -88,10 +100,11 @@ describe('feature gate (default off; settlement always refused)', () => {
     expect(codeOf(decideOperation('prepare', P13_GATE_DEFAULT, 31337))).toBe('P13_DISABLED');
   });
 
-  it('keeps inspection, export and recovery available while off', () => {
+  it('keeps inspection, export and recovery available while off, even with a malformed configuration', () => {
     for (const op of ['inspect', 'export', 'recover'] as const) {
-      const r = decideOperation(op, P13_GATE_DEFAULT, 31337);
-      expect(r).toEqual({ ok: true, value: { mode: 'read-only' } });
+      expect(decideOperation(op, P13_GATE_DEFAULT, 31337)).toEqual({ ok: true, value: { mode: 'read-only' } });
+      expect(decideOperation(op, { enabled: 'yes', junk: 1 }, 31337)).toEqual({ ok: true, value: { mode: 'read-only' } });
+      expect(decideOperation(op, null, 1)).toEqual({ ok: true, value: { mode: 'read-only' } });
     }
   });
 

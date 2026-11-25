@@ -27,7 +27,9 @@ const HEADER_LEN = 4 + 1 + 16 + 4;
 export const MAX_ENVELOPE_BYTES = 1024 * 1024;
 /** Records per backup (COMMON batch budget). */
 export const MAX_BACKUP_RECORDS = 1000;
-const NAMESPACE_RE = /^[a-z0-9][a-z0-9:_/-]{0,127}$/;
+// No '/' so one namespace can never be a key prefix of another (`ns/` + 32 hex is the only key shape).
+const NAMESPACE_RE = /^[a-z0-9][a-z0-9:_-]{0,127}$/;
+const RECORD_ID_RE = /^[0-9a-f]{32}$/;
 const B64URL_RE = /^[A-Za-z0-9_-]{1,1400000}$/;
 
 function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
@@ -60,6 +62,8 @@ function header(recordId: string, revision: number): Uint8Array {
 export interface ReconcileReport {
   readonly total: number;
   readonly invalidatedReviews: number;
+  /** Prepared plans bound to an older session epoch (not reviewable; re-prepare or cancel). */
+  readonly stalePlans: number;
   readonly needsReconciliation: number;
   readonly corrupt: number;
 }
@@ -78,6 +82,12 @@ export interface BackupV1 {
   readonly namespace: string;
   readonly records: readonly string[];
 }
+
+/**
+ * Liveness check run after sealing and immediately before the compare-and-set, so a write from a cancelled or stale
+ * operation is not committed. A commit that already started completes; the caller then reports it stale.
+ */
+export type CommitGuard = () => void;
 
 /** Fields an update may change; everything else is immutable after creation. */
 export interface RecordPatch {
@@ -112,6 +122,14 @@ export class ConfidentialRecordStore {
 
   #key(recordId: string): string {
     return `${this.#namespace}/${recordId}`;
+  }
+
+  /** Keys of exactly this namespace (`ns/<32 hex>`), sorted. */
+  async #ownKeys(): Promise<string[]> {
+    const prefix = `${this.#namespace}/`;
+    const keys = (await this.#kv.keys(prefix)).filter((k) => k.startsWith(prefix) && RECORD_ID_RE.test(k.slice(prefix.length)));
+    check(keys.length <= MAX_BACKUP_RECORDS, 'P13_RECORD_LIMIT', 'too many records');
+    return keys.sort();
   }
 
   #aad(h: Uint8Array): Uint8Array {
@@ -154,9 +172,11 @@ export class ConfidentialRecordStore {
   }
 
   /** Stores a new record (revision 1, state `prepared`). @throws `P13_RECORD_CONFLICT` if the id exists. */
-  public async create(r: ConfidentialRecordV1): Promise<RecordSummary> {
+  public async create(r: ConfidentialRecordV1, guard?: CommitGuard): Promise<RecordSummary> {
+    matchString(r.recordId, RECORD_ID_RE, 'P13_RECORD_INVALID');
     check(r.revision === 1 && r.state === 'prepared', 'P13_RECORD_INVALID', 'new records start prepared at revision 1');
     const env = await this.#seal(r);
+    guard?.();
     const ok = await this.#kv.compareAndSet(this.#key(r.recordId), undefined, env);
     check(ok, 'P13_RECORD_CONFLICT', 'record id already exists');
     this.#observe(r);
@@ -165,7 +185,7 @@ export class ConfidentialRecordStore {
 
   /** Loads and verifies a record; `undefined` if absent. */
   public async load(recordId: string): Promise<ConfidentialRecordV1 | undefined> {
-    matchString(recordId, /^[0-9a-f]{32}$/, 'P13_RECORD_INVALID');
+    matchString(recordId, RECORD_ID_RE, 'P13_RECORD_INVALID');
     const env = await this.#kv.get(this.#key(recordId));
     if (env === undefined) return undefined;
     const r = await this.#open(env, recordId);
@@ -175,10 +195,17 @@ export class ConfidentialRecordStore {
 
   /**
    * Applies `patch` if the stored revision equals `expectedRevision` and the lifecycle allows the transition.
+   * `verified` / `reverted` need the matching evidence reason from `interpretEvidence`. The store persists state; it
+   * does not authorise settlement (the gate does).
    * @throws {P13Error} `P13_RECORD_CONFLICT` (retryable) on a concurrent write; `P13_TRANSITION`.
    */
-  public async update(recordId: string, expectedRevision: number, patch: RecordPatch): Promise<ConfidentialRecordV1> {
-    matchString(recordId, /^[0-9a-f]{32}$/, 'P13_RECORD_INVALID');
+  public async update(
+    recordId: string,
+    expectedRevision: number,
+    patch: RecordPatch,
+    guard?: CommitGuard,
+  ): Promise<ConfidentialRecordV1> {
+    matchString(recordId, RECORD_ID_RE, 'P13_RECORD_INVALID');
     const key = this.#key(recordId);
     const env = await this.#kv.get(key);
     check(env !== undefined, 'P13_RECORD_INVALID', 'record not found');
@@ -186,6 +213,8 @@ export class ConfidentialRecordStore {
     this.#observe(cur);
     if (cur.revision !== expectedRevision) fail('P13_RECORD_CONFLICT', 'record changed concurrently', true);
     assertTransition(cur.state, patch.state);
+    if (patch.state === 'verified') check(patch.evidence?.reason === 'delivered', 'P13_TRANSITION', 'verified needs delivery evidence');
+    if (patch.state === 'reverted') check(patch.evidence?.reason === 'reverted', 'P13_TRANSITION', 'reverted needs revert evidence');
     check(Number.isSafeInteger(patch.updatedAt) && patch.updatedAt >= cur.updatedAt, 'P13_RECORD_INVALID', 'time went backwards');
     const next: ConfidentialRecordV1 = {
       ...cur,
@@ -196,6 +225,7 @@ export class ConfidentialRecordStore {
       ...(patch.evidence !== undefined ? { evidence: patch.evidence } : {}),
     };
     const nextEnv = await this.#seal(next);
+    guard?.();
     const ok = await this.#kv.compareAndSet(key, env, nextEnv);
     if (!ok) fail('P13_RECORD_CONFLICT', 'record changed concurrently', true);
     this.#observe(next);
@@ -204,8 +234,7 @@ export class ConfidentialRecordStore {
 
   /** Amount-free list. Envelopes that fail to open are reported as `corrupt` and left untouched. */
   public async list(): Promise<readonly ListEntry[]> {
-    const keys = [...(await this.#kv.keys(`${this.#namespace}/`))].sort();
-    check(keys.length <= MAX_BACKUP_RECORDS, 'P13_RECORD_LIMIT', 'too many records');
+    const keys = await this.#ownKeys();
     const out: ListEntry[] = [];
     for (const key of keys) {
       const env = await this.#kv.get(key);
@@ -222,12 +251,14 @@ export class ConfidentialRecordStore {
   }
 
   /**
-   * After a reload or crash: invalidates reviews from an older session epoch (reviewed -> prepared) and moves
-   * submitted records to `unknown` until evidence arrives. Authorized records are only counted: the app cannot know
-   * whether a signature left the device, so nothing is resent or cancelled automatically.
+   * After a reload or crash: invalidates reviews from an older session epoch (reviewed -> prepared, still bound to the
+   * old epoch) and moves submitted records to `unknown` until evidence arrives. Plans from an older epoch stay
+   * unreviewable (`stalePlans`): the user re-prepares or cancels them. Authorized records are only counted: the app
+   * cannot know whether a signature left the device, so nothing is resent or cancelled automatically.
    */
   public async reconcileAfterReload(currentEpoch: number, nowSec: number): Promise<ReconcileReport> {
     let invalidatedReviews = 0;
+    let stalePlans = 0;
     let needsReconciliation = 0;
     let corrupt = 0;
     const entries = await this.list();
@@ -241,8 +272,11 @@ export class ConfidentialRecordStore {
       if (r === undefined) continue;
       const at = Math.max(nowSec, r.updatedAt);
       if (r.state === 'reviewed' && r.sessionEpoch !== currentEpoch) {
-        await this.update(r.recordId, r.revision, { state: 'prepared', updatedAt: at, sessionEpoch: currentEpoch });
+        await this.update(r.recordId, r.revision, { state: 'prepared', updatedAt: at });
         invalidatedReviews += 1;
+        stalePlans += 1;
+      } else if (r.state === 'prepared' && r.sessionEpoch !== currentEpoch) {
+        stalePlans += 1;
       } else if (r.state === 'submitted') {
         await this.update(r.recordId, r.revision, { state: 'unknown', updatedAt: at, evidence: { ...r.evidence, reason: 'reloaded' } });
         needsReconciliation += 1;
@@ -250,13 +284,12 @@ export class ConfidentialRecordStore {
         needsReconciliation += 1;
       }
     }
-    return { total: entries.length, invalidatedReviews, needsReconciliation, corrupt };
+    return { total: entries.length, invalidatedReviews, stalePlans, needsReconciliation, corrupt };
   }
 
   /** Exports every stored envelope as-is (ciphertext only; no re-encryption, no plaintext). */
   public async exportBackup(): Promise<BackupV1> {
-    const keys = [...(await this.#kv.keys(`${this.#namespace}/`))].sort();
-    check(keys.length <= MAX_BACKUP_RECORDS, 'P13_RECORD_LIMIT', 'too many records');
+    const keys = await this.#ownKeys();
     const records: string[] = [];
     for (const key of keys) {
       const env = await this.#kv.get(key);

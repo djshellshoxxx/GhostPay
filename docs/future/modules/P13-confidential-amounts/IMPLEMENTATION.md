@@ -54,8 +54,12 @@ within 400 units (CT-03). Zero-value "silent" transfers are indistinguishable un
   in-session rollback is detected. Cross-session rollback by an attacker who can write storage is **not** detected
   without an external monotonic counter (owner decision D6).
 - Settlement: none. `authorize/sign/submit/wrap/unwrap/decrypt/transfer` return `P13_SETTLEMENT_DISABLED` in every
-  configuration; only `ctm-cleartext` preparation/review on chain 31337 can be enabled, with consent bound to the
-  current disclosure digest.
+  configuration; only `ctm-cleartext` preparation/review on chain 31337 can be enabled, and only with a consent value
+  equal to the current disclosure version digest (fields, keys and exact wording). That digest identifies what was
+  shown; it is computable by any caller and is not proof that a person saw it.
+- Stale work: plan writes run a liveness guard (abort, epoch, deadline) after sealing and immediately before the
+  compare-and-set, so a cancelled or stale operation commits nothing; a commit already in flight completes and is then
+  reported stale. Plans from an older session epoch stay unreviewable (re-prepare or cancel).
 
 ## 4. Implemented components (`packages/confidential-amounts/src/future/p13/`)
 
@@ -100,8 +104,9 @@ licence for commercial use (audit CT-16; owner decision D7).
   same record key and namespace**. Import is all-or-nothing and never downgrades a newer revision.
 - Losing the record key loses the records, not funds: confidential balances stay controlled by stealth keys; finding
   them again needs a rescan and decryption through the protocol (copy `P13_RECORD_KEY`).
-- Interrupted work: stale reviews are invalidated; `submitted` becomes `unknown`; `authorized` is only flagged. Nothing
-  is resent or cancelled automatically.
+- Interrupted work: stale reviews are invalidated and, like other plans from an older epoch, are counted as
+  `stalePlans` (not reviewable); `submitted` becomes `unknown`; `authorized` is only flagged. Nothing is resent or
+  cancelled automatically. The store only accepts `verified`/`reverted` with the matching evidence reason.
 - Corrupt envelopes are reported and kept, never deleted.
 
 ## 8. Outstanding owner decisions

@@ -92,6 +92,7 @@ describe('record codec', () => {
     const canonical = new TextDecoder().decode(encodeRecord(record()));
     expect(codeOf(() => decodeRecord(new TextEncoder().encode(` ${canonical}`)))).toBe('P13_RECORD_INVALID');
     const dup = canonical.replace('{"amounts"', '{"revision":1,"amounts"');
+    expect(dup).not.toBe(canonical);
     expect(codeOf(() => decodeRecord(new TextEncoder().encode(dup)))).toBe('P13_RECORD_INVALID');
     expect(codeOf(() => decodeRecord(Uint8Array.from([0xff, 0xfe, 0x7b])))).toBe('P13_RECORD_INVALID');
     expect(codeOf(() => decodeRecord(new Uint8Array(64 * 1024 + 1)))).toBe('P13_RECORD_LIMIT');
@@ -166,6 +167,8 @@ describe('encrypted store', () => {
     const { sealer, kv } = await setup();
     expect(codeOf(() => new ConfidentialRecordStore(kv, sealer, '../etc'))).toBe('P13_RECORD_INVALID');
     expect(codeOf(() => new ConfidentialRecordStore(kv, sealer, 'P13'))).toBe('P13_RECORD_INVALID');
+    // '/' would let one namespace be a key prefix of another.
+    expect(codeOf(() => new ConfidentialRecordStore(kv, sealer, `${NS}/nested`))).toBe('P13_RECORD_INVALID');
     const badRng = createAesGcmSealer(await generateRecordKey(), { subtle: globalThis.crypto.subtle, rng: () => new Uint8Array(4) });
     expect(await codeOfAsync(() => badRng.seal(new Uint8Array(), new Uint8Array(1)))).toBe('P13_INTERNAL');
   });
@@ -178,6 +181,7 @@ describe('encrypted store', () => {
     expect(await codeOfAsync(() => store.create(record({ recordId: 'bb'.repeat(16), state: 'submitted' })))).toBe('P13_RECORD_INVALID');
     expect(await store.load('cc'.repeat(16))).toBeUndefined();
     expect(await codeOfAsync(() => store.load('../x'))).toBe('P13_RECORD_INVALID');
+    expect(await codeOfAsync(() => store.create(record({ recordId: 'ab'.repeat(40) })))).toBe('P13_RECORD_INVALID');
   });
 
   it('update enforces lifecycle, revision CAS (two tabs) and monotonic time', async () => {
@@ -196,6 +200,47 @@ describe('encrypted store', () => {
     // Immutable fields survive updates.
     expect(r3.amounts.gross.reveal((v) => v)).toBe(GROSS);
     expect(r3.planDigest).toBe(record().planDigest);
+  });
+
+  it('requires matching evidence for verified and reverted', async () => {
+    const { store } = await setup();
+    await store.create(record());
+    const id = record().recordId;
+    let rev = 1;
+    for (const state of ['reviewed', 'authorized', 'submitted'] as const) {
+      await store.update(id, rev, { state, updatedAt: NOW });
+      rev += 1;
+    }
+    expect(await codeOfAsync(() => store.update(id, rev, { state: 'verified', updatedAt: NOW }))).toBe('P13_TRANSITION');
+    expect(await codeOfAsync(() => store.update(id, rev, { state: 'verified', updatedAt: NOW, evidence: { reason: 'underpaid' } }))).toBe('P13_TRANSITION');
+    expect(await codeOfAsync(() => store.update(id, rev, { state: 'reverted', updatedAt: NOW, evidence: { reason: 'delivered' } }))).toBe('P13_TRANSITION');
+    const v = await store.update(id, rev, { state: 'verified', updatedAt: NOW, evidence: { reason: 'delivered' } });
+    expect(v.state).toBe('verified');
+    const back = await store.update(id, v.revision, { state: 'submitted', updatedAt: NOW });
+    expect((await store.update(id, back.revision, { state: 'reverted', updatedAt: NOW, evidence: { reason: 'reverted' } })).state).toBe('reverted');
+  });
+
+  it('a guard failure after sealing commits nothing', async () => {
+    const { kv, store } = await setup();
+    const stop = (): void => {
+      throw new Error('stale');
+    };
+    expect(await codeOfAsync(() => store.create(record(), stop))).toBe('P13_INTERNAL');
+    expect(kv.raw.size).toBe(0);
+    await store.create(record());
+    expect(await codeOfAsync(() => store.update(record().recordId, 1, { state: 'reviewed', updatedAt: NOW }, stop))).toBe('P13_INTERNAL');
+    expect((await store.load(record().recordId))?.revision).toBe(1);
+  });
+
+  it('ignores keys outside its exact namespace (prefix collisions, foreign entries)', async () => {
+    const { kv, store } = await setup();
+    await store.create(record());
+    kv.raw.set(`${NS}/${record().recordId}/shadow`, Uint8Array.from([1]));
+    kv.raw.set(`${NS}/not-a-record`, Uint8Array.from([1]));
+    kv.raw.set(`${NS}x/${record().recordId}`, Uint8Array.from([1]));
+    expect((await store.list()).map((e) => e.status)).toEqual(['ok']);
+    expect((await store.exportBackup()).records).toHaveLength(1);
+    expect((await store.reconcileAfterReload(1, NOW)).total).toBe(1);
   });
 
   it('detects a storage rollback to an older valid envelope within the session', async () => {
@@ -236,8 +281,10 @@ describe('reload and interrupted operations', () => {
     // Simulated reload: a new store instance over the same persisted bytes, new session epoch.
     const reloaded = new ConfidentialRecordStore(kv, sealer, NS);
     const report = await reloaded.reconcileAfterReload(2, NOW + 60);
-    expect(report).toEqual({ total: 4, invalidatedReviews: 1, needsReconciliation: 2, corrupt: 0 });
-    expect((await reloaded.load(ids.reviewed))?.state).toBe('prepared');
+    expect(report).toEqual({ total: 4, invalidatedReviews: 1, stalePlans: 2, needsReconciliation: 2, corrupt: 0 });
+    const invalidated = await reloaded.load(ids.reviewed);
+    expect(invalidated?.state).toBe('prepared');
+    expect(invalidated?.sessionEpoch).toBe(1); // still bound to the old session: not reviewable without re-preparing
     const sub = await reloaded.load(ids.submitted);
     expect(sub?.state).toBe('unknown');
     expect(sub?.evidence).toEqual({ txHash: `0x${'77'.repeat(32)}`, reason: 'reloaded' });
@@ -253,7 +300,7 @@ describe('reload and interrupted operations', () => {
     await store.create(record());
     kv.raw.set(`${NS}/${'5a'.repeat(16)}`, Uint8Array.from([0x47, 0x50, 0x43, 0x31, 1]));
     const report = await new ConfidentialRecordStore(kv, sealer, NS).reconcileAfterReload(1, NOW);
-    expect(report).toEqual({ total: 2, invalidatedReviews: 0, needsReconciliation: 0, corrupt: 1 });
+    expect(report).toEqual({ total: 2, invalidatedReviews: 0, stalePlans: 0, needsReconciliation: 0, corrupt: 1 });
     expect(kv.raw.size).toBe(2);
   });
 

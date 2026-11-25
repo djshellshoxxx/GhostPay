@@ -67,8 +67,9 @@ function decodeConfig(value: unknown): P13GateConfig {
  */
 export function decideOperation(op: P13Operation, config: unknown, chainId: number): ModuleResult<GateDecision> {
   return toResult((): GateDecision => {
-    const cfg = decodeConfig(config);
+    // Inspection, export and recovery never depend on the configuration, even a malformed one.
     if (READ_ONLY.includes(op)) return { mode: 'read-only' };
+    const cfg = decodeConfig(config);
     if (SETTLEMENT.includes(op)) fail('P13_SETTLEMENT_DISABLED', 'confidential settlement is disabled in this phase');
     check(LOCAL.includes(op), 'P13_UNSUPPORTED', 'unknown operation');
     check(cfg.enabled, 'P13_DISABLED', 'confidential amounts are off');

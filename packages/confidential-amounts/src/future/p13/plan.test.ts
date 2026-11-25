@@ -123,6 +123,49 @@ describe('refusals (gate, asset, invoice, session)', () => {
     expect(e.kv.raw.size).toBe(0);
   });
 
+  it('a lock or account switch while the record is being sealed commits nothing', async () => {
+    const e = await env(1);
+    const key = await generateRecordKey();
+    const inner = createAesGcmSealer(key);
+    const flipping = {
+      seal: async (aad: Uint8Array, pt: Uint8Array) => {
+        const out = await inner.seal(aad, pt);
+        e.setEpoch(2); // session changes after sealing, before the compare-and-set
+        return out;
+      },
+      open: (aad: Uint8Array, sealed: Uint8Array) => inner.open(aad, sealed),
+    };
+    const store = new ConfidentialRecordStore(e.kv, flipping, NS);
+    expect(await prepareConfidentialPlan(e.input(), { ...e.deps, store })).toMatchObject({ ok: false, code: 'P13_STALE' });
+    expect(e.kv.raw.size).toBe(0);
+  });
+
+  it('a review whose deadline passes before the commit leaves the stored plan untouched', async () => {
+    const e = await env(1);
+    const r = await prepareConfidentialPlan(e.input(), e.deps);
+    if (!r.ok) throw new Error(r.code);
+    const id = r.value.recoveryRef.slice('p13-record:'.length);
+    const before = new Map(e.kv.raw);
+    // Calls 1-2 (entry check, updatedAt) are in time; the commit guard (call 3) is past the deadline.
+    let calls = 0;
+    const clockMs = (): number => (calls++ < 2 ? NOW * 1000 : NOW * 1000 + 120_000);
+    expect(await reviewPlan(id, 1, GATE, e.ctx(), { ...e.deps, clockMs })).toMatchObject({ ok: false, code: 'P13_STALE' });
+    expect(e.kv.raw).toEqual(before);
+  });
+
+  it('a plan from an earlier session is not reviewable after reload reconciliation', async () => {
+    const e = await env(1);
+    const r = await prepareConfidentialPlan(e.input(), e.deps);
+    if (!r.ok) throw new Error(r.code);
+    const id = r.value.recoveryRef.slice('p13-record:'.length);
+    expect(await reviewPlan(id, 1, GATE, e.ctx(), e.deps)).toMatchObject({ ok: true });
+    e.setEpoch(2);
+    const report = await e.store.reconcileAfterReload(2, NOW);
+    expect(report).toMatchObject({ invalidatedReviews: 1, stalePlans: 1 });
+    expect(await reviewPlan(id, 3, GATE, e.ctx(), e.deps)).toMatchObject({ ok: false, code: 'P13_STALE' });
+    expect(await cancelPlan(id, 3, e.ctx(), e.deps)).toMatchObject({ ok: true, value: { state: 'cancelled' } });
+  });
+
   it('a cancelled operation writes nothing', async () => {
     const e = await env();
     const ac = new AbortController();

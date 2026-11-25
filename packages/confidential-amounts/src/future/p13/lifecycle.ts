@@ -22,6 +22,7 @@ const TRANSITIONS: Readonly<Record<P13State, readonly P13State[]>> = {
   authorized: ['submitted', 'cancelled'],
   // Once submitted, actual chain state wins: no cancel, no resend.
   submitted: ['unknown', 'verified', 'reverted'],
+  // unknown -> submitted re-files an observed pending transaction (e.g. seen again after a reorg); never a resend.
   unknown: ['unknown', 'verified', 'reverted', 'submitted'],
   // A reorg rolls observations back to pending.
   verified: ['submitted'],

@@ -154,9 +154,13 @@ export function buildDisclosure(protocolId: P13ProtocolId): DisclosureV1 {
   return d;
 }
 
-/** Digest a consent must reference. Any copy-key or field change invalidates earlier consent. */
+/**
+ * Version digest of the disclosure as shown: fields plus the exact text of every line. Any field, key or wording change
+ * invalidates a stored consent. It identifies what was shown; it is not a signature and does not prove that a user saw
+ * it (a caller can compute it), so it gates the fixture flow only.
+ */
 export function disclosureDigest(d: DisclosureV1): Digest {
-  return digestOf(d);
+  return digestOf({ disclosure: d, lines: disclosureLines(d) });
 }
 
 /** Lines for the consent screen, in display order. */

@@ -75,7 +75,7 @@ try {
   assert.equal(ids.settlementGate, 'P13_SETTLEMENT_DISABLED');
   assert.equal(r.exportable, false, 'persisted record key must be non-extractable');
   assert.equal(r.keyType, 'AES-GCM/256/false');
-  assert.deepEqual(r.report, { total: 2, invalidatedReviews: 1, needsReconciliation: 1, corrupt: 0 });
+  assert.deepEqual(r.report, { total: 2, invalidatedReviews: 1, stalePlans: 1, needsReconciliation: 1, corrupt: 0 });
   assert.equal(r.reviewedState, 'prepared', 'review from the previous session must be invalidated');
   assert.equal(r.submittedState, 'unknown', 'interrupted submission must become unknown, never resent');
   assert.equal(r.submittedReason, 'reloaded');
