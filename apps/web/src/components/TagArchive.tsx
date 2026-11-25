@@ -180,7 +180,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
   };
   const fail = (e: unknown): void => { setMessage({ kind: 'error', text: captureUserMessage(e) }); };
-  const done = (text: ArchiveMessage): void => { setMessage({ kind: 'ok', text }); app.announce(archiveMessage(text, trRef.current)); };
+  const done = (text: ArchiveMessage): void => { setMessage({ kind: 'ok', text }); app.announce(t('common.notice.ok')); };
 
   const historyVaults = async (c: AbortController): Promise<{ vaults: { chainId: number; vault: ReconciliationVault }[]; skipped: number }> => {
     const s = getSessionPublic();
@@ -424,7 +424,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
             <button type="submit" className="btn" disabled={busy}>{t('tagArchive.import.preview')}</button>
           </form>
           {staged !== undefined && (
-            <div role="status">
+            <div>
               <p>
                 {t('tagArchive.import.summary', { total: String(staged.archive.tags.total), added: String(staged.archive.tags.added), updated: String(staged.archive.tags.updated), kept: String(staged.archive.tags.keptLocal), removed: String(staged.archive.tags.removed) })}
                 {staged.history.length > 0 && ` ${t('tagArchive.import.historyNote', { count: String(staged.history.length) })}`}

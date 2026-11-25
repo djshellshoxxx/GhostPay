@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { sanitizeDisplayText } from '../lib/sanitize';
+import { neutralDownloadName } from '../lib/downloadNames';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { ContextHelp } from './ContextHelp';
 
@@ -89,27 +90,30 @@ export function downloadText(filename: string, text: string, type: string): void
 }
 
 /**
- * Triggers a local file download of a Blob (Blob URL, no network). A throw from the anchor or the click is rethrown
+ * Triggers a local file download of a Blob (Blob URL, no network). A browser failure is reported with fixed text
  * after the anchor is removed and the URL revoked, so a blocked download leaves neither behind.
  */
 export function downloadBlob(filename: string, blob: Blob): void {
   const a = document.createElement('a');
-  const url = URL.createObjectURL(blob);
+  let url: string | undefined;
   try {
+    url = URL.createObjectURL(blob);
     a.href = url;
-    a.download = filename;
+    // Only a fixed, value-free name can cross into the browser's download history (#286 item 5).
+    a.download = neutralDownloadName(filename);
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
-  } catch (error) {
-    URL.revokeObjectURL(url);
-    throw error;
+  } catch {
+    if (url !== undefined) URL.revokeObjectURL(url);
+    throw new Error('The local download could not be started.');
   } finally {
     a.remove();
   }
   // Allow the browser to consume a successfully initiated download before revocation.
+  const downloadUrl = url;
   setTimeout(() => {
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(downloadUrl);
   }, 1000);
 }
 

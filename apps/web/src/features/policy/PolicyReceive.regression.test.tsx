@@ -16,6 +16,10 @@ import { policyActionKey } from './withdrawalJournal';
 import { withdrawalChain, installPolicyTestLocks } from './withdrawal.testutil';
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, accountCalls, clientVectors, deploymentCalls, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const vector = account('acct-001');
 const realVerify = chainModule.verifyPolicyDeployment;

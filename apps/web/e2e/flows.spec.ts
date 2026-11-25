@@ -19,6 +19,7 @@ test.afterEach(async ({ page }, info) => {
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 import { CORS, RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
+import { approveWalletDisclosures } from './walletDisclosure';
 
 interface WalletControls {
   holdSend: boolean;
@@ -31,6 +32,8 @@ interface WalletControls {
 
 /** An EIP-6963 wallet injected before any page script runs. */
 async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: number; permitCalls?: number }): Promise<void> {
+  // Each wallet request is first shown in the in-page disclosure dialog; these flows approve it as a user would.
+  await approveWalletDisclosures(page);
   await page.exposeFunction('__recordTx', (tx: SentTx) => {
     state.sent = tx;
     state.sendCalls = (state.sendCalls ?? 0) + 1;
@@ -124,6 +127,66 @@ async function prepare(page: Page, url: string): Promise<void> {
 }
 
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
+  test('destination reuse follows the actual preview across invoices, reloads and wallet changes', async ({ page, context }) => {
+    const state: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const first = await createInvoice(page);
+    await expect(page.getByText(/same seller meta-address on multiple invoices/)).toBeVisible();
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
+    const second = await createInvoice(page, { memo: 'second synthetic invoice' });
+    expect(first).not.toEqual(second);
+
+    const send = page.getByRole('button', { name: 'Send payment in my wallet' });
+    const same = page.getByText(/already prepared this exact destination for the same signed invoice/);
+    const reused = page.getByText(/exact destination for another invoice/);
+    const prepare = async (link: string, scalar: number, switchAccount = false): Promise<string> => {
+      await openFresh(page, link);
+      await page.getByRole('button', { name: 'Continue' }).click();
+      if (switchAccount) {
+        await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
+      }
+      await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+      // Only the synthetic checkout runs with a fixed ephemeral scalar. Keys and signed invoices already exist.
+      await page.evaluate((byte) => {
+        const original = crypto.getRandomValues.bind(crypto);
+        crypto.getRandomValues = <T extends ArrayBufferView>(buf: T): T => {
+          if (buf instanceof Uint8Array && buf.length === 32) { buf.fill(byte); return buf; }
+          return original(buf);
+        };
+      }, scalar);
+      await page.getByRole('button', { name: 'Prepare payment' }).click();
+      await expect(send).toBeEnabled();
+      return page.getByText('One-time destination', { exact: true }).locator('+ dd').innerText();
+    };
+    const destination = await prepare(first, 11);
+    await expect(same.or(reused)).toHaveCount(0);
+    expect(await prepare(first, 11)).toBe(destination);
+    await expect(same).toBeVisible();
+    await expect(reused).toHaveCount(0);
+    expect(await prepare(second, 12)).not.toBe(destination);
+    await expect(same.or(reused)).toHaveCount(0);
+    expect(await prepare(second, 11)).toBe(destination);
+    await expect(reused).toBeVisible();
+    await expect(same).toHaveCount(0);
+    const history = await page.evaluate(() => sessionStorage.getItem('ghostpay.destination-review.v1'));
+    expect(history).toBeTruthy();
+    expect(history).not.toContain(destination.slice(2).toLowerCase());
+    await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
+    await expect(reused).toHaveCount(0);
+    expect(await prepare(second, 11, true)).toBe(destination);
+    await expect(same.or(reused)).toHaveCount(0);
+    expect(await prepare(second, 11)).toBe(destination);
+    await expect(reused).toBeVisible();
+    expect(state.sendCalls ?? 0).toBe(0);
+    await send.click();
+    await expect(page.getByRole('heading', { name: 'Submitted' })).toBeVisible();
+    expect(state.sendCalls).toBe(1);
+  });
+
   test('pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it', async ({
     page,
     context,

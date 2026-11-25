@@ -1,4 +1,5 @@
 import type { ChainConfig } from '@ghostpay/chain-adapters';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import type { PolicyRecord } from '@ghostpay/policy-scheme';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
@@ -31,6 +32,7 @@ function WalletPicker(props: { readonly chainId: number; readonly onConnected: (
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [err, setErr] = useState<string | undefined>(undefined);
+  const walletDisclosure = useWalletDisclosure();
   return (
     <div>
       <button type="button" onClick={() => { setErr(undefined); void services.discoverWallets().then(setWallets, (e: unknown) => { setErr(userMessage(e)); }); }}>
@@ -40,7 +42,7 @@ function WalletPicker(props: { readonly chainId: number; readonly onConnected: (
       <ul className="plain">
         {wallets?.map((w) => (
           <li key={w.id}>
-            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
+            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId, undefined, undefined, { disclosure: walletDisclosure }).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
               {t('policy.wallet.connect', { name: w.name })}
             </button>
           </li>

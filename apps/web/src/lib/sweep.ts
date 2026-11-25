@@ -663,8 +663,9 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     try {
       hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
     } catch (error) {
+      // The alert names no hash (#286 item 5); the expected hash is shown with the recorded attempt.
       throw new DirectSweepOutcomeUnknownError(
-        { key: 'transaction.sweep.unknown', values: { hash: expectedHash } },
+        { key: 'transaction.sweep.unknown' },
         attempt,
         simulation,
         error instanceof ChainAdapterError ? error.code : 'RPC_HANDOFF_UNKNOWN',
@@ -672,7 +673,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     }
     if (typeof hash !== 'string' || hash.toLowerCase() !== expectedHash) {
       throw new DirectSweepOutcomeUnknownError(
-        { key: 'transaction.sweep.hashMismatch', values: { hash: expectedHash } },
+        { key: 'transaction.sweep.hashMismatch' },
         attempt,
         simulation,
         'RPC_HASH_MISMATCH',

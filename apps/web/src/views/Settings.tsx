@@ -9,6 +9,7 @@ import {
 import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
@@ -106,6 +107,9 @@ export function Settings(): ReactNode {
       <Notice kind="warn" title={t('settings.outside.title')}>
         {t('settings.outside.body')}
       </Notice>
+      {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
+      <MetadataRetentionControls manual={false} />
+      <MetadataRetentionControls scope="proof" manual={false} />
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
@@ -418,8 +422,10 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
       const next = { ...cfg, endpoints, indexerUrls };
-      setCfg(next);
-      const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      const savedPrivacy = saveScanPrivacy(browserStorage(), next);
+      // A successful save replaces settings that could not be read: show what is saved now, without the lock.
+      setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
+      const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
