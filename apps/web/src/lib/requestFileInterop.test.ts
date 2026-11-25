@@ -83,5 +83,6 @@ describe('F03 real file, URL and multipart QR interoperability', () => {
     expect(JSON.parse(file)).toEqual({ format: 'ghostpay-payment-request', version: 1, fragment: created.fragment });
     expect(file).not.toContain(BASE_URL);
     expect(file).not.toContain(PASSPHRASE);
-  });
+    // The passphrase mode derives scrypt keys four times (build plus three parses): ~45 s on a hosted runner, so allow headroom.
+  }, 180_000);
 });

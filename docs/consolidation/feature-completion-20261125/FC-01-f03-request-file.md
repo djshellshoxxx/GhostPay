@@ -68,6 +68,14 @@ See the PR description for the final table. Heavy commands ran through the machi
 - `apps/web` lint: pass. Typecheck: first run segfaulted (memory pressure, exit 139). After raising the heap, one
   genuine error in my new test (`notifyAppLock()` needs a reason). It was fixed in `fd5ba475`; rerun result is in the PR.
 
+## Hosted CI timeout (ts-test web, run on aae8d592)
+
+`src/lib/requestFileInterop.test.ts` "preserves the original passphrase invoice through an independent QR image decoder"
+timed out at the default 60 s on a congested runner (3345 of 3346 tests passed). An earlier hosted run passed it in
+45.1 s, with the plain and bearer variants near 2 s, so the scrypt path had about 25% margin. The `it.each` now carries an
+explicit 180_000 ms timeout, matching the repository's convention for scrypt-heavy tests (BackupPanel, TagArchive,
+keystore). No assertion changed. Not run locally after the change.
+
 ## Known limitations (N3, N5, N7 and others)
 
 - N3, N5 and N7 were noted by the independent review and are not fixed here.
