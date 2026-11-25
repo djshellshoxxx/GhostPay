@@ -358,6 +358,13 @@ low/info, and remain filler work.
   auto-lock, wallet import). Adopted reviewer's safer design: release marks only on lock/wallet change (drop
   release-on-scan; L1 paged-resume early release). L2 allow identical rebroadcast of the same signed txid; L3 observable
   tests; nits: sign from `scanRef.current.found`, keep `===` tip check, no 0-height marks. Sent to worker fc03.
+- 2026-11-25T12:30Z — owner: cooperate with the other workers to merge this work and push safely without overwriting
+  anyone. Checked: every campaign branch (`claude/fc*`, `claude/feature-completion-20261125`, W4's
+  `claude/w4-*`) is identical to its `origin` ref (nothing local-only); `worktree-agent-*` refs are base placeholders.
+  Merge-queue status sent to every reachable GhostPay session (`ghostpay-backup-60`, `ghostpay-42`, `newghostpay-ae`;
+  `ghostpay-58` and `ghostpay-15` no longer reachable — the lock branch history records every acquire/release for
+  them): gen 26 held for #664 → then #647 (ghostpay-15) → others on request. Merges only via the lock with non-force
+  pushes; no branch the coordinator does not own is touched.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
