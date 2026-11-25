@@ -146,6 +146,19 @@ describe('an approval that goes stale around the journal never reaches the walle
   });
 });
 
+describe('a request that cannot be journaled is never shown for approval', () => {
+  it('refuses an unreadable journal before calling the gate or the wallet', async () => {
+    const provider = new MockWallet();
+    const gate = vi.fn<WalletDisclosureGate>(() => Promise.resolve({ assertCurrent: () => undefined }));
+    const session: WalletSession = { ...await connectWallet(info(provider), 84532), disclosure: gate };
+    const storage: AttemptStorage = { getItem: () => '{not json', setItem: () => undefined };
+    provider.calls.length = 0;
+    await expect(sendViaWallet(session, tx, undefined, { kind: 'transaction', storage })).rejects.toThrow(/journal/i);
+    expect(gate).not.toHaveBeenCalled();
+    expect(provider.calls).toEqual([]);
+  });
+});
+
 describe('approval lifetime and controller edge cases (review findings 4 and 9)', () => {
   it('times an approval from the decision, not from when the review opened', async () => {
     let wall = 1_000_000;

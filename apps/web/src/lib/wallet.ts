@@ -1,7 +1,7 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import type { Abi } from 'viem';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { attemptTxDigest, beginAttempt, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
+import { attemptTxDigest, beginAttempt, readAttempts, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, requireApproval, walletRequestParams, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
@@ -512,6 +512,9 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   const authority = walletAuthority(s, assertCurrent);
   try {
     authority.assert();
+    // Fail fast: a request whose journal cannot be read is refused before it is shown for approval. The authoritative
+    // read still happens under the journal lock below.
+    if (disclose !== undefined && (attemptOptions?.storage !== undefined || browserAttemptStorage() !== undefined)) readAttempts(attemptOptions?.storage);
     // The approval is checked again immediately before the provider call, never after it returns a hash. A gate that
     // answers without a usable approval cancels.
     const approval = disclose === undefined || disclosed === undefined ? undefined : requireApproval(await disclose(disclosed.disclosure, authority.signal));

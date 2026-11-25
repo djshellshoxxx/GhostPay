@@ -283,7 +283,8 @@ describe('wallet privacy disclosure before authority leaves the application', ()
     const operation = sendViaWallet(session, tx, undefined, { kind: 'transaction', storage });
     const rejected = expect(operation).rejects.toThrow(/cancelled/);
     controller.revoke(); await rejected;
-    expect(storage.getItem).not.toHaveBeenCalled(); expect(storage.setItem).not.toHaveBeenCalled();
+    // A readability check may read the journal before the review (fail fast), but a cancelled review never writes it.
+    expect(storage.setItem).not.toHaveBeenCalled();
     expect(provider.calls).toEqual([]);
   });
 
