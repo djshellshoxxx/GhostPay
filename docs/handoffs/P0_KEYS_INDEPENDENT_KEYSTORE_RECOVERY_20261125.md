@@ -134,14 +134,38 @@ teardown. `WalletAttempts.tsx:104` called `setError` once jsdom's `window` was g
 `WalletAttempts.status.test.tsx`. This PR touches no web source, the same job passed on `2bb16151`, and open PR #595
 ("Finish wallet-attempt status fixture lifetime qualification") owns that test file. It was left for #595.
 
+## Merge request (owner asked to back up and merge, 2026-11-25 ~10:30Z)
+
+Backups (verified): GitHub branches `backup/p0-keys-independent-recovery-021e4f25` and
+`backup/p0-keys-independent-recovery-da26b87e`, and git bundles (thin, on top of main) in
+`C:\Users\new\Desktop\claudework\backups\p0-keys-independent-recovery-<sha8>.bundle`.
+
+Main `aaa71a11` (#635 merged, plus the owner stop-work directive in AGENTS.md) was merged into the branch at `da26b87e`.
+The directive keeps "encrypted backups and independent recovery" as shared core, and this PR touches none of the stopped
+features. At `da26b87e`, after rebuilding `ux-vault`: recovery suites 47 tests, 45 pass, 0 fail, 2 skipped (anvil);
+web typecheck and ESLint on the spec exit 0; the new browser spec passes in Chrome (5.1 min).
+
+Integration lock `automation/ghostpay-integration-lock` generation 25 is **held** by `claude-ghostpay-backup-60` for
+#657 and #660 (expires 13:28Z). This session does not take it over. The agreed order once generation 25 is released:
+whichever of feature-completion-06 (batch #664) and this PR has green exact-head CI goes first; if both are green,
+feature-completion-06 goes first. Whoever releases sends the other one line with the release commit and the new main
+SHA. To merge: re-verify the exact head's CI; acquire the next generation with a non-force push of
+`integration-lock.json` (`status: held`, own owner and token, `base_sha` = current main); mark the PR ready; merge with
+`gh pr merge 647 --merge`; then release (`status: released`, `released_at`) and notify the waiting sessions.
+
+backup-60's read-only review of `da26b87e` found no defects. Its note on spec §5 (spending ≠ viewing) was applied.
+backup-60 will switch #641's own vector tests (`packages/ux-vault/src/keystore-portable.vectors*`) to read
+`test-vectors/seller-keystore-v1.json` after this merges; that change belongs to them.
+
 ## Remaining and blockers
 
-- Independent human review before marking the PR ready and merging. The read-only review above was AI-assisted.
-  Merging stays with the owner and the repository's gates; nothing here is merged.
-- If main moves, rebase and re-check that #641/#622 still leave `scripts/recovery/*` untouched.
-- Not in this work: Firefox/WebKit (no tooling on main), mobile engines (#588), in-app keystore verification and
-  restore (#641), archive, master and in-app Spec 18 recovery (#622).
+- Merge waits for the integration lock (above). The owner-scheduled W2 prompt (04:09 local) routes merges through W1
+  once `%USERPROFILE%\GhostPay-coordination\TEAM.md` exists; it did not exist at 10:50Z.
+- Owner-requested pause: 05:00–05:34 local (13:00–13:34Z). No heavy work in that window.
+- Not in this work: Firefox/WebKit (no tooling on main), mobile engines (#588), archive, master and in-app Spec 18
+  recovery (#622).
 
 ## Next action
 
-Owner review of draft PR #647. No further work is planned in this scope unless review asks for it.
+When generation 25 is released and this head's CI is green, follow the agreed lock order, then merge as above, or hand
+#647 to W1 if TEAM.md assigns merging there.

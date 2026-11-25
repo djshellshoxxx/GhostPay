@@ -72,7 +72,8 @@ verification fails. A wrong passphrase and a modified file produce the same erro
 A reader accepts the keys only when all of these hold:
 
 - each key is in range (section 3);
-- the spending and viewing public keys form exactly `meta.metaAddress`;
+- the spending and viewing public keys form exactly `meta.metaAddress`, so the two keys differ (section 2 already
+  requires two distinct points there; GhostPay's codec also checks it directly);
 - the invoice-signing public key equals `meta.signer`;
 - the invoice-signing key differs from both the spending key and the viewing key.
 
