@@ -14,7 +14,7 @@ The app's current Sweep page shows a generic linkability notice; the sharper pay
 ## Steps
 
 1. In **Scan and receive**, choose a match and go to **Sweep**. Load your keys if the app asks.
-2. Confirm the chain, one-time address, asset and on-chain balance. If the balance is unknown, you need an RPC for that chain (and RPC reads of the address tell your RPC provider you care about it; see [Privacy limits](privacy-limits.md)).
+2. Confirm the chain, one-time address, asset and on-chain balance. The balance is read only when you press **Read balance from the Settings RPC**; until then it shows "not read yet". Pressing it needs an RPC for that chain, and the read tells your RPC provider you care about that address (see [Privacy limits](privacy-limits.md)). If you change the destination, balance, provider, chain, payment or fee mode while signing, nothing is sent and you review and sign again.
 3. Enter your **destination**. Use a fresh address you control.
 4. Choose how the network fee is paid:
    - **Through the relayer:** needs a relayer URL in Settings and a token that supports ERC-2612 `permit` (for example USDC). The relayer fee is deducted from the swept amount. You get a quote showing the fee and what you receive, then sign.

@@ -74,6 +74,23 @@ const settle = async (): Promise<void> => { await act(async () => { await new Pr
 const clickRead = (): void => { fireEvent.click(screen.getByRole('button', { name: READ_BALANCE })); };
 
 describe('Sweep balance read and scan privacy', () => {
+  it('shows "not read yet" before any click, with an RPC configured', async () => {
+    const m = mount();
+    await settle();
+    expect(screen.getByText('not read yet (press the button below)')).toBeTruthy();
+    expect(screen.queryByText('unknown (an RPC for this chain is required)')).toBeNull();
+    expect(m.calls).toEqual([]);
+  });
+
+  it('tells the user when no RPC is available for the chain after a click, without any request', async () => {
+    const m = mount({ unavailable: true });
+    clickRead();
+    await settle();
+    expect(screen.getByText(/No RPC is configured for this chain in Settings/)).toBeTruthy();
+    expect(screen.getByText('unknown (an RPC for this chain is required)')).toBeTruthy();
+    expect(m.calls).toEqual([]);
+  });
+
   it('behind a required local proxy, reads nothing from the Settings RPC until the user asks, then exactly the balance', async () => {
     store(PRIVATE);
     const m = mount();
@@ -128,11 +145,11 @@ describe('Sweep balance read and scan privacy', () => {
     await screen.findByText(/^1 /);
     m.update({ sweepTarget: { ...original, match: { ...original.match, stealthAddress: SECOND } } });
     await settle();
-    expect(screen.getByText('unknown (an RPC for this chain is required)')).toBeTruthy();
+    expect(screen.getByText('not read yet (press the button below)')).toBeTruthy();
     expect(m.calls).toHaveLength(1);
     m.update({ sweepTarget: original });
     await settle();
-    expect(screen.getByText('unknown (an RPC for this chain is required)')).toBeTruthy();
+    expect(screen.getByText('not read yet (press the button below)')).toBeTruthy();
     expect(m.calls).toHaveLength(1);
     clickRead();
     await waitFor(() => { expect(m.calls).toHaveLength(2); });

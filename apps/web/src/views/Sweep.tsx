@@ -43,6 +43,10 @@ export function Sweep(): ReactNode {
   // Every balance lookup names this one-time address to the Settings RPC and needs its own click.
   const [privatePathRequired] = useState(() => privatePathForbidsDirect(loadScanPrivacy(browserStorage())));
   const balanceOperation = useRef(0);
+  // `asked`: this review context has had a read request (so an empty balance means "unknown", not "not read yet");
+  // `noRpc`: the last request found no RPC for the chain and sent nothing.
+  const [balanceAsked, setBalanceAsked] = useState(false);
+  const [balanceNoRpc, setBalanceNoRpc] = useState(false);
   const quoteOperation = useRef(0);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
   const [busy, setBusy] = useState(false);
@@ -87,6 +91,8 @@ export function Sweep(): ReactNode {
     setVaultPass('');
     balanceOperation.current += 1;
     setBalance(undefined);
+    setBalanceAsked(false);
+    setBalanceNoRpc(false);
     setQuote(undefined);
   }), []);
 
@@ -108,6 +114,8 @@ export function Sweep(): ReactNode {
 
   useEffect(() => {
     setBalance(undefined);
+    setBalanceAsked(false);
+    setBalanceNoRpc(false);
     setQuote(undefined);
     return () => { balanceOperation.current += 1; };
   }, [balanceScope]);
@@ -148,13 +156,16 @@ export function Sweep(): ReactNode {
       try { unchangedSession(); return true; } catch { return false; }
     };
     setBalance(undefined);
+    setBalanceAsked(true);
+    setBalanceNoRpc(false);
     setQuote(undefined);
     setError(undefined);
     void (async () => {
       try {
         const rpc = await app.getRpc(chainId);
         // RPC creation may be asynchronous. A changed selection must not disclose even the old address afterward.
-        if (rpc === undefined || !current()) return;
+        if (!current()) return;
+        if (rpc === undefined) { setBalanceNoRpc(true); return; }
         const next = await readBalance(rpc, sel.match.stealthAddress, tokenAddr);
         if (current()) setBalance(next);
       } catch (e) {
@@ -234,7 +245,7 @@ export function Sweep(): ReactNode {
       const assertReviewCurrent = (): void => {
         assertCurrent();
         if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
-          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+          throw new UserFacingError({ key: 'sweep.reviewChanged' });
         }
       };
       assertReviewCurrent();
@@ -295,7 +306,7 @@ export function Sweep(): ReactNode {
       const assertReviewCurrent = (): void => {
         assertCurrent();
         if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
-          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+          throw new UserFacingError({ key: 'sweep.reviewChanged' });
         }
       };
       assertReviewCurrent();
@@ -396,13 +407,14 @@ export function Sweep(): ReactNode {
         <dt>{t('sweep.asset')}</dt>
         <dd>{symbol} {tokenAddr === 'native' ? '' : <Mono>{tokenAddr}</Mono>}</dd>
         <dt>{t('sweep.balanceOnChain')}</dt>
-        <dd>{balance === undefined ? t('sweep.balanceUnknown') : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
+        <dd>{balance === undefined ? t(balanceAsked ? 'sweep.balanceUnknown' : 'sweep.balanceNotRead') : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
       </dl>
       <Notice kind="warn">
         {t(privatePathRequired ? 'sweep.balanceRead.warning' : 'sweep.balanceRead.note')}
         <br />
-        <button type="button" className="btn" onClick={onReadBalance}>{t('sweep.balanceRead.button')}</button>
+        <button type="button" className="btn" disabled={busy} onClick={onReadBalance}>{t('sweep.balanceRead.button')}</button>
       </Notice>
+      {balanceNoRpc && <Notice kind="warn">{t('sweep.balanceRead.noRpc')}</Notice>}
       <ManifestBanner manifest={manifest} />
       {manifest !== undefined && loaded === undefined && <Notice kind="warn">{t('sweep.noManifest')}</Notice>}
       {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">{t('sweep.tokenNotAllowed')}</Notice>}
@@ -518,4 +530,4 @@ export function Sweep(): ReactNode {
   );
 }
 
-// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive

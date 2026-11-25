@@ -126,10 +126,13 @@ describe('Sweep quote lifecycle', () => {
     const m = mount();
     await ready(m);
     await requestQuote(m);
+    // Read balance is disabled while the quote request is in flight, so a refresh cannot race it.
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: READ }).disabled).toBe(true);
+    await answer(m);
+    expect(screen.getByRole('button', { name: SIGN })).toBeTruthy();
     m.setAmount(10_000_000n);
     fireEvent.click(screen.getByRole('button', { name: READ }));
     await screen.findByText('10 USDC');
-    await answer(m);
     expect(screen.queryByRole('button', { name: SIGN })).toBeNull();
     expect(screen.queryByText(/You receive:/)).toBeNull();
     expect(m.requests).toHaveLength(1);
@@ -213,8 +216,10 @@ type ReviewChange = 'recipient' | 'balance' | 'provider' | 'mode' | 'selection';
 async function changeReview(m: ReturnType<typeof mount>, change: ReviewChange, currentMode: 'relayer' | 'direct' = 'relayer'): Promise<void> {
   if (change === 'recipient') changeDestination(OTHER_DESTINATION);
   if (change === 'balance') {
-    m.setAmount(10_000_000n);
-    fireEvent.click(screen.getByRole('button', { name: READ }));
+    // Read balance is disabled while signing is busy, so a user cannot refresh mid-sign; the balance can still be
+    // invalidated underneath the operation (here by an idle app lock), and the review must then be refused.
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: READ }).disabled).toBe(true);
+    act(() => { notifyAppLock('idle'); });
   }
   if (change === 'provider') m.update({ settings: { ...m.app().settings, rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } } });
   if (change === 'mode') fireEvent.click(screen.getByLabelText(currentMode === 'relayer' ? /^Directly/ : /^Through the relayer/));
@@ -410,5 +415,73 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: HASH, status: outcome });
     expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
     if (outcome === 'unknown-after-handoff') expect(screen.getByText(/could not dry.run/i)).toBeTruthy();
+  });
+});
+
+const REVIEW_CHANGED = 'The review changed; nothing was sent. Review and sign again.';
+
+describe('Sweep review-change messaging and read availability', () => {
+  it.each(['relayed', 'direct'] as const)('says the review changed (not a vault cancellation) when the recipient is edited during %s signing', async (flow) => {
+    const m = mount();
+    if (flow === 'relayed') await reviewedQuote(m); else await reviewedDirect(m, false);
+    const gate = deferred<void>();
+    m.holdRpc(gate.promise);
+    const priorCalls = m.rpcCalls();
+    fireEvent.click(screen.getByRole('button', { name: flow === 'relayed' ? SIGN : DIRECT }));
+    await waitFor(() => { expect(m.rpcCalls()).toBe(priorCalls + 1); });
+    changeDestination(OTHER_DESTINATION);
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(screen.getByText(REVIEW_CHANGED)).toBeTruthy();
+    expect(screen.queryByText('Vault check cancelled.')).toBeNull();
+  });
+
+  it('disables Read balance while a signing operation is busy', async () => {
+    const m = mount();
+    await reviewedQuote(m);
+    const gate = deferred<void>();
+    m.holdRpc(gate.promise);
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: READ }).disabled).toBe(true); });
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+  });
+
+  it('shows only the latest balance read when an earlier read resolves last', async () => {
+    const m = mount();
+    const first = deferred<void>();
+    m.holdRpc(first.promise);
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+    await waitFor(() => { expect(m.rpcCalls()).toBe(1); });
+    m.holdRpc(Promise.resolve());
+    m.setAmount(10_000_000n);
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+    await screen.findByText('10 USDC');
+    m.setAmount(1_000_000n);
+    await act(async () => { first.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(screen.getByText('10 USDC')).toBeTruthy();
+    expect(screen.queryByText('1 USDC')).toBeNull();
+  });
+
+  it.each(['balance refresh', 'app lock'] as const)('retains relayed handoff evidence after a %s following handoff', async (event) => {
+    const m = mount();
+    await reviewedQuote(m);
+    vi.spyOn(sweepLib, 'relayedSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(ORDER);
+      return Promise.resolve(HASH);
+    });
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('submitted'); });
+    await settle();
+    if (event === 'balance refresh') {
+      m.setAmount(10_000_000n);
+      fireEvent.click(screen.getByRole('button', { name: READ }));
+      await screen.findByText('10 USDC');
+    } else {
+      act(() => { notifyAppLock('idle'); });
+      await settle();
+    }
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, order: ORDER, status: 'submitted', expectedHash: HASH });
   });
 });
