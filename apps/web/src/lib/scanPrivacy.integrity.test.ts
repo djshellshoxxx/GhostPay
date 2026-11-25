@@ -108,7 +108,7 @@ describe('saved scan privacy intent', () => {
       fc.jsonValue({ maxDepth: 2 }),
     );
     fc.assert(fc.property(fc.dictionary(fc.constantFrom(...known), plausible, { maxKeys: 6 }), (value) => {
-      const v = value as Record<string, unknown>;
+      const v: Record<string, unknown> = value;
       const s = loadScanPrivacy(stored(v));
       // A saved requirement is kept, readable or not.
       if (v['requireProxy'] === true) expect(s.requireProxy).toBe(true);
@@ -163,7 +163,7 @@ describe('per-request scan route checks', () => {
     const fetchImpl = (_url: string, init: RequestInit): Promise<Response> => {
       n += 1;
       if (onFetch?.(n) === 'fail') return Promise.reject(new TypeError('network down'));
-      const body = JSON.parse(String(init.body)) as { id: number; method: string };
+      const body = JSON.parse(typeof init.body === 'string' ? init.body : '{}') as { id: number; method: string };
       const result = body.method === 'eth_chainId' ? '0x14a34' : body.method === 'eth_blockNumber' ? '0x10' : null;
       return Promise.resolve(new Response(JSON.stringify({ jsonrpc: '2.0', id: body.id, result }), { status: 200, headers: { 'content-type': 'application/json' } }));
     };
@@ -178,7 +178,7 @@ describe('per-request scan route checks', () => {
   it('on a scan endpoint, nothing more is sent once the route changes', async () => {
     const r = route();
     const net = endpoint();
-    const clients = await openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: async () => undefined, fetchImpl: net.fetchImpl, sleep: async () => undefined, assertCurrent: r.assert });
+    const clients = await openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(undefined), fetchImpl: net.fetchImpl, sleep: () => Promise.resolve(), assertCurrent: r.assert });
     expect(clients).toBeDefined();
     await expect(clients!.base.blockNumber()).resolves.toBe(16n);
     const sent = net.sent();
@@ -192,7 +192,7 @@ describe('per-request scan route checks', () => {
     const r = route();
     let failAt = 0;
     const net = endpoint((n) => { if (n === failAt) { r.change(); return 'fail'; } });
-    const clients = await openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: async () => undefined, fetchImpl: net.fetchImpl, sleep: async () => undefined, assertCurrent: r.assert });
+    const clients = await openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(undefined), fetchImpl: net.fetchImpl, sleep: () => Promise.resolve(), assertCurrent: r.assert });
     failAt = net.sent() + 1;
     await expect(clients!.base.blockNumber()).rejects.toSatisfy(isScanRouteChanged);
     // The failed attempt was the last request: no retry and no chain re-check left the page.
@@ -202,7 +202,7 @@ describe('per-request scan route checks', () => {
   it('a change during the initial chain check reports the change, not an unusable endpoint', async () => {
     const r = route();
     const net = endpoint((n) => { if (n === 1) r.change(); });
-    await expect(openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: async () => undefined, fetchImpl: net.fetchImpl, sleep: async () => undefined, assertCurrent: r.assert }))
+    await expect(openScanClients({ plan: endpointPlan(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(undefined), fetchImpl: net.fetchImpl, sleep: () => Promise.resolve(), assertCurrent: r.assert }))
       .rejects.toSatisfy(isScanRouteChanged);
   });
 
@@ -211,7 +211,7 @@ describe('per-request scan route checks', () => {
     const cached = mockRpc(84532, (m) => (m === 'eth_blockNumber' ? '0x10' : null));
     const plan = planScan(DEFAULT_SCAN_PRIVACY, chain);
     if (plan.kind !== 'ready') throw new Error('plan');
-    const clients = await openScanClients({ plan, chain, announcer: FAKE_ANNOUNCER, appRpc: async () => cached, fetchImpl: () => Promise.reject(new Error('no fetch')), sleep: async () => undefined, assertCurrent: r.assert });
+    const clients = await openScanClients({ plan, chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(cached), fetchImpl: () => Promise.reject(new Error('no fetch')), sleep: () => Promise.resolve(), assertCurrent: r.assert });
     await expect(clients!.base.blockNumber()).resolves.toBe(16n);
     r.change();
     await expect(clients!.base.blockNumber()).rejects.toSatisfy(isScanRouteChanged);
@@ -224,7 +224,7 @@ describe('per-request scan route checks', () => {
     const cached = mockRpc(84532, (m) => (m === 'eth_blockNumber' ? '0x10' : null));
     const plan = planScan(DEFAULT_SCAN_PRIVACY, chain);
     if (plan.kind !== 'ready') throw new Error('plan');
-    const clients = await openScanClients({ plan, chain, announcer: FAKE_ANNOUNCER, appRpc: async () => cached, fetchImpl: () => Promise.reject(new Error('no fetch')), sleep: async () => undefined });
+    const clients = await openScanClients({ plan, chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(cached), fetchImpl: () => Promise.reject(new Error('no fetch')), sleep: () => Promise.resolve() });
     expect(clients!.base).toBe(cached);
   });
 });
