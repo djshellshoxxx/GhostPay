@@ -1,0 +1,120 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T02:02:39Z (run start; subsequent live reads)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "8cbb4adc2524e219ad9f033eec1e5d6d0949ae80:docs/consolidation/autonomous-20261121/semantic-delta-20261125T0103Z.json",
+  "summary": {
+    "branches": 713,
+    "openPrs": 247,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      13
+    ],
+    "prPages": [
+      100,
+      100,
+      47
+    ],
+    "independentRefMatches": 713,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 197,
+    "addedProvisionalDispositions": 0,
+    "classificationCounts": "carried forward from prior delta; new open BUG-only PR remains unresolved"
+  },
+  "newlyDiscovered": [
+    {
+      "pr": 634,
+      "branch": "automation/20261125T0120Z/bug/ux-links-handle-confusable-case",
+      "sha": "898106124f7fc2ae90916a8d62348d0d4dd5e120",
+      "checks": {
+        "success": 39,
+        "skipped": 3
+      },
+      "ownership": "existing BUG-only worker; no modification or merge"
+    }
+  ],
+  "unresolvedReview": [
+    {
+      "pr": 231,
+      "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "disposition": "unique-but-incomplete; already preserved in broader #238, not in main; coordinate existing privacy ownership",
+      "mainSweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "donorSweep": "1c8fae32d5060a66566fe48dd695442bdd7bb13d",
+      "successor": {
+        "pr": 238,
+        "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "sweep": "8afadf31504c5ffde2bbf2dcbf67ebf6e3803ab2",
+        "checks": {
+          "success": 32,
+          "failure": 8,
+          "skipped": 6
+        }
+      },
+      "treeComparison": "All 14 PR paths compared against three untruncated recursive trees; zero exact donor-path matches in main; three exact matches in #238 (sweep.spec.ts, Sweep.privacy.test.tsx, handoff). Runtime guard exists in #238 but not main; do not restore older whole files.",
+      "mainBehavior": "Sweep.tsx lines 95-113 permit automatic address-bearing read in default configuration and context-dependent reruns after consent. Main privacy test explicitly expects auto-read for default and optional proxy. #231 replaces effect with per-click operation, scope and session guards; #238 retains it. Seven original consent tests are byte-identical in #238 (70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4).",
+      "hostedFailure": {
+        "run": 44298174852,
+        "job": 134849370583,
+        "results": "2761 passed, 2 failed, 1 skipped",
+        "rootCause": "scanPrivacy.i18n.test.ts lines 31 and 90 compares old conditional sweep disclosure in describeScanDisclosure to new consent-only rendered catalog. #231 and main share scanPrivacy.ts blob 31dd6847ed088206afb7080873a2520c2201c393; #238 blob c3722a0c58730f5cae7cdba506b2571a5959341f already changes sweepHow to consent-only. Preserve full parity assertions, port the narrow semantic correction with the click guard, and requalify on actual main; do not change disclosure alone while automatic reads remain. #231 aggregate typescript and web job failed; #238 also has 8 failed checks."
+      },
+      "next": "existing owner reconcile consent implementation, scan disclosure and seven privacy regressions on actual main; check asynchronous RPC creation/lock and session invalidation, preserve current signing and recovery behavior. Fresh web/browser/hosted checks plus review required."
+    }
+  ],
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0,
+      "mergeable": true
+    },
+    "p615": {
+      "merged": true,
+      "mergeCommit": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+      "compareToMain": {
+        "status": "ahead",
+        "ahead": 187,
+        "behind": 0
+      }
+    },
+    "p616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "mergeable": false
+    },
+    "p617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "mergeable": false
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "main": {
+      "checkRuns": 45,
+      "workflowRuns": [
+        45485137780,
+        45472765175,
+        45423093766,
+        45415639617,
+        45415639485,
+        45415637708
+      ],
+      "codeScanningAlertsEndpoint": "connector rejects URL; main Analyze jobs succeeded but no separate alert result. #634 CodeQL success on current main base does not clear existing alerts.",
+      "branchProtection": "branch metadata advertises no contexts; explicit protection read 403; rules/branches endpoint rejected"
+    }
+  },
+  "testEvidence": {
+    "newTestsExecuted": 0,
+    "qualification": "historical job log read, source/tree analysis only; no fresh runtime test or claim"
+  },
+  "remaining": "Carry all prior obligations including #226/#384/#217/BTC and CodeQL holds. Preserve #614-first and all existing ownership. No main merge, deployment or new automation."
+}
