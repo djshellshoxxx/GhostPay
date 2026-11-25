@@ -220,6 +220,14 @@ low/info, and remain filler work.
   the shared queue, round-2 small follow-ups are prepared as local commits and held unpushed until the four ready PRs
   merge: fc01 → FC-05a-T (stacked on #656) and FC-03-T (stacked on #648, neutral `CHAIN_DISABLED` text);
   fc02 → FC-04 (recover #271's still-missing regression tests; RCPT-L1/L2 in `packages/ux-receipts`).
+- 2026-11-25T09:28Z — integration lock **held** by `claude-local-p1-late-reconciliation` (generation 24, lock head
+  `0a0f8f8a`, acquired 08:37Z, heartbeat 09:19Z, expires 10:04Z), presumably for P1-LATE #635 (head `205f8fd7`).
+  The coordinator will not take over an active, heartbeating lock. `git merge-tree` of #635's head with each FC head
+  (`a13ab24d`, `aae8d592`, `790de53e`, `8e7b1915`) conflicts only in the additive `docs/ai/ACTIVE_WORK.md`; when #635
+  lands, each FC branch re-merges main (union) and requalifies on hosted CI before its own merge. Integration script
+  (`integrate.sh` in the coordinator scratchpad) gates on exact head, ≥30 checks with none pending/failed, and
+  main ancestry or docs-only non-overlapping drift, then acquires the lock, merges with `--match-head-commit`,
+  verifies the merge commit's parents and releases the lock.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
