@@ -352,6 +352,12 @@ low/info, and remain filler work.
   typecheck/lint 0; tests 549/558 (9 environment: CRLF adapter-types ×7, bip32 vectors parse on this checkout,
   headerchain passed on rerun); web btc 267 passed/1 load flake (passed on rerun); coverage not captured locally.
   Independent fund-safety review requested.
+- 2026-11-25T12:25Z — FC-05b #669 review **CHANGES-REQUIRED** limited to the pending-spend guard (current-scan guard
+  and scanner conflict check APPROVED; no fund-loss finding; PR strictly safer than its base). Required: M1 reorg
+  must not clear marks (the swept tx stays valid); M2 UI text must disclose memory-only scope (reload, leaving the view,
+  auto-lock, wallet import). Adopted reviewer's safer design: release marks only on lock/wallet change (drop
+  release-on-scan; L1 paged-resume early release). L2 allow identical rebroadcast of the same signed txid; L3 observable
+  tests; nits: sign from `scanRef.current.found`, keep `===` tip check, no 0-height marks. Sent to worker fc03.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
