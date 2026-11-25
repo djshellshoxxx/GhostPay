@@ -10,7 +10,7 @@ describe('retention preference under generated input (#287 item 4)', () => {
     const stored = fc.oneof(
       { weight: 2, arbitrary: fc.string({ unit: 'binary', maxLength: 200 }) },
       { weight: 2, arbitrary: fc.anything().map((value) => { try { return JSON.stringify(value) ?? 'null'; } catch { return 'null'; } }) },
-      { weight: 3, arbitrary: fc.record({ delay: fc.oneof(fc.constantFrom<unknown>(...DELAYS, '300000', 300_000.5, -300_000, 1e309, null), fc.integer()) }, { requiredKeys: [] })
+      { weight: 3, arbitrary: fc.record({ delay: fc.oneof(fc.constantFrom<unknown>(...DELAYS, '300000', 300_000.5, -300_000, Number.POSITIVE_INFINITY, null), fc.integer()) }, { requiredKeys: [] })
         .chain((record) => fc.constantFrom(JSON.stringify(record), ` ${JSON.stringify(record)}`, JSON.stringify({ ...record, extra: 1 }), JSON.stringify([record]))) },
       { weight: 1, arbitrary: fc.constantFrom('{"delay":300000,"delay":0}', '{"__proto__":{"delay":300000}}', '{"delay":3600000}'.padEnd(129, ' ')) },
     );
