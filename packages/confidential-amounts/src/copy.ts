@@ -45,8 +45,13 @@ export const CT_COPY: Readonly<Record<string, string>> = {
   CT_NP_SUPPLY_LEAK: 'The wrapped total supply is public; with few users, changes can reveal wrap amounts.',
 };
 
-/** Words the UI must not use about these options (CT-UX-3 and repo wording rule). */
-const FORBIDDEN = /\b(anonymous(ly)?|anonymity|untraceable|unlinkable|private|privately|mix(er|ers|ing|ed)?|tumbl\w*)\b/i;
+/**
+ * Words the UI must not use about these options (CT-UX-3 and the repo wording rule in SECURITY.md /
+ * `docs/user/privacy-limits.md`): no anonymity claims, and no audited / deployed / mainnet-ready /
+ * "verified seller" claims (nothing is audited or deployed; testnet only).
+ */
+const FORBIDDEN =
+  /\b(anonymous(ly)?|anonymity|untraceable|unlinkable|private|privately|mix(er|ers|ing|ed)?|tumbl\w*|audited|deployed|mainnet[- ]ready|verified\s+seller)\b/i;
 
 /**
  * Returns the first forbidden wording found in `text`, or `null`.

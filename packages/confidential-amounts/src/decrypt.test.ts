@@ -82,7 +82,17 @@ describe('DecryptScheduler (T6)', () => {
       [STEALTH, OTHER].map((o) => s.enqueue({ owner: o, run: () => { owners.push(o); return Promise.resolve(); } })),
     );
     expect(owners).toEqual([STEALTH, OTHER]);
-    expect(() => s.enqueue({ owner: '0xnot-an-address', run: () => Promise.resolve() })).toThrow(/owner must be an address/);
+    await expect(s.enqueue({ owner: '0xnot-an-address', run: () => Promise.resolve() })).rejects.toThrow(/owner must be an address/);
+  });
+
+  it('B4: enqueue reports a bad owner as a rejected promise, never a synchronous throw', async () => {
+    const { s } = sched();
+    let p: Promise<unknown> | undefined;
+    expect(() => {
+      p = s.enqueue({ owner: '0xnot-an-address', run: () => Promise.resolve() });
+    }).not.toThrow();
+    await expect(p).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+    expect(s.pending).toBe(0);
   });
 
   it('propagates job failures and keeps draining', async () => {
@@ -91,6 +101,89 @@ describe('DecryptScheduler (T6)', () => {
     const b = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('ok') });
     await expect(a).rejects.toThrow('x');
     await expect(b).resolves.toBe('ok');
+  });
+
+  /** Settles `p` or reports `'unsettled'` after a few macrotask turns (the scheduler must never leave a job hanging). */
+  function settledWithin<T>(p: Promise<T>): Promise<{ ok: true; v: T } | { ok: false; e: unknown } | 'unsettled'> {
+    return Promise.race([
+      p.then((v) => ({ ok: true as const, v }), (e: unknown) => ({ ok: false as const, e })),
+      new Promise<'unsettled'>((r) => setTimeout(() => r('unsettled'), 50)),
+    ]);
+  }
+
+  it('B4: a throwing isolate() rejects only that job, and the queue keeps draining', async () => {
+    let calls = 0;
+    const { s } = sched({
+      isolate: (): Transport => {
+        calls++;
+        if (calls === 1) throw new Error('isolate boom');
+        return () => Promise.resolve('t');
+      },
+    });
+    const a = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('a') });
+    const b = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('b') });
+    const ra = await settledWithin(a);
+    expect(ra).not.toBe('unsettled');
+    expect(ra).toMatchObject({ ok: false });
+    expect(((ra as { e: Error }).e).message).toBe('isolate boom');
+    expect(await settledWithin(b)).toEqual({ ok: true, v: 'b' });
+  });
+
+  it('B4: a rejecting sleep or throwing random rejects that job instead of stalling the queue', async () => {
+    let n = 0;
+    const { s } = sched({ sleep: () => (++n === 1 ? Promise.reject(new Error('sleep boom')) : Promise.resolve()) });
+    const a = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('a') });
+    const b = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('b') });
+    expect(await settledWithin(a)).toMatchObject({ ok: false });
+    expect(await settledWithin(b)).toEqual({ ok: true, v: 'b' });
+
+    let r = 0;
+    const { s: s2 } = sched({
+      random: () => {
+        if (++r === 1) throw new Error('rng boom');
+        return 0.5;
+      },
+    });
+    const c = s2.enqueue({ owner: STEALTH, run: () => Promise.resolve('c') });
+    const d = s2.enqueue({ owner: STEALTH, run: () => Promise.resolve('d') });
+    expect(await settledWithin(c)).toMatchObject({ ok: false });
+    expect(await settledWithin(d)).toEqual({ ok: true, v: 'd' });
+  });
+
+  it('B4: cancelPending clears the pending default timer and the scheduler stays usable', async () => {
+    vi.useFakeTimers();
+    try {
+      const s = new DecryptScheduler({ minGapMs: 300_000, maxGapMs: 300_000 });
+      const p = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('never') });
+      const settled = expect(p).rejects.toMatchObject({ code: 'CANCELLED' });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(vi.getTimerCount()).toBe(1);
+      s.cancelPending();
+      expect(vi.getTimerCount()).toBe(0);
+      await settled;
+      expect(s.started).toBe(0);
+      const q = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('next') });
+      await vi.advanceTimersByTimeAsync(300_000);
+      await expect(q).resolves.toBe('next');
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('B4: cancelPending with nothing pending is a no-op; a sleep that rejects after cancel is ignored', async () => {
+    const { s: idle } = sched();
+    expect(() => idle.cancelPending()).not.toThrow();
+    let fail: (e: Error) => void = () => undefined;
+    const { s } = sched({ sleep: () => new Promise<void>((_r, rej) => { fail = rej; }) });
+    const a = s.enqueue({ owner: STEALTH, run: () => Promise.resolve('a') });
+    const done = expect(a).rejects.toMatchObject({ code: 'CANCELLED' });
+    s.cancelPending();
+    fail(new Error('late sleep failure'));
+    await done;
+    // the late rejection neither re-settles the job nor breaks the next one
+    const { s: s2 } = sched();
+    expect(await s2.enqueue({ owner: STEALTH, run: () => Promise.resolve('b') })).toBe('b');
   });
 
   it('bounds the queue', async () => {

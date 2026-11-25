@@ -90,6 +90,43 @@ try {
   assert.equal(r.sessionStorage, 0);
   assert.deepEqual(foreign, [], 'no request may leave the local origin');
   assert.deepEqual(problems, []);
+
+  // Phase 3: two real tabs (same origin, shared IndexedDB) race the same review; the IndexedDB CAS must admit one.
+  const tabB = await page.context().newPage();
+  tabB.on('pageerror', (e) => problems.push(`pageerror(B): ${e.message}`));
+  tabB.on('request', (q) => requests.push(q.url()));
+  await tabB.goto(`${origin}/`);
+  await tabB.waitForFunction(() => globalThis.p13Ready === true);
+  const ROUNDS = 25;
+  const raceIds = await page.evaluate((n) => globalThis.p13.raceSetup(n), ROUNDS);
+  const race = { rounds: ROUNDS, bothOk: 0, oneOk: 0, noneOk: 0, loserCodes: new Set() };
+  for (const id of raceIds) {
+    const [a, b] = await Promise.all([page.evaluate((x) => globalThis.p13.raceReview(x), id), tabB.evaluate((x) => globalThis.p13.raceReview(x), id)]);
+    const oks = [a, b].filter((x) => x === 'ok').length;
+    if (oks === 2) race.bothOk += 1;
+    else if (oks === 1) race.oneOk += 1;
+    else race.noneOk += 1;
+    for (const x of [a, b]) if (x !== 'ok') race.loserCodes.add(x);
+    const seenA = await page.evaluate((x) => globalThis.p13.raceState(x), id);
+    const seenB = await tabB.evaluate((x) => globalThis.p13.raceState(x), id);
+    assert.deepEqual(seenA, { state: 'reviewed', revision: 2 }, 'tab A must see exactly one committed review');
+    assert.deepEqual(seenB, seenA, 'both tabs must agree on the stored record');
+  }
+  // Phase 4: browser stress (IndexedDB + WebCrypto at volume).
+  const STRESS_N = Number(process.env.P13_BROWSER_STRESS ?? 300);
+  const stress = await page.evaluate((n) => globalThis.p13.stress(n), STRESS_N);
+  console.log(JSON.stringify({ race: { ...race, loserCodes: [...race.loserCodes] }, stress }, null, 2));
+  assert.equal(race.bothOk, 0, 'two tabs must never both commit the same revision');
+  assert.equal(race.noneOk, 0, 'one of the two tabs must win each round');
+  assert.equal(race.oneOk, ROUNDS);
+  assert.deepEqual([...race.loserCodes], ['P13_RECORD_CONFLICT']);
+  assert.equal(stress.listed, STRESS_N);
+  assert.equal(stress.exported, STRESS_N);
+  assert.equal(stress.inserted, STRESS_N);
+  assert.equal(stress.stalePlans, STRESS_N);
+  assert.ok(stress.prepareMs < 120_000 && stress.importMs < 120_000, 'stress budget exceeded');
+  assert.deepEqual(requests.filter((u) => !u.startsWith(`${origin}/`)), [], 'no request may leave the local origin');
+  assert.deepEqual(problems, []);
   console.log('P13 browser qualification: PASS');
 } finally {
   await browser?.close();

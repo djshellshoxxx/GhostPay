@@ -45,8 +45,10 @@ const ZERO_HASHES = { acl: null, coprocessor: null, kmsVerifier: null, inputVeri
 
 /**
  * Pinned CT-1 manifest. Protocol addresses were read from `@fhevm/solidity` 0.11.1 `ZamaConfig.sol`
- * and `@zama-fhe/sdk` 3.7.0 `chains` preset on 2026-10-21 (both agree). Code hashes are NOT pinned:
- * no RPC was reachable from the build sandbox [UNVERIFIED].
+ * and `@zama-fhe/sdk` 3.7.0 `chains` preset on 2026-10-21 (both agree); `manifest.test.ts` re-checks
+ * them against the currently pinned `@zama-fhe/sdk` 3.7.1. Code hashes are NOT pinned: no RPC was
+ * reachable from the build sandbox [UNVERIFIED]. No GhostPay router or token is pinned, so every
+ * CT-1 builder of `ZamaBackend` refuses with this manifest (fail closed).
  */
 export const CT1_MANIFEST: CtManifest = {
   backend: 'ct1-zama',
@@ -127,6 +129,48 @@ export function manifestForChain(chainId: number, manifest: CtManifest = CT1_MAN
   return entry;
 }
 
+/**
+ * Requires `address` to be the GhostPay router pinned for this chain.
+ * @param entry Manifest entry of the chain (see {@link manifestForChain}).
+ * @param address Parsed address the caller wants to use as router (or as the router operator).
+ * @param label Field name for the error message.
+ * @throws {CtError} `CHAIN_NOT_SUPPORTED` if the manifest pins no router (nothing deployed and reviewed: the
+ * shipped {@link CT1_MANIFEST}); `MANIFEST_MISMATCH` if `address` is not the pinned router.
+ * @security Fail closed: the router becomes an operator over the payer's whole confidential balance.
+ */
+export function assertManifestRouter(entry: CtChainManifest, address: Address, label = 'router'): void {
+  const router = entry.ghostpay.router;
+  if (router === null) throw new CtError('CHAIN_NOT_SUPPORTED', 'no GhostPay router is pinned for this chain');
+  if (router.toLowerCase() !== address.toLowerCase()) {
+    throw new CtError('MANIFEST_MISMATCH', `${label} is not the pinned GhostPay router`);
+  }
+}
+
+/**
+ * Requires `token` to be one of the confidential tokens pinned for this chain.
+ * @throws {CtError} `CHAIN_NOT_SUPPORTED` if the manifest pins no token; `MANIFEST_MISMATCH` if `token` is not pinned.
+ */
+export function assertManifestToken(entry: CtChainManifest, token: Address): void {
+  if (entry.ghostpay.tokens.length === 0) throw new CtError('CHAIN_NOT_SUPPORTED', 'no confidential token is pinned for this chain');
+  if (!entry.ghostpay.tokens.some((t) => t.toLowerCase() === token.toLowerCase())) {
+    throw new CtError('MANIFEST_MISMATCH', 'token is not a pinned confidential token');
+  }
+}
+
+/**
+ * Requires `contract` to be a pinned GhostPay contract (the router or a token), e.g. the contract an
+ * encrypted input is bound to.
+ * @throws {CtError} `CHAIN_NOT_SUPPORTED` if the manifest pins no GhostPay contract; `MANIFEST_MISMATCH` otherwise.
+ */
+export function assertManifestContract(entry: CtChainManifest, contract: Address): void {
+  const { router, tokens } = entry.ghostpay;
+  if (router === null && tokens.length === 0) throw new CtError('CHAIN_NOT_SUPPORTED', 'no GhostPay contract is pinned for this chain');
+  const c = contract.toLowerCase();
+  if (router?.toLowerCase() !== c && !tokens.some((t) => t.toLowerCase() === c)) {
+    throw new CtError('MANIFEST_MISMATCH', 'contract is not a pinned GhostPay contract');
+  }
+}
+
 /** Reads runtime bytecode (`eth_getCode`). */
 export type GetCode = (address: Address) => Promise<Hex | undefined>;
 
@@ -134,19 +178,25 @@ export type GetCode = (address: Address) => Promise<Hex | undefined>;
 export interface ManifestReport {
   /** Chain id verified. */
   readonly chainId: number;
-  /** Per-role result. */
+  /**
+   * Per-role result. Roles: the protocol contracts, `router`, and `token:<address>` per pinned token
+   * (`tokens` when the manifest pins none). A null router or empty token list counts as `unpinned`.
+   */
   readonly roles: Readonly<Record<string, 'ok' | 'unpinned'>>;
-  /** True if every role was matched against a pinned hash. */
+  /** True if at least one role was checked and every role was matched against a pinned hash. */
   readonly fullyPinned: boolean;
 }
 
 /**
- * Compares the on-chain runtime code of every manifest address with the pinned hashes (CT-PAY-4).
+ * Compares the on-chain runtime code of every manifest address with the pinned hashes (CT-PAY-4):
+ * the Zama protocol contracts, the GhostPay router and every pinned confidential token. Token hashes
+ * are keyed `token:<address>` in `codeHashes` (address case-insensitive).
  * @param chainId Chain id.
  * @param getCode Bytecode reader (e.g. viem `publicClient.getCode`).
  * @param opts `requirePinned` (default true) refuses roles whose hash is not pinned yet.
  * @param manifest Manifest to check.
- * @throws {CtError} `MANIFEST_MISMATCH` if code is missing or differs; `UNPINNED_CODEHASH` if a hash is unpinned and `requirePinned`.
+ * @throws {CtError} `MANIFEST_MISMATCH` if code is missing or differs; `UNPINNED_CODEHASH` if a hash, the
+ * router address or the token list is unpinned and `requirePinned`.
  * @security A mismatch means the address is not the pinned protocol contract: do not send encrypted inputs to it.
  */
 export async function verifyManifestOnChain(
@@ -158,21 +208,31 @@ export async function verifyManifestOnChain(
   const entry = manifestForChain(chainId, manifest);
   const requirePinned = opts.requirePinned ?? true;
   const roles: Record<string, 'ok' | 'unpinned'> = {};
-  const targets: [string, Address | null][] = [
-    ['acl', entry.protocol.acl],
-    ['coprocessor', entry.protocol.coprocessor],
-    ['kmsVerifier', entry.protocol.kmsVerifier],
-    ['inputVerifier', entry.protocol.inputVerifier],
-    ['wrappersRegistry', entry.protocol.wrappersRegistry],
-    ['router', entry.ghostpay.router],
+  // `optional`: a null address is legitimately absent (the local mock has no wrappers registry).
+  // Every other null address is a role that is not pinned yet.
+  const targets: { role: string; address: Address | null; optional: boolean }[] = [
+    { role: 'acl', address: entry.protocol.acl, optional: false },
+    { role: 'coprocessor', address: entry.protocol.coprocessor, optional: false },
+    { role: 'kmsVerifier', address: entry.protocol.kmsVerifier, optional: false },
+    { role: 'inputVerifier', address: entry.protocol.inputVerifier, optional: false },
+    { role: 'wrappersRegistry', address: entry.protocol.wrappersRegistry, optional: true },
+    { role: 'router', address: entry.ghostpay.router, optional: false },
+    ...(entry.ghostpay.tokens.length === 0
+      ? [{ role: 'tokens', address: null, optional: false }]
+      : entry.ghostpay.tokens.map((t) => ({ role: `token:${getAddress(t)}`, address: t, optional: false }))),
   ];
-  for (const [role, address] of targets) {
-    if (address === null) continue;
+  for (const { role, address, optional } of targets) {
+    if (address === null) {
+      if (optional) continue;
+      if (requirePinned) throw new CtError('UNPINNED_CODEHASH', `${role} is not pinned`);
+      roles[role] = 'unpinned';
+      continue;
+    }
     const code = await getCode(address);
     if (code === undefined || code === '0x') {
       throw new CtError('MANIFEST_MISMATCH', `no contract code at pinned address for ${role}`);
     }
-    const pinned = entry.codeHashes[role] ?? null;
+    const pinned = pinnedHash(entry.codeHashes, role);
     if (pinned === null) {
       if (requirePinned) throw new CtError('UNPINNED_CODEHASH', `code hash for ${role} is not pinned`);
       roles[role] = 'unpinned';
@@ -183,16 +243,24 @@ export async function verifyManifestOnChain(
     }
     roles[role] = 'ok';
   }
-  return { chainId, roles, fullyPinned: Object.values(roles).every((v) => v === 'ok') };
+  const results = Object.values(roles);
+  return { chainId, roles, fullyPinned: results.length > 0 && results.every((v) => v === 'ok') };
+}
+
+/** @internal Pinned hash of `role` (key matched case-insensitively, so `token:<address>` may use any case). */
+function pinnedHash(codeHashes: Readonly<Record<string, Hex | null>>, role: string): Hex | null {
+  const want = role.toLowerCase();
+  return Object.entries(codeHashes).find(([k]) => k.toLowerCase() === want)?.[1] ?? null;
 }
 
 /**
- * Strict address parse used throughout the package.
+ * Strict address parse used throughout the package. All-lowercase hex is accepted; mixed case must
+ * carry a valid EIP-55 checksum (a wrong checksum usually means a mistyped or tampered address).
  * @param value Candidate address.
  * @param label Field name for the error message.
  * @returns The checksummed address.
  */
 export function parseAddress(value: string, label: string): Address {
-  requireInput(typeof value === 'string' && isAddress(value, { strict: false }), `${label} must be an address`);
+  requireInput(typeof value === 'string' && isAddress(value, { strict: true }), `${label} must be an address`);
   return getAddress(value);
 }

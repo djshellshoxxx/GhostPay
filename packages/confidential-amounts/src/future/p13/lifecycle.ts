@@ -2,9 +2,10 @@
  * P13 operation lifecycle, settlement-evidence interpretation and stale-completion guards (spec "Lifecycle, error and
  * recovery"; COMMON section 5). A transaction hash, SDK success or ciphertext handle is never positive evidence.
  */
-import { classifyPayment } from '../../payment.js';
+import { MAX_RECEIPT_LOGS, classifyPayment, verifyPaymentProvenance, type PaymentLog, type PinnedPayment } from '../../payment.js';
 import { check, fail } from './errors.js';
-import type { SecretAmount } from './secret.js';
+import { SecretAmount } from './secret.js';
+import { dataArray, exactRecord } from './strict.js';
 
 /** Persisted states. `unavailable`/`research-qualified` are capability states, not record states. */
 export type P13State = 'prepared' | 'reviewed' | 'authorized' | 'submitted' | 'unknown' | 'verified' | 'reverted' | 'cancelled';
@@ -19,7 +20,8 @@ const TRANSITIONS: Readonly<Record<P13State, readonly P13State[]>> = {
   // Account, chain or policy change invalidates the review: back to prepared.
   reviewed: ['authorized', 'prepared', 'cancelled'],
   // Unsent work can still be cancelled locally.
-  authorized: ['submitted', 'cancelled'],
+  // An authorization may already have produced a signature; it is never cancelled locally (audit A5).
+  authorized: ['submitted'],
   // Once submitted, actual chain state wins: no cancel, no resend.
   submitted: ['unknown', 'verified', 'reverted'],
   // unknown -> submitted re-files an observed pending transaction (e.g. seen again after a reorg); never a resend.
@@ -53,31 +55,57 @@ export interface EvidenceInput {
   readonly expectedNet: SecretAmount;
   /** Decrypted delivered net, if the seller has decrypted it. */
   readonly delivered?: SecretAmount;
+  /** Logs of the payment's receipt. */
+  readonly logs: readonly PaymentLog[];
+  /** Pinned router, token, stealth address and the announced handle. */
+  readonly pinned: PinnedPayment;
 }
 
 /** Interpretation of {@link EvidenceInput}. */
 export interface EvidenceVerdict {
   readonly state: 'verified' | 'unknown' | 'reverted';
-  readonly reason: 'no-receipt' | 'confirmations' | 'not-decrypted' | 'zero-delivery' | 'underpaid' | 'delivered' | 'reverted';
+  readonly reason:
+    | 'no-receipt'
+    | 'confirmations'
+    | 'unverified-source'
+    | 'not-decrypted'
+    | 'zero-delivery'
+    | 'underpaid'
+    | 'delivered'
+    | 'reverted';
 }
 
 /**
  * Interprets evidence (P13-A06, A09). `verified` needs a confirmed successful receipt AND a decrypted delivery of at
  * least the expected net; a silent zero transfer or underpayment stays `unknown`, never `verified`.
  */
-export function interpretEvidence(e: EvidenceInput): EvidenceVerdict {
+export function interpretEvidence(input: EvidenceInput): EvidenceVerdict {
+  // Read every field exactly once (audit A4): accessors and unknown keys are refused, amounts must be real SecretAmounts.
+  const e = exactRecord(input, ['receipt', 'confirmations', 'minConfirmations', 'expectedNet', 'logs', 'pinned'], ['delivered'], 'P13_RECORD_INVALID');
+  const confirmations = e['confirmations'];
+  const minConfirmations = e['minConfirmations'];
   check(
-    Number.isSafeInteger(e.confirmations) && e.confirmations >= 0 && Number.isSafeInteger(e.minConfirmations) && e.minConfirmations >= 1,
+    typeof confirmations === 'number' && Number.isSafeInteger(confirmations) && confirmations >= 0 &&
+      typeof minConfirmations === 'number' && Number.isSafeInteger(minConfirmations) && minConfirmations >= 1,
     'P13_RECORD_INVALID',
     'invalid confirmation counts',
   );
-  if (e.receipt === 'none') return { state: 'unknown', reason: 'no-receipt' };
-  if (e.confirmations < e.minConfirmations) return { state: 'unknown', reason: 'confirmations' };
-  if (e.receipt === 'reverted') return { state: 'reverted', reason: 'reverted' };
-  check(e.receipt === 'success', 'P13_RECORD_INVALID', 'invalid receipt status');
-  if (e.delivered === undefined) return { state: 'unknown', reason: 'not-decrypted' };
-  const delivered = e.delivered;
-  const status = e.expectedNet.reveal((expected) => delivered.reveal((got) => classifyPayment(expected, got)));
+  const expectedNet = e['expectedNet'];
+  const delivered = e['delivered'];
+  check(expectedNet instanceof SecretAmount, 'P13_RECORD_INVALID', 'expected net must be a SecretAmount');
+  check(delivered === undefined || delivered instanceof SecretAmount, 'P13_RECORD_INVALID', 'delivered must be a SecretAmount');
+  const receipt = e['receipt'];
+  if (receipt === 'none') return { state: 'unknown', reason: 'no-receipt' };
+  if (confirmations < minConfirmations) return { state: 'unknown', reason: 'confirmations' };
+  if (receipt === 'reverted') return { state: 'reverted', reason: 'reverted' };
+  check(receipt === 'success', 'P13_RECORD_INVALID', 'invalid receipt status');
+  // A handle that decrypts proves nothing (audit B1): the pinned router and token must have emitted the payment.
+  const logs = dataArray(e['logs'], MAX_RECEIPT_LOGS, 'P13_RECORD_INVALID') as readonly PaymentLog[];
+  const p = exactRecord(e['pinned'], ['router', 'token', 'stealth', 'handle'], [], 'P13_RECORD_INVALID');
+  const pinned = { router: p['router'], token: p['token'], stealth: p['stealth'], handle: p['handle'] } as PinnedPayment;
+  if (verifyPaymentProvenance(logs, pinned) !== 'verified') return { state: 'unknown', reason: 'unverified-source' };
+  if (delivered === undefined) return { state: 'unknown', reason: 'not-decrypted' };
+  const status = expectedNet.reveal((expected) => delivered.reveal((got) => classifyPayment(expected, got)));
   if (status === 'confirmed') return { state: 'verified', reason: 'delivered' };
   return { state: 'unknown', reason: status === 'failed_insufficient_balance' ? 'zero-delivery' : 'underpaid' };
 }

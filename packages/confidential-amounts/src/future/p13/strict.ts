@@ -18,7 +18,10 @@ export function exactRecord(
   check(typeof value === 'object' && value !== null && !Array.isArray(value), code, 'expected an object');
   const proto: unknown = Object.getPrototypeOf(value);
   check(proto === Object.prototype || proto === null, code, 'expected a plain object');
-  check(Object.getOwnPropertySymbols(value).length === 0, code, 'unexpected symbol key');
+  // Count keys before building descriptors so a huge hostile object is refused cheaply.
+  const ownKeys = Reflect.ownKeys(value);
+  check(ownKeys.length <= required.length + optional.length, code, 'unexpected key');
+  check(ownKeys.every((k) => typeof k === 'string'), code, 'unexpected symbol key');
   const descriptors = Object.getOwnPropertyDescriptors(value);
   const out: Record<string, unknown> = {};
   for (const [key, d] of Object.entries(descriptors)) {
@@ -33,9 +36,10 @@ export function exactRecord(
 /** Dense array of data elements, at most `max` long. */
 export function dataArray(value: unknown, max: number, code: P13Code): readonly unknown[] {
   check(Array.isArray(value) && Object.getPrototypeOf(value) === Array.prototype, code, 'expected an array');
-  const descriptors: Record<string, PropertyDescriptor> = Object.getOwnPropertyDescriptors(value);
-  const length: unknown = descriptors['length']?.value;
+  // Check the length before building descriptors so a huge hostile array is refused cheaply.
+  const length: unknown = Object.getOwnPropertyDescriptor(value, 'length')?.value;
   check(typeof length === 'number' && length <= max, code, 'array too long');
+  const descriptors: Record<string, PropertyDescriptor> = Object.getOwnPropertyDescriptors(value);
   check(Object.keys(descriptors).length === length + 1, code, 'sparse or extended array');
   const out: unknown[] = [];
   for (let i = 0; i < length; i++) {

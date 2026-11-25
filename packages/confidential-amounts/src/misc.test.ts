@@ -46,6 +46,15 @@ describe('copy (T10)', () => {
     }
     expect(findForbiddenWording('Amount hidden on-chain from the public.')).toBeNull();
   });
+  it('B10: detects the repo-banned claims (audited, deployed, mainnet-ready, verified seller)', () => {
+    for (const w of ['audited', 'Audited', 'deployed', 'mainnet-ready', 'Mainnet ready', 'mainnet ready', 'verified seller', 'Verified Seller']) {
+      expect(findForbiddenWording(`this is ${w} okay`), w).not.toBeNull();
+    }
+    // neighbouring wording that makes no such claim stays allowed
+    for (const ok of ['Test network only.', 'the seller can decrypt', 'mainnet chain ids are refused', 'payment verified by decryption']) {
+      expect(findForbiddenWording(ok), ok).toBeNull();
+    }
+  });
   it('has copy for every NOT-protected key and every key the specs name', () => {
     for (const k of NOT_PROTECTED_KEYS) expect(CT_COPY[k], k).toBeTruthy();
     for (const k of ['CT_HIDES_AMOUNT_ONLY', 'CT_WRAP_PUBLIC', 'CT_TRUST_ZAMA', 'CT_TESTNET_ONLY', 'CT_UNWRAP_PUBLIC', 'CT_OTHER_CHAIN', 'CT_TRUST_FHENIX', 'CT_TRUST_INCO_TEE']) {

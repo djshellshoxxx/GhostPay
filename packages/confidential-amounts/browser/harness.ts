@@ -170,4 +170,93 @@ async function phase2(ids: { reviewedId: string; submittedId: string }): Promise
   };
 }
 
-Object.assign(globalThis, { p13: { phase1, phase2 }, p13Ready: true });
+const RACE_DB = 'ghostpay-p13-qualification-race';
+const RACE_NS = 'p13:qual-race:eip155-31337';
+
+/** Race setup (one tab): fresh database, persisted key, `n` prepared records. Returns their ids. */
+async function raceSetup(n: number): Promise<string[]> {
+  await req(indexedDB.deleteDatabase(RACE_DB));
+  const db = await openDb(RACE_DB);
+  const key = await generateRecordKey();
+  await saveKey(db, key);
+  const store = new ConfidentialRecordStore(idbKv(db), createAesGcmSealer(key), RACE_NS);
+  const input = { invoice: sampleInvoice(), asset: structuredClone(CTM_ASSET), approved: [CTM_ASSET], gate: GATE, payer: `0x${'0a'.repeat(20)}`, stealth: `0x${'0b'.repeat(20)}`, ctx: ctx(1) };
+  const ids: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const p = await prepareConfidentialPlan(input, deps(store, 1));
+    if (!p.ok) throw new Error('prepare failed');
+    ids.push(p.value.recoveryRef.slice('p13-record:'.length));
+  }
+  db.close();
+  return ids;
+}
+
+/** One tab's attempt to review record `id` at revision 1; resolves to 'ok' or the P13 code. */
+async function raceReview(id: string): Promise<string> {
+  const db = await openDb(RACE_DB);
+  try {
+    const key = await storedKey(db);
+    if (key === undefined) return 'no-key';
+    const store = new ConfidentialRecordStore(idbKv(db), createAesGcmSealer(key), RACE_NS);
+    const r = await reviewPlan(id, 1, GATE, ctx(1), deps(store, 1));
+    return r.ok ? 'ok' : r.code;
+  } finally {
+    db.close();
+  }
+}
+
+/** Final state of record `id` as this tab reads it. */
+async function raceState(id: string): Promise<{ state: string; revision: number } | null> {
+  const db = await openDb(RACE_DB);
+  try {
+    const key = await storedKey(db);
+    if (key === undefined) return null;
+    const r = await new ConfidentialRecordStore(idbKv(db), createAesGcmSealer(key), RACE_NS).load(id);
+    return r === undefined ? null : { state: r.state, revision: r.revision };
+  } finally {
+    db.close();
+  }
+}
+
+/** Browser stress: `n` plans prepared into IndexedDB, exported and restored into a fresh database; timings in ms. */
+async function stress(n: number): Promise<Record<string, number>> {
+  const SDB = 'ghostpay-p13-qualification-stress';
+  const RDB = 'ghostpay-p13-qualification-stress-restore';
+  await req(indexedDB.deleteDatabase(SDB));
+  await req(indexedDB.deleteDatabase(RDB));
+  const db = await openDb(SDB);
+  const key = await generateRecordKey();
+  const ns = 'p13:qual-stress:eip155-31337';
+  const store = new ConfidentialRecordStore(idbKv(db), createAesGcmSealer(key), ns);
+  const input = { invoice: sampleInvoice(), asset: structuredClone(CTM_ASSET), approved: [CTM_ASSET], gate: GATE, payer: `0x${'0a'.repeat(20)}`, stealth: `0x${'0b'.repeat(20)}`, ctx: ctx(1) };
+  const t0 = performance.now();
+  for (let i = 0; i < n; i++) {
+    const p = await prepareConfidentialPlan(input, deps(store, 1));
+    if (!p.ok) throw new Error('prepare failed');
+  }
+  const t1 = performance.now();
+  const listed = (await store.list()).filter((e) => e.status === 'ok').length;
+  const backup = await store.exportBackup();
+  const t2 = performance.now();
+  const rdb = await openDb(RDB);
+  const restored = new ConfidentialRecordStore(idbKv(rdb), createAesGcmSealer(key), ns);
+  const report = await restored.importBackup(JSON.parse(JSON.stringify(backup)));
+  const t3 = performance.now();
+  const reconciled = await new ConfidentialRecordStore(idbKv(rdb), createAesGcmSealer(key), ns).reconcileAfterReload(2, NOW + 60);
+  const t4 = performance.now();
+  db.close();
+  rdb.close();
+  return {
+    prepared: n,
+    listed,
+    exported: backup.records.length,
+    inserted: report.inserted,
+    stalePlans: reconciled.stalePlans,
+    prepareMs: Math.round(t1 - t0),
+    listExportMs: Math.round(t2 - t1),
+    importMs: Math.round(t3 - t2),
+    reconcileMs: Math.round(t4 - t3),
+  };
+}
+
+Object.assign(globalThis, { p13: { phase1, phase2, raceSetup, raceReview, raceState, stress }, p13Ready: true });

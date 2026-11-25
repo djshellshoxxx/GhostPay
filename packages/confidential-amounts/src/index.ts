@@ -42,8 +42,8 @@ export {
   encodeUnwrap,
   encodeFinalizeUnwrap,
 } from './calldata.js';
-export { classifyPayment, wrapWarnings } from './payment.js';
-export type { PaymentStatus, WrapWarning } from './payment.js';
+export { classifyPayment, wrapWarnings, verifyPaymentProvenance, MAX_RECEIPT_LOGS } from './payment.js';
+export type { PaymentStatus, WrapWarning, PaymentLog, PinnedPayment, ProvenanceResult } from './payment.js';
 export { NOT_PROTECTED_KEYS, CT_COPY, findForbiddenWording } from './copy.js';
 export type { NotProtectedKey } from './copy.js';
 export { DecryptScheduler } from './decrypt.js';

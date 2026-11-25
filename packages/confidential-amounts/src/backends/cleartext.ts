@@ -59,7 +59,7 @@ export class CleartextBackend implements ConfidentialBackend {
   /** @inheritdoc */
   public async userDecrypt(p: { chainId: number; contract: Address; handle: Hex; signer: StealthSigner }): Promise<bigint> {
     assertCtChain(p.chainId, ID);
-    assertHandle(p.handle, 'handle');
+    assertHandle(p.handle, 'handle', true);
     const contract = parseAddress(p.contract, 'contract');
     const address = parseAddress(p.signer.address, 'signer');
     // Exercise the same scoped-key path as the real backend so key handling is covered in tests.

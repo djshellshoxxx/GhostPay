@@ -73,11 +73,15 @@ export class DecryptScheduler {
   readonly #maxQueue: number;
   readonly #isolate: ((key: string) => Transport) | undefined;
   readonly #random: () => number;
-  readonly #sleep: (ms: number) => Promise<void>;
+  readonly #sleep: ((ms: number) => Promise<void>) | undefined;
   readonly #queue: Queued[] = [];
   #running = false;
   #waiting: Queued | undefined;
   #started = 0;
+  /** Ends the current gap early (set while a gap is being waited out). */
+  #wake: (() => void) | undefined;
+  /** Timer of the default sleep, cleared on wake so no timer outlives `cancelPending`. */
+  #timer: ReturnType<typeof setTimeout> | undefined;
 
   /** @param o See {@link DecryptSchedulerOptions}. */
   public constructor(o: DecryptSchedulerOptions = {}) {
@@ -90,7 +94,7 @@ export class DecryptScheduler {
     requireInput(Number.isInteger(this.#maxQueue) && this.#maxQueue > 0, 'maxQueue must be a positive integer');
     this.#isolate = o.isolate;
     this.#random = o.random ?? cryptoRandom;
-    this.#sleep = o.sleep ?? ((ms) => new Promise<void>((r) => setTimeout(r, ms)));
+    this.#sleep = o.sleep;
   }
 
   /** Number of jobs waiting (excluding the one running). */
@@ -104,21 +108,24 @@ export class DecryptScheduler {
   }
 
   /**
-   * Queues a job.
-   * @returns The job's result; rejects with `QUEUE_FULL`, `CANCELLED`, or the job's own error.
+   * Queues a job. Never throws synchronously.
+   * @returns The job's result; rejects with `INVALID_INPUT` (bad owner), `QUEUE_FULL`, `CANCELLED`, or the
+   * job's own error (also when `isolate`, `sleep` or `random` fail for that job).
    */
   public enqueue<T>(job: DecryptJob<T>): Promise<T> {
-    parseAddress(job.owner, 'owner');
-    if (this.#queue.length >= this.#maxQueue) {
-      return Promise.reject(new CtError('QUEUE_FULL', 'decryption queue is full'));
-    }
+    // Validation runs inside the executor, so a throw becomes this promise's rejection.
     return new Promise<T>((resolve, reject) => {
+      parseAddress(job.owner, 'owner');
+      if (this.#queue.length >= this.#maxQueue) throw new CtError('QUEUE_FULL', 'decryption queue is full');
       this.#queue.push({ job: job, resolve: resolve as (v: unknown) => void, reject, cancelled: false });
       if (!this.#running) void this.#drain();
     });
   }
 
-  /** Rejects every job that has not started yet (queued or waiting out its gap) with `CANCELLED`. */
+  /**
+   * Rejects every job that has not started yet (queued or waiting out its gap) with `CANCELLED`, and
+   * ends the current gap at once: the default timer is cleared, so nothing keeps the process alive.
+   */
   public cancelPending(): void {
     const dropped = this.#queue.splice(0);
     if (this.#waiting) dropped.push(this.#waiting);
@@ -126,6 +133,7 @@ export class DecryptScheduler {
       q.cancelled = true;
       q.reject(new CtError('CANCELLED', 'decryption job cancelled'));
     }
+    this.#wake?.();
   }
 
   /** @internal Draws the next gap in ms. */
@@ -133,26 +141,56 @@ export class DecryptScheduler {
     return this.#min + Math.floor(this.#random() * (this.#max - this.#min + 1));
   }
 
+  /** @internal Waits `ms` (injected sleep or a timer); {@link cancelPending} can end the wait early via `#wake`. */
+  #pause(ms: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const wake = (): void => {
+        if (this.#wake !== wake) return;
+        this.#wake = undefined;
+        clearTimeout(this.#timer);
+        this.#timer = undefined;
+        resolve();
+      };
+      this.#wake = wake;
+      if (this.#sleep) {
+        this.#sleep(ms).then(wake, (e: Error) => {
+          if (this.#wake === wake) this.#wake = undefined;
+          reject(e);
+        });
+      } else {
+        this.#timer = setTimeout(wake, ms);
+      }
+    });
+  }
+
   async #drain(): Promise<void> {
     this.#running = true;
     try {
       for (let next = this.#queue.shift(); next !== undefined; next = this.#queue.shift()) {
-        if (this.#started > 0 || this.#delayFirst) {
-          this.#waiting = next;
-          await this.#sleep(this.#gap());
-          this.#waiting = undefined;
-        }
-        if (next.cancelled) continue;
-        this.#started++;
-        const transport = this.#isolate ? this.#isolate(requestId(this.#random)) : undefined;
-        try {
-          next.resolve(await next.job.run(transport));
-        } catch (e) {
-          next.reject(e);
-        }
+        await this.#runOne(next);
       }
     } finally {
       this.#running = false;
+    }
+  }
+
+  /** @internal Runs one job. Every failure (gap, sleep, isolate, run) settles that job's promise; it never escapes. */
+  async #runOne(next: Queued): Promise<void> {
+    try {
+      if (this.#started > 0 || this.#delayFirst) {
+        this.#waiting = next;
+        try {
+          await this.#pause(this.#gap());
+        } finally {
+          this.#waiting = undefined;
+        }
+      }
+      if (next.cancelled) return;
+      this.#started++;
+      const transport = this.#isolate ? this.#isolate(requestId(this.#random)) : undefined;
+      next.resolve(await next.job.run(transport));
+    } catch (e) {
+      next.reject(e);
     }
   }
 }

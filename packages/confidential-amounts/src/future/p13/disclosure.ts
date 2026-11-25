@@ -5,7 +5,7 @@
 import { BACKEND_INFOS } from '../../registry.js';
 import { NOT_PROTECTED_KEYS, findForbiddenWording } from '../../copy.js';
 import { check } from './errors.js';
-import { copyText, isKnownCopyKey } from './copy.js';
+import { PROTOCOL_COPY, copyText, isKnownCopyKey } from './copy.js';
 import { digestOf, type Digest, type P13ProtocolId } from './asset.js';
 
 /** Payment routes the UI may describe. */
@@ -99,9 +99,8 @@ const ROUTES: Readonly<Record<RouteKind, RouteClassification>> = {
 
 /** Classifies a route. Transparent and masked routes never allow a confidential-amount claim. */
 export function classifyRoute(kind: RouteKind): RouteClassification {
-  const r = ROUTES[kind];
-  check(r !== undefined, 'P13_UNSUPPORTED', 'unknown route');
-  return r;
+  check(typeof kind === 'string' && Object.hasOwn(ROUTES, kind), 'P13_UNSUPPORTED', 'unknown route');
+  return ROUTES[kind];
 }
 
 /** Consent text shown before any P13 preparation, bound by its digest. */
@@ -120,7 +119,8 @@ export interface DisclosureV1 {
   readonly review: 'none-independent';
 }
 
-const EXTRA_LIMITS = ['P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY', 'P13_NO_FEE_ADDON'] as const;
+/** P13 limits appended to each protocol's backend lines (filtered by {@link PROTOCOL_COPY}). */
+const EXTRA_LIMITS = ['P13_FIXTURE_ONLY', 'P13_SETTLEMENT_OFF', 'P13_NOT_REVIEWED', 'P13_RECORD_KEY', 'P13_NO_FEE_ADDON'] as const;
 
 /**
  * Builds the disclosure for a protocol from the backend's static info plus the P13 limits.
@@ -132,14 +132,18 @@ export function buildDisclosure(protocolId: P13ProtocolId): DisclosureV1 {
   const route = classifyRoute(protocolId);
   const maturity = info.maturity;
   check(maturity === 'testnet' || maturity === 'test-double', 'P13_UNSUPPORTED', 'backend not built');
+  // The backend's static lines are filtered to what this protocol may truthfully show (audit A3).
+  const allowed = PROTOCOL_COPY[protocolId];
   const d: DisclosureV1 = {
     schema: 'ghostpay.p13-disclosure/v1',
     protocolId,
     maturity,
     trust: info.trust,
     visibility: route.visibility,
-    hides: [...info.whatItHides],
-    doesNotHide: [...info.whatItDoesNotHide, ...EXTRA_LIMITS.filter((k) => !info.whatItDoesNotHide.includes(k))],
+    hides: info.whatItHides.filter((k) => allowed.includes(k)),
+    doesNotHide: [...info.whatItDoesNotHide, ...EXTRA_LIMITS.filter((k) => !info.whatItDoesNotHide.includes(k))].filter((k) =>
+      allowed.includes(k),
+    ),
     publicFields: route.publicFields,
     relayerOrigin: info.relayerOrigin,
     licence: info.licence,
@@ -150,7 +154,11 @@ export function buildDisclosure(protocolId: P13ProtocolId): DisclosureV1 {
     check(isKnownCopyKey(key), 'P13_UNSUPPORTED', 'unknown copy key');
     check(findForbiddenWording(copyText(key) ?? '') === null, 'P13_UNSUPPORTED', 'copy makes a forbidden claim');
   }
-  check(NOT_PROTECTED_KEYS.every((k) => d.doesNotHide.includes(k)), 'P13_UNSUPPORTED', 'limits incomplete');
+  if (protocolId === 'ct1-zama') {
+    check(NOT_PROTECTED_KEYS.every((k) => d.doesNotHide.includes(k)), 'P13_UNSUPPORTED', 'limits incomplete');
+  } else {
+    check(d.hides.length === 0 && d.doesNotHide.includes('CT_M_NO_PRIVACY'), 'P13_UNSUPPORTED', 'fixture must state it hides nothing');
+  }
   return d;
 }
 

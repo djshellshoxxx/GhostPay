@@ -80,4 +80,11 @@ describe('confidential metadata codec (T4)', () => {
     expect(() => assertHandle(H, 'h')).not.toThrow();
     expect(() => assertHandle('0x12', 'h')).toThrow(/h must be/);
   });
+
+  it('B7: assertHandle refuses the zero handle unless explicitly allowed', () => {
+    const zero: Hex = `0x${'00'.repeat(32)}`;
+    expect(() => assertHandle(zero, 'h')).toThrow(CtError);
+    expect(() => assertHandle(zero, 'h')).toThrow(/h must not be the zero handle/);
+    expect(() => assertHandle(zero, 'h', true)).not.toThrow();
+  });
 });

@@ -7,7 +7,7 @@ import { sha256, stringToBytes } from 'viem';
 import { CT1_MANIFEST, BACKEND_CHAINS, MAINNET_CHAIN_IDS } from '../../manifest.js';
 import { NOT_PROTECTED_KEYS } from '../../copy.js';
 import { check, fail } from './errors.js';
-import { isKnownCopyKey } from './copy.js';
+import { PROTOCOL_COPY, isKnownCopyKey } from './copy.js';
 import { dataArray, exactRecord, intIn, matchString } from './strict.js';
 import { MAX_DECIMALS, formatDecimalUnits, parseDecimalUnits, wrapperUnits, type DecimalUnits } from './units.js';
 
@@ -152,6 +152,7 @@ export function decodeConfidentialAsset(value: unknown): ConfidentialAssetV1 {
   );
   check(new Set(ids).size === ids.length, 'P13_INVALID_ASSET', 'duplicate trust statement');
   check(ids.every(isKnownCopyKey), 'P13_INVALID_ASSET', 'unknown trust statement');
+  check(ids.every((k) => PROTOCOL_COPY[protocolId].includes(k)), 'P13_INVALID_ASSET', 'trust statement of another protocol');
   check(REQUIRED_TRUST_IDS[protocolId].every((k) => ids.includes(k)), 'P13_INVALID_ASSET', 'missing trust statement');
   return {
     schema: 'ghostpay.confidential-asset/v1',
