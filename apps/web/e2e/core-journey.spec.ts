@@ -9,6 +9,7 @@ import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } f
 import { verifyReceipt } from '../src/lib/receipts';
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 import { DESTINATION, readSweepJournal } from './sweep-network';
+import { approveWalletDisclosures } from './walletDisclosure';
 
 /*
  * One chained lean-core journey on authored, test-only data: seller keys -> signed invoice -> payer consent and payment
@@ -262,6 +263,8 @@ async function newProfile(browser: Browser, sim: ChainSim, opts: { clock?: boole
 
 /** An EIP-6963 wallet whose `eth_sendTransaction` hands the exact request object to the simulator. */
 async function injectWallet(page: Page, sim: ChainSim): Promise<void> {
+  // Each wallet request is first shown in the in-page disclosure dialog; the journey approves it as a user would.
+  await approveWalletDisclosures(page);
   await page.exposeFunction('__coreWalletSend', (tx: WalletTx) => sim.walletSend(tx));
   await page.addInitScript((account) => {
     const w = window as unknown as { __coreWalletSend: (tx: unknown) => Promise<string> };

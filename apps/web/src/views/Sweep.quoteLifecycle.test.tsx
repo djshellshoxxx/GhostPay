@@ -100,7 +100,8 @@ async function ready(m: ReturnType<typeof mount>): Promise<void> {
 }
 async function requestQuote(m: ReturnType<typeof mount>, count = 1): Promise<void> {
   fireEvent.click(screen.getByRole('button', { name: QUOTE }));
-  await waitFor(() => { expect(m.requests).toHaveLength(count); });
+  // The quote path awaits the RPC and the manifest check first; under CI load that can exceed waitFor's 1 s default.
+  await waitFor(() => { expect(m.requests).toHaveLength(count); }, { timeout: 5_000 });
 }
 async function answer(m: ReturnType<typeof mount>, index = 0): Promise<void> {
   await act(async () => {
