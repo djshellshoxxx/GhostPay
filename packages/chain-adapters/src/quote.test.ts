@@ -121,6 +121,10 @@ describe('readPrice', () => {
 
 describe('fiatToTokenAmount', () => {
   const base = { fiatDecimals: 2, fiatCurrency: 'USD', priceQuoteCurrency: 'USD' } as const;
+  it('refuses an absurd price.decimals instead of building a huge bigint', () => {
+    expect(() => fiatToTokenAmount({ ...base, fiatMinorUnits: 1000n, price: { answer: 1n, decimals: 2 ** 31 }, tokenDecimals: 18, side: 'payer' })).toThrow(/decimals/);
+    expect(() => fiatToTokenAmount({ ...base, fiatMinorUnits: 1000n, price: { answer: 1n, decimals: -1 }, tokenDecimals: 18, side: 'payer' })).toThrow(/decimals/);
+  });
   // ETH at $2000.00000000 (8 decimals); $10.00 -> 0.005 ETH
   it('converts exactly', () => {
     expect(fiatToTokenAmount({ ...base, fiatMinorUnits: 1000n, price: { answer: 2_000_00000000n, decimals: 8 }, tokenDecimals: 18, side: 'payer' })).toBe(5_000_000_000_000_000n);
