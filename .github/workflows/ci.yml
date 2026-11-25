@@ -173,7 +173,8 @@ jobs:
               needs_contract_artifacts=false
               for ((i = 0; i < ${#args[@]}; i += 2)); do
                 workspace="${args[$((i + 1))]}"
-                if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then
+                # light-indexer: its contract test deploys the compiled ERC5564Announcer on anvil (must run, not skip).
+                if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" || "$workspace" == "packages/light-indexer" ]]; then
                   needs_contract_artifacts=true
                   anvil_args+=(-w "$workspace")
                 else
