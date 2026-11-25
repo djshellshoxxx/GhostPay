@@ -10,7 +10,7 @@ import {
   type RpcClient,
   type ScanCursor,
 } from '@ghostpay/chain-adapters';
-import { encodeMetaAddress, generateKeySet, unsafeRevealSecret, type KeySet } from '@ghostpay/core-crypto';
+import { encodeMetaAddress, generateKeySet, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { makeLog, TOKEN_84532, type MadeLog } from './announcements';
 import { SyntheticChain, TRANSFER_TOPIC } from './disclosureChain';
 import { DisclosureRecorder, handlerTransport, instrumentRpcTransport, type DisclosureContext } from './rpcDisclosure';
@@ -27,7 +27,7 @@ const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).pad
 
 /** A synthetic seller plus helpers to build announcements for the seller and for strangers. */
 export interface Seller {
-  readonly keys: KeySet;
+  readonly keys: ReturnType<typeof generateKeySet>;
   readonly meta: string;
 }
 export function newSeller(): Seller {
@@ -142,7 +142,7 @@ export async function runDisclosureScenario(i: ScenarioInput): Promise<ScenarioO
 
 /** In-memory checkpoint store with an operation log (what the scanner asked to persist). */
 export function memoryCheckpoints(): CheckpointStore & { readonly saved: ScanCursor[]; clears: number } {
-  const state: { cursor?: ScanCursor } = {};
+  const state: { cursor: ScanCursor | undefined } = { cursor: undefined };
   const saved: ScanCursor[] = [];
   const store = {
     saved,
