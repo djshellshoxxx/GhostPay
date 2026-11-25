@@ -39,16 +39,18 @@ describe('chain verifier contains throwing adapter evidence accessors', () => {
   it('treats a throwing lookup proxy as unavailable', async () => {
     // RCPT-L1: the trap must let the promise machinery see `then` as absent. Otherwise the async lookup rejects
     // before verification ever reads the object, and the guard around the property reads is never exercised.
-    let guardedReads = 0;
+    const guardedReads: string[] = [];
     const lookup = new Proxy({ status: 'found', facts: { confirmed: true, amountBase: '1500000' } }, {
       get(_target, property): never | undefined {
         if (property === 'then') return undefined;
-        guardedReads += 1;
+        guardedReads.push(String(property));
         throw new Error('adapter proxy denied property access');
       },
     });
     await expectUnavailable(lookup);
-    expect(guardedReads).toBeGreaterThan(0);
+    // `status` is read only by verification itself (never by promise resolution), so it proves the lookup did not
+    // reject early and that the guard around the property reads ran.
+    expect(guardedReads).toContain('status');
   });
 
   it('reads each lookup accessor exactly once (RCPT-L2)', async () => {
@@ -69,8 +71,13 @@ describe('chain verifier contains throwing adapter evidence accessors', () => {
     const facts = counted('facts', { confirmed: true, amountBase: '1500000', assetSymbol: 'USDC', sender: SENDER, recipient: RECIPIENT });
     const lookup = counted('lookup', { status: 'found', facts });
     const receipt = await createReceipt(record(), PRESETS.full);
-    await verifyReceipt(receipt, { verifier: verifierFor(lookup) });
-    expect(reads.size).toBeGreaterThan(0);
+    const report = await verifyReceipt(receipt, { verifier: verifierFor(lookup) });
+    expect(report.chain.status).toBe('confirmed');
+    // status and facts on the envelope; confirmed, amountBase, assetSymbol, sender and recipient on the facts.
+    expect([...reads.keys()].sort()).toEqual([
+      'facts.amountBase', 'facts.assetSymbol', 'facts.confirmed', 'facts.recipient', 'facts.sender', 'lookup.facts', 'lookup.status',
+    ]);
+    expect(reads.size).toBe(7);
     for (const [name, count] of reads) expect({ name, count }).toEqual({ name, count: 1 });
   });
 

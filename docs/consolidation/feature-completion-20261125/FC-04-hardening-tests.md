@@ -8,14 +8,14 @@ Donor: `origin/integration/ghostpay-adapter-qualification-20261119` head `429a4d
 
 | Donor hunk | State on main | Action |
 |---|---|---|
-| `quote.test.ts` "refuses an absurd price.decimals" (2**31 and -1) | missing; the source bound already exists | recovered verbatim |
+| `quote.test.ts` "refuses an absurd price.decimals" (2**31, -1, and in a follow-up commit 31, 1.5, NaN) | missing; the source bound already exists | recovered verbatim |
 | `tron/chain.hardening.test.ts` incomplete-page case and strict-range genesis assertion | present, with main's later adaptation (`checkNetwork(..., 'local')`) | none; main kept |
 | `tron/fixtures.testutil.ts` full-range block fixture | present | none |
 | `deployments.test.ts`, `rpc.test.ts`, `deployments.ts`, `rpc.ts` | main is ahead | not recovered, per instruction |
 
 ## 2. Receipt follow-ups (`docs/engineering/SECURITY_FINDINGS.md`)
 
-- RCPT-L1: the throwing-proxy test now returns `undefined` for `then` and counts guarded reads, so the proxy actually reaches the property-read guard (the old `then` trap rejected the async lookup before verification read it).
+- RCPT-L1: the throwing-proxy test now returns `undefined` for `then`, records the property names the trap sees, and asserts `status` was among them. `status` is read only by verification itself, so the assertion fails if the `then` line is removed (the promise machinery would then reject the lookup early and `status` would never be read). Counting all reads alone would not guarantee this.
 - RCPT-L2: `verify.ts` snapshots `status`, `facts` and each fact field once. Two new tests were written first: one counts reads per accessor (each must be exactly one), one uses a getter whose value changes after the first read.
 
 ## Commands and outcomes
@@ -27,5 +27,10 @@ All heavy commands ran through the mutex; free RAM at the job start was 332 MB.
 - `npx tsc -p tsconfig.json --noEmit` and `eslint` in `packages/ux-receipts`: no errors after a first attempt failed on a type narrowing and two unnecessary assertions, fixed in `verify.ts`.
 - `npx vitest run src/quote.test.ts --coverage=false` in `packages/chain-adapters`: 23 passed.
 - The Tron hardening test file was not changed, so it was not run.
-- The RCPT-L1 case was not run against the old trap; its assertion `guardedReads > 0` is what makes it non-vacuous.
+- The RCPT-L1 case was not run against the old trap (the reasoning above is by inspection).
 - Not run: whole-repo suites, hosted CI.
+
+## Follow-up commit (review N1 to N3)
+
+- Strengthened the RCPT-L1 and RCPT-L2 tests (status read asserted; exact 7-accessor read set; `chain.status === confirmed`), extended the quote decimals case with 31, 1.5 and NaN, and marked RCPT-L1/L2 fixed on this branch (pending integration, not merged) in `SECURITY_FINDINGS.md`, `REMAINING_WORK.md`, `FEATURE_INTEGRATION_LOG.md`.
+- NOT RUN after this commit: two attempts to run `npm test` (ux-receipts), tsc, eslint and the quote test were skipped by the RAM guard (free RAM 236 MB and 275 MB, below 300 MB). The earlier results above are for the previous commit only.
