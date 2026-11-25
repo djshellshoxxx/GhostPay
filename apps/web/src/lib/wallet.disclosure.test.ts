@@ -1,10 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { erc20Abi } from '@ghostpay/chain-adapters';
 import { encodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../test/mockWallet';
 import { connectWallet, sendViaWallet, signTypedDataViaWallet, walletAttemptKey, type Eip1193Provider, type TxRequest, type WalletAttemptOptions, type WalletInfo, type WalletSession } from './wallet';
 import { readAttempts, type AttemptStorage } from './duplicateAttemptJournal';
 import { WalletDisclosureController } from './walletDisclosure';
+import { installTestLocks } from '../test/locks';
+
+// Node-environment suite: Node 22 (CI) has no Web Locks API, so the durable journal gets the in-process test lock,
+// as browser-environment suites get it from test/setup.ts. Newer Node versions would otherwise use their native one.
+beforeEach(() => { installTestLocks(); });
 
 interface Approval { assertCurrent(): void }
 type Gate = (request: unknown, signal?: AbortSignal) => Promise<Approval>;
