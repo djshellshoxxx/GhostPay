@@ -1,0 +1,151 @@
+{
+  "schema": "ghostpay-live-semantic-delta/1",
+  "checkedAtUtc": "2026-11-25T01:03:14Z (run start; subsequent live reads)",
+  "main": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+  "priorDelta": "b0709cf0d6c379cd58bda99a6cfe573df8fb3a89:docs/consolidation/autonomous-20261121/semantic-delta-20261125T0003Z.json",
+  "summary": {
+    "branches": 712,
+    "openPrs": 246,
+    "stacked": 145,
+    "branchPages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      12
+    ],
+    "prPages": [
+      100,
+      100,
+      46
+    ],
+    "independentRefMatches": 712,
+    "provisionalFinalized": 516,
+    "provisionalUnresolved": 196,
+    "mainAncestryLowerBound": 372,
+    "addedProvisionalDispositions": 0,
+    "classificationCounts": "carried forward; no new semantic dispositions claimed"
+  },
+  "advanced": [
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "sha": "b0709cf0d6c379cd58bda99a6cfe573df8fb3a89",
+      "disposition": "audit-snapshot-documentation-only"
+    }
+  ],
+  "newlyDiscovered": [],
+  "newlyFinal": [],
+  "unresolvedReview": [
+    {
+      "pr": 615,
+      "head": "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+      "merged": true,
+      "mergeCommit": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+      "codeqlCheck": 138387485461,
+      "conclusion": "failure",
+      "alertSummary": "7 new high-severity alerts reported at old head",
+      "disposition": "historical security gate failure on merged PR; actual-main triage required, do not assert vulnerability persists or resolved",
+      "notes": "Main dynamic workflow 45415637708 has three successful Analyze jobs but no separately named CodeQL check on returned main check list. Successful analysis execution is not evidence that alerts were resolved."
+    },
+    {
+      "pr": 616,
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "codeqlCheck": 138405979936,
+      "conclusion": "failure",
+      "alertSummary": "7 new high-severity alerts",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "failure": 1
+      },
+      "dynamicWorkflow": 45373838131,
+      "disposition": "blocked-old-head-security-gate-and-stale-base"
+    },
+    {
+      "pr": 617,
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "codeqlCheck": 138424848592,
+      "conclusion": "failure",
+      "alertSummary": "7 new high-severity alerts",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "failure": 1
+      },
+      "dynamicWorkflow": 45376086489,
+      "disposition": "blocked-old-head-security-gate-and-stale-base"
+    }
+  ],
+  "securityTriage": {
+    "annotationAccess": "GET check-runs/{id}/annotations rejected by connector allowlist (INVALID_ARGUMENT); exact rules, locations and cross-PR identity unverified. Equal counts do not prove identical alerts. Obtain authorized alert details on #615/#616/#617 and main, correlate by rule and source location, coordinate BUG-only worker, repair confirmed findings and require clean fresh actual-head checks. No dismissal or suppression.",
+    "prospectiveTreeReadback": {
+      "untruncated": true,
+      "stages": [
+        {
+          "from": "34c33cc2fc639c0f084269f7744ab31df111451a",
+          "to": "c50161d0b62c763710fc2b68df2433ae2457f62c",
+          "leaves": 4542,
+          "adds": 2,
+          "modifies": 1,
+          "deletes": 0,
+          "nonDocs": []
+        },
+        {
+          "from": "c50161d0b62c763710fc2b68df2433ae2457f62c",
+          "to": "93265166c105ea479e51e66f5dbe836bb53fe9a3",
+          "leaves": 4574,
+          "adds": 32,
+          "modifies": 1,
+          "deletes": 0,
+          "nonDocs": [],
+          "executableDocs": [
+            "docs/qa/followup-composition-20261124/cryptokey-chromium-acceptance.mjs"
+          ]
+        },
+        {
+          "from": "93265166c105ea479e51e66f5dbe836bb53fe9a3",
+          "to": "a2524d9bead51bb1017bc29bc4e7d1418d0563fb",
+          "leaves": 4648,
+          "adds": 74,
+          "modifies": 1,
+          "deletes": 0,
+          "nonDocs": []
+        }
+      ],
+      "note": "All paths compared by mode/type/blob SHA. No product changes, but one executable QA evidence script is included; don't equate docs directory with nonexecutable content. Exact blob 62728ba8f8a676acaca0447bd590152a60dbe8b4 inspected; loopback and fixed module map, local synthetic crypto, browser launched with --no-sandbox and URL parsing outside catch. Requires appropriate independent execution-environment/security review; no assertion it is related to CodeQL alerts. Existing evidence preserved, not executed."
+    }
+  },
+  "checks": {
+    "p614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0,
+      "ci": 45421359913,
+      "dynamic": 45421346748,
+      "mergeable": true
+    },
+    "lock": {
+      "sha": "4fe0656517a03cb7a39d4e248187c76ffaa3238a",
+      "generation": 20,
+      "status": "released"
+    },
+    "mainPush": [
+      45415639617,
+      45415639485,
+      45415637708
+    ],
+    "scheduledIntegration": 45423093766,
+    "scheduledResearch": 45485137780,
+    "scheduledDevelopmentFailure": 45472765175,
+    "branchProtection": "main reports no enforced contexts; rulesets empty"
+  },
+  "testEvidence": {
+    "checkout": "git ls-remote failed DNS resolution, exit 128; Git 2.47.3, Node v22.16.0",
+    "newTestsExecuted": 0
+  },
+  "remaining": "Preserve #614-first, no merge until independent approval and security/ownership/lease gates. Fresh triage of historical #615 alert exposure on actual main, then #616/#617 reconciliations and exact-head checks. Carry #384, #217, BTC regression, #226 and #225 obligations from prior deltas. No main, application branch, lock, deployment, deletion or force update."
+}
