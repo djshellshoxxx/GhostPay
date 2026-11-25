@@ -167,3 +167,8 @@ low/info, and remain filler work.
   `createSolanaAdapter`, which enables devnet/testnet only (`adapter.ts:22,72`); not shown by CLI or web. Queue for
   the small follow-up bundle (one-line neutral wording + `stealth.test.ts:211`). Also optional: `solana-impl.md:31`
   old `K` naming.
+- 2026-11-25T08:20Z — FC-02 follow-up at `ef101fd5` **APPROVE** (L1/L2/L3, i18n classification, out-of-order read
+  test, post-handoff journal retention; both safety properties re-verified line by line). One wording claim sent back
+  before merge: `sweep.reviewChanged` "nothing was sent" is false for a direct sweep cancelled mid-helper (nonce/fee
+  reads and a dry run naming the old destination already reached the RPC); corrected text must say no transaction or
+  order was sent. FC-02 is last in the integration order, so the extra CI cycle does not delay FC-03/FC-01.
