@@ -172,3 +172,11 @@ low/info, and remain filler work.
   before merge: `sweep.reviewChanged` "nothing was sent" is false for a direct sweep cancelled mid-helper (nonce/fee
   reads and a dry run naming the old destination already reached the RPC); corrected text must say no transaction or
   order was sent. FC-02 is last in the integration order, so the extra CI cycle does not delay FC-03/FC-01.
+- 2026-11-25T08:30Z — final worker reports received. Final heads: FC-01 #650 `aae8d592`, FC-02 #649 `e88377a4`
+  (wording fix `e88377a4` checked by coordinator: "No transaction or order was sent", doc names the nonce/fee/dry-run
+  RPC reads), FC-03 #648 `a13ab24d`. Local evidence caveats recorded by workers: FC-03 `build:libs` stopped at
+  ~24/69 under load and local chain-solana/solana-stealth runs fail only the CRLF-sensitive `adapter-types.test.ts`
+  (Windows `core.autocrlf` checkout; donor recorded 111/111 on Linux); FC-01 local scrypt/passphrase tests timed
+  out under load and passed with `--testTimeout=120000`; FC-02 one load-dependent lifecycle test passed in
+  isolation. Hosted CI on Linux is the qualifying gate for all three. Stale worker CI-watch/poll loops (12) were
+  stopped by the coordinator. FC-05a (#244) assigned to worker fc03 in its existing worktree.
