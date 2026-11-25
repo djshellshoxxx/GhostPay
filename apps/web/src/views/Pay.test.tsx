@@ -24,6 +24,7 @@ import { withSessionSecrets } from '../lib/session';
 import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
+import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
 
 beforeEach(() => {
   clearSession();
@@ -41,6 +42,9 @@ const withRpcSetting = (): void => {
   const cur = JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as Record<string, unknown>;
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...cur }));
 };
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would; the methods it showed are recorded.
+const disclosures = useAutoApprovedWalletDisclosures();
 
 function openWith(fragment: string, services: Services, opts: { noRpcSetting?: boolean } = {}): ReturnType<typeof userEvent.setup> {
   if (opts.noRpcSetting !== true) withRpcSetting();
@@ -537,6 +541,8 @@ describe('Pay: sending', () => {
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
+    // Account access and the payment were each shown and approved before reaching the wallet.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
   });
 
   it.each(['verified', 'pending'] as const)('retains a %s submission when notifying the embedding page fails', async (state) => {
@@ -783,6 +789,8 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(rpc.calls.some((c) => c.method === 'eth_estimateGas')).toBe(true);
+    // The exact approval and the payment are separate wallet requests, each disclosed first.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction', 'eth_sendTransaction']);
   });
 
   it('permit token whose permit domain cannot be verified falls back to the exact approval path without a signature prompt (spec 04)', async () => {
@@ -831,6 +839,8 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(screen.getByText('payERC20')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
     expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+    // The permit signature was shown before the wallet was asked; nothing else was sent.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_signTypedData_v4']);
   });
 
   it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {

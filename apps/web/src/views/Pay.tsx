@@ -5,6 +5,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { BroadcastReference } from '../components/BroadcastReference';
 import { TransactionStatusLine } from '../components/TransactionStatusLine';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { useWalletDisclosure } from '../components/WalletDisclosure';
 import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
 import { watchDestinationWallet } from '../lib/destinationWalletScope';
 import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
@@ -151,6 +152,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  // Every wallet request from checkout (connect, network switch, permit, send) is shown and approved first.
+  const walletDisclosure = useWalletDisclosure();
   const latestT = useRef(t); latestT.current = t;
   const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
@@ -728,7 +731,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const invoice = parsed?.invoice;
     setError(undefined);
     setStatus({ key: 'pay.status.walletWaiting' });
-    connectWallet(w, chainId).then(
+    // A changed invoice, flow or session ends an open review and the connection; the handlers below then stay silent.
+    const connectionCurrent = (): void => {
+      sessionGuard();
+      if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
+    };
+    connectWallet(w, chainId, connectionCurrent, undefined, { disclosure: walletDisclosure }).then(
       (s) => {
         try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
