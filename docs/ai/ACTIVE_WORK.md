@@ -1,3 +1,19 @@
+# GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60`; branch `claude/backup-recovery`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Donors (ancestry kept, original branches untouched): #530 `88f7d1b4` → #540 `8daebb0f` → #573 `56fb25aa` → #629 `4b1ed14c`.
+Owned paths: `apps/web/src/views/SellerKeys.tsx` and its tests, `apps/web/src/lib/{session,keyVault,keystore}.ts` and tests,
+`apps/web/src/AppShell.tsx` (leave-page guard only), `packages/ux-vault/src/{keystore-portable,portable-errors}.ts`,
+additive locale/securityKeys entries, `apps/web/e2e/{recovery,app}.spec.ts`, additive `pages-devnet.spec.ts` cases,
+`docs/user/product-guide.md` restore section, `docs/pages/RELEASE_MATRIX.md` rows for GP-PAGES-02 and this entry.
+Not owned: payment recovery (#635, `claude/p1-late-reconciliation`), Spec 18 payment-key exports (#622), idle-lock
+suspended-signer path (#544/#365/#577/#596), `flows.spec.ts`, `core-journey.spec.ts`, Pay/wallet/journal files.
+Conflict rule: main's #314 operation ownership (verification shares the single operation slot) is kept; #530's
+independent verification controller is not. Verify is disabled while an unlock is pending instead of cancelling it.
+Acceptance: keystore codec typed errors, panel-local verification status that never survives a seller change or a
+file switch, typed deletion of an unrelated or locked vault, leave-page warning without a verified external copy,
+fresh-profile restoration and derived-address consistency; focused unit, typecheck, lint, build and hosted CI.
+
 # REV-L2 — checkout with a stale payment-attempt mirror
 
 Codex, branch `codex/checkout-rev-l2-durable-preflight`, stacked on #500 at
@@ -394,6 +410,32 @@ Source: PR #372 head `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` (Spec 18 K01–K
 Owned paths: `packages/ux-vault/src/stealth-export-portable*` and its export entries; `apps/web/src/lib/{stealthExport,paymentKeyExport}*`; `apps/web/src/components/StealthExport*`; additive export authorization in `apps/web/src/lib/keyVault.ts` and `apps/web/src/lib/session.ts`; export mounts in `apps/web/src/views/{Scan,SellerKeys}.tsx`; matching locale/security keys; `scripts/recovery/*`; `docs/handoffs/P0_KEYS_SPEC18_EXTRACTION_20261123.md`.
 Not owned: M1 journal paths claimed by `claude/keen-volta-8ctx9x` (PR #500), privacy/network-authorization lineage of #372, Sweep, relayer, contracts, hosting kit.
 Acceptance: encrypted single/archive/master export and raw-key export behind re-authentication; recovery of any export in a fresh session; standalone decoder recovers signing authority with GhostPay session cleared (anvil-backed); tampered/wrong-passphrase/oversize/wrong-chain inputs refused; existing main RPC client only (no new endpoint, no fallback); full web + ux-vault gates; independent review; merge only under the integration lock.
+
+# GP-PAGES-02 seller recovery and sole-copy safeguards
+
+Worker: Codex on `codex/gp-pages-02-recovery-proof`, based on #540 at `8daebb0fa4a1cc1f771dbe724dede67f00028298` (child of #530). Main was `f76904301cff0b24d65ea4e31cbf37d470db4d95` at discovery. #539/#560 own individual payment exports. #577 retains the sole invoice signer inside #544's existing recovery-only idle state. This branch uses #260's close/reload guard and the existing Pages/Anvil restoration journey. Both changes go through their respective owners.
+
+Owned paths: AppShell's beforeunload check, Seller Keys vault deletion and tests, corresponding security strings, the Pages recovery journey and recovery documentation. Acceptance: a download alone keeps the leave-page warning armed, a failed or unrelated file installs nothing, typed destructive confirmation protects a locked vault, same-meta/different-signer deletion fails closed, and the restored profile signs from the original payment address. No release, deployment or owner-branch writes.
+
+---
+
+# Seller Keys file-switch browser regression
+
+Worker: Codex, branch `codex/seller-keys-file-switch-browser`, based on PR #530 at `88f7d1b496a1452f062d472d78e99b5401c61e35`. Main at discovery: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Owned paths: `apps/web/e2e/recovery.spec.ts` and this entry. Exercise the owner's existing verification UI with two genuine synthetic seller exports. After unlocking A and verifying A's file, selecting B must remove the success before another submission. B's own passphrase must produce the seller mismatch while A's public identity and serialized IndexedDB vault remain intact. Target #530's branch for owner integration.
+
+---
+
+# GP-PAGES-02 — selected seller keystore recovery verification (2026-11-23)
+
+Worker and integrator: Codex. Branch: `codex/ghostpay-keystore-verification-20261123`. Refreshed main base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+
+Scope: `apps/web/src/views/SellerKeys.tsx`, the existing v1 codec in `packages/ux-vault/src/keystore-portable.ts`, localized messages, regression tests and this handoff. Main already authenticates a bounded encrypted keystore, derives and compares seller identities and clears transient key bytes in `apps/web/src/lib/session.ts`. The selected file lacks a reliable result, typed format/key diagnostics and focused recovery-safety assertions. Verification must preserve loaded keys and saved vault ciphertext, with only matching files qualifying as a verified external copy.
+
+Coordination: Related open #365 `45ece45defd2a26cfb7f471ea4654ba4d1d2266e` and #504 `cdf1510116d84855ef6e579f80e0e05a0fb1a5f1` carry the operation-ownership lineage from #314/#333. Preserve those branches and avoid porting their unrelated save/unlock/export changes. #260 `f3bb7c662274c4a4394324c405b49517ad2b1461` reconciles the separate Spec 18 stealth-payment export work from #239/#240. Integration lock `082e754f44944ebb4be283f89176b966bf8f7b4f` was released at generation 12. No shared integration planned.
+
+Acceptance: real v1 export round-trip and identity match, unchanged vault, safe typed failures, cancelled plaintext cleanup and distinct per-file UI states. Run focused and repository typecheck, lint, build, browser, bundle and committed-secret checks. Obtain independent exact-head review.
 
 ---
 
@@ -3164,3 +3206,12 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 ### 2026-11-24 bounded deployment diagnostic completion
 
 `/root/historical_review` qualified `e65214c2f13bd7724aec42032e6cfcb40e87aba5`, tree `088fa581964a891a793bdeaef879a42bf1c20725`, on `integration/neutral-deployment-diagnostic-20261124`. The three selected source/test files remain exact #619 postimages. All 45 existing focused cases passed in four files with zero skips; full web typecheck and typed lint passed. Independent `/root/ownership_review` source approval is recorded. The helper currently has only test callers, and the live manifest readback path is unchanged. Reused web dependencies retain cookie 0.4.2, so these results make no whole-lock/cookie-override installation claim. The completed cookie branch/private qualification remains preserved; no root/main/remote changes were made. Handoff: `docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md`; source-pinned raw evidence is adjacent. Final combined hosted acceptance and promotion remain with the coordinator.
+
+
+
+## #573 browser fixture continuation — 2026-11-24
+
+- Worker: sequential ChatGPT recovery QA; isolated branch `automation/20261124-recovery-573/qa/beforeunload-fixture`; exact parent `56fb25aa2ff098737dbc181fa88c0aac06425c8e`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+- Own only the hostile-text test in `apps/web/e2e/app.spec.ts`, this additive claim and a new source-pinned handoff. #573 owns the actual sole-copy guard; #622 owns archive/master recovery and does not touch this test. No existing branch edits or shared integration.
+- RED evidence: CI run 45334789740, jobs 138303654258 (lean) and 138303654348 (full), both abort at `openFresh` navigating to about:blank. The hostile-text test dismisses every dialog, including the intentional beforeunload warning newly introduced by #573.
+- Acceptance: explicitly accept only the expected beforeunload at deliberate fresh navigation, assert it occurred exactly once, continue recording/rejecting every unexpected dialog, retain the exact hostile-text/inert markup/no-XSS assertions. No production, workflow, timeout or security-gate changes. Exact-head hosted full/lean replay and independent review required.
