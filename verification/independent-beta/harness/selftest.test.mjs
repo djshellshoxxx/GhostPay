@@ -99,7 +99,7 @@ function fakeWorld() {
     lastClearSeq: { X: 0, C: 0 },
     clearedHashes: new Set(),
     hashes: { X: new Set(), C: new Set() },
-    closedAt: new Map(),
+    docEndedAt: new Map(),
     deliveredToOpenPage: new Set(),
     reorged: new Set(),
   };
@@ -147,7 +147,7 @@ test('oracle flags planted I4 (returned hash lost) and I3 (unknown record not sh
   const w = fakeWorld();
   const o = new Oracle(w);
   const h = '0x' + '3'.repeat(64);
-  w.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1 }));
+  w.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1 }));
   w.deliveredToOpenPage.add(h);
   o.checkObservations(0, { op: 'reload' }, { A: obsOf({}) });
   assert.ok(o.violations.some((v) => v.inv === 'I4'));
@@ -155,9 +155,9 @@ test('oracle flags planted I4 (returned hash lost) and I3 (unknown record not sh
   // Same, but the page closed within the record window: the hash may legitimately be missing (R5/A5).
   const w2 = fakeWorld();
   const o2 = new Oracle(w2);
-  w2.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1 }));
+  w2.wallet.handoffs.push(handoff(1, 'X', { hash: h, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1 }));
   w2.deliveredToOpenPage.add(h);
-  w2.closedAt.set(1, Date.now() - 9_500);
+  w2.docEndedAt.set('1:1', Date.now() - 9_500);
   o2.checkObservations(0, { op: 'reload' }, { A: obsOf({ journal: ['payment on chain 84532 · Outcome unknown'] }) });
   assert.equal(o2.violations.length, 0);
 });

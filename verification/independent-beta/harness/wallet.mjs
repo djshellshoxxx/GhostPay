@@ -74,12 +74,15 @@ export const BROWSER_SHIM = `(${browserShim.toString()})();`;
  *   reject                user rejection, code 4001, nothing broadcast
  */
 export class WalletController {
-  constructor({ chain, rng, tabOf, intentOf, pageIdOf, onDelivered }) {
+  constructor({ chain, rng, tabOf, intentOf, pageIdOf, docOf, onDelivered }) {
     this.chain = chain;
     this.rng = rng;
     this.tabOf = tabOf;
     this.intentOf = intentOf;
     this.pageIdOf = pageIdOf;
+    // docOf(page) = how many documents this page has loaded. A reply reaches the app only if the document that made
+    // the request is still the page's current document (harness fix H5: navigation, not just close, loses a reply).
+    this.docOf = docOf;
     this.onDelivered = onDelivered; // (hash) => void, called when a hash reply reaches a still-open page
     this.account = ACCOUNT_A;
     this.chainId = '0x14a34';
@@ -123,7 +126,7 @@ export class WalletController {
     const behaviour = this.nextSend;
     this.nextSend = 'ok';
     const hash = this.rng.hash32();
-    const handoff = { ...rec, intent: this.intentOf(tab), pageId: this.pageIdOf(page), params: tx, behaviour, hash: undefined, replied: false };
+    const handoff = { ...rec, intent: this.intentOf(tab), pageId: this.pageIdOf(page), doc: this.docOf(page), params: tx, behaviour, hash: undefined, replied: false };
     this.handoffs.push(handoff);
     const broadcast = behaviour !== 'reject' && behaviour !== 'hang-nobroadcast';
     if (broadcast) {
@@ -146,7 +149,7 @@ export class WalletController {
               handoff.replied = true;
               handoff.hash = hash;
               handoff.repliedAt = Date.now();
-              handoff.deliveredToOpenPage = !page.isClosed();
+              handoff.deliveredToOpenPage = !page.isClosed() && this.docOf(page) === handoff.doc;
               if (handoff.deliveredToOpenPage) this.onDelivered(hash);
               if (!broadcast) this.chain.submit(hash, { ...tx, from: tx.from ?? this.account });
               resolve({ ok: true, result: hash });
@@ -157,7 +160,7 @@ export class WalletController {
         handoff.replied = true;
         handoff.hash = hash;
         handoff.repliedAt = Date.now();
-        handoff.deliveredToOpenPage = !page.isClosed();
+        handoff.deliveredToOpenPage = !page.isClosed() && this.docOf(page) === handoff.doc;
         if (handoff.deliveredToOpenPage) this.onDelivered(hash);
         return { ok: true, result: hash };
     }

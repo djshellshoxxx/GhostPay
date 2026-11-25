@@ -47,6 +47,7 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
   const rng = new Rng(scenario.seed ?? hashName(scenario.name));
   const rpc = new MockRpc(chain);
   const pageIds = new WeakMap();
+  const docs = new WeakMap(); // page -> number of documents loaded (DOMContentLoaded; hash changes do not count)
   const tabOfPage = new WeakMap();
   let pageCounter = 0;
   const world = {
@@ -60,7 +61,7 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
     lastClearSeq: { X: 0, C: 0 },
     clearedHashes: new Set(),
     hashes: { X: new Set(), C: new Set() },
-    closedAt: new Map(),
+    docEndedAt: new Map(), // `${pageId}:${doc}` -> ms
     deliveredToOpenPage: new Set(),
     reorged: new Set(),
     dialogs: [],
@@ -71,6 +72,7 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
     tabOf: (p) => tabOfPage.get(p) ?? '?',
     intentOf: (tab) => world.intentOfTab[tab] ?? null,
     pageIdOf: (p) => pageIds.get(p),
+    docOf: (p) => docs.get(p) ?? 0,
     onDelivered: (h) => world.deliveredToOpenPage.add(h),
   });
   world.wallet = wallet;
@@ -87,8 +89,15 @@ async function runScenario(browser, origin, scenario, { withSuffix = true } = {}
     const newTab = async (label) => {
       const p = await context.newPage();
       pageIds.set(p, (pageCounter += 1));
+      docs.set(p, 0);
+      // A document ends when the page loads the next one or closes; I4's record window is measured to that end.
+      // (Measured at the next DOMContentLoaded, so slightly late: lenient towards the app, never stricter.)
+      p.on('domcontentloaded', () => {
+        world.docEndedAt.set(`${pageIds.get(p)}:${docs.get(p) ?? 0}`, Date.now());
+        docs.set(p, (docs.get(p) ?? 0) + 1);
+      });
       tabOfPage.set(p, label);
-      p.on('close', () => world.closedAt.set(pageIds.get(p), Date.now()));
+      p.on('close', () => world.docEndedAt.set(`${pageIds.get(p)}:${docs.get(p) ?? 0}`, Date.now()));
       p.on('dialog', (d) => {
         world.dialogs.push({ tab: label, type: d.type(), message: d.message().slice(0, 200) });
         // A reload/close/navigation step is a deliberate leave, so a leave-page warning is accepted. Any other dialog

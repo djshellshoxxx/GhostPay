@@ -153,7 +153,7 @@ export class Oracle {
       if (h.hash === undefined || h.repliedAt === undefined) continue;
       if (this.w.clearedHashes.has(h.hash)) continue;
       if (h.seq <= (this.w.lastClearSeq[h.intent] ?? 0)) continue;
-      const closedAt = this.w.closedAt.get(h.pageId);
+      const closedAt = this.w.docEndedAt.get(`${h.pageId}:${h.doc}`);
       const delivered = this.w.deliveredToOpenPage.has(h.hash);
       if (!delivered) continue; // reply went to a closed page: R5 allows the hash to be absent (A5)
       if (closedAt !== undefined && closedAt - h.repliedAt < RECORD_WINDOW_MS) continue;
