@@ -30,7 +30,7 @@ Each new test was shown failing against the pre-change source (source reverted t
 - typecheck and lint, exit code 0 for each of solana-stealth, chain-solana, chain-tron, cli.
 - chain-tron `npm test`: 6 files, 55/55 pass; coverage 100% statements (168/168), branches (107/107), functions (38/38), lines (140/140).
 - cli `vitest run --coverage --testTimeout=400000`: 37 files, 575 passed, 2 skipped (577); coverage statements 98.41%, branches 97.29%, functions 99.07%, lines 99.34%. (An earlier run with the default 60 s timeout had 5 timeouts in key-derivation tests under load; they pass with the longer timeout.)
-- chain-solana `npm test`: 106/113 pass; solana-stealth `npm test`: 130/137 pass. All 14 failures are `adapter-types.test.ts`, which reads `packages/chain-adapters/src/adapter.ts` with an LF-only regex and fails on this CRLF checkout (`core.autocrlf=true`); both files are unchanged by this work. Coverage was not reported for these two because the run failed; their results on Linux are left to hosted CI.
+- chain-solana `npm test` (final round, after the object-overload guard): 108/115 pass; solana-stealth `npm test` (earlier run): 130/137 pass. FC-03 local Windows re-run only; the donor recorded 111/111 on Linux and `packages/chain-solana/DEVIATIONS.md` keeps the donor numbers. All 14 failures are `adapter-types.test.ts`, which reads `packages/chain-adapters/src/adapter.ts` with an LF-only regex and fails on this CRLF checkout (`core.autocrlf=true`); both files are unchanged by this work. Coverage was not reported for these two because the run failed; their results on Linux are left to hosted CI.
 - `git diff --check origin/main...HEAD`: clean.
 
 ## Known limitations (reviewer nits, recorded not fixed)
@@ -42,3 +42,10 @@ Each new test was shown failing against the pre-change source (source reverted t
 - `decodeMetaAddress` without `expectedCluster` still parses mainnet addresses (needed to report and refuse them); only derivation refuses them.
 - `buildTrc20TransferRequest` and `deriveTronStealthPayment` stay exported; protection is a documentation warning plus the adapter's `MEMO_NOT_BOUND`.
 - Local `build:libs` incomplete; the full CI suite is the authority.
+
+## Final round (second review)
+- Object overload of chain-solana `deriveStealthPayment` refuses a decoded mainnet `SolanaMetaAddress` with `CHAIN_DISABLED` before any RNG draw (test counts draws; red then green: "expected function to throw an error, but it didn't"). The `CHAIN_DISABLED` message now reads "devnet, testnet and localnet only" (red then green).
+- `docs/remote/chain-ports/solana-impl.md` states the ADR-0017 derivation (Z=r*V, no cofactor step, SHA-256 view tag); `packages/solana-stealth/README.md` says the base64url memo is rejected as `INVALID_ANNOUNCEMENT` (only `gpsol:` meta-addresses get `LEGACY_META_ADDRESS`).
+- FC-03 claim owned paths extended; `DEVIATIONS.md` restored to the donor's status text (transient local results live only here).
+- Local, final round: chain-solana typecheck exit 0, lint exit 0; cli `chain-commands.test.ts` 45/45; chain-solana 108/115 (the 7 failures are the CRLF-sensitive `adapter-types.test.ts`).
+- Additional limitation: the chain-tron mainnet check in `createTronAdapter` is a denylist (chain id containing "mainnet"); an allowlist would be stronger. The adapter's payment build always throws `MEMO_NOT_BOUND` regardless.

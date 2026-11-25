@@ -3,7 +3,7 @@ import { hexToBytes, numberToBytesLE } from '@noble/curves/utils.js';
 import { describe, expect, it } from 'vitest';
 import { decodeAnnouncement } from './announcement.js';
 import { reduceDigest, reduceDigestNonZero } from './hash.js';
-import { encodeMetaAddress, generateStealthKeys, stealthKeysFromSecrets } from './keys.js';
+import { decodeMetaAddress, encodeMetaAddress, generateStealthKeys, stealthKeysFromSecrets } from './keys.js';
 import { decodeAddress, Point } from './point.js';
 import { seededRng } from './rng.testutil.js';
 import { L, scalarFromValue, scalarValue } from './secret.js';
@@ -187,6 +187,29 @@ describe('deriveStealthPayment is testnet-only for text meta-addresses', () => {
     const keys = generateStealthKeys(rng);
     const mainnet = encodeMetaAddress({ ...keys, cluster: 'mainnet' });
     expect(() => deriveStealthPayment(mainnet, rng)).toThrow(expect.objectContaining({ code: 'CHAIN_DISABLED' }));
+  });
+  it('refuses a decoded mainnet SolanaMetaAddress object before drawing any randomness', () => {
+    const keys = generateStealthKeys(rng);
+    const decoded = decodeMetaAddress(encodeMetaAddress({ ...keys, cluster: 'mainnet' }));
+    expect(decoded.cluster).toBe('mainnet');
+    let draws = 0;
+    const countingRng: typeof rng = {
+      getRandomValues: ((array: ArrayBufferView) => {
+        draws += 1;
+        return rng.getRandomValues(array);
+      }) as typeof rng.getRandomValues,
+    };
+    expect(() => deriveStealthPayment(decoded, countingRng)).toThrow(expect.objectContaining({ code: 'CHAIN_DISABLED' }));
+    expect(draws).toBe(0);
+  });
+  it('CHAIN_DISABLED message names every enabled cluster', () => {
+    const keys = generateStealthKeys(rng);
+    try {
+      deriveStealthPayment(encodeMetaAddress({ ...keys, cluster: 'mainnet' }), rng);
+      expect.unreachable();
+    } catch (e) {
+      expect((e as Error).message).toBe('Solana cluster is not enabled (devnet, testnet and localnet only)');
+    }
   });
   it('still derives for devnet, testnet and localnet', () => {
     const keys = generateStealthKeys(rng);

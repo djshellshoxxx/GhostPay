@@ -39,7 +39,7 @@ const MESSAGES: Readonly<Record<SolanaStealthErrorCode, string>> = {
   ZERO_STEALTH_KEY: 'derived stealth key is zero',
   KEY_REUSE: 'spending and viewing keys must be distinct',
   KEY_MISMATCH: 'secret key does not match the expected public key',
-  CHAIN_DISABLED: 'Solana cluster is not enabled (devnet/testnet only)',
+  CHAIN_DISABLED: 'Solana cluster is not enabled (devnet, testnet and localnet only)',
   INVALID_INVOICE: 'invalid Solana invoice',
   ABORTED: 'operation aborted',
   RNG_UNAVAILABLE: 'no secure random source available',

@@ -1,7 +1,7 @@
 # FC-03 — Solana/TRON meta-address and memo interoperability alignment (2026-11-25 UTC)
 
 - Worker: fc03. Branch: `claude/fc03-chain-interop-20261125`. Base: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f` (origin/main). Donor: PR #376 head `f717157271fe494eb8094e504e9fec8276d51fcc`, merged with `--no-ff`.
-- Owned paths: the donor's 34 source paths (Solana/TRON libraries, adapters, CLI inspection), this claim, `docs/consolidation/feature-completion-20261125/FC-03-chain-interop.md`.
+- Owned paths: the donor's 34 source paths (Solana/TRON libraries, adapters, CLI inspection), this claim, `docs/consolidation/feature-completion-20261125/FC-03-chain-interop.md`, plus follow-up paths `packages/solana-stealth/README.md`, `packages/solana-stealth/src/meta-address.ts`, `packages/solana-stealth/src/stealth.test.ts` and `docs/remote/chain-ports/solana-impl.md`.
 - Excluded: apps/web, contracts, workflows, root manifests/lockfile.
 - Acceptance: Solana/TRON/CLI workspace tests, typecheck and lint pass with coverage thresholds held; web and library vectors agree; TRON build stays fail-closed (`MEMO_NOT_BOUND`); no mainnet enablement. Testnet/proof-of-concept only.
 

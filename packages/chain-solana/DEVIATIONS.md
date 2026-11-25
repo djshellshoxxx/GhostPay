@@ -1,7 +1,7 @@
 # Deviations, verification status and threat notes (chain-solana)
 
-Status (donor numbers, 2026-11-18, TB-08, not re-measured here: 111 tests; coverage 99.41% statements, 98.99% branches,
-98.41% functions, 99.64% lines). FC-03 local re-run (Windows, 2026-11-25): 106 of 113 tests pass; the 7 failures are the CRLF-sensitive `adapter-types.test.ts` drift test, and coverage was not reported because the run failed. **Proof of concept: not audited, never run against a cluster.**
+Status (2026-11-18, TB-08): typecheck, lint and tests pass; 111 tests; coverage 99.41% statements, 98.99% branches,
+98.41% functions, 99.64% lines. **Proof of concept: not audited, never run against a cluster.**
 
 ## 0. Format consolidation with `@ghostpay/solana-stealth` (TB-08, 2026-11-18)
 

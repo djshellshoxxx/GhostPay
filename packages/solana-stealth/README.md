@@ -6,8 +6,8 @@ This package is a **proof of concept** of dual-key ed25519 stealth payments for 
 (with a cluster byte and checksum) and `gpst1:` + base58 memos, and the same derivation. Shared vectors
 (`test-vectors/meta-address-sol-tron-v1.json`, `test-vectors/solana-stealth.json`) are checked from both sides by
 `packages/chain-solana/src/interop.test.ts`. This package is the one imported by the web app (`apps/web`); the CLI
-imports `@ghostpay/chain-solana`. The older `gpsol:` meta-address and base64url memo format is gone and is rejected
-by `@ghostpay/chain-solana` with `LEGACY_META_ADDRESS`. Testnet and proof of concept only.
+imports `@ghostpay/chain-solana`. The older `gpsol:` meta-address is rejected by `@ghostpay/chain-solana`
+with `LEGACY_META_ADDRESS`; the old base64url memo is rejected as `INVALID_ANNOUNCEMENT`. Testnet and proof of concept only.
 
 ## What it does
 
