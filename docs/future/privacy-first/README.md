@@ -14,18 +14,20 @@
 6. All public formats are versioned, bounded, domain-separated, replay-resistant and backwards compatible where possible. New cryptography and real-value contract changes need accepted ADRs, independent vectors and review.
 7. No work starts on these proposals without a **new explicit owner instruction**, updated code/PR comparison, scoped security and threat-model review, tests, and separate release authorization.
 
-## Owner release exclusions — 2026-11-25
+## Owner release exclusions — expanded 2026-11-25
 
-F01, F09 and F13 are permanently archived. F08, F11, F12 and F14 are deferred beyond v1.0. All seven are stop-work and excluded from beta and v1.0. Preserve history; no feature development, integration or activation. Existing code must remain dormant and disabled. Explicit owner authorization is required to reverse either status. See [binding engineering instructions](../../../AGENTS.md).
+The owner has stopped all feature work on **F01, F02, F04, F08/F8, F09, F11, F12, F13, F14 and P07**. F01/F09/F13 retain their earlier permanent-archive status; F08/F11/F12/F14 retain their earlier deferral beyond v1.0; F02/F04/P07 are now archived indefinitely. All ten are excluded from beta and v1.0. Preserve source and history, keep integrated code dormant/disabled, and do not count completion as a release requirement. No automatic resumption: a new explicit owner instruction is required.
+
+P07 is encrypted device synchronization, outside this F-series catalog. It is not F07 GhostPayouts and does not include ordinary encrypted backup/import or local cross-tab payment integrity. F12 stops GhostPay's P2P-Offramp integration only. See [the canonical stop-work directive](../../ai/STOP_WORK_20261125.md) and [binding engineering instructions](../../../AGENTS.md).
 
 ## Catalog
 
 | No. | Future spec | Status |
 |---|---|---|
 | 01 | [GhostTips: privacy-first donations and tips](01-ghosttips.md) | **ARCHIVED — STOP WORK** |
-| 02 | [GhostStore: privacy-first static storefronts](02-ghoststore.md) | **FUTURE ONLY** |
+| 02 | [GhostStore: privacy-first static storefronts](02-ghoststore.md) | **ARCHIVED — STOP WORK** |
 | 03 | [Universal private payment links and QR](03-private-payment-links.md) | **FUTURE ONLY** |
-| 04 | [Private local merchant dashboard](04-merchant-dashboard.md) | **FUTURE ONLY** |
+| 04 | [Private local merchant dashboard](04-merchant-dashboard.md) | **ARCHIVED — STOP WORK** |
 | 05 | [GhostProof: selective-disclosure payment evidence](05-ghostproof.md) | **FUTURE ONLY** |
 | 06 | [Encrypted offline backup and complete recovery](06-encrypted-backups.md) | **FUTURE ONLY** |
 | 07 | [GhostPayouts: private multi-recipient payouts](07-ghostpayouts.md) | **FUTURE ONLY** |
@@ -43,4 +45,4 @@ F01, F09 and F13 are permanently archived. F08, F11, F12 and F14 are deferred be
 
 ## Existing work and status
 
-The current code and active PRs take precedence for implementation status. Existing plans include [post-launch concepts](../../POST_LAUNCH_FEATURES_SECURITY_ROADMAP.md), [usability specifications](../../remote/usability/specs/README.md), [privacy limits](../../user/privacy-limits.md), and [technical proposals](../../specs/ideas/README.md). This catalog does **not** change current milestones, existing tests, task queues, merge decisions or active automation scope.
+The current code and active PRs take precedence for implementation status. Existing plans include [post-launch concepts](../../POST_LAUNCH_FEATURES_SECURITY_ROADMAP.md), [usability specifications](../../remote/usability/specs/README.md), [privacy limits](../../user/privacy-limits.md), and [technical proposals](../../specs/ideas/README.md). The proposals themselves do **not** authorize implementation or change milestones. The newer owner stop-work directive above **does** override older task queues, completion instructions, merge plans and automation scope for the stopped features. All other entries remain future-only unless separately authorized.
