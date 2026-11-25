@@ -279,7 +279,8 @@ export function AppShell(props: AppShellProps): ReactNode {
   // One gate scope for the life of the shell: a connected wallet keeps working across key or settings changes, which
   // each view's own authority checks handle. Such a change only cancels a review that is open at that moment.
   const [walletDisclosureScope] = useState(() => ({}));
-  const walletDisclosureRevision = useMemo(() => ({ session, settings }), [session, settings]);
+  // A new view or invoice fragment cancels an open review too: it was requested for what was on screen before.
+  const walletDisclosureRevision = useMemo(() => ({ session, settings, view, fragment }), [session, settings, view, fragment]);
 
   return (
     <AppContext.Provider value={state}>

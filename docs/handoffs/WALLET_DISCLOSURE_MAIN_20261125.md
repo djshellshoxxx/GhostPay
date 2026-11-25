@@ -39,6 +39,20 @@ regression tests (`wallet.disclosure.review.test.ts`) and mutation checks; see t
   the gate. Pay asserts the shown sequence for native, ERC-20 approve-then-pay and permit flows; the dialog suite
   covers presence before any provider call, cancel, Escape, focus return, scope change and app lock.
 
+### PR B independent review (AI-assisted, not a professional audit)
+
+No path to the wallet without the gate and no approval without a click. Fixed: a source check
+(`walletDisclosure.callsites.test.ts`) fails if a production `connectWallet` call omits the gate, and Registry and
+Policy tests assert the shown sequence (mutation-checked); a view or invoice change cancels an open review, and Pay
+and Registry pass their flow guards to `connectWallet`; a review requested while the page is hidden waits until it
+is visible (an automatic follow-up after a mined approval no longer fails); the dialog handles Tab and Escape in the
+capture phase ahead of background key traps; one dialog element per request; the unit approver finds the button by
+role, so localized suites work.
+
+Left as is: no activation delay on Continue (a double click could approve an immediately following network-switch
+review; sends always need their own Send click). Pre-existing, full build only: a policy withdrawal holds the
+cross-tab journal lock while its review is open (up to two minutes), so other tabs' journal writes wait.
+
 ## Not done / for others
 
 - User documentation of the dialog and of wallet-extension RPC traffic: W3 (ghostpay-backup-60) owns the docs and

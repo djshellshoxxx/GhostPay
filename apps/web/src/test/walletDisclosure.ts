@@ -25,8 +25,9 @@ export function useAutoApprovedWalletDisclosures(): DisclosureRecorder {
   const approveVisible = (): void => {
     const dialog = document.querySelector('.wallet-disclosure-dialog');
     if (dialog === null || seen.has(dialog)) return;
-    const button = [...dialog.querySelectorAll('button')].find((b) => b.textContent === 'Continue to wallet');
-    if (button === undefined) return;
+    // By role in the dialog, not by text, so localized suites work too.
+    const button = dialog.querySelector<HTMLButtonElement>('.wallet-disclosure-actions .btn.primary');
+    if (button === null) return;
     seen.add(dialog);
     methods.push(dialog.querySelector('dd code')?.textContent ?? '?');
     // Outside the observer callback, so React has committed the dialog before the click arrives.

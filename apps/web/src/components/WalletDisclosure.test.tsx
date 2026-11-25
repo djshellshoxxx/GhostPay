@@ -2,7 +2,7 @@
 import { useState, type ReactNode } from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { WalletDisclosureProvider, useWalletDisclosure } from './WalletDisclosure';
 import { notifyAppLock } from '../lib/appLock';
 import { connectWallet, sendViaWallet, type WalletInfo, type WalletSession } from '../lib/wallet';
@@ -47,6 +47,22 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     expect(provider.calls[0]?.method).toBe('eth_requestAccounts');
     expect(screen.queryByRole('dialog')).toBeNull();
     await waitFor(() => { expect(document.activeElement).toBe(opener); });
+  });
+  it('waits for a hidden page to become visible before showing a review, then shows it', async () => {
+    const provider = new MockWallet(); render(<App provider={provider} scope={{}} />);
+    const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    try {
+      fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
+      await act(async () => { await new Promise((resolve) => setTimeout(resolve, 20)); });
+      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(screen.getByText('Ready')).toBeTruthy();
+      visibility.mockReturnValue('visible');
+      act(() => { document.dispatchEvent(new Event('visibilitychange')); });
+      const dialog = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+      expect(provider.calls).toEqual([]);
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Continue to wallet' }));
+      await screen.findByText('Connected');
+    } finally { visibility.mockRestore(); }
   });
   it('Escape cancels without disclosing accounts and leaves the app usable', async () => {
     const provider = new MockWallet(); render(<App provider={provider} scope={{}} />);

@@ -134,7 +134,8 @@ export function RegistryView(): ReactNode {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     const guard = captureAuthority();
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId, undefined, undefined, { disclosure: walletDisclosure }).then(
+    // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
+    connectWallet(w, chainId, guard, undefined, { disclosure: walletDisclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);

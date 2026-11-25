@@ -731,7 +731,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const invoice = parsed?.invoice;
     setError(undefined);
     setStatus({ key: 'pay.status.walletWaiting' });
-    connectWallet(w, chainId, undefined, undefined, { disclosure: walletDisclosure }).then(
+    // A changed invoice, flow or session ends an open review and the connection; the handlers below then stay silent.
+    const connectionCurrent = (): void => {
+      sessionGuard();
+      if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
+    };
+    connectWallet(w, chainId, connectionCurrent, undefined, { disclosure: walletDisclosure }).then(
       (s) => {
         try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;

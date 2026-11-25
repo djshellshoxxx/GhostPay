@@ -16,7 +16,7 @@ import { makeServices, renderApp } from '../../test/render';
 import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
 
 // Suites written before the wallet disclosure gate approve each real dialog as a user would.
-useAutoApprovedWalletDisclosures();
+const disclosures = useAutoApprovedWalletDisclosures();
 
 const SEPOLIA = 11155111;
 const TYPEHASH_CALL = keccak256(toBytes('ERC6538REGISTRY_ENTRY_TYPE_HASH()')).slice(0, 10);
@@ -125,6 +125,8 @@ describe('Registry view', () => {
     expect(wallet.sent?.['to']).toBe(ERC6538_REGISTRY_ADDRESS);
     expect(wallet.sent?.['data']).toBe(call.data);
     expect(wallet.sent?.['value']).toBe('0x0');
+    // Account access and the registry transaction were each shown and approved before reaching the wallet.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
   });
 
   it('does not publish if consent is withdrawn during the wallet network recheck', async () => {

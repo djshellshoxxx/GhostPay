@@ -19,7 +19,7 @@ import { preparePolicyPayment } from './pay';
 import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
 
 // Suites written before the wallet disclosure gate approve each real dialog as a user would.
-useAutoApprovedWalletDisclosures();
+const disclosures = useAutoApprovedWalletDisclosures();
 
 const LABEL = 'Policy accounts (experimental)';
 const a1 = account('acct-001');
@@ -86,6 +86,8 @@ describe('policy view: session guard before the wallet request', () => {
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     expect(await screen.findByText(/Payment submitted/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
+    // The refused first send never reached a review; the fresh one was shown before the wallet was asked.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
   });
 
   it('refuses an account deployment when the keys are re-imported during the wallet re-check', async () => {

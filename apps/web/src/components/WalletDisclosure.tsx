@@ -11,6 +11,19 @@ const WalletDisclosureContext = createContext<WalletDisclosureGate>(unavailable)
 /** Production callers must supply this gate; a missing or unmounted presenter never approves a request. */
 export const useWalletDisclosure = (): WalletDisclosureGate => useContext(WalletDisclosureContext);
 
+/** Resolves once the page is visible; rejects as cancelled if `signal` aborts first. */
+function untilVisible(signal?: AbortSignal): Promise<void> {
+  if (document.visibilityState === 'visible') return Promise.resolve();
+  return new Promise<void>((resolve, reject) => {
+    const done = (): void => { document.removeEventListener('visibilitychange', onChange); signal?.removeEventListener('abort', onAbort); };
+    const onChange = (): void => { if (document.visibilityState === 'visible') { done(); resolve(); } };
+    const onAbort = (): void => { done(); reject(new UserFacingError({ key: 'wallet.disclosure.cancelled' })); };
+    if (signal?.aborted === true) { onAbort(); return; }
+    document.addEventListener('visibilitychange', onChange);
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
+}
+
 /** Moves focus to the page's main heading when the control that opened the review is gone. */
 function focusPageHeading(): void {
   const heading = document.querySelector<HTMLElement>('main h2, main h1, h2, h1');
@@ -28,12 +41,15 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
   const request = props.pending.request;
   useLayoutEffect(() => {
     cancel.current?.focus();
+    // Capture phase on window, ahead of the background's own document-level key traps (QR view, help), which are
+    // inert while the dialog is open but still listen.
     const onKey = (event: KeyboardEvent): void => {
-      if (event.defaultPrevented) return;
       if (event.key === 'Escape') {
         event.preventDefault();
+        event.stopPropagation();
         props.controller.cancel(props.pending);
       } else if (event.key === 'Tab') {
+        event.stopPropagation();
         const controls = [...(dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled), summary, [tabindex="0"]') ?? [])];
         const first = controls[0]; const last = controls[controls.length - 1];
         const outside = !dialog.current?.contains(document.activeElement);
@@ -44,10 +60,10 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
     const onFocus = (event: FocusEvent): void => {
       if (event.target instanceof Node && !dialog.current?.contains(event.target)) cancel.current?.focus();
     };
-    document.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
     document.addEventListener('focusin', onFocus);
     return () => {
-      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onKey, true);
       document.removeEventListener('focusin', onFocus);
     };
   }, [props.controller, props.pending]);
@@ -120,6 +136,9 @@ export function WalletDisclosureProvider(props: { readonly scope: unknown; reado
   const [controller] = useState(() => new WalletDisclosureController());
   const pending = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot);
   const opener = useRef<Element | null>(null);
+  // One dialog element per request: nothing (an open <details>, focus) carries over to the next review.
+  const keys = useRef(new WeakMap<PendingWalletDisclosure, number>());
+  const nextKey = useRef(0);
   const scope = useRef(props.scope);
   scope.current = props.scope;
   const gate = useMemo<WalletDisclosureGate>(() => {
@@ -128,6 +147,9 @@ export function WalletDisclosureProvider(props: { readonly scope: unknown; reado
       if (scope.current !== captured || document.visibilityState !== 'visible') throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
     };
     return async (request, signal) => {
+      // A review is never shown to a hidden page; a request made meanwhile (an automatic follow-up after an approval
+      // was mined) waits for the page to be visible again instead of failing.
+      await untilVisible(signal);
       assertScope();
       // Capture before rendering inert; browsers may move focus as soon as the opener becomes inert.
       if (controller.getSnapshot() === undefined) opener.current = document.activeElement;
@@ -159,8 +181,15 @@ export function WalletDisclosureProvider(props: { readonly scope: unknown; reado
     };
   }, [controller]);
   const shown = pending !== undefined;
+  const dialogKey = (value: PendingWalletDisclosure): number => {
+    const known = keys.current.get(value);
+    if (known !== undefined) return known;
+    const key = ++nextKey.current;
+    keys.current.set(value, key);
+    return key;
+  };
   return <WalletDisclosureContext.Provider value={gate}>
     <div inert={shown} aria-hidden={shown ? true : undefined}>{props.children}</div>
-    {shown && <DisclosureDialog pending={pending} controller={controller} opener={opener.current} />}
+    {shown && <DisclosureDialog key={dialogKey(pending)} pending={pending} controller={controller} opener={opener.current} />}
   </WalletDisclosureContext.Provider>;
 }
