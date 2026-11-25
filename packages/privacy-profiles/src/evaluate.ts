@@ -162,11 +162,10 @@ function cmpIssue(a: Issue, b: Issue): number {
  * that are not a Set) is blocking and is replaced by its most restrictive form, so it can only block, never allow.
  */
 export function evaluate(selIn: Selection, ctxIn: Context): Evaluation {
-  return deepFreeze(evaluateRaw(selIn, ctxIn));
+  return deepFreeze(run(selIn, ctxIn).evaluation);
 }
 
-/** Same as {@link evaluate} without freezing the result; used inside loops that discard it. */
-export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
+function run(selIn: Selection, ctxIn: Context): { readonly evaluation: Evaluation; readonly applied: AppliedValue[] } {
   const { selection: sel, problems: selProblems } = normalizeSelection(selIn);
   const { context: ctx, problems: ctxProblems } = normalizeContext(ctxIn);
   const issues: Issue[] = [];
@@ -220,6 +219,7 @@ export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
     });
   }
 
+  const applied: AppliedValue[] = [];
   const trust: TrustParty[] = [];
   const hides: LeakKey[] = [];
   const dnh: LeakKey[] = [];
@@ -253,7 +253,9 @@ export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
       if (w !== 'privacy.warn.testnetOnly') issues.push({ code: 'W_VALUE', key: w, options: [id] });
     }
     for (const a of vd.acks) acksNeeded.set(a, [...(acksNeeded.get(a) ?? []), id]);
-    trust.push(...trustOf(id, vd, st));
+    const effectiveTrust = trustOf(id, vd, st);
+    applied.push({ option: id, value, def: vd, trust: effectiveTrust });
+    trust.push(...effectiveTrust);
     hides.push(...vd.hides);
     dnh.push(...vd.doesNotHide);
     strength.push(vd.strength);
@@ -276,7 +278,7 @@ export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
   }
   dedup.sort(cmpIssue);
   const blocking = dedup.filter((i) => i.code.startsWith('E_'));
-  return {
+  const evaluation: Evaluation = {
     ok: blocking.length === 0,
     blocking,
     warnings: dedup.filter((i) => i.code.startsWith('W_')),
@@ -288,6 +290,30 @@ export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
     strength: uniqSorted(strength),
     specCopyKeys: uniqSorted(copy),
   };
+  return { evaluation, applied };
+}
+
+/** Same as {@link evaluate} without freezing the result; used inside loops that discard it. */
+export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
+  return run(selIn, ctxIn).evaluation;
+}
+
+/** A non-default value that is in scope for the action and active, with its catalogue definition. */
+export interface AppliedValue {
+  readonly option: OptionId;
+  readonly value: string;
+  readonly def: ValueDef;
+  /** Parties this value relies on, including the pool submitter the default `poolSubmit=relayer` implies. */
+  readonly trust: readonly TrustParty[];
+}
+
+/**
+ * The evaluation together with the values that actually take effect (non-default, in scope, active), in catalogue order.
+ * Consent and capability claims are derived from exactly this list, so they cannot disagree with `trust` and `acks`.
+ */
+export function evaluateWithApplied(selIn: Selection, ctxIn: Context): { readonly evaluation: Evaluation; readonly applied: readonly AppliedValue[] } {
+  const { evaluation, applied } = run(selIn, ctxIn);
+  return deepFreeze({ evaluation, applied });
 }
 
 /** Adds one extra blocking issue to an evaluation (used by option setters). */
