@@ -1,0 +1,118 @@
+{
+  "observation": "2026-11-25T07:03Z cycle",
+  "main": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+  "lease": {
+    "sha": "e6865193bfdd9a0c2dd89bb15d92b8521adce3a8",
+    "generation": 21,
+    "status": "released",
+    "acquired": false
+  },
+  "previous": "ee0688c241820b2ab9baa2b5014ec728935cd359",
+  "branch_count": 732,
+  "open_pr_count": 264,
+  "prior_provisional_dispositions": 516,
+  "arithmetic_remainder": 216,
+  "classification_note": "Paginated branch and open PR collections through empty terminal pages; unique names/numbers. Not independently cross-checked against matching-refs this cycle. Historical dispositions carried, not fresh semantic count.",
+  "new_branches": [
+    [
+      "automation/20261125T0637Z/qa/account-privacy-signer-pin",
+      "724afdcf557178d8b78d841b681f50e99d41935f"
+    ],
+    [
+      "docs/privacy-profile-decisions-20261124",
+      "be04d1167aeb24025f5a4970833ebb2dbb98af70"
+    ]
+  ],
+  "advanced_branches": [
+    [
+      "claude/fc03-chain-interop-20261125",
+      "2a6b33b74addf48501cb3ebcd62267836960e21f"
+    ],
+    [
+      "claude/feature-completion-20261125",
+      "f424b47c674b96fa49379e604288539c63cf2513"
+    ],
+    [
+      "claude/p0-keys-independent-recovery",
+      "efd42a556ff92d24ddec4f7a16775e794cb2f358"
+    ],
+    [
+      "claude/p1-late-reconciliation",
+      "cefd0191af8659aabc750f7f5103d85f75555fa2"
+    ],
+    [
+      "ledger/consolidation-snapshot-20261124-0418",
+      "ee0688c241820b2ab9baa2b5014ec728935cd359"
+    ]
+  ],
+  "main_ci": {
+    "run": 45550136003,
+    "attempt": 2,
+    "conclusion": "success",
+    "updated_at": "2026-11-25T06:48:59Z",
+    "web_job": 139024465583,
+    "aggregate_job": 139030542841,
+    "web_tests_passed": 3289,
+    "web_tests_skipped": 1,
+    "additional_tests_passed": 3,
+    "repair_595": "still open, same head 534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c; passing rerun does not resolve prior teardown race"
+  },
+  "integration": {
+    "614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "checks": "8 success, 13 skipped",
+      "reviews": 0,
+      "detached": "e65435cc768edd9e1b55583e2dbf4e8fcaf8e644",
+      "status": "await independent approval and coordinator adoption"
+    },
+    "615": {
+      "merged": true,
+      "merge": "7b4af29882ad2e7acefdcb83d5a949cd516d100f",
+      "security": "historical 7 high alerts unresolved"
+    },
+    "616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "checks": "36 success, 3 skipped, CodeQL failure 7 high"
+    },
+    "617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "checks": "36 success, 3 skipped, CodeQL failure 7 high"
+    }
+  },
+  "sweep": {
+    "pr": 649,
+    "head": "5613341bd286571f77680eb8a17b640f530bcedd",
+    "checks": "38 success, 3 skipped, 1 in progress",
+    "original_privacy_test_blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+    "original_tests_exact_in": [
+      231,
+      238,
+      649
+    ],
+    "disclosure_fix": "Both localized row and legacy English summary are click-only; stale assertions corrected; quote/signing scope guards added. Source verification only.",
+    "distinct_obligation": "Scan range padding in #238 (scanPrivacy.ts blob c3722a0c58730f5cae7cdba506b2571a5959341f) absent in main and #649. #222 and #249 retain padRange and four named padding regressions; #238 also has settings normalization test. #222 has 7 failed checks, #249 4; preserve distinct TM scan padding work and verify owner/dependencies, no wholesale promotion."
+  },
+  "new_prs": [
+    {
+      "n": 650,
+      "head": "225383a9ad621acd0654e2e22f6fe756c4fff307",
+      "status": "draft F03 signed file interchange, existing FC01 owner"
+    },
+    {
+      "n": 651,
+      "head": "be04d1167aeb24025f5a4970833ebb2dbb98af70",
+      "status": "draft policy proposal only, no owner approval inferred"
+    },
+    {
+      "n": 652,
+      "head": "724afdcf557178d8b78d841b681f50e99d41935f",
+      "status": "draft fixture recovery stacked on #645, existing QA owner"
+    }
+  ],
+  "limitations": [
+    "Git ls-remote fails DNS resolution in local container; no new runtime tests.",
+    "No independent review available for #614; no merge or branch edits outside owned ledger.",
+    "Branch protection administrative endpoint returns 403; metadata advertises no required contexts; no native auto-merge."
+  ],
+  "actions": "Preserve prior checkpoints and all outstanding ownership obligations. Continue #614-first, repair #595 through original owner, retain CodeQL gates, separate padding from Sweep consent; no deployment, branch deletion, force push or lock acquisition."
+}
