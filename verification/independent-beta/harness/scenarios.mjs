@@ -135,6 +135,21 @@ export const NAMED = [
       { op: 'check', tab: 'A', intent: 'X' },
     ],
   },
+  {
+    name: 'N10-one-clear-two-tabs-race',
+    why: 'R25/R19: one deliberate clear authorizes at most one further wallet request across both tabs',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'error-after-broadcast' },
+      { op: 'open', tab: 'B', intent: 'X' },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'clear', tab: 'B', intent: 'X', accept: true },
+      { op: 'send', tab: 'A', behaviour: 'hang-broadcast' },
+      { op: 'send', tab: 'B', behaviour: 'ok' },
+      { op: 'release' },
+      { op: 'mine' },
+    ],
+  },
 ];
 
 /** Random middle step alphabet with weights; every op is bounded (no unbounded waits or loops). */
