@@ -1,0 +1,158 @@
+{
+  "checkpoint": "2026-11-25T06:04Z",
+  "previous_checkpoint": "c86cdfb127748ac58e77fdb66a8f633724350f7a",
+  "previous_ledger_ref": "a1fdc04a257f660f07a6ad01961aa9105aeb37b0",
+  "note": "Previous checkpoint exists as direct child of observed ledger ref; preserve it as parent, no force. PR #380's separate master ledger at 80dd9eb9669fba0171a037b0b690d17a7e2b655e remains untouched; respect its recorded shared-target hold.",
+  "main": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+  "main_tree": "fc0fc1eb674a3bac265da6bc7b40d494e71adb0b",
+  "branch_snapshot": {
+    "path": "docs/consolidation/autonomous-20261121/branch-refs-20261125T0604Z.json",
+    "blob": "9ed611f7cb61d03f1ac4a895f7a04e43651423b3",
+    "branch_pages": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      30
+    ],
+    "git_refs_count": 730,
+    "matched": 730,
+    "open_pr_pages": [
+      100,
+      100,
+      62
+    ],
+    "open_pr_count": 262,
+    "previous_provisional_classified": 516,
+    "arithmetic_remainder": 214,
+    "limitations": "Prior classifications not revalidated; arithmetic remainder is not global unresolved source obligations; full divergence/semantic census not complete."
+  },
+  "lock": {
+    "head": "e6865193bfdd9a0c2dd89bb15d92b8521adce3a8",
+    "generation": 21,
+    "status": "released",
+    "acquired_by_this_run": false
+  },
+  "main_ci": {
+    "run": 45550136003,
+    "conclusion": "failure",
+    "web_job": 138990017254,
+    "typescript_aggregate": 139010346193,
+    "test_files_passed": 244,
+    "test_files_skipped": 1,
+    "tests_passed": 3289,
+    "tests_skipped": 1,
+    "unhandled_errors": 1,
+    "error": "ReferenceError: window is not defined",
+    "location": "apps/web/src/components/WalletAttempts.tsx:104",
+    "attributed_fixture": "apps/web/src/components/WalletAttempts.status.test.tsx",
+    "explanation": "Vitest logged an unhandled migration rejection during teardown; React state update occurs with DOM unavailable. Aggregate job failure is consequential. Not evidence of a production exploit."
+  },
+  "recovery": {
+    "pr": 595,
+    "head": "534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c",
+    "parent": "d1e167f1b5372f74506fc104220b9a03cb6a3e92",
+    "parent_pr": 545,
+    "parent_ancestry": {
+      "status": "ahead",
+      "main_ahead": 832,
+      "main_behind": 0
+    },
+    "trees": {
+      "main_entries": 4543,
+      "donor_entries": 4009,
+      "parent_entries": 4008,
+      "truncated": false
+    },
+    "main_fixture": "11471852de601d9b3cba1920d61fd28fe077b97a",
+    "donor_fixture": "b3fb4cc4feafb3fe3e11d06b4d0490093096fcb1",
+    "component": "3bc1a208a507a95de0951ab8318aa4921c27d80c",
+    "journal": "b08da36e227ede1a5ecb96c62d3c64ca85ac11f4",
+    "errors": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+    "attempt_status": "82a39d5203cffc88e8d9e3d7a64cfcc2b79c5c02",
+    "mock_rpc": "14beafd3e03e1dc209a0194018a6dfb59dfde70e",
+    "setup": "e58fe1deb7c1eee1777977565fa8fdcf9095a169",
+    "all_six_dependencies_equal": true,
+    "package_manifests_changed": true,
+    "donor_delta": [
+      "apps/web/src/components/WalletAttempts.status.test.tsx",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md"
+    ],
+    "donor_checks": {
+      "success": 29,
+      "skipped": 3,
+      "failure": 0
+    },
+    "donor_review_submissions": 0,
+    "owner_handoff": "https://github.com/djshellshoxxx/GhostPay/pull/595#issuecomment-7154434321",
+    "next": "Existing owner to retarget/recompose #595 onto current main, retain all six tests and additive claim, qualify fresh exact head and obtain independent review; coordinate main CI restoration and #614-first instruction; do not recreate or weaken the fix."
+  },
+  "queue": {
+    "614": {
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "success": 8,
+      "skipped": 13,
+      "reviews": 0,
+      "prior_detached_candidate": "e65435cc768edd9e1b55583e2dbf4e8fcaf8e644"
+    },
+    "615": {
+      "merged": true,
+      "prior_security_alerts_unresolved": true
+    },
+    "616": {
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "codeql_alert_check": 138405979936,
+      "conclusion": "failure"
+    },
+    "617": {
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "codeql_alert_check": 138424848592,
+      "conclusion": "failure"
+    },
+    "635": {
+      "head": "fb141fa541163f6796d0cabfc8c51b508ebfcd86",
+      "ci_run": 45551781218,
+      "conclusion": "in_progress"
+    },
+    "641": {
+      "head": "2e36cb6f88403fac457b3291c07a1ffae18f400e",
+      "ci_run": 45557748548,
+      "conclusion": "queued"
+    },
+    "new_owners": [
+      646,
+      647,
+      648,
+      649,
+      650
+    ],
+    "sweep_649": {
+      "head": "5613341bd286571f77680eb8a17b640f530bcedd",
+      "reported_donor": "#534 / #252 plus selected #272 lifecycle changes",
+      "reported_local_tests": 443,
+      "qualification": "owner-reported; preserve prior #231/#238 obligation until behavioral equivalence established"
+    },
+    "recovery_647": {
+      "head": "2bb161516cdc7911f8e6aa59dfdf936201909632",
+      "scope": "owner's independent seller-keystore recovery; coordinate #641 backup stack"
+    }
+  },
+  "environment": {
+    "git_ls_remote": "exit 128; Could not resolve host: github.com",
+    "node": "v22.16.0",
+    "new_local_runtime_tests": 0
+  },
+  "actions": {
+    "new_production_changes": 0,
+    "new_main_merges": 0,
+    "deployments": 0,
+    "branch_deletions": 0,
+    "force_pushes": 0,
+    "security_gate_bypasses": 0
+  },
+  "carry_forward": "All historical unresolved obligations and active worker ownership remain. No completion claim."
+}
