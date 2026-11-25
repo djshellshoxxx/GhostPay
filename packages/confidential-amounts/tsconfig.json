@@ -5,5 +5,5 @@
     "types": ["node"],
     "rootDir": "."
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"]
+  "include": ["src/**/*.ts", "browser/**/*.ts", "vitest.config.ts"]
 }

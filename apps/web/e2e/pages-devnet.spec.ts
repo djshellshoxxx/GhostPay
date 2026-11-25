@@ -522,6 +522,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const rawBefore = net.sentRaw.length;
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(s, VAULT_PASS);
     await sign.click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
@@ -551,6 +552,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // A second sweep of the same one-time address is refused before signing; nothing new reaches the chain.
     await nav(s).getByRole('button', { name: 'Seller keys' }).click();
     await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     const again = await prepareDirectSweep(s, VAULT_PASS);
     await again.click();
@@ -636,6 +638,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // The swept address cannot be swept again from the reopened profile either.
     const rawBefore = net.sentRaw.length;
     await scanMatches(sp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(sp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(sp, VAULT_PASS);
     await sign.click();
     await expect(sweepView(sp).getByText('The balance does not cover the network fee.', { exact: false })).toBeVisible({ timeout: 30_000 });
@@ -729,6 +732,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(rp).locator('code', { hasText: stealth })).toBeVisible();
     const sign = await prepareDirectSweep(rp);
     await sign.click();
@@ -745,6 +749,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect.poll(async () => (await anvil.receipt(fundingHash))?.status).toBe('0x1');
     await nav(rp).getByRole('button', { name: 'Seller keys' }).click();
     await nav(rp).getByRole('button', { name: 'Sweep' }).click();
+    // The balance is read only on request, and remounting Sweep clears it (FC-02 consent model).
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await (await prepareDirectSweep(rp)).click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
     const raw = net.sentRaw.at(-1) as `0x02${string}`;

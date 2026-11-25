@@ -58,7 +58,7 @@ function subscribeToLanguageChanges(onChange: () => void): () => void {
 
 function devWarn(issue: I18nIssue): void {
   if (!import.meta.env.DEV) return;
-  console.warn(`[i18n] ${issue.kind}: ${issue.key} (${issue.locale})`);
+  console.warn(`[i18n] ${issue.kind}`);
 }
 
 export function I18nProvider(props: I18nProviderProps): ReactNode {

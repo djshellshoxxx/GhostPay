@@ -59,9 +59,9 @@ describe('shared presentation helpers', () => {
     vi.useFakeTimers();
     downloadText('receipt.json', '{"ok":true}', 'application/json');
     expect(blob).toHaveBeenCalledOnce();
-    expect(clicked).toEqual({ href: 'blob:local', download: 'receipt.json', rel: 'noopener', connected: true });
+    expect(clicked).toEqual({ href: 'blob:local', download: 'export.json', rel: 'noopener', connected: true });
     expect(click).toHaveBeenCalledOnce();
-    expect(document.querySelector('a[download="receipt.json"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).not.toHaveBeenCalled();
     vi.advanceTimersByTime(999);
     expect(revoke).not.toHaveBeenCalled();
@@ -76,9 +76,9 @@ describe('shared presentation helpers', () => {
     const blocked = new Error('download blocked');
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
 
-    expect(() => downloadText('blocked-receipt.json', '{"test":true}', 'application/json')).toThrow(blocked);
+    expect(() => downloadText('blocked-receipt.json', '{"test":true}', 'application/json')).toThrow('The local download could not be started.');
     expect(blob).toHaveBeenCalledOnce();
-    expect(document.querySelector('a[download="blocked-receipt.json"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked');
   });
 
@@ -89,9 +89,9 @@ describe('shared presentation helpers', () => {
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => { throw blocked; });
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click');
 
-    expect(() => downloadText('detached.json', '{}', 'application/json')).toThrow(blocked);
+    expect(() => downloadText('detached.json', '{}', 'application/json')).toThrow('The local download could not be started.');
     expect(click).not.toHaveBeenCalled();
-    expect(document.querySelector('a[download="detached.json"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:detached');
   });
 
@@ -104,7 +104,7 @@ describe('shared presentation helpers', () => {
     downloadBlob('archive.gpa', bytes);
     expect(blob).toHaveBeenCalledExactlyOnceWith(bytes);
     expect(click).toHaveBeenCalledOnce();
-    expect(document.querySelector('a[download="archive.gpa"]')).toBeNull();
+    expect(document.querySelector('a[download]')).toBeNull();
     vi.advanceTimersByTime(999);
     expect(revoke).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
@@ -119,8 +119,8 @@ describe('shared presentation helpers', () => {
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
     vi.useFakeTimers();
 
-    expect(() => downloadBlob('blocked.gpa', bytes)).toThrow(blocked);
-    expect(document.querySelector('a[download="blocked.gpa"]')).toBeNull();
+    expect(() => downloadBlob('blocked.gpa', bytes)).toThrow('The local download could not be started.');
+    expect(document.querySelector('a[download]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked-bytes');
     vi.runAllTimers();
     expect(revoke).toHaveBeenCalledOnce();
@@ -180,4 +180,34 @@ describe('CopyButton localization', () => {
     rerender(<CopyButton text="second receipt" label="Copy receipt" />);
     expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
   });
+});
+
+it('keeps private export bytes intact and out of download metadata', async () => {
+  vi.useFakeTimers();
+  const payload = {
+    address: `0x${'ab'.repeat(20)}`,
+    balance: '87129.03251',
+    invoiceId: 'fixture-lantern-order',
+    privateKey: `0x${'cd'.repeat(32)}`,
+  };
+  const serialized = JSON.stringify(payload);
+  const url = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:local-test');
+  vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+  const metadata: string[] = [];
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+    metadata.push(this.download, this.href, this.title);
+  });
+  downloadText(`${Object.values(payload).join('-')}.json`, serialized, 'application/json');
+  expect(metadata).toEqual(['export.json', 'blob:local-test', '']);
+  const blob = url.mock.calls[0]?.[0];
+  if (!(blob instanceof Blob)) throw new Error('expected an export Blob');
+  vi.advanceTimersByTime(1000);
+  vi.useRealTimers();
+  const reader = new FileReader();
+  const read = new Promise<string>((resolve, reject) => {
+    reader.onload = () => { if (typeof reader.result === 'string') resolve(reader.result); else reject(new Error('expected text')); };
+    reader.onerror = () => { reject(new Error('read failed')); };
+  });
+  reader.readAsText(blob);
+  expect(await read).toBe(serialized);
 });

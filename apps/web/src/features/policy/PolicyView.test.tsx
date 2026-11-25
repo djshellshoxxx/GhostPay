@@ -15,6 +15,10 @@ import { decodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../../test/mockWallet';
 import type { WalletInfo } from '../../lib/wallet';
 import { preparePolicyPayment } from './pay';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const LABEL = 'Policy accounts (experimental)';
 const a1 = account('acct-001');

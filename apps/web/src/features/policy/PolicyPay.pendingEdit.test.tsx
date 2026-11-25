@@ -9,6 +9,10 @@ import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, deploymentCalls, fakeChain, walletMirror } from './fixtures.testutil';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 // GP-BUG-07: reproduce the audit's UI edit during a paused wallet account recheck.
 // No network transaction is submitted; MockWallet records eth_sendTransaction requests.

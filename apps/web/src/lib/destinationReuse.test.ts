@@ -1,0 +1,118 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { getAddress } from 'viem/utils';
+import { checkDestinationReuse, isOwnOneTimeAddress } from './destinationReuse';
+
+const payer = '0x8ba1f109551bd432803012645ac136ddd64dba72';
+const address = '0x5aeda56215b167893e80b4fe645ba6d5bab767de';
+const other = '0x1111111111111111111111111111111111111111';
+const invoice = { kind: 'invoice' as const, payer, invoiceDigest: 'a'.repeat(64) };
+const second = { ...invoice, invoiceDigest: 'b'.repeat(64) };
+const seller = { kind: 'sweep' as const, metaAddress: 'synthetic-profile-a' };
+
+const records = new Map<string, string>();
+const storage = {
+  getItem: (key: string) => records.get(key) ?? null,
+  setItem: (key: string, value: string) => { records.set(key, value); },
+};
+const persistentWrite = vi.fn();
+beforeEach(() => {
+  records.clear();
+  persistentWrite.mockClear();
+  vi.stubGlobal('window', { sessionStorage: storage, localStorage: { setItem: persistentWrite } });
+});
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+describe('local EVM destination history', () => {
+  it('compares complete normalized addresses, prioritizing distinct signed invoices over a retry', () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    expect(checkDestinationReuse(invoice, 84532, address, true)).toBeUndefined();
+    expect(checkDestinationReuse(invoice, 84532, getAddress(address), true)).toBe('same-invoice');
+    expect(checkDestinationReuse(second, 84532, other, true)).toBeUndefined();
+    expect(checkDestinationReuse(second, 84532, address, true)).toBe('different-invoice');
+    expect(checkDestinationReuse(invoice, 84532, address, true)).toBe('different-invoice');
+    expect(checkDestinationReuse(second, 84532, address.slice(0, -1) + 'f', true)).toBeUndefined();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('separates payers, sellers, and networks and canonicalizes payer case', () => {
+    expect(getAddress(payer)).not.toBe(payer);
+    for (const chain of [84532, 11155111]) {
+      expect(checkDestinationReuse(invoice, chain, address, true)).toBeUndefined();
+      expect(checkDestinationReuse({ ...second, payer: getAddress(payer) }, chain, address, false)).toBe('different-invoice');
+      expect(checkDestinationReuse({ ...invoice, payer: other }, chain, address, false)).toBeUndefined();
+      expect(checkDestinationReuse(seller, chain, address, false)).toBeUndefined();
+      expect(checkDestinationReuse(seller, chain, address, true)).toBeUndefined();
+      expect(checkDestinationReuse(seller, chain, '  ' + getAddress(address) + ' ', false)).toBe('repeat-sweep');
+      // A second seller profile sweeping to the same wallet links the two profiles: reported, not treated as fresh.
+      expect(checkDestinationReuse({ ...seller, metaAddress: 'synthetic-profile-b' }, chain, address, false)).toBe('other-profile-sweep');
+      expect(checkDestinationReuse({ ...seller, metaAddress: 'synthetic-profile-b' }, chain, other, false)).toBeUndefined();
+    }
+  });
+
+  it('reports a destination swept by another seller profile, ahead of the same profile repeating it', () => {
+    const profileB = { ...seller, metaAddress: 'synthetic-profile-b' };
+    expect(checkDestinationReuse(seller, 84532, address, true)).toBeUndefined();
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBe('repeat-sweep');
+    expect(checkDestinationReuse(profileB, 84532, address, true)).toBe('other-profile-sweep');
+    // Both profiles have now used it: either profile sees the cross-profile link first.
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBe('other-profile-sweep');
+    expect(checkDestinationReuse(profileB, 84532, address, false)).toBe('other-profile-sweep');
+    // Another network is a separate scope; invoice and sweep histories never answer for each other.
+    expect(checkDestinationReuse(profileB, 11155111, address, false)).toBeUndefined();
+    expect(checkDestinationReuse(invoice, 84532, address, false)).toBeUndefined();
+    const raw = storage.getItem('ghostpay.destination-review.v1')!;
+    for (const secret of ['synthetic-profile', address.slice(2), getAddress(address).slice(2)]) expect(raw).not.toContain(secret);
+  });
+
+  it('recognises another one-time address of these keys without storing or requesting anything', () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const own = [getAddress(address), other];
+    expect(isOwnOneTimeAddress(address, own)).toBe(true);
+    expect(isOwnOneTimeAddress(`  ${getAddress(other)} `, own)).toBe(true);
+    expect(isOwnOneTimeAddress(payer, own)).toBe(false);
+    expect(isOwnOneTimeAddress(address, [])).toBe(false);
+    for (const bad of ['', '0x123', address + '0', '0x5Aeda56215b167893e80b4fe645ba6d5bab767de', 7 as unknown as string]) {
+      expect(isOwnOneTimeAddress(bad, own)).toBe(false);
+    }
+    expect(isOwnOneTimeAddress(address, [5 as unknown as string, address])).toBe(true);
+    expect(records.size).toBe(0);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed input without storing a record', () => {
+    for (const bad of ['0x123', address.slice(0, -2) + 'zz', '0X' + address.slice(2),
+      '0x5Aeda56215b167893e80b4fe645ba6d5bab767de', address + '0']) {
+      expect(checkDestinationReuse(invoice, 84532, bad, true)).toBeUndefined();
+    }
+    expect(checkDestinationReuse(invoice, NaN, address, true)).toBeUndefined();
+    expect(checkDestinationReuse({ ...invoice, payer: 'wrong' }, 84532, address, true)).toBeUndefined();
+    expect(records.size).toBe(0);
+  });
+
+  it('stores only bounded tab-scoped fingerprints and tolerates denied or corrupt storage', () => {
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBeUndefined();
+    expect(records.size).toBe(0);
+    checkDestinationReuse(invoice, 84532, address, true);
+    const key = 'ghostpay.destination-review.v1';
+    // Neither the lowercase nor the EIP-55 spelling of any identifier may appear.
+    for (const raw of [address.slice(2), getAddress(address).slice(2), payer.slice(2), getAddress(payer).slice(2), invoice.invoiceDigest]) {
+      expect(storage.getItem(key)).not.toContain(raw);
+    }
+    expect(persistentWrite).not.toHaveBeenCalled();
+    for (let i = 0; i < 128; i++) checkDestinationReuse(seller, 84532, '0x' + i.toString(16).padStart(40, '0'), true);
+    expect(checkDestinationReuse(invoice, 84532, address, false)).toBeUndefined();
+    expect(storage.getItem(key)!.length).toBeLessThan(18_000);
+    storage.setItem(key, '{');
+    expect(checkDestinationReuse(invoice, 84532, address, true)).toBe('unavailable');
+    expect(storage.getItem(key)).toBe('{');
+    records.clear();
+    checkDestinationReuse(invoice, 84532, address, true);
+    vi.spyOn(storage, 'setItem').mockImplementation(() => { throw new Error('quota'); });
+    expect(checkDestinationReuse(second, 84532, address, true)).toBe('different-invoice');
+    expect(checkDestinationReuse(invoice, 84532, other, true)).toBe('unavailable');
+    vi.spyOn(storage, 'getItem').mockImplementation(() => { throw new Error('denied'); });
+    expect(checkDestinationReuse(seller, 84532, address, false)).toBe('unavailable');
+  });
+});
