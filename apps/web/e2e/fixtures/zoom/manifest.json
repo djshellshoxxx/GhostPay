@@ -2,5 +2,5 @@
   "manifest_version": 3,
   "name": "GhostPay browser zoom test",
   "version": "1.0",
-  "background": { "service_worker": "worker.js" }
+  "background": { "service_worker": "worker.mjs" }
 }
