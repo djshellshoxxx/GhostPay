@@ -1,3 +1,17 @@
+# W3 — successor of #649 (FC-02 Sweep balance consent) with stale-consent binding (2026-11-25 UTC)
+
+Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-sweep-consent-successor`, from #649 head `790de53e` (ancestry kept; original branch untouched) merged with main `e2c11634`.
+Why: #649 (all hosted checks green at 790de53e) and its combined candidate #664 lost their driver when feature-completion-06 exited; ghostpay-42 and newghostpay-ae confirmed nobody else took it.
+Owned paths: #649's files (`apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, `Sweep.quoteLifecycle.test.tsx`, `Sweep.test.tsx`, `lib/scanPrivacy.ts` disclosure line, e2e journeys), the merge resolution with #674/#675 in Sweep, one additive `sweep.balanceRead.settingsChanged` key, this entry.
+W3 addition: a balance read is consented to for the saved RPCs and scan privacy settings Sweep opened with; if another tab changed them, nothing is sent (checked at the click and again after the RPC lookup) and a late balance is discarded. #675's live-region rule is kept: the new message names no address, amount or hash.
+Acceptance: #649's tests plus two stale-consent regressions; full hosted CI on the exact head.
+
+# FC-02 — Sweep balance consent and quote/signing lifecycle onto current main (2026-11-25)
+
+- Worker: fc02 (Claude Code implementation worker, feature-completion campaign). Branch `claude/fc02-sweep-consent-20261125`, base `origin/main` `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`. Donor: PR #534 head `5c93c3b172cd002f1cdc68232b1a0f3335aadb76` (merged with `git merge --no-ff`; #252 `4085622463411d3ba27f4efb7b73a70575170535` and selected #272 commits `ab40d79a`, `9e4ec2da`, `a67d0975` stay in history).
+- Owned paths: `apps/web/src/views/Sweep{,.test,.privacy.test,.quoteLifecycle.test}.tsx`, `apps/web/src/lib/scanPrivacy{,.test}.ts`, `apps/web/locales/*.json`, `apps/web/src/i18n/securityKeys.ts`, e2e specs `core-journey`, `devnet-journey`, `pages-devnet`, `sweep`, this entry, and `docs/consolidation/feature-completion-20261125/FC-02-sweep-consent.md`. Not touching #586 or #610 work.
+- Acceptance: Sweep balance refresh only after explicit consent; any change to quote, amount, destination, chain or account invalidates the pre-broadcast signing context; post-handoff evidence retained; current-main Sweep/scanPrivacy behavior preserved; focused tests, typecheck and lint pass; hosted CI pending until reported.
+
 # W3 — EVM provider/privacy boundary: fail-closed scan privacy settings and per-request route checks (2026-11-25 UTC)
 
 Worker: W3 (Claude Code session `ghostpay-backup-60`, home team per `%USERPROFILE%\GhostPay-coordination\TEAM.md`); branch `claude/w3-provider-privacy-boundary`; base main `32ae3977`.
@@ -1853,6 +1867,26 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Sweep balance query consent — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -1913,6 +1947,21 @@ coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existin
 artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+## PR 231 standalone pre-merge disclosure repair — 2026-11-18
+
+Worker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.
+Branch: `repair/ghostpay-pr-231-20261118`.
+Source: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).
+Target: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`
+regressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.
+Acceptance: reproduce the two exact hosted disclosure-equivalence failures;
+extract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;
+retain every balance-consent/session guard and disclosure assertion; verify the
+actual combined main/source tree. #222/#238 and their active source branches
+are read-only. All source commits remain ancestors. Both sides of the only
+merge conflict (independent ACTIVE_WORK claims) are retained. No contract,
+dependency, cryptographic or gate changes.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -3408,6 +3457,40 @@ Worker: Claude Code cloud session, branch `nodata/gracious-meitner-0yy6do`, base
 Owned paths: `examples/pos-terminal/**` (new `pos-session.js`, `session.test.mjs`; `index.html`, `pos.js`, `pos.css`, `README.md`), `apps/web/e2e/pos-terminal.spec.ts` (additive scenarios; existing five scenarios unchanged), the POS parity line in `.github/workflows/ci.yml`, this entry, new `docs/handoffs/POS_TERMINAL_COMPLETION_20261125.md`. Not modified: `packages/merchant-hooks`, `packages/merchant-ledger`, `packages/invoice-schema`, `examples/pos-terminal/pos-logic.js` reducer semantics.
 Acceptance: pure lifecycle module with deterministic clock, mock storage and synthetic feed/mock-wallet fixtures covering creation, amount validation and exact precision, presentation, expiry/countdown, cancellation/reset, feed-sourced completion (strict webhook-event validation matching `parseWebhookEvent`, cumulative-to-delta, replay dedup, invoice/currency binding, late rejection, ledger `reconcile` agreement), customer display model, persistence/restore without the bearer link, corrupt-storage recovery; terminal UI keypad, customer screen, live status and focus handling; Playwright desktop and touch-tablet scenarios; existing parity and e2e unchanged and passing.
 
+
+## Sweep balance consent integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-sweep-balance-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Preserve PR #252 donor `4085622463411d3ba27f4efb7b73a70575170535` as a parent and reconcile additive work claims.
+- Acceptance: require an explicit action before an RPC balance read for a one-time address, preserve selected-provider policy and discard late results on selection, provider, session or lock changes. Run the existing Sweep, privacy, and lean-browser acceptance tests.
+- PR #272 is a follow-on. The recovery stack #361/#372/#373 already contains #252. Preserve their code and branch ownership and reconcile current C1 and reserved workstreams before integration.
+## Sweep quote and relayed signing lifecycle correction — 2026-11-19
+
+Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`.
+Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
+and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
+Acceptance: prevent stale quotes and stale relayed submissions after a balance,
+recipient, payment, provider, session, mode, manifest or transport change; retain
+submitted and uncertain-outcome evidence after irreversible handoff; preserve
+explicit balance consent and existing vault, session, fee and journal guards.
+The original stale quote was reproduced against exact source. The full component
+regressions, typecheck, lint and hosted checks remain qualification gates.
+The execution environment became unavailable during dependency setup. The
+reconstructed candidate is an unqualified draft, not a completed acceptance claim.
+Existing #231/#252 and broad #262/#264 remain unchanged. Main integration belongs
+to the root coordinator. No deployment, release or real transaction is authorized
+by this worker claim.
+
+Sweep integration follow-up: Independent review found that #252 alone lets a
+balance refresh invalidate displayed context while a prior direct sweep waits
+for the vault or RPC. Add the reviewed #272 lifecycle and regression commits
+`ab40d79a4452e618dd3f6f462fde2829f5ba7e05`,
+`9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac` and
+`a67d09750f13ae2cfee3a0ad7bdc3ccb6c28b4f0`. Keep unrelated donor changes in
+their existing branches. Verify the refresh, stale handoff and post-handoff
+evidence cases on the composed tree.
 
 ## Mobile browser workflow qualification — 2026-11-23 Pacific
 
