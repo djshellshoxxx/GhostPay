@@ -103,8 +103,13 @@ owner HOLD whose shared-core code is already on main (`seal.ts`, `qrKinds.ts` st
 | Clipboard cleanup (#286) | #553 #580 → #668 | done | W4/W1 | W4 | — | W1 merge | W1 |
 | Privacy-minimal invoices, destination reuse (#287) | #585 #600, #584 #586 #610 | partial | W4 / reuse worker | — | — | owners | owners |
 | P14 RPC provider disclosure evidence | #658 | done (test level T) | open | — | — | owner | owner |
-| #286/#287 masking, export metadata, retention, wallet disclosure stacks | #569 #570 #571 #587 #589 #598 #606 #609 #612 #613 #619 #630 #632 | on #372 base (519 commits off main) | not started | — | UNVERIFIED | recovery map in progress (section 8) | no |
-| GP-PAGES sleep/freeze/signer stacks | #544 #577 #582 #596 | partial (#641 merged GP-PAGES-02 parts) | not started | — | UNVERIFIED | recovery map in progress | no |
+| #372 privacy-mode foundation: `privacyMode.tsx`, `SensitiveContent.tsx`, `PrivacyQuickHide.tsx`, `PrivateHistory.tsx`, `WalletDisclosure.tsx`, `walletDisclosure.ts`, `useWalletPrivacy.ts` | #372 `055d33e0` | done on branch, **absent from main** | not started (519 commits, 901 behind) | — | UNVERIFIED | coordinator/owner decision: re-cut subset vs. full recovery (section 9) | no |
+| #286 masking and account-switch revocation | #569 → #613; #571 → #598 → #612 | on #372 | blocked on #372 | — | UNVERIFIED | 19 / 12 code conflicts; Pay.tsx overlap with #664 and #584/#586/#610 | no |
+| #287 external wallet disclosure | #589 → #606 → #630 → #632 | on #372 | blocked on #372 | — | UNVERIFIED | main has `onWalletRequest` (#500) only; #632 duplicates #613 fixture | no |
+| #286 export, alert and lock-screen metadata | #570 (own `a61c4755`…`55781533`) | done | **next unit R2 after #664 and #668 land** | — | UNVERIFIED | 3 code conflicts; drop hunks already on main (deployment diagnostic, createRoot handlers); shares Common.tsx/Pay.tsx/locales with W4 and FC | after deps |
+| #287 invoice/receipt timestamp retention | #587 → #609 | done | not started | — | UNVERIFIED | vault format v4/v5 bump: owner confirmation first | owner |
+| Sole invoice signer kept under idle lock | #577 (own `fb09d2a9` `23639435`) on #544 idle stack | done | blocked on #544 base stack | — | UNVERIFIED | AppShell.tsx conflict; main still wipes at idle (`signerLost`) | owner |
+| Deployment diagnostic neutral reason | #619 | done | **already on main** via #620 | — | — | none (class D) | — |
 | Private seller scan checkpoints (FC-06) | #248 | partial, red | deferred by FC | — | — | Scan.tsx overlap with #635 | owner/FC |
 
 ## 6. Excluded products
@@ -131,9 +136,13 @@ Pages artifact.
 ## 8. Remaining blockers and next units
 
 1. Hosted CI on this branch's PR head; then join the merge queue tail under the lock.
-2. Recovery map of the unclaimed #286/#287 and GP-PAGES stacks (C class) — read-only analysis in progress; results
-   will be appended here and offered to W1/W3/W4 before any integration, to avoid overlap.
-3. Owner decisions: section 9.
+2. Recovery map of the unclaimed #286/#287 and GP-PAGES stacks: done, read-only
+   ([PRIVACY_STACK_MAP.md](consolidation/cloud-lead-20261125/PRIVACY_STACK_MAP.md); small-residual triage in
+   [SMALL_RESIDUAL_TRIAGE.md](consolidation/cloud-lead-20261125/SMALL_RESIDUAL_TRIAGE.md)). Ranked: #570 (independent
+   of #372), #587 (owner: vault format), #577 (after #544 stack), #589 family and #569/#571 families (after #372).
+3. Next unit R2: recover #570 on top of main once #664 (FC) and #668 (W4) have merged, since they change the same
+   Common.tsx, Pay.tsx, BtcView and locale files. Taking it earlier would force both owners to re-merge.
+4. Owner decisions: section 9.
 
 ## 9. Outstanding owner decisions
 
@@ -145,3 +154,6 @@ Pages artifact.
 | #558 #559 dormant future modules | accept onto main dormant, or keep on branch? |
 | #528 policy journal lock | release the journal lock during the wallet prompt (as proposed)? |
 | F02/F04 wording | see #667: "deferred and disabled for beta/v1.0", restartable only by new instruction? |
+| #372 privacy-mode foundation | Who recovers it, and how: a reviewed re-cut of the seven privacy files onto main (new design surface), or a full recovery of #372? Ten #286/#287 PRs depend on it. Suggested owner: W3 (privacy boundary) with W1 integrating. |
+| #587 vault format v4/v5 | Accept the vault/receipt format bump for timestamp retention (recovery compatibility impact)? |
+| #544 idle/Sweep base stack | Land the ~84-commit idle stack that #577/#582/#596 sit on? |
