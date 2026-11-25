@@ -9,6 +9,7 @@ import {
 import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
@@ -106,6 +107,9 @@ export function Settings(): ReactNode {
       <Notice kind="warn" title={t('settings.outside.title')}>
         {t('settings.outside.body')}
       </Notice>
+      {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
+      <MetadataRetentionControls manual={false} />
+      <MetadataRetentionControls scope="proof" manual={false} />
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>

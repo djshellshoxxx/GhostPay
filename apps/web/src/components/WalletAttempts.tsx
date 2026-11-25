@@ -21,7 +21,8 @@ function statusText(outcome: AttemptResolution, attempt: WalletAttempt, t: Trans
         : observed.state === 'reverted' ? t('walletAttempts.reverted') : t('walletAttempts.confirmed');
       if (outcome.state !== 'replaced') return result;
       // A cancel (different call) confirming is not the original action confirming: never word it as such.
-      return t(outcome.kind === 'different-call' ? 'walletAttempts.replacedDifferent' : 'walletAttempts.replaced', { hash: outcome.hash, result });
+      // The hash is shown next to the status, outside the live region (#286 item 5).
+      return t(outcome.kind === 'different-call' ? 'walletAttempts.replacedDifferent' : 'walletAttempts.replaced', { result });
     }
     case 'pending': return outcome.reorged ? t('walletAttempts.unresolved') : t('walletAttempts.pending');
     case 'mismatch': return t('walletAttempts.mismatch');
@@ -74,6 +75,7 @@ function AttemptRow({ attempt, getRpc, t }: {
       </details>
     </>}
     {outcome !== undefined && <p role="status" className="status">{statusText(outcome, attempt, t)}</p>}
+    {outcome?.state === 'replaced' && <p>{t('walletAttempts.replacementHash')}: <Mono>{outcome.hash}</Mono></p>}
     {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
     <button type="button" className="btn" disabled={busy} onClick={() => {
       if (!window.confirm(t('walletAttempts.confirmClear'))) return;

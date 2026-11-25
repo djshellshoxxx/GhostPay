@@ -1,5 +1,8 @@
 # GhostPay core functional-beta completion tracker
 
+**Issue #286 item 5, exports and notifications.** Donor [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) is integrated onto current main on `claude/w-export-privacy-286-20261125`, with fixed recovery-friendly download names and three further live-region fixes from independent review. Release acceptance still requires hosted CI at the exact head and integration through the shared queue; see the integration PR for current results.
+
+
 Date: 2026-11-11 (UTC). Branch `claude/nice-ritchie-8vivls`, [PR #114](https://github.com/djshellshoxxx/GhostPay/pull/114), stacked on the
 integration candidate [PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98) at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`
 (all 34 hosted checks green on that exact head, observed 2026-11-11). `main` (`14f9b26`) is 581 commits behind the candidate

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { userMessage } from './errors';
 import { RELAYER_PRE_BROADCAST_CODES, RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
@@ -43,6 +44,12 @@ describe('requestQuote', () => {
   it('reports HTTP errors by class only and never echoes the body', async () => {
     const e1 = requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'budget_exhausted', detail: 'secret 0xabc' }, 503)));
     await expect(e1).rejects.toThrow('The relayer refused the request: HTTP 503 (budget_exhausted).');
+    for (const code of ['invoice_winter_sample', 'invalid_invoice_winter_sample']) {
+      const failure: unknown = await requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: { code } }, 400))).catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(RelayerRefusedError);
+      expect(userMessage(failure)).toContain('HTTP 400');
+      expect(userMessage(failure)).not.toContain('invoice_winter_sample');
+    }
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'Has Spaces!' }, 422)))).rejects.toThrow('HTTP 422.');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('<html>', { status: 500 })))).rejects.toThrow('HTTP 500.');
   });
