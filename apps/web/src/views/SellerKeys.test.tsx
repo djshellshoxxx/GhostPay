@@ -3,7 +3,9 @@ import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as keySession from '../lib/session';
+import { MAX_KEYSTORE_BYTES } from '../lib/keystore';
 import { clearSession, generateSession, getSessionBackup, getSessionPublic, hasSession, importSession } from '../lib/session';
+import * as keyVault from '../lib/keyVault';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeServices, renderApp } from '../test/render';
@@ -316,6 +318,68 @@ describe('Seller keys', () => {
     expect(screen.getByRole('button', { name: 'Download encrypted keystore' })).not.toHaveProperty('disabled', true);
   });
 
+  it('reports the selected file separately from a saved vault and preserves the active vault', async () => {
+    const pub = generateSession();
+    const pass = 'a long passphrase';
+    const opts = { N: 1 << 14 };
+    await saveEncryptedVault(pass, opts);
+    const saved = await vaultStore.get();
+    expect(saved).toBeDefined();
+    const mine = await keySession.exportKeystore(pass, opts);
+    const user = await open();
+    const panel = within(screen.getByRole('region', { name: 'Verify the backup' }));
+    const select = async (text: string): Promise<void> => {
+      await user.upload(panel.getByLabelText('Downloaded keystore file'), new File([text], 'backup.json', { type: 'application/json' }));
+      await user.type(panel.getByLabelText('Keystore passphrase'), pass);
+      await user.click(panel.getByRole('button', { name: 'Verify backup' }));
+    };
+    expect(getSessionBackup()?.verified).toBe(true);
+    expect(panel.queryByText(/This backup is verified|Backup verified:/)).toBeNull();
+    await select(mine);
+    expect(await panel.findByText(/^Backup verified:/, {}, { timeout: 15_000 })).toBeTruthy();
+    await select('x'.repeat(MAX_KEYSTORE_BYTES + 1));
+    expect(panel.getByRole('alert').textContent).toMatch(/size limit/);
+    expect(panel.queryByText(/This backup is verified|Backup verified:/)).toBeNull();
+    expect(panel.getByLabelText('Keystore passphrase')).toHaveProperty('value', '');
+    expect(getSessionPublic()).toBe(pub);
+    expect(await vaultStore.get()).toBe(saved);
+    expect(keySession.sessionHasExternalCopy()).toBe(true);
+  });
+
+  it('verification supersedes a pending vault unlock: the loaded keys and the saved vault stay unchanged', async () => {
+    const pub = generateSession();
+    const pass = 'a long passphrase';
+    await saveEncryptedVault(pass, { N: 1 << 14 });
+    const saved = await vaultStore.get();
+    const mine = await keySession.exportKeystore(pass, { N: 1 << 14 });
+    const user = await open();
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const unlock = keyVault.unlockEncryptedVault;
+    const pendingUnlock = vi.spyOn(keyVault, 'unlockEncryptedVault').mockImplementation(async (...args) => {
+      await gate;
+      return unlock(...args);
+    });
+    await user.type(screen.getByLabelText('Vault passphrase'), pass);
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    await waitFor(() => { expect(pendingUnlock).toHaveBeenCalled(); });
+    const panel = within(screen.getByRole('region', { name: 'Verify the backup' }));
+    await user.upload(panel.getByLabelText('Downloaded keystore file'), new File([mine], 'backup.json', { type: 'application/json' }));
+    await user.type(panel.getByLabelText('Keystore passphrase'), pass);
+    await user.click(panel.getByRole('button', { name: 'Verify backup' }));
+    try {
+      // The newest action owns the form (#314): the unlock was cancelled, the file is checked against the loaded keys.
+      expect(pendingUnlock.mock.calls[0]?.[2]?.aborted).toBe(true);
+      expect(await panel.findByText(/^Backup verified:/, {}, { timeout: 15_000 })).toBeTruthy();
+    } finally {
+      release();
+    }
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
+    expect(getSessionPublic()).toBe(pub);
+    expect(await vaultStore.get()).toBe(saved);
+    expect(keySession.sessionHasExternalCopy()).toBe(true);
+  });
+
   it('GP-PAGES-02: a cancelled verification and a failed vault unlock leave every other form enabled', async () => {
     const PASS = 'a long passphrase';
     generateSession();
@@ -332,12 +396,15 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Verify backup' }));
     await waitFor(() => { expect(screen.getByRole('button', { name: 'Cancel verification' })).toBeTruthy(); });
     expect(screen.getByRole('button', { name: 'Verify backup' })).toHaveProperty('disabled', true);
+    expect(await screen.findByText(/File read. Checking whether the keys/)).toBeTruthy();
     // The vault unlock form is independent of the pending verification.
     expect(screen.getByRole('button', { name: 'Delete encrypted vault' })).toHaveProperty('disabled', false);
     await user.click(screen.getByRole('button', { name: 'Cancel verification' }));
     release();
     await act(async () => { await Promise.resolve(); });
     expect(screen.queryByRole('button', { name: 'Cancel verification' })).toBeNull();
+    expect(screen.queryByText(/File read. Checking whether the keys|Backup verified:/)).toBeNull();
+    expect(screen.getByLabelText('Keystore passphrase')).toHaveProperty('value', '');
     // The saved vault is a proven copy, the cancelled download is not: nothing recorded the file as verified.
     expect(keySession.sessionHasExternalCopy()).toBe(false);
     // A failed unlock does not disable Verify backup either.
@@ -742,9 +809,30 @@ describe('encrypted vault delete confirmation', () => {
   async function openConfirmation(): Promise<ReturnType<typeof userEvent.setup>> {
     const user = await open();
     await user.click(await screen.findByRole('button', { name: 'Delete encrypted vault' }));
-    expect(await screen.findByRole('button', { name: CONFIRM })).toBeTruthy();
+    const confirm = await screen.findByRole<HTMLButtonElement>('button', { name: CONFIRM });
+    expect(confirm.disabled).toBe(true);
+    await user.type(screen.getByLabelText(/This vault may be the only copy/), CONFIRM);
+    expect(confirm.disabled).toBe(false);
     return user;
   }
+
+  it('preserves the locked vault on an accidental confirm and resets typed consent when reopened', async () => {
+    const { a } = await savedAWithReplacementB();
+    const user = await open();
+    const begin = () => user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    await begin();
+    const input = await screen.findByLabelText(/This vault may be the only copy/);
+    await user.type(input, 'delete');
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    expect(await vaultStore.get()).toBe(a);
+    await user.clear(input);
+    await user.type(input, CONFIRM);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await begin();
+    expect((await screen.findByLabelText<HTMLInputElement>(/This vault may be the only copy/)).value).toBe('');
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: CONFIRM }).disabled).toBe(true);
+    expect(await vaultStore.get()).toBe(a);
+  });
 
   it('Cancel keeps vault A byte-for-byte', async () => {
     const { a } = await savedAWithReplacementB();
