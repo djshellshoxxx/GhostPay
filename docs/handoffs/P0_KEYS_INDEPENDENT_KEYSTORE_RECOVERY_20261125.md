@@ -30,13 +30,25 @@ which is the backup **Back up (encrypted)** downloads. Only GhostPay code can op
 
 | # | Milestone | State | Commit | Evidence |
 |---|---|---|---|---|
-| 1 | Claim, checkpoint | done | (this commit) | n/a |
-| 2 | Failing tests, vector generator, TEST-ONLY vector | pending | | |
-| 3 | Reader in `stealth-export-recover.mjs` | pending | | |
-| 4 | Cross-implementation and isolated-directory tests | pending | | |
-| 5 | Browser acceptance spec | pending | | |
-| 6 | Docs (format reference, user guide, vector README) | pending | | |
-| 7 | Gates, review, draft PR | pending | | |
+| 1 | Claim, checkpoint | done | `693e9843` | n/a |
+| 2 | Failing tests, vector generator, TEST-ONLY vector | done | `08e55e34` | new suite failed at import before the reader existed |
+| 3 | Reader in `stealth-export-recover.mjs` | done | `08e55e34` | `node --test scripts/recovery/seller-keystore-recover.test.mjs`: 14/14 pass |
+| 4 | Cross-implementation and isolated-directory tests | done | `08e55e34` | in the same suite; existing recovery suites 23 pass, 2 skipped (no Foundry here) |
+| 5 | Browser acceptance spec | written; local run in progress | | `apps/web/e2e/independent-keystore-recovery.spec.ts` |
+| 6 | Docs (format reference, user guide, vector README) | done | `b2f7879e` | n/a |
+| 6b | Independent review fixes (BOM, inspect note, bounds tests) | done | `e72978a8` | recovery suites 41 tests: 39 pass, 2 skipped (no Foundry) |
+| 7 | Gates, draft PR | in progress | | web `tsc -p tsconfig.json --noEmit` exit 0; ESLint on the new spec exit 0; `scripts/scan-secrets.sh` OK |
+
+Independent review (code-reviewer subagent, read-only): no critical or high findings. It reported a BOM asymmetry
+with the app's `Blob.text()`, a missing header-only note on master `--inspect`, a wrong doc cross-reference and test
+gaps (hex case, upper import bounds). All were fixed in `e72978a8`. It also noted an accepted behaviour change: a
+master backup's header is now validated before announcements and the passphrase are read, so a file with both a bad
+header and a bad announcement reports `invalidFile` first.
+
+Not run locally: web unit tests (`src/**` only; this change touches no web source), the anvil suites (no Foundry),
+Firefox/WebKit (not in main's tooling). `.mjs` files are excluded by the repo ESLint config.
+
+Not edited on purpose: `docs/user/set-up-stealth-meta-address.md` (open PR #577 edits it).
 
 ## Environment limits
 
