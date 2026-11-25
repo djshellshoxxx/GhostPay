@@ -335,6 +335,13 @@ low/info, and remain filler work.
   `claude-ghostpay-backup-60` for #657/#660; not requested early (holder's turn). When they release, merge the new main
   into the candidate (#660 changes `ux-vault` source, so a confirming CI run is required), then acquire the lock and
   fast-forward. FC-05b assigned to worker fc03 (stacked on FC-05a-T), brief in coordinator scratchpad.
+- 2026-11-25T12:10Z — `claude-ghostpay-backup-60` released gen 25 (`8d94940a`); main → `32ae3977` (#657 as `4c31dee5`,
+  #660 as `32ae3977`). `ghostpay-15` (#647, 2 checks pending) yielded the turn. Main's 19-file change since `aaa71a11`
+  overlaps the candidate only in `docs/ai/ACTIVE_WORK.md`; merged it into the candidate → **`7b47c3dd`** (parents
+  `d4bdd022`, `32ae3977`); the merge's non-registry patch is patch-identical to main's own change (`8ecef952…`), registry
+  +240/−0 vs main. Because #660 changes `ux-vault` source, a confirming CI pass is required: **lock gen 26 acquired**
+  (`d8bf8be5`, base `32ae3977`, 45-minute lease with heartbeats every ~20 min by a background holder that also watches
+  #664 CI). On green: fast-forward `main` to `7b47c3dd` (non-force), release, notify `ghostpay-15`.
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
