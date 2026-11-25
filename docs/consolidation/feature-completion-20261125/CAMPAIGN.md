@@ -206,6 +206,16 @@ low/info, and remain filler work.
 - 2026-11-25T09:14Z — **Owner decision:** "this is a primary feature of ghostpay. this is staying in." FC-01 (F03 signed
   invoice request file) is approved to go live; recorded on PR #650 (comment 7158077523). Scope: the request-file slice
   only, not the rest of the broader F03 proposal.
+- 2026-11-25T09:16Z — FC-05a #656 `8e7b1915` independent review **APPROVE-WITH-NITS** (read-only). Verified by reading:
+  spends derive only from header/Merkle-bound block data; `local` spent status requires full coverage to the checked
+  tip, otherwise `unknown` and unsweepable; reorg reconcile clears marks above the common ancestor; no
+  outspend/hex/merkle-proof request without explicit consent (enforced in four places), revocation aborts and wipes;
+  main's `0860e8fb`/`498a72ed`/`3a4870e6` byte-identical; encrypted scan state unchanged in envelope, validation
+  stricter; #244 is safe without #254. Non-blocking follow-ups queued: **FC-05a-T** (text accuracy: docs and the
+  two security-classified strings `btc.server.hint`, `btc.oracle.resultsNote` still describe the old automatic
+  outspend query — conservative overstatement of disclosure) and, for **FC-05b**, a session "pending spend" guard
+  (default local mode cannot see mempool spends, so a rescan right after a broadcast shows the swept inputs as
+  sweepable; a second sweep conflicts with the user's own transaction; disclosed by `btc.scan.spentStatus.local`).
 - Main drift rule refinement: `595a184b` (and `5cced8ef`) change only `AGENTS.md` and
   `docs/future/privacy-first/README.md`, which no FC branch touches. Docs-only main movement that touches no file of
   a candidate does not change the qualified source tree, so it does not by itself require re-running candidate CI;
