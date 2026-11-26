@@ -352,10 +352,22 @@ describe('Sweep', () => {
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Get relayer quote' }).disabled).toBe(true);
   });
 
-  it('tells the user when their keys are gone from memory', async () => {
-    await toSweep();
-    clearSession();
-    await waitFor(() => { expect(screen.getByText(/Your keys are no longer in memory/)).toBeTruthy(); });
+  it('clears the selected payment and destination when their keys leave memory', async () => {
+    const sink: RawSink = { calls: [], raws: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    const destination = screen.getByLabelText<HTMLInputElement>('Destination address (your own wallet)');
+    await user.type(destination, DEST);
+    const reads = [...(sink.calls ?? [])];
+    act(() => { clearSession(); });
+    expect(screen.getByText('Choose a payment to sweep from Scan and receive.')).toBeTruthy();
+    expect(destination.isConnected).toBe(false);
+    expect(screen.queryByDisplayValue(DEST)).toBeNull();
+    expect(screen.queryByText('5 USDC')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign and broadcast directly' })).toBeNull();
+    expect(sink.calls).toEqual(reads);
+    expect(sink.raws).toEqual([]);
+    expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '[]')).toEqual([]);
   });
 
   it('refuses a direct sweep end to end when the session is cleared while the pre-handoff gas price read is held', async () => {
@@ -378,6 +390,7 @@ describe('Sweep', () => {
       await waitFor(() => { expect(sink.calls).toContain('eth_gasPrice'); });
       expect(raws).toHaveLength(0);
       expect(wrapper).toHaveBeenCalledTimes(1);
+      const reads = [...(sink.calls ?? [])];
 
       await act(async () => {
         clearSession();
@@ -385,7 +398,10 @@ describe('Sweep', () => {
         await completed;
       });
 
-      expect(screen.getByText(/Your keys are no longer in memory/)).toBeTruthy();
+      expect(screen.getByText('Choose a payment to sweep from Scan and receive.')).toBeTruthy();
+      expect(screen.queryByLabelText('Destination address (your own wallet)')).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Sign and broadcast directly' })).toBeNull();
+      expect(sink.calls).toEqual(reads);
       expect(raws).toHaveLength(0);
       expect(sink.calls).not.toContain('eth_sendRawTransaction');
       expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '[]')).toEqual([]);

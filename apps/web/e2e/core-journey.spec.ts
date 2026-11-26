@@ -395,8 +395,18 @@ async function createShortInvoice(page: Page, hours: number, register = false): 
 }
 
 /** Payer: review -> explicit consent steps -> final check. Nothing reaches the wallet before the send click. */
-async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string): Promise<void> {
+async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string, idleLockMinutes?: number): Promise<void> {
   await openFresh(payer, link);
+  if (idleLockMinutes !== undefined) {
+    // Set this after navigation: the RPC fixture resets saved settings on every document load.
+    await nav(payer).getByRole('button', { name: 'Settings' }).click();
+    await payer.getByLabel('Idle lock after minutes without activity', { exact: true }).fill(String(idleLockMinutes));
+    await payer.getByRole('button', { name: 'Save settings' }).click();
+    await expect(payer.getByText('Settings saved.', { exact: true })).toBeVisible();
+    expect(await payer.evaluate(() => JSON.parse(window.localStorage.getItem('ghostpay.settings.v1') ?? '{}') as unknown))
+      .toMatchObject({ lockTimeoutMin: idleLockMinutes });
+    await nav(payer).getByRole('button', { name: 'Pay', exact: true }).click();
+  }
   await expect(payer.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(payer.getByText(FAKE_ROUTER).first()).toBeVisible();
   await payer.getByRole('button', { name: 'Continue' }).click();
@@ -609,7 +619,8 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
     const s = await openSeller(open);
     const link = await createShortInvoice(s, 1);
     const payer = await openPayer(open, sim, { clock: true });
-    await reviewToFinalCheck(payer.page, sim, link);
+    // Keep this invoice-expiry case inside the supported idle window; idle revocation has its own browser cases.
+    await reviewToFinalCheck(payer.page, sim, link, 240);
     // The invoice expires between the reviewed final check and the send click.
     await payer.context.clock.setSystemTime(Date.now() + 2 * 3_600_000);
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
