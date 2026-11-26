@@ -20,7 +20,11 @@ Continued by Claude Code session `newghostpay-77` after `newghostpay-ae` stopped
   every selected candidate once, all in chain order. No window, trigger or cap.
 - `scanClient.ts`: every page plans cover from its router announcements that pass `sendsLookups` (the checks
   `verifyClaimedPayment` applies before its first request), whether or not the page holds a match. Decoys run through
-  the same `verifyClaimedPayment` call with a throwaway evidence set; results are discarded. Off: exactly the old loop.
+  the same `verifyClaimedPayment` call with a separate per-page evidence set; results are never shown or recorded.
+  Only their block and receipt state feed the replay-anchor rule in `persistable`, exactly like real checks (third
+  review, 2026-11-26); with cover on, a failed real claim that sends no request no longer moves the anchor. Off:
+  exactly the old behaviour. A run held by a budget now also retries failed cover checks, advancing at least to the
+  next failing block each resume.
 - Setting `matchCover` in the scan-lane store (literal `true` only). Saved lane settings that cannot be read exactly are
   marked `unreadable`: a scan does not start, and Settings says so until they are saved again. A running scan stops
   when the saved cover choice changes or becomes unreadable.
@@ -37,18 +41,20 @@ changed between scans, order leaks and silent decoys.)
 
 ## Limits (Settings, Scan disclosure and docs/user/privacy-limits.md)
 
-Aimed at a provider that records requests. Not covered: a provider that alters, withholds or fails its answers (for
-example by provoking the checkpoint replay after a failed check, call-graph item 6); block reads of matched payments
-after a reorg report; the single-payment re-check from the result list; balance reads, key export and sweeps through
-the same RPC; time and IP address. A decoy that fails verification (such as a smart-wallet payment) gets fewer
-requests and no second-provider lookup. Only supported-token router payments serve as cover. Cost: about half of all
-router payments read, each scan. Not anonymity.
+Aimed at a provider that records requests. Not covered: a provider that alters, withholds or fails its answers; block
+reads of payments recorded against saved invoices (after a reorg report or a ledger retry); repeated on-chain copies
+(independent decisions); the token named by the similar-transfer estimate; the single-payment re-check from the result
+list; balance reads, key export and sweeps through the same RPC; time and IP address. A decoy that fails verification
+(such as a smart-wallet payment) gets fewer requests and no second-provider lookup. Only supported-token router
+payments serve as cover. Cost: about half of all router payments read, each scan. Not anonymity.
 
 ## Evidence
 
 `matchCover.test.ts` (share, reorg stability, content binding, cover without a match, no cap, chain order, split
 independence, dispose); `scanDisclosure.cover.test.ts` (PRIV-T02 instrumentation over the real scanner: off = one
 pair; on = the payment plus exactly the key-selected payments of the range; a range without a match gets the same cover;
-resume overlap; spam; second provider; two payments; viewing-key wipe); `scanSpam.test.ts`, `Scan.privacy.test.tsx` and
+resume overlap; spam; second provider; two payments; viewing-key wipe; the same block reads and saved position after
+a failed or pending check of a payment and of the same cover, one replay only, no replay for a request-less claim);
+`scanSpam.test.ts`, `Scan.privacy.test.tsx` and
 `Settings.test.tsx` (unreadable settings, mid-scan change, wiring on/off). Mutation check: removing the view wiring or
 restoring "cover only with a match" fails the new tests.

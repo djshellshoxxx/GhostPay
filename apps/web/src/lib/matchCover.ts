@@ -9,7 +9,8 @@ import { utf8ToBytes } from '@noble/hashes/utils.js';
  * receipt and transaction; a non-matching announcement gets none of these, so the provider learns which public
  * announcements matched the seller's keys (docs/research/privacy-rpc-call-graph.md, items 2 and 3). With cover on,
  * every scan page also verifies a fixed share of the other router payments it reads, through the same verification
- * path and in chain order, whether or not any payment matched; their results are discarded.
+ * path and in chain order, whether or not any payment matched; their results are discarded. Only the block and receipt
+ * state of a check, real or cover, decides where the next scan restarts after a pending or failed one.
  *
  * Which other payments are looked up depends only on the announcement and a key derived from the viewing key: not on
  * the page, on whether anything matched, or on a reorg (the hashed fields survive one). A provider that only records
@@ -18,9 +19,9 @@ import { utf8ToBytes } from '@noble/hashes/utils.js';
  * independent decision. The key stays in memory and cannot be computed from public data.
  *
  * What it does not hide: when the scan ran and the IP address; anything a provider finds out by altering or failing its
- * answers (a failed check of a real payment changes where the next scan starts); the block reads after a reorg or a
- * failed check; a balance read, key export or sweep through the same RPC; a single payment's re-check from the result
- * list; and anything sent to a wallet or relayer. Few router payments give little or no cover.
+ * answers; the block reads that re-check payments recorded against saved invoices; a balance read, key export or sweep
+ * through the same RPC; a single payment's re-check from the result list; and anything sent to a wallet or relayer. Few
+ * router payments give little or no cover.
  */
 
 /** Share of the other router payments that are looked up as cover: 1 in 2. */

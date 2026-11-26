@@ -45,7 +45,7 @@ export interface LogSpec {
 }
 
 export function sellerLog(s: Seller, spec: LogSpec): MadeLog {
-  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: s.meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.wrongTag === true ? { wrongTag: true } : {}) });
+  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: s.meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.wrongTag === true ? { wrongTag: true } : {}), ...(spec.token === undefined ? {} : { token: spec.token }) });
 }
 export function strangerLog(spec: LogSpec): MadeLog {
   return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: newSeller().meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.token === undefined ? {} : { token: spec.token }) });

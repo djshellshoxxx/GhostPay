@@ -166,3 +166,70 @@ describe('cover lookups for a matched router payment', () => {
     expect(viewingKey.every((byte) => byte === 0)).toBe(true);
   });
 });
+
+describe('cover lookups and the replay after a pending or failed check', () => {
+  /** A stranger's payment at the same position as the seller's, picked until the seller's key selects it as cover. */
+  const selectedStranger = (): MadeLog => {
+    for (;;) {
+      const m = strangerLog({ block: 525, index: 0 });
+      if (planner.selects(asItem(m))) return m;
+    }
+  };
+  const real = sellerLog(seller, { block: 525, index: 0 });
+  const decoy = selectedStranger();
+
+  /** One page up to head 900 (finality depth 100), so a scan with nothing to replay saves block 801. */
+  async function replayRun(target: MadeLog, matched: readonly MadeLog[], options: { fail?: boolean; lateHead?: number; cover?: boolean; from?: bigint } = {}) {
+    const w = watched([target, ...sameWindow], 900);
+    const record = w.chain.intercept!;
+    let fetched = false;
+    w.chain.intercept = (method, params) => {
+      record(method, params);
+      if (method === 'eth_getLogs') fetched = true;
+      if (options.fail === true && method === 'eth_getTransactionReceipt' && String(params[0]).toLowerCase() === hashOf(target)) return null;
+      return fetched && options.lateHead !== undefined && method === 'eth_blockNumber' ? `0x${options.lateHead.toString(16)}` : undefined;
+    };
+    const checkpoints = memoryCheckpoints();
+    const o = await runDisclosureScenario({
+      id: 'replay', seller, chain: w.chain, matched, checkpoints, matchCover: options.cover ?? true,
+      ...(options.from === undefined ? {} : { cursor: { nextBlock: options.from } }),
+    });
+    expect(o.error).toBeUndefined();
+    const blockReads = w.asked.filter((a) => a.method === 'eth_getBlockByNumber').map((a) => BigInt(a.arg))
+      .sort((x, y) => (x < y ? -1 : x > y ? 1 : 0));
+    return { blockReads, saved: checkpoints.saved.at(-1)?.nextBlock, receipts: o.matches.map((m) => m.receipt) };
+  }
+
+  it('reads the same blocks after a failed check of a payment as after the same failure of cover', async () => {
+    const mineFails = await replayRun(real, [real], { fail: true });
+    const coverFails = await replayRun(decoy, [], { fail: true });
+    expect(mineFails.receipts).toEqual(['claimed']);
+    expect(coverFails.receipts).toEqual([]);
+    expect(coverFails.blockReads).toEqual(mineFails.blockReads);
+    // The replay anchor: the block before the failed check, where the next scan starts.
+    expect(mineFails.blockReads).toContain(524n);
+    expect([mineFails.saved, coverFails.saved]).toEqual([525n, 525n]);
+  });
+
+  it('reads the same blocks when a lower head leaves a payment or the same cover pending', async () => {
+    const minePending = await replayRun(real, [real], { lateHead: 550 });
+    const coverPending = await replayRun(decoy, [], { lateHead: 550 });
+    expect(minePending.receipts).toEqual(['pending']);
+    expect(coverPending.blockReads).toEqual(minePending.blockReads);
+    expect(coverPending.saved).toBe(minePending.saved);
+    expect(minePending.saved).toBeLessThanOrEqual(525n);
+  });
+
+  it('replays a failed cover check once: a scan resumed at it saves past it', async () => {
+    expect((await replayRun(decoy, [], { fail: true, from: 525n })).saved).toBe(801n);
+  });
+
+  it('does not move the checkpoint for a claim that sends no request while cover is on', async () => {
+    const dust = sellerLog(seller, { block: 525, index: 0, token: UNSUPPORTED_TOKEN });
+    const on = await replayRun(dust, [dust]);
+    expect(on.receipts).toEqual(['claimed']);
+    expect(on.saved).toBe(801n);
+    // Off keeps the earlier rule.
+    expect((await replayRun(dust, [dust], { cover: false })).saved).toBe(525n);
+  });
+});

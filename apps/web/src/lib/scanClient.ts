@@ -12,6 +12,7 @@ import {
   type Hex,
   type RpcClient,
   type ScanCursor,
+  type PaymentVerification,
   type ProviderDiscrepancy,
   type ReceiptStatus,
   type ScannedAnnouncement,
@@ -238,6 +239,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // or RPC evidence.
   const claimLedger = new Map<string, number>();
   const evidenceLedger = new Map<string, bigint>();
+  // Blocks of cover payments seen as pending in this run: the replay rule treats them like pending matches.
+  const coverPending: bigint[] = [];
   const discrepancies: ProviderDiscrepancy[] = [];
   // Pending results from this run are in memory only. On a reorg the safe persistence floor
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
@@ -448,19 +451,25 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             });
             return cover.plan(uniqueClaims.items, candidates);
           })();
+      // Blocks of this page's failed cover checks, and the transfers cover credits among itself (never the ledger's).
+      const coverClaimed: bigint[] = [];
+      const coverEvidence = new Set<string>();
       for (const step of steps) {
         if (p.signal.aborted) break;
         if (step.decoy) {
-          // The same verification call as a real claim, against a throwaway evidence set; the result is dropped.
-          await verifyClaimedPayment({
+          // The same verification call as a real claim, against a separate evidence set. The result is never shown or
+          // recorded; only its block and receipt state feed the replay rule, so real and cover checks move it alike.
+          const checked = receiptStatus(await verifyClaimedPayment({
             chain: p.chain,
             client: p.client,
             router: p.manifest.router,
             announcer: p.manifest.announcer,
             claim: step.item,
             ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
-            consumedTransfers: new Set<string>(),
-          }).catch(() => undefined);
+            consumedTransfers: coverEvidence,
+          }).catch(() => undefined));
+          if (checked === 'pending') coverPending.push(step.item.announcement.blockNumber);
+          if (checked === 'claimed') coverClaimed.push(step.item.announcement.blockNumber);
           continue;
         }
         const claim = step.item;
@@ -476,11 +485,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
               ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
               consumedTransfers: pageEvidence,
             });
-        // A router-attributed announcement alone is still just a claim. Only independent transfer
-        // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
-        const receipt: ReceiptStatus = verification?.status === 'received'
-          ? verification.final ? 'verified' : 'pending'
-          : 'claimed';
+        const receipt = receiptStatus(verification);
         const workerMatch = workerMatches.get(claim.announcement.id);
         const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt };
         pageMatches.push(match);
@@ -582,7 +587,14 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
       if (canSaveCheckpoint && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches, retryHeight);
+        // With cover on, a failed claim that sends no request is left out: verifying it again cannot change it, and
+        // its replay would read a block that only a payment of this seller leads to.
+        const replayed = pageMatches.filter((m) => m.viaRouter && m.receipt === 'claimed' && (cover === undefined ||
+          (m.metadata !== undefined && sendsLookups(p.chain, p.manifest.router, m.announcement, m.metadata))));
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, {
+          pending: [...all.filter((m) => m.receipt === 'pending').map((m) => m.announcement.blockNumber), ...coverPending],
+          failed: [...replayed.map((m) => m.announcement.blockNumber), ...coverClaimed],
+        }, retryHeight);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
           await p.onUnresolvedEvidence?.(pageFrom);
@@ -674,36 +686,52 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
 }
 
 /**
+ * A router-attributed announcement alone is still just a claim. Only independent transfer evidence can be shown as
+ * received; pending applies only to evidence-backed, non-final funds.
+ */
+function receiptStatus(verification: PaymentVerification | undefined): ReceiptStatus {
+  if (verification?.status !== 'received') return 'claimed';
+  return verification.final ? 'verified' : 'pending';
+}
+
+/** What decides where the next scan starts, as announcement blocks. Cover checks count the same as real ones. */
+interface ReplayChecks {
+  /** Every check of this run that saw evidence-backed but non-final funds. */
+  readonly pending: readonly bigint[];
+  /** This page's router checks that degraded to `claimed`. */
+  readonly failed: readonly bigint[];
+}
+
+/**
  * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
  * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
  * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
  * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
- * earliest `pending` match, and never moves behind where this run started. Router claims whose payment
- * verification degraded to `claimed` get one replay: only while they are on the current page and above this run's
- * floor, so neither an old claim nor one the resumed run has just retried can pin every later checkpoint.
+ * earliest `pending` check, and never moves behind where this run started. Router checks that degraded to `claimed`
+ * get one replay: only while they are on the current page and above this run's floor, so neither an old claim nor one
+ * the resumed run has just retried can pin every later checkpoint. With cover on, cover checks follow the same two
+ * rules, so the block reads after a pending or failed check do not single out the seller's payments.
  *
  * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
  * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
  * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[], retryHeight?: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, checks: ReplayChecks, retryHeight?: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   let settled = head + 1n > depth ? head + 1n - depth : 0n;
   if (cursor.nextBlock < settled) settled = cursor.nextBlock;
   if (settled > next) next = settled;
   // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
-  for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
+  for (const block of checks.pending) if (block < next) next = block;
   // A router claim whose verification failed is reported as `claimed`; the failure may be transient (RPC trouble) or
   // permanent (indirect router call, unparsable metadata), and the two are not distinguishable here. Give it ONE
   // replay: only claims from this page, and only above this run's floor. A claim at the floor was already retried by
   // this run (it resumed from that block), so pinning it again would make every resume restart there and, when the
   // next page is held by the open-lane budget or the match limit, never save past it (A5 liveness).
-  for (const m of pageMatches) {
-    if (m.viaRouter && m.receipt === 'claimed' && m.announcement.blockNumber > floor && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
-  }
+  for (const block of checks.failed) if (block > floor && block < next) next = block;
   // A previously accepted payment disappeared from this run but its block could not be confirmed as replaced.
   if (retryHeight !== undefined && retryHeight < next) next = retryHeight;
   if (next < floor) next = floor;
@@ -799,14 +827,6 @@ const encodeCursor = (cursor: ScanCursor): string =>
   JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
 
 /**
- * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
- *
- * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
- * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
- * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
- * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
- */
-/**
  * Whether verifying this router announcement reaches the network: the same conditions `verifyClaimedPayment` checks
  * before its first request (router caller, router metadata with a positive amount and a supported asset, well-formed
  * transaction hash, block hash and log index). Cover is drawn only from announcements that pass, so a cover lookup
@@ -821,6 +841,14 @@ function sendsLookups(chain: ChainConfig, router: Address, a: ScannedAnnouncemen
     && Number.isSafeInteger(a.logIndex) && a.logIndex >= 0 && a.logIndex <= 0xffffff;
 }
 
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ *
+ * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
+ * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
+ * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
+ * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
+ */
 export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
   sweepLegacySlots(storage);
   const named = checkpointSlotNamer(viewingKey);

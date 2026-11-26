@@ -123,10 +123,14 @@ key, one-time address and metadata against a fixed share), so it does not depend
 reorg, and an altered copy is decided independently. There is no per-page cap. Cover payments must pass the checks
 verification applies before its first request (router caller, positive amount, supported token, well-formed hashes), so
 no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts` (deterministic mock; no live provider).
-It addresses a provider that records requests. Remaining exposure: the checkpoint replay after a failed verification
-(item 6 above), which an active provider can provoke; block reads of matched payments after a reorg report; the
-single-payment re-check from the result list; balance reads, key export and sweeps through the same RPC; cover that
-fails verification sends fewer follow-up requests and never reaches the second provider.
+It addresses a provider that records requests. The checkpoint replay after a pending or failed check (item 6 above)
+follows the block and receipt state of cover checks too, so it does not single out the matched payments; a failed
+claim that sends no request no longer moves it while cover is on. Remaining exposure: a provider that alters,
+withholds or fails its answers; block reads of payments recorded against saved invoices (after a reorg report or a
+ledger retry); repeated on-chain copies, which get independent cover decisions; the token named by the optional
+similar-transfer estimate; the single-payment re-check from the result list; balance reads, key export and sweeps
+through the same RPC; cover that fails verification sends fewer follow-up requests and never reaches the second
+provider.
 
 The candidates below remain open.
 

@@ -105,11 +105,16 @@ and [seller privacy](seller-privacy.md).
   router payments in supported tokens that it reads, whether or not any payment matched, the same way and in chain
   order, and discard their results; your payments are verified exactly as before. Which others are checked is decided
   by a key derived from your viewing key and by each announcement's content, so a rescan, a resumed scan or a scan
-  after a reorg checks the same ones. This is aimed at a provider that records your requests: from the lookups alone it
+  after a reorg checks the same ones. A check that fails or is still pending moves the saved scan position the same way
+  for your payments and for cover. This is aimed at a provider that records your requests: from the lookups alone it
   cannot tell your payments from the cover. Limits:
-  - a provider that alters, withholds or fails its answers can still find out which payment matched, for example
-    because a failed check of a real payment makes the next scan restart from that payment's block;
-  - the extra block reads after a reorg or a failed check cover only your own observations;
+  - a provider that alters, withholds or fails its answers can still find out which payment matched; the cover is not
+    designed against it;
+  - the block reads that re-check payments recorded against your saved invoices (after a reorg, or when the ledger asks
+    for a check again) are made only for your own payments, so they point at them;
+  - a copy of an announcement sent again on chain gets its own cover decision, while router copies of your payments are
+    all checked;
+  - with the similar-transfer estimate also on, its token log query names the token of your latest payment;
   - reading a balance in Sweep, exporting a payment key or sweeping through the same RPC sends the matched address or
     transaction and undoes the cover for that payment, as does re-checking one payment from the result list (for
     example accepting a late payment);
