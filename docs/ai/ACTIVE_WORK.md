@@ -1,3 +1,9 @@
+# GP-PAGES-04 idle deadline and real page freeze qualification, successor of #582 (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/idle-sweep-freeze-tests-20261126` from main `194e225c` (#582 `test/gp-pages-04-frozen-page-sweep-resume` stays open and untouched; it was stacked on #544's old base).
+Owned paths: new `apps/web/src/lib/sweep.idleDeadline.test.tsx`, new `apps/web/e2e/idle-freeze.spec.ts`, this entry. Test-only; no product, workflow or dependency change.
+Acceptance: a delayed final Sweep simulation returning at 59,999 ms signs and hands off once, while 60,000 and 60,001 ms reach neither `signDigest` nor the handoff; a real Chromium freeze (CDP `Page.setWebLifecycleState`) for 59,999/60,000/60,001 ms and an early resume followed by a delayed periodic check lock or keep authority accordingly in the existing desktop e2e project (full and lean); hosted CI green at the exact head.
+
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
 Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
