@@ -262,9 +262,15 @@ async function execStep(world, oracle, step, i) {
       await unlockLedger(page);
       const name = step.op === 'confirm' ? 'Confirm proposed invoice match' : 'Accept late payment for this invoice';
       const proposalFor = await page.evaluate(() => (document.body.innerText.match(/Exact local match proposed: invoice (0x[0-9a-f]{64})/i) ?? [])[1]?.toLowerCase() ?? null);
+      // Attribute the decision to the invoice the proposal names (by its card's amount), not to the step's label.
+      const seen = await observeSeller(page);
+      const card = seen.cards?.find((c) => c.digest === proposalFor);
+      const named = card === undefined ? null : Object.entries(INTENTS).find(([, v]) => v.units === card.units)?.[0] ?? null;
+      const late = seen.cards?.filter((c) => /Verified late transfer — invoice decision pending/.test(c.text)).map((c) => Object.entries(INTENTS).find(([, v]) => v.units === c.units)?.[0]) ?? [];
+      const intent = step.op === 'confirm' ? named ?? step.intent ?? 'X' : late[0] ?? step.intent ?? 'X';
       const r = await clickLedgerAction(page, name);
-      if (r === 'clicked') world.actions[step.intent ?? 'X'].push({ op: step.op, tab: step.tab, step: i, proposalFor });
-      return { clicked: r, proposalFor };
+      if (r === 'clicked') world.actions[intent].push({ op: step.op, tab: step.tab, step: i, proposalFor });
+      return { clicked: r, proposalFor, intent };
     }
     case 'reload': {
       const page = world.tabs[step.tab];

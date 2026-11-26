@@ -113,7 +113,10 @@ export const SELLER_CONTROLS = [
   },
 ];
 
-/** Seeded sequences over the same alphabet (bounded: 4–8 steps after a fixed payment prefix). */
+/**
+ * Seeded sequences (bounded: 4–8 middle steps). A scan is followed by a confirm in the same tab half the time, so
+ * decisions actually happen; every sequence ends by finalising, deciding and re-rendering both tabs.
+ */
 export function sellerGenerated(seed) {
   const rng = new Rng(seed);
   const steps = [{ op: 'pay', intent: 'X' }];
@@ -121,16 +124,26 @@ export function sellerGenerated(seed) {
   for (let i = 0; i < n; i += 1) {
     const r = rng.next();
     const tab = rng.pick(['S1', 'S2']);
-    if (r < 0.25) steps.push({ op: 'scan', tab, fromStart: rng.next() < 0.3 });
-    else if (r < 0.4) steps.push({ op: 'advance', n: rng.pick([1, 50, FINAL]) });
-    else if (r < 0.55) steps.push({ op: 'confirm', tab, intent: 'X' });
-    else if (r < 0.62) steps.push({ op: 'reorg', depth: rng.pick([2, FINAL + 3]), drop: rng.next() < 0.5 });
-    else if (r < 0.7) steps.push({ op: 'mine' });
-    else if (r < 0.78) steps.push({ op: 'reload', tab });
-    else if (r < 0.85) steps.push({ op: 'scan', tab, failAfterCalls: rng.int(2, 12) });
-    else if (r < 0.92) steps.push({ op: 'pay', intent: 'C' });
+    if (r < 0.3) {
+      const decide = rng.next() < 0.5;
+      steps.push({ op: 'scan', tab, fromStart: decide || rng.next() < 0.3 });
+      if (decide) steps.push({ op: 'confirm', tab });
+    } else if (r < 0.45) steps.push({ op: 'advance', n: rng.pick([1, 50, FINAL]) });
+    else if (r < 0.55) steps.push({ op: 'reorg', depth: rng.pick([2, FINAL + 3]), drop: rng.next() < 0.5 });
+    else if (r < 0.62) steps.push({ op: 'mine' });
+    else if (r < 0.7) steps.push({ op: 'reload', tab });
+    else if (r < 0.78) steps.push({ op: 'scan', tab, failAfterCalls: rng.int(2, 12) });
+    else if (r < 0.88) steps.push({ op: 'pay', intent: 'C' });
     else steps.push({ op: 'compareTabs' });
   }
-  steps.push({ op: 'advance', n: FINAL }, { op: 'scan', tab: 'S1' }, { op: 'compareTabs' });
+  steps.push(
+    { op: 'advance', n: FINAL },
+    // From block 0: a checkpoint-resumed scan re-lists nothing already scanned, and proposals need live results.
+    { op: 'scan', tab: 'S1', fromStart: true },
+    { op: 'confirm', tab: 'S1' },
+    { op: 'compareTabs' },
+    { op: 'scan', tab: 'S2', fromStart: true },
+    { op: 'compareTabs' },
+  );
   return { name: `SG-${seed}`, why: 'seeded seller interleaving', seed, steps };
 }
