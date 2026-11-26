@@ -85,7 +85,13 @@ export { checkpointKeyId } from '@ghostpay/ux-vault/portable';
 
 export interface CheckpointStore {
   load(chainId: number, keyId: string): ScanCursor | undefined;
-  save(chainId: number, keyId: string, cursor: ScanCursor): void;
+  /**
+   * Stores the resume cursor. Without `expected` the write is forward-only: a cursor older than the stored one is refused.
+   * With `expected` (the cursor the writer last read or wrote, `null` for none) it is a compare-and-swap: the write happens
+   * only while the slot still holds exactly that cursor. The slot's owner can therefore move it backward (reorg rollback,
+   * claim replay, a deliberate restart), while a scan that lost the slot to another scan cannot overwrite it.
+   */
+  save(chainId: number, keyId: string, cursor: ScanCursor, expected?: ScanCursor | null): void;
   clear(chainId: number, keyId: string): void;
 }
 
@@ -231,6 +237,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
   let canSaveCheckpoint = true;
+  // PRIV-06 F1: the checkpoint this run last read or wrote. Another scan of the same keys (a second tab, or an older run
+  // that outlives a newer one) may write the slot meanwhile. This run then yields the slot for the rest of the run instead
+  // of overwriting it: the other writer's cursor stands whether it is ahead (a newer scan) or behind (its own rollback).
+  // Read synchronously here, before the first await, so a scan started later cannot be mistaken for this run's own write.
+  let ownedCheckpoint = p.checkpoints === undefined ? undefined : loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
   let retryHeight: bigint | undefined;
   const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
   const uncertainFrom = (from: bigint, head: bigint): bigint => {
@@ -550,7 +561,18 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }
-        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
+        if (saved !== undefined) {
+          // Re-read and write in one synchronous step. A store that does not round-trip (reads undefined) keeps saving.
+          const stored = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+          if (stored !== undefined && !sameCursor(stored, ownedCheckpoint)) {
+            canSaveCheckpoint = false;
+          } else {
+            p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor, stored ?? null);
+            // Own what the slot holds now, not what was asked: a write lost to a full or failing storage leaves the old
+            // cursor, which this run may then retry at its next page instead of mistaking it for a foreign write.
+            ownedCheckpoint = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+          }
+        }
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
       if (!res.truncated) break;
@@ -707,6 +729,23 @@ async function corroborateAnchor(p: ScanParams, secondary: RpcClient, height: bi
   }
 }
 
+/** A store that throws on read is treated as empty, like an unreadable slot. */
+function loadCheckpoint(store: CheckpointStore, chainId: number, keyId: string): ScanCursor | undefined {
+  try {
+    return store.load(chainId, keyId);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Same resume position and anchor (hash compared case-insensitively). */
+function sameCursor(a: ScanCursor | undefined, b: ScanCursor | undefined): boolean {
+  if (a === undefined || b === undefined) return a === b;
+  if (a.nextBlock !== b.nextBlock) return false;
+  if (a.last === undefined || b.last === undefined) return a.last === b.last;
+  return a.last.number === b.last.number && a.last.hash.toLowerCase() === b.last.hash.toLowerCase();
+}
+
 function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
@@ -766,20 +805,31 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
   sweepLegacySlots(storage);
   const named = checkpointSlotNamer(viewingKey);
   const slot = (chainId: number, keyId: string): string | undefined => (validScope(chainId, keyId) ? named(chainId, keyId) : undefined);
+  /** The stored cursor; an unreadable, unparsable or malformed value counts as absent (it is overwritten, never trusted). */
+  const read = (name: string): ScanCursor | undefined => {
+    try {
+      const text = storage?.getItem(name);
+      return text === null || text === undefined ? undefined : parseCursor(text);
+    } catch {
+      return undefined;
+    }
+  };
   return {
     load(chainId, keyId) {
       try {
         const name = slot(chainId, keyId);
-        const text = name === undefined ? undefined : storage?.getItem(name);
-        return text === null || text === undefined ? undefined : parseCursor(text);
+        return name === undefined ? undefined : read(name);
       } catch {
         return undefined;
       }
     },
-    save(chainId, keyId, cursor) {
+    save(chainId, keyId, cursor, expected) {
       try {
         const name = slot(chainId, keyId);
         if (name === undefined) return;
+        // PRIV-06 F1: no last-writer-wins. Read and write happen in one synchronous step (the same in every tab).
+        const current = read(name);
+        if (expected === undefined ? current !== undefined && cursor.nextBlock < current.nextBlock : !sameCursor(current, expected ?? undefined)) return;
         storage?.setItem(name, encodeCursor(cursor));
         storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
