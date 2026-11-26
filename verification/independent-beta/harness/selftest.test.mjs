@@ -537,3 +537,46 @@ test('chain clone is independent: reorging the original leaves the frozen view (
   assert.equal(frozen.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: [ANNOUNCEMENT_TOPIC] }).length, 1);
   assert.equal(chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: [ANNOUNCEMENT_TOPIC] }).length, 0);
 });
+
+test('block headers are well formed from block 0 (H12): non-zero hashes, zero parent only for block 0', () => {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  chain.advance(3);
+  for (let n = 0; n <= chain.head; n += 1) {
+    const b = chain.blockObject(n);
+    assert.match(b.hash, /^0x[0-9a-f]{64}$/);
+    assert.match(b.parentHash, /^0x[0-9a-f]{64}$/);
+    assert.notEqual(b.hash, '0x' + '0'.repeat(64));
+    if (n === 0) assert.equal(b.parentHash, '0x' + '0'.repeat(64));
+    else assert.equal(b.parentHash, chain.blockObject(n - 1).hash);
+  }
+});
+
+// ---- M3 seller oracle fixtures (SI9 two-RPC, SI10 restart) on synthetic observations.
+import { SellerOracle } from './seller-oracle.mjs';
+const UNITS_X = '498750000000000000';
+const sellerCard = (state) => ({ text: `Invoice 0x${'ab'.repeat(32)} ${UNITS_X} base units of native; valid until 2099-01-01T00:00:00.000Z. ${state}`, digest: '0x' + 'ab'.repeat(32), units: UNITS_X, validUntil: '2099-01-01T00:00:00.000Z' });
+const sellerObs = (state) => ({ closed: false, cards: [sellerCard(state)], ledgerText: '', ledgerLocked: false });
+function sellerWorld() {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  return { chain, payments: { X: [], C: [] }, actions: { X: [{ op: 'confirm', step: 0 }], C: [] }, scans: {}, reorged: new Set() };
+}
+
+test('SI9: one-sided reorg may withhold credit (noted) but must not add a link or an invalidation', () => {
+  const w = sellerWorld();
+  w.reorgSinceFreeze = true;
+  const o = new SellerOracle(w, { X: { units: UNITS_X }, C: { units: '1' } });
+  o.check(1, { op: 'scan', tab: 'S1' }, { S1: sellerObs('Linked to a verified observation.') }, { S1: sellerObs('Unverified observation. Scan again before relying on it.') }, { outcome: 'finished' });
+  assert.equal(o.violations.filter((v) => v.inv === 'SI9').length, 0);
+  assert.ok(o.notes.some((n) => /credit withheld/.test(n.note)));
+  const o2 = new SellerOracle(w, { X: { units: UNITS_X }, C: { units: '1' } });
+  o2.check(1, { op: 'scan', tab: 'S1' }, { S1: sellerObs('Linked to a verified observation.') }, { S1: sellerObs('Reorg invalidated earlier payment evidence.') }, { outcome: 'finished' });
+  assert.equal(o2.violations.find((v) => v.inv === 'SI9')?.detail.gained.includes('invalidated'), true);
+});
+
+test('SI10: a link lost across a restart with no chain change is flagged', () => {
+  const w = sellerWorld();
+  w.chainLogLengthAtRestart = w.chain.log.length;
+  const o = new SellerOracle(w, { X: { units: UNITS_X }, C: { units: '1' } });
+  o.check(1, { op: 'restartSeller' }, { S1: sellerObs('Linked to a verified observation.') }, { S1: sellerObs('No linked observation.'), S2: sellerObs('No linked observation.') }, {});
+  assert.ok(o.violations.some((v) => v.inv === 'SI10'));
+});

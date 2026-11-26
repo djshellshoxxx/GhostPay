@@ -63,6 +63,17 @@ export class SellerOracle {
         const pays = this.canonicalPayments(intent, scanHead);
         const final = pays.filter((p) => p.depth >= FINALITY);
         const detail = { tab, intent, card: card.text.slice(0, 300), payments: pays.map((p) => ({ hash: p.hash, kind: p.kind, block: p.truth.block, depth: p.depth, ts: p.truth.timestamp })), scanHead };
+        // SI11 (LATE-LM1, #716): an invoice whose linked payment is quarantined (unverified) stays reserved: no exact
+        // proposal for it may be offered for another payment.
+        const decided = this.w.actions[intent].some((a) => ['confirm', 'manualLink', 'acceptLate'].includes(a.op));
+        if (decided && cls.includes('unverified') && new Set(this.w.payments[intent].map((p) => p.hash)).size >= 2 && card.digest !== null && o.ledgerText.toLowerCase().includes(`exact local match proposed: invoice ${card.digest}`)) {
+          this.violation('SI11', stepIndex, { ...detail, reason: 'exact proposal offered for an invoice reserved by a quarantined link' });
+        }
+        // SI12 (S3/S42/S44): after deleting observations, an imported backup is untrusted history: it never credits an
+        // invoice, and an observation invalidated by a reorg is not revived.
+        if (step.op === 'importBackup' && this.w.deletedObservations === true && cls.includes('linked')) {
+          this.violation('SI12', stepIndex, { ...detail, reason: 'imported history credited an invoice' });
+        }
         // SI7: the control never shows payment state without a payment of its own.
         if (this.w.payments[intent].length === 0 && cls.some((c) => PAYMENT_STATES.includes(c))) this.violation('SI7', stepIndex, detail);
         if (cls.includes('linked')) {
@@ -89,7 +100,7 @@ export class SellerOracle {
           if (fresh || step.op === 'reload' || step.op === 'view') this.violation('SI4', stepIndex, { ...detail, reason: 'accepted-late decision history not visible' });
         }
         // SI4 (notice): a reorg that withdrew a link should be explained, not silently reopened (S29); recorded only.
-        if (fresh && !cls.includes('linked') && this.w.actions[intent].length > 0 && this.w.payments[intent].some((p) => this.w.reorged.has(p.hash)) && !cls.includes('invalidated')) {
+        if (fresh && this.w.reorgSinceFreeze !== true && !cls.includes('linked') && this.w.actions[intent].length > 0 && this.w.payments[intent].some((p) => this.w.reorged.has(p.hash)) && !cls.includes('invalidated')) {
           this.ambiguous('SA7', stepIndex, { ...detail, reason: 'link withdrawn after reorg without a visible invalidation notice' });
         }
       }
@@ -103,11 +114,20 @@ export class SellerOracle {
     const stateOf = (x) => Object.fromEntries((x?.cards ?? []).map((c) => [this.intentOfCard(c), cardClasses(c.text).filter((k) => ['linked', 'acceptedLate', 'invalidated'].includes(k)).sort().join('+')]));
     // SI9 (S20): a reorg reported by only one of two providers stops the scan; nothing is linked, rolled back or
     // invalidated on that pass.
+    // Withholding credit (linked -> "Unverified observation") is accepted while providers disagree (S12, HO:48: a
+    // failed recheck marks records unverified and a rescan restores credit); a NEW link or a NEW invalidation is not
+    // (harness fix H11: an earlier version also flagged withheld credit).
     if (step.op === 'scan' && this.w.reorgSinceFreeze === true) {
       const was = stateOf(before[step.tab]);
       const now = stateOf(obs[step.tab]);
-      const changed = Object.keys({ ...was, ...now }).filter((k) => k !== 'null' && (was[k] ?? '') !== (now[k] ?? ''));
-      if (changed.length > 0) this.violation('SI9', stepIndex, { tab: step.tab, outcome: result?.outcome, before: was, after: now });
+      for (const k of Object.keys({ ...was, ...now })) {
+        if (k === 'null') continue;
+        const a = (was[k] ?? '').split('+');
+        const b = (now[k] ?? '').split('+');
+        const gained = b.filter((c) => c !== '' && !a.includes(c));
+        if (gained.includes('linked') || gained.includes('invalidated')) this.violation('SI9', stepIndex, { tab: step.tab, intent: k, gained, outcome: result?.outcome, before: was[k] ?? '', after: now[k] ?? '' });
+        else if ((was[k] ?? '') !== (now[k] ?? '')) this.notes.push({ step: stepIndex, note: 'credit withheld while providers disagreed (S12)', tab: step.tab, intent: k, before: was[k] ?? '', after: now[k] ?? '' });
+      }
       if (result?.outcome === 'finished') this.notes.push({ step: stepIndex, note: 'scan finished while providers disagreed about a reorg', tab: step.tab, text: result?.text });
     }
     // SI10 (S28): visible linked, accepted-late and invalidated evidence is durable across a full browser restart
@@ -120,6 +140,13 @@ export class SellerOracle {
           if (k !== 'null' && (was[k] ?? '') !== (now[k] ?? '')) this.violation('SI10', stepIndex, { tab, intent: k, before: was[k] ?? '', after: now[k] ?? '' });
         }
       }
+    }
+    // SA8 (finding F2): a manual link accepted for an invoice that a quarantined link still reserves (LATE-LM1)
+    // reaches the two-links/above state #716 describes, through the annotation path. Recorded, not scored: manual
+    // links are seller annotations (ADR:247-248) and no accepted requirement forbids this.
+    if (step.op === 'manualLink' && result?.linked === true) {
+      const was = (before[step.tab]?.cards ?? []).find((c) => this.intentOfCard(c) === step.intent);
+      if (was !== undefined && cardClasses(was.text).includes('unverified')) this.ambiguous('SA8', stepIndex, { tab: step.tab, intent: step.intent, before: was.text.slice(0, 300) });
     }
     // SI8: after both seller tabs re-rendered (scenario 'compareTabs' step), they agree on what is linked.
     if (step.op === 'compareTabs') {

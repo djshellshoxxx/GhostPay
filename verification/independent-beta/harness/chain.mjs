@@ -12,9 +12,14 @@ export const GENESIS = 500;
 const hex = (n) => `0x${n.toString(16)}`;
 const pad64 = (s) => s.replace(/^0x/, '').toLowerCase().padStart(64, '0');
 
-/** Deterministic block hash: 8 hex digits of fork id, 56 of block number. */
+/**
+ * Deterministic block hash: 8 hex digits of fork id, a fixed `b10c` marker, 52 of block number. No block hash is all
+ * zero, and the parent of block 0 is the zero hash, as on a real chain (harness fix H12: block 0 previously hashed to
+ * zero and its parentHash rendered a negative number into the hex).
+ */
 export function blockHash(fork, number) {
-  return `0x${fork.toString(16).padStart(8, '0')}${number.toString(16).padStart(56, '0')}`;
+  if (number < 0) return `0x${'0'.repeat(64)}`;
+  return `0x${fork.toString(16).padStart(8, '0')}b10c${number.toString(16).padStart(52, '0')}`;
 }
 
 export class SyntheticChain {

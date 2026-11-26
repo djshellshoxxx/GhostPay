@@ -99,9 +99,13 @@ export class MockRpc {
   }
 
   one(body) {
-    this.calls.push({ method: body.method, at: Date.now(), mode: this.mode });
+    const call = { method: body.method, at: Date.now(), mode: this.mode };
+    if (process.env.W5_RPC_DEBUG === '1') call.params = JSON.stringify(body.params ?? []).slice(0, 200);
+    this.calls.push(call);
     try {
-      return { jsonrpc: '2.0', id: body.id, result: this.answer(body.method, body.params ?? []) };
+      const result = this.answer(body.method, body.params ?? []);
+      if (process.env.W5_RPC_DEBUG === '1') call.result = JSON.stringify(result ?? null).slice(0, 160);
+      return { jsonrpc: '2.0', id: body.id, result };
     } catch (e) {
       return { jsonrpc: '2.0', id: body.id, error: { code: e.code ?? -32603, message: String(e.message) } };
     }

@@ -145,3 +145,61 @@ export async function observeSeller(page) {
     };
   });
 }
+
+/** Export the encrypted reconciliation backup; returns the saved file path. */
+export async function exportBackup(page, dir) {
+  const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+  const btn = ledger.getByRole('button', { name: 'Export encrypted reconciliation backup' });
+  if (!(await visible(btn, 5_000))) return { exported: false, reason: 'no-export-button' };
+  const [download] = await Promise.all([page.waitForEvent('download', { timeout: 15_000 }), btn.click()]);
+  const path = `${dir}/reconciliation-backup-${Date.now()}.json`;
+  await download.saveAs(path);
+  return { exported: true, path };
+}
+
+/** "Delete encrypted observations", accepting its confirmation. */
+export async function deleteObservations(page) {
+  const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+  const btn = ledger.getByRole('button', { name: 'Delete encrypted observations' });
+  if (!(await visible(btn, 5_000))) return { deleted: false, reason: 'no-delete-button' };
+  let dialog = null;
+  page.once('dialog', (d) => {
+    dialog = d.message().slice(0, 200);
+    void d.accept().catch(() => undefined);
+  });
+  await btn.click();
+  await page.waitForTimeout(1_500);
+  return { deleted: true, dialog };
+}
+
+/** Import a backup file: preview, then activate. Returns the preview text and any alert. */
+export async function importBackup(page, path) {
+  const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+  const input = ledger.getByLabel('Encrypted reconciliation backup file', { exact: true });
+  if ((await input.count()) === 0) return { imported: false, reason: 'no-file-input' };
+  await input.setInputFiles(path);
+  const preview = ledger.getByRole('button', { name: 'Preview encrypted backup' });
+  if (!(await visible(preview, 5_000))) return { imported: false, reason: 'no-preview-button' };
+  await preview.click();
+  const activate = ledger.getByRole('button', { name: 'Activate previewed historical records' });
+  const shown = await visible(activate, 15_000);
+  const previewText = (await ledger.innerText()).match(/\d+ historical observation\(s\)[^\n]*|Activating would mark[^\n]*/g) ?? [];
+  if (!shown) return { imported: false, reason: 'no-activate-button', previewText, alerts: await ledger.getByRole('alert').allInnerTexts() };
+  await activate.click();
+  await page.waitForTimeout(2_000);
+  return { imported: true, previewText, alerts: (await ledger.getByRole('alert').allInnerTexts()).map((a) => a.replace(/\s+/g, ' ').slice(0, 200)) };
+}
+
+/** Manual link of the first live match to an invoice digest ("Add verified payment to ledger"). */
+export async function manualLink(page, digest) {
+  const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+  const field = ledger.getByLabel('Invoice digest (optional, manual link)');
+  if (!(await visible(field, 3_000))) return { linked: false, reason: 'no-manual-link-field' };
+  await field.first().fill(digest);
+  const btn = ledger.getByRole('button', { name: 'Add verified payment to ledger' });
+  if (!(await visible(btn, 2_000))) return { linked: false, reason: 'no-add-button' };
+  await btn.first().click();
+  await page.waitForTimeout(2_000);
+  const alerts = (await page.locator('main [role="alert"]').allInnerTexts()).map((a) => a.replace(/\s+/g, ' ').slice(0, 200));
+  return { linked: true, clicked: 'clicked', alerts };
+}

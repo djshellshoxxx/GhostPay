@@ -16,7 +16,7 @@ import { MockRpc, RPC2_URL } from './rpc.mjs';
 import { BROWSER_SHIM, WalletController } from './wallet.mjs';
 import { DISCLOSURE_SHIM, clickSend, openAndPrepare, settingsInitScript, settle } from './app.mjs';
 import { routerExecutor, withDeadline } from './router-model.mjs';
-import { clickLedgerAction, createRegisteredInvoice, createSellerKeys, observeSeller, openScan, runScan, unlockLedger, unlockSellerKeys } from './seller.mjs';
+import { clickLedgerAction, createRegisteredInvoice, createSellerKeys, deleteObservations, exportBackup, importBackup, manualLink, observeSeller, openScan, runScan, unlockLedger, unlockSellerKeys } from './seller.mjs';
 import { SellerOracle } from './seller-oracle.mjs';
 import { SELLER_CONTROLS, SELLER_NAMED, sellerGenerated } from './seller-scenarios.mjs';
 import { serveDist } from './serve.mjs';
@@ -106,6 +106,9 @@ async function runScenario(launcher, origin, scenario) {
     tabOfPage.set(page, label);
     page.on('dialog', (d) => {
       world.dialogs.push({ tab: label, type: d.type(), message: d.message().slice(0, 160) });
+      // A step that owns the dialog (e.g. the delete confirmation) registers its own handler; leave it to that step
+      // (harness fix H13: both handlers answered the same dialog and the second threw).
+      if (d.type() !== 'beforeunload' && page.listenerCount('dialog') > 1) return;
       void (d.type() === 'beforeunload' ? d.accept() : d.dismiss()).catch(() => undefined);
     });
     world.tabs[label] = page;
@@ -134,6 +137,14 @@ async function runScenario(launcher, origin, scenario) {
     const S2 = adopt(sellerCtx, 'S2', await sellerCtx.newPage());
     if ((await unlockSellerKeys(S2, origin)) === 'unlock-failed') throw new Error('harness: second seller tab could not unlock keys');
     adopt(payerCtx, 'P', payerCtx.pages()[0] ?? (await payerCtx.newPage()));
+    // A second, independent payer (its own profile and journal) for a second payment of the same invoice.
+    world.payer2 = async () => {
+      if (world.tabs.P2 !== undefined) return world.tabs.P2;
+      const ctx = await boot('payer2');
+      return adopt(ctx, 'P2', ctx.pages()[0] ?? (await ctx.newPage()));
+    };
+    world.tmpDir = mkdtempSync(join(os.tmpdir(), 'w5-files-'));
+    dirs.push(world.tmpDir);
     for (let i = 0; i < scenario.steps.length; i += 1) {
       const step = scenario.steps[i];
       const rec = { i, step, t: Date.now() - started };
@@ -146,7 +157,7 @@ async function runScenario(launcher, origin, scenario) {
       // A named scenario step marked `must` has to take effect, or the scenario proves nothing (vacuity guard).
       if (step.must === true) {
         const r = rec.result ?? {};
-        const ok = rec.error === undefined && r.clicked !== 'no-button' && r.clicked !== 'disabled' && r.outcome !== 'error' && r.outcome !== 'timeout' && r.prepared !== false && r.handoff !== false;
+        const ok = rec.error === undefined && r.clicked !== 'no-button' && r.clicked !== 'disabled' && r.outcome !== 'error' && r.outcome !== 'timeout' && r.prepared !== false && r.handoff !== false && r.exported !== false && r.deleted !== false && r.imported !== false && r.linked !== false;
         if (!ok) throw new Error(`harness: step ${i} (${step.op}) did not take effect: ${JSON.stringify(rec.result ?? rec.error).slice(0, 200)}`);
       }
       const obs = await snapshot(world);
@@ -180,12 +191,21 @@ async function runScenario(launcher, origin, scenario) {
     rpcUnknownMethods: [...rpc.unknownMethods],
     blockedOrigins: [...new Set([...rpc.blockedOrigins, ...(rpc2?.blockedOrigins ?? [])])],
     rpc2Calls: rpc2 === null ? null : rpc2.calls.length,
+    rpcMethodCounts: { primary: countBy(rpc.calls.map((c) => c.method)), secondary: rpc2 === null ? null : countBy(rpc2.calls.map((c) => c.method)) },
+    rpc2UnknownMethods: rpc2 === null ? [] : [...rpc2.unknownMethods],
+    ...(process.env.W5_RPC_DEBUG === '1' ? { rpcDebug: { primary: rpc.calls, secondary: rpc2?.calls ?? [] } } : {}),
     violations: oracle.violations.map(({ key, ...v }) => v),
     ambiguities: oracle.ambiguities.map(({ key, ...v }) => v),
     notes: oracle.notes,
     dialogs: world.dialogs,
     trace,
   };
+}
+
+function countBy(xs) {
+  const m = {};
+  for (const x of xs) m[x] = (m[x] ?? 0) + 1;
+  return m;
 }
 
 async function snapshot(world) {
@@ -210,7 +230,7 @@ async function execStep(world, oracle, step, i) {
   switch (step.op) {
     case 'pay': {
       // The payer's real checkout in its own profile; 'capture' declines in the wallet after recording the call.
-      const page = world.tabs.P;
+      const page = step.payer === 'P2' ? await world.payer2() : world.tabs.P;
       world.payingIntent = step.intent;
       const prep = await openAndPrepare(page, world.links[step.intent]);
       if (!prep.prepared) return { prepared: false, reason: prep.reason };
@@ -321,6 +341,34 @@ async function execStep(world, oracle, step, i) {
     }
     case 'view':
       return { ready: await sellerReady(world, step.tab) };
+    case 'exportBackup': {
+      await sellerReady(world, step.tab);
+      const r = await exportBackup(world.tabs[step.tab], world.tmpDir);
+      if (r.exported) world.backupPath = r.path;
+      return r;
+    }
+    case 'deleteObservations': {
+      await sellerReady(world, step.tab);
+      const r = await deleteObservations(world.tabs[step.tab]);
+      if (r.deleted) world.deletedObservations = true;
+      return r;
+    }
+    case 'importBackup': {
+      if (world.backupPath === undefined) return { imported: false, reason: 'no backup exported' };
+      await sellerReady(world, step.tab);
+      return importBackup(world.tabs[step.tab], world.backupPath);
+    }
+    case 'manualLink': {
+      // In place on the live Scan view, like confirm (H10).
+      const page = world.tabs[step.tab];
+      await unlockLedger(page);
+      const seen = await observeSeller(page);
+      const card = seen.cards?.find((c) => c.units === INTENTS[step.intent].units);
+      if (card === undefined || card.digest === null) return { linked: false, reason: 'no invoice card' };
+      const r = await manualLink(page, card.digest);
+      if (r.linked) world.actions[step.intent].push({ op: 'manualLink', tab: step.tab, step: i });
+      return r;
+    }
     case 'compareTabs': {
       // Both seller tabs re-render from storage (reload, keys, Scan, ledger) before SI8 compares them.
       for (const label of ['S1', 'S2']) {

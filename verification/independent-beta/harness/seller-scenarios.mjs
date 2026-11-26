@@ -153,6 +153,83 @@ export const SELLER_NAMED = [
       { op: 'compareTabs' },
     ],
   },
+  {
+    name: 'M11-quarantined-link-keeps-invoice-reserved',
+    why: 'LATE-LM1 (#716, SECURITY_FINDINGS): a linked payment quarantined by RPC uncertainty still reserves its invoice; a second payment gets no exact proposal; a clean rescan restores the first link, counted once',
+    steps: [
+      { op: 'pay', intent: 'X', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'confirm', tab: 'S1', intent: 'X', must: true },
+      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6 }, // expected to fail and quarantine the link
+      { op: 'pay', intent: 'X', payer: 'P2', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'confirm', tab: 'S1', intent: 'X' }, // expected: no proposal for the reserved invoice
+      { op: 'scan', tab: 'S1', fromStart: true, must: true },
+      { op: 'confirm', tab: 'S1', intent: 'X' },
+      { op: 'compareTabs' },
+    ],
+  },
+  {
+    name: 'M12-old-backup-cannot-revive-reorged-link',
+    why: 'S42/S43/S44: after a reorg tombstone and "Delete encrypted observations", importing the pre-reorg backup never credits the invoice',
+    steps: [
+      { op: 'pay', intent: 'X', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'confirm', tab: 'S1', intent: 'X', must: true },
+      { op: 'exportBackup', tab: 'S1', must: true },
+      { op: 'reorg', depth: FINAL + 3, drop: true },
+      { op: 'advance', n: 2 },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'deleteObservations', tab: 'S1', must: true },
+      { op: 'importBackup', tab: 'S1', must: true },
+      { op: 'reload', tab: 'S1' },
+      { op: 'compareTabs' },
+    ],
+  },
+  {
+    name: 'M13-manual-link-cannot-replace-late-acceptance',
+    why: 'S13 (ADR:247-248): a manual link cannot stand in for "Accept late payment"; the invoice must not show an on-time link',
+    xHours: 1,
+    steps: [
+      { op: 'latePay', intent: 'X' },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'manualLink', tab: 'S1', intent: 'X' }, // expected: field absent or refused
+      { op: 'compareTabs' },
+    ],
+  },
+  {
+    name: 'M14-on-time-manual-link-counted-once',
+    why: 'S13/S32: an on-time manual link is allowed and counted once across rescans and tabs',
+    steps: [
+      { op: 'pay', intent: 'X', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'manualLink', tab: 'S1', intent: 'X', must: true },
+      { op: 'scan', tab: 'S1', fromStart: true, must: true },
+      { op: 'compareTabs' },
+    ],
+  },
+  {
+    name: 'M15-manual-link-to-reserved-invoice-probe',
+    why: 'probe (recipe AMB on LATE-LM1): a manual link of a second payment to an invoice reserved by a quarantined link must not create a second credit',
+    steps: [
+      { op: 'pay', intent: 'X', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'confirm', tab: 'S1', intent: 'X', must: true },
+      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6 },
+      { op: 'pay', intent: 'X', payer: 'P2', must: true },
+      { op: 'advance', n: FINAL },
+      { op: 'scan', tab: 'S1', must: true },
+      { op: 'manualLink', tab: 'S1', intent: 'X' },
+      { op: 'scan', tab: 'S1', fromStart: true, must: true },
+      { op: 'compareTabs' },
+    ],
+  },
 ];
 
 /** Positive controls: conditions outside the accepted guarantee under which the oracle must fire. */
