@@ -21,7 +21,8 @@ async function assertReflow(page: Page, label: string): Promise<void> {
   const layout = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
     const controls = [...document.querySelectorAll<HTMLElement>('main button, main input, main select, main textarea, main summary')]
-      .filter((element) => element.getClientRects().length > 0)
+      // A closed disclosure can retain stale layout rectangles (seen in Firefox); inspect rendered controls only.
+      .filter((element) => element.checkVisibility())
       .map((element) => ({ element, rect: element.getBoundingClientRect() }))
       .filter(({ rect }) => rect.width > 0 && (rect.left < -1 || rect.right > width + 1))
       .map(({ element, rect }) => ({ tag: element.tagName, left: rect.left, right: rect.right }));
