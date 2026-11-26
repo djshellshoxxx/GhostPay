@@ -6,6 +6,13 @@ removal of the three `docs/maintenance/*_20261125.md` snapshot reports this bran
 each README correction re-verified against main `194e225c` (bundle scan path, `apps/web` dependency list, Foundry
 project naming, `REQUIRE_ANVIL`, `build:circuits` workspace); pointers to `docs/remote/usability/audit-*.md` (not kept
 by the `84c2c185` consolidation merge, so absent from main) removed; docs-only; full hosted CI green on the exact head.
+# Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
+
+Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
+`docs/engineering/ESSENTIAL_FEATURE_MATRIX.md`, `ESSENTIAL_FEATURE_PROGRESS.md`, `FEATURE_INTEGRATION_LOG.md`,
+`REMAINING_WORK.md` and this entry. The cut-off worker's uncommitted matrix edit was a file of NUL bytes only (no text
+to recover), so it was rewritten from the last commit. Docs only; facts checked against git history and GitHub PR and
+run records.
 
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
