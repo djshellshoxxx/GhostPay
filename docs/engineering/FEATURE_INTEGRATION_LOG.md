@@ -60,3 +60,19 @@ Recorded from repository history; this session did not perform this merge.
 - Post-merge push CI on `aaa71a11`: CI run 45595034543 and Hosting kit 45595034817 succeeded.
 - PR state on 2026-11-26: #533 shows merged; #575, #590, #599 and #625 are closed as superseded and #546 as already
   integrated. Handoff: `docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`.
+
+## 2026-11-26 — LATE-LM1 invoice reservation fix → `main` `9d92472a46a4e37f847472276d77e3b4ce158e80`
+
+- PR #716, exact head `b536fdda9f899e43e8a66cf07bc8f18312f327ae` on base `e7e98109`. Main had since moved 8 commits, touching two
+  unrelated files; `git merge-tree` was clean. Shared-core reconciliation maintenance, permitted by
+  [STOP_WORK_20261125](../ai/STOP_WORK_20261125.md) ("individual invoice status, payment evidence, reconciliation").
+- Change: in `proposeInvoiceMatch`, a live linked record in a pending or unverified state also reserves its invoice. Only an
+  `invalidated-after-reorg` tombstone frees it. Found by the Worker F2 review of #533→#546→#575.
+- Evidence:
+  - Hosted: 42 of 42 checks success or skipped (CI run 45799816592, Pages 45799816651, Beta 45799816576, Hosting kit
+    45799816495, CLI 45799816443, CodeQL 45799806753).
+  - Local: the regression fails before the fix (proposal `exact`) and passes after; ux-vault 398/398 (coverage
+    96.67/93.37/99.07/98.48); `REQUIRE_ANVIL=1 npm test -w @ghostpay/web` 4135 passed / 2 pre-existing expected-fail /
+    1 skipped, coverage 93.22/89.58/95.02/96.99.
+- Lock: generation 47 acquired by `claude-keen-volta-8ctx9x` at `b5e5cdb7`, released at `09dd9791`. Both pushes non-force.
+
