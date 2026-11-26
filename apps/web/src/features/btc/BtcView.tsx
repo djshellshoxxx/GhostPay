@@ -76,6 +76,8 @@ export function BtcView(
   const [hasBackup, setHasBackup] = useState(false);
   const [amount, setAmount] = useState('');
   const [fromHeight, setFromHeight] = useState('');
+  // Spec 12 local spend tracking: the server is asked per outpoint only on request (light oracle scans have no block spends).
+  const [providerCheck, setProviderCheck] = useState(false);
   const [saveScan, setSaveScan] = useState(false);
   const [savedScan, setSavedScan] = useState<ScanState | undefined>();
   const [forgetScan, setForgetScan] = useState(false);
@@ -119,11 +121,13 @@ export function BtcView(
   /** Bumped by "Forget saved headers": a sync started before it may neither save nor change scan results. */
   const forgetGen = useRef(0);
   const net = btcNetwork(netId);
+  const usingLightScan = oracleKind !== 'none' && lightScan;
 
   const invalidate = (): void => {
     op.current++;
     abort.current?.abort();
     setBusy(false);
+    setHeaderProgress(undefined);
   };
 
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
@@ -168,7 +172,7 @@ export function BtcView(
     clearFlowState();
   };
   const changeSource = (): void => {
-    invalidate(); resetFlow(); setError(undefined); setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
+    invalidate(); resetFlow(); setProviderCheck(false); setError(undefined); setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
   };
   const oracleSelection = (): BtcOracleConfig | undefined => oracleKind === 'none' ? undefined : normalizeOracleConfig({
     kind: oracleKind, url: oracleUrl, mode: lightScan ? 'light' : 'full',
@@ -207,6 +211,7 @@ export function BtcView(
       setSaveScan(false);
       setSavedScan(undefined);
       setForgetScan(false);
+      setProviderCheck(false);
     });
   };
 
@@ -220,8 +225,9 @@ export function BtcView(
     }
   }, [wallet, amount]);
 
-  /** Only payments in blocks the checked header chain reaches may be swept. */
-  const sweepable = (f: FoundPayment): boolean => checkedTip !== undefined && f.height <= checkedTip;
+  /** Both payment inclusion and sufficient spentness evidence must remain current. */
+  const spentStatus = scan?.spentStatus === 'local' && checkedTip !== undefined && scan.toHeight !== checkedTip ? 'unknown' : scan?.spentStatus;
+  const sweepable = (f: FoundPayment): boolean => spentStatus !== undefined && spentStatus !== 'unknown' && checkedTip !== undefined && f.height <= checkedTip;
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => sweepable(f) && picked.has(`${f.txid}:${String(f.vout)}`));
 
   /** Inputs of the review all sit in blocks the checked header chain reaches. */
@@ -231,6 +237,7 @@ export function BtcView(
     return (
       r !== undefined &&
       live !== undefined &&
+      (scan?.spentStatus !== 'local' || scan.toHeight === live.tipHeight) &&
       r.inputs.every((i) => {
         const f = scan?.found.find((x) => x.txid === i.txid && x.vout === i.vout);
         return f !== undefined && sweepable(f) && live.hashAt(f.height) === f.blockHash;
@@ -268,6 +275,8 @@ export function BtcView(
     return [
       next === undefined
         ? { kind: 'warn', text: { key: 'btc.headers.scanDiscarded' } }
+        : dropped.length === 0 && next.spentStatus === 'unknown'
+          ? { kind: 'warn', text: { key: 'btc.scan.spentEvidenceChanged' } }
         : { kind: 'warn', text: { key: 'btc.headers.resultsDropped', values: { height: String(next.toHeight), count: String(dropped.length) } } },
     ];
   };
@@ -289,6 +298,7 @@ export function BtcView(
       const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id), {
         onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.loading', values: { height: String(h) } }); },
       });
+      if (!live()) return undefined;
       chain = loaded.chain;
       if (forgetGen.current === gen) chainRef.current = { netId: net.id, chain };
       if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: { key: 'btc.headers.restored', values: { count: String(chain.tipHeight) } } });
@@ -304,7 +314,7 @@ export function BtcView(
         sources: [new EsploraHeaderSource(c)],
         store: headerStorage.storeFor(net.id),
         signal,
-        canSave: () => forgetGen.current === gen,
+        canSave: () => live() && forgetGen.current === gen,
         ...props.headerSyncLimits,
         onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.progress', values: { height: String(h) } }); },
       });
@@ -313,9 +323,10 @@ export function BtcView(
     } finally {
       if (live()) setHeaderProgress(undefined);
     }
-    // The chain may have switched before a failure, or while this action went stale, or it was just loaded from
-    // storage (another tab's, or a fresh one after a forget) and never compared with what is on screen: results from
-    // blocks it does not have are removed (and their tweaks wiped), before anything else.
+    // Only the active operation owns the displayed chain. It may have switched before a failure, or just loaded a
+    // different stored chain: reconcile its results before offering any sweep, but never let an old wallet/source
+    // operation mutate a newer session after a late storage or transport response.
+    if (!live()) return undefined;
     const dropped = forgetGen.current !== gen || (!fresh && chain.tipHash === before) ? [] : applyChainToScan(chain);
     if (forgetGen.current === gen) setCheckedTip(chain.tipHeight);
     const partial = out ?? (failure instanceof HeaderSyncError ? failure.partial : undefined);
@@ -407,6 +418,7 @@ export function BtcView(
   const runScan = (recoveryOffset = 0): void => {
     setError(undefined);
     if (wallet === undefined) return;
+    if (usingLightScan && !providerCheck) { setError({ key: 'btc.scan.providerCheckLight' }); return; }
     resetFlow();
     const { signal, live } = begin();
     setBusy(true);
@@ -438,6 +450,7 @@ export function BtcView(
           headers,
           signal,
           ...(oracle === undefined ? {} : { oracle }),
+          providerSpentCheck: providerCheck,
           ...(vault === undefined ? {} : {
             resumeState: resumeState ?? createScanState(net.id, from),
             recoveryOffset,
@@ -540,6 +553,7 @@ export function BtcView(
     walletRef.current = undefined;
     forgetSeed();
     setWallet(undefined);
+    setProviderCheck(false);
     setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
     resetFlow();
   };
@@ -579,7 +593,9 @@ export function BtcView(
               value={netId}
               disabled={wallet !== undefined}
               onChange={(e) => {
+                changeSource();
                 setNetId(e.target.value as BtcNetworkId);
+                chainRef.current = undefined;
                 setConfirmForget(false);
                 setHeaderNotes([]);
                 setCheckedTip(undefined);
@@ -714,7 +730,17 @@ export function BtcView(
               <input id={id} aria-describedby={d} inputMode="numeric" disabled={scanning || (saveScan && savedScan !== undefined)} value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
             )}
           </Field>
-          <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={() => { runScan(); }}>
+          <div className="field">
+            <label>
+              <input type="checkbox" checked={providerCheck} onChange={(e) => {
+                invalidate(); resetFlow(); setError(undefined); setProviderCheck(e.target.checked);
+              }} />{' '}
+              {t(usingLightScan ? 'btc.scan.providerCheckLightLabel' : 'btc.scan.providerCheckLabel')}
+            </label>
+            <p className="hint">{t(usingLightScan ? 'btc.scan.providerCheckLight' : 'btc.scan.providerCheckHint')}</p>
+            <p role="note">{t(usingLightScan ? 'btc.scan.mode.light' : providerCheck ? 'btc.scan.mode.provider' : 'btc.scan.mode.local')}</p>
+          </div>
+          <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === '' || (usingLightScan && !providerCheck)} onClick={() => { runScan(); }}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
           {' '}
@@ -773,15 +799,16 @@ export function BtcView(
               <p>
                 {scan.found.length === 0
                   ? t('btc.scan.noneFound')
-                  : t('btc.scan.foundCount', { count: String(scan.found.length) })}
+                  : t(spentStatus === 'unknown' ? 'btc.scan.unknownCount' : 'btc.scan.foundCount', { count: String(scan.found.length) })}
                 {scan.spentCount > 0 && ` ${t('btc.scan.alreadySpent', { count: String(scan.spentCount) })}`}
               </p>
+              <p role="note">{t(spentStatus === 'local' ? 'btc.scan.spentStatus.local' : spentStatus === 'provider' ? 'btc.scan.spentStatus.provider' : 'btc.scan.spentStatus.unknown', { height: String(scan.toHeight) })}</p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">
                     {t(oracleKind === 'none' ? 'btc.scan.singleProvider' : 'btc.oracle.resultsNote')}
                   </p>
-                  {scan.found.some((f) => !sweepable(f)) && (
+                  {scan.found.some((f) => checkedTip === undefined || f.height > checkedTip) && (
                     <Notice kind="warn">{checkedTip === undefined ? t('btc.headers.uncheckedNone') : t('btc.headers.uncheckedResults', { height: String(checkedTip) })}</Notice>
                   )}
                   <table>
@@ -925,4 +952,5 @@ export function BtcView(
   );
 }
 
+// i18n-use: btc.scan.providerCheckLabel btc.scan.providerCheckHint btc.scan.providerCheckLight btc.scan.spentStatus.local btc.scan.spentStatus.provider btc.scan.spentStatus.unknown
 // i18n-use: btc.headers.scanDiscarded btc.headers.resultsDropped btc.headers.loading btc.headers.restored btc.headers.discarded btc.headers.checking btc.headers.progress btc.headers.reorg btc.headers.lessWork btc.headers.conflictHint btc.headers.forkTooDeep btc.headers.forkUnresolved btc.headers.tooMany btc.headers.claimRejected btc.headers.failed btc.headers.otherTab btc.headers.notSaved btc.headers.verified btc.headers.more btc.headers.forgotten btc.headers.forgetFailed btc.scan.firstHeightRequired btc.headers.behind btc.scan.foundBlock btc.scan.scanned btc.sweep.invalidQr

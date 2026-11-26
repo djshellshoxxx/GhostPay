@@ -1,0 +1,49 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "pullRequest": 244,
+  "branch": "chatgpt/btc-spent-private-scan-20261118",
+  "pullRequestHead": "ef08170a83d86d194b8ce4186299e791027e461e",
+  "testedMergeCommit": "278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+  "testedTree": "0074dde6081e45188c45feb39503c64243ef99b8",
+  "workflowRun": 44472294261,
+  "job": 135384438424,
+  "conclusion": "success",
+  "node": "v22.23.4",
+  "npm": "10.9.9",
+  "toolingTests": {
+    "passed": 72,
+    "failed": 0,
+    "skipped": 0
+  },
+  "commands": [
+    "npm ci --ignore-scripts",
+    "npm ls --all --omit=dev",
+    "npm run build:libs",
+    "node --test scripts/pages/*.test.mjs",
+    "bash scripts/pages/build-pages.sh \"$RUNNER_TEMP/pages\"",
+    "bash scripts/scan-secrets.sh"
+  ],
+  "output": {
+    "files": 16,
+    "paymentState": "DEMO: payments disabled on every chain (no deployment manifest)",
+    "bitcoinIncluded": false
+  },
+  "artifact": {
+    "id": 14505310987,
+    "name": "pages-site-278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+    "bytes": 716253,
+    "sha256": "73d56d8324fde6a51cdeedd2bf04ea986e0d7b26e3d9af19771baa9d81b61208",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294261/artifacts/14505310987"
+  },
+  "logExcerpts": [
+    "2026-11-19T06:28:39.5459139Z node: v22.23.4",
+    "2026-11-19T06:28:39.5459433Z npm: 10.9.9",
+    "2026-11-19T06:30:29.1438406Z # tests 72",
+    "2026-11-19T06:30:29.1438719Z # pass 72",
+    "2026-11-19T06:30:29.1438884Z # fail 0",
+    "2026-11-19T06:30:29.1439205Z # skipped 0",
+    "2026-11-19T06:30:45.8929745Z Pages site verified: 16 files; DEMO: payments disabled on every chain (no deployment manifest)",
+    "2026-11-19T06:30:45.9016410Z build-pages: OK -> /home/runner/work/_temp/pages/site (evidence in /home/runner/work/_temp/pages/evidence)",
+    "2026-11-19T06:30:47.3844116Z SHA256 digest of uploaded artifact is 73d56d8324fde6a51cdeedd2bf04ea986e0d7b26e3d9af19771baa9d81b61208"
+  ]
+}

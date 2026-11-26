@@ -1,3 +1,16 @@
+# Orphaned FC round-1 PRs onto current main: FC-03 and FC-05a (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-42`, on the owner's instruction to finish the orphaned feature-completion PRs
+(coordinator `feature-completion-06` exited before merging candidate #664). Branch: `claude/fc-round1-rest-20261126`,
+base main `1bea3df3`. Inputs merged with `--no-ff` at their exact reviewed heads: #648 FC-03 `a13ab24d`, #661 FC-03-T
+`a2b14ca8`, #656 FC-05a `8e7b1915`, #662 FC-05a-T `22c3cb1d` (each green at its own head; reviews APPROVE or
+APPROVE-WITH-NITS, recorded in `docs/consolidation/feature-completion-20261125/CAMPAIGN.md` on the coordinator branch).
+Already landed by others: #650 (in #688), #663 (in #690), #649 (as #683 by W3). Not in this branch: FC-05b #669, which
+has an unaddressed CHANGES-REQUIRED review on its pending-spend guard; it follows as a separate PR after this lands.
+Stop-work check: no F14 routing, bridging or chain selection; FC-03 adds mainnet refusals to existing PoC libraries,
+FC-05a reduces Bitcoin provider disclosure (consent-only spent checks). Owned: this branch only; donor branches untouched.
+Acceptance: hosted CI green at the exact head; merge through the shared lock queue.
+
 # W3 follow-up to #647: one canonical v1 seller keystore vector (2026-11-26 UTC)
 
 Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-keystore-canonical-vector`; base main `1bea3df3` (#647 merged via #684).
@@ -212,6 +225,19 @@ browser regression `apps/web/e2e/payment-request-file-attempt.spec.ts` (file ent
 production source change. Acceptance: the affected local gates, the six request-file browser scenarios on fresh full and lean
 builds, union and hunk checks against main and the donor, an independent review, and hosted CI recorded against
 exact SHAs. The handoff is left ready for the owner's integration.
+
+# FC-03 — Solana/TRON meta-address and memo interoperability alignment (2026-11-25 UTC)
+
+- Worker: fc03. Branch: `claude/fc03-chain-interop-20261125`. Base: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f` (origin/main). Donor: PR #376 head `f717157271fe494eb8094e504e9fec8276d51fcc`, merged with `--no-ff`.
+- Owned paths: the donor's 34 source paths (Solana/TRON libraries, adapters, CLI inspection), this claim, `docs/consolidation/feature-completion-20261125/FC-03-chain-interop.md`, plus follow-up paths `packages/solana-stealth/README.md`, `packages/solana-stealth/src/meta-address.ts`, `packages/solana-stealth/src/stealth.test.ts` and `docs/remote/chain-ports/solana-impl.md`.
+- Excluded: apps/web, contracts, workflows, root manifests/lockfile.
+- Acceptance: Solana/TRON/CLI workspace tests, typecheck and lint pass with coverage thresholds held; web and library vectors agree; TRON build stays fail-closed (`MEMO_NOT_BOUND`); no mainnet enablement. Testnet/proof-of-concept only.
+
+# FC-05a — Bitcoin spent-output detection and private-scan consent (2026-11-25 UTC)
+
+- Worker: fc03 session (feature-completion campaign), task FC-05a. Branch: `claude/fc05a-btc-spentness-20261125`. Base: `60824005b89611aea2b16d3355378eebf072eedb` (origin/main). Donor: PR #244 head `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f` (contains #219 `9617e857`), merged `--no-ff`. PR #254 is NOT merged (FC-05b).
+- Owned paths: `apps/web/src/features/btc/**`, `packages/btc-silent-payments/src/scan/**`, `apps/web/e2e/btc-spent-consent.spec.ts`, `apps/web/e2e/btc-worker.spec.ts`, the donor's locale/securityKeys hunks, this claim, `docs/consolidation/feature-completion-20261125/FC-05a-btc-spentness.md`.
+- Acceptance: unknown never becomes spent or sweepable without complete canonical header-covered coverage; consent revocation stops network use; chain change invalidates evidence; non-BTC paths equal current main unless the feature needs them; `spend.preview.network.test.ts` still present and passing. Full profile only, testnet, proof of concept.
 
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
@@ -1202,6 +1228,33 @@ Scope: startup and resumed/runtime local capability checks, displayed at the bot
 Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
 Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
 
+# Solana/TRON interoperability recovery — 2026-11-21 UTC (HISTORICAL: donor claim, its branch lease is not active; superseded by the FC-03 claim at the top of this file)
+
+Worker: `/root/chain_interop_recovery`, delegated by coordinator `5ceb6203640a-root`.
+Owned branch: `recover/ghostpay-chain-interop-20261121-5ceb`.
+Verified live main/base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**`,
+`test-vectors/meta-address-sol-tron-v1.json`, and the three relevant CLI files
+`packages/cli/src/chain-commands.test.ts`, `packages/cli/src/commands/chain.ts`,
+`packages/cli/src/payment-context.ts`; additive claim and a source-pinned handoff.
+Task: selectively recover existing #211 G5/G5b compatibility and safe request
+construction changes, preserving exact current browser-facing adapter sources.
+Current #211 head `a92658b1ef6b95ff0145b2e1933d0047d51289d5` says its workers
+finished; its original branch remains reserved and unchanged. #218 remains an
+open historical CLI owner, but its three relevant files match current main.
+No existing PR or other worktree is modified. #369 owns separate web TRON adapter
+paths, which are outside this recovery.
+Acceptance: documented Solana/TRON formats and deterministic shared reference
+vectors agree with the browser packages; unsupported unbound TRON construction
+refuses; CLI reports the supported Solana cluster and fixed legacy-format errors.
+Run corrected-source package/CLI coverage, ordinary interoperability properties,
+typecheck, lint and builds. Preserve original assertions and exact donor SHAs.
+Do not execute vulnerability reproductions, construct exploits or send real
+payments. No contracts, fees, custody, dependencies or network policy changes.
+The generation-11 integration lease remains held by `994a0d214fb9-root-r3`.
+This worker has no remote-write, merge, deployment or release authority. Root
+owns independent review, new owned publication and final shared integration gates.
+
 ---
 
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
@@ -1543,6 +1596,27 @@ Out of scope: money movement, backend, contracts, relayer, production deployment
 Status: regression committed first at `2b7cedbd`, repaired at `dbe6e975`, and source-blob-identity Node verification passed (two RED-on-base/GREEN-on-fix scenarios, seven existing controls); isolated source TypeScript check passed. Repository Vitest/lint/build, exact-head hosted CI and independent verification remain pending. See `docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md` (handoff commit `3503075a`).
 
 ---
+
+# Bitcoin spent-output/private-scan completion — 2026-11-18
+
+Worker: ChatGPT coordinator and three independent engineering/review lanes.
+Branch: `chatgpt/btc-spent-private-scan-20261118`.
+Base: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.
+Integrated main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` after independent compatibility
+review; only this registry overlapped, and both ownership records are preserved.
+User explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only
+comparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.
+
+| Lane | Owned paths | Acceptance |
+| --- | --- | --- |
+| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |
+| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |
+| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |
+| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |
+
+No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
+contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
