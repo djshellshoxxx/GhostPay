@@ -1,3 +1,21 @@
+# #706 journal model fuzzing — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/journal-fuzz-20261126`, local head
+`17d55c90` plus this change, merged with main `e7e98109`. Owned paths: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts`,
+#706's other paths and this entry. #710 (separate worker) also edits `duplicateAttemptJournal.ts` and adds
+`returned.fuzz`/`returned.stress` tests; this change edits no production file.
+Acceptance: the 2026-11-26T07:03:35Z review points (independent expected-state model, exact membership, deterministic
+sensitivity checks, schema refusal separated from schema-valid edits); every hosted check green at the exact head;
+independent review.
+
+# Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
+
+Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
+`docs/engineering/ESSENTIAL_FEATURE_MATRIX.md`, `ESSENTIAL_FEATURE_PROGRESS.md`, `FEATURE_INTEGRATION_LOG.md`,
+`REMAINING_WORK.md` and this entry. The cut-off worker's uncommitted matrix edit was a file of NUL bytes only (no text
+to recover), so it was rewritten from the last commit. Docs only; facts checked against git history and GitHub PR and
+run records.
+
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
 Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
