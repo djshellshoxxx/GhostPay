@@ -1,3 +1,18 @@
+# Account/vault/session privacy: light fuzz, stress, QA and bug/security audit (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-68`, on the owner's instruction after reviewing #697/#698 (APPROVE sent to the
+integration coordinator `ghostpay-backup-60`). Branch `claude/account-privacy-audit-20261126`, base #698 head
+`f45025b5f2cfa27f938c10c35490b42768b8ae0a` (= #692 `c7b9badc` + #691 `6b4bbe17` + main `019d5d18`); rebased onto main
+after #697/#698 land. Does not push to or move the #697/#698 integration branches or any donor ref.
+Owned paths: new fuzz/stress test files beside `apps/web/src/lib/duplicateAttemptJournal.ts`,
+`apps/web/src/lib/useWalletPrivacy.ts` and `apps/web/src/components/SessionPresentationBoundary.tsx`; a narrow fix in a
+#691/#692 runtime file only for a defect confirmed by a failing test (reported to the coordinator first); this entry and
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`.
+Acceptance: bounded fast-check properties (existing pinned dev dependency, no new packages) and stress cases pass; any
+confirmed defect gets a failing-then-passing regression; assertions, coverage thresholds, timeouts and release gates
+unchanged; affected web typecheck/lint/tests pass locally and full hosted CI passes on the exact head. No deployment,
+contracts, live wallets or funds.
+
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
 Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the
