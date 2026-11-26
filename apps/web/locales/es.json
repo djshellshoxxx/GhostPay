@@ -13,7 +13,7 @@
     "app.checks.digest": "Prueba SHA-256 con resultado conocido de WebCrypto",
     "app.checks.storage": "Prueba temporal de escritura y lectura del almacenamiento",
     "app.checks.pass": "Superada",
-    "app.checks.warn": "No disponible",
+    "app.checks.unavailable": "No disponible",
     "app.checks.fail": "Fallida",
     "app.checks.limits": "Estas comprobaciones no son una verificación independiente de la integridad del código, la autenticidad del monedero o RPC, la seguridad de los pagos, la liquidación en cadena ni la recuperación de claves. No se envía ninguna solicitud de red.",
     "requestFile.download": "Download payment request",

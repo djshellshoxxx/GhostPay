@@ -179,6 +179,7 @@
           <li>Tags and reconciliation records are encrypted in IndexedDB. Some record existence and size may remain visible to anyone who can inspect the browser profile. Unlocked content is readable by the running page.</li>
           <li>Wallet and sweep attempt records keep transaction references and unresolved outcomes. They are not key backups, and clearing them cannot cancel an on-chain action.</li>
           <li>Imported historical observations and stored receipts do not gain independent payment verification merely by being stored or restored.</li>
+          <li>The browser self-check at the bottom of the app writes a fixed test value under a temporary <code>__ghostpay_capability_</code> name in localStorage and removes it at once. The value holds no personal data, and the check makes no network request.</li>
         </ul>
         <p>Locking a view restricts its current access. It does not erase stored records or downloaded files. Records remain until you delete them or clear the site's storage. Export the backups you need before clearing site data, and delete exported copies separately when you no longer need them.</p>
       </section>

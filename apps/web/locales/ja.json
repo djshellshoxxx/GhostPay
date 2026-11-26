@@ -13,7 +13,7 @@
     "app.checks.digest": "WebCrypto SHA-256 の既知結果テスト",
     "app.checks.storage": "一時的なブラウザーストレージの書き込み・読み取りテスト",
     "app.checks.pass": "成功",
-    "app.checks.warn": "利用不可",
+    "app.checks.unavailable": "利用不可",
     "app.checks.fail": "失敗",
     "app.checks.limits": "これらのチェックは、アプリのコードの完全性、ウォレットや RPC の真正性、決済の安全性、ブロックチェーン上の確定、鍵の復旧を独立して検証するものではありません。ネットワーク通信は行いません。",
     "requestFile.download": "Download payment request",

@@ -13,7 +13,7 @@
     "app.checks.digest": "اختبار SHA-256 بنتيجة معروفة عبر WebCrypto",
     "app.checks.storage": "اختبار مؤقت للكتابة والقراءة من تخزين المتصفح",
     "app.checks.pass": "اجتاز",
-    "app.checks.warn": "غير متاح",
+    "app.checks.unavailable": "غير متاح",
     "app.checks.fail": "فشل",
     "app.checks.limits": "هذه الفحوص ليست تحققًا مستقلاً من سلامة شيفرة التطبيق أو أصالة المحفظة أو RPC أو سلامة المدفوعات أو تسويتها على السلسلة أو استرداد المفاتيح. لا تُرسل أي طلبات شبكة.",
     "requestFile.download": "Download payment request",
