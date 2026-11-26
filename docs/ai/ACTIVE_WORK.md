@@ -6,7 +6,7 @@ contract change (ADR-0014 order kept: CONTRACTS_SPEC first). Owned paths: `docs/
 `docs/developer/contracts-reference.md` router rows, `packages/contracts/src/GhostPayRouter.sol`,
 `src/interfaces/IGhostPayRouter.sol`, `test/Base.t.sol` (shared `_permitSig`), `test/GhostPayRouter.{t,fuzz.t,invariant.t}.sol`,
 `test/echidna/EchidnaRouter.sol`, `.gas-snapshot` entries for the new unit tests, `packages/chain-adapters/src/{abi/router,router}.ts`
-and their tests, `packages/tx-review/src/{decode,types}.ts` and tests, `apps/web/src/lib/txGuard.ts` and test, the three
+and their tests, `packages/chain-adapters/src/buffer.anvil.test.ts` (spec 13 section 4 anvil sweep on buffered gas, both buffer methods), `packages/tx-review/src/{decode,types}.ts` and tests, `apps/web/src/lib/txGuard.ts` and test, the three
 DEVIATIONS files, this entry. Not touched: `Pay.tsx`/`payExec.ts` wiring, deployments, manifests, workflows.
 Acceptance: CONTRACTS_SPEC describes the entry point before the code; `forge build/test/fmt/snapshot/natspec` and Slither
 green in CI (no local Foundry); unit tests for happy path, front-run permit, invalid permit, buffer required/too large

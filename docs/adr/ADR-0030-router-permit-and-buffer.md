@@ -36,4 +36,5 @@ deployment manifest.
   in one transaction instead of two; it removes the approval transaction, not the public linkage of the buffer itself.
 - Re-audit is required before any deployment: the unit, fuzz and invariant suites and the Echidna harness cover the
   new path, but the AI-assisted review is not an audit.
-- Open: the spec 13 anvil end-to-end sweep "using only buffered gas" through the new method, and the web wiring.
+- The spec 13 anvil end-to-end sweep "using only buffered gas" runs through the new method against the compiled router
+  (`packages/chain-adapters/src/buffer.anvil.test.ts`, CI with `REQUIRE_ANVIL=1`). Open: the web wiring.

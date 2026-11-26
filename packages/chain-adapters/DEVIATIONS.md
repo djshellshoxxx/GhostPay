@@ -65,3 +65,5 @@ The contracts' real code wins over spec text. Each item should be confirmed or r
     the generator's layout and checked field by field against the compiler's ABI output because `forge` was unavailable in
     the authoring environment; run `scripts/gen-abi.sh` when it is. No deployment has the method yet: a client must not select
     it unless the manifest's router build does.
+    `buffer.anvil.test.ts` pays through both buffer methods on a local anvil and sweeps the one-time address with gas paid
+    from the forwarded buffer alone (spec 13 section 4); it skips without anvil and fails under `REQUIRE_ANVIL=1`.
