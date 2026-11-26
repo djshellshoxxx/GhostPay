@@ -4,6 +4,16 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  // #286 item 1: global sensitive-data masking controls and their limits.
+  privacyMasking: [
+    'privacyUx.modeLabel',
+    'privacyUx.modeHint',
+    'privacyUx.hidden',
+    'privacyUx.revealed',
+    'privacyUx.reveal',
+    'privacyUx.hide',
+    'privacyUx.notSaved',
+  ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
     'wallet.disclosure.title',
