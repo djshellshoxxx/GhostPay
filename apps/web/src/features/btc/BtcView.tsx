@@ -103,15 +103,9 @@ export function BtcView(
   /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
   const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
-  /**
-   * Outputs ("txid:vout" -> height of the block that holds them) of a transaction this session asked the server to
-   * broadcast. Local spentness sees only confirmed blocks, so a rescan cannot show a mempool spend: these stay
-   * unsweepable until a later complete local scan no longer lists them, a reorganization cuts the scan, or the
-   * session is locked or its wallet replaced. Memory only; the ref is what retained handlers read.
-   */
   // Session pending-spend marks: input id -> txid of the signed transaction handed to the server for it. Kept only in
   // memory and released only on lock or wallet change (FC-05b review M1/L1): the transaction stays valid across reorgs
-  // and rescans that cannot see the mempool.
+  // and rescans that cannot see the mempool. Retained handlers read the ref.
   const pendingSpendsRef = useRef<ReadonlyMap<string, string>>(new Map());
   const [pendingSpends, setPendingSpendsState] = useState<ReadonlyMap<string, string>>(new Map());
   const setPendingSpends = (next: ReadonlyMap<string, string>): void => {
