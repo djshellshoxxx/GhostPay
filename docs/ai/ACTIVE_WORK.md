@@ -8,6 +8,19 @@ Acceptance: the 2026-11-26T07:03:35Z review points (independent expected-state m
 sensitivity checks, schema refusal separated from schema-valid edits); every hosted check green at the exact head;
 independent review.
 
+# #701 review upkeep (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
+this record's "Remaining items" correction, one wording correction in the earlier ghostpay-71 entry below, the
+ACTIVE_WORK union and this entry. Docs only.
+
+# ghostpay-78 worker: #701 account-privacy verification record refresh (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `nodata/zen-dirac-vkl84j` (#701), base main `194e225c`. Owned paths:
+`docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`, this entry. Acceptance: re-verified that
+`e1d0eb0f^{tree}` equals `f45025b5^{tree}` (`3dc2d133`), that #697 and #698 are merged and that the recorded push CI runs
+concluded success; main merged in without rebase; docs-only; full hosted CI green on the exact head.
+
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
 Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
@@ -4645,3 +4658,11 @@ required; no new local test run or browser execution is claimed.
 - Worker: Claude Code session `ghostpay-backup-60`. Branch `claude/journal-fuzz-20261126`, base main `e1d0eb0f7c8688ae280f774f36e01e08d2435deb`.
 - Owns: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts` (new seeded model fuzz: never-overwrite hash, duplicate refusal, malformed journal fails closed; a seeded mutant that overwrites hashes is caught), `apps/web/src/lib/duplicateAttemptJournal.clearUnsaved.test.ts` (new), the `clearAttempt` guard in `duplicateAttemptJournal.ts`, one new error key in four catalogs plus `securityKeys.ts`, and two rows in `docs/engineering/SECURITY_FINDINGS.md` (JRNL-L4 fixed; IDLE-M1 recorded as an accepted-design residual risk awaiting an owner decision, not changed).
 - Acceptance: the new regression is red before and green after; neighboring journal, policy, wallet-attempt and i18n suites pass; lint is clean; hosted CI is green on the exact head. No change to idle/recovery behavior, thresholds, dependencies, workflows or contracts.
+
+## Independent account-privacy composition verification — 2026-11-26 (ghostpay-71)
+
+- Worker: Claude Code session `ghostpay-71`, branch `nodata/zen-dirac-vkl84j`, base main `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
+- Owns only this additive entry and `docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`. Docs only.
+- Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
+- Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
+- Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
