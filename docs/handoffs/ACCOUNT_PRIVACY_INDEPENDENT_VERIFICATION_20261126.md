@@ -80,7 +80,9 @@ changed by this worker.
 - Resulting main `e1d0eb0f`: `Hosting kit` (45769417486) succeeded. The push `CI` run (45769417481) was still queued
   behind the earlier main run when last read (06:51 UTC). Final result: push `CI` run 45769248688 on `045ac2d3` (#697) and
   run 45769417481 on `e1d0eb0f` (#698) both **concluded success** (the latter completed 07:35 UTC). Main later advanced to
-  `6c3acdd5` (#703, unrelated); `e1d0eb0f` is its ancestor.
+  `6c3acdd5` (#703, unrelated) and then `194e225c` (#695); `e1d0eb0f` is an ancestor of both. Re-checked at
+  `194e225c`: `e1d0eb0f^{tree}` and `f45025b5^{tree}` are both `3dc2d13377e22fe12a1664559c7af6c5f381b257`, #697 and #698
+  are merged, and runs 45769248688, 45769417481 and 45769417486 still report success.
 
 ### LanguagePicker failure: unrelated flake, not changed
 

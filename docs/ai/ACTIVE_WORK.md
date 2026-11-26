@@ -1,3 +1,10 @@
+# ghostpay-78 worker: #701 account-privacy verification record refresh (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `nodata/zen-dirac-vkl84j` (#701), base main `194e225c`. Owned paths:
+`docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`, this entry. Acceptance: re-verified that
+`e1d0eb0f^{tree}` equals `f45025b5^{tree}` (`3dc2d133`), that #697 and #698 are merged and that the recorded push CI runs
+concluded success; main merged in without rebase; docs-only; full hosted CI green on the exact head.
+
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
 Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
