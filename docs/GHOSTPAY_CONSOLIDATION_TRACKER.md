@@ -14,7 +14,7 @@ append rows; keep the starting baseline unchanged.
 | | Value |
 |---|---|
 | Starting baseline (2026-11-25 12:50 UTC) | `origin/main` = `32ae3977b6026991ae0591daf385d3c536e2132f` (Merge PR #660) |
-| Current integration baseline | `69485773` (Merge PR #642), merged into this branch as `be9ca3a3`; no merge to main by this worker yet |
+| Current integration baseline | `29d21c1b` (2026-11-26 00:55 UTC, Merge #684). It contains #673 at exact head `e2bd32c5`, merged under lock generation 34 by `chatgpt-8812-branch-completion` |
 | Integration lock | `automation/ghostpay-integration-lock` `d1e2e037`: **released**, generation 26, last owner `claude-feature-completion-20261125` (candidate #664 `7b47c3dd` failed e2e lean, main unchanged) |
 | Remote heads | 791 (`git ls-remote --heads`), incl. 34 frozen `archive/owner-stop-20261125/*` snapshots |
 | Open PRs | 256 (pages 1–3 of the PR list at 13:40 UTC) |
@@ -149,6 +149,38 @@ Pages artifact.
    and all guard tests pass on the merged tree. P13 lives in `packages/confidential-amounts/src/future/p13/` and is not
    rendered in lean. Suggested follow-up (not done, needs review): also deny `packages/*/src/future/**` in the lean guard.
 5. Owner decisions: section 9.
+
+## 8a. Handoff — cloud lead `ghostpay-6a` (2026-11-26 01:00 UTC)
+
+**Landed on main through #673** (exact head `e2bd32c5`, 39 successful checks and three intentional skips; CodeQL passed):
+- REL-EXCL. `apps/web/scripts/stoppedProducts.mjs` lists the stopped products. The lean build guard in `localBuildProfile.mjs` uses that list, and `scripts/release/verify-release-exclusions.mjs` checks the emitted artifact, invoked from `build-pages.sh` after the last site mutation. The verifier:
+  - requires exact report shapes and the writer's nonempty Worker and per-chunk module evidence;
+  - reconciles the report's chunks with the emitted executables;
+  - is covered by 54 node tests.
+  - Real lean artifact at `8aca5a06`: 364 rendered modules, 17 site files, no stopped-product module.
+- R1: automation fixes #623, #626, #627 and #633, merged with their donor SHAs preserved.
+- This tracker, plus `cloud-lead-20261125/` with the open-PR classification, small-residual triage and privacy-stack map.
+
+**Taken by other workers after this map** (no longer open work here):
+- #570 → #675
+- destination reuse → #674
+- retention → #676
+- wallet disclosure → #677/#679
+- W3 scan privacy → #672
+- Sweep consent → #683
+- recovery/privacy branch composition → #684
+
+**Next independent units:**
+1. The owner decisions in section 9.
+2. #528, a policy journal lock-scope review (full profile only).
+3. #595, a test-only manual port.
+4. Optional: extend the lean guard to `packages/*/src/future/**`. P13 currently lives in `packages/confidential-amounts/src/future/p13/` and is not rendered.
+5. Refresh `OPEN_PR_CLASSIFICATION.tsv`. It is pinned at `32ae3977`, and many class J/C rows have merged since.
+
+**Not claimed by this worker:**
+- Source-level dormancy of product code embedded in core modules.
+- Shared-core retention review.
+- Physical-device and real-Tor testing.
 
 ## 9. Outstanding owner decisions
 

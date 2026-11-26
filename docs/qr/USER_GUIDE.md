@@ -39,7 +39,7 @@ Every QR code in GhostPay sits in a coloured frame with a text label, so you kno
 
 ## Pay an invoice from a QR code
 
-1. Open **Pay** → **Scan an invoice QR**.
+1. Open **Pay** → **Scan an invoice QR or open a request file**.
 2. Scan the seller's code. You'll see **Review scanned invoice**: the chain, and whether the invoice signature is
    valid. A valid signature shows that the key in the invoice signed it. It does **not** prove who the seller is.
    Check the seller fingerprint with them by another channel.
