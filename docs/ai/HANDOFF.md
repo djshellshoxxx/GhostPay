@@ -3,9 +3,9 @@
 Source-pinned coordinator handoff. Facts below were read on 2026-11-26 UTC; re-verify heads before acting.
 
 - Repository: djshellshoxxx/GhostPay
-- Target: GitHub Pages browser beta, with the owner stop-work scope in [STOP_WORK_20261125.md](STOP_WORK_20261125.md) binding (F01/F09/F13 permanently archived; F02/F04/F08/F11/F12/F14/P07 deferred and excluded from beta and v1.0).
+- Target: GitHub Pages browser beta, with the owner stop-work scope in [STOP_WORK_20261125.md](STOP_WORK_20261125.md) binding (F01/F09/F13 permanently archived; F02, F04 and P07 stopped and archived indefinitely; F08, F11, F12 and F14 deferred beyond v1.0; all ten excluded from beta and v1.0).
 - Base SHA (origin/main): `019d5d18c8992f63fe77740f75ad04d86d3d9b07` (merge of #699, defer persistent vault timestamp retention).
-- Task branch: `nodata/brave-clarke-nwzz0s`, at the same base SHA before this handoff commit.
+- Task branch: `nodata/brave-clarke-nwzz0s`, which carries the handoff docs commit(s) above base (check with `git log origin/main..HEAD`).
 - Main CI at base SHA: `CI` run 45762973800 completed `success` on `019d5d18`; `Push on main` run 45762973794 `success`.
 - Recently landed on main (ancestry verified): #693 canonical v1 seller keystore vector (`0afab048`); #694 FC round-1 FC-03/FC-05a (`a9d2a033`); #699 (`019d5d18`).
 
@@ -18,12 +18,12 @@ Treat as active until verified otherwise. Do not duplicate.
 - #700 (draft): `fix(i18n)` English fallback for unsupported formatter locales. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`.
 - #701 (draft): independent verification record for the account-privacy composition. Branch `nodata/zen-dirac-vkl84j`.
 - Held, do not merge as-is: #371, #614, #621 (mixed stopped-product work); #592 (held reference-rate qualification).
-- Owner-deferred, untouched: #383, #587, #609 (persistent vault timestamp retention; see [ACTIVE_WORK.md](ACTIVE_WORK.md) top entry). Requires new owner approval.
+- Owner-deferred, untouched: #383, #587, #609 (persistent vault timestamp retention; see the "Owner decision: persistent vault timestamp retention deferred" entry in [ACTIVE_WORK.md](ACTIVE_WORK.md)). Requires new owner approval.
 - Other open PRs: a full census was not taken. Two pages of 100 were read; many are old automation drafts. Treat each as claimed.
 
 ## Implemented changes
 
-- This commit: docs only (`docs/ai/HANDOFF.md`, claim entry in `docs/ai/ACTIVE_WORK.md`). No code, test, workflow or dependency change.
+- Handoff docs commit on this branch: docs only (`docs/ai/HANDOFF.md`, claim entry in `docs/ai/ACTIVE_WORK.md`). No code, test, workflow or dependency change.
 
 ## Checks actually run (read-only, no `npm ci`)
 
