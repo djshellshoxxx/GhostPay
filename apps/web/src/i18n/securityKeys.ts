@@ -248,6 +248,9 @@ export const SECURITY_KEY_GROUPS = {
     'scanLanes.disclosure.transfers',
     'settings.scanLanes.floodHint',
     'settings.scanLanes.transfersHint',
+    'settings.scanLanes.matchCover',
+    'settings.scanLanes.matchCoverHint',
+    'scanLanes.disclosure.matchCover',
   ],
   supportedChainOutcomes: [
     'btc.verification.check.header',

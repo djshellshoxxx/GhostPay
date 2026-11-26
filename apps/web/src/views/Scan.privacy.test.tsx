@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { SCAN_PRIVACY_KEY } from '../lib/scanPrivacy';
+import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import type { Services } from '../lib/services';
 import { FAKE_ANNOUNCER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
@@ -30,6 +31,27 @@ beforeEach(() => {
 });
 
 describe('Scan privacy (spec 10)', () => {
+  it('does not mention cover lookups while the opt-in is off', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainWithLogs(84532, 2500, []);
+    await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    expect(screen.getByText(/Scan RPC/)).toBeTruthy();
+    expect(screen.queryByText(/groups of 4 identical lookups/)).toBeNull();
+  });
+
+  it('discloses cover lookups when the opt-in is on, and still scans', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ floodPerBlock: 32, spamScoring: true, privacySetTransfers: false, matchCover: true }));
+    const rpc = chainWithLogs(84532, 2500, []);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    expect(screen.getByText(/groups of 4 identical lookups/)).toBeTruthy();
+    await user.type(screen.getByLabelText('Start block'), '0');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+  });
+
   it('queries announcements only in whole aligned windows by default and shows what each party learns', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));

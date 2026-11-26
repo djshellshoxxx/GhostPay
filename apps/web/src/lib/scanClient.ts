@@ -17,6 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { coverWindow, createMatchCover } from './matchCover';
 import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
@@ -133,6 +134,12 @@ export interface ScanParams {
   readonly replyTimeoutMs?: number;
   /** Independent second provider on the same chain; compared at every checkpoint. */
   readonly secondaryClient?: RpcClient;
+  /**
+   * Cover lookups (opt-in): verify each matched router payment together with `matchCover - 1` other router
+   * announcements of the same block window, in random order and through the same verification path, so the RPC
+   * providers cannot tell which lookup is the payment. Decoy results are discarded. Absent or below 2: off.
+   */
+  readonly matchCover?: number;
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
   /** Spec 05: non-router announcements processed per run (default 20,000). Overflow is deferred, never skipped. */
   readonly openLaneBudget?: number;
@@ -157,6 +164,8 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
+  // Derived before the viewing key is handed to the worker (which zeroizes it); undefined when cover is off.
+  const cover = createMatchCover(p.matchCover, p.viewingKey);
   const stopWorker = (): void => {
     if (stopped) return;
     stopped = true;
@@ -418,8 +427,40 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageMatches: ScanMatch[] = [];
       const pageEvidence = new Set(evidenceLedger.keys());
       const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
-      for (const claim of uniqueClaims.items) {
+      // Real claims in chain order (it decides which of two claims sharing a transfer is credited); with cover on,
+      // decoy lookups of other router announcements in the same block window are interleaved at random positions.
+      // Only claims that will actually be looked up get cover.
+      const steps = cover === undefined
+        ? uniqueClaims.items.map((item) => ({ item, decoy: false }))
+        : (() => {
+            const matchedIds = new Set(claims.map((c) => c.announcement.id));
+            const candidates = lanes.trusted.flatMap((announcement) => {
+              if (matchedIds.has(announcement.id) || announcement.transactionHash === undefined) return [];
+              let metadata: ParsedMetadata | undefined;
+              try { metadata = parseMetadata(announcement.metadata); } catch { return []; }
+              return [{ stealthAddress: announcement.stealthAddress, announcement, metadata, viaRouter: true }];
+            });
+            return cover.plan(uniqueClaims.items, candidates, {
+              covered: (c) => c.viaRouter && c.metadata !== undefined && !all.some((x) => x.announcement.id === c.announcement.id),
+              group: (c) => coverWindow(c.announcement.blockNumber),
+            });
+          })();
+      for (const step of steps) {
         if (p.signal.aborted) break;
+        if (step.decoy) {
+          // Exactly the request path of a real verification, against a throwaway evidence set; the result is dropped.
+          await verifyClaimedPayment({
+            chain: p.chain,
+            client: p.client,
+            router: p.manifest.router,
+            announcer: p.manifest.announcer,
+            claim: step.item,
+            ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
+            consumedTransfers: new Set<string>(),
+          }).catch(() => undefined);
+          continue;
+        }
+        const claim = step.item;
         if (all.some((x) => x.announcement.id === claim.announcement.id)) continue;
         const verification = claim.metadata === undefined
           ? undefined

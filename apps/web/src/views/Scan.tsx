@@ -1,4 +1,5 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
+import { MATCH_COVER_SIZE } from '../lib/matchCover';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { StealthExportPayment } from '../components/StealthExportPayment';
@@ -305,6 +306,7 @@ export function Scan(): ReactNode {
           floodPerBlock: lanes.floodPerBlock,
           spamScoring: lanes.spamScoring,
           privacySetTransfers: lanes.privacySetTransfers,
+          ...(lanes.matchCover ? { matchCover: MATCH_COVER_SIZE } : {}),
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
@@ -453,6 +455,7 @@ export function Scan(): ReactNode {
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {scanLanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
+          {scanLanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover', { size: String(MATCH_COVER_SIZE) })}</li>}
         </ul>
         <p className="hint">{t('scan.disclosure.hint')}</p>
       </details>

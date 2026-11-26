@@ -112,7 +112,18 @@ provider.
 Do not read any of the above as anonymity. Fixed-window scanning bounds what the `eth_getLogs` ranges say; it does not
 make match-time or position-bearing requests uniform.
 
-## Phase 8: privacy improvement candidates (none implemented)
+## Phase 8: privacy improvement candidates
+
+**Implemented after this analysis (owner-approved, opt-in, off by default): cover lookups for matched router payments.**
+With `matchCover` (Settings: "Hide which payments matched among other lookups"), each matched router payment is verified
+together with three other router announcements of the same 1000-block window, through the same `verifyClaimedPayment`
+path, in random order, on both providers; decoy results are discarded and the real verification is unchanged. Decoys
+are chosen with a key derived from the viewing key, so a rescan repeats the same set. Measured in
+`src/lib/scanDisclosure.cover.test.ts`: off, 1 receipt and 1 transaction request (as in C); on, 4 of each, 2 of the 8
+about the payment, the same set on rescan, the same set on the second provider, none from another window. Items 2 and 3
+above then hold per group of four, not per payment; the count of groups still reveals the number of matches.
+
+The candidates below remain open.
 
 No change was made. The candidates below each touch `scanClient.ts` or `payments.ts`, which have open PRs from other
 workers (#625, #635, #653), and each needs a baseline-versus-change run of these same scenarios before it ships.

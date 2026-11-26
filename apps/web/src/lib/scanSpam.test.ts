@@ -159,17 +159,20 @@ describe('lane options (spec 05 D4)', () => {
     expect(sanitizeScanLanes('junk')).toEqual(DEFAULT_SCAN_LANES);
     expect(sanitizeScanLanes({ floodPerBlock: 0, spamScoring: 'yes', privacySetTransfers: 1 })).toEqual(DEFAULT_SCAN_LANES);
     expect(sanitizeScanLanes({ floodPerBlock: 10_001 })).toEqual(DEFAULT_SCAN_LANES);
-    expect(sanitizeScanLanes({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true })).toEqual({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true });
-    expect(DEFAULT_SCAN_LANES).toEqual({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false });
+    expect(sanitizeScanLanes({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true })).toEqual({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true, matchCover: false });
+    expect(DEFAULT_SCAN_LANES).toEqual({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false, matchCover: false });
+    // Cover lookups are opt-in: only a literal true turns them on.
+    expect(sanitizeScanLanes({ matchCover: true }).matchCover).toBe(true);
+    for (const v of [1, 'true', 'yes', null, {}]) expect(sanitizeScanLanes({ matchCover: v }).matchCover).toBe(false);
   });
 
   it('round-trips through storage under its own key and tolerates missing or failing storage', () => {
     const m = new Map<string, string>();
     const storage = { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) };
     expect(loadScanLanes(storage)).toEqual(DEFAULT_SCAN_LANES);
-    expect(saveScanLanes(storage, { floodPerBlock: 9, spamScoring: true, privacySetTransfers: true })).toBe(true);
+    expect(saveScanLanes(storage, { floodPerBlock: 9, spamScoring: true, privacySetTransfers: true, matchCover: true })).toBe(true);
     expect([...m.keys()]).toEqual([SCAN_LANES_KEY]);
-    expect(loadScanLanes(storage)).toEqual({ floodPerBlock: 9, spamScoring: true, privacySetTransfers: true });
+    expect(loadScanLanes(storage)).toEqual({ floodPerBlock: 9, spamScoring: true, privacySetTransfers: true, matchCover: true });
     m.set(SCAN_LANES_KEY, '{not json');
     expect(loadScanLanes(storage)).toEqual(DEFAULT_SCAN_LANES);
     expect(loadScanLanes(undefined)).toEqual(DEFAULT_SCAN_LANES);

@@ -1,3 +1,13 @@
+# Cover lookups for matched router payments (owner-approved, opt-in) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-match-cover-20261125`, base main `1bea3df3`. The owner approved this slice in this session (new capability, off by default). W3 (ghostpay-backup-60) confirmed it is outside W3/P14 scope; ghostpay-42 informed.
+Problem: verifying a matched router payment sends receipt and transaction lookups that no non-matching announcement gets, so the RPC (and a second RPC) learn which announcements matched (docs/research/privacy-rpc-call-graph.md items 2-3).
+Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
+Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
+Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+
+---
+
 # SEC-1 follow-up — in-app payment-key warnings name the payer (2026-11-25 UTC)
 
 Worker: Claude Code session `ghostpay-15` (the PR #647 session). Branch `claude/sec1-payer-key-warning`, base main

@@ -65,6 +65,8 @@ export interface ScenarioInput {
   readonly signal?: AbortSignal;
   /** Recorder to continue (resume scenarios keep one recorder per scenario id). */
   readonly recorder?: DisclosureRecorder;
+  /** Cover lookups per matched router payment (`runScan`'s `matchCover`); absent: off. */
+  readonly matchCover?: number;
 }
 
 export interface ScenarioOutput {
@@ -130,6 +132,7 @@ export async function runDisclosureScenario(i: ScenarioInput): Promise<ScenarioO
       signal: i.signal ?? new AbortController().signal,
       ...(i.checkpoints === undefined ? {} : { checkpoints: i.checkpoints }),
       ...(i.maxPages === undefined ? {} : { maxPages: i.maxPages }),
+      ...(i.matchCover === undefined ? {} : { matchCover: i.matchCover }),
       ...(secondary === undefined ? {} : { secondaryClient: win(secondary) }),
       onProgress: (p) => progress.push(p),
       onMatch: (m) => matches.push(m),

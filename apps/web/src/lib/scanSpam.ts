@@ -74,9 +74,14 @@ export interface ScanLaneSettings {
   readonly spamScoring: boolean;
   /** Opt-in: after a scan, count same-token transfers at similar amounts for the privacy set (costs RPC calls). */
   readonly privacySetTransfers: boolean;
+  /**
+   * Opt-in: verify each matched router payment together with other router announcements of the same block window, so
+   * the RPC cannot tell which lookup is the payment (costs several times the verification requests).
+   */
+  readonly matchCover: boolean;
 }
 
-export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false });
+export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false, matchCover: false });
 export const SCAN_LANES_KEY = 'ghostpay.scanLanes.v1';
 
 interface StorageLike {
@@ -91,6 +96,7 @@ export function sanitizeScanLanes(raw: unknown): ScanLaneSettings {
     floodPerBlock: intIn(o['floodPerBlock'], 1, MAX_FLOOD_PER_BLOCK) ? o['floodPerBlock'] : DEFAULT_SCAN_LANES.floodPerBlock,
     spamScoring: o['spamScoring'] !== false,
     privacySetTransfers: o['privacySetTransfers'] === true,
+    matchCover: o['matchCover'] === true,
   };
 }
 
