@@ -612,7 +612,12 @@ ghostpay reconcile propose --in history-1.json --observations current.json \
 ```
 
 Review the returned candidates, then set `RECORD_ID` to the public record ID you
-intend to associate. Export a uniquely exact proposal:
+intend to associate. Each listed proposal carries `currentChainVerified`, true
+only for a record among the observations freshly verified in this run; saved
+records take part in matching but are reported as not currently verified, and
+the top-level `currentChainVerified` is true only when every listed proposal is.
+Only a freshly verified record can be exported (otherwise
+`CURRENT_EVIDENCE_REQUIRED`, exit 1). Export a uniquely exact proposal:
 
 ```sh
 ghostpay reconcile propose --in history-1.json --observations current.json \
