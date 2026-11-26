@@ -11,13 +11,13 @@ export const SUFFIX = [
   { op: 'release' },
   { op: 'rpc', mode: 'up' },
   { op: 'chain', to: 'invoice' },
-  { op: 'open', tab: 'A', intent: 'X' },
+  { suffix: true, op: 'open', tab: 'A', intent: 'X' },
   { op: 'check', tab: 'A', intent: 'X' },
-  { op: 'send', tab: 'A', behaviour: 'ok' }, // must be refused while X has a record (I2)
-  { op: 'open', tab: 'B', intent: 'X' },
-  { op: 'send', tab: 'B', behaviour: 'ok' }, // must be refused in the other tab too (I6)
-  { op: 'open', tab: 'B', intent: 'C' },
-  { op: 'send', tab: 'B', behaviour: 'ok', mineOnSubmit: true }, // control must reach the wallet exactly once (I7)
+  { suffix: true, op: 'send', tab: 'A', behaviour: 'ok' }, // must be refused while X has a record (I2)
+  { suffix: true, op: 'open', tab: 'B', intent: 'X' },
+  { suffix: true, op: 'send', tab: 'B', behaviour: 'ok' }, // must be refused in the other tab too (I6)
+  { suffix: true, op: 'open', tab: 'B', intent: 'C' },
+  { suffix: true, op: 'send', tab: 'B', behaviour: 'ok', mineOnSubmit: true }, // control must reach the wallet exactly once (I7)
   { op: 'mine' },
   { op: 'check', tab: 'B', intent: 'X' },
 ];

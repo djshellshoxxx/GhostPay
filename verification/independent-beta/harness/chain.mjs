@@ -81,7 +81,13 @@ export class SyntheticChain {
       tx.logs = [];
       delete tx.revertReason;
       if (!tx.success || this.executor === null) return;
-      const out = this.executor(tx.params, { blockNumber: this.head, index, hash: h, timestamp });
+      let out;
+      try {
+        out = this.executor(tx.params, { blockNumber: this.head, index, hash: h, timestamp });
+      } catch (e) {
+        // A malformed transaction reverts; the block is still stored (audit finding 21).
+        out = { revert: `ExecutorError: ${String(e?.message ?? e).slice(0, 80)}` };
+      }
       if (out !== null && !Array.isArray(out) && out.revert !== undefined) {
         // The contract model reverted: the transaction is mined with status 0x0 and emits nothing.
         tx.success = false;
@@ -142,7 +148,8 @@ export class SyntheticChain {
       this.blocks.delete(n);
     }
     this.head = floor;
-    this.clock = this.timestampOf(floor);
+    // Chain time never regresses: replacement blocks keep later timestamps than anything seen before, so a late
+    // payment re-mined after a reorg stays late (audit finding 12; the clock used to reset to the fork point).
     // Replacement branch is at least as long as the old one so a naive "highest block wins" client still sees it.
     for (let n = floor + 1; n <= oldHead; n += 1) this.mine([]);
     this.log.push({ op: 'reorg', depth, floor, oldHead, orphaned, fork: this.fork });
@@ -266,7 +273,8 @@ export class SyntheticChain {
     const p = tx.params;
     return {
       transactionHash: String(hash).toLowerCase(),
-      transactionIndex: '0x0',
+      // Same index as the transaction object and its logs (audit finding 13).
+      transactionIndex: hex(Math.max(0, this.blocks.get(tx.block)?.txs.indexOf(String(hash).toLowerCase()) ?? 0)),
       blockNumber: hex(tx.block),
       blockHash: this.hashOf(tx.block),
       from: String(p.from ?? '').toLowerCase(),

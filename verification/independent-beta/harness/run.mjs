@@ -8,7 +8,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { join } from 'node:path';
-import { DIST, REPO, distFingerprint, sourceIdentity } from './build.mjs';
+import { DIST, PRODUCTION_PATHS, REPO, distFingerprint, sourceIdentity } from './build.mjs';
 import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
 import { MockRpc } from './rpc.mjs';
@@ -28,11 +28,16 @@ function parseArgs(argv) {
     if (k === '--named') a.named = true;
     else if (k === '--minimize') a.minimize = true;
     else if (k === '--only') a.only = argv[++i];
-    else if (k === '--concurrency') a.concurrency = Math.max(1, Math.min(6, Number(argv[++i])));
+    else if (k === '--concurrency') {
+      const n = Number(argv[++i]);
+      if (!Number.isInteger(n) || n < 1) throw new Error('--concurrency needs a positive integer'); // audit finding 5
+      a.concurrency = Math.min(6, n);
+    }
     else if (k === '--out') a.out = argv[++i];
     else if (k === '--candidate') a.candidate = argv[++i];
     else if (k === '--seeds') {
       const [lo, hi] = String(argv[++i]).split('-').map(Number);
+      if (!Number.isInteger(lo) || (hi !== undefined && !Number.isInteger(hi)) || lo < 0) throw new Error('--seeds needs N or N-M'); // audit finding 5
       const top = Math.min(hi ?? lo, lo + 199); // hard bound: at most 200 generated sequences per run
       for (let s = lo; s <= top; s += 1) a.seeds.push(s);
     } else throw new Error(`unknown argument ${k}`);
@@ -63,6 +68,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     clears: { X: 0, C: 0 },
     lastClearSeq: { X: 0, C: 0 },
     clearedHashes: new Set(),
+    clearedHandoffs: new Set(), // handoff seq numbers whose journal record was deliberately cleared
     hashes: { X: new Set(), C: new Set() },
     docEndedAt: new Map(), // `${pageId}:${doc}` -> ms
     deliveredToOpenPage: new Set(),
@@ -102,8 +108,19 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
       docs.set(p, 0);
       // A document ends when the page loads the next one or closes; I4's record window is measured to that end.
       // (Measured at the next DOMContentLoaded, so slightly late: lenient towards the app, never stricter.)
+      // The document ends when the main frame commits a navigation to another URL (a hash change is the same
+      // document) or the page closes; the next document is counted at its DOMContentLoaded (audit finding 16: the
+      // end used to be stamped at the next DOMContentLoaded, which under load stretched the record window).
+      let lastUrl = '';
+      const key = () => `${pageIds.get(p)}:${docs.get(p) ?? 0}`;
+      p.on('framenavigated', (f) => {
+        if (f !== p.mainFrame()) return;
+        const u = f.url().split('#')[0];
+        if (u !== lastUrl && !world.docEndedAt.has(key())) world.docEndedAt.set(key(), Date.now());
+        lastUrl = u;
+      });
       p.on('domcontentloaded', () => {
-        world.docEndedAt.set(`${pageIds.get(p)}:${docs.get(p) ?? 0}`, Date.now());
+        if (!world.docEndedAt.has(key())) world.docEndedAt.set(key(), Date.now());
         docs.set(p, (docs.get(p) ?? 0) + 1);
       });
       tabOfPage.set(p, label);
@@ -149,6 +166,14 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
       }
       // Only hashes that actually reached an open page can be shown by the app (harness fix H3).
       for (const h of wallet.handoffs) if (h.hash !== undefined && h.intent !== null && h.deliveredToOpenPage === true) world.hashes[h.intent].add(h.hash);
+      // The judgement suffix must actually reach the final check and click send, or "refused" is indistinguishable
+      // from "never attempted" (audit finding 6).
+      if (step.suffix === true) {
+        const r = rec.result ?? {};
+        if (rec.error !== undefined || (step.op === 'open' && r.prepared !== true) || (step.op === 'send' && r.clicked !== 'clicked')) {
+          throw new Error(`harness: judgement suffix step ${i} (${step.op}) was not attempted: ${JSON.stringify(rec.result ?? rec.error).slice(0, 160)}`);
+        }
+      }
       const obs = {};
       for (const [label, p] of Object.entries(world.tabs)) obs[label] = await observe(p).catch(() => ({ closed: true }));
       oracle.checkHandoffs(i);
@@ -162,11 +187,19 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     // Vacuity guard: every scenario starts with a payment of X, and its suffix pays C, so a run in which nothing ever
     // reached the wallet means the harness failed to drive the app, not that the app is safe.
     if (wallet.handoffs.length === 0) harnessError = 'harness: vacuous run (no wallet handoff at all)';
+    if (harnessError === null && rpc.unknownMethods.size > 0) harnessError = `harness: mock RPC cannot answer ${[...rpc.unknownMethods].join(', ')} (audit finding 13)`;
+    if (harnessError === null && rpc.blockedOrigins.length > 0) harnessError = `harness: off-origin request(s) to ${[...new Set(rpc.blockedOrigins)].join(', ')} (audit finding 4)`;
   } catch (e) {
     harnessError = String(e?.stack ?? e);
   } finally {
     await context?.close().catch(() => undefined);
-    for (const d of profileDirs) rmSync(d, { recursive: true, force: true });
+    for (const d of profileDirs) {
+      try {
+        rmSync(d, { recursive: true, force: true, maxRetries: 3 });
+      } catch {
+        // A leftover temp dir must not lose the run record (audit finding 20).
+      }
+    }
   }
   const found = new Set(oracle.violations.map((v) => v.inv));
   const expect = scenario.expectViolations ?? [];
@@ -283,8 +316,14 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       const r = await clearRow(page, sel, step.accept);
       if (r.cleared) {
         world.clears[step.intent] += 1;
-        world.lastClearSeq[step.intent] = wallet.seq;
-        for (const h of world.hashes[step.intent]) world.clearedHashes.add(h);
+        // Mark only the record that was cleared (audit finding 14: every hash of the intent used to be marked).
+        if (sel.hash !== undefined) {
+          world.clearedHashes.add(sel.hash);
+          for (const h of wallet.handoffs) if (h.hash === sel.hash) world.clearedHandoffs.add(h.seq);
+        } else {
+          const unknown = wallet.handoffs.filter((h) => h.intent === step.intent && !world.clearedHandoffs.has(h.seq) && !(h.hash !== undefined && world.deliveredToOpenPage.has(h.hash)));
+          if (unknown.length > 0) world.clearedHandoffs.add(unknown[unknown.length - 1].seq);
+        }
       }
       return r;
     }
@@ -390,10 +429,15 @@ async function main() {
   // The candidate under test (default: origin/main). The run refuses if any production path differs from it, so a
   // record always describes the unmodified candidate, never a locally edited app.
   const candidate = execFileSync('git', ['-C', REPO, 'rev-parse', args.candidate ?? 'origin/main'], { encoding: 'utf8' }).trim();
-  const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', candidate, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
+  const productionDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', candidate, 'HEAD', '--', ...PRODUCTION_PATHS], { encoding: 'utf8' }).trim();
   if (productionDiff !== '') throw new Error(`harness: production paths differ from candidate ${candidate}:\n${productionDiff}`);
+  // The bundle must come from the same production source as the candidate (audit finding 10).
+  const bundleDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', build.head, 'HEAD', '--', ...PRODUCTION_PATHS], { encoding: 'utf8' }).trim();
+  if (bundleDiff !== '') throw new Error(`harness: bundle was built from ${build.head}, whose production paths differ from HEAD:\n${bundleDiff}`);
   const { chromium } = require('playwright-core');
-  const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'];
+  // Every hostname but localhost fails to resolve; the synthetic RPC hosts are answered by request interception, so
+  // nothing can leave the machine even outside Playwright's routing (audit finding 4).
+  const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'];
   const probe = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: launchArgs });
   const chromiumVersion = probe.version();
   await probe.close();
@@ -409,10 +453,15 @@ async function main() {
         viewport: { width: 1280, height: 900 },
       }),
   };
-  const server = await serveDist(DIST);
+  const server = await serveDist(DIST, { port: Number(process.env.W5_PORT ?? 4173) }); // W5_PORT: run two harnesses side by side
   let list = [];
   if (args.named) list.push(...CONTROLS, ...NAMED);
-  if (args.only !== null) list = [...CONTROLS, ...NAMED].filter((s) => args.only.split(',').includes(s.name));
+  if (args.only !== null) {
+    const wanted = args.only.split(',');
+    list = [...CONTROLS, ...NAMED].filter((s) => wanted.includes(s.name));
+    const missing = wanted.filter((w) => !list.some((s) => s.name === w));
+    if (missing.length > 0) throw new Error(`unknown scenario(s): ${missing.join(', ')}`); // audit finding 5
+  }
   for (const s of args.seeds) list.push(generated(s));
   const runId = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
   const out = args.out ?? join(REPO, 'verification/independent-beta/results', runId);
@@ -426,7 +475,9 @@ async function main() {
       return r;
     });
     if (args.minimize) {
-      for (const r of results) if (r.violations.length > 0 && r.harnessError === null && r.expectViolations.length === 0) r.minimized = await minimize(browser, server.origin, r);
+      // At most 4 failures are minimized per run (24 replays each), so minimization stays bounded (audit finding 20).
+      const failing = results.filter((r) => r.violations.length > 0 && r.harnessError === null && r.expectViolations.length === 0);
+      for (const r of failing.slice(0, 4)) r.minimized = await minimize(browser, server.origin, r);
     }
   } finally {
     await server.close();
@@ -454,7 +505,10 @@ async function main() {
   };
   writeFileSync(join(out, 'run.json'), `${JSON.stringify(record, null, 2)}\n`);
   process.stdout.write(`\nrecord: ${out}/run.json\n${JSON.stringify(record.totals)}\n`);
-  process.exitCode = record.totals.harnessErrors > 0 ? 2 : record.totals.withViolations > 0 ? 1 : 0;
+  // A run with no scenarios, a missing result, an off-origin request or an RPC method the mock cannot answer proves
+  // nothing about the app: exit 2 (audit findings 4, 5, 13).
+  const invalid = results.length === 0 || results.some((r) => r === undefined) || record.totals.blockedOffOrigin.length > 0;
+  process.exitCode = invalid || record.totals.harnessErrors > 0 ? 2 : record.totals.withViolations > 0 ? 1 : 0;
 }
 
 main().catch((e) => {

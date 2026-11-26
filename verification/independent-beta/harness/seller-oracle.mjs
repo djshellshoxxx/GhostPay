@@ -24,6 +24,7 @@ export class SellerOracle {
     this.violations = [];
     this.ambiguities = [];
     this.notes = [];
+    this.harnessIssues = []; // conditions that make the observation unusable; the runner turns them into harness errors
   }
 
   flag(list, inv, step, detail) {
@@ -48,10 +49,18 @@ export class SellerOracle {
 
   check(stepIndex, step, before, obs, result) {
     const freshScan = step.op === 'scan' && result?.outcome === 'finished';
+    // Strict when the chain has not changed since the last finished scan (any tab: the vault is shared), so a
+    // premature link through confirm, reload or the other tab is scored, not excused as SA6 (audit finding 3).
+    const ref = this.w.lastFinishedScan;
+    const chainUnchanged = ref !== undefined && this.w.chain.log.length === ref.chainLogLen;
     for (const [tab, o] of Object.entries(obs)) {
       if (o.closed || o.cards === undefined || o.ledgerLocked) continue;
-      const fresh = freshScan && step.tab === tab;
-      const scanHead = this.w.scans[tab]?.head ?? this.w.chain.head;
+      // A finished scan in an unlocked ledger must show both registered invoices (audit finding 8).
+      if (freshScan && step.tab === tab && o.cards.map((c) => this.intentOfCard(c)).filter(Boolean).length < 2) {
+        this.harnessIssues.push(`step ${stepIndex}: ${tab} shows ${o.cards.length} parsable invoice card(s) after a finished scan`);
+      }
+      const fresh = (freshScan && step.tab === tab) || chainUnchanged;
+      const scanHead = ref?.head ?? this.w.scans[tab]?.head ?? this.w.chain.head;
       for (const card of o.cards) {
         const intent = this.intentOfCard(card);
         if (intent === null) {
@@ -59,7 +68,11 @@ export class SellerOracle {
           continue;
         }
         const cls = cardClasses(card.text);
-        const expiresAt = card.validUntil === null ? null : Math.floor(Date.parse(card.validUntil) / 1000);
+        const shownExpiry = card.validUntil === null ? null : Math.floor(Date.parse(card.validUntil) / 1000);
+        const exp = this.w.expiry?.[intent];
+        if (exp !== undefined && shownExpiry !== null && (shownExpiry < exp.from || shownExpiry > exp.to)) this.ambiguous('SA9', stepIndex, { tab, intent, shownExpiry, expected: exp });
+        // Lateness is judged from the harness's own expiry window (audit finding 17); inside the window it is unclear.
+        const expiresAt = exp === undefined ? shownExpiry : exp.to;
         const pays = this.canonicalPayments(intent, scanHead);
         const final = pays.filter((p) => p.depth >= FINALITY);
         const detail = { tab, intent, card: card.text.slice(0, 300), payments: pays.map((p) => ({ hash: p.hash, kind: p.kind, block: p.truth.block, depth: p.depth, ts: p.truth.timestamp })), scanHead };
@@ -78,7 +91,11 @@ export class SellerOracle {
         if (this.w.payments[intent].length === 0 && cls.some((c) => PAYMENT_STATES.includes(c))) this.violation('SI7', stepIndex, detail);
         if (cls.includes('linked')) {
           // SI2: a link needs a recorded seller decision for this intent.
-          if (this.w.actions[intent].length === 0) this.violation('SI2', stepIndex, detail);
+          if (this.w.actions[intent].length === 0) {
+            const attempted = (this.w.attempted ?? []).some((a) => a.intent === intent && a.step <= stepIndex);
+            if (attempted) this.ambiguous('SA10', stepIndex, { ...detail, reason: 'link appeared after a decision that had not shown effect when checked' });
+            else this.violation('SI2', stepIndex, detail);
+          }
           // SI1/SI4: a link needs final, canonical, successful evidence at the last scan. Strict right after a scan
           // in this tab; otherwise a stale display before any rescan is the recorded ambiguity SA6.
           if (final.length === 0) {

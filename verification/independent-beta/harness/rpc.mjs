@@ -3,6 +3,7 @@
 // Original work; the fake contract code bytes and addresses are the repository's public E2E fixture values.
 import { keccak_256 } from '@noble/hashes/sha3.js';
 import { CHAIN_ID_HEX } from './chain.mjs';
+import { routerExecutor } from './router-model.mjs';
 
 export const RPC_URL = 'https://rpc.e2e.test';
 // Second, independent provider for two-RPC cross-checks (S20). Answered in-browser like the first.
@@ -52,8 +53,11 @@ export class MockRpc {
         return hex(c.head);
       case 'eth_getBlockByNumber': {
         const tag = params[0];
-        const n = tag === 'latest' || tag === 'pending' || tag === 'safe' || tag === 'finalized' ? c.head : parseInt(tag, 16);
-        return c.blockObject(n);
+        const n = tag === 'earliest' ? 0 : tag === 'latest' || tag === 'pending' || tag === 'safe' || tag === 'finalized' ? c.head : parseInt(tag, 16);
+        if (!Number.isInteger(n)) throw Object.assign(new Error('invalid block tag'), { code: -32602 });
+        const b = c.blockObject(n);
+        // Full transaction objects when asked (audit finding 13).
+        return b !== null && params[1] === true ? { ...b, transactions: b.transactions.map((h) => c.txObject(h)) } : b;
       }
       case 'eth_getBlockByHash': {
         const want = String(params[0]).toLowerCase();
@@ -74,12 +78,24 @@ export class MockRpc {
         return hex(1_000_000_000);
       case 'eth_maxPriorityFeePerGas':
         return hex(1_000_000);
-      case 'eth_estimateGas':
+      case 'eth_estimateGas': {
+        const call = params[0] ?? {};
+        if (String(call.to ?? '').toLowerCase() === ROUTER) {
+          const sim = routerExecutor({ ...call, data: call.data ?? call.input }, { timestamp: c.clock + 2 });
+          if (sim !== null && !Array.isArray(sim) && sim.revert !== undefined) throw Object.assign(new Error(`execution reverted: ${sim.revert}`), { code: 3, data: '0x' });
+        }
         return hex(200_000);
+      }
       case 'eth_feeHistory':
         return { oldestBlock: hex(c.head), baseFeePerGas: [hex(1_000_000), hex(1_000_000)], gasUsedRatio: [0.5], reward: [[hex(1_000_000)]] };
-      case 'eth_getLogs':
-        return c.getLogs(params[0] ?? {});
+      case 'eth_getLogs': {
+        const f = params[0] ?? {};
+        // A real node errors for an unknown blockHash rather than returning nothing (audit finding 13).
+        if (f.blockHash !== undefined && c.getLogs({ blockHash: f.blockHash }).length === 0 && ![...Array(c.head + 1).keys()].some((n) => c.hashOf(n) === String(f.blockHash).toLowerCase())) {
+          throw Object.assign(new Error('unknown block'), { code: -32000 });
+        }
+        return c.getLogs(f);
+      }
       case 'eth_call': {
         const call = params[0] ?? {};
         const to = String(call.to ?? '').toLowerCase();
@@ -88,7 +104,11 @@ export class MockRpc {
           if (sel === SEL.FEE_BPS) return word((25).toString(16));
           if (sel === SEL.FEE_RECIPIENT) return word(FEE_RECIPIENT);
           if (sel === SEL.ANNOUNCER) return word(ANNOUNCER);
-          return '0x'; // successful dry run of a router payment (no return data)
+          // A dry run reverts exactly when the contract model would on the next block (audit finding 13: dry runs
+          // used to always succeed, so the app's preflight was never exercised).
+          const sim = routerExecutor({ ...call, data: call.data ?? call.input }, { timestamp: c.clock + 2 });
+          if (sim !== null && !Array.isArray(sim) && sim.revert !== undefined) throw Object.assign(new Error(`execution reverted: ${sim.revert}`), { code: 3, data: '0x' });
+          return '0x';
         }
         return '0x';
       }
@@ -99,6 +119,9 @@ export class MockRpc {
   }
 
   one(body) {
+    if (body === null || typeof body !== 'object' || typeof body.method !== 'string') {
+      return { jsonrpc: '2.0', id: body?.id ?? null, error: { code: -32600, message: 'invalid request' } }; // audit finding 21
+    }
     const call = { method: body.method, at: Date.now(), mode: this.mode };
     if (process.env.W5_RPC_DEBUG === '1') call.params = JSON.stringify(body.params ?? []).slice(0, 200);
     this.calls.push(call);
@@ -107,7 +130,7 @@ export class MockRpc {
       if (process.env.W5_RPC_DEBUG === '1') call.result = JSON.stringify(result ?? null).slice(0, 160);
       return { jsonrpc: '2.0', id: body.id, result };
     } catch (e) {
-      return { jsonrpc: '2.0', id: body.id, error: { code: e.code ?? -32603, message: String(e.message) } };
+      return { jsonrpc: '2.0', id: body.id, error: { code: e.code ?? -32603, message: String(e.message), ...(e.data === undefined ? {} : { data: e.data }) } };
     }
   }
 

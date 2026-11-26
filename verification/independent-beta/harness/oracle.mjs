@@ -2,6 +2,8 @@
 // Original work. Inputs are only harness-owned facts: wallet handoffs, deliberate clears, the synthetic chain's
 // truth and black-box observations. Output: violations (product-defect candidates) and ambiguities (A-items).
 
+import { classify } from './app.mjs';
+
 const RECORD_WINDOW_MS = 2_000; // I4 applies once a returned hash had this long in an open page (A5 / R5)
 const SUCCESS_IN_BLOCK = /Status: included in block (\d+)/;
 // A privacy-masked hash as a UI may render it: 0x + leading digits + ellipsis + trailing digits.
@@ -48,6 +50,11 @@ export class Oracle {
     this.flag(this.ambiguities, inv, step, detail);
   }
 
+  /** A handoff whose journal record was deliberately cleared (per record; legacy per-intent cut-off still honoured). */
+  isCleared(h) {
+    return this.w.clearedHandoffs?.has(h.seq) === true || h.seq <= (this.w.lastClearSeq?.[h.intent] ?? 0);
+  }
+
   handoffsFor(intent) {
     return this.w.wallet.handoffs.filter((h) => h.intent === intent);
   }
@@ -89,6 +96,7 @@ export class Oracle {
   /** I1/I8 on an explicit status check: a success class needs canonical successful evidence right now. */
   checkStatusResult(stepIndex, intent, hash, result) {
     if (!result.checked) return;
+    if (result.cls.length === 0) this.notes.push({ step: stepIndex, note: 'status check produced no classifiable text (harness note, audit finding 1)', intent, hash, text: result.text });
     const truth = this.w.chain.truth(hash);
     const success = result.cls.includes('success');
     if (success && !(truth.state === 'mined' && truth.success)) {
@@ -159,11 +167,28 @@ export class Oracle {
         const other = intent === 'X' ? 'C' : 'X';
         // Disclosing the previous invoice's hash under its own labelled warning is correct, not bleed.
         const labelledPrevious = /Previous invoice transaction may have been submitted/.test(o.mainText);
-        for (const h of o.mainHashes) {
-          if (!this.w.hashes[other].has(h)) continue;
+        const foreign = referencedHashes(o.mainText, [...this.w.hashes[other]]);
+        for (const h of [...foreign.full, ...foreign.masked]) {
           if (labelledPrevious) this.notes.push({ step: stepIndex, note: 'previous-invoice hash disclosed under its warning', tab, intent, hash: h });
           else this.violation('I5b', stepIndex, { tab, intent, foreignHash: h, text: o.mainText.slice(0, 300) });
         }
+      }
+      // I1/I8 on the shared journal (audit finding 2): a row claiming inclusion is judged against the hashes it shows.
+      // Strict right after an explicit check in this tab or a fresh render of it; otherwise a stale row is A1.
+      for (const row of o.journal) {
+        if (!classify(row).includes('success')) continue;
+        const known = [...this.w.hashes.X, ...this.w.hashes.C];
+        const ref = referencedHashes(row, known);
+        const shown = [...ref.full, ...ref.masked];
+        const holds = shown.length > 0 && shown.some((h) => {
+          const t = this.w.chain.truth(h);
+          return t.state === 'mined' && t.success;
+        });
+        if (holds) continue;
+        const strict = (step.op === 'check' && step.tab === tab) || (FRESH_RENDER_OPS.has(step.op) && (step.op === 'restart' || step.tab === tab));
+        const det = { tab, row: row.slice(0, 240), shown: shown.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })), after: step.op };
+        if (strict) this.violation(shown.some((h) => this.w.reorged.has(h)) ? 'I8' : 'I1', stepIndex, { ...det, basis: 'journal-row' });
+        else this.ambiguous('A1', stepIndex, { ...det, basis: 'journal-row' });
       }
       // I3: each un-cleared handoff's OWN record is visible on the screens that show the journal (review gap G2:
       // identity, not row count). Rows carrying a known hash belong to that hash's intent and cannot stand in for
@@ -183,8 +208,7 @@ export class Oracle {
   expectedRecords() {
     const out = [];
     for (const intent of ['X', 'C']) {
-      const since = this.w.lastClearSeq[intent] ?? 0;
-      const live = this.handoffsFor(intent).filter((h) => h.seq > since);
+      const live = this.handoffsFor(intent).filter((h) => !this.isCleared(h));
       if (live.length === 0) continue;
       const delivered = live.filter((h) => h.hash !== undefined && this.w.deliveredToOpenPage.has(h.hash) && !this.w.clearedHashes.has(h.hash));
       const settled = delivered.filter((h) => {
@@ -279,7 +303,7 @@ export class Oracle {
     for (const h of this.w.wallet.handoffs) {
       if (h.hash === undefined || h.repliedAt === undefined) continue;
       if (this.w.clearedHashes.has(h.hash)) continue;
-      if (h.seq <= (this.w.lastClearSeq[h.intent] ?? 0)) continue;
+      if (this.isCleared(h)) continue;
       const closedAt = this.w.docEndedAt.get(`${h.pageId}:${h.doc}`);
       const delivered = this.w.deliveredToOpenPage.has(h.hash);
       if (!delivered) continue; // reply went to a closed page: R5 allows the hash to be absent (A5)

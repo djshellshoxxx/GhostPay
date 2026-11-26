@@ -72,7 +72,7 @@ export async function openScan(page) {
  * Run one scan. `fromStart` unchecks "Resume from checkpoint" (full rescan from block 0). Resolves with the final
  * status/alert text; `onStarted` lets a scenario inject a fault while the scan runs.
  */
-export async function runScan(page, { fromStart = false, capMs = 60_000, onStarted } = {}) {
+export async function runScan(page, { fromStart = false, capMs = 60_000, onStarted, beforeStart } = {}) {
   await openScan(page);
   const resume = page.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true });
   if ((await resume.count()) > 0) {
@@ -81,6 +81,8 @@ export async function runScan(page, { fromStart = false, capMs = 60_000, onStart
   }
   const start = page.getByLabel('Start block');
   if ((await start.count()) > 0 && (await start.isEditable().catch(() => false))) await start.fill('0');
+  // A fault is armed right before the click so it cannot lose a race with a fast scan (audit finding 11).
+  if (beforeStart !== undefined) await beforeStart();
   await page.getByRole('button', { name: 'Start scan' }).click();
   if (onStarted !== undefined) await onStarted();
   const t0 = Date.now();
@@ -169,7 +171,8 @@ export async function deleteObservations(page) {
   });
   await btn.click();
   await page.waitForTimeout(1_500);
-  return { deleted: true, dialog };
+  // Effective only if the app asked for (and got) confirmation (audit finding 7).
+  return { deleted: dialog !== null, dialog };
 }
 
 /** Import a backup file: preview, then activate. Returns the preview text and any alert. */
@@ -201,5 +204,7 @@ export async function manualLink(page, digest) {
   await btn.first().click();
   await page.waitForTimeout(2_000);
   const alerts = (await page.locator('main [role="alert"]').allInnerTexts()).map((a) => a.replace(/\s+/g, ' ').slice(0, 200));
-  return { linked: true, clicked: 'clicked', alerts };
+  // A refusal shows as an alert; the caller additionally confirms the invoice card changed (audit finding 7).
+  const refused = alerts.some((a) => /no longer has a single exact invoice match|invalidated by a reorg|cannot|refus/i.test(a));
+  return { linked: !refused, clicked: 'clicked', alerts, refused };
 }

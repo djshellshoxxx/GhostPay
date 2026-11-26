@@ -33,6 +33,13 @@ export async function serveDist(root, { port = 4173, host = '127.0.0.1' } = {}) 
         return;
       }
       const info = await stat(file).catch(() => null);
+      // A missing asset (a path with a file extension) is a 404, so the app's own asset errors stay visible; only
+      // extension-less paths fall back to the single-page index. The harness's build record is never served.
+      // (audit finding 19)
+      if (rel.endsWith('/.w5-build.json') || (!info?.isFile() && extname(rel) !== '')) {
+        res.writeHead(404).end();
+        return;
+      }
       const target = info?.isFile() ? file : join(base, 'index.html');
       const body = await readFile(target);
       res.writeHead(200, { 'content-type': TYPES[extname(target)] ?? 'application/octet-stream', 'cache-control': 'no-store' });
@@ -45,6 +52,7 @@ export async function serveDist(root, { port = 4173, host = '127.0.0.1' } = {}) 
     server.once('error', fail);
     server.listen(port, host, ok);
   });
+  server.on('error', () => undefined); // a later socket error must not crash the run (audit finding 19)
   const addr = server.address();
   return {
     // `localhost` keeps the origin identical to the repository's own E2E origin (http://localhost:4173).

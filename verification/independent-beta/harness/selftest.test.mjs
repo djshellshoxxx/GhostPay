@@ -580,3 +580,143 @@ test('SI10: a link lost across a restart with no chain change is flagged', () =>
   o.check(1, { op: 'restartSeller' }, { S1: sellerObs('Linked to a verified observation.') }, { S1: sellerObs('No linked observation.'), S2: sellerObs('No linked observation.') }, {});
   assert.ok(o.violations.some((v) => v.inv === 'SI10'));
 });
+
+// ---- Audit fixes (independent review, 2026-11-26): each fixture targets one finding.
+import { serveDist } from './serve.mjs';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join as pjoin } from 'node:path';
+
+function finalPay(w, intent, depth = 100) {
+  const h = '0x' + (intent === 'X' ? 'a7' : 'c7').repeat(32);
+  w.chain.submit(h, { from: '0x' + '77'.repeat(20), to: '0x' + '11'.repeat(20), value: '0x1', data: '0x' });
+  w.chain.mine([h]);
+  w.chain.advance(depth - 1);
+  w.payments[intent].push({ hash: h, kind: 'checkout' });
+  w.lastFinishedScan = { head: w.chain.head, chainLogLen: w.chain.log.length };
+  return h;
+}
+const sellerOracle = (w) => new SellerOracle(w, { X: { units: UNITS_X }, C: { units: '299250000000000000' } });
+const cCard = (state) => ({ text: `Invoice 0x${'cd'.repeat(32)} 299250000000000000 base units of native; valid until 2099-01-01T00:00:00.000Z. ${state}`, digest: '0x' + 'cd'.repeat(32), units: '299250000000000000', validUntil: '2099-01-01T00:00:00.000Z' });
+
+test('audit 3/SI1: a link on non-final evidence is a violation on ANY step while the chain is unchanged since the last scan', () => {
+  const w = sellerWorld();
+  finalPay(w, 'X', 20); // only 20 blocks deep
+  const o = sellerOracle(w);
+  o.check(1, { op: 'confirm', tab: 'S1' }, { S1: sellerObs('Verified on-time transfer — invoice link pending.') }, { S1: sellerObs('Linked to a verified observation.') }, { clicked: 'clicked' });
+  assert.ok(o.violations.some((v) => v.inv === 'SI1'), 'premature link after confirm must be scored');
+});
+
+test('SI2: a link with no seller decision at all is a violation; one after an ineffective attempt is SA10', () => {
+  const w = sellerWorld();
+  w.actions.X = [];
+  finalPay(w, 'X');
+  const o = sellerOracle(w);
+  o.check(1, { op: 'view', tab: 'S1' }, {}, { S1: sellerObs('Linked to a verified observation.') }, {});
+  assert.ok(o.violations.some((v) => v.inv === 'SI2'));
+  const w2 = sellerWorld();
+  w2.actions.X = [];
+  w2.attempted = [{ op: 'confirm', intent: 'X', step: 0 }];
+  finalPay(w2, 'X');
+  const o2 = sellerOracle(w2);
+  o2.check(1, { op: 'view', tab: 'S1' }, {}, { S1: sellerObs('Linked to a verified observation.') }, {});
+  assert.ok(!o2.violations.some((v) => v.inv === 'SI2') && o2.ambiguities.some((a) => a.inv === 'SA10'));
+});
+
+test('SI3/audit 17: a late payment linked on-time (no accept-late) is a violation, judged from the harness expiry', () => {
+  const w = sellerWorld();
+  w.chain = new SyntheticChain({ startTime: 1_900_000_000 });
+  finalPay(w, 'X');
+  w.expiry = { X: { from: 1_800_000_000, to: 1_800_000_100 } }; // expired long before the payment block
+  const o = sellerOracle(w);
+  o.check(1, { op: 'confirm', tab: 'S1' }, {}, { S1: sellerObs('Linked to a verified observation.') }, { clicked: 'clicked' });
+  assert.ok(o.violations.some((v) => v.inv === 'SI3'));
+  assert.ok(o.ambiguities.some((a) => a.inv === 'SA9'), 'card renders an expiry outside the harness window');
+});
+
+test('SI6 and SI7: double credit for one payment, and control state without a control payment, are violations', () => {
+  const w = sellerWorld();
+  finalPay(w, 'X');
+  const o = sellerOracle(w);
+  const obs = { closed: false, ledgerText: '', ledgerLocked: false, cards: [sellerCard('Linked to a verified observation. Linked total is above the expected net amount.'), cCard('Pending transfer evidence.')] };
+  o.check(1, { op: 'view', tab: 'S1' }, {}, { S1: obs }, {});
+  assert.ok(o.violations.some((v) => v.inv === 'SI6'));
+  assert.ok(o.violations.some((v) => v.inv === 'SI7'));
+});
+
+test('audit 8: a finished scan whose ledger shows fewer than both invoice cards is a harness issue', () => {
+  const w = sellerWorld();
+  const o = sellerOracle(w);
+  o.check(1, { op: 'scan', tab: 'S1' }, {}, { S1: { closed: false, ledgerText: '', ledgerLocked: false, cards: [] } }, { outcome: 'finished' });
+  assert.equal(o.harnessIssues.length, 1);
+});
+
+test('audit 2: a journal row claiming inclusion for a reorged hash fails after a fresh render, is A1 otherwise', () => {
+  const w = fakeWorld();
+  const h = '0x' + '6e'.repeat(32);
+  w.hashes.X.add(h);
+  w.chain.submit(h, { from: '0x5555', to: '0x1111' });
+  w.chain.mine([h]);
+  w.chain.reorg(1);
+  w.reorged.add(h);
+  const row = `payment on chain 84532 · 0x5555 · Returned hash: ${h} Included in a canonical block. Waiting for the chain’s configured confirmation depth.`;
+  const o = new Oracle(w);
+  o.checkObservations(1, { op: 'mine' }, { A: obsOf({ journal: [row] }) });
+  assert.ok(o.ambiguities.some((a) => a.inv === 'A1' && a.detail.basis === 'journal-row'));
+  o.checkObservations(2, { op: 'reload', tab: 'A' }, { A: obsOf({ journal: [row] }) });
+  assert.ok(o.violations.some((v) => v.inv === 'I8' && v.detail.basis === 'journal-row'));
+});
+
+test('audit 9: a masked foreign hash on a checkout is cross-intent bleed', () => {
+  const w = fakeWorld();
+  const hx = '0x' + '4a'.repeat(32);
+  w.hashes.X.add(hx);
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { B: obsOf({ mainText: `Transaction hash: ${hx.slice(0, 6)}…${hx.slice(-4)}` }) });
+  assert.ok(o.violations.some((v) => v.inv === 'I5b'));
+});
+
+test('audit 12: a reorg never moves chain time backwards (a late payment re-mined stays late)', () => {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  chain.advance(3);
+  chain.warp(7200);
+  chain.mine([]);
+  const tAfterWarp = parseInt(chain.blockObject(chain.head).timestamp, 16);
+  chain.reorg(2);
+  chain.mine([]);
+  assert.ok(parseInt(chain.blockObject(chain.head).timestamp, 16) > tAfterWarp);
+});
+
+test('audit 13/21: router dry runs revert like the contract; receipts carry the real index; malformed requests are rejected', () => {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  chain.executor = routerExecutor;
+  const rpc = new MockRpc(chain);
+  const expired = rpc.one({ id: 1, method: 'eth_call', params: [{ to: '0x1111111111111111111111111111111111111111', value: '0x' + GROSS.toString(16), data: payData(1_700_000_000) }] });
+  assert.equal(expired.error?.code, 3);
+  const ok = rpc.one({ id: 2, method: 'eth_call', params: [{ to: '0x1111111111111111111111111111111111111111', value: '0x' + GROSS.toString(16), data: payData(1_900_000_000) }] });
+  assert.equal(ok.result, '0x');
+  assert.equal(rpc.one(null).error.code, -32600);
+  assert.equal(rpc.one({ id: 3, method: 'eth_getBlockByNumber', params: ['earliest', false] }).result.number, '0x0');
+  const a = '0x' + 'a1'.repeat(32);
+  const b = '0x' + 'b1'.repeat(32);
+  for (const h of [a, b]) chain.submit(h, { from: '0x' + '77'.repeat(20), to: '0x' + '99'.repeat(20) });
+  chain.mine([a, b]);
+  assert.equal(chain.receiptObject(b).transactionIndex, chain.txObject(b).transactionIndex);
+  assert.equal(chain.receiptObject(b).transactionIndex, '0x1');
+});
+
+test('audit 19: serve answers 404 for a missing asset and never serves the build record', async () => {
+  const dir = mkdtempSync(pjoin(tmpdir(), 'w5-serve-'));
+  writeFileSync(pjoin(dir, 'index.html'), '<!doctype html><title>x</title>');
+  writeFileSync(pjoin(dir, '.w5-build.json'), '{}');
+  const srv = await serveDist(dir, { port: 0 });
+  try {
+    const port = new URL(srv.origin).port;
+    assert.equal((await fetch(`http://127.0.0.1:${port}/assets/missing.js`)).status, 404);
+    assert.equal((await fetch(`http://127.0.0.1:${port}/.w5-build.json`)).status, 404);
+    assert.equal((await fetch(`http://127.0.0.1:${port}/some/route`)).status, 200);
+  } finally {
+    await srv.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

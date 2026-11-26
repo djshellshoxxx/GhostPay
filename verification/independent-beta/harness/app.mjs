@@ -179,7 +179,7 @@ export async function clearRow(page, sel, accept) {
   let dialogText = null;
   const onDialog = (d) => {
     dialogText = d.message();
-    void (accept ? d.accept() : d.dismiss());
+    void (accept ? d.accept() : d.dismiss()).catch(() => undefined);
   };
   page.once('dialog', onDialog);
   const btn = row.first().getByRole('button', { name: T.clearBtn });
@@ -201,24 +201,21 @@ export async function checkRow(page, sel) {
   if (!(await visible(btn, 2_000))) return { checked: false, reason: 'no-check-button' };
   const before = await row.innerText();
   await btn.click();
-  // The result may render as a status line or as an error notice inside the row (harness fix H4): wait until the
-  // button is usable again and the row text changed, then classify everything below the record line.
-  let text = '';
+  // Wait for the check to run (button busy, then usable again) or the row to change; then classify the row as it
+  // is, changed or not (audit finding 1: an unchanged stale row used to be skipped and never judged).
+  let sawBusy = false;
+  let text = before;
   for (let i = 0; i < 40; i += 1) {
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(250);
     const busy = !(await btn.isEnabled().catch(() => true));
-    const now = await row.innerText().catch(() => before);
-    if (!busy && now !== before) {
-      text = now;
-      break;
-    }
+    if (busy) sawBusy = true;
+    text = await row.innerText().catch(() => text);
+    if (!busy && (sawBusy || text !== before) && i >= 3) break;
   }
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
-  const result = lines
-    .slice(1)
-    .filter((l) => ![T.checkBtn, T.clearBtn, 'Link a replacement transaction', '✖ Problem', ':'].includes(l))
-    .join(' ');
-  return { checked: true, text: result, cls: classify(result) };
+  const body = lines.length > 1 ? lines.slice(1) : lines;
+  const result = body.filter((l) => ![T.checkBtn, T.clearBtn, 'Link a replacement transaction', '✖ Problem', ':'].includes(l)).join(' ');
+  return { checked: true, text: result, cls: classify(result), changed: text !== before, sawBusy };
 }
 
 /** Everything a user (or a forensic look at site data) can see in one tab. */

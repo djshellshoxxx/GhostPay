@@ -141,6 +141,21 @@ documented requirement; RS:25 says depth is not independent finality verificatio
 | SI7 control | C's card never shows X's state or evidence. | S31 |
 | SI8 two seller tabs | A confirm in one seller tab is not silently overwritten by a stale action in the other; after a reload both tabs agree. | S39 |
 
+### Milestone 3 additions
+
+| Inv | Statement | From |
+|---|---|---|
+| SI9 two RPCs | While two providers disagree about a reorg, a scan adds no link and writes no invalidation; withholding credit (link → "Unverified observation") is accepted. | RS:35-37, S12 (HO:48) |
+| SI10 restart | Linked, accepted-late and invalidated evidence survives a full seller browser restart when the chain did not change. | S28, ADR:127-130 (S49 proposed) |
+| SI11 reservation | An invoice whose linked payment is quarantined (unverified) is still reserved: no exact proposal names it for another payment. | LATE-LM1, `docs/engineering/SECURITY_FINDINGS.md` (#716) |
+| SI12 import | After "Delete encrypted observations", an imported backup is untrusted history: it credits no invoice and revives no reorg-invalidated observation. | S3, S42–S44 (ADR:130-131,155-165,197-200) |
+
+Rules tightened after the independent harness audit (HANDOFF "Audit"): seller links are judged strictly on every step
+while the chain is unchanged since the last finished scan, so SA6 covers only a real chain change; a decision counts
+only when its effect is visible; lateness uses the harness's own expiry window (the rendered expiry is cross-checked,
+SA9); a finished scan must show both invoice cards; payer journal rows claiming inclusion are judged like the done
+panel; armed RPC faults must be seen to hit the scan; unknown RPC methods and off-origin requests are harness errors.
+
 ## Ambiguities recorded (M2)
 
 - SA1 Depth 100 is configuration, not a documented requirement; scenarios use it as the app's own rule.
@@ -155,6 +170,13 @@ documented requirement; RS:25 says depth is not independent finality verificatio
   completed scan in that tab the same display is judged strictly (SI1/SI4).
 - SA7 A link withdrawn by a reorg should carry a visible invalidation notice (requirements S29); a withdrawn link
   without one is recorded, not scored, because the notice wording is not fixed by an accepted requirement.
+
+- SA8 (finding F2) A manual link of a second payment to an invoice that a quarantined link still reserves (LATE-LM1)
+  is accepted and reaches the two-links/"above" state #716 describes. Manual links are annotations (ADR:247-248) and no
+  accepted requirement forbids it, so it is recorded, not scored.
+- SA9 The invoice card renders an expiry outside the window the harness expects from its own creation time.
+- SA10 A link appeared after a seller decision that had not shown effect when the harness checked (timing), so SI2
+  cannot attribute it.
 
 Harness rules specific to M2 (each was a harness defect first, see HANDOFF H8–H10): decisions are taken in place on
 the live Scan view, because proposals exist only for live scan results (S3); a named-scenario step marked `must`

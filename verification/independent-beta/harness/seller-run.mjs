@@ -9,7 +9,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { join } from 'node:path';
-import { DIST, REPO, distFingerprint, sourceIdentity } from './build.mjs';
+import { DIST, PRODUCTION_PATHS, REPO, distFingerprint, sourceIdentity } from './build.mjs';
 import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
 import { MockRpc, RPC2_URL } from './rpc.mjs';
@@ -36,7 +36,11 @@ function parseArgs(argv) {
     const k = argv[i];
     if (k === '--only') a.only = argv[++i];
     else if (k === '--named') a.named = true;
-    else if (k === '--concurrency') a.concurrency = Math.max(1, Math.min(4, Number(argv[++i])));
+    else if (k === '--concurrency') {
+      const n = Number(argv[++i]);
+      if (!Number.isInteger(n) || n < 1) throw new Error('--concurrency needs a positive integer'); // audit finding 5
+      a.concurrency = Math.min(4, n);
+    }
     else if (k === '--out') a.out = argv[++i];
     else if (k === '--candidate') a.candidate = argv[++i];
     else if (k === '--seeds') {
@@ -120,10 +124,15 @@ async function runScenario(launcher, origin, scenario) {
     world.payerCtx = payerCtx;
     const S1 = adopt(sellerCtx, 'S1', sellerCtx.pages()[0] ?? (await sellerCtx.newPage()));
     await createSellerKeys(S1, origin);
+    world.expiry = {};
     for (const intent of ['X', 'C']) {
-      const r = await createRegisteredInvoice(S1, { amount: INTENTS[intent].amount, hours: intent === 'X' ? scenario.xHours ?? 24 : 24, description: `W5 ${intent}` });
+      const hours = intent === 'X' ? scenario.xHours ?? 24 : 24;
+      const createdAt = Math.floor(Date.now() / 1000);
+      const r = await createRegisteredInvoice(S1, { amount: INTENTS[intent].amount, hours, description: `W5 ${intent}` });
       if (!r.registered) throw new Error(`harness: invoice ${intent} was not registered`);
       world.links[intent] = r.link;
+      // The harness's own expectation of expiry, so lateness is not judged from the app's rendering (finding 17).
+      world.expiry[intent] = { from: createdAt + hours * 3600 - 60, to: Math.floor(Date.now() / 1000) + hours * 3600 + 60 };
     }
     world.sellerCtx = sellerCtx;
     // Full seller browser restart (S49): same profile directory, every tab and in-memory key gone.
@@ -154,10 +163,33 @@ async function runScenario(launcher, origin, scenario) {
       } catch (e) {
         rec.error = String(e?.message ?? e).split('\n')[0];
       }
+      // An expired checkout must not yield a successful payment: either the wallet is never asked, or the router
+      // reverts what was sent (checked against chain truth, not the app's claim).
+      if (step.expectNoEffectivePayment === true) {
+        const h = rec.result?.hash;
+        if (h !== null && h !== undefined && world.chain.truth(h).success === true) {
+          oracle.violation('SI1', i, { reason: 'checkout after expiry produced a successful payment', hash: h, truth: world.chain.truth(h) });
+        }
+      }
+      // A fault the scenario relies on must actually hit the scan (audit finding 11).
+      if (step.expectFault === true && rec.result?.faultFired !== true) throw new Error(`harness: step ${i} fault was armed but never hit the scan`);
       // A named scenario step marked `must` has to take effect, or the scenario proves nothing (vacuity guard).
       if (step.must === true) {
         const r = rec.result ?? {};
-        const ok = rec.error === undefined && r.clicked !== 'no-button' && r.clicked !== 'disabled' && r.outcome !== 'error' && r.outcome !== 'timeout' && r.prepared !== false && r.handoff !== false && r.exported !== false && r.deleted !== false && r.imported !== false && r.linked !== false;
+        // Whitelist per op (audit finding 6: a blacklist let `skipped` and other non-effects pass).
+        const success = {
+          pay: () => r.prepared === true && r.handoff === true,
+          directPay: () => typeof r.hash === 'string',
+          latePay: () => typeof r.hash === 'string',
+          scan: () => r.outcome === 'finished',
+          confirm: () => r.effective === true,
+          acceptLate: () => r.effective === true,
+          manualLink: () => r.linked === true,
+          exportBackup: () => r.exported === true,
+          deleteObservations: () => r.deleted === true,
+          importBackup: () => r.imported === true,
+        }[step.op] ?? (() => r.skipped === undefined);
+        const ok = rec.error === undefined && success();
         if (!ok) throw new Error(`harness: step ${i} (${step.op}) did not take effect: ${JSON.stringify(rec.result ?? rec.error).slice(0, 200)}`);
       }
       const obs = await snapshot(world);
@@ -166,11 +198,22 @@ async function runScenario(launcher, origin, scenario) {
       trace.push(rec);
     }
     if (Object.values(world.payments).flat().length === 0) harnessError = 'harness: vacuous run (no payment reached the chain)';
+    if (harnessError === null && oracle.harnessIssues.length > 0) harnessError = `harness: ${oracle.harnessIssues[0]} (${oracle.harnessIssues.length} issue(s), audit finding 8)`;
+    const unknown = new Set([...rpc.unknownMethods, ...(rpc2?.unknownMethods ?? [])]);
+    if (harnessError === null && unknown.size > 0) harnessError = `harness: mock RPC cannot answer ${[...unknown].join(', ')} (audit finding 13)`;
+    const offOrigin = [...rpc.blockedOrigins, ...(rpc2?.blockedOrigins ?? [])];
+    if (harnessError === null && offOrigin.length > 0) harnessError = `harness: off-origin request(s) to ${[...new Set(offOrigin)].join(', ')} (audit finding 4)`;
   } catch (e) {
     harnessError = String(e?.stack ?? e);
   } finally {
     for (const c of contexts) await c.close().catch(() => undefined);
-    for (const d of dirs) rmSync(d, { recursive: true, force: true });
+    for (const d of dirs) {
+      try {
+        rmSync(d, { recursive: true, force: true, maxRetries: 3 });
+      } catch {
+        // A leftover temp dir must not lose the run record (audit finding 20).
+      }
+    }
   }
   const found = new Set(oracle.violations.map((v) => v.inv));
   const expect = scenario.expectViolations ?? [];
@@ -187,6 +230,7 @@ async function runScenario(launcher, origin, scenario) {
     harnessError,
     payments: world.payments,
     actions: world.actions,
+    attemptedDecisions: world.attempted ?? [],
     chainLog: chain.log,
     rpcUnknownMethods: [...rpc.unknownMethods],
     blockedOrigins: [...new Set([...rpc.blockedOrigins, ...(rpc2?.blockedOrigins ?? [])])],
@@ -298,20 +342,27 @@ async function execStep(world, oracle, step, i) {
     }
     case 'latePay': {
       // Compound: checkout captured (declined in wallet), chain time passes expiry, payer's tooling pays directly.
-      await execStep(world, oracle, { op: 'pay', intent: step.intent, capture: true }, i);
+      const captured = await execStep(world, oracle, { op: 'pay', intent: step.intent, capture: true }, i);
+      if (captured.prepared !== true || captured.handoff !== true) return { ...captured, skipped: 'checkout not captured' };
       chain.warp(step.warp ?? 2 * 3600);
       return execStep(world, oracle, { op: 'directPay', intent: step.intent }, i);
     }
     case 'scan': {
       const page = world.tabs[step.tab];
       await sellerReady(world, step.tab);
+      const refusedBefore = world.rpc.calls.filter((c) => c.method === '(refused: rpc down)').length;
       const r = await runScan(page, {
         fromStart: step.fromStart === true,
-        onStarted: step.failAfterCalls === undefined ? undefined : async () => { world.rpc.failAfter = step.failAfterCalls; },
+        beforeStart: step.failAfterCalls === undefined ? undefined : async () => { world.rpc.failAfter = step.failAfterCalls; },
       });
       world.rpc.failAfter = null;
-      if (step.failAfterCalls !== undefined) world.rpc.mode = 'up';
-      world.scans[step.tab] = { head: chain.head, outcome: r.outcome, at: i };
+      if (step.failAfterCalls !== undefined) {
+        world.rpc.mode = 'up';
+        // Record whether the fault actually hit the scan (audit finding 11).
+        r.faultFired = world.rpc.calls.filter((c) => c.method === '(refused: rpc down)').length > refusedBefore;
+      }
+      world.scans[step.tab] = { head: chain.head, outcome: r.outcome, at: i, chainLogLen: chain.log.length };
+      if (r.outcome === 'finished') world.lastFinishedScan = { head: chain.head, chainLogLen: chain.log.length, tab: step.tab, at: i };
       await unlockLedger(page);
       return r;
     }
@@ -330,8 +381,13 @@ async function execStep(world, oracle, step, i) {
       const late = seen.cards?.filter((c) => /Verified late transfer — invoice decision pending/.test(c.text)).map((c) => Object.entries(INTENTS).find(([, v]) => v.units === c.units)?.[0]) ?? [];
       const intent = step.op === 'confirm' ? named ?? step.intent ?? 'X' : late[0] ?? step.intent ?? 'X';
       const r = await clickLedgerAction(page, name);
-      if (r === 'clicked') world.actions[intent].push({ op: step.op, tab: step.tab, step: i, proposalFor });
-      return { clicked: r, proposalFor, intent };
+      // Recorded as a decision only if it took effect: the invoice card now shows the link (audit finding 7).
+      const after = await observeSeller(page);
+      const cardAfter = after.cards?.find((c) => c.units === INTENTS[intent].units);
+      const effective = r === 'clicked' && cardAfter !== undefined && (step.op === 'confirm' ? /Linked to a verified observation\./ : /Verified late payment accepted by seller\./).test(cardAfter.text);
+      if (effective) world.actions[intent].push({ op: step.op, tab: step.tab, step: i, proposalFor });
+      else if (r === 'clicked') (world.attempted ??= []).push({ op: step.op, intent, tab: step.tab, step: i });
+      return { clicked: r, effective, proposalFor, intent, alerts: after.alerts };
     }
     case 'reload': {
       const page = world.tabs[step.tab];
@@ -366,7 +422,10 @@ async function execStep(world, oracle, step, i) {
       const card = seen.cards?.find((c) => c.units === INTENTS[step.intent].units);
       if (card === undefined || card.digest === null) return { linked: false, reason: 'no invoice card' };
       const r = await manualLink(page, card.digest);
+      const after = (await observeSeller(page)).cards?.find((c) => c.units === INTENTS[step.intent].units);
+      r.linked = r.linked === true && after !== undefined && /Linked to a verified observation\./.test(after.text);
       if (r.linked) world.actions[step.intent].push({ op: 'manualLink', tab: step.tab, step: i });
+      else if (r.clicked === 'clicked') (world.attempted ??= []).push({ op: 'manualLink', intent: step.intent, tab: step.tab, step: i });
       return r;
     }
     case 'compareTabs': {
@@ -403,18 +462,26 @@ async function main() {
   const dist = distFingerprint();
   if (dist === null || dist.sha256 !== build.dist.sha256) throw new Error('harness: dist changed since build.mjs recorded it; rebuild');
   const candidate = execFileSync('git', ['-C', REPO, 'rev-parse', args.candidate ?? 'origin/main'], { encoding: 'utf8' }).trim();
-  const diff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', candidate, 'HEAD', '--', 'apps', 'packages', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim();
+  const diff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', candidate, 'HEAD', '--', ...PRODUCTION_PATHS], { encoding: 'utf8' }).trim();
   if (diff !== '') throw new Error(`harness: production paths differ from candidate ${candidate}:\n${diff}`);
+  // The bundle must come from the same production source as the candidate (audit finding 10).
+  const bundleDiff = execFileSync('git', ['-C', REPO, 'diff', '--name-only', build.head, 'HEAD', '--', ...PRODUCTION_PATHS], { encoding: 'utf8' }).trim();
+  if (bundleDiff !== '') throw new Error(`harness: bundle was built from ${build.head}, whose production paths differ from HEAD:\n${bundleDiff}`);
   const { chromium } = require('playwright-core');
-  const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1'];
+  const launchArgs = ['--no-sandbox', '--host-resolver-rules=MAP localhost 127.0.0.1, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']; // audit finding 4
   const probe = await chromium.launch({ executablePath: CHROMIUM, headless: true, args: launchArgs });
   const chromiumVersion = probe.version();
   await probe.close();
   const launcher = { launch: (dir) => chromium.launchPersistentContext(dir, { executablePath: CHROMIUM, headless: true, args: launchArgs, serviceWorkers: 'block', viewport: { width: 1280, height: 1000 } }) };
-  const server = await serveDist(DIST);
+  const server = await serveDist(DIST, { port: Number(process.env.W5_PORT ?? 4173) }); // W5_PORT: run two harnesses side by side
   let list = [];
   if (args.named) list.push(...SELLER_CONTROLS, ...SELLER_NAMED);
-  if (args.only !== null) list = [...SELLER_CONTROLS, ...SELLER_NAMED].filter((s) => args.only.split(',').includes(s.name));
+  if (args.only !== null) {
+    const wanted = args.only.split(',');
+    list = [...SELLER_CONTROLS, ...SELLER_NAMED].filter((s) => wanted.includes(s.name));
+    const missing = wanted.filter((w) => !list.some((s) => s.name === w));
+    if (missing.length > 0) throw new Error(`unknown scenario(s): ${missing.join(', ')}`); // audit finding 5
+  }
   for (const s of args.seeds) list.push(sellerGenerated(s));
   const runId = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
   const out = args.out ?? join(REPO, 'verification/independent-beta/results', `m2-${runId}`);
@@ -456,7 +523,8 @@ async function main() {
   };
   writeFileSync(join(out, 'run.json'), `${JSON.stringify(record, null, 2)}\n`);
   process.stdout.write(`\nrecord: ${out}/run.json\n${JSON.stringify(record.totals)}\n`);
-  process.exitCode = record.totals.harnessErrors > 0 ? 2 : record.totals.withViolations > 0 ? 1 : 0;
+  const invalid = results.length === 0 || results.some((r) => r === undefined) || record.totals.blockedOffOrigin.length > 0; // audit findings 4, 5
+  process.exitCode = invalid || record.totals.harnessErrors > 0 ? 2 : record.totals.withViolations > 0 ? 1 : 0;
 }
 
 main().catch((e) => {

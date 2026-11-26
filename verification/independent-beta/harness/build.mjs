@@ -12,6 +12,9 @@ export const REPO = resolve(HERE, '../../..');
 export const WEB = join(REPO, 'apps/web');
 export const DIST = join(WEB, 'dist');
 
+/** Paths whose content defines the candidate; everything under verification/ is the harness, not the candidate. */
+export const PRODUCTION_PATHS = ['apps', 'packages', 'package.json', 'package-lock.json', 'tsconfig.base.json'];
+
 function git(...args) {
   return execFileSync('git', ['-C', REPO, ...args], { encoding: 'utf8' }).trim();
 }
@@ -20,7 +23,7 @@ function git(...args) {
 export function sourceIdentity() {
   const head = git('rev-parse', 'HEAD');
   // Only verification/independent-beta and the additive claim may differ from the pinned base.
-  const dirty = git('status', '--porcelain', '--', 'apps', 'packages', 'package.json', 'package-lock.json', 'tsconfig.base.json');
+  const dirty = git('status', '--porcelain', '--', ...PRODUCTION_PATHS);
   return { head, productionTreeClean: dirty === '', dirty: dirty === '' ? [] : dirty.split('\n') };
 }
 
@@ -57,15 +60,26 @@ async function main() {
   if (!id.productionTreeClean) {
     throw new Error(`refusing to build: production paths differ from HEAD:\n${id.dirty.join('\n')}`);
   }
+  if (args.includes('--skip-build')) {
+    // Re-fingerprint only a bundle this script built from the same production source and profile (finding 10).
+    const prev = existsSync(join(DIST, '.w5-build.json')) ? JSON.parse(readFileSync(join(DIST, '.w5-build.json'), 'utf8')) : null;
+    if (prev === null || prev.profile !== profile) throw new Error('refusing --skip-build: no matching build record for this profile');
+    const changed = git('diff', '--name-only', prev.head, 'HEAD', '--', ...PRODUCTION_PATHS);
+    if (changed !== '') throw new Error(`refusing --skip-build: production paths changed since ${prev.head}:\n${changed}`);
+  }
   if (!args.includes('--skip-build')) {
     // Reuse the repository's own fixture helper (read-only import) so the bundle trusts only the ephemeral test key.
     const { prepareManifestFixture } = await import(join(WEB, 'e2e/prepare-manifest.mjs'));
     const fixture = prepareManifestFixture();
+    // Whitelisted environment (audit finding 10): an inherited GP_COMMIT, GHOSTPAY_PAGES_DEV or report path must not
+    // change what is built.
+    const keep = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'NODE_OPTIONS', 'npm_config_cache', 'HTTPS_PROXY', 'HTTP_PROXY', 'NO_PROXY', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE'];
+    const baseEnv = Object.fromEntries(keep.filter((k) => process.env[k] !== undefined).map((k) => [k, process.env[k]]));
     const r = spawnSync('npm', ['run', 'build'], {
       cwd: WEB,
       stdio: 'inherit',
       env: {
-        ...process.env,
+        ...baseEnv,
         GHOSTPAY_RELEASE_PUBKEYS: fixture.publicKey,
         GHOSTPAY_DEPLOYMENTS_DIR: fixture.directory,
         GHOSTPAY_LOCAL_BUILD_PROFILE: profile,

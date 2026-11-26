@@ -72,7 +72,7 @@ export const SELLER_NAMED = [
     steps: [
       { op: 'pay', intent: 'X' },
       { op: 'advance', n: FINAL },
-      { op: 'scan', tab: 'S1', failAfterCalls: 6 }, // expected to fail
+      { op: 'scan', tab: 'S1', failAfterCalls: 6, expectFault: true }, // expected to fail
       { op: 'confirm', tab: 'S1', intent: 'X' },
       { op: 'scan', tab: 'S1' },
       { op: 'confirm', tab: 'S1', intent: 'X', must: true },
@@ -141,15 +141,16 @@ export const SELLER_NAMED = [
     ],
   },
   {
-    name: 'M10-checkout-mined-after-expiry-reverts',
-    why: 'CONTRACTS_SPEC §1 / S30: the checkout deadline precedes expiry, so a checkout mined after expiry reverts; nothing may appear as paid',
+    name: 'M10-checkout-after-expiry-refused-or-reverts',
+    why: 'CONTRACTS_SPEC §1 / S30: after expiry the checkout must not produce a payment: refused before the wallet (dry run reverts) or reverted on chain; nothing may appear as paid; the unrelated control still pays',
     xHours: 1,
     steps: [
       { op: 'warp', seconds: 2 * 3600 },
-      { op: 'pay', intent: 'X', must: true },
+      { op: 'pay', intent: 'X', expectNoEffectivePayment: true },
+      { op: 'pay', intent: 'C', must: true },
       { op: 'advance', n: FINAL },
       { op: 'scan', tab: 'S1', fromStart: true, must: true },
-      { op: 'confirm', tab: 'S1', intent: 'X' },
+      { op: 'confirm', tab: 'S1', intent: 'C', must: true },
       { op: 'compareTabs' },
     ],
   },
@@ -161,7 +162,7 @@ export const SELLER_NAMED = [
       { op: 'advance', n: FINAL },
       { op: 'scan', tab: 'S1', must: true },
       { op: 'confirm', tab: 'S1', intent: 'X', must: true },
-      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6 }, // expected to fail and quarantine the link
+      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6, expectFault: true }, // expected to fail and quarantine the link
       { op: 'pay', intent: 'X', payer: 'P2', must: true },
       { op: 'advance', n: FINAL },
       { op: 'scan', tab: 'S1', must: true },
@@ -221,7 +222,7 @@ export const SELLER_NAMED = [
       { op: 'advance', n: FINAL },
       { op: 'scan', tab: 'S1', must: true },
       { op: 'confirm', tab: 'S1', intent: 'X', must: true },
-      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6 },
+      { op: 'scan', tab: 'S1', fromStart: true, failAfterCalls: 6, expectFault: true },
       { op: 'pay', intent: 'X', payer: 'P2', must: true },
       { op: 'advance', n: FINAL },
       { op: 'scan', tab: 'S1', must: true },
