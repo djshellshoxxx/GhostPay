@@ -4143,6 +4143,37 @@ Browser execution, full-suite/coverage qualification, independent implementation
 review and hosted checks remain with the parent/coordinator. No remote changes or
 additional donor merges were performed by this delegated worker.
 
+
+## Shared policy journal lock completion — 2026-11-25 Pacific (8812)
+
+Worker: root `chatgpt-8812-branch-completion`. Branch `finish/policy-journal-lock-20261125-8812`; base privacy checkpoint `e8857e0292dd06bed85a17ba49d9f6701979e83c`, pending its separate final source review. Current main is `84b80260b9c16b928e440dd81750d9bfb6cdb2b4`; canonical idle prerequisite is `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5` with shared utility #690 ancestry.
+
+Owner seam expressly agreed with `/root/artifact_review`: this task owns only `WalletAttemptOptions.beforeAttemptStart` and its synchronous invocation immediately before `beginAttempt` inside the authoritative journal transaction in `apps/web/src/lib/wallet.ts`. Retained-hash completion, lifecycle and disclosure changes remain with the privacy worker. Also own `apps/web/src/features/policy/withdrawalJournal.ts` and its existing test file, an additive handoff, original donor handoff adoption and directly affected JRNL-L1 status documentation. No other wallet, journal, payment or private-presentation source changes.
+
+Donor: #528 `ff274a08de2a84bcbdf0e373fb607666543554a2`. Its unique current-history delta is limited to these three source/test files and two documentation files. The source snapshot is older than current disclosure/receipt/late-hash controls: retain those newer controls and invoke the hook from captured `attemptOptions`, never substitute the historical wallet file. Prepare and recheck outside the global journal lock, use the existing bounded browser lock manager, and run the synchronous duplicate-policy guard inside the durable begin transaction.
+
+Acceptance: preserve exact current disclosure, transaction snapshot, asynchronous authority, late-hash durability, post-send ownership and receipt-correlation behavior; refuse duplicates and stale sessions before provider invocation; prove another independent send progresses while a policy prompt remains open and bounded lock refusal makes no provider call. Preserve original refs, assertions and all other claims. Use bounded synthetic ordinary regressions, affected typecheck/lint/build and actual full/lean browser qualification; no mutation/fuzz campaign, new dependency, contract change, activation, release or real funds. Final approved privacy and canonical idle/utility inputs must be adopted normally before publication. Independent review, fresh exact-composition hosted CI and cooperative integration lock remain mandatory.
+
+## PR #500 policy wallet lock release — 2026-11-23
+
+- Worker: `/root` (coordinator and implementation owner); isolated from the PR branch.
+- Branch: `codex/ghostpay-policy-lock-release-20261123`; base: PR #500 exact head `d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea`.
+- Owned paths: `apps/web/src/lib/wallet.ts`, `apps/web/src/features/policy/withdrawalJournal.ts`, its focused test, this claim, and `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+- Finding: `sendPolicyAction` awaited `prepare()` and then the full wallet send under the global attempt journal lock. The full wallet send also performs asynchronous account/chain rechecks before provider invocation, so holding the non-reentrant lock through it blocked unrelated journal work during wallet prompts.
+- Planned correction: perform the existing fast duplicate check before prepare; prepare and wallet rechecks outside the global lock; repeat the policy duplicate guard synchronously inside `sendViaWallet`'s journal-locked start callback immediately before durable attempt creation/provider invocation. Keep the attempt write and provider invocation atomic under the lock; release it while the wallet request is pending; hash persistence still reacquires the journal lock.
+- Acceptance: focused policy and durable wallet journal tests passed (20/20); web typecheck, production build/postbuild scan, scoped ESLint, and diff check passed. The regression proves a distinct wallet send completes through the same lock manager while the policy prompt remains unresolved; existing same-action coverage still proves one provider invocation. Independent review found no blocker and recommends real two-page Web Locks integration coverage. Hosted qualification remains outstanding. No deploy, main merge, or mutation of PR #500. See `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+
+## 2026-11-26 UTC — chatgpt-8812 policy browser continuation (#541)
+
+- Owner: chatgpt-8812-branch-completion. Additive continuation of the completed #541 handoff alongside #528; original refs preserved.
+- Scope: apps/web/e2e/flows.spec.ts, apps/web/e2e/policy-action.fixture.ts, and the policy completion handoff. Preserve every current invoice/disclosure/stale-mirror case and helper; retain the two-tab policy regression using the current production journal.
+- Gates: independent current-composition review, bounded ordinary local checks and fresh hosted full/lean browser qualification before integration. No production fixture exposure, dependency or workflow changes.
+
+## Policy-prompt browser verification
+
+- Worker: Codex, branch `verify/policy-prompt-two-tabs-20261124`, stacked on #528 at `ff274a08de2a84bcbdf0e373fb607666543554a2`. Current #500 is `ad67862f63590fe38410d21b88ebf0e05329da47`. #528 branched at `a23a9f994709e021c479adb0bcc10afcd79fea4b`.
+- Owns the new case in `apps/web/e2e/flows.spec.ts` and its test-only policy fixture. Reuse the injected wallet, invoice checkout and two same-origin pages. While the first policy prompt is pending, the other page must send an unrelated invoice and refuse a duplicate of the policy action. The existing owners retain the journal and integration branches.
+
 ## Coordinator idle invoice-expiry browser qualification — 2026-11-26
 
 - Worker: `/root/branch_triage`; branch: `fix/idle-expiry-fixture-20261126`.
@@ -4294,3 +4325,12 @@ Normal merge `f451c6206f2e0434ec8386b6ca1602a3c82ed969`, tree
 incoming lines are preserved, and both incoming non-log blobs are exact. Approved
 privacy runtime remains unchanged from 28f; only the reviewed four-line Pages fixture
 and its evidence are added. Fresh combined hosted gates remain the coordinator's work.
+
+## Policy journal completion qualification — 2026-11-26 UTC
+
+- Worker: chatgpt-8812-branch-completion, branch `finish/policy-journal-lock-20261125-8812`.
+- Independently approved runtime/default-manager repair: `3c9835afe838a710101ce66eb23a7e492530d328`. Final source composition `f79117395fe04098d1aebd09a36fdacefb955212`, tree `2c3956b95d4bae5fbe0726a2803a7c359737910b`, normally adopts canonical privacy `f8145c1c` and corrected idle `0ae8a9d1`.
+- #528 and #541 whole legitimate donor ancestry retained; current disclosure, frozen arguments, authoritative transaction journal and retained-hash behavior preserved. All current browser suite lines retained.
+- Initial broad check: 314 passes, 14 fixture failures; reviewed privacy compatibility repair994be97 adopted. Final selected policy/journal follow-up: 26 passes, 128 unrelated cases unselected. Default-manager regression failed before correction and passed afterward.
+- Final full web typecheck, changed-file typed lint, full/lean production builds and 20/18-file postbuild scans passed. Unchanged reachability gate4/4; two browser cases collected only. Secret and whitespace checks passed.
+- Source and composition independently approved. Final evidence handoff: `docs/handoffs/POLICY_JOURNAL_COMPLETION_20261125_8812.md`; narrow final evidence review and fresh hosted full/lean/Pages qualification remain required before cooperative-lock integration. No release, deployment or live transaction.
