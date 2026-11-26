@@ -1,3 +1,16 @@
+# Security remediation PR #220 — refresh onto main `e7e98109` (2026-11-26 UTC)
+
+Worker: Claude session 01KtKj8hxPXds2YXGcbiFzEw; branch `security/mythril-full-remediation-20261118` (base `5467c158`, merged
+with main `e7e98109`). Owned paths: agent path policy and runner pins in `.github/workflows/*` and
+`.github/actions/setup-forge/action.yml`, `scripts/tests/ghostpay-{automation-hardening,parallel-review-workflow}.test.mjs`,
+`packages/confidential-contracts` (A-3 no-copy forward + ReturnBombStealth test), `packages/core-crypto/src/viewing-key-boundary.test.ts`,
+the `confirm()` doc comment in `packages/ux-flow/src/reconcile.ts` (no code change), `packages/contracts/DEVIATIONS.md` P3 note,
+`docs/audits/security-remediation-20261118.md` and `docs/audits/data/mythril-local-20261118/`. `packages/contracts/src` untouched.
+Not claimed: `classifyAmount` tolerance validation (reported on #220 by the owner account), D-1 payer binding, #213/#217/#212 scopes.
+Acceptance: regression tests fail before / pass after each fix; full hosted CI green on the exact head except the base-wide Mythril gate.
+
+---
+
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
 Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
