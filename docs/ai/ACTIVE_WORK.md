@@ -213,6 +213,12 @@ exact SHAs. The handoff is left ready for the owner's integration.
 - Excluded: apps/web, contracts, workflows, root manifests/lockfile.
 - Acceptance: Solana/TRON/CLI workspace tests, typecheck and lint pass with coverage thresholds held; web and library vectors agree; TRON build stays fail-closed (`MEMO_NOT_BOUND`); no mainnet enablement. Testnet/proof-of-concept only.
 
+# FC-05a — Bitcoin spent-output detection and private-scan consent (2026-11-25 UTC)
+
+- Worker: fc03 session (feature-completion campaign), task FC-05a. Branch: `claude/fc05a-btc-spentness-20261125`. Base: `60824005b89611aea2b16d3355378eebf072eedb` (origin/main). Donor: PR #244 head `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f` (contains #219 `9617e857`), merged `--no-ff`. PR #254 is NOT merged (FC-05b).
+- Owned paths: `apps/web/src/features/btc/**`, `packages/btc-silent-payments/src/scan/**`, `apps/web/e2e/btc-spent-consent.spec.ts`, `apps/web/e2e/btc-worker.spec.ts`, the donor's locale/securityKeys hunks, this claim, `docs/consolidation/feature-completion-20261125/FC-05a-btc-spentness.md`.
+- Acceptance: unknown never becomes spent or sweepable without complete canonical header-covered coverage; consent revocation stops network use; chain change invalidates evidence; non-BTC paths equal current main unless the feature needs them; `spend.preview.network.test.ts` still present and passing. Full profile only, testnet, proof of concept.
+
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
 Worker: Claude Code session `ghostpay-backup-60`; branch `claude/backup-recovery`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
@@ -1570,6 +1576,27 @@ Out of scope: money movement, backend, contracts, relayer, production deployment
 Status: regression committed first at `2b7cedbd`, repaired at `dbe6e975`, and source-blob-identity Node verification passed (two RED-on-base/GREEN-on-fix scenarios, seven existing controls); isolated source TypeScript check passed. Repository Vitest/lint/build, exact-head hosted CI and independent verification remain pending. See `docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md` (handoff commit `3503075a`).
 
 ---
+
+# Bitcoin spent-output/private-scan completion — 2026-11-18
+
+Worker: ChatGPT coordinator and three independent engineering/review lanes.
+Branch: `chatgpt/btc-spent-private-scan-20261118`.
+Base: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.
+Integrated main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` after independent compatibility
+review; only this registry overlapped, and both ownership records are preserved.
+User explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only
+comparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.
+
+| Lane | Owned paths | Acceptance |
+| --- | --- | --- |
+| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |
+| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |
+| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |
+| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |
+
+No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
+contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
