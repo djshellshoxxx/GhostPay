@@ -9,6 +9,7 @@ import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
 import { watchDestinationWallet } from '../lib/destinationWalletScope';
 import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
+import { browserOnline, useBrowserOnline } from '../lib/browserOnline';
 import { PaymentRequestFileInput } from '../components/PaymentRequestFileInput';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
@@ -145,6 +146,11 @@ function refusedAfterEarlierRequest(error: unknown): MessageDescriptor {
   return { key: 'transaction.walletUnknown', values: { diagnostic: { key: detail } } };
 }
 
+/** The checkout's own offline refusal, thrown before a wallet is asked for anything. */
+function isOfflineRefusal(error: unknown): boolean {
+  return error instanceof UserFacingError && error.translation?.key === 'pay.offlineCheck';
+}
+
 function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
 }
@@ -160,6 +166,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  // Checkout reads the chain through the configured RPC. Without a connection nothing is verified or sent (#591).
+  const online = useBrowserOnline();
   // Every wallet request from checkout (connect, network switch, permit, send) is shown and approved first.
   const walletDisclosure = useWalletDisclosure();
   const latestT = useRef(t); latestT.current = t;
@@ -502,14 +510,23 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
+  // A newer check or a connection loss supersedes an in-flight chain verification.
+  const reviewRequest = useRef(0);
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
+    const request = ++reviewRequest.current;
     const { parsed: p, manifest: m } = latest.current;
     if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
+    // Fail closed while offline: the invoice stays readable, but no payment context exists without chain evidence.
+    if (!browserOnline()) {
+      if (!latest.current.keepContext) setCtx(undefined);
+      setCtxError({ key: 'pay.offlineCheck' });
+      return undefined;
+    }
     const revision = flowRevision.current;
-    const current = (): boolean => mounted.current && flowRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const current = (): boolean => mounted.current && reviewRequest.current === request && browserOnline() && flowRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -541,6 +558,40 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       return undefined;
     }
   }, [app, services]);
+  // Counts connection losses: wallet work that has not reached the wallet never continues across one.
+  const connectionLosses = useRef(0);
+  const captureConnection = (): { readonly lost: () => boolean; readonly assert: () => void } => {
+    const losses = connectionLosses.current;
+    const lost = (): boolean => !browserOnline() || connectionLosses.current !== losses;
+    return { lost, assert: () => { if (lost()) throw new UserFacingError({ key: 'pay.offlineCheck' }); } };
+  };
+  /** Back to the review, so only an explicit chain check restarts a payment nothing was asked of the wallet for. */
+  const returnToReview = (): void => {
+    setBuilt(undefined);
+    setBuiltFor(undefined);
+    setBuiltForContext(undefined);
+    setCtx(undefined);
+    setCtxError({ key: 'pay.offlineCheck' });
+    setPhase('review');
+  };
+  // Losing the connection cancels an open review, a pending delay and a prepared payment that no wallet has seen.
+  // Reconnecting never re-verifies or resumes by itself: the payer retries the chain check explicitly.
+  useEffect(() => {
+    const disconnect = (): void => {
+      connectionLosses.current++;
+      reviewRequest.current++;
+      if (latest.current.keepContext) return;
+      scheduler.current?.cancel();
+      setCtxError({ key: 'pay.offlineCheck' });
+      setCtx(undefined);
+      setBuilt(undefined);
+      setBuiltFor(undefined);
+      setBuiltForContext(undefined);
+      if (latest.current.parsed !== undefined) setPhase('review');
+    };
+    window.addEventListener('offline', disconnect);
+    return () => { window.removeEventListener('offline', disconnect); };
+  }, []);
   const refreshRef = useRef(refreshContext);
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
@@ -828,14 +879,25 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setError(undefined);
     setShowWalletChangeNotice(false);
     setStatus({ key: 'pay.status.walletWaiting' });
+    const connection = captureConnection();
     // A changed invoice, flow or session ends an open review and the connection; the handlers below then stay silent.
-    const connectionCurrent = (): void => {
+    // A connection loss also ends it, before the wallet is asked, and says so.
+    const stillOurs = (): void => {
       privacyScope.assertCurrent();
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
     };
+    const connectionCurrent = (): void => {
+      stillOurs();
+      connection.assert();
+    };
     connectWallet(w, chainId, connectionCurrent, privacyScope.signal, { disclosure: walletDisclosure }).then(
       (s) => {
-        try { connectionCurrent(); } catch { return; }
+        try { stillOurs(); } catch { return; }
+        if (connection.lost()) {
+          setStatus('');
+          setError({ key: 'pay.offlineCheck' });
+          return;
+        }
         // A hard reload does not run React cleanup; remove a connected private invoice's URL capability now.
         if ((parsed?.encrypted === true || parsed?.passphraseProtected === true) && window.location.hash === fragment) {
           clearFragment(window.location, window.history);
@@ -845,7 +907,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
-        try { connectionCurrent(); } catch { return; }
+        try { stillOurs(); } catch { return; }
         setStatus('');
         setError(captureUserMessage(e));
       },
@@ -861,7 +923,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
     const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const connection = captureConnection();
     const guard = (): void => {
+      connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
@@ -923,6 +987,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
+        // Nothing was sent by preparing: after a connection loss the chain is checked again before another try.
+        if (connection.lost() && !handedOff) { returnToReview(); return; }
         if (e instanceof PermitRejectedError) setPermitDeclined(true);
         if (!(e instanceof Error && e.message === 'buffer')) setError(captureUserMessage(e));
         setPhase('ready');
@@ -938,7 +1004,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
     const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const connection = captureConnection();
     const guard = (): void => {
+      connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
@@ -1007,6 +1075,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         }
         let earlierRequest = paymentWalletRequested;
         try { earlierRequest ||= paymentAttemptRecorded(invoice); } catch { /* The original storage error is shown below. */ }
+        // Refused before this payer's wallet was asked for anything: the chain is checked again before another try.
+        if (isOfflineRefusal(e) && !earlierRequest && actualAllowance === undefined && approvalBroadcastHash === undefined) {
+          returnToReview();
+          return;
+        }
         if (actualAllowance !== undefined) {
           const outcome = approvedPaymentOutcome(e, earlierRequest, approvalBroadcastHash as Hex | undefined);
           setError(outcome.message);
@@ -1030,13 +1103,16 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const invoice = parsed.invoice;
     const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
+    const connection = captureConnection();
     setError(undefined);
     setPhase('busy');
     void (async () => {
       try {
         const rt = await runtime();
         if (!isCurrent()) return;
+        // Runs before the wallet is asked, so a connection loss during the review refuses the revocation.
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
+          connection.assert();
           sessionGuard();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
         });
@@ -1175,7 +1251,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </ul>
         </Notice>
       )}
-      {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
+      {ctxError !== undefined && (
+        <Notice kind="error">
+          {displayMessage(ctxError, t)}{' '}
+          {online && phase === 'review' && review.blockers.length === 0 &&
+            <button type="button" className="btn" onClick={() => { void refreshContext(); }}>{t('pay.retryCheck')}</button>}
+        </Notice>
+      )}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
           {review.warningMessages.map((w) => <p key={w.key}>{displayMessage(w, t)}</p>)}
@@ -1381,7 +1463,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               <ul className="plain-list">
                 {wallets?.map((w) => (
                   <li key={w.id}>
-                    <button type="button" className="btn" onClick={() => { onConnect(w); }}>
+                    <button type="button" className="btn" disabled={!online} onClick={() => { onConnect(w); }}>
                       {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} {t('pay.connect', { name: w.name })}
                       {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
@@ -1398,7 +1480,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </p>
           )}
           {wallet !== undefined && built === undefined && (
-            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
+            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={!online || phase === 'busy' || ctx === undefined}>
               {t('pay.prepare')}
             </button>
           )}
@@ -1406,7 +1488,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={!online || phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <TransactionStatusLine status={status} />}
@@ -1461,7 +1543,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       <div className="actions">
         {phase === 'review' && (
-          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
+          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={!online || review.blockers.length > 0 || ctx === undefined}>
             {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}

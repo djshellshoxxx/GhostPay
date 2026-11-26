@@ -1,3 +1,29 @@
+# Consolidation stack 2: #696, #717 and audit fixes F2, F3, F7 (2026-11-26 UTC)
+
+Worker: newghostpay-4e (coordinator); existing branch `claude/consolidation-stack-20261126`, base `c7c6349c` (#718).
+Stacks reviewed heads #696 `1b097132` and #717 `367a3b30` plus the independently reviewed source-audit patches F2, F3 and
+F7. Hand resolutions are limited to `apps/web/src/AppShell.tsx` (masking wrapper kept, offline notice added),
+`apps/web/src/i18n/securityKeys.ts` (both key groups kept) and this registry. No new branch, dependency, contract,
+deployment or gate change. Acceptance: full hosted CI and independent re-review at the exact head.
+
+# Offline-aware checkout and opt-in encrypted invoice drafts, successor of #604/#591 (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/offline-drafts-successor-20261126` from main `194e225c`. Donors (left open,
+untouched): #604 `finish/offline-completion-20261124` `2f2c282e`, #591 `codex/offline-interrupted-invoice` `49862e2d`.
+Their receipt-binding half is already on main via #635 and is not ported. Owned paths: `apps/web/src/lib/browserOnline.ts`,
+`apps/web/src/lib/invoiceDraft{,.test}.ts`, `apps/web/src/lib/useInvoiceDraft{,.test}.ts(x)`, the offline handling in
+`apps/web/src/views/Pay.tsx` and its tests, the offline notice in `apps/web/src/AppShell.tsx`, the draft controls in
+`apps/web/src/views/CreateInvoice.tsx` (inside `InvoiceForm`), `apps/web/e2e/offline-session.spec.ts`, the offline notes
+in `docs/pages/README.md`, additive `app.offline`, `pay.offlineCheck`, `pay.retryCheck` and `create.draft.*` keys in the
+four locales and `apps/web/src/i18n/securityKeys.ts`, this entry.
+Continued by newghostpay-4e/features2 after that worker's machine crashed: also the interrupted wallet request cases in
+`apps/web/e2e/flows.spec.ts`; merged with current main. #710 (separate worker) also edits `Pay.tsx` and is not included.
+Acceptance: offline checkout fails closed and recovers only through an explicit retry; drafts are opt-in, tab-local,
+encrypted under the loaded seller's viewing key, strictly validated, refused for a chain or token the build does not
+offer or money terms the form would change (kept rather than converted), never store passphrases and never resurrect memo or line
+descriptions for a minimal-metadata draft; returned wallet hashes and unknown outcomes survive a connection loss; no new
+workspace dependency; hosted CI green at the exact head.
+
 # Cover lookups (#696): merge of main `e7e98109` and review follow-up — newghostpay-4e/features2 (2026-11-26 UTC)
 
 Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/w-match-cover-20261125`, head
