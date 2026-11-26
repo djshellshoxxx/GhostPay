@@ -1575,6 +1575,8 @@ export const SECURITY_KEY_GROUPS = {
   payReviewAndOutcomes: [
     'pay.previous.title',
     'pay.previous.body',
+    'pay.alreadyRequested.title',
+    'pay.alreadyRequested.body',
     'pay.rejected.title',
     'pay.rejected.controlsUnavailable',
     'pay.rejected.nothingSent',
@@ -1848,6 +1850,7 @@ export const SECURITY_KEY_GROUPS = {
     'walletAttempts.noneForWallet',
     'walletAttempts.unsaved',
     'walletAttempts.retrySave',
+    'walletAttempts.unsavedOther',
     'walletAttempts.recoveryChain',
     'walletAttempts.findWallet',
     'walletAttempts.aria',

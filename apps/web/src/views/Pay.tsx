@@ -225,6 +225,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
   // A public reconnect reason can outlive a cleared private invoice without retaining its contents or an outcome claim.
   const [showWalletChangeNotice, setShowWalletChangeNotice] = useState(false);
+  // WEB-APP-02: once a payment request may have reached a wallet, revoking the view must not reopen Prepare/Send for the
+  // same open invoice. Only the invoice identity is kept here; its hash, account and outcome stay behind the journal.
+  const [requestedInvoice, setRequestedInvoice] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
+  const walletRequestedFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
@@ -412,6 +416,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     app.setFragment(undefined);
   }, [app.setFragment]);
   const walletPrivacy = useWalletPrivacy(wallet, (cause) => {
+    const terminal = phase === 'done' || phase === 'submitted' || paymentMayHaveBeenSent || (parsed !== undefined && walletRequestedFor.current === parsed.invoice);
+    if (terminal && parsed !== undefined) setRequestedInvoice(parsed.invoice);
     flowRevision.current++;
     scheduler.current?.cancel();
     setWallet(undefined);
@@ -791,8 +797,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     });
   };
   useEffect(() => {
-    if (phase === 'ready' && wallets === undefined) onFindWallets();
-  }, [phase, wallets]);
+    if (phase === 'ready' && wallets === undefined && (parsed === undefined || requestedInvoice !== parsed.invoice)) onFindWallets();
+  }, [phase, wallets, parsed, requestedInvoice]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
     const privacyScope = walletPrivacy.capture();
@@ -836,6 +842,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   const onPrepare = (): void => {
     if (wallet === undefined || ctx === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
+    if (requestedInvoice === parsed.invoice) return;
     const revision = flowRevision.current;
     let privacyScope;
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
@@ -961,6 +968,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
           requestedThisAttempt = true;
+          // Synchronous: a wallet event in the same tick must still see that this invoice reached the wallet.
+          walletRequestedFor.current = invoice;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
         if (!isCurrent()) return;
@@ -1039,6 +1048,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const forget = (): void => {
     resetInvoiceQr();
     setShowWalletChangeNotice(false);
+    setRequestedInvoice(undefined);
+    walletRequestedFor.current = undefined;
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
     scheduler.current?.cancel();
@@ -1123,6 +1134,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const inv = parsed.invoice;
   const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
+  const alreadyRequested = requestedInvoice === parsed.invoice;
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
   // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
@@ -1345,7 +1357,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
-      {ready && phase !== 'done' && phase !== 'submitted' && (
+      {alreadyRequested && <Notice kind="warn" title={t('pay.alreadyRequested.title')}>{t('pay.alreadyRequested.body')}</Notice>}
+
+      {ready && phase !== 'done' && phase !== 'submitted' && !alreadyRequested && (
         <div className="panel">
           <h3>{t('pay.wallet')}</h3>
           {wallet === undefined ? (
