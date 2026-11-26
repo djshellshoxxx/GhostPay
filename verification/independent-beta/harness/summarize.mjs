@@ -38,7 +38,8 @@ for (const r of detailed) {
 const payEnabled = rec.results.reduce((n, r) => n + (r.payEnabledWithRecord ?? 0), 0);
 const fallback = rec.results.reduce((n, r) => n + r.notes.filter((x) => /I1 judged without/.test(x.note ?? '')).length, 0);
 const idUnjudgeable = rec.results.reduce((n, r) => n + r.notes.filter((x) => /identity unjudgeable/.test(x.note ?? '')).length, 0);
-lines.push('', `Explicit classifications (never silent): pay action enabled with own record visible (R20) ${payEnabled} observations; I1 judged without a displayed known hash ${fallback}; I3 unknown-row identity unjudgeable ${idUnjudgeable}.`);
+const unqualified = rec.results.reduce((n, r) => n + (r.i3UnqualifiedMatches ?? 0), 0);
+lines.push('', `Explicit classifications (never silent): pay action enabled with own record visible (R20) ${payEnabled} observations; I1 judged without a displayed known hash ${fallback}; I3 unknown-row identity unjudgeable ${idUnjudgeable}; I3 satisfied only by a hash-less unknown row (presence, not identity) ${unqualified}.`);
 const unknown = uniq(rec.results.flatMap((r) => r.rpcUnknownMethods));
 lines.push('', `RPC methods the mock did not implement (requested by the app): ${unknown.length === 0 ? 'none' : unknown.join(', ')}`);
 writeFileSync(join(dirname(file), 'SUMMARY.md'), `${lines.join('\n')}\n`);

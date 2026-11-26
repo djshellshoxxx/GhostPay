@@ -7,6 +7,8 @@ const SUCCESS_IN_BLOCK = /Status: included in block (\d+)/;
 // A privacy-masked hash as a UI may render it: 0x + leading digits + ellipsis + trailing digits.
 const MASKED_HASH = /0x([0-9a-fA-F]{4,})(?:\u2026|\.{3})([0-9a-fA-F]{4,})/g;
 const FULL_HASH = /0x[0-9a-fA-F]{64}/g;
+// Steps after which a tab's checkout is rendered afresh, so a displayed inclusion must be currently true (G4).
+const FRESH_RENDER_OPS = new Set(['open', 'switchInPage', 'reload', 'closeReopen', 'restart', 'freshProfile']);
 
 /** Hashes from `candidates` that `text` shows in full or in masked form (prefix…suffix). */
 export function referencedHashes(text, candidates) {
@@ -103,9 +105,15 @@ export class Oracle {
     for (const [tab, o] of Object.entries(obs)) {
       if (o.closed || o.headings === undefined) continue;
       const intent = this.w.intentOfTab[tab];
-      // I1: the checkout's own done panel claiming inclusion. Never passes silently (review gap G1): the claim is
-      // judged against the hashes it displays (full or masked); if it displays none the harness recognises, against
-      // every hash the wallet returned for that intent; with no returned hash at all it is a violation.
+      // I1: the checkout's own done panel claiming inclusion. Never passes silently (review gaps G1, G3, G4):
+      // - judged against the hashes it displays, full or masked;
+      // - if it displays a hash the wallet never returned for this intent, that is foreign evidence and FAILS: the
+      //   harness never substitutes a different transaction for what the page shows (G3);
+      // - only if it displays no hash at all is it judged against every hash the wallet returned for the intent
+      //   (fallback basis recorded); with no returned hash, or no qualifying one, it fails;
+      // - an unchanged claim is re-judged at every step: after a fresh render of that tab (open, in-page switch,
+      //   reload, close/reopen, restart) a stale claim is a violation; during a chain change, or after a journal
+      //   check that does not refresh the done panel, it is the recorded ambiguity A1, never silent (G4).
       const m = SUCCESS_IN_BLOCK.exec(o.mainText);
       if (m !== null) {
         const block = Number(m[1]);
@@ -114,30 +122,36 @@ export class Oracle {
         let judged = [...ref.full, ...ref.masked];
         let basis = ref.masked.length > 0 ? 'masked' : 'displayed';
         if (judged.length === 0) {
-          judged = known;
           basis = intent === null ? 'intent-unknown' : showsAnyHash(o.mainText) ? 'foreign-or-unrecognised-hash' : 'no-displayed-hash';
+          judged = basis === 'foreign-or-unrecognised-hash' ? [] : known;
         }
         const key = `${intent}:${m[0]}:${basis}:${judged.join(',')}`;
         const okFor = (h) => {
           const t = this.w.chain.truth(h);
           return t.state === 'mined' && t.success && t.block === block;
         };
-        if (this.seenSuccess.get(tab) !== key) {
+        const passed = judged.length > 0 && (basis === 'displayed' || basis === 'masked' ? judged.every(okFor) : judged.some(okFor));
+        const detail = { tab, intent, basis, shown: m[0], judged: judged.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })) };
+        if (basis === 'foreign-or-unrecognised-hash') detail.reason = 'displayed hash is not one the wallet returned for this intent';
+        else if (judged.length === 0) detail.reason = 'success claimed with no wallet-returned hash for this intent';
+        const firstSight = this.seenSuccess.get(tab) !== key;
+        const freshRender = FRESH_RENDER_OPS.has(step.op) && (step.op === 'restart' || step.tab === tab);
+        if (firstSight) {
           this.seenSuccess.set(tab, key);
-          if (basis !== 'displayed' && basis !== 'masked') this.notes.push({ step: stepIndex, note: `I1 judged without a displayed known hash (${basis})`, tab, intent });
-          // Displayed hashes must each be canonical successful at that block; otherwise at least one known hash must be.
-          const passed = judged.length > 0 && (basis === 'displayed' || basis === 'masked' ? judged.every(okFor) : judged.some(okFor));
-          if (!passed) {
-            const detail = { tab, intent, basis, shown: m[0], judged: judged.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })) };
-            if (chainMutating && judged.length > 0) this.ambiguous('A1', stepIndex, detail);
-            else this.violation('I1', stepIndex, judged.length === 0 ? { ...detail, reason: 'success claimed with no wallet-returned hash for this intent' } : detail);
-          }
-        } else if (chainMutating) {
-          const stillOk = judged.length > 0 && (basis === 'displayed' || basis === 'masked' ? judged.every(okFor) : judged.some((h) => {
-            const t = this.w.chain.truth(h);
-            return t.state === 'mined' && t.success;
-          }));
-          if (!stillOk) this.ambiguous('A1', stepIndex, { tab, intent, basis, staleShown: m[0], judged: judged.map((h) => ({ hash: h, truth: this.w.chain.truth(h) })) });
+          if (basis !== 'displayed' && basis !== 'masked' && basis !== 'foreign-or-unrecognised-hash') this.notes.push({ step: stepIndex, note: `I1 judged without a displayed known hash (${basis})`, tab, intent });
+        }
+        if (!passed) {
+          // Decision table for a claim that does not hold right now:
+          //   no evidence at all (nothing the wallet returned qualifies)        -> violation
+          //   first sight, outside a chain change                              -> violation
+          //   first sight, during a chain change (rendered just before it)     -> A1
+          //   unchanged claim, after a fresh render of this tab                -> violation (stale survived re-render)
+          //   unchanged claim, no fresh render (chain change or other step)    -> A1, labelled with the step
+          const inv = judged.some((h) => this.w.reorged.has(h)) ? 'I8' : 'I1';
+          if (judged.length === 0) this.violation(inv, stepIndex, detail);
+          else if (firstSight) (chainMutating ? this.ambiguous('A1', stepIndex, detail) : this.violation(inv, stepIndex, detail));
+          else if (freshRender) this.violation(inv, stepIndex, { ...detail, after: `fresh render (${step.op})` });
+          else this.ambiguous('A1', stepIndex, { ...detail, staleShown: m[0], after: chainMutating ? `chain change (${step.op})` : `no fresh render (${step.op})` });
         }
       }
       // I5b / I7: a checkout for one intent must not present the other intent's hash outside the shared journal.
@@ -219,6 +233,12 @@ export class Oracle {
         const u = unknownPool.find((r) => !r.used);
         if (u !== undefined) {
           u.used = true;
+          // Satisfied only by a hash-less row: presence, not proof of identity (G5). Counted and qualified.
+          this.i3UnqualifiedMatches = (this.i3UnqualifiedMatches ?? 0) + 1;
+          if (!this.i3UnqualifiedNoted?.has(e.intent)) {
+            (this.i3UnqualifiedNoted ??= new Set()).add(e.intent);
+            this.notes.push({ step: stepIndex, note: 'I3 matched by a hash-less unknown row (unqualified: presence, not proof of identity)', tab, intent: e.intent });
+          }
           continue;
         }
       }

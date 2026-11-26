@@ -329,3 +329,77 @@ test('G2: a returned-and-recorded hash shown only as a hash-less unknown row fai
   o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.unknownX], storedHashes: [HX] }) });
   assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.missingIntent, 'X');
 });
+
+// ---- Follow-up review gaps G3–G5 (PR #665, 2026-11-26 00:02 UTC, head bb30044c).
+
+test('G3: an explicitly displayed unrelated hash fails I1 even when the known X hash is canonical at that block', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const block = w.chain.mine([HX]);
+  const o = new Oracle(w);
+  const stranger = '0x' + 'ee'.repeat(32);
+  o.checkObservations(0, { op: 'send' }, { A: successObs(`Transaction hash: ${stranger} Status: included in block ${block} (not necessarily final yet).`) });
+  const v = o.violations.find((x) => x.inv === 'I1');
+  assert.ok(v, 'foreign evidence must not be substituted with the known X transaction');
+  assert.equal(v.detail.basis, 'foreign-or-unrecognised-hash');
+  assert.equal(v.detail.reason, 'displayed hash is not one the wallet returned for this intent');
+});
+
+test('G3 control: a genuinely hash-omitted claim with X canonical at that block passes, fallback recorded', () => {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const block = w.chain.mine([HX]);
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'send' }, { A: successObs(`Submitted Status: included in block ${block} (not necessarily final yet).`) });
+  assert.equal(o.violations.length, 0);
+  assert.ok(o.notes.some((n) => /no-displayed-hash/.test(n.note)));
+});
+
+function g4Setup() {
+  const w = g1World();
+  w.hashes.X.add(HX);
+  w.chain.submit(HX, { from: '0x5555', to: '0x1111' });
+  const block = w.chain.mine([HX]);
+  const o = new Oracle(w);
+  const text = `Transaction hash: ${HX} Status: included in block ${block} (not necessarily final yet).`;
+  o.checkObservations(0, { op: 'send', tab: 'A' }, { A: successObs(text) });
+  assert.equal(o.violations.length, 0, 'canonical success first');
+  for (const h of w.chain.reorg(1)) w.reorged.add(h);
+  o.checkObservations(1, { op: 'reorg' }, { A: successObs(text) });
+  assert.equal(o.violations.length, 0, 'unchanged claim during the chain change is A1, not a violation');
+  assert.ok(o.ambiguities.some((a) => a.inv === 'A1' && /chain change/.test(a.detail.after)));
+  return { o, text };
+}
+
+test('G4: an unchanged stale inclusion that survives a reload of its tab fails (I8)', () => {
+  const { o, text } = g4Setup();
+  o.checkObservations(2, { op: 'reload', tab: 'A' }, { A: successObs(text) });
+  const v = o.violations.find((x) => x.inv === 'I8');
+  assert.ok(v, 'stale claim after a fresh render must fail');
+  assert.equal(v.detail.after, 'fresh render (reload)');
+});
+
+test('G4: the same stale claim after a journal check (no done-panel refresh) is an explicit, labelled A1', () => {
+  const { o, text } = g4Setup();
+  o.checkObservations(2, { op: 'check', tab: 'A' }, { A: successObs(text) });
+  assert.equal(o.violations.length, 0);
+  assert.ok(o.ambiguities.some((a) => a.inv === 'A1' && a.detail.after === 'no fresh render (check)'));
+});
+
+test('G4: a reload of the OTHER tab is not a fresh render of this one', () => {
+  const { o, text } = g4Setup();
+  o.checkObservations(2, { op: 'reload', tab: 'B' }, { A: successObs(text) });
+  assert.equal(o.violations.length, 0);
+  assert.ok(o.ambiguities.some((a) => a.inv === 'A1' && a.detail.after === 'no fresh render (reload)'));
+});
+
+test('G5: a record satisfied only by a hash-less unknown row is counted as unqualified, not proof of identity', () => {
+  const w = g2World();
+  const o = new Oracle(w);
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [row.unknownX, row.hashC], storedHashes: [HC] }) });
+  assert.equal(o.violations.length, 0);
+  assert.equal(o.i3UnqualifiedMatches, 1);
+  assert.ok(o.notes.some((n) => /unqualified: presence, not proof of identity/.test(n.note)));
+});

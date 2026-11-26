@@ -197,6 +197,8 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     notes: oracle.notes,
     // Explicit classification (review gap G2): pay action enabled while this intent's own record is visible (R20).
     payEnabledWithRecord: oracle.payEnabledWithRecord ?? 0,
+    // I3 records satisfied only by a hash-less unknown row (presence, not proof of identity; review gap G5).
+    i3UnqualifiedMatches: oracle.i3UnqualifiedMatches ?? 0,
     trace,
   };
 }
