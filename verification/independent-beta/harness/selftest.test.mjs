@@ -332,6 +332,49 @@ test('G2: a returned-and-recorded hash shown only as a hash-less unknown row fai
   assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.missingIntent, 'X');
 });
 
+// ---- Account privacy (#691, main 9d92472a): history only for the connected account and chain.
+const PRIVATE = 'Wallet attempts in this browser ⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.';
+const REVEAL = ' Connect the relevant wallet account and chain to reveal its attempts.';
+function privacyWorld(walletAccount) {
+  const w = fakeWorld();
+  w.intentOfTab = { A: 'X', B: null };
+  w.wallet.account = walletAccount;
+  w.wallet.chainId = '0x14a34';
+  w.wallet.handoffs.push(handoff(1, 'X', { hash: HX, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1, params: { from: '0x5555' } }));
+  w.deliveredToOpenPage.add(HX);
+  w.hashes.X.add(HX);
+  return w;
+}
+
+test('#691: a record of another connected account may be concealed behind the evidence notice (classified)', () => {
+  const o = new Oracle(privacyWorld('0x6666'));
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: PRIVATE, storedHashes: [HX] }) });
+  assert.equal(o.violations.length, 0);
+  assert.deepEqual(o.i3Concealed, { 'other-account-or-chain': 1 });
+});
+
+test('#691: every record may be concealed while the panel asks to connect, behind the evidence notice', () => {
+  const o = new Oracle(privacyWorld('0x5555'));
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: PRIVATE + REVEAL, storedHashes: [HX] }) });
+  assert.equal(o.violations.length, 0);
+  assert.deepEqual(o.i3Concealed, { 'not-connected': 1 });
+});
+
+test('#691: concealment without the evidence notice fails I3', () => {
+  const o = new Oracle(privacyWorld('0x6666'));
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: 'Wallet attempts in this browser' + REVEAL, storedHashes: [HX] }) });
+  assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.concealedWithoutNotice, true);
+});
+
+test('#691: the record of the connected account itself must still be shown (strict), notice or not', () => {
+  const o = new Oracle(privacyWorld('0x5555'));
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: PRIVATE, storedHashes: [HX] }) });
+  assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.missingIntent, 'X');
+  const ok = new Oracle(privacyWorld('0x5555'));
+  ok.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [`payment on chain 84532 · 0x5555…5555 · Returned hash: ${HX}`], journalNotice: PRIVATE, storedHashes: [HX] }) });
+  assert.equal(ok.violations.length, 0);
+});
+
 // ---- Follow-up review gaps G3–G5 (PR #665, 2026-11-26 00:02 UTC, head bb30044c).
 
 test('G3: an explicitly displayed unrelated hash fails I1 even when the known X hash is canonical at that block', () => {

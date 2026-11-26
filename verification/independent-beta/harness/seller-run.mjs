@@ -150,7 +150,24 @@ async function runScenario(launcher, origin, scenario) {
     world.payer2 = async () => {
       if (world.tabs.P2 !== undefined) return world.tabs.P2;
       const ctx = await boot('payer2');
+      world.payer2Ctx = ctx;
+      await world.alignPayerClocks();
       return adopt(ctx, 'P2', ctx.pages()[0] ?? (await ctx.newPage()));
+    };
+    // Chain time moved forward by `warp` stands for real time passing, so the payer's browser clock must move with
+    // it: otherwise every later checkout builds a deadline from a clock hours behind the chain and the router dry run
+    // reverts, silently (generated runs) or as a vacuous step (M10). Only payer profiles are shifted; the seller's
+    // late classification is by canonical block time against the stored expiry, which this does not touch.
+    world.warpSeconds = 0;
+    world.alignPayerClocks = async () => {
+      if (world.warpSeconds === 0) return;
+      for (const ctx of [world.payerCtx, world.payer2Ctx]) {
+        if (ctx === undefined) continue;
+        const time = Date.now() + world.warpSeconds * 1000;
+        if (ctx.__w5clock === true) await ctx.clock.setSystemTime(time);
+        else await ctx.clock.install({ time });
+        ctx.__w5clock = true;
+      }
     };
     world.tmpDir = mkdtempSync(join(os.tmpdir(), 'w5-files-'));
     dirs.push(world.tmpDir);
@@ -308,7 +325,9 @@ async function execStep(world, oracle, step, i) {
       return { head: chain.head };
     case 'warp':
       chain.warp(step.seconds);
-      return { clock: chain.clock };
+      world.warpSeconds += Math.max(0, Math.min(86_400, Math.floor(step.seconds)));
+      await world.alignPayerClocks();
+      return { clock: chain.clock, payerClockShift: world.warpSeconds };
     case 'reorg': {
       // `hideFromRpc`: positive control only. The (single) RPC keeps serving the pre-reorg fork, i.e. a stale or lying
       // provider outside the accepted trust boundary (RS:25); the harness's truth chain still reorgs.
@@ -344,8 +363,7 @@ async function execStep(world, oracle, step, i) {
       // Compound: checkout captured (declined in wallet), chain time passes expiry, payer's tooling pays directly.
       const captured = await execStep(world, oracle, { op: 'pay', intent: step.intent, capture: true }, i);
       if (captured.prepared !== true || captured.handoff !== true) return { ...captured, skipped: 'checkout not captured' };
-      chain.warp(step.warp ?? 2 * 3600);
-      return execStep(world, oracle, { op: 'directPay', intent: step.intent }, i);
+      return { ...(await execStep(world, oracle, { op: 'warp', seconds: step.warp ?? 2 * 3600 }, i)), ...(await execStep(world, oracle, { op: 'directPay', intent: step.intent }, i)) };
     }
     case 'scan': {
       const page = world.tabs[step.tab];

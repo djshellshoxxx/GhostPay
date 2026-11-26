@@ -12,7 +12,7 @@ import { DIST, PRODUCTION_PATHS, REPO, distFingerprint, sourceIdentity } from '.
 import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
 import { MockRpc } from './rpc.mjs';
-import { BROWSER_SHIM, WalletController } from './wallet.mjs';
+import { ACCOUNT_A, BROWSER_SHIM, WalletController } from './wallet.mjs';
 import { DISCLOSURE_SHIM, checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
 import { Oracle } from './oracle.mjs';
 import { CONTROLS, NAMED, SUFFIX, generated } from './scenarios.mjs';
@@ -179,7 +179,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
       oracle.checkHandoffs(i);
       oracle.checkObservations(i, step, obs);
       rec.obs = Object.fromEntries(
-        Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { headings: o.headings.slice(0, 4), statuses: o.statuses, alerts: o.alerts, journal: o.journal, sendButton: o.sendButton, disclosures: (o.disclosures ?? []).length, cancelledDisclosures: (o.disclosures ?? []).filter((d) => d.action === 'cancel').length }]),
+        Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { headings: o.headings.slice(0, 4), statuses: o.statuses, alerts: o.alerts, journal: o.journal, journalNotice: o.journalNotice, sendButton: o.sendButton, disclosures: (o.disclosures ?? []).length, cancelledDisclosures: (o.disclosures ?? []).filter((d) => d.action === 'cancel').length }]),
       );
       rec.handoffs = wallet.handoffs.length;
       trace.push(rec);
@@ -232,6 +232,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     payEnabledWithRecord: oracle.payEnabledWithRecord ?? 0,
     // I3 records satisfied only by a hash-less unknown row (presence, not proof of identity; review gap G5).
     i3UnqualifiedMatches: oracle.i3UnqualifiedMatches ?? 0,
+    i3Concealed: oracle.i3Concealed ?? {},
     trace,
   };
 }
@@ -297,7 +298,9 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       return {};
     }
     case 'account':
-      await wallet.switchAccount(Object.values(world.tabs));
+      // `to: 'original'` (judgement suffix) returns to the account that started the payment, so the suffix judges the
+      // records strictly under their own account (#691 conceals other accounts' records).
+      if (step.to !== 'original' || wallet.account !== ACCOUNT_A) await wallet.switchAccount(Object.values(world.tabs));
       return { account: wallet.account };
     case 'chain': {
       const want = step.to === 'other' ? '0xaa36a7' : '0x14a34';

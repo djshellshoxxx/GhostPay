@@ -1,6 +1,6 @@
 # W5 handoff — independent payment-state verifier
 
-Status: milestone 1 delivered (model + harness + recorded runs). Coordination: this file, draft PR
+Status: milestones 1–3 delivered (payer and seller models, harness, independent audit, bounded stress runs). Coordination: this file, draft PR
 [djshellshoxxx/GhostPay#665](https://github.com/djshellshoxxx/GhostPay/pull/665), branch `nodata/elegant-tesla-kpeojx`.
 
 ## Pins
@@ -167,11 +167,81 @@ Findings: no SI1–SI8 violation (product-defect candidate) on `e7e98109`. Obser
 - SA5 (docs): `docs/user/reconciliation-and-receipts.md:14-27` still describes observation-time matching; the app
   and ADR-0026 use canonical block time (late payments in M4 were classified by block time).
 
+## Milestone 3 — seller feature completion, audit and stress (2026-11-26)
+
+Candidate: main `9d92472a46a4e37f847472276d77e3b4ce158e80` (includes LATE-LM1 #716), unmodified lean bundle
+`ab9bc5b061acb54a9bf8833fd788e81e343467be348506c697005e15a6d84c62` (18 files, built by `build.mjs` from `947e2ff6`,
+whose production paths equal `9d92472a`). Model: `SAFETY_MODEL.md` "Milestone 3 additions" (SI9–SI12, SA8–SA10).
+
+New coverage:
+
+| Scenario | Requirement | What the candidate did |
+|---|---|---|
+| M7 two-RPC disagreement | S20 | the second provider (frozen on the pre-reorg fork) disagreed: the scan stopped with the disagreement notice and credited nothing; once both providers agreed the link was invalidated (SI9) |
+| M8 / M9 seller browser restart | S28/S49 | a confirmed link and an accepted-late decision survived a full browser restart over the same profile and vault (SI10) |
+| M10 checkout after expiry | S37 | the router dry run reverts on the expired deadline, so the checkout refused before the wallet; no effective payment (SI2) |
+| M11 quarantined link keeps invoice reserved | LATE-LM1 (#716) | after a reorg quarantined X's link, a second payment of X's amount was not proposed for X (SI11) |
+| M12 old backup cannot revive a reorged link | S42–S44 | importing a backup exported before the reorg marked 1 observation invalid and did not relink (SI12) |
+| M13 / M14 manual links | S13 | a manual link was not offered for a late payment (needs "Accept late payment"); an on-time manual link counted once |
+| M15 manual link to a reserved invoice (probe) | LATE-LM1 × S13 | **accepted** — see F2 |
+
+Harness defects found and fixed in M3: H11 (SI9 flagged withheld credit, which S12 allows), H12 (genesis block hash
+zero and `parentHash` malformed, so the app kept "second RPC disagreed" after the thaw), H13 (two dialog handlers
+answered one dialog; the unhandled rejection crashed the run).
+
+Found by the first post-audit stress run (stopped, not committed as evidence) and fixed before the final runs:
+
+- H14 (model behind an accepted requirement): main `9d92472a` includes account privacy (#691, R50 in
+  `SAFETY_MODEL.md`): the journal lists only the connected account's and chain's records, behind the notice "A
+  previous wallet request may already have been submitted… Journal records are preserved." I3 still demanded every
+  record on every journal screen, so N5 (account switch) and N6 (RPC down blocks reconnection) reported I3 although no
+  second wallet request was made (I2 held). Not a product defect. Fix: I3 is strict for the connected account and
+  chain, and accepts concealment only behind that notice (classified `i3Concealed`); the suffix returns to the paying
+  account so each record is judged strictly at least once. 4 new fixtures; 3 fail on the old oracle (the strict
+  connected-account fixture passes on both).
+- H15 (vacuous step, silent coverage loss): `warp` moved chain time ahead while the payer's browser clock stayed put,
+  so every later checkout built its deadline hours behind the chain and the (audit-13) router dry run reverted. M10's
+  control payment of C never reached the wallet; the audit-6 whitelist made that a harness error, and generated runs
+  lost every checkout after `latePay` silently. Fix: payer profiles' clocks move with each warp (Playwright clock,
+  real time keeps flowing); the seller's clock is untouched because lateness is judged by block time.
+
+### Independent harness audit (22 findings, all harness-side, all fixed in `ce569d8c`)
+
+A separate review of the harness source (not anchored on this handoff) found no product defect and 22 harness gaps.
+High: unchanged status-check rows were not re-judged (1); journal rows claiming inclusion were not judged like the
+done panel (2); seller links were only strict right after a scan, not whenever the chain is unchanged since the last
+finished scan (3). Medium: DNS lockdown plus off-origin and unknown-RPC-method harness errors (4, 13); argument
+validation and exit 2 on invalid or empty runs (5); suffix steps must be attempted and each op has a success whitelist
+(6); seller decisions recorded only when effective, refusals detected (7); invoice cards must parse after a finished
+scan (8); masked foreign hashes count as bleed (9); bundle provenance check and whitelisted build environment (10);
+faults armed before Start and verified to fire (11); chain time never regresses on reorg (12); router dry runs revert
+like the contract, real receipt index, `earliest`, full transaction objects, unknown `blockHash` error (13); per-record
+clear bookkeeping (14); document end measured at navigation (16); harness-side expiry for late classification (17).
+Low: dialog errors caught, server 404s for missing assets and the build record, robust profile cleanup, bounded
+minimization, malformed request guard (18–21); model wording (22). 9 of the 10 new self-test fixtures fail on the
+pre-audit harness (the tenth is a control).
+
+Self-test: 52 pass, 0 fail, at the default scale and at `W5_PROPERTY_SCALE=10` (3000 random chain sequences,
+500 generator seeds checked for determinism and bounds).
+
+### Runs
+
+| Record | Harness SHA | Command | Scenarios | Payments / handoffs | Violations | Harness errors | Ambiguities |
+|---|---|---|---|---|---|---|---|
+| `results/m3-a13a2bb9/` (pre-audit harness) | `a13a2bb9` | `seller-run.mjs --named --seeds 1-24 --concurrency 3 --candidate 9d92472a` | 40 (P2, M1–M15, SG-1…SG-24) | 47 payments | **0** (P2 detected SI4) | 0 | 27× SA6, 1× SA8 (M15) |
+STRESS_ROWS
+
+### Findings (M3)
+
+| Id | Class | Owner | Finding | Evidence | Suggested remedy |
+|---|---|---|---|---|---|
+| F2 | ambiguous requirement / low | W3 | A manual link of a second payment to an invoice whose earlier link is quarantined by a reorg (LATE-LM1 reservation, #716) is accepted: the card then says "Linked total is above the expected net amount… Distinct linked observations: 2". Proposals respect the reservation (M11); the manual path does not. Not a credit to the wrong invoice, but it defeats the reservation's purpose. | M15 in `m3-a13a2bb9` and the stress record (SA8) | decide whether manual links must honour the reservation; if so, refuse with the reservation reason |
+
+No SI1–SI12 violation (product-defect candidate) on `9d92472a`. F1, A1, A2, O3 and SA5 are unchanged.
+
 ## Not covered yet (next milestones)
 
-1. Seller-side gaps after M2: two-RPC disagreement (S20, secondary RPC), backup export/import with reorg tombstones
-   (S42/S43), vault saturation (S24), manual links (S13 interplay), more late-payment variants in the generator, and
-   reconciliation across a full browser restart (S49, proposed).
+1. Seller-side gaps after M3: vault saturation (S24) and replacement-observation linking.
 2. ERC-20 checkout (approval/permit + payment): the per-invoice request count is ambiguous (A3) and needs an owner rule.
 3. Replacement linking ("Link a replacement transaction" / nonce consumed) and wallet rejection 4001 policy (A4).
 4. A W1-approved candidate SHA, if W1 names one other than current main: `build.mjs` then

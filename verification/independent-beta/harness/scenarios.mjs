@@ -10,6 +10,7 @@ export const SEND_BEHAVIOURS = ['ok', 'hang-broadcast', 'hang-nobroadcast', 'err
 export const SUFFIX = [
   { op: 'release' },
   { op: 'rpc', mode: 'up' },
+  { op: 'account', to: 'original' }, // records are shown only to their own account and chain (#691)
   { op: 'chain', to: 'invoice' },
   { suffix: true, op: 'open', tab: 'A', intent: 'X' },
   { op: 'check', tab: 'A', intent: 'X' },

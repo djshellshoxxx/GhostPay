@@ -205,10 +205,10 @@ export class Oracle {
    * `mayBeUnknown` = a hash-less unknown row is also acceptable (no delivered hash, or the delivering document ended
    * inside the record window, R5/A5); `rejectOnly` = only 4001 rejections (A4: record presence not settled).
    */
-  expectedRecords() {
+  expectedRecords(owned = () => true) {
     const out = [];
     for (const intent of ['X', 'C']) {
-      const live = this.handoffsFor(intent).filter((h) => !this.isCleared(h));
+      const live = this.handoffsFor(intent).filter((h) => !this.isCleared(h) && owned(h));
       if (live.length === 0) continue;
       const delivered = live.filter((h) => h.hash !== undefined && this.w.deliveredToOpenPage.has(h.hash) && !this.w.clearedHashes.has(h.hash));
       const settled = delivered.filter((h) => {
@@ -232,7 +232,33 @@ export class Oracle {
   }
 
   checkJournalIdentity(stepIndex, tab, intent, o) {
-    const expected = this.expectedRecords();
+    // Account privacy (#691, accepted: "History requires a matching connected account and chain"): the panel lists
+    // only the records of the wallet account and chain the tab is connected to. A record of another account or chain,
+    // or every record while the panel asks to "Connect the relevant wallet account and chain", may be concealed, but
+    // only behind the notice that a previous wallet request may already have been submitted (records preserved).
+    // Records owned by the connected account and chain must still be shown by identity (strict, as before).
+    const all = this.expectedRecords();
+    if (all.length === 0) return;
+    const notice = o.journalNotice ?? '';
+    const evidenceNotice = /A previous wallet request may already have been submitted/.test(notice);
+    const notRevealed = /Connect the relevant wallet account and chain to reveal its attempts/.test(notice);
+    const wAccount = this.w.wallet.account === undefined ? undefined : String(this.w.wallet.account).toLowerCase();
+    const wChain = this.w.wallet.chainId;
+    const owned = (h) =>
+      !notRevealed &&
+      (wAccount === undefined || String(h.params?.from ?? h.account).toLowerCase() === wAccount) &&
+      (wChain === undefined || h.chainId === undefined || h.chainId === wChain);
+    const expected = this.expectedRecords(owned);
+    const concealed = all.filter((e) => !expected.some((x) => x.intent === e.intent));
+    for (const e of concealed) {
+      if (e.rejectOnly) continue;
+      if (evidenceNotice) {
+        const reason = notRevealed ? 'not-connected' : 'other-account-or-chain';
+        (this.i3Concealed ??= {})[reason] = (this.i3Concealed[reason] ?? 0) + 1;
+        continue;
+      }
+      this.violation('I3', stepIndex, { tab, missingIntent: e.intent, expectedHashes: e.hashes, concealedWithoutNotice: true, notice: notice.slice(0, 300), journal: o.journal });
+    }
     if (expected.length === 0) return;
     const allKnown = [...this.w.hashes.X, ...this.w.hashes.C];
     const rows = o.journal.map((text) => {

@@ -228,6 +228,16 @@ export async function observe(page) {
     const alerts = [...main.querySelectorAll('[role="alert"]')].map(txt).filter(Boolean);
     const headings = [...main.querySelectorAll('h1,h2,h3')].map(txt).filter(Boolean);
     const journal = [...document.querySelectorAll('section[aria-label="Wallet attempt journal"] li')].map(txt);
+    // The panel's own text outside its rows: the account-privacy notices (#691) live here, e.g. "Connect the relevant
+    // wallet account and chain to reveal its attempts." Only the visible English text is used.
+    const journalNotice = [...document.querySelectorAll('section[aria-label="Wallet attempt journal"]')]
+      .map((s) => {
+        const c = s.cloneNode(true);
+        for (const li of c.querySelectorAll('li')) li.remove();
+        return (c.textContent ?? '').replace(/\s+/g, ' ').trim();
+      })
+      .join(' ')
+      .slice(0, 2000);
     // Checkout text outside the shared journal panel (the journal legitimately lists every intent's records).
     const clone = main.cloneNode(true);
     for (const s of clone.querySelectorAll('section[aria-label="Wallet attempt journal"]')) s.remove();
@@ -277,6 +287,7 @@ export async function observe(page) {
       statuses,
       alerts,
       journal,
+      journalNotice,
       mainText,
       mainHashes,
       disclosures,
