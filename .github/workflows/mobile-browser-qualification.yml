@@ -10,6 +10,11 @@ on:
       - 'apps/web/e2e/devices*.spec.ts'
       - 'apps/web/e2e/flows.spec.ts'
       - 'apps/web/e2e/qr-camera.spec.ts'
+      # devices-mobile-restore restores this vector through this helper, codec and view in each engine.
+      - 'apps/web/src/views/SellerKeys.tsx'
+      - 'packages/ux-vault/src/keystore-portable.ts'
+      - 'packages/ux-vault/src/keystore-portable.vectors.testutil.ts'
+      - 'test-vectors/seller-keystore-v1.json'
 
 permissions:
   contents: read
