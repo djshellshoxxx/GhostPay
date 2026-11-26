@@ -92,12 +92,14 @@ describe('merchant template invoice issuance', () => {
     await expect(changed).rejects.toThrow();
   });
   it('preserves the validated request snapshot and rechecks profile expiry before returning', async () => {
-    const request = input();
+    const request = { ...input(), minimalMetadata: true };
     const pending = buildMerchantTemplateInvoice(request);
     request.token = 'native';
     request.tokenAmount = '99';
+    request.minimalMetadata = false;
     const created = await pending;
     expect(created.invoice.token).toBe(TOKEN);
+    expect(created.invoice.lineItems).toEqual([]);
     expect(created.invoice.amountPolicy).toEqual({ mode: 'fixed_token', tokenAmount: '1250000' });
     let now = NOW;
     const expires = buildMerchantTemplateInvoice(input({ nowSeconds: () => now }));

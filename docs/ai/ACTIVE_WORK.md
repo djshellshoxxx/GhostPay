@@ -1,3 +1,12 @@
+# Cover lookups (#696): third independent review and finish (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, continuing `newghostpay-77`'s parked branch `claude/w-match-cover-20261125`; base main
+`194e225c` merged (ACTIVE_WORK union). Owned paths: the #696 files (`apps/web/src/lib/matchCover.ts`, the cover hunks of
+`scanClient.ts`, `scanSpam.ts`, `Settings.tsx`, `Scan.tsx`, their tests, the three `scanLanes` catalog keys) and this
+entry. Acceptance: independent security/correctness review of cover v3 against the security invariants (opt-in, fail
+closed on unreadable settings, derived-key cleanup, no new egress, honest limits, route guard and #691 revocation, no
+anonymity wording); confirmed defects fixed with failing-then-passing tests; hosted CI green at the exact head.
+
 # Cover lookups (#696): successor work after the second review (2026-11-26 UTC)
 
 Worker: Claude Code session `newghostpay-77`, continuing `newghostpay-ae`'s parked branch `claude/w-match-cover-20261125`
@@ -15,6 +24,40 @@ Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg 
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
 
 ---
+
+# W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
+
+Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
+Why: the previous W4 (feature-completion-06's subagent) exited before continuing #585/#600; ghostpay-42 and newghostpay-ae confirmed no driver.
+Owned paths: #585/#600's files and the merge resolution in `apps/web/src/views/CreateInvoice.tsx` link row (main's auto-clearing Copy, #585's exact-link .txt download and #688's request-file download, all three kept), this entry.
+Acceptance: minimal mode omits memo and item breakdown after totals are computed; payment and verification fields, canonical serialization, signatures and envelopes unchanged; downloads carry the exact signed link; full hosted CI on the exact head.
+
+# PR #585 native typecheck resumption — 2026-11-24 UTC
+
+Worker: `/root/recover_local_workers`, coordinated by `/root`. Isolated successor branch `resume/privacy-minimal-typecheck-20261124`; exact saved parent #585 `b82be893d3d360064222fafcce8cef2033cd23a5`, main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only the invalid role-query option in `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/PR585_NATIVE_TYPECHECK_20261124.md`.
+
+Acceptance: reproduce TS2769 from the unsupported `exact` option, remove only that option after verifying the string accessible-name matcher remains exact, retain every privacy-minimal and stale-result assertion, and run focused native tests plus full web typecheck and scoped typed lint. Preserve all production code, dependencies, schemas and signing/payment behavior. #586, #571, Pay paths and original owner branches remain outside this assignment. Root owns independent review and publication. No merge, deployment or real-funds operation.
+
+---
+
+# Issue 287 invoice metadata minimization
+
+Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.
+
+---
+# Browser self-check feature completion (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
+existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
+other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
+`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
+`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
+`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
+`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
+Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
+handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
+unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
+payments, network egress or release gates.
 
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
