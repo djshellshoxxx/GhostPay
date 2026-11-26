@@ -265,6 +265,37 @@ parsed as `0-3`); seed specs are now checked against `N` or `N-M` with `N <= M` 
 
 No SI1–SI12 violation (product-defect candidate) on `9d92472a`. F1, A1, A2, O3 and SA5 are unchanged.
 
+## Replacement-link probe (requested on #665, comment 7196313386; 2026-11-26)
+
+Candidate: main `601f20955b435eede448c6d82d8315705d7e381d`, unmodified lean bundle `ab9bc5b0…` (identical to
+`9d92472a`'s). Record `results/probe-replacement-a6b354ab/` (harness `a6b354ab`):
+`run.mjs --only N14-linked-replacement-receipt-withheld,N15-link-replacement-while-receipt-withheld --candidate origin/main`.
+2 scenarios, 4 handoffs, 0 violations, 0 harness errors. The source-level replay in the comment was not reused; this
+is the built app in Chromium over the synthetic chain.
+
+Set-up: X is sent (hash H0, nonce 0, not mined); the payer's wallet replaces it outside GhostPay (H0 leaves the
+mempool; replacement R1 from the same account with nonce 0 and the same call is mined); the payer links R1 with
+"Link a replacement transaction" → "Verify and link". The provider fault then reports R1 included
+(`eth_getTransactionByHash` has its block) but returns no receipt (`eth_getTransactionReceipt` → `null`); the latest
+nonce (1) is above the recorded one (0).
+
+| Step (N14) | Row status shown by the app |
+|---|---|
+| before linking (control) | "This transaction is not visible, but the account has already used its nonce, so another transaction took its place … Find it in your wallet and link it below before retrying." (correct) |
+| linked, receipt available (control) | "Linked replacement transaction. Included in a canonical block. Waiting for the chain's configured confirmation depth." (correct) |
+| **linked, R1 included, receipt withheld** | **the same "not visible … another transaction took its place … link it below" text; the linked R1 is no longer listed**; same after reload |
+| receipt restored (control) | linked/included again, R1 listed |
+
+N15 (link while the receipt is withheld): the link was saved, with no visible confirmation or error, and the row kept
+asking the payer to "link it below"; once the receipt came back the row showed R1 as linked and included.
+
+Safety held: no success or inclusion claim without canonical evidence (I1), and every later retry of X in both tabs
+was refused before the wallet was asked (I2). The control C paid once.
+
+| Id | Class | Owner | Finding | Suggested remedy |
+|---|---|---|---|---|
+| F3 | product, low–medium (misleading status under an inconsistent provider answer) | W2/W3 (attempt status) | With a linked replacement that the provider reports included but whose receipt it withholds, the status says the transaction is not visible and that another, unidentified transaction used the nonce, and asks the payer to find and link it, although it is already linked and visible. R14 says verification stops on an inconsistent answer; the shown text points the payer at a hunt for a different transaction (a cancel, say), which a payer may answer by clearing the record. A link saved in this state gives no visible confirmation (N15). | treat an included linked replacement without a receipt as an unusable RPC answer (verification incomplete) and keep the linked hash listed; regression per the comment's suggested `attemptStatus.test.ts` case, then re-verify with N14/N15 |
+
 ## Not covered yet (next milestones)
 
 1. Seller-side gaps after M3: vault saturation (S24) and replacement-observation linking.

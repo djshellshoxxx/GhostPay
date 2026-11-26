@@ -1,0 +1,2793 @@
+{
+  "runId": "2026-11-26T1539",
+  "command": "node verification/independent-beta/harness/run.mjs --only N14-linked-replacement-receipt-withheld,N15-link-replacement-while-receipt-withheld --concurrency 2 --candidate origin/main --out verification/independent-beta/results/probe-replacement-a6b354ab",
+  "pinnedMain": "601f20955b435eede448c6d82d8315705d7e381d",
+  "source": {
+    "head": "a6b354ab5b1b307d1f608ffa58cf6c6c34e81ff4",
+    "productionTreeClean": true,
+    "dirty": []
+  },
+  "productionPathsDifferingFromPinnedMain": [],
+  "build": {
+    "profile": "lean",
+    "head": "e3a7037e79384867015d800e9219322321f9b5b5",
+    "productionTreeClean": true,
+    "dirty": [],
+    "dist": {
+      "sha256": "ab9bc5b061acb54a9bf8833fd788e81e343467be348506c697005e15a6d84c62",
+      "files": 18
+    },
+    "builtAt": "2026-11-26T14:07:48.419Z"
+  },
+  "environment": {
+    "node": "v22.23.5",
+    "platform": "linux 6.18.44-fc-v880 x64",
+    "cpus": 4,
+    "playwrightCore": "1.64.1",
+    "chromium": "158.0.8127.36",
+    "chromiumPath": "/opt/pw-browsers/chromium"
+  },
+  "seeds": [],
+  "wallMs": 128471,
+  "totals": {
+    "scenarios": 2,
+    "harnessErrors": 0,
+    "withViolations": 0,
+    "positiveControls": [],
+    "withAmbiguities": 0,
+    "handoffs": 4,
+    "blockedOffOrigin": []
+  },
+  "results": [
+    {
+      "name": "N14-linked-replacement-receipt-withheld",
+      "why": "R14/R3/R12: the wallet replaces X (same account, nonce, call); the payer links the replacement; the provider then reports it included but withholds its receipt. Uncertainty must stay uncertainty (no success, no retry); the status should say verification is incomplete rather than that an unidentified transaction used the nonce (#665 comment 7196313386)",
+      "expectViolations": [],
+      "seed": null,
+      "steps": [
+        {
+          "op": "open",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "send",
+          "tab": "A",
+          "behaviour": "ok"
+        },
+        {
+          "op": "speedUp",
+          "intent": "X"
+        },
+        {
+          "op": "mine"
+        },
+        {
+          "op": "open",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "linkReplacement",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "withholdReceipt",
+          "on": true
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "reload",
+          "tab": "A"
+        },
+        {
+          "op": "open",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "withholdReceipt",
+          "on": false
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        }
+      ],
+      "suffix": true,
+      "durationMs": 128470,
+      "harnessError": null,
+      "handoffs": [
+        {
+          "seq": 9,
+          "tab": "A",
+          "intent": "X",
+          "behaviour": "ok",
+          "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233",
+          "broadcastHash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233",
+          "account": "0x5555555555555555555555555555555555555555",
+          "chainId": "0x14a34",
+          "from": "0x5555555555555555555555555555555555555555",
+          "to": "0x1111111111111111111111111111111111111111",
+          "value": "0x6f05b59d3b20000",
+          "delivered": true
+        },
+        {
+          "seq": 42,
+          "tab": "B",
+          "intent": "C",
+          "behaviour": "ok",
+          "hash": "0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf",
+          "broadcastHash": "0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf",
+          "account": "0x5555555555555555555555555555555555555555",
+          "chainId": "0x14a34",
+          "from": "0x5555555555555555555555555555555555555555",
+          "to": "0x1111111111111111111111111111111111111111",
+          "value": "0x6f05b59d3b20000",
+          "delivered": true
+        }
+      ],
+      "clears": {
+        "X": 0,
+        "C": 0
+      },
+      "dialogs": [],
+      "chainLog": [
+        {
+          "op": "submit",
+          "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233",
+          "nonce": 0
+        },
+        {
+          "op": "drop",
+          "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+        },
+        {
+          "op": "submit",
+          "hash": "0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+          "nonce": 0
+        },
+        {
+          "op": "mine",
+          "block": 501,
+          "included": [
+            "0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf"
+          ],
+          "success": true
+        },
+        {
+          "op": "mine",
+          "block": 502,
+          "included": [],
+          "success": true
+        },
+        {
+          "op": "submit",
+          "hash": "0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf",
+          "nonce": 1
+        },
+        {
+          "op": "mine",
+          "block": 503,
+          "included": [
+            "0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf"
+          ],
+          "success": true
+        },
+        {
+          "op": "mine",
+          "block": 504,
+          "included": [],
+          "success": true
+        }
+      ],
+      "rpcUnknownMethods": [],
+      "blockedOrigins": [],
+      "walletMethods": {
+        "eth_requestAccounts": 6,
+        "eth_accounts": 14,
+        "eth_chainId": 10,
+        "net_version": 10,
+        "eth_sendTransaction": 2
+      },
+      "violations": [],
+      "ambiguities": [],
+      "notes": [],
+      "payEnabledWithRecord": 25,
+      "i3UnqualifiedMatches": 0,
+      "i3Concealed": {},
+      "trace": [
+        {
+          "i": 0,
+          "step": {
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 1406,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt",
+                "Wallet"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 0
+        },
+        {
+          "i": 1,
+          "step": {
+            "op": "send",
+            "tab": "A",
+            "behaviour": "ok"
+          },
+          "t": 7483,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 1
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 2,
+          "step": {
+            "op": "speedUp",
+            "intent": "X"
+          },
+          "t": 51139,
+          "result": {
+            "original": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233",
+            "replacement": "0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+            "nonce": 0,
+            "truth": {
+              "state": "mined",
+              "success": true,
+              "block": 501,
+              "confirmations": 1,
+              "timestamp": 1795707494
+            }
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 3,
+          "step": {
+            "op": "mine"
+          },
+          "t": 51146,
+          "result": {
+            "block": 502,
+            "included": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 4,
+          "step": {
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 51152,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 5,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 57592,
+          "result": {
+            "checked": true,
+            "text": "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+            "cls": [
+              "mismatch"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 6,
+          "step": {
+            "op": "linkReplacement",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 60594,
+          "result": {
+            "linked": true,
+            "text": "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233 Check status on my RPC Link a replacement transaction Replacement transaction hashVerify and link Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf Clear this attempt after checking my wallet",
+            "alerts": [],
+            "original": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233",
+            "replacement": "0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 7,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 74994,
+          "result": {
+            "checked": true,
+            "text": "Replacement transaction hashVerify and link Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+            "cls": [
+              "success"
+            ],
+            "changed": false,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 8,
+          "step": {
+            "op": "withholdReceipt",
+            "on": true
+          },
+          "t": 87398,
+          "result": {
+            "withheld": [
+              "0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf"
+            ]
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 9,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 87406,
+          "result": {
+            "checked": true,
+            "text": "Replacement transaction hashVerify and link This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+            "cls": [
+              "mismatch"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 10,
+          "step": {
+            "op": "reload",
+            "tab": "A"
+          },
+          "t": 90461,
+          "result": {},
+          "obs": {
+            "A": {
+              "headings": [
+                "What do you want to do?",
+                "Seller",
+                "Pay",
+                "Sweep"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 11,
+          "step": {
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 91838,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 12,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 98208,
+          "result": {
+            "checked": true,
+            "text": "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+            "cls": [
+              "mismatch"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 13,
+          "step": {
+            "op": "withholdReceipt",
+            "on": false
+          },
+          "t": 101210,
+          "result": {
+            "withheld": []
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 14,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 101215,
+          "result": {
+            "checked": true,
+            "text": "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+            "cls": [
+              "success"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 15,
+          "step": {
+            "op": "release"
+          },
+          "t": 104268,
+          "result": {
+            "released": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 16,
+          "step": {
+            "op": "rpc",
+            "mode": "up"
+          },
+          "t": 106717,
+          "result": {
+            "mode": "up"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 17,
+          "step": {
+            "op": "account",
+            "to": "original"
+          },
+          "t": 106724,
+          "result": {
+            "account": "0x5555555555555555555555555555555555555555"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 18,
+          "step": {
+            "op": "chain",
+            "to": "invoice"
+          },
+          "t": 106730,
+          "result": {
+            "chainId": "0x14a34"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 19,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 106735,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 20,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 113112,
+          "result": {
+            "checked": true,
+            "text": "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+            "cls": [
+              "success"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 21,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "A",
+            "behaviour": "ok"
+          },
+          "t": 116113,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 22,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "B",
+            "intent": "X"
+          },
+          "t": 119820,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 23,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "B",
+            "behaviour": "ok"
+          },
+          "t": 120971,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 24,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "B",
+            "intent": "C"
+          },
+          "t": 122665,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 25,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "B",
+            "behaviour": "ok",
+            "mineOnSubmit": true
+          },
+          "t": 123826,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 1
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        },
+        {
+          "i": 26,
+          "step": {
+            "op": "mine"
+          },
+          "t": 127245,
+          "result": {
+            "block": 504,
+            "included": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        },
+        {
+          "i": 27,
+          "step": {
+            "op": "check",
+            "tab": "B",
+            "intent": "X"
+          },
+          "t": 127255,
+          "result": {
+            "checked": true,
+            "text": "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf",
+            "cls": [
+              "success"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x94e71166d92edb77d1da9bda2db6231395ce58ee72ec1724bdd02f123003d233\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0xccea6a9787c1ad4a3adfae408f7204a98e7d2fa54b80bfc1db2c4ee566b761cf\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0xcc339fb503cdf7f67e4cf58a6f309533f18c3a6a8670b9ae1166dd58005b4ddf\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        }
+      ]
+    },
+    {
+      "name": "N15-link-replacement-while-receipt-withheld",
+      "why": "control for N14: a replacement whose receipt the provider withholds at link time must not be linked as verified",
+      "expectViolations": [],
+      "seed": null,
+      "steps": [
+        {
+          "op": "open",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "send",
+          "tab": "A",
+          "behaviour": "ok"
+        },
+        {
+          "op": "speedUp",
+          "intent": "X"
+        },
+        {
+          "op": "mine"
+        },
+        {
+          "op": "withholdReceipt",
+          "on": true
+        },
+        {
+          "op": "open",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "linkReplacement",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "check",
+          "tab": "A",
+          "intent": "X"
+        },
+        {
+          "op": "withholdReceipt",
+          "on": false
+        }
+      ],
+      "suffix": true,
+      "durationMs": 108484,
+      "harnessError": null,
+      "handoffs": [
+        {
+          "seq": 9,
+          "tab": "A",
+          "intent": "X",
+          "behaviour": "ok",
+          "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3",
+          "broadcastHash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3",
+          "account": "0x5555555555555555555555555555555555555555",
+          "chainId": "0x14a34",
+          "from": "0x5555555555555555555555555555555555555555",
+          "to": "0x1111111111111111111111111111111111111111",
+          "value": "0x6f05b59d3b20000",
+          "delivered": true
+        },
+        {
+          "seq": 38,
+          "tab": "B",
+          "intent": "C",
+          "behaviour": "ok",
+          "hash": "0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86",
+          "broadcastHash": "0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86",
+          "account": "0x5555555555555555555555555555555555555555",
+          "chainId": "0x14a34",
+          "from": "0x5555555555555555555555555555555555555555",
+          "to": "0x1111111111111111111111111111111111111111",
+          "value": "0x6f05b59d3b20000",
+          "delivered": true
+        }
+      ],
+      "clears": {
+        "X": 0,
+        "C": 0
+      },
+      "dialogs": [],
+      "chainLog": [
+        {
+          "op": "submit",
+          "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3",
+          "nonce": 0
+        },
+        {
+          "op": "drop",
+          "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3"
+        },
+        {
+          "op": "submit",
+          "hash": "0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c",
+          "nonce": 0
+        },
+        {
+          "op": "mine",
+          "block": 501,
+          "included": [
+            "0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c"
+          ],
+          "success": true
+        },
+        {
+          "op": "mine",
+          "block": 502,
+          "included": [],
+          "success": true
+        },
+        {
+          "op": "submit",
+          "hash": "0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86",
+          "nonce": 1
+        },
+        {
+          "op": "mine",
+          "block": 503,
+          "included": [
+            "0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86"
+          ],
+          "success": true
+        },
+        {
+          "op": "mine",
+          "block": 504,
+          "included": [],
+          "success": true
+        }
+      ],
+      "rpcUnknownMethods": [],
+      "blockedOrigins": [],
+      "walletMethods": {
+        "eth_requestAccounts": 5,
+        "eth_accounts": 13,
+        "eth_chainId": 9,
+        "net_version": 9,
+        "eth_sendTransaction": 2
+      },
+      "violations": [],
+      "ambiguities": [],
+      "notes": [],
+      "payEnabledWithRecord": 19,
+      "i3UnqualifiedMatches": 0,
+      "i3Concealed": {},
+      "trace": [
+        {
+          "i": 0,
+          "step": {
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 1433,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt",
+                "Wallet"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 0
+        },
+        {
+          "i": 1,
+          "step": {
+            "op": "send",
+            "tab": "A",
+            "behaviour": "ok"
+          },
+          "t": 7543,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 1
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 2,
+          "step": {
+            "op": "speedUp",
+            "intent": "X"
+          },
+          "t": 51141,
+          "result": {
+            "original": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3",
+            "replacement": "0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c",
+            "nonce": 0,
+            "truth": {
+              "state": "mined",
+              "success": true,
+              "block": 501,
+              "confirmations": 1,
+              "timestamp": 1795707494
+            }
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 3,
+          "step": {
+            "op": "mine"
+          },
+          "t": 51147,
+          "result": {
+            "block": 502,
+            "included": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 4,
+          "step": {
+            "op": "withholdReceipt",
+            "on": true
+          },
+          "t": 51153,
+          "result": {
+            "withheld": [
+              "0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c"
+            ]
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 5,
+          "step": {
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 51162,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 6,
+          "step": {
+            "op": "linkReplacement",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 57632,
+          "result": {
+            "linked": false,
+            "text": "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3 Check status on my RPC Link a replacement transaction Replacement transaction hashVerify and link This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying. Clear this attempt after checking my wallet",
+            "alerts": [],
+            "original": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3",
+            "replacement": "0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 7,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 71998,
+          "result": {
+            "checked": true,
+            "text": "Replacement transaction hashVerify and link This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+            "cls": [
+              "mismatch"
+            ],
+            "changed": false,
+            "sawBusy": false,
+            "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 8,
+          "step": {
+            "op": "withholdReceipt",
+            "on": false
+          },
+          "t": 84446,
+          "result": {
+            "withheld": []
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 9,
+          "step": {
+            "op": "release"
+          },
+          "t": 84454,
+          "result": {
+            "released": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 10,
+          "step": {
+            "op": "rpc",
+            "mode": "up"
+          },
+          "t": 86904,
+          "result": {
+            "mode": "up"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 11,
+          "step": {
+            "op": "account",
+            "to": "original"
+          },
+          "t": 86913,
+          "result": {
+            "account": "0x5555555555555555555555555555555555555555"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 12,
+          "step": {
+            "op": "chain",
+            "to": "invoice"
+          },
+          "t": 86921,
+          "result": {
+            "chainId": "0x14a34"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "This transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.",
+                "Import closed."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nReplacement transaction hashVerify and link\n\nThis transaction is not visible, but the account has already used its nonce, so another transaction took its place (for example a speed-up or cancel in your wallet). Find it in your wallet and link it below before retrying.\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 13,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 86929,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 14,
+          "step": {
+            "op": "check",
+            "tab": "A",
+            "intent": "X"
+          },
+          "t": 93329,
+          "result": {
+            "checked": true,
+            "text": "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c",
+            "cls": [
+              "success"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 15,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "A",
+            "behaviour": "ok"
+          },
+          "t": 96334,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [],
+              "statuses": [],
+              "alerts": [],
+              "journal": [],
+              "journalNotice": "",
+              "sendButton": "absent",
+              "disclosures": 0,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 16,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "B",
+            "intent": "X"
+          },
+          "t": 100044,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 17,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "B",
+            "behaviour": "ok"
+          },
+          "t": 101121,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 18,
+          "step": {
+            "suffix": true,
+            "op": "open",
+            "tab": "B",
+            "intent": "C"
+          },
+          "t": 102830,
+          "result": {
+            "prepared": true,
+            "reason": "final-check"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 1,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 1
+        },
+        {
+          "i": 19,
+          "step": {
+            "suffix": true,
+            "op": "send",
+            "tab": "B",
+            "behaviour": "ok",
+            "mineOnSubmit": true
+          },
+          "t": 103889,
+          "result": {
+            "clicked": "clicked",
+            "newHandoffs": 1
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        },
+        {
+          "i": 20,
+          "step": {
+            "op": "mine"
+          },
+          "t": 107295,
+          "result": {
+            "block": 504,
+            "included": 0
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        },
+        {
+          "i": 21,
+          "step": {
+            "op": "check",
+            "tab": "B",
+            "intent": "X"
+          },
+          "t": 107305,
+          "result": {
+            "checked": true,
+            "text": "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying. Replacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c",
+            "cls": [
+              "success"
+            ],
+            "changed": true,
+            "sawBusy": false,
+            "hash": "0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3"
+          },
+          "obs": {
+            "A": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [
+                "✖ Problem\n:\nThe wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly. A previous wallet attempt for this action already exists in this browser profile. Check its outcome before explicitly clearing it."
+              ],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "enabled",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            },
+            "B": {
+              "headings": [
+                "Review payment",
+                "Wallet attempts in this browser",
+                "Import a seller receipt",
+                "Scan or paste a seller receipt"
+              ],
+              "statuses": [
+                "Linked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying."
+              ],
+              "alerts": [],
+              "journal": [
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x66115dbb13bd344eb80735196a91276e99349f92a7cc09de4f808a8572a6e1e3\n\nCheck status on my RPC\nLink a replacement transaction\n\nLinked replacement transaction. Included in a canonical block. Waiting for the chain’s configured confirmation depth. Check its details in your wallet before retrying.\n\nReplacement transaction hash: 0x200223efaf2cb49609a0023c26e4d02b0b24837b9e619be66787ed74d73a6b9c\n\nClear this attempt after checking my wallet",
+                "payment on chain 84532 · 0x5555555555555555555555555555555555555555 · Returned hash: 0x639fb197031b892005b48a3de584c3ed95b5e7428fda8ae5a64393ec8f282f86\n\nCheck status on my RPC\nLink a replacement transaction\nClear this attempt after checking my wallet"
+              ],
+              "journalNotice": "Wallet attempts in this browser⚠ Warning:A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.A recorded attempt blocks another send for the same action across tabs in this browser profile until you explicitly clear it. A hash alone does not prove payment. Clearing cannot cancel an in-flight wallet request or roll back a transaction. Other profiles and devices have separate tracking.",
+              "sendButton": "absent",
+              "disclosures": 2,
+              "cancelledDisclosures": 0
+            }
+          },
+          "handoffs": 2
+        }
+      ]
+    }
+  ]
+}
