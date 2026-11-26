@@ -34,7 +34,7 @@ concurrency:
 jobs:
   workflows:
     name: Phone and tablet engines (${{ matrix.profile }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     strategy:
       fail-fast: false
