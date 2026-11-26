@@ -365,9 +365,13 @@ function proposeInvoiceMatch(
   const byId = new Map<string, ContextRecord>();
   for (const item of [...context, record]) byId.set(item.id, item);
   const all = [...byId.values()];
-  const claimed = new Set(
-    all.filter((r) => verifiedLiveObservation(r) && r.invoiceDigest !== undefined).map((r) => r.invoiceDigest),
-  );
+  // A live linked record keeps its invoice while it can still be restored: quarantined (unverified) or pending evidence
+  // is reversible, so releasing the invoice would let a second payment be linked and double-count it. Only a reorg
+  // tombstone (invalidated-after-reorg) frees the invoice.
+  const reservesInvoice = (r: ContextRecord): boolean => r.invoiceDigest !== undefined && (verifiedLiveObservation(r) ||
+    ((r.evidenceStatus === 'unverified-at-scan' || r.evidenceStatus === 'pending-at-scan') &&
+      (r.provenance === undefined || r.provenance === 'live-scan')));
+  const claimed = new Set(all.filter(reservesInvoice).map((r) => r.invoiceDigest));
   const open = invoices.filter((invoice) => !claimed.has(invoice.invoiceDigest));
   const candidates = open.filter((invoice) => candidate(invoice, record));
   if (candidates.length === 0) return { kind: 'none' };

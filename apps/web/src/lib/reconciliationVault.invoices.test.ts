@@ -127,6 +127,25 @@ describe('encrypted invoice registration and local matching', () => {
     await expect(vault.confirmProposal({ ...rec(3), chainId: 1, id: rec(3).id.replace(':84532:', ':1:') }, invoice.invoiceDigest)).rejects.toThrow(/scope/);
   });
 
+  it('keeps an invoice reserved while its linked payment is quarantined, so a second payment cannot claim it', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const first = rec(1);
+    await vault.observeInvoicePayments([first]);
+    await vault.confirmProposal(first, invoice.invoiceDigest);
+    // RPC uncertainty quarantines the linked inclusion; it can still be restored, so the invoice stays taken.
+    await vault.quarantineInvoicePayments(BigInt(first.blockNumber));
+    expect(await vault.read()).toMatchObject([{ id: first.id, invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'unverified-at-scan' }]);
+    const second = rec(2);
+    await vault.observeInvoicePayments([second]);
+    expect((await vault.proposals([second])).get(second.id)).toEqual({ kind: 'none' });
+    await expect(vault.confirmProposal(second, invoice.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
+    // Restoring the first inclusion leaves exactly one link to the invoice.
+    await vault.observeInvoicePayments([first]);
+    expect((await vault.read()).filter((r) => r.invoiceDigest === invoice.invoiceDigest)).toMatchObject([{ id: first.id, evidenceStatus: 'verified-at-scan' }]);
+  });
+
   it('never confirms ambiguous proposals', async () => {
     const vault = await unlocked();
     const a = registrationFromInvoice(testInvoice(), 1);
