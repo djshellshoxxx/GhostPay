@@ -6,9 +6,10 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   ATTEMPT_JOURNAL_KEY, DUPLICATE_ATTEMPT_MESSAGE, beginAttempt, clearAttempt, finishAttempt, finishReturnedAttempt, readAttempts,
-  type AttemptStorage, type WalletAttempt,
+  withAttemptJournal, type AttemptStorage, type WalletAttempt,
 } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
+import { installTestLocks } from '../test/locks';
 
 const hex64 = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`;
 const KEYS = [1, 2, 3, 4].map((n) => hex64(0xa000 + n));
@@ -102,6 +103,20 @@ describe('wallet attempt journal model fuzzing', () => {
         }
       }
     }), { seed: 691692, numRuns: 150 });
+  });
+
+  it('admits exactly one of many concurrent same-action begins through the locked durable journal (stress)', async () => {
+    installTestLocks();
+    localStorage.clear();
+    const key = KEYS[3]!;
+    const results = await Promise.allSettled(Array.from({ length: 40 }, (_, i) =>
+      withAttemptJournal((storage) => beginAttempt({ key, chainId: 1, account: ACCOUNTS[i % 2]!, kind: 'payment' }, storage))));
+    const won = results.filter((r) => r.status === 'fulfilled');
+    const refused = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    expect(won).toHaveLength(1);
+    expect(refused).toHaveLength(39);
+    for (const r of refused) expect(messageKey(r.reason)).toBe(DUPLICATE_ATTEMPT_MESSAGE);
+    expect(readAttempts().filter((a) => a.key === key)).toHaveLength(1);
   });
 
   it('refuses malformed or mutated stored journals with a typed error instead of reading them as empty', () => {
