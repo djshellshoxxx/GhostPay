@@ -1,3 +1,24 @@
+# #286 item 1: global sensitive-data masking onto current main (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-68`. Branch `claude/global-masking-286-20261126`, base main
+`e1d0eb0f7c8688ae280f774f36e01e08d2435deb`. Main has no masking module; the donor line (#569 `c30283d2` over #373,
+diverged 2026-11-20 by 319 files) is a mixed historical composition and is not merged. Narrow hand port of its masking
+mechanism (`privacyMode.tsx`, `SensitiveContent.tsx`, `PrivacyControls.tsx`, `PrivacyQuickHide.tsx`; spec
+`docs/privacy-release/v1-01-masking.md` on that line) with `Recovered-from:` trailers; donor refs untouched.
+Owned paths: new `apps/web/src/lib/privacyMode.tsx`, `apps/web/src/components/{SensitiveContent,PrivacyControls,PrivacyQuickHide}.tsx`
+and their tests; the provider/boundary hunks in `apps/web/src/AppShell.tsx`; the masked body of the wallet request
+review in `apps/web/src/components/WalletDisclosure.tsx`; one reveal-revocation line in `apps/web/src/lib/useWalletPrivacy.ts`;
+additive `privacyUx.*` catalog keys and a security-key group; user doc `docs/user/privacy-masking.md`; this entry and a handoff.
+Not owned: Settings model/`settings.ts` (the preference is a separate store so toggling never invalidates in-flight
+payment or Sweep consent bound to saved settings), clipboard (#687), account/vault revocation (#691), private history
+gate (#691), exports (#675), BTC/Solana/TRON PoC views, Pay/Sweep/Scan internals.
+Acceptance: default off; when on, masked routes, the live region and the wallet request review are absent from the
+live document (text, attributes, form values, accessibility tree), not merely blurred; reveal is deliberate, expires
+within 30 s on both clocks, fails closed on clock rollback and is revoked by navigation, lock, session change, hidden
+tab, page exit and wallet invalidation; drafts and sole-copy keys survive masking; unreadable or invalid saved
+preference fails closed to masked; light fuzz of the reveal clock model; web typecheck/lint/tests; hosted CI incl.
+full/lean browser on the exact head. No dependency, workflow, contract, network or deployment change.
+
 # Browser self-check feature completion (2026-11-26 UTC)
 
 Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
