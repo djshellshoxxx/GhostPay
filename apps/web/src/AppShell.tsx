@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
+import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
 import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
@@ -26,6 +27,26 @@ import { notifyAppLock } from './lib/appLock';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
+
+interface IdleObservation { readonly wall: number; readonly monotonic: number }
+interface IdleLease {
+  readonly session: ReturnType<typeof getSessionPublic>;
+  activity: IdleObservation | undefined;
+  observed: IdleObservation | undefined;
+  expired: boolean;
+}
+
+/** A clock observation is one indivisible sample. Unknown/negative clocks never establish a new lease. */
+function observeIdleClocks(): IdleObservation | undefined {
+  try {
+    const wall = Date.now();
+    const monotonic = performance.now();
+    return Number.isFinite(wall) && wall >= 0 && Number.isFinite(monotonic) && monotonic >= 0
+      ? { wall, monotonic } : undefined;
+  } catch {
+    return undefined;
+  }
+}
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
 import type { MessageKey } from './i18n/catalog';
 import { ShellProfileContext } from './lib/buildProfile';
@@ -77,7 +98,6 @@ export function AppShell(props: AppShellProps): ReactNode {
   const services = useServices();
   const [fragment, setFragment] = useState<string | undefined>(() => readInvoiceFragment(window.location));
   const [selectedView, setViewState] = useState<ViewId>(() => (readInvoiceFragment(window.location) === undefined ? 'home' : 'pay'));
-  const view = profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
   const setView = useCallback((next: ViewId): void => {
     setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
   }, [profile]);
@@ -85,16 +105,19 @@ export function AppShell(props: AppShellProps): ReactNode {
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
-  // Minutes of the idle lock that last wiped seller keys, and whether an unsaved signing key went with them (C-R10), for a
-  // visible notice; cleared once keys are loaded again.
-  const [idleWiped, setIdleWiped] = useState<{ readonly minutes: number; readonly signerLost: boolean } | undefined>(undefined);
+  // Show the wipe notice until a new seller is loaded or the user dismisses it.
+  const [idleWipedAfterMinutes, setIdleWipedAfterMinutes] = useState<number>();
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
+  const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
+  const view = suspended ? 'seller' : profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
+  // Configuration/service rerenders do not count as activity. Only actual key installation starts a new session lease.
+  const idleLease = useRef<IdleLease | undefined>(undefined);
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
   // Hash changes arriving later are handled by the listener below.
@@ -126,87 +149,166 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
   useEffect(() => subscribeSession(() => {
     services.vault.lock();
-    if (hasSession()) setIdleWiped(undefined);
+    if (hasSession()) setIdleWipedAfterMinutes(undefined);
   }), [services]);
 
-  // Idle lock (L1-01). Local tags always lock. Seller keys are wiped only when a copy survives the wipe (imported keys, a
-  // downloaded keystore, or their vault still saved here); keys that exist nowhere else stay loaded under the backup
-  // banner, because wiping them would lose every payment sent to their meta-address. Hex keys imported without their
-  // signing key are wiped too: the hex loads them again, and the notice says that the signing key generated here is gone (C-R10).
+  // GP-PAGES-04: expire authority synchronously; custody checks decide only whether retained boxes can be disposed.
+  // A sole copy remains available to the existing encrypted backup path, never to ordinary signing/scanning/export.
   useEffect(() => {
     const minutes = settings.lockTimeoutMin;
     const timeoutMs = minutes * 60_000;
+    const freshLease = (): IdleLease => {
+      const observation = observeIdleClocks();
+      return { session: getSessionPublic(), activity: observation, observed: observation, expired: false };
+    };
+    const previous = idleLease.current;
+    let lease = previous?.session === getSessionPublic() ? previous : undefined;
+    lease ??= freshLease();
+    // A concrete local binding lets queued callbacks compare object identity after any session replacement.
+    let current: IdleLease = lease;
+    idleLease.current = current;
+    let active = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    // Both clocks enforce the deadline (GP-PAGES-04): wall time advances across device sleep on platforms that pause
-    // performance.now(), while monotonic time prevents a wall-clock adjustment from extending the idle period.
-    // Any rollback since the last observation locks immediately, including when both timers and monotonic time paused.
-    let lastActivityWall = Date.now();
-    let lastActivityMonotonic = performance.now();
-    let lastObservedWall = lastActivityWall;
-    let lastObservedMonotonic = lastActivityMonotonic;
-    let locked = false;
-    const lock = (): void => {
-      if (locked) return;
-      locked = true;
-      services.vault.lock();
-      // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
-      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard if unchanged (G2-02).
-      notifyAppLock('idle');
-      if (!hasSession()) {
-        setLive({ key: 'app.idle.tagsLocked' });
-        return;
-      }
+    let timerRevision = 0;
+    let lockRevision = 0;
+    const cancelTimer = (): void => {
+      timerRevision++;
+      if (timer !== undefined) clearTimeout(timer);
+      timer = undefined;
+    };
+    const overdue = (now: IdleObservation | undefined): boolean => {
+      const { activity, observed } = current;
+      if (now === undefined || activity === undefined || observed === undefined) return true;
+      const rolledBack = now.wall < observed.wall || now.monotonic < observed.monotonic;
+      current.observed = now;
+      return rolledBack || now.wall - activity.wall >= timeoutMs || now.monotonic - activity.monotonic >= timeoutMs;
+    };
+    const retainedNotice = (): void => {
+      const backupState = getSessionBackup();
+      setLive({ key: backupState?.signerOnly === true ? 'app.idle.keptSigner'
+        : backupState?.verified === true ? 'app.idle.keptUnconfirmed'
+        : backupState?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept' });
+    };
+    const finishLock = (expected: IdleLease): void => {
+      const revision = ++lockRevision;
       const unchanged = captureSessionVersionGuard();
+      const stillCurrent = (): boolean => {
+        if (!active || current !== expected || revision !== lockRevision) return false;
+        try { unchanged(); return true; } catch { return false; }
+      };
       void loadedKeysRecoverable().then((recoverable) => {
-        try { unchanged(); } catch { return; }
-        const signerLost = getSessionBackup()?.signerOnly === true;
-        if (!recoverable && !signerLost) {
-          // A downloaded keystore that was never verified does not count: the file may never have reached the disk (GP-PAGES-02).
-          setLive({ key: getSessionBackup()?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept' });
-          return;
-        }
+        if (!stillCurrent()) return;
+        if (!recoverable) { retainedNotice(); return; }
         clearSession();
-        setIdleWiped({ minutes, signerLost });
+        setIdleWipedAfterMinutes(minutes);
         setLive({ key: 'app.idle.wiped' });
+      }, () => {
+        // An unavailable custody check must preserve the copy and the suspended authority, with no unhandled promise.
+        if (stillCurrent()) retainedNotice();
       });
     };
-    const overdue = (): boolean => {
-      const wall = Date.now();
-      const monotonic = performance.now();
-      const rolledBack = wall < lastObservedWall || monotonic < lastObservedMonotonic;
-      lastObservedWall = wall;
-      lastObservedMonotonic = monotonic;
-      return rolledBack || !Number.isFinite(wall) || !Number.isFinite(monotonic) ||
-        wall - lastActivityWall >= timeoutMs || monotonic - lastActivityMonotonic >= timeoutMs;
+    const lock = (): void => {
+      if (!active || current.expired) return;
+      const expected = current;
+      current.expired = true;
+      cancelTimer();
+      // Revoke the generation before notifying views or awaiting IndexedDB. Pending imports/borrows fail immediately.
+      suspendSession();
+      services.vault.lock();
+      notifyAppLock('idle');
+      setMatches([]);
+      selectForSweep(undefined);
+      setFragment(undefined);
+      // A synchronous listener may have installed a new wallet. Never apply the old lock's custody answer to it.
+      if (current !== expected || getSessionPublic() !== expected.session) return;
+      if (!hasSession()) { setLive({ key: 'app.idle.tagsLocked' }); return; }
+      finishLock(expected);
     };
-    const check = (): void => { if (overdue()) lock(); };
+    const schedule = (delay: number): void => {
+      cancelTimer();
+      const revision = timerRevision;
+      const expected = current;
+      timer = setTimeout(() => {
+        if (active && revision === timerRevision && current === expected) lock();
+      }, delay);
+    };
+    const start = (now: IdleObservation | undefined): void => {
+      if (current.expired) {
+        // Replacing an effect must retire its asynchronous answer without leaving a recoverable copy inaccessible.
+        if (hasSession()) finishLock(current);
+        return;
+      }
+      if (now === undefined || overdue(now)) { lock(); return; }
+      const activity = current.activity;
+      if (activity === undefined) { lock(); return; }
+      schedule(Math.min(timeoutMs - (now.wall - activity.wall), timeoutMs - (now.monotonic - activity.monotonic)));
+    };
+    const onSession = (): void => {
+      if (!active || getSessionPublic() === current.session) return;
+      cancelTimer();
+      lockRevision++;
+      if (getSessionPublic() === undefined) {
+        // A wipe is not new activity. Preserve the expired latch so restoration events cannot emit duplicate locks.
+        current = { ...current, session: undefined };
+        idleLease.current = current;
+        if (!current.expired) start(observeIdleClocks());
+      } else {
+        current = freshLease();
+        idleLease.current = current;
+        start(current.activity);
+      }
+    };
+    const check = (): void => {
+      if (!active) return;
+      if (getSessionPublic() !== current.session) { onSession(); return; }
+      if (!current.expired && overdue(observeIdleClocks())) lock();
+    };
     const arm = (): void => {
-      // Activity after a sleep that passed the deadline locks first; the activity then starts the next idle period.
-      check();
-      lastActivityWall = Date.now();
-      lastActivityMonotonic = performance.now();
-      lastObservedWall = lastActivityWall;
-      lastObservedMonotonic = lastActivityMonotonic;
-      locked = false;
-      if (timer !== undefined) clearTimeout(timer);
-      timer = setTimeout(lock, timeoutMs);
+      if (!active) return;
+      if (current.expired) {
+        // Fresh post-lock input needs a cleanup timer for recovery/unlock passphrases. This renews only that UI
+        // deadline: session authority stays suspended until normal import/unlock. Keep this lease's identity so
+        // activity cannot cancel an outstanding custody decision for the already-revoked session.
+        const now = observeIdleClocks();
+        current.activity = now;
+        current.observed = now;
+        current.expired = false;
+        start(now);
+        return;
+      }
+      const now = observeIdleClocks();
+      if (now === undefined || overdue(now)) { lock(); return; }
+      current.activity = now;
+      schedule(timeoutMs);
     };
-    const onVisibility = (): void => { if (document.visibilityState === 'visible') check(); };
-    arm();
+    const unsubscribeExpiry = subscribeSessionExpiryCheck(check);
+    const unsubscribeSession = subscribeSession(onSession);
+    start(previous === current ? observeIdleClocks() : current.activity);
     const interval = setInterval(check, IDLE_CHECK_MS);
-    window.addEventListener('pointerdown', arm);
-    window.addEventListener('keydown', arm);
+    // Capture runs before React/target handlers can start a protected operation with the first input after sleep.
+    window.addEventListener('pointerdown', arm, true);
+    window.addEventListener('keydown', arm, true);
     window.addEventListener('focus', check);
     window.addEventListener('pageshow', check);
-    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', check);
+    document.addEventListener('visibilitychange', check);
+    document.addEventListener('resume', check);
+    document.addEventListener('freeze', check);
     return () => {
-      if (timer !== undefined) clearTimeout(timer);
+      active = false;
+      lockRevision++;
+      cancelTimer();
       clearInterval(interval);
-      window.removeEventListener('pointerdown', arm);
-      window.removeEventListener('keydown', arm);
+      unsubscribeExpiry();
+      unsubscribeSession();
+      window.removeEventListener('pointerdown', arm, true);
+      window.removeEventListener('keydown', arm, true);
       window.removeEventListener('focus', check);
       window.removeEventListener('pageshow', check);
-      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', check);
+      document.removeEventListener('visibilitychange', check);
+      document.removeEventListener('resume', check);
+      document.removeEventListener('freeze', check);
     };
   }, [services, settings.lockTimeoutMin]);
 
@@ -287,6 +389,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   return (
     <AppContext.Provider value={state}>
+      <SessionPresentationBoundary>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
@@ -296,7 +399,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <ul className="nav">
             {order.map((v) => (
               <li key={v}>
-                <button type="button" className="nav-btn" data-view={v} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
+                <button type="button" className="nav-btn" data-view={v} disabled={suspended && v !== 'seller'} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
                   {t(VIEW_LABELS[v])}
                 </button>
               </li>
@@ -305,7 +408,8 @@ export function AppShell(props: AppShellProps): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
-        {props.mainPrelude}
+        {!suspended && props.mainPrelude}
+        {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
@@ -319,17 +423,17 @@ export function AppShell(props: AppShellProps): ReactNode {
             {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
-        {session === undefined && idleWiped !== undefined && (
+        {session === undefined && idleWipedAfterMinutes !== undefined && (
           <Notice kind="info">
-            {t('app.idle.wipedNotice', { minutes: idleWiped.minutes })}{idleWiped.signerLost && <> {t('app.idle.signerLost')}</>}{' '}
-            <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
+            {t('app.idle.wipedNotice', { minutes: idleWipedAfterMinutes })}{' '}
+            <button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
         <CopiedBackupNotice />
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} />
+            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
@@ -344,6 +448,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         </ul>
       </footer>
       </WalletDisclosureProvider>
+      </SessionPresentationBoundary>
     </AppContext.Provider>
   );
 }
