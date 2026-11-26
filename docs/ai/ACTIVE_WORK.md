@@ -1,3 +1,16 @@
+# #710 independent review follow-up and merge train #704 (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/train2`, continuing the uncommitted work of `newghostpay-7d/train` after a host crash.
+Branches `claude/account-privacy-audit-20261126` (from head `f53e82f1`), `claude/global-masking-286-20261126` (from
+`5996aa49`) and `claude/fc05b-main-20261126` (train, from `bfbf6200`). Owned paths for the follow-up: the
+terminal-marker lines of `apps/web/src/views/Pay.tsx`, `apps/web/src/views/WalletPrivacy.lifecycle.test.tsx`,
+`apps/web/src/components/PrivacyControls.tsx`, `apps/web/src/components/QrFrame.tsx` and their tests,
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`, this file's registry rebuild and this entry.
+`duplicateAttemptJournal.ts` is not changed.
+Acceptance: the review findings reproduce in failing tests and pass after the fixes, the existing pending/done
+no-extra-send cases and durable journal evidence are kept, `ACTIVE_WORK.md` differs from main by additions only,
+full hosted CI passes on the exact train head. No deployment, contracts, live wallets or funds.
+
 # Account/vault/session privacy: light fuzz, stress, QA and bug/security audit (2026-11-26 UTC)
 
 Worker: Claude Code session `ghostpay-68`, on the owner's instruction after reviewing #697/#698 (APPROVE sent to the

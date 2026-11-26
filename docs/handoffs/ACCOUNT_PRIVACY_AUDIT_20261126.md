@@ -83,3 +83,23 @@ All six regression cases failed on `e1d0eb0f` and pass with the fix.
   4 catalogs, 0 errors (warnings are English-source fallbacks, as before).
 - Not run: local Playwright, full/lean browser, beta, Pages-artifact and mobile lanes (hosted CI gates), deployment,
   live wallets or funds.
+
+## Independent review follow-up (09:07Z review of `f53e82f1`)
+
+The first handoff edit for this follow-up was zero-filled by a host crash and was rewritten from the committed copy.
+
+1. **The "payment already requested" marker retained a revoked private invoice.** `requestedInvoice` and
+   `walletRequestedFor` held the whole invoice object, and revoking an encrypted or passphrase-protected checkout cleared
+   neither. Both holders are now written for public checkout only, and replacing the invoice clears both. The durable
+   attempt journal is unchanged, so its records stay.
+2. **An unverified approval was reported as a requested payment.** The revocation handler treated any `submitted` phase as
+   a payment handoff, including the approval branch of `PostBroadcastError`. Only a `submitted` payment, `done`, or a
+   payment wallet request counts now. Checkout reopens after an approval-only outcome and the journal refuses to repeat
+   the approval.
+
+A payment the wallet explicitly rejected stays terminal for the open public invoice: a wallet error code, 4001
+included, does not prove nothing was broadcast, and its `unknown` journal record stays until explicitly cleared.
+
+Regressions are in `apps/web/src/views/WalletPrivacy.lifecycle.test.tsx`: the approval-only case, four private-checkout
+cases (encrypted and passphrase-protected, each with a wallet change and a replacement) and the rejection case. The
+`done` and `pending` no-extra-send cases are unchanged. Hosted CI on the train head is the gate.
