@@ -27,6 +27,7 @@ contract EchidnaRouter {
     uint256 internal okErc20;
     uint256 internal okNative;
     uint256 internal okBuffer;
+    uint256 internal okPermitBuffer;
     uint256 internal okFeeNonZero;
 
     constructor() payable {
@@ -165,7 +166,7 @@ contract EchidnaRouter {
             _meta(0xab, 0xa9059cbb, address(token), net),
             IGhostPayRouter.PermitSig({v: 27, r: bytes32(0), s: bytes32(0)})
         ) {
-            okBuffer++;
+            okPermitBuffer++;
             totalBuffer += buffer;
             totalGrossErc20 += gross;
             if (_sum(token) - sumBefore != gross) perCallBroken = true;
@@ -222,6 +223,10 @@ contract EchidnaRouter {
 
     function echidna_canary_buffer_success() external view returns (bool) {
         return okBuffer < 5;
+    }
+
+    function echidna_canary_permit_buffer_success() external view returns (bool) {
+        return okPermitBuffer < 5;
     }
 
     function echidna_canary_nonzero_fee() external view returns (bool) {

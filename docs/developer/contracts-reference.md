@@ -42,7 +42,7 @@ IERC5564Announcer public immutable ANNOUNCER;   address public immutable FEE_REC
 | `payERC20WithPermit(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata, uint8 v, bytes32 r, bytes32 s)` | 0 | `permit(msg.sender, this, gross, deadline, v, r, s)` inside `try/catch`; token must have a nonzero address and `block.timestamp <= deadline` before the permit is tried |
 | `payNative(address stealth, uint256 minNet, uint256 deadline, bytes ephemeralPubKey, bytes metadata)` | `gross = msg.value` | |
 | `payERC20WithBuffer(token, stealth, gross, minNet, deadline, uint256 maxBufferWei, ephemeralPubKey, metadata)` | buffer | `msg.value` is a native gas buffer forwarded to `stealth`; no fee on it |
-| `payERC20WithPermitAndBuffer(token, stealth, gross, minNet, deadline, uint256 maxBufferWei, ephemeralPubKey, metadata, PermitSig permit)` | buffer | `permit(msg.sender, this, gross, deadline, permit.v, permit.r, permit.s)` inside `try/catch` after the buffer bounds pass, then the `payERC20WithBuffer` rules; `PermitSig {uint8 v; bytes32 r; bytes32 s}` (ADR-0030, not deployed) |
+| `payERC20WithPermitAndBuffer(token, stealth, gross, minNet, deadline, uint256 maxBufferWei, ephemeralPubKey, metadata, PermitSig permit)` | buffer | buffer bounds first (`BufferRequired`, `BufferTooLarge`), then `token != 0` and `block.timestamp <= deadline`, then `permit(msg.sender, this, gross, deadline, permit.v, permit.r, permit.s)` inside `try/catch`, then the `payERC20WithBuffer` transfer and forward rules; `PermitSig {uint8 v; bytes32 r; bytes32 s}` (ADR-0030, not deployed) |
 | `receive()` / `fallback()` | | always revert `NoDirectETH()` |
 
 Every function is `nonReentrant` (storage-based `ReentrancyGuard`, not transient, for chains without Cancun transient

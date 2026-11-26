@@ -1048,7 +1048,7 @@ contract GhostPayRouterTest is Base {
         IGhostPayRouter.PermitSig memory sig = _sigOf(p);
         vm.expectRevert(IGhostPayRouter.BufferRequired.selector);
         this.payPermitBufferExternal(p, 0, 1 ether, sig);
-        // The permit was not consumed: the same signature still pays afterwards.
+        // A refused call leaves the signature usable: the same permit pays afterwards.
         assertEq(p.t.nonces(p.addr), 0);
         _payPermitBuffer(p, 0.01 ether, 1 ether, sig);
         assertEq(p.t.balanceOf(stealth), GROSS - _fee(GROSS));

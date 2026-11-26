@@ -158,7 +158,7 @@ contract GhostPayRouter is IGhostPayRouter, ReentrancyGuard {
         bytes calldata metadata,
         PermitSig calldata permit
     ) external payable nonReentrant {
-        // Buffer bounds first: a refused call must not consume the permit nonce.
+        // Buffer bounds first: input validation before any external call (the permit comes after).
         if (msg.value == 0) revert BufferRequired();
         if (msg.value > maxBufferWei) revert BufferTooLarge();
         if (address(token) == address(0)) revert ZeroAddress();

@@ -14,8 +14,9 @@ deployment manifest.
 ## Decision
 1. `GhostPayRouter` gains `payERC20WithPermitAndBuffer(token, stealth, gross, minNet, deadline, maxBufferWei,
    ephemeralPubKey, metadata, PermitSig permit)`, `payable` and `nonReentrant`. It is the composition of the two existing
-   paths and introduces no new rule: buffer bounds (`BufferRequired`, `BufferTooLarge`) are checked first so that a refused
-   call never consumes the permit nonce; then the zero-token and deadline checks; then the permit inside `try/catch` with
+   paths and introduces no new rule: buffer bounds (`BufferRequired`, `BufferTooLarge`) are checked first, so a mis-sized
+   buffer fails on input validation before any external call (a revert leaves the signature usable in any order); then
+   the zero-token and deadline checks; then the permit inside `try/catch` with
    the same front-run reasoning as `payERC20WithPermit` (a consumed nonce only makes the permit fail and the transfer
    reverts unless the allowance suffices); then the exact balance-delta ERC-20 transfer, the buffer forward with all
    remaining gas and the announcement. No fee is taken on the buffer and the router holds nothing afterwards.

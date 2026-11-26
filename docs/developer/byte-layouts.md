@@ -63,9 +63,10 @@ With the only valid lengths the tails are fixed: key = 1 length word + 2 data wo
 | `payERC20WithPermit(address,address,uint256,uint256,uint256,bytes,bytes,uint8,bytes32,bytes32)` | `0x5074fd54` | token, stealth, gross, minNet, deadline, off(key)=`0x140`, off(meta)=`0x1a0`, v, r, s | 516 |
 | `payNative(address,uint256,uint256,bytes,bytes)` | `0xb0c02fa3` | stealth, minNet, deadline, off(key)=`0xa0`, off(meta)=`0x100` | 356 |
 | `payERC20WithBuffer(address,address,uint256,uint256,uint256,uint256,bytes,bytes)` | `0x8538e776` | token, stealth, gross, minNet, deadline, maxBufferWei, off(key)=`0x100`, off(meta)=`0x160` | 452 |
+| `payERC20WithPermitAndBuffer(address,address,uint256,uint256,uint256,uint256,bytes,bytes,(uint8,bytes32,bytes32))` | `0x74885f89` | token, stealth, gross, minNet, deadline, maxBufferWei, off(key)=`0x160`, off(meta)=`0x1c0`, v, r, s | 548 |
 
-Sample size = 4 + 32 x head words + 96 + 96. Native value: `payNative` `msg.value = gross`; `payERC20WithBuffer` `msg.value =
-buffer`; others 0. The `payERC20` words, decoded from a real encoding (`token=0x...1001`, `stealth=0x...2002`, gross
+Sample size = 4 + 32 x head words + 96 + 96. Native value: `payNative` `msg.value = gross`; `payERC20WithBuffer` and
+`payERC20WithPermitAndBuffer` `msg.value = buffer`; others 0. The `payERC20` words, decoded from a real encoding (`token=0x...1001`, `stealth=0x...2002`, gross
 `1000000000`, minNet `996000000`, deadline `1700000000`):
 
 ```

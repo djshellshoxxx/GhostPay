@@ -203,12 +203,14 @@ hash. Consumers must not use scan wall time when header time is absent.
 ## Router builders (`router.ts`)
 
 ```ts
-type RouterMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative' | 'payERC20WithBuffer'
+type RouterMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative' | 'payERC20WithBuffer' | 'payERC20WithPermitAndBuffer'
 interface PaymentTx { to: Address; data: Hex; value: bigint }
 interface PaymentPreview {
   method: RouterMethod; chainId: number; router: Address; token: Address | 'native'; stealth: Address;
   gross: bigint; fee: bigint; net: bigint; minNet: bigint; deadline: bigint;
-  ephemeralPublicKey: Hex; metadata: Hex; value: bigint; maxBufferWei?: bigint; permit?: { v: number; r: Hex; s: Hex };
+  ephemeralPublicKey: Hex; metadata: Hex; value: bigint;
+  maxBufferWei?: bigint;                 // both buffer methods
+  permit?: { v: number; r: Hex; s: Hex };  // both permit methods
 }
 interface BuiltPayment { tx: PaymentTx; preview: PaymentPreview }
 interface BuildPaymentInput {
@@ -227,8 +229,10 @@ const ROUTER_NATIVE_MARKER: Address
 ```
 
 Method selection: native invoice -> `payNative` (value = gross); ERC-20 + `permitSignature` -> `payERC20WithPermit`;
-ERC-20 + `buffer` -> `payERC20WithBuffer` (value = `bufferWei`, cap `maxBufferWei` defaults to `bufferWei`); else
-`payERC20`. Permit and buffer are mutually exclusive; both are invalid for native. The token must be on the allowlist
+ERC-20 + `buffer` -> `payERC20WithBuffer` (value = `bufferWei`, cap `maxBufferWei` defaults to `bufferWei`); ERC-20 +
+`permitSignature` + `buffer` -> `payERC20WithPermitAndBuffer` (value = `bufferWei`, same buffer bounds, permit encoded as
+a `{v, r, s}` tuple; ADR-0030, no deployment has it yet); else `payERC20`. Permit and buffer are both invalid for native.
+The token must be on the allowlist
 (`UNSUPPORTED_TOKEN`), and `permit` requires `TokenConfig.permit`. `decodePaymentCalldata` requires the re-encoded
 calldata to equal the input byte for byte, checks metadata against the router layout and `net = gross - routerFee`, and
 rejects `minNet > net`. `assertPreviewMatchesCalldata` compares method, chainId, router, token, stealth, gross, fee,

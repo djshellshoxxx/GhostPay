@@ -33,7 +33,7 @@ Rules (all functions): `nonReentrant`; `block.timestamp <= deadline`; `stealth` 
 - native: `metadata[1:5] == 0xeeeeeeee`, `metadata[5:25] == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`, `metadata[25:57] == net`;
 - `metadata[0]` (view tag) is unconstrained (the router cannot verify it).
 
-ERC-20 transfer path: record balances of `stealth` and `FEE_RECIPIENT`; `safeTransferFrom(msg.sender, FEE_RECIPIENT, fee)` (skipped if `fee == 0`), `safeTransferFrom(msg.sender, stealth, net)`; require the balance deltas equal `fee` and `net` exactly (rejects fee-on-transfer, rebasing-on-transfer tokens). Router must hold zero token balance afterwards (checked by invariant tests, not at runtime). Native path: `call{value: fee}` to `FEE_RECIPIENT`, `call{value: net}` to `stealth`, both must succeed. Then `ANNOUNCER.announce(1, stealth, ephemeralPubKey, metadata)`. `payERC20WithBuffer` additionally requires `msg.value <= maxBufferWei`, `msg.value > 0`, forwards `msg.value` to `stealth` before announcing. `payERC20WithPermitAndBuffer` checks those two buffer rules first (so a refused call consumes no permit nonce), then `token != 0` and the deadline, then `permit(msg.sender, this, gross, deadline, v, r, s)` inside `try/catch` exactly as `payERC20WithPermit`, then the ERC-20 transfer path, the buffer forward and the announcement; no fee on the buffer. `receive()`/`fallback()` revert. No function sweeps stray funds (documented: accidental transfers to the router are unrecoverable).
+ERC-20 transfer path: record balances of `stealth` and `FEE_RECIPIENT`; `safeTransferFrom(msg.sender, FEE_RECIPIENT, fee)` (skipped if `fee == 0`), `safeTransferFrom(msg.sender, stealth, net)`; require the balance deltas equal `fee` and `net` exactly (rejects fee-on-transfer, rebasing-on-transfer tokens). Router must hold zero token balance afterwards (checked by invariant tests, not at runtime). Native path: `call{value: fee}` to `FEE_RECIPIENT`, `call{value: net}` to `stealth`, both must succeed. Then `ANNOUNCER.announce(1, stealth, ephemeralPubKey, metadata)`. `payERC20WithBuffer` additionally requires `msg.value <= maxBufferWei`, `msg.value > 0`, forwards `msg.value` to `stealth` before announcing. `payERC20WithPermitAndBuffer` checks those two buffer rules first (input validation before any external call), then `token != 0` and the deadline, then `permit(msg.sender, this, gross, deadline, v, r, s)` inside `try/catch` exactly as `payERC20WithPermit`, then the ERC-20 transfer path, the buffer forward and the announcement; no fee on the buffer. `receive()`/`fallback()` revert. No function sweeps stray funds (documented: accidental transfers to the router are unrecoverable).
 
 Custom errors (exact names): `ZeroAddress`, `InvalidStealth`, `Expired`, `ZeroAmount`, `SlippageExceeded`, `InvalidEphemeralKey`, `InvalidMetadata`, `UnexpectedBalanceDelta`, `NativeTransferFailed`, `BufferTooLarge`, `BufferRequired`, `NoDirectETH`.
 
@@ -60,7 +60,7 @@ Token support matrix: works with ERC-20 tokens with ERC-2612 `permit` (e.g. USDC
 
 ## 3. Feature-1 gas buffer
 
-Implemented as `payERC20WithBuffer` in section 1. Client calculation: `bufferWei = ceil(gasLimit * maxFeePerGas * (10_000 + safetyBps) / 10_000)`.
+Implemented as `payERC20WithBuffer` and, when the payer also submits an ERC-2612 permit, `payERC20WithPermitAndBuffer` (ADR-0030, not deployed) in section 1. Client calculation: `bufferWei = ceil(gasLimit * maxFeePerGas * (10_000 + safetyBps) / 10_000)`.
 
 ## 4. Policy-guarded stealth account (scheme id `0x47500002` = "GP" + 2) , built after the core audit
 

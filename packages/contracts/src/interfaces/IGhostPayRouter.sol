@@ -131,9 +131,10 @@ interface IGhostPayRouter {
 
     /// @notice Same as {payERC20WithBuffer} but first submits an ERC-2612 permit signed by the caller,
     /// so a permit payer forwards the gas buffer without a separate approval transaction.
-    /// @dev `msg.value` is checked against zero and `maxBufferWei` before the permit is tried, so a refused
-    /// call consumes no permit nonce. The permit is wrapped in try/catch like {payERC20WithPermit}; if the
-    /// allowance is then insufficient the token transfer reverts. No fee is taken on the buffer.
+    /// @dev `msg.value` is checked against zero and `maxBufferWei` before any external call, so a
+    /// mis-sized buffer fails on input validation alone (a revert leaves the signature usable either way).
+    /// The permit is wrapped in try/catch like {payERC20WithPermit}; if the allowance is then
+    /// insufficient the token transfer reverts. No fee is taken on the buffer.
     /// @param token The ERC-20 token being paid (must implement ERC-2612).
     /// @param stealth The stealth address receiving the net amount and the buffer.
     /// @param gross Total token amount pulled from the caller, also the permit value.
