@@ -108,7 +108,7 @@ describe('every download call site requests a fixed name', () => {
       'components/PaymentRequestDownload.tsx: PAYMENT_REQUEST_FILE_NAME',
     ]);
     // Exact, so that a new call site, or one the pattern stops matching after a rewrite, has to be looked at here.
-    expect(calls).toHaveLength(14);
+    expect(calls).toHaveLength(15);
     for (const call of calls) {
       const name = literal.exec(call)?.[1];
       if (name !== undefined) expect(DOWNLOAD_NAMES, call).toContain(name);
