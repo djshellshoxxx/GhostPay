@@ -37,7 +37,7 @@ Not changed: what a checkpoint contains, the anchor and reorg checks, `clear`, `
 A separate subagent reviewed `05f6f06a` and found no skipped-block or liveness defect. Its findings and outcomes:
 
 - Major, fixed in the follow-up commit: a foreign clear was silently overridden. The run now yields to it.
-- Found while verifying a minor: the yield reused `canSaveCheckpoint`, which also gates `onPageMatches`, so a yielded run
+- Raised as minor, treated as a defect after verification (`scanClient.ts` gates `onPageMatches` on the same flag): the yield reused `canSaveCheckpoint`, which also gates `onPageMatches`, so a yielded run
   stopped recording invoice observations. Fixed with a separate flag that gates only the write.
 - Minor, fixed: after its own save the run adopted whatever the slot held. It now adopts only the saved or unchanged cursor.
 - Minor, documented and not changed: `expected` is optional, so a wrapper that drops it type-checks and turns rewinds into
