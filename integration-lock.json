@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "chatgpt-8812-branch-completion",
   "token": "420f2f57-7140-477b-a30f-7d5fac203463",
   "generation": 36,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-26T01:26:58.000Z",
   "heartbeat_at": "2026-11-26T01:26:58.000Z",
   "expires_at": "2026-11-26T02:26:58.000Z",
-  "transport": "github-api-nonforce-cas"
+  "transport": "github-api-nonforce-cas",
+  "released_at": "2026-11-26T01:27:57.000Z"
 }
