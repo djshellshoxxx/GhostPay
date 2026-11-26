@@ -78,8 +78,9 @@ changed by this worker.
   (45764930062), `Beta acceptance` (45764930091), `Mobile browser qualification` (45764930083), `Hosting kit`
   (45764930053) and `CLI operator qualification` (45764930037) all concluded success on attempt 1.
 - Resulting main `e1d0eb0f`: `Hosting kit` (45769417486) succeeded. The push `CI` run (45769417481) was still queued
-  behind the earlier main run when last read (06:51 UTC), so no main push-CI result is claimed here. Its tree equals the
-  one that passed on `f45025b5`.
+  behind the earlier main run when last read (06:51 UTC). Final result: push `CI` run 45769248688 on `045ac2d3` (#697) and
+  run 45769417481 on `e1d0eb0f` (#698) both **concluded success** (the latter completed 07:35 UTC). Main later advanced to
+  `6c3acdd5` (#703, unrelated); `e1d0eb0f` is its ancestor.
 
 ### LanguagePicker failure: unrelated flake, not changed
 
@@ -100,7 +101,7 @@ record remains the duplicate and recovery blocker.
 
 ## Remaining items
 
-1. Confirm the push `CI` run on main `e1d0eb0f` (45769417481) when it completes; reuse nothing from here for that gate.
+1. None for the push `CI` gate: both main runs above succeeded.
 2. The #691, #689 and #692 drafts are superseded by the merged integration; closing them without deleting any ref is
    the coordinator's decision (their heads are ancestors of main).
 3. Separate bug-only follow-up: the `LanguagePicker` test timing race above.
