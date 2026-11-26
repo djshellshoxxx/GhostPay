@@ -5,6 +5,8 @@ import { keccak_256 } from '@noble/hashes/sha3.js';
 import { CHAIN_ID_HEX } from './chain.mjs';
 
 export const RPC_URL = 'https://rpc.e2e.test';
+// Second, independent provider for two-RPC cross-checks (S20). Answered in-browser like the first.
+export const RPC2_URL = 'https://rpc2.e2e.test';
 export const ROUTER = '0x1111111111111111111111111111111111111111';
 const SWEEP = '0x2222222222222222222222222222222222222222';
 const ANNOUNCER = '0x55649e01b5df198d18d95b5cc5051630cfd45564';
@@ -29,7 +31,8 @@ const CORS = {
 };
 
 export class MockRpc {
-  constructor(chain) {
+  constructor(chain, { url = RPC_URL } = {}) {
+    this.url = url;
     this.chain = chain;
     this.mode = 'up'; // 'up' | 'down'
     this.failAfter = null; // when a number: answer that many more requests, then go down (mid-scan fault)
@@ -104,16 +107,19 @@ export class MockRpc {
     }
   }
 
-  /** Install the guard and the RPC route on a browser context. `origin` is the loopback app origin. */
-  async install(context, origin) {
+  /**
+   * Install the guard and this RPC's route on a browser context. `origin` is the loopback app origin. A second
+   * provider on the same context passes `{ guard: false }` so the deny-all guard is registered only once.
+   */
+  async install(context, origin, { guard = true } = {}) {
     // Registered first, so it runs LAST: anything not handled by a more specific route is refused and recorded.
-    await context.route('**/*', (route) => {
+    if (guard) await context.route('**/*', (route) => {
       const url = new URL(route.request().url());
       if (url.origin === origin || ['data:', 'blob:', 'about:'].includes(url.protocol)) return route.continue();
       this.blockedOrigins.push(url.origin);
       return route.abort('blockedbyclient');
     });
-    await context.route(`${RPC_URL}/**`, async (route) => {
+    await context.route(`${this.url}/**`, async (route) => {
       const req = route.request();
       if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
       if (this.failAfter !== null) {

@@ -100,6 +100,27 @@ export class SellerOracle {
         for (const i of linked(o)) if (!was.has(i)) this.violation('SI5', stepIndex, { tab, intent: i, outcome: result?.outcome, alerts: result?.alerts });
       }
     }
+    const stateOf = (x) => Object.fromEntries((x?.cards ?? []).map((c) => [this.intentOfCard(c), cardClasses(c.text).filter((k) => ['linked', 'acceptedLate', 'invalidated'].includes(k)).sort().join('+')]));
+    // SI9 (S20): a reorg reported by only one of two providers stops the scan; nothing is linked, rolled back or
+    // invalidated on that pass.
+    if (step.op === 'scan' && this.w.reorgSinceFreeze === true) {
+      const was = stateOf(before[step.tab]);
+      const now = stateOf(obs[step.tab]);
+      const changed = Object.keys({ ...was, ...now }).filter((k) => k !== 'null' && (was[k] ?? '') !== (now[k] ?? ''));
+      if (changed.length > 0) this.violation('SI9', stepIndex, { tab: step.tab, outcome: result?.outcome, before: was, after: now });
+      if (result?.outcome === 'finished') this.notes.push({ step: stepIndex, note: 'scan finished while providers disagreed about a reorg', tab: step.tab, text: result?.text });
+    }
+    // SI10 (S28): visible linked, accepted-late and invalidated evidence is durable across a full browser restart
+    // when the chain did not change in between.
+    if (step.op === 'restartSeller' && this.w.chain.log.length === this.w.chainLogLengthAtRestart) {
+      for (const tab of ['S1', 'S2']) {
+        const was = stateOf(before.S1);
+        const now = stateOf(obs[tab]);
+        for (const k of Object.keys({ ...was, ...now })) {
+          if (k !== 'null' && (was[k] ?? '') !== (now[k] ?? '')) this.violation('SI10', stepIndex, { tab, intent: k, before: was[k] ?? '', after: now[k] ?? '' });
+        }
+      }
+    }
     // SI8: after both seller tabs re-rendered (scenario 'compareTabs' step), they agree on what is linked.
     if (step.op === 'compareTabs') {
       const linked = (x) => [...new Set((x?.cards ?? []).filter((c) => cardClasses(c.text).includes('linked')).map((c) => this.intentOfCard(c)))].sort().join(',');

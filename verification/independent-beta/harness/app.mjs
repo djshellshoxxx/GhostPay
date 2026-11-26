@@ -68,8 +68,11 @@ function disclosureShim() {
 export const DISCLOSURE_SHIM = `(${disclosureShim.toString()})();`;
 
 /** Settings every load starts with: the harness RPC for 84532 (same key the repository's E2E helpers use). */
-export function settingsInitScript() {
-  return `try { localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': ${JSON.stringify(RPC_URL)} } })); } catch {}`;
+export function settingsInitScript({ secondary } = {}) {
+  // Written on every load, as before (milestone 1 evidence depends on it). `secondary` adds a second provider for
+  // 84532 for two-RPC cross-checks (S20).
+  const settings = { rpcUrls: { '84532': RPC_URL }, ...(secondary === undefined ? {} : { rpcUrlsSecondary: { '84532': secondary } }) };
+  return `try { localStorage.setItem('ghostpay.settings.v1', ${JSON.stringify(JSON.stringify(settings))}); } catch {}`;
 }
 
 async function visible(locator, timeout = 0) {

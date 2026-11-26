@@ -12,7 +12,7 @@ import { join } from 'node:path';
 import { DIST, REPO, distFingerprint, sourceIdentity } from './build.mjs';
 import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
-import { MockRpc } from './rpc.mjs';
+import { MockRpc, RPC2_URL } from './rpc.mjs';
 import { BROWSER_SHIM, WalletController } from './wallet.mjs';
 import { DISCLOSURE_SHIM, clickSend, openAndPrepare, settingsInitScript, settle } from './app.mjs';
 import { routerExecutor, withDeadline } from './router-model.mjs';
@@ -53,11 +53,14 @@ async function runScenario(launcher, origin, scenario) {
   chain.executor = routerExecutor;
   const rng = new Rng(scenario.seed ?? 7);
   const rpc = new MockRpc(chain);
+  // Optional second provider (S20). It answers from the same chain unless a scenario freezes its view.
+  const rpc2 = scenario.secondaryRpc === true ? new MockRpc(chain, { url: RPC2_URL }) : null;
   const tabOfPage = new WeakMap();
   const world = {
     origin,
     chain,
     rpc,
+    rpc2,
     tabs: {},
     links: {},
     // payments[intent] = [{ hash, kind: 'checkout' | 'direct' }]; actions[intent] = seller decisions the harness made
@@ -84,15 +87,18 @@ async function runScenario(launcher, origin, scenario) {
   const trace = [];
   const started = Date.now();
   let harnessError = null;
-  const boot = async (label) => {
-    const dir = mkdtempSync(join(os.tmpdir(), `w5-${label}-`));
-    dirs.push(dir);
+  const boot = async (label, reuseDir) => {
+    const dir = reuseDir ?? mkdtempSync(join(os.tmpdir(), `w5-${label}-`));
+    if (reuseDir === undefined) dirs.push(dir);
     const ctx = await launcher.launch(dir);
     contexts.push(ctx);
+    ctx.__w5dir = dir;
     await rpc.install(ctx, origin);
+    const seller = label === 'seller';
+    if (seller && rpc2 !== null) await rpc2.install(ctx, origin, { guard: false });
     await ctx.addInitScript(BROWSER_SHIM);
     await ctx.addInitScript(DISCLOSURE_SHIM);
-    await ctx.addInitScript(settingsInitScript());
+    await ctx.addInitScript(settingsInitScript(seller && rpc2 !== null ? { secondary: RPC2_URL } : {}));
     await ctx.exposeBinding('__w5wallet', (source, payload) => wallet.handle(source.page, payload));
     return ctx;
   };
@@ -116,6 +122,15 @@ async function runScenario(launcher, origin, scenario) {
       if (!r.registered) throw new Error(`harness: invoice ${intent} was not registered`);
       world.links[intent] = r.link;
     }
+    world.sellerCtx = sellerCtx;
+    // Full seller browser restart (S49): same profile directory, every tab and in-memory key gone.
+    world.restartSeller = async () => {
+      const dir = world.sellerCtx.__w5dir;
+      await world.sellerCtx.close();
+      world.sellerCtx = await boot('seller', dir);
+      adopt(world.sellerCtx, 'S1', world.sellerCtx.pages()[0] ?? (await world.sellerCtx.newPage()));
+      adopt(world.sellerCtx, 'S2', await world.sellerCtx.newPage());
+    };
     const S2 = adopt(sellerCtx, 'S2', await sellerCtx.newPage());
     if ((await unlockSellerKeys(S2, origin)) === 'unlock-failed') throw new Error('harness: second seller tab could not unlock keys');
     adopt(payerCtx, 'P', payerCtx.pages()[0] ?? (await payerCtx.newPage()));
@@ -163,7 +178,8 @@ async function runScenario(launcher, origin, scenario) {
     actions: world.actions,
     chainLog: chain.log,
     rpcUnknownMethods: [...rpc.unknownMethods],
-    blockedOrigins: [...new Set(rpc.blockedOrigins)],
+    blockedOrigins: [...new Set([...rpc.blockedOrigins, ...(rpc2?.blockedOrigins ?? [])])],
+    rpc2Calls: rpc2 === null ? null : rpc2.calls.length,
     violations: oracle.violations.map(({ key, ...v }) => v),
     ambiguities: oracle.ambiguities.map(({ key, ...v }) => v),
     notes: oracle.notes,
@@ -233,6 +249,7 @@ async function execStep(world, oracle, step, i) {
       // `hideFromRpc`: positive control only. The (single) RPC keeps serving the pre-reorg fork, i.e. a stale or lying
       // provider outside the accepted trust boundary (RS:25); the harness's truth chain still reorgs.
       if (step.hideFromRpc === true) world.rpc.chain = chain.clone();
+      if (world.secondaryFrozenAt !== undefined) world.reorgSinceFreeze = true;
       const orphaned = chain.reorg(step.depth);
       for (const h of orphaned) world.reorged.add(h);
       if (step.drop === true) for (const h of orphaned) chain.drop(h);
@@ -241,6 +258,30 @@ async function execStep(world, oracle, step, i) {
     case 'rpc':
       world.rpc.mode = step.mode;
       return { mode: step.mode };
+    case 'freezeSecondary':
+      // The second provider keeps answering from the current fork; later chain changes reach only the primary.
+      if (world.rpc2 === null) return { skipped: 'no secondary RPC' };
+      world.rpc2.chain = chain.clone();
+      world.secondaryFrozenAt = i;
+      return { frozenAtHead: chain.head };
+    case 'thawSecondary':
+      if (world.rpc2 === null) return { skipped: 'no secondary RPC' };
+      world.rpc2.chain = chain;
+      delete world.secondaryFrozenAt;
+      world.reorgSinceFreeze = false;
+      return { thawed: true };
+    case 'restartSeller': {
+      world.chainLogLengthAtRestart = chain.log.length;
+      await world.restartSeller();
+      for (const label of ['S1', 'S2']) await sellerReady(world, label);
+      return { restarted: true };
+    }
+    case 'latePay': {
+      // Compound: checkout captured (declined in wallet), chain time passes expiry, payer's tooling pays directly.
+      await execStep(world, oracle, { op: 'pay', intent: step.intent, capture: true }, i);
+      chain.warp(step.warp ?? 2 * 3600);
+      return execStep(world, oracle, { op: 'directPay', intent: step.intent }, i);
+    }
     case 'scan': {
       const page = world.tabs[step.tab];
       await sellerReady(world, step.tab);
