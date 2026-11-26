@@ -1,3 +1,10 @@
+# Cloud release qualification and shipped-wording claims guard (2026-11-26 UTC)
+
+Worker: Claude cloud session (claude.ai, read-only GitHub access: no push, no PR, no lock). Branch `claude/release-qual-cloud-20261125`, base main `cc8466dd` (qualification run on `8aca5a06`).
+Delivered to the owner as a git bundle and patch; a lane with push rights lands it through the lock queue. Does not take over W5 (#665, `verification/independent-beta/**`), the cloud lead (#673, REL-EXCL), #680 scope work or any production file.
+Owned paths: new `apps/web/src/i18n/claimsWording.test.ts`, new `docs/handoffs/CLOUD_RELEASE_QUALIFICATION_20261126.md`, this entry.
+Acceptance: the English source catalog, `help.html` and `privacy.html` affirm no anonymity, audit, mainnet-readiness, verified-seller, refund-promise, expiry-reversal or guarantee claim; every catalog message on those topics is pinned to its reviewed text; positive controls and a planted catalog claim fail the suite; web typecheck, lint and unit tests pass; hosted CI on the exact head before merge.
+
 # Static guide footer keyboard navigation
 
 Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
