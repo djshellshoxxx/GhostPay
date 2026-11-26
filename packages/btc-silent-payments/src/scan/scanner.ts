@@ -235,9 +235,15 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
       const sp = await source.getSpends(height, signal);
       if (sp.height !== height || sp.blockHash !== tw.blockHash) return fail('REORG_DETECTED');
       if (!Array.isArray(sp.spends) || sp.spends.length > MAX_SPENDS_PER_BLOCK) return fail('INVALID_RESPONSE');
+      // A block cannot spend one outpoint twice: conflicting entries are an invalid response, watched or not.
+      // Recovered-from: 78e50547 (PR #254). The map is bounded by MAX_SPENDS_PER_BLOCK and dropped per block.
+      const consumers = new Map<string, string>();
       for (const sIn of sp.spends) {
         checkSpendBounds(sIn);
         const id = `${sIn.txid}:${sIn.vout}`;
+        const previous = consumers.get(id);
+        if (previous !== undefined && previous !== sIn.spentBy) return fail('INVALID_RESPONSE');
+        consumers.set(id, sIn.spentBy);
         if (!watch.has(id) && !seenOutpoints.has(id)) continue;
         if (reportedSpends.has(id)) continue;
         if (isAborted(signal)) return;

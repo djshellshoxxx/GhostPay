@@ -358,4 +358,43 @@ describe('local spent tracking in ScanState', () => {
     // Version-1 input without the field still parses.
     expect(parseScanState(JSON.stringify({ ...good, matches: [legacy, m1] })).matches[0]?.spent).toBeUndefined();
   });
+
+  // Recovered-from: 78e50547 (PR #254).
+  it('preserves the first canonical spend when a later duplicate consumer is orphaned', async () => {
+    const original = { txid: tx(100, 0), vout: 0, spentBy: fakeTxid('first-canonical-spend') };
+    const replay = { ...original, spentBy: fakeTxid('later-repeated-consumer') };
+    const { state } = await run(resumeScan({ source: spending(blocks(), { 101: [original], 103: [replay] }),
+      keys, state: createScanState('mainnet', 100) }));
+    const firstEvidence = { height: 101, blockHash: blockHashOf(101), spentBy: original.spentBy };
+    expect.soft(state.matches[0]?.spent).toEqual(firstEvidence);
+    const reorg = await reconcileScanState(state, (h) => h === 103 ? fakeTxid('new-tip') : blockHashOf(h));
+    expect(reorg.resumeHeight).toBe(103);
+    expect.soft(reorg.state.matches[0]?.spent).toEqual(firstEvidence);
+    expect(parseScanState(serializeScanState(reorg.state))).toEqual(reorg.state);
+  });
+
+  it('recordScannedBlock never overwrites already recorded canonical spend evidence', async () => {
+    const original = { txid: tx(100, 0), vout: 0, spentBy: fakeTxid('first-canonical-spend') };
+    const { state } = await run(resumeScan({ source: spending(blocks(), { 101: [original] }),
+      keys, state: createScanState('mainnet', 100), toHeight: 101 }));
+    const repeated = recordScannedBlock(state, 102, blockHashOf(102), [], [
+      { ...original, spentBy: fakeTxid('replacement-consumer'), height: 102, blockHash: blockHashOf(102) },
+    ], true);
+    expect(repeated.matches[0]?.spent).toEqual(state.matches[0]?.spent);
+  });
+
+  it('rejects a later-block replay of a confirmed outpoint instead of replacing its discovery and spend evidence', async () => {
+    const original = blocks();
+    const { state } = await run(resumeScan({ source: spending(original), keys, state: createScanState('mainnet', 100) }));
+    const old = original[0]!;
+    const replay = {
+      tweaks: { ...old.tweaks, height: 104, blockHash: blockHashOf(104) },
+      outputs: { ...old.outputs, height: 104, blockHash: blockHashOf(104) },
+    };
+    const saved: ScanState[] = [];
+    await expect(run(resumeScan({ source: spending([...original, replay], {}), keys, state,
+      onState: (next) => { saved.push(next); } }))).rejects.toMatchObject({ code: 'INVALID_INPUT' }); // FC-05a code for a replayed confirmed outpoint (#254 used INVALID_RESPONSE).
+    expect(saved).toEqual([]);
+    expect(state.matches[0]).toMatchObject({ height: 100, blockHash: blockHashOf(100), spent });
+  });
 });
