@@ -317,6 +317,9 @@ export function Scan(): ReactNode {
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
+          // The checkpoint this render showed and `cursor` was chosen against: a change by another tab since then is
+          // foreign to this run, even if it happened during the awaits above.
+          checkpointSeen: checkpoint ?? null,
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
             caughtUp = nextProgress.caughtUp;
