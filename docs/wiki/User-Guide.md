@@ -1,5 +1,14 @@
 # User Guide — static Pages client (draft)
 
+## Current status (2026-11-26 UTC)
+
+- **Scope:** lean static GitHub Pages browser beta. It is experimental, testnet-only and not audited, and it is not a production release. This page does not claim a live deployment, an audit or any real-funds use.
+- **Not in this beta or v1.0 (stopped or deferred by the owner, not offered):** GhostStore, merchant dashboard and analytics, GhostTeams, GhostID, GhostBridge P2P-Offramp integration, multi-chain routing beyond the approved EVM scope, and encrypted device sync.
+- **Permanently archived (not offered):** GhostTips, GhostPOS and fiat conversion. Details: [Not in this beta or v1.0](../user/README.md#not-in-this-beta-or-v10).
+- **Kept core:** single-invoice status and reconciliation, encrypted local records and receipts, private invoice links and QR codes, stealth destinations, backup and recovery, and privacy protections. Blockchain transactions and much of their metadata stay public.
+- Fiat-quoted invoices cannot be paid in the lean build. Exact crypto amounts still work.
+- The dated status paragraphs and sections below are historical snapshots. They do not describe current status.
+
 [Home](Home.md) · [Developer Guide](Developer-Guide.md) · [Verification and Release Gates](Verification-and-Release-Gates.md)
 
 **November 16, 2026 — #177 exact-head GREEN after retry:** The newest individually qualified, still **unmerged** Pages-only [draft #177](https://github.com/djshellshoxxx/GhostPay/pull/177) at `17f681915f25441f5c38326ad718b8082495d52a` now has [application CI #43812242766](https://github.com/djshellshoxxx/GhostPay/actions/runs/43812242766) **SUCCESS (24/24 jobs)** after the single failed-job rerun. The original attempt's unrelated passphrase test shard timed out at 60 seconds; no test/KDF limit or production code was changed for the retry and its cause remains unproven. [Pages/local-Anvil #43812242782](https://github.com/djshellshoxxx/GhostPay/actions/runs/43812242782), [beta #43812242757](https://github.com/djshellshoxxx/GhostPay/actions/runs/43812242757), [hosting #43812242740](https://github.com/djshellshoxxx/GhostPay/actions/runs/43812242740) and [CLI #43812242763](https://github.com/djshellshoxxx/GhostPay/actions/runs/43812242763) also passed at the same SHA. The confirmed test-first RED and corrected `IdbTagStore.onclose` recovery are source-pinned in [Verification and Release Gates](Verification-and-Release-Gates.md). This **does not** qualify the owner #157 / staging #174 integration, external wallets, CodeQL/Sonar A, independent audit, signed testnet manifests, deploy/live smoke, real funds, release, main merge or Wiki publication. Older statements below are dated historical checkpoints.
