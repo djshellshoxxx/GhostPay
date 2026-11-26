@@ -1,3 +1,16 @@
+# Orphaned FC round-1 PRs onto current main: FC-03 and FC-05a (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-42`, on the owner's instruction to finish the orphaned feature-completion PRs
+(coordinator `feature-completion-06` exited before merging candidate #664). Branch: `claude/fc-round1-rest-20261126`,
+base main `1bea3df3`. Inputs merged with `--no-ff` at their exact reviewed heads: #648 FC-03 `a13ab24d`, #661 FC-03-T
+`a2b14ca8`, #656 FC-05a `8e7b1915`, #662 FC-05a-T `22c3cb1d` (each green at its own head; reviews APPROVE or
+APPROVE-WITH-NITS, recorded in `docs/consolidation/feature-completion-20261125/CAMPAIGN.md` on the coordinator branch).
+Already landed by others: #650 (in #688), #663 (in #690), #649 (as #683 by W3). Not in this branch: FC-05b #669, which
+has an unaddressed CHANGES-REQUIRED review on its pending-spend guard; it follows as a separate PR after this lands.
+Stop-work check: no F14 routing, bridging or chain selection; FC-03 adds mainnet refusals to existing PoC libraries,
+FC-05a reduces Bitcoin provider disclosure (consent-only spent checks). Owned: this branch only; donor branches untouched.
+Acceptance: hosted CI green at the exact head; merge through the shared lock queue.
+
 # SEC-1 follow-up — in-app payment-key warnings name the payer (2026-11-25 UTC)
 
 Worker: Claude Code session `ghostpay-15` (the PR #647 session). Branch `claude/sec1-payer-key-warning`, base main
