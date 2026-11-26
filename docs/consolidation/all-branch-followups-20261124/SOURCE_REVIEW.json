@@ -1,0 +1,148 @@
+{
+  "format": "ghostpay-final-extended-neutral-diagnostics-addendum/1",
+  "reviewer": "/root/ownership_review",
+  "observed_at": "2026-11-24T13:34:15.604492+00:00",
+  "decision": "approve-source-composition",
+  "blockers": [],
+  "source": "70df75359a807bf833da82f43229452d6ab59976",
+  "tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+  "baseline": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "baseline_tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+  "qualified_source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+  "qualified_tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+  "author_final": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+  "author_final_tree": "e78131dd21005e3abf360f10d4bea1ac262e4fa0",
+  "merge_proof": {
+    "path": "/workspace/scratch/f80482f352bc/compatibility-merge-proofs/c38f3c2cd692b44f512c596cab4732b7ed04f5ce.json",
+    "sha256": "56dcdee8275fdb42adb850e43417b7aec30e5abdc34229a8659826fd4999d107",
+    "parents": [
+      "d75cbb00c2312f300c6e7ea4b7abd3a9011352d5",
+      "c38f3c2cd692b44f512c596cab4732b7ed04f5ce"
+    ],
+    "unique_merge_base": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+    "only_shared_changed_path": "docs/ai/ACTIVE_WORK.md",
+    "exact_nonshared_entries": [
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "apps/web/src/lib/deployment.test.ts",
+        "entry": "100644 blob ae888b9a42cf73dbe205af1be61e79cffa3c853b"
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "apps/web/src/lib/deployment.ts",
+        "entry": "100644 blob 0a9bb48d76a9456def783a07e9480327299e1a79"
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "apps/web/src/lib/hardening.test.ts",
+        "entry": "100644 blob 5c62abd6c7899bc2625a6608ac2b7ffd85a64b0c"
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md",
+        "entry": "100644 blob dd460742737d5b2517752feaeb102a9901bc8066"
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "docs/handoffs/deployment-diagnostic-recovery-20261124/QUALIFICATION.json",
+        "entry": "100644 blob 83c58c0371946f1e791b19e3dad65f5f2e71cd79"
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "path": "docs/handoffs/deployment-diagnostic-recovery-20261124/run-logs.tar.gz",
+        "entry": "100644 blob 49288788f0c57c09f562eedf2318f18c7009e765"
+      }
+    ],
+    "entire_merge_tree_matches_parent_union_except_claim": true,
+    "claim_parent_checks": [
+      {
+        "parent": "d75cbb00c2312f300c6e7ea4b7abd3a9011352d5",
+        "ordered_nonblank_sequence_preserved": true,
+        "per_line_multiplicity_preserved": true
+      },
+      {
+        "parent": "c38f3c2cd692b44f512c596cab4732b7ed04f5ce",
+        "ordered_nonblank_sequence_preserved": true,
+        "per_line_multiplicity_preserved": true
+      }
+    ],
+    "claim_multiplicity_exact_parent_union_minus_base": true,
+    "conflict_markers_absent": true
+  },
+  "scope": {
+    "base_entries": 4418,
+    "final_entries": 4421,
+    "changed_paths_from_785": [
+      "apps/web/src/lib/deployment.test.ts",
+      "apps/web/src/lib/deployment.ts",
+      "apps/web/src/lib/hardening.test.ts",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/DEPLOYMENT_DIAGNOSTIC_RECOVERY_20261124.md",
+      "docs/handoffs/deployment-diagnostic-recovery-20261124/QUALIFICATION.json",
+      "docs/handoffs/deployment-diagnostic-recovery-20261124/run-logs.tar.gz"
+    ],
+    "changed_source_paths": [
+      "apps/web/src/lib/deployment.ts",
+      "apps/web/src/lib/deployment.test.ts",
+      "apps/web/src/lib/hardening.test.ts"
+    ],
+    "existing_785_entries_exact": 4414,
+    "existing_785_entries_modified": 4,
+    "added_documentation_evidence_paths": 3,
+    "deleted_paths": [],
+    "all_prior_19_nonshared_compatibility_paths_exact": true,
+    "all_packages_workflows_manifest_and_lock_exact_to_785": true,
+    "donor_source_postimages_exact": true,
+    "all_other_785_entries_exact": true,
+    "combined_bda_changed_path_count": 26,
+    "combined_bda_addition_count": 19,
+    "combined_bda_modified_existing_count": 7,
+    "combined_bda_deleted_count": 0,
+    "combined_bda_existing_exact_count": 4395
+  },
+  "qualification": {
+    "source": "e65214c2f13bd7724aec42032e6cfcb40e87aba5",
+    "tree": "088fa581964a891a793bdeaef879a42bf1c20725",
+    "tests": {
+      "files": 4,
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "newly_authored_tests": 0
+    },
+    "all_three_recorded_commands_exit_zero": true,
+    "archive_readback_verified_members": 8,
+    "archive_sha256": "8263be6b725860d69fd6beafaee74d0452d013f5f050bc60971b04ebb07eb29c",
+    "original_logs_match_archive": true,
+    "author_post_qualification_changes_docs_only": true,
+    "reviewer_runtime_reruns": false,
+    "source_pin_is_not_final_hosted_run": true
+  },
+  "review_inputs": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/neutral-deployment-independent-review.json",
+      "sha256": "a13d4b097c29f3dbc5309a0e4f8309c0d56d0c52955bb9903bb404d2960bf2e7"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/final-extended-composition-independent-review-7852931.json",
+      "sha256": "ec10f23ccbd7ebc49c7e1e3dfb19f210ad2f695ff9f8a9efe67b85ec43ff0d62"
+    }
+  ],
+  "limits": [
+    "This approves source composition only; exact-final-head hosted gates remain required.",
+    "45 focused tests retain the e652 source pin and overlap earlier full application coverage; do not aggregate them as new unique full-suite tests.",
+    "The local web installation contains cookie 0.4.2; it does not qualify the final cookie override. Separate cookie private-install evidence remains distinct.",
+    "No new helper callers, broader donor privacy/export behavior, dependencies, workflows, contracts or transports are introduced.",
+    "No source/ref/remote mutations or runtime reruns were performed by the reviewer.",
+    "Later report-only commits need their own docs-only verification; no later source is presumed reviewed."
+  ],
+  "remote_tree_equivalent": {
+    "source": "0a7b903780b66135a9505230c96d4ab45b2959a2",
+    "tree": "d006864ec291386d17ddab0bd4fd4ac1bb08c1a8",
+    "parents": [
+      "851e86ce8b6fed659e499e69d1c174b86b646e4c"
+    ],
+    "exact_tree_equivalence_verified": true,
+    "qualification_claim": "No hosted result is inferred from tree equivalence."
+  }
+}

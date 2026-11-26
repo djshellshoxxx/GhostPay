@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { crc32Ascii, encodeMultipart, QrExchangeError } from '@ghostpay/qr-exchange';
+import { notifyAppLock } from '../lib/appLock';
 
 const fakes = vi.hoisted(() => ({ startCamera: vi.fn(), scanFromVideo: vi.fn(), decodeQrImage: vi.fn(), listVideoInputs: vi.fn() }));
 // Real Assembler, chunk parser and errors; only the camera, device listing and image decoder are replaced.
@@ -59,6 +60,28 @@ async function show(scan: Frame, text: string): Promise<boolean> {
 const progressBar = (): HTMLProgressElement => screen.getByRole<HTMLProgressElement>('progressbar', { name: 'Multipart QR transfer progress' });
 
 describe('CameraImporter multipart camera scanning', () => {
+  it.each(['idle', 'manual'] as const)('clears partial transfer progress on %s app lock and requires a new scan', async (reason) => {
+    const parts = chunksOf('ordinary synthetic invoice '.repeat(20));
+    const { onText } = renderImporter();
+    const user = userEvent.setup();
+    const scan = await startCamera(user);
+    await show(scan, parts[0] as string);
+    expect(progressBar().value).toBe(1);
+
+    act(() => { notifyAppLock(reason); });
+    expect(screen.queryByRole('progressbar')).toBeNull();
+    expect(await show(scan, parts[1] as string)).toBe(false);
+    expect(onText).not.toHaveBeenCalled();
+    expect(fakes.startCamera).toHaveBeenCalledOnce();
+
+    frame = undefined;
+    const restarted = await startCamera(user);
+    await show(restarted, parts[1] as string);
+    expect(progressBar().value).toBe(1);
+    expect(onText).not.toHaveBeenCalled();
+    expect(fakes.startCamera).toHaveBeenCalledTimes(2);
+  });
+
   it('assembles parts out of order, ignores duplicates, lists missing parts and delivers the text exactly once', async () => {
     const parts = chunksOf(SECRET);
     expect(parts.length).toBeGreaterThan(5);

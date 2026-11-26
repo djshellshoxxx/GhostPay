@@ -145,7 +145,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ANVIL_ACCOUNTS.payer)).toBe(payerNonce + 1);
 
@@ -188,6 +188,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     const sweepRawBefore = net.sentRaw.length;
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
@@ -218,9 +219,10 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect.poll(() => sweepJournal(s)).toMatchObject([{ expectedHash: sweepHash, status: 'included' }]);
 
     // 8. Already swept: a second sweep of the same one-time address is refused before signing; nothing new on chain.
-    // Leave and re-enter the Sweep view for the same selected payment, so it re-reads the (now dust) balance.
+    // Leave and re-enter the Sweep view for the same selected payment, then request the current (now dust) balance.
     await nav(s).getByRole('button', { name: 'Seller keys' }).click();
     await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
@@ -265,7 +267,7 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect((await anvil.tx(hash))?.blockNumber).toBeNull();
 

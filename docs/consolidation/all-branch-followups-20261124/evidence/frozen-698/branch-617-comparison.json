@@ -1,0 +1,112 @@
+{
+  "donor": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+  "donor_base": "7c4987650faf32322d7ded48ad669130aba7e63b",
+  "core": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+  "followup": "74e51b7197258cba1e2db98bfb698307ef741d7c",
+  "paths": [
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "donor": "100644 blob 3eaea811d82c9a1913313fc1c0d587147b68fd16\tapps/web/src/lib/qrKinds.test.ts",
+      "core_exact": true,
+      "followup_exact": false,
+      "core": "100644 blob 3eaea811d82c9a1913313fc1c0d587147b68fd16\tapps/web/src/lib/qrKinds.test.ts",
+      "followup": "100644 blob ff90b8295d4a536998f10e96dcbe5275a5a7ca1e\tapps/web/src/lib/qrKinds.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "donor": "100644 blob 1a4beffc898c7854f6183aac5a7e6f74f8228d63\tapps/web/src/lib/qrKinds.ts",
+      "core_exact": true,
+      "followup_exact": false,
+      "core": "100644 blob 1a4beffc898c7854f6183aac5a7e6f74f8228d63\tapps/web/src/lib/qrKinds.ts",
+      "followup": "100644 blob 305e5fc416e0a6cc43e0977b4424d8ef327f00b4\tapps/web/src/lib/qrKinds.ts"
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.marker-script.test.ts",
+      "donor": "100644 blob 9ea6b56db11a56bc819bcf0dfd1cd30b3d320c3e\tapps/web/src/lib/sanitize.marker-script.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 9ea6b56db11a56bc819bcf0dfd1cd30b3d320c3e\tapps/web/src/lib/sanitize.marker-script.test.ts",
+      "followup": "100644 blob 9ea6b56db11a56bc819bcf0dfd1cd30b3d320c3e\tapps/web/src/lib/sanitize.marker-script.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "donor": "100644 blob ad29c5812951ff8a7500fcdad47f00c771fa4cca\tapps/web/src/lib/sanitize.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob ad29c5812951ff8a7500fcdad47f00c771fa4cca\tapps/web/src/lib/sanitize.ts",
+      "followup": "100644 blob ad29c5812951ff8a7500fcdad47f00c771fa4cca\tapps/web/src/lib/sanitize.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "donor": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b\tpackages/chain-adapters/src/deployments.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b\tpackages/chain-adapters/src/deployments.test.ts",
+      "followup": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b\tpackages/chain-adapters/src/deployments.test.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "donor": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8\tpackages/chain-adapters/src/deployments.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8\tpackages/chain-adapters/src/deployments.ts",
+      "followup": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8\tpackages/chain-adapters/src/deployments.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.test.ts",
+      "donor": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8\tpackages/chain-adapters/src/rpc.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8\tpackages/chain-adapters/src/rpc.test.ts",
+      "followup": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8\tpackages/chain-adapters/src/rpc.test.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "donor": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e\tpackages/chain-adapters/src/rpc.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e\tpackages/chain-adapters/src/rpc.ts",
+      "followup": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e\tpackages/chain-adapters/src/rpc.ts"
+    },
+    {
+      "path": "packages/merchant-billing/src/refunds.ts",
+      "donor": "100644 blob 6e09d09ad80eb3fc67cfbf235833e63952bd54e2\tpackages/merchant-billing/src/refunds.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 6e09d09ad80eb3fc67cfbf235833e63952bd54e2\tpackages/merchant-billing/src/refunds.ts",
+      "followup": "100644 blob 6e09d09ad80eb3fc67cfbf235833e63952bd54e2\tpackages/merchant-billing/src/refunds.ts"
+    },
+    {
+      "path": "packages/merchant-billing/src/refunds.uncertain.test.ts",
+      "donor": "100644 blob 2f9823cc208a6d4b97854a0f8c65b41888259819\tpackages/merchant-billing/src/refunds.uncertain.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 2f9823cc208a6d4b97854a0f8c65b41888259819\tpackages/merchant-billing/src/refunds.uncertain.test.ts",
+      "followup": "100644 blob 2f9823cc208a6d4b97854a0f8c65b41888259819\tpackages/merchant-billing/src/refunds.uncertain.test.ts"
+    },
+    {
+      "path": "packages/metadata-hardening/src/web.anchor-attributes.test.ts",
+      "donor": "100644 blob fe81e7c20d2b77a0e56743a0b88d9208a885eac5\tpackages/metadata-hardening/src/web.anchor-attributes.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob fe81e7c20d2b77a0e56743a0b88d9208a885eac5\tpackages/metadata-hardening/src/web.anchor-attributes.test.ts",
+      "followup": "100644 blob fe81e7c20d2b77a0e56743a0b88d9208a885eac5\tpackages/metadata-hardening/src/web.anchor-attributes.test.ts"
+    },
+    {
+      "path": "packages/metadata-hardening/src/web.ts",
+      "donor": "100644 blob 9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587\tpackages/metadata-hardening/src/web.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587\tpackages/metadata-hardening/src/web.ts",
+      "followup": "100644 blob 9bdaf36b0cdc3b37d0705f27720f9ae3f9af7587\tpackages/metadata-hardening/src/web.ts"
+    },
+    {
+      "path": "packages/ux-fiat/src/view.quote-accessor.test.ts",
+      "donor": "100644 blob 2a71a8eae3b64a6272a56d2eca89f0435fbd6fe9\tpackages/ux-fiat/src/view.quote-accessor.test.ts",
+      "core_exact": true,
+      "followup_exact": true,
+      "core": "100644 blob 2a71a8eae3b64a6272a56d2eca89f0435fbd6fe9\tpackages/ux-fiat/src/view.quote-accessor.test.ts",
+      "followup": "100644 blob 2a71a8eae3b64a6272a56d2eca89f0435fbd6fe9\tpackages/ux-fiat/src/view.quote-accessor.test.ts"
+    }
+  ]
+}

@@ -15,6 +15,10 @@ import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderWith } from '../../test/render';
 import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const SEPOLIA = 11155111;
 function LocaleControl(): ReactNode {

@@ -1,0 +1,42 @@
+{
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "equivalent_remote_source": "c6efee6e9e0505d4bcb8b81bf5b02e4ab3331c48",
+  "expected_rows": 698,
+  "actual_rows": 698,
+  "unique_branches": 698,
+  "snapshot_ref_set_equal": true,
+  "baseline_rows_preserved": 696,
+  "new_refs": 2,
+  "advanced_baseline_refs": 2,
+  "deleted_refs": 0,
+  "historical_rows_preserved": 67,
+  "baseline_csv_sha256": "6319dbceee2c563d8593d1d915a5e4f0698b3c9d34ed3156568bfa2033ece5da",
+  "historical_json_sha256": "f2a6fdee5429ed3abbc82dc70c598048a58b2b0e68460c1f9a5ed1bdd88b5b27",
+  "ledger_full_and_incremental_documentation_only": true,
+  "pr617_current_exact_paths": 11,
+  "pr617_strengthened_qr_paths": 2,
+  "pr614_remaining_different_paths": [
+    "apps/web/src/lib/format.test.ts",
+    "apps/web/src/lib/format.ts",
+    "packages/qr-exchange/src/vendor.provenance.test.ts",
+    "packages/qr-exchange/src/vendor/jsqr-1.4.0.mjs"
+  ],
+  "exact_residual_delta_equivalent_rows": [
+    "evidence/ghostpay-vault-rekey-qualification-20261120",
+    "qualification/pr525-main-package-rollup-20261124",
+    "qualification/pr531-main-package-rollup-20261124",
+    "qualify/ghostpay-hygiene-composition-20261120-9a4ab6"
+  ],
+  "no_repository_or_remote_writes": true,
+  "authored_csv_validation": "Passed: artifact-tool wrote and read back all 10,485 cells exactly; independent csv.DictReader round trip preserved all 698 rows and 15 columns.",
+  "csv_sha256": "8ee2f70beb417bffb6a79258bf517a974d21aac972190914897f011da430fe5b",
+  "model_and_csv_values_exact": true,
+  "all_snapshot_refs_exact_and_in_order": true,
+  "baseline_696_and_historical_67_bytes_unchanged": true,
+  "ancestry_counts_match_all_four_flags": true,
+  "equivalent_remote_same_tree": true,
+  "formula_error_scan_matches": 0,
+  "preview_readable": true,
+  "tests_run_for_report": false
+}

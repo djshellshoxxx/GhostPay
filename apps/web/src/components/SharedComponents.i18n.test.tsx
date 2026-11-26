@@ -35,7 +35,7 @@ const draft = (locale: Draft, key: string): string => {
 };
 const english = (key: string): string => (SOURCE_CATALOG.messages as Record<string, string>)[key] ?? `MISSING ${key}`;
 
-beforeEach(() => { window.sessionStorage.clear(); });
+beforeEach(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
 afterEach(() => { cleanup(); });
 
 function inLocale(locale: string, ui: React.ReactNode): React.ReactNode {
@@ -168,7 +168,7 @@ describe('PaymentRequestQr under Arabic', () => {
 
 describe('WalletAttempts', () => {
   it('translates the heading, keeps the unknown-outcome and clear texts English in a draft locale', async () => {
-    beginAttempt({ key: `0x${'ab'.repeat(32)}`, chainId: 1, account: `0x${'cd'.repeat(20)}`, kind: 'payment' });
+    beginAttempt({ key: `0x${'ab'.repeat(32)}`, chainId: 1, account: `0x${'cd'.repeat(20)}`, kind: 'payment' }, window.localStorage);
     render(inLocale('es', <WalletAttempts />));
     expect(await screen.findByRole('heading', { name: draft('es', 'walletAttempts.heading') })).toBeTruthy();
     expect(screen.getByText(english('walletAttempts.hint'))).toBeTruthy();

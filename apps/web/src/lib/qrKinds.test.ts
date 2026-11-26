@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contrastRatio, deltaE, type Cvd } from './qrContrast';
-import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
+import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrKind, type QrPalette, type QrPayloadType } from './qrKinds';
 
 const css = readFileSync(new URL('../styles/qr.css', import.meta.url), 'utf8');
 
@@ -40,6 +40,51 @@ describe('taxonomy', () => {
       expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0])).toThrow('unknown QR kind');
     }
   });
+  const runtimeClassifiers = [
+    ['payload', (value: unknown) => kindForPayload(value as QrPayloadType), 'spend-key', 'invoice-link', 'unknown QR payload type'],
+    ['unverified payload', (value: unknown) => kindForPayload(value as QrPayloadType, { unverified: true }), 'spend-key', 'invoice-link', 'unknown QR payload type'],
+    ['frame', (value: unknown) => qrKindClass(value as QrKind), 'secret', 'shareable', 'unknown QR kind'],
+  ] as const;
+  it.each(runtimeClassifiers)('rejects non-string %s inputs with the fixed error', (_name, classify, knownKey, _otherKey, message) => {
+    const inputs: unknown[] = [
+      undefined, null, false, true, 0, 1, NaN, Infinity, 1n, Symbol(knownKey),
+      [], [knownKey], {}, { 0: knownKey, length: 1 }, new String(knownKey),
+    ];
+    for (const input of inputs) {
+      expect(() => classify(input)).toThrow(TypeError);
+      expect(() => classify(input)).toThrow(new TypeError(message));
+    }
+  });
+  it.each(runtimeClassifiers)('does not coerce a stateful %s key before rejecting it', (_name, classify, knownKey, otherKey, message) => {
+    const coerce = vi.fn().mockReturnValueOnce(knownKey).mockReturnValue(otherKey);
+    const input = { [Symbol.toPrimitive]: coerce };
+    expect(() => classify(input)).toThrow(TypeError);
+    expect(() => classify(input)).toThrow(new TypeError(message));
+    expect(coerce).not.toHaveBeenCalled();
+  });
+  it.each(runtimeClassifiers)('does not inspect a hostile %s coercion hook', (_name, classify, _knownKey, _otherKey, message) => {
+    const inspect = vi.fn(() => { throw new Error('private input must not escape'); });
+    const input = Object.defineProperty({}, Symbol.toPrimitive, { get: inspect });
+    expect(() => classify(input)).toThrow(TypeError);
+    expect(() => classify(input)).toThrow(new TypeError(message));
+    expect(inspect).not.toHaveBeenCalled();
+  });
+  it('preserves every declared payload mapping, flag precedence and frame class', () => {
+    const mappings: readonly (readonly [QrPayloadType, QrKind])[] = [
+      ['keystore-backup', 'secret'], ['recovery-data', 'secret'], ['spend-key', 'secret'],
+      ['invoice-link', 'shareable'], ['invoice-link-passphrase', 'shareable'],
+      ['stealth-meta-address', 'shareable'], ['payment-request', 'shareable'], ['registry-entry', 'shareable'],
+      ['invoice-link-with-key', 'bearer'], ['settings', 'device'], ['rpc-list', 'device'], ['pinned-signers', 'device'],
+      ['receipt', 'proof'], ['payment-proof', 'proof'], ['signed-manifest', 'proof'], ['fingerprint', 'proof'],
+    ];
+    for (const [payload, kind] of mappings) {
+      expect(kindForPayload(payload)).toBe(kind);
+      for (const flags of [{ testnet: true }, { unsigned: true }, { unverified: true }, { testnet: true, unsigned: true, unverified: true }]) {
+        expect(kindForPayload(payload, flags)).toBe(kind === 'secret' || kind === 'bearer' ? kind : 'caution');
+      }
+    }
+    for (const kind of QR_KIND_ORDER) expect(qrKindClass(kind)).toBe(`qr-kind-${kind}`);
+  });
   it('maps payloads to kinds; secret is never downgraded', () => {
     expect(kindForPayload('keystore-backup')).toBe('secret');
     expect(kindForPayload('keystore-backup', { testnet: true })).toBe('secret');
@@ -59,7 +104,7 @@ describe('taxonomy', () => {
 
 const MODES: readonly (readonly [string, QrPalette, string, string])[] = [
   ['light', QR_PALETTE_LIGHT, '#f7f8fa', '#ffffff'],
-  ['dark', QR_PALETTE_DARK, '#0f1218', '#181c24'],
+  ['dark', QR_PALETTE_DARK, '#050912', '#09111f'],
 ];
 
 describe('palette', () => {
@@ -115,5 +160,35 @@ describe('printQrPolicy', () => {
     expect(printQrPolicy('abc', false)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
     expect(printQrPolicy('abc', true)).toEqual({ includeQr: true, kind: 'shareable', bearerWarning: false });
     expect(printQrPolicy(undefined, false).bearerWarning).toBe(false);
+  });
+});
+
+
+describe('printQrPolicy runtime protection boundary', () => {
+  it('does not treat truthy non-boolean values as proof that an invoice link is passphrase-protected', () => {
+    const invalidFlags: readonly unknown[] = ['false', 'true', 1, -1, [], {}, ['true']];
+    for (const value of invalidFlags) {
+      expect(printQrPolicy('https://example.invalid/#gpi=v1.test', value as boolean)).toEqual({
+        includeQr: true,
+        kind: 'bearer',
+        bearerWarning: true,
+      });
+    }
+  });
+  it('preserves existing true/false handling, limits and missing-link behavior', () => {
+    const link = 'https://example.invalid/#gpi=v1.test';
+    expect(printQrPolicy(link, true)).toEqual({ includeQr: true, kind: 'shareable', bearerWarning: false });
+    expect(printQrPolicy(link, false)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
+    const falsyFlags: readonly unknown[] = [null, undefined, 0, '', NaN];
+    for (const value of falsyFlags) {
+      expect(printQrPolicy(link, value as boolean)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
+      expect(printQrPolicy(undefined, value as boolean)).toEqual({ includeQr: false, kind: 'bearer', bearerWarning: false });
+    }
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS), false).includeQr).toBe(true);
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS + 1), false)).toEqual({
+      includeQr: false,
+      kind: 'bearer',
+      bearerWarning: true,
+    });
   });
 });

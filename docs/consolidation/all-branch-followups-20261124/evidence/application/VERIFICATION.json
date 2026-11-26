@@ -1,0 +1,13 @@
+{
+  "format": "ghostpay-evidence-readback/1",
+  "archive": "followup-evidence.tar.gz",
+  "archive_sha256": "066cae609f8d54e944e51e8ee986b160f8c903b00a33b7cab688ecb40c5b2865",
+  "archive_bytes": 160124,
+  "verified_members": 154,
+  "verified_original_files": 151,
+  "verified_original_bytes": 693229,
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "final_qualification": "completed receipts included",
+  "readback": "every original stream matched SHA-256 and size; no extra members"
+}

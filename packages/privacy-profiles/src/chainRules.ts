@@ -3,6 +3,7 @@
  * are not stated by any method spec and are listed in DEVIATIONS.md.
  * @security Chain rules only add ordering knowledge; each resolves to the stricter effect together with R-01..R-46.
  */
+import { deepFreeze } from './freeze.js';
 import type { AckKey, ErrorKey, OptionId, Pred, RuleId, SpecRef, WarningKey } from './types.js';
 import type { StepKind } from './steps.js';
 
@@ -58,7 +59,7 @@ const SPONSORED = ['permit-relay', 'eip7702-sponsored', 'erc4337-paymaster'];
 const RELAY_KINDS: readonly StepKind[] = ['hops.forward', 'pool.exit', 'pay.from-pool', 'pool.deposit', 'pay.submit'];
 
 /** C-01..C-35. */
-export const CHAIN_RULES: readonly ChainRuleDef[] = [
+export const CHAIN_RULES: readonly ChainRuleDef[] = deepFreeze([
   { id: 'C-01', relation: 'redundant', pattern: { before: [k('hops.forward', { not: { p: 'hops', gt: 2 } }), k('pool.deposit')] }, effect: 'warn', key: w('hopsBeforePoolNoGain'), profileRule: 'R-08', specRef: r('hops.md', 'HOP-POOL-1', 'HOP-POOL-2') },
   { id: 'C-02', relation: 'impossible', pattern: { before: [k('hops.forward', { p: 'hops', gt: 2 }), k('pool.deposit')] }, effect: 'block', key: e('conflict.hopsPoolMax2'), profileRule: 'R-09', specRef: r('hops.md', 'HOP-POOL-1') },
   { id: 'C-03', relation: 'impossible', pattern: { after: k('pool.exit'), any: true }, effect: 'block', key: e('chain.afterPoolExit'), specRef: r('hops.md', 'HOP-POOL-3') },
@@ -94,7 +95,7 @@ export const CHAIN_RULES: readonly ChainRuleDef[] = [
   { id: 'C-33', relation: 'impossible', pattern: { mixedFamilies: true }, effect: 'block', key: e('chain.crossChain'), specRef: r('README.md', 'Watch') },
   { id: 'C-34', relation: 'redundant', pattern: { distinctLineages: k('pool.deposit'), min: 2 }, effect: 'warn', key: w('chain.secondPoolNoGain'), specRef: 'new' },
   { id: 'C-35', relation: 'impossible', pattern: { joinOf: k('pool.exit') }, effect: 'block', key: e('chain.consolidation'), specRef: r('shielded-pool.md', 'SP-SDK-7') },
-];
+]);
 
 const label = (m: StepMatch): string => (typeof m.kind === 'string' ? m.kind : m.kind.join('|'));
 

@@ -20,6 +20,7 @@ export function sanitizeDisplayText(input: string): SafeText {
     replaced++;
     return `⟨U+${(ch.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, '0')}⟩`;
   });
-  const mixedScript = text.split(/[\s.,;:!?()[\]{}"'/\\|+-]+/u).some((w) => /\p{Script=Latin}/u.test(w) && /[\p{Script=Cyrillic}\p{Script=Greek}]/u.test(w));
+  // Inspect the original words, not the Latin letters introduced by visible markers.
+  const mixedScript = input.split(/[\s.,;:!?()[\]{}"'/\\|+-]+/u).some((w) => /\p{Script=Latin}/u.test(w) && /[\p{Script=Cyrillic}\p{Script=Greek}]/u.test(w));
   return { text, replaced, mixedScript };
 }

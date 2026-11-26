@@ -12,13 +12,38 @@ import { SOURCE_TRANSLATOR } from '../i18n/source';
 import { SCAN_PRIVACY_KEY } from '../lib/scanPrivacy';
 import { describeAnonymitySet } from '../lib/scanSpam';
 import type { Services } from '../lib/services';
-import { clearSession, generateSession } from '../lib/session';
+import { captureSessionGuard, clearSession, generateSession, revealViewingKey } from '../lib/session';
+import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderWith } from '../test/render';
+
+// Match the guarded encrypted-vault fixture used by Scan.test.tsx. jsdom
+// does not provide the browser IndexedDB store needed by page reconciliation.
+let vaultData = new Map<string, string>();
+vi.mock('../lib/reconciliationVault', async (original) => {
+  const actual = await original<typeof import('../lib/reconciliationVault')>();
+  return {
+    ...actual,
+    createCurrentReconciliationVault: async (chainId: number, sellerKeyId: string) => {
+      const store: ReconciliationVaultStore = {
+        read: (key) => Promise.resolve(vaultData.get(key) ?? null),
+        compareAndSwap: (key, expected, next, guard) => {
+          guard();
+          if ((vaultData.get(key) ?? null) !== expected) return Promise.resolve(false);
+          vaultData.set(key, next);
+          return Promise.resolve(true);
+        },
+      };
+      const vault = new actual.ReconciliationVault(store, { chainId, sellerKeyId }, captureSessionGuard());
+      await vault.unlock(revealViewingKey());
+      return vault;
+    },
+  };
+});
 
 const translated = {
   ...en.messages,
@@ -64,6 +89,7 @@ const formValues = (section: HTMLElement): unknown => Array.from(section.querySe
 
 beforeEach(() => {
   clearSession();
+  vaultData = new Map();
   window.localStorage.clear();
   window.sessionStorage.clear();
   window.history.replaceState(null, '', '/');

@@ -1,4 +1,5 @@
 import type { ChainConfig } from '@ghostpay/chain-adapters';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import type { PolicyRecord } from '@ghostpay/policy-scheme';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
@@ -19,7 +20,7 @@ export interface PolicyCtx {
   readonly deployment: PolicyChainDeployment | undefined;
   readonly wallet: WalletSession | undefined;
   readonly records: readonly PolicyRecord[];
-  readonly addRecord: (r: PolicyRecord) => void;
+  readonly addRecord: (r: PolicyRecord) => boolean;
   /** Captured deployment scope; invalidated immediately by edits, re-verification or leaving this view. */
   readonly assertDeploymentCurrent: () => void;
 }
@@ -31,6 +32,7 @@ function WalletPicker(props: { readonly chainId: number; readonly onConnected: (
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [err, setErr] = useState<string | undefined>(undefined);
+  const walletDisclosure = useWalletDisclosure();
   return (
     <div>
       <button type="button" onClick={() => { setErr(undefined); void services.discoverWallets().then(setWallets, (e: unknown) => { setErr(userMessage(e)); }); }}>
@@ -40,7 +42,7 @@ function WalletPicker(props: { readonly chainId: number; readonly onConnected: (
       <ul className="plain">
         {wallets?.map((w) => (
           <li key={w.id}>
-            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
+            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId, undefined, undefined, { disclosure: walletDisclosure }).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
               {t('policy.wallet.connect', { name: w.name })}
             </button>
           </li>
@@ -68,6 +70,7 @@ export function PolicyView(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [records, setRecords] = useState<readonly PolicyRecord[]>([]);
+  const recordsRef = useRef<readonly PolicyRecord[]>([]);
   const revision = useRef(0);
   const [scope, setScope] = useState(0);
   useEffect(() => () => { revision.current++; }, []);
@@ -103,7 +106,15 @@ export function PolicyView(): ReactNode {
     deployment,
     wallet: wallet?.chainId === chain.chainId ? wallet : undefined,
     records,
-    addRecord: (r) => { setRecords((prev) => (prev.some((x) => x.policyHash === r.policyHash) ? prev : [...prev, r])); },
+    addRecord: (r) => {
+      // The complete canonical meta-address binds seller keys and policy terms.
+      // Keep a synchronous source of truth so two imports in one event cannot race React state.
+      if (recordsRef.current.some((x) => x.metaAddress === r.metaAddress)) return false;
+      const next = [...recordsRef.current, r];
+      recordsRef.current = next;
+      setRecords(next);
+      return true;
+    },
     assertDeploymentCurrent: () => {
       if (revision.current !== scope || deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
     },

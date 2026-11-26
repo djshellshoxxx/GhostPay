@@ -1,0 +1,88 @@
+diff --git a/apps/web/src/lib/deployment.test.ts b/apps/web/src/lib/deployment.test.ts
+index be90aa64..ae888b9a 100644
+--- a/apps/web/src/lib/deployment.test.ts
++++ b/apps/web/src/lib/deployment.test.ts
+@@ -46,3 +46,15 @@ describe('checkDeployment fails closed (A7-2)', () => {
+     expect(deploymentProblem('checking')).toMatch(/Checking/);
+   });
+ });
++
++it('keeps provider-controlled adapter diagnostics out of the deployment banner', async () => {
++  const privateText = 'invoice-winter-sample 76219.843';
++  for (const failure of [
++    new ChainAdapterError('DEPLOYMENT_UNVERIFIED', privateText),
++    Object.assign(new Error(privateText), { name: 'ChainAdapterError' }),
++  ]) {
++    const check = await checkDeployment(manifest, rpc(), undefined, () => Promise.reject(failure));
++    expect(check.status).toBe('unverified');
++    expect(deploymentProblem(check)).not.toContain(privateText);
++  }
++});
+diff --git a/apps/web/src/lib/deployment.ts b/apps/web/src/lib/deployment.ts
+index 6cfa79ac..0a9bb48d 100644
+--- a/apps/web/src/lib/deployment.ts
++++ b/apps/web/src/lib/deployment.ts
+@@ -1,4 +1,4 @@
+-import { verifyDeployment as defaultVerify, type DeploymentManifest, type RpcClient, type VerifiedDeployment } from '@ghostpay/chain-adapters';
++import { ChainAdapterError, verifyDeployment as defaultVerify, type DeploymentManifest, type RpcClient, type VerifiedDeployment } from '@ghostpay/chain-adapters';
+ 
+ /**
+  * Result of reading the bundled manifest back from the chain (S3-01). Pay, Scan and Sweep stay disabled unless this is
+@@ -11,7 +11,7 @@ export type DeploymentCheck =
+ 
+ export type VerifyFn = (m: DeploymentManifest, client: RpcClient, opts?: { readonly secondary?: RpcClient }) => Promise<VerifiedDeployment>;
+ 
+-/** Never throws. `reason` is a fixed-form adapter message (no URLs, no provider text). */
++/** Never throws. `reason` is a fixed message (no URLs, no provider text). */
+ export async function checkDeployment(
+   manifest: DeploymentManifest,
+   primary: RpcClient | undefined,
+@@ -23,7 +23,7 @@ export async function checkDeployment(
+     const verified = await verify(manifest, primary, secondary === undefined ? {} : { secondary });
+     return { status: 'verified', verified };
+   } catch (e) {
+-    const msg = e instanceof Error && e.name === 'ChainAdapterError' ? e.message.replace(/^[A-Z_]+: /, '') : 'the RPC could not be read';
++    const msg = e instanceof ChainAdapterError ? 'the contract checks failed' : 'the RPC could not be read';
+     return { status: 'unverified', reason: msg };
+   }
+ }
+diff --git a/apps/web/src/lib/hardening.test.ts b/apps/web/src/lib/hardening.test.ts
+index 582a5393..5c62abd6 100644
+--- a/apps/web/src/lib/hardening.test.ts
++++ b/apps/web/src/lib/hardening.test.ts
+@@ -1,4 +1,5 @@
+ import { describe, expect, it } from 'vitest';
++import { ChainAdapterError } from '@ghostpay/chain-adapters';
+ import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
+ import { secp256k1 } from '@noble/curves/secp256k1.js';
+ import { checkDeployment, deploymentProblem } from './deployment';
+@@ -188,12 +189,25 @@ describe('S3-01: deployment check', () => {
+     expect(seen).toBeDefined();
+   });
+   it('fails closed with a fixed-form reason, and reports no RPC', async () => {
+-    const failing = (): Promise<never> => Promise.reject(Object.assign(new Error('DEPLOYMENT_UNVERIFIED: router code hash differs from the manifest'), { name: 'ChainAdapterError' }));
++    const detail = 'router code hash differs from the manifest';
++    const failing = (): Promise<never> => Promise.reject(new ChainAdapterError('DEPLOYMENT_UNVERIFIED', detail));
+     const bad = await checkDeployment(m, rpc, undefined, failing);
+-    expect(bad).toEqual({ status: 'unverified', reason: 'router code hash differs from the manifest' });
++    expect(bad).toEqual({ status: 'unverified', reason: 'the contract checks failed' });
+     expect(deploymentProblem(bad)).toMatch(/Payments are disabled/);
+-    const weird = await checkDeployment(m, rpc, undefined, () => Promise.reject(new Error('https://secret@rpc.example/leak')));
+-    expect(JSON.stringify(weird)).not.toMatch(/secret|leak/);
++    expect(JSON.stringify(bad)).not.toContain(detail);
++    expect(deploymentProblem(bad)).not.toContain(detail);
++
++    const providerText = 'https://secret@rpc.example/leak';
++    for (const failure of [
++      Object.assign(new Error(providerText), { name: 'ChainAdapterError' }),
++      new Error(providerText),
++    ]) {
++      const weird = await checkDeployment(m, rpc, undefined, () => Promise.reject(failure));
++      expect(weird).toEqual({ status: 'unverified', reason: 'the RPC could not be read' });
++      expect(JSON.stringify(weird)).not.toContain(providerText);
++      expect(deploymentProblem(weird)).not.toContain(providerText);
++      expect(deploymentProblem(weird)).toMatch(/Payments are disabled/);
++    }
+     expect(await checkDeployment(m, undefined, undefined)).toEqual({ status: 'no-rpc' });
+     expect(deploymentProblem({ status: 'no-rpc' })).toMatch(/Configure an RPC/);
+     expect(deploymentProblem('checking')).toMatch(/Checking/);

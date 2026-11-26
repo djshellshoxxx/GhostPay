@@ -119,7 +119,11 @@ export function totalsOf(inv: ExportInvoice, options: ExportOptions = {}): Invoi
 export function resolveAll(invoices: readonly ExportInvoice[], options: ExportOptions = {}): InvoiceTotals[] {
   const all = invoices.map((i) => totalsOf(i, options));
   all.sort((a, b) => a.createdAt - b.createdAt || cmp(a.id, b.id));
-  for (let i = 1; i < all.length; i++) if (all[i]?.id === all[i - 1]?.id) throw new LedgerError('duplicate-invoice');
+  const seen = new Set<string>();
+  for (const invoice of all) {
+    if (seen.has(invoice.id)) throw new LedgerError('duplicate-invoice');
+    seen.add(invoice.id);
+  }
   return all;
 }
 

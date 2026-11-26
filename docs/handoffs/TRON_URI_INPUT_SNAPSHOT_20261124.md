@@ -1,0 +1,38 @@
+# TRON URI builder optional-input snapshot — 2026-11-24 UTC
+
+Cycle 20261124T0637Z; start approximately 06:37 UTC, one coordinator, sequential discovery, regression, implementation and self-review phases. No native delegation or Caveman runtime available; no independent approval. No paid agents invoked. Scope: existing shared payment URI package correctness only, no TRON payment activation, non-EVM profile enablement, contract, wallet, network or release changes.
+
+## Exact source and changes
+- Main/base: f76904301cff0b24d65ea4e31cbf37d470db4d95 (also #537 actual merge commit). Isolated branch `automation/20261124T0637Z/bug/tron-uri-input-snapshot`.
+- Claim: eea9fb9bd611bf13ae18077ab270387a916966bf.
+- Regression-first tests: 6aee53cd5ac4d874a286ec873ac8a4ce87390d3c.
+- Production: 8a8e8210100b53df4be315455c6b6eef80641b94; source blob changed from 316b71948856d0f1784211fc6eebdec7e5928c31 to 17be0715d76c2c9b8f41bbf80aad65b68d7f9b9b.
+- Finding GP-TRON-URI-SNAPSHOT-20261124 (low-priority local API correctness, high confidence for accessor behavior, no external exploit established): buildTronUri read optional amount, token, label and message twice. Changing local accessor values were serialized from the second read. Read each value into a local constant at its original validation position, then use the same value for presence and serialization. Preserve network defaults, query order, error semantics and ordinary inputs.
+- Three Vitest regression cases: first-read round trip with four changing getters and exact read counts; omitted optional fields and explicit default; four malformed ordinary values. Repository tests not yet executed here.
+
+## Verification
+`git ls-remote https://github.com/djshellshoxxx/GhostPay.git HEAD` failed DNS resolution. Node v22.16.0 available; Vitest and actual package dependencies absent. `node /tmp/gp-tron-0637/check.mjs` executed source-body-equivalent baseline and corrected builders with stub collaborators: baseline wrong serialization and two reads for each of four fields reproduced; corrected 4/4 assertions passed (serialized first observations, one read each, absent fields, invalid network). This does not exercise real address validation, the repository parser, Vitest, TypeScript, lint, build or browser tests. Hosted exact-head qualification and independent verification remain required. No native checkout or dependency install claimed.
+
+## Discovery and consolidation
+Read main AGENTS.md, docs/ai/WORKFLOW.md, HANDOFF template, ACTIVE_WORK, SECURITY.md, legacy continuation/audit/wiki/collaboration handoff excerpts, specs 02 and 18 excerpts and spec inventory. docs/automation and docs/engineering-handoffs/CURRENT.md returned 404 on main; existing authoritative ledger #380 is externally owned, head 80dd9eb9669fba0171a037b0b690d17a7e2b655e, not modified. Home and Sidebar are version-controlled wiki source; live publication not verified. Branch/PR pages observed 665 branch records (7 pages plus empty page) and 342 open PR records (4 pages plus empty page), non-atomic API snapshots; not complete semantic/history comparisons. Tag endpoint rejected. All four #504 changed-file pages (358 records), adjacent payment URI candidates and recent PR names/bodies checked. Existing #496 owns the EIP-3770 mapping repair; avoid duplicate. No TRON URI file overlap identified in those inspections.
+- #507 exact head 7e618aef8e9c84055f445b4959a339e7ad470cbf, main f7690430; Pages 45327910928, Beta 45327910859, CLI 45327910776 and Hosting 45327910783 completed success. Pages artifact/browser passed, deploy/release/postdeploy skipped. Core CI 45327910867 pending (only changes and secrets jobs queued at second inspection), zero reviews returned. Do not merge or interrupt qualification.
+- #537 merged at f76904301cff0b24d65ea4e31cbf37d470db4d95; no repeat integration.
+- #504 active exact head 1a7447d58c08363209b6b9b67e9a6afad07d87f3, separate coordinator. #528 head ff274a08de2a84bcbdf0e373fb666543554a2, base a23a9f994709e021c479adb0bcc10afcd79fea4b; #500 head ad67862f63590fe38410d21b88ebf0e05329da47 is seven commits ahead of that base, zero behind, 16 changed paths including wallet and duplicateAttemptJournal. Do not modify or merge owner branches; reconcile exact parent before qualification.
+- Higher priority recovery, masking, scanner, offline and wallet work has active owners. Spec 18 remains marked specification-only on main; #572/#573/#539 related active PRs need their own qualification. Do not claim feature completion.
+- Existing integration lock automation/ghostpay-integration-lock status released generation 15, blob e1cf57b1b1b1a5eeac202ccb537071f52a13fe15. Not acquired; no protected/shared integration. Main protection read returned 403; rules endpoint rejected. Reviewed all 11 workflow trigger definitions: Pages PR path validates only, deployment is main workflow_dispatch with deploy=true; release is version-tag gated; paid cloud workflows not dispatched. Pages repository settings remain unverified. No change to workflows, repository settings or security findings.
+- Historical Mythril finding-specific clearance and independent/external beta gates remain open; no fresh contract analysis this cycle. No deployments, releases, real funds, tags, source deletions or force-pushes.
+
+## Resume
+Check this draft's exact-head hosted CI and native regression results, repair any demonstrated failure in place, then independent verification. Recheck #507 pending Core CI and coordinate its integration only with current lock ownership, exact-head gates and verified no deployment. Continue active ledger #380 without competing writes; prioritize known recovery and security blockers and rotate to unclaimed scopes. No automation changes.
+
+## Resumed native qualification — 2026-11-24
+
+The owner requested resumption of the interrupted workers. A separate native worker checked out exact source `da598d85f51aa8b5d0bd4852a3dcfaf91912b352` and rebuilt the package dependencies from that checkout. Original source remained clean.
+
+- `npm test -w @ghostpay/payment-uri -- --maxWorkers=2`: 209 tests passed across five files, no skips, with the original coverage thresholds.
+- Coverage: statements 97.52% (551/565), branches 97.09% (535/551), functions 100% (48/48), lines 99.09% (439/443).
+- Package typecheck, typed lint, build and the repository secret scan all passed.
+- A bounded native comparison against original main `f76904301cff0b24d65ea4e31cbf37d470db4d95`, with only the regression test file added, produced one expected failure and two passing controls. The actual parser, validators and dependencies were used.
+- Independent source review found no blocking issue in the existing correction. This is AI-assisted engineering verification, not a submitted GitHub approval or external audit.
+
+These results resolve the earlier unavailable-native-runtime qualification gap for the tested source. They do not qualify the entire application or activate a payment network. Recheck hosted checks, current main and integration requirements before merging. This appended record changes documentation only.

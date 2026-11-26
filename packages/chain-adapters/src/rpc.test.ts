@@ -96,6 +96,12 @@ describe('createClient', () => {
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: 99, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(6); // clamped to 5 retries
     n = 0;
+    // Runaway guard: after 50 sends the transport answers 400 (not retried), so an unbounded loop fails the assertion below
+    // instead of hanging the suite.
+    const capped: RpcTransport = { send: () => { n++; return Promise.reject(new RpcHttpError(n > 50 ? 400 : 500)); } };
+    await expect(createClient(SEPOLIA, URL_OK, { transport: capped, retries: Number.NaN, ...opts })).rejects.toThrow(ChainAdapterError);
+    expect(n).toBe(1); // NaN must not mean "retry forever"
+    n = 0;
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: -3, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(1);
   });
@@ -299,6 +305,13 @@ describe('fetchTransport (global fetch stubbed, no network)', () => {
   it('reads a small body', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(stream(['{"a"', ':1}']), { status: 200 }))));
     expect(await fetchTransport.send(URL_OK, '{}', init)).toBe('{"a":1}');
+  });
+  it('sends no credentials or referrer and bypasses the HTTP cache', async () => {
+    const f = vi.fn((...args: [string, RequestInit?]) => { void args; return Promise.resolve(new Response(stream(['{}']), { status: 200 })); });
+    vi.stubGlobal('fetch', f);
+    await fetchTransport.send(URL_OK, '{}', init);
+    const sent = f.mock.calls[0]?.[1];
+    expect(sent).toMatchObject({ credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store', redirect: 'error', method: 'POST' });
   });
   it('enforces the streamed size cap', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(stream(['x'.repeat(60), 'x'.repeat(60)]), { status: 200 }))));

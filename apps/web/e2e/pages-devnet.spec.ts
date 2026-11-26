@@ -307,6 +307,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // GP-PAGES-02: the download is recorded as unverified until "Verify backup" opens the real downloaded file. A damaged
     // copy and the wrong passphrase are refused and change nothing; the exact file makes the backup verified.
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    const wouldWarnOnExit = () => sp.evaluate(() =>
+      !window.dispatchEvent(new Event('beforeunload', { cancelable: true })));
+    const pendingExit = sp.waitForEvent('dialog', { timeout: 10_000 });
+    await sp.evaluate(() => { setTimeout(() => { window.location.reload(); }, 0); });
+    const exit = await pendingExit;
+    expect(exit.type()).toBe('beforeunload');
+    await exit.dismiss();
+    await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     const verifyFile = keysView(sp).getByLabel('Downloaded keystore file', { exact: true });
     const verifyPass = keysView(sp).getByLabel('Keystore passphrase', { exact: true });
     await verifyFile.setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(tamperCiphertext(keystoreText), 'utf8') });
@@ -327,6 +335,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
     await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
+    expect(await wouldWarnOnExit()).toBe(false);
     identity = await identityOf(sp);
     checkKeystore(keystoreText, identity, KEYSTORE_PASS);
 
@@ -427,7 +436,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+    await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce + 1);
     expect(await anvil.balance(stealth)).toBe(preview.net);
@@ -493,7 +502,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // Local reconciliation: the verified payment is saved and matched to the registered invoice.
     const l = ledger(s);
     await l.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
-    await expect(l.getByText('0 stored records in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    // The pending scan already retained this same inclusion. Finality upgrades it without linking the invoice.
+    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    await expect(l.getByText('Verified on-time transfer — invoice link pending.', { exact: true })).toBeVisible();
+    await expect(l.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
     await expect(l).toContainText(digest);
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
@@ -510,6 +522,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const rawBefore = net.sentRaw.length;
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(s, VAULT_PASS);
     await sign.click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
@@ -539,6 +552,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // A second sweep of the same one-time address is refused before signing; nothing new reaches the chain.
     await nav(s).getByRole('button', { name: 'Seller keys' }).click();
     await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     const again = await prepareDirectSweep(s, VAULT_PASS);
     await again.click();
@@ -562,6 +576,15 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await nav(sp).getByRole('button', { name: 'Seller keys' }).click();
     await expect(keysView(sp).getByRole('heading', { name: 'Encrypted seller vault saved in this browser' })).toBeVisible({ timeout: 30_000 });
     await expectNoKeys(sp);
+    expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
+
+    // A freshly restarted profile cannot confirm deletion of this locked vault with a stray click.
+    await keysView(sp).getByRole('button', { name: 'Delete encrypted vault' }).click();
+    const confirmDelete = keysView(sp).getByRole('button', { name: 'Confirm delete encrypted vault' });
+    await expect(confirmDelete).toBeDisabled();
+    await keysView(sp).getByLabel(/This vault may be the only copy/).fill('delete');
+    await expect(confirmDelete).toBeDisabled();
+    await keysView(sp).getByRole('button', { name: 'Cancel', exact: true }).click();
     expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
 
     // Wrong passphrase: refused, nothing loaded, vault untouched.
@@ -615,6 +638,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // The swept address cannot be swept again from the reopened profile either.
     const rawBefore = net.sentRaw.length;
     await scanMatches(sp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(sp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(sp, VAULT_PASS);
     await sign.click();
     await expect(sweepView(sp).getByText('The balance does not cover the network fee.', { exact: false })).toBeVisible({ timeout: 30_000 });
@@ -685,9 +709,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText('Imported historical observation — untrusted until independently rescanned.');
     await expect(record).toContainText(digest);
-    // Imported history preserves invoice annotations, but cannot establish fresh verification.
-    await expect(l.getByText('No linked observation.')).toBeVisible();
-    await expect(l.getByText('Linked to a verified observation.')).toHaveCount(0);
+    // Imported history preserves annotations, but contributes no verified link or credited amount summary.
+    const registeredInvoice = l.locator('li.card').filter({
+      has: rp.getByRole('button', { name: 'Remove registration', exact: true }),
+    });
+    await expect(registeredInvoice).toHaveCount(1);
+    await expect(registeredInvoice.getByText('Unverified observation. Scan again before relying on it.', { exact: true })).toBeVisible();
+    await expect(registeredInvoice.getByText('Linked to a verified observation.', { exact: true })).toHaveCount(0);
+    await expect(registeredInvoice.getByRole('region', { name: 'Linked invoice amounts', exact: true })).toHaveCount(0);
     // Adding the freshly rescanned, verified observation upgrades that same record instead of counting the payment twice.
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.', { timeout: 30_000 });
@@ -695,11 +724,15 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText(digest);
     // Only a freshly saved live-router observation makes the invoice registry link verified.
-    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
-    await expect(l.getByText('No linked observation.')).toHaveCount(0);
+    await expect(registeredInvoice.getByText('Linked to a verified observation.', { exact: true })).toBeVisible();
+    await expect(registeredInvoice.getByText('Unverified observation. Scan again before relying on it.', { exact: true })).toHaveCount(0);
+    const linkedAmounts = registeredInvoice.getByRole('region', { name: 'Linked invoice amounts', exact: true });
+    await expect(linkedAmounts.getByText('Linked total equals the expected net amount.', { exact: true })).toBeVisible();
+    await expect(linkedAmounts.getByText('Distinct linked observations: 1.', { exact: true })).toBeVisible();
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(rp).locator('code', { hasText: stealth })).toBeVisible();
     const sign = await prepareDirectSweep(rp);
     await sign.click();
@@ -708,6 +741,30 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(await anvil.nonce(stealth)).toBe(1);
     expect(await anvil.balance(ACCOUNTS.destination)).toBe(destAfterSweep);
     expect((await anvil.receipt(sweepHash))?.status).toBe('0x1');
+
+    // Fund the same address on the local fixture. Only the restored profile signs this second sweep.
+    const fundingHash = await anvil.call<Hex>('eth_sendTransaction', [{
+      from: ACCOUNTS.payer, to: stealth, value: toHex(PRICE),
+    }]);
+    await expect.poll(async () => (await anvil.receipt(fundingHash))?.status).toBe('0x1');
+    await nav(rp).getByRole('button', { name: 'Seller keys' }).click();
+    await nav(rp).getByRole('button', { name: 'Sweep' }).click();
+    // The balance is read only on request, and remounting Sweep clears it (FC-02 consent model).
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
+    await (await prepareDirectSweep(rp)).click();
+    await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
+    const raw = net.sentRaw.at(-1) as `0x02${string}`;
+    const tx = parseTransaction(raw);
+    expect(tx.chainId).toBe(84532);
+    expect(tx.nonce).toBe(1);
+    expect(tx.to?.toLowerCase()).toBe(ACCOUNTS.destination.toLowerCase());
+    expect(await recoverTransactionAddress({ serializedTransaction: raw })).toBe(getAddress(stealth));
+    const hash = keccak256(raw);
+    await expect.poll(async () => (await anvil.receipt(hash))?.status).toBe('0x1');
+    expect(tx.value ?? 0n).toBeGreaterThan(0n);
+    expect(await anvil.balance(ACCOUNTS.destination) - destAfterSweep).toBe(tx.value);
+    expect(await anvil.nonce(stealth)).toBe(2);
+    txHashes.add(hash);
     net.expectClean();
   });
 
@@ -795,7 +852,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(1);
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
       expect(await anvil.balance(payment.stealth)).toBe(0n);
@@ -981,7 +1038,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this browser profile.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(0);
       expect(payer.wallet.hashes).toHaveLength(0);
       // Unpaid on chain: the payer sent nothing, and the seller's scan of the whole chain finds no payment for its keys.

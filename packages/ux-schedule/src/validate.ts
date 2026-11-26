@@ -59,7 +59,7 @@ export function validText(v: unknown, what: string, min: number, max: number): R
   for (const ch of cps) {
     const c = ch.codePointAt(0) ?? 0;
     const bidi = (c >= 0x202a && c <= 0x202e) || (c >= 0x2066 && c <= 0x2069);
-    if (c < 0x20 || (c >= 0x7f && c <= 0x9f) || bidi || c === 0x2028 || c === 0x2029) {
+    if (c < 0x20 || (c >= 0x7f && c <= 0x9f) || bidi || (c >= 0xd800 && c <= 0xdfff) || c === 0x2028 || c === 0x2029) {
       return err('bad_text', `${what}: contains a forbidden control character`);
     }
   }

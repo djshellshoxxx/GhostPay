@@ -41,5 +41,6 @@ export function matchesAddress(revealed: string, actual: string): boolean {
   const head = revealed.slice(0, i);
   const tail = revealed.slice(i + 3);
   const a = norm(actual);
-  return a.length > head.length + tail.length && a.startsWith(norm(head)) && a.endsWith(norm(tail));
+  const suffix = a.startsWith('0x') ? tail.toLowerCase() : tail;
+  return a.length > head.length + tail.length && a.startsWith(norm(head)) && a.endsWith(suffix);
 }

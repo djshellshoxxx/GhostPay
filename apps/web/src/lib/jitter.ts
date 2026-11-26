@@ -56,6 +56,8 @@ const defaultDeps: SchedulerDeps = {
 export class DelayScheduler {
   private status: ScheduleStatus = 'waiting';
   private readonly dueAt: number;
+  private readonly startedMonotonicMs: number;
+  private readonly startedWallSeconds: number;
   private handle: unknown;
   private readonly listeners = new Set<(s: ScheduleSnapshot) => void>();
 
@@ -64,7 +66,9 @@ export class DelayScheduler {
     private readonly invoiceExpiresAtSeconds: number,
     private readonly deps: SchedulerDeps = defaultDeps,
   ) {
-    this.dueAt = deps.monotonicNow() + delayMs;
+    this.startedMonotonicMs = deps.monotonicNow();
+    this.startedWallSeconds = deps.wallNowSeconds();
+    this.dueAt = this.startedMonotonicMs + delayMs;
     this.handle = deps.setInterval(() => {
       this.check();
     }, 500);
@@ -79,10 +83,25 @@ export class DelayScheduler {
     return { status: this.status, remainingMs: this.status === 'waiting' ? Math.max(0, this.dueAt - this.deps.monotonicNow()) : 0 };
   }
 
+  /**
+   * A backward wall-clock adjustment must not revalidate an expired invoice.
+   * The wall clock may move forward for expiry, but monotonic elapsed time gives
+   * the earliest safe expiry even when the system clock is set back.
+   */
+  private invoiceExpired(): boolean {
+    const monotonicNow = this.deps.monotonicNow();
+    const wallNow = this.deps.wallNowSeconds();
+    if (!Number.isFinite(monotonicNow) || !Number.isFinite(wallNow)
+      || !Number.isFinite(this.startedMonotonicMs) || !Number.isFinite(this.startedWallSeconds)
+      || !Number.isFinite(this.invoiceExpiresAtSeconds)) return true;
+    const monotonicWallFloor = this.startedWallSeconds + Math.max(0, monotonicNow - this.startedMonotonicMs) / 1000;
+    return Math.max(wallNow, monotonicWallFloor) >= this.invoiceExpiresAtSeconds;
+  }
+
   /** Re-evaluates the schedule; safe to call at any time (timer tick, visibilitychange, tests). */
   public check(): ScheduleSnapshot {
     if (this.status === 'waiting') {
-      if (this.deps.wallNowSeconds() >= this.invoiceExpiresAtSeconds) this.finish('expired');
+      if (this.invoiceExpired()) this.finish('expired');
       else if (this.deps.monotonicNow() >= this.dueAt) this.finish('ready');
     }
     const snap = this.snapshot();
@@ -97,7 +116,7 @@ export class DelayScheduler {
 
   /** Used by "Send now": skip the rest of the wait. Only valid while waiting. */
   public sendNow(): void {
-    if (this.status === 'waiting') this.finish(this.deps.wallNowSeconds() >= this.invoiceExpiresAtSeconds ? 'expired' : 'ready');
+    if (this.status === 'waiting') this.finish(this.invoiceExpired() ? 'expired' : 'ready');
     this.check();
   }
 

@@ -24,6 +24,7 @@ import { withSessionSecrets } from '../lib/session';
 import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
+import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
 
 beforeEach(() => {
   clearSession();
@@ -42,6 +43,9 @@ const withRpcSetting = (): void => {
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...cur }));
 };
 
+// Suites written before the wallet disclosure gate approve each real dialog as a user would; the methods it showed are recorded.
+const disclosures = useAutoApprovedWalletDisclosures();
+
 function openWith(fragment: string, services: Services, opts: { noRpcSetting?: boolean } = {}): ReturnType<typeof userEvent.setup> {
   if (opts.noRpcSetting !== true) withRpcSetting();
   setHash(fragment);
@@ -55,7 +59,7 @@ function chainSeeing(wallet: MockWallet) {
       const s = wallet.sent;
       return s === undefined ? null : { hash: params[0], from: s['from'], to: s['to'], input: s['data'], value: s['value'], chainId: '0x14a34' };
     }
-    if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+    if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     if (method === 'eth_gasPrice') return '0x3b9aca00';
     // Base Sepolia is OP Stack: its GasPriceOracle prices no L1 data or operator fee here.
     if (method === 'eth_call' && (params[0] as { to?: unknown }).to === '0x420000000000000000000000000000000000000F') return `0x${'0'.repeat(64)}`;
@@ -358,7 +362,8 @@ describe('Pay: invoice reading and review', () => {
     const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv: hostile, sig })))}`;
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(await screen.findByText('Invoice rejected')).toBeTruthy();
-    expect(screen.getByRole('alert').textContent).toMatch(/not valid and was rejected\. \(field: expiresAt\)/);
+    expect(screen.getByRole('alert').textContent).toContain('not valid and was rejected');
+    expect(screen.getByRole('alert').textContent).not.toContain('expiresAt');
     expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
   });
@@ -536,6 +541,8 @@ describe('Pay: sending', () => {
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
+    // Account access and the payment were each shown and approved before reaching the wallet.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
   });
 
   it.each(['verified', 'pending'] as const)('retains a %s submission when notifying the embedding page fails', async (state) => {
@@ -586,13 +593,13 @@ describe('Pay: sending', () => {
     expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
   });
 
-  it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {
+  it.each(['0x0', '0x1'])('keeps an unmatched receipt with status %s unverified in the review and proof', async (receiptStatus) => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();
     // The RPC has a receipt for the hash but never returns the transaction itself.
-    const rpc = mockRpc(84532, (method) => {
+    const rpc = mockRpc(84532, (method, params) => {
       if (method === 'eth_getTransactionByHash') return null;
-      if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: receiptStatus, blockNumber: '0x64', to: wallet.sent?.['to'] };
       if (method === 'eth_gasPrice') return '0x3b9aca00';
       throw new Error(`unexpected ${method}`);
     });
@@ -601,7 +608,7 @@ describe('Pay: sending', () => {
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
     expect(screen.getByText(/did not return the transaction itself, so it could not be compared with the preview/)).toBeTruthy();
     expect(screen.getByText(/Status: unverified/)).toBeTruthy();
-    expect(document.body.textContent).not.toMatch(/included in block|Independently verified/);
+    expect(document.body.textContent).not.toMatch(/included in block|Independently verified|Nothing was paid/);
     await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
     expect(document.querySelector('[data-qr-kind="caution"]')).not.toBeNull();
     expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toContain('"status": "unconfirmed"');
@@ -782,6 +789,8 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(rpc.calls.some((c) => c.method === 'eth_estimateGas')).toBe(true);
+    // The exact approval and the payment are separate wallet requests, each disclosed first.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction', 'eth_sendTransaction']);
   });
 
   it('permit token whose permit domain cannot be verified falls back to the exact approval path without a signature prompt (spec 04)', async () => {
@@ -830,6 +839,8 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(screen.getByText('payERC20')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
     expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+    // The permit signature was shown before the wallet was asked; nothing else was sent.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_signTypedData_v4']);
   });
 
   it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {
@@ -974,8 +985,12 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     });
     await screen.findByRole('heading', { name: 'Review payment' });
     act(() => { releaseReceipt?.(); });
-    const warning = await screen.findByText(/This was a approval for the invoice/);
-    expect(warning.textContent).toContain(`0x${'9'.repeat(64)}`);
+    const warning = await screen.findByText(/This approval was for the invoice/);
+    const reference = `0x${'9'.repeat(64)}`;
+    expect(warning.textContent).not.toContain(reference);
+    const summary = screen.getByText('Transaction reference', { selector: 'summary' });
+    await t.user.click(summary);
+    await waitFor(() => { expect(summary.parentElement?.querySelector('code')?.textContent).toBe(reference); });
     expect(screen.queryByText('Token approval confirmed')).toBeNull();
     expect(t.wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   });

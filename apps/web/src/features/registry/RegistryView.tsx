@@ -1,5 +1,7 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
@@ -51,6 +53,7 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 /** ERC-6538 registry: publish your meta-address (explicit consent) and look up a payee's meta-address. */
 export function RegistryView(): ReactNode {
   const app = useApp();
+  const walletDisclosure = useWalletDisclosure();
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -65,7 +68,7 @@ export function RegistryView(): ReactNode {
   const [reviewed, setReviewed] = useState<RegistryCall | undefined>(undefined);
   const [reviewAction, setReviewAction] = useState<'publish' | 'clear' | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const [pub, setPub] = useState<Msg | undefined>(undefined);
+  const [pub, setPub] = useState<(Msg & { readonly reference?: string }) | undefined>(undefined);
   const [who, setWho] = useState('');
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
@@ -131,7 +134,8 @@ export function RegistryView(): ReactNode {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     const guard = captureAuthority();
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId).then(
+    // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
+    connectWallet(w, chainId, guard, undefined, { disclosure: walletDisclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
@@ -208,7 +212,7 @@ export function RegistryView(): ReactNode {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
         if (!mounted.current) return;
         if (returnedHash !== undefined) {
-          setPub({ kind: 'warn', text: { key: 'registry.walletReturned', values: { hash: returnedHash } } });
+          setPub({ kind: 'warn', text: { key: 'registry.walletReturned' }, reference: returnedHash });
           return;
         }
         try { guard(); } catch { return; }
@@ -253,7 +257,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts />
+      <WalletAttempts getRpc={app.getRpc} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>
@@ -311,6 +315,7 @@ export function RegistryView(): ReactNode {
         </BackupGate>
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{displayMessage(pub.text, t)}</Notice>}
+      {pub?.reference !== undefined && <BroadcastReference key={pub.reference} reference={pub.reference} />}
 
       <section className="panel" aria-label={t('registry.qrReviewLabel')}>
         <h3>{t('registry.qrHeadingH3')}</h3>

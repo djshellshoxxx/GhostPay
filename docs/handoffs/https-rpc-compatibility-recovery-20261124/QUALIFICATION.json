@@ -1,0 +1,279 @@
+{
+  "format": "ghostpay-https-rpc-compatibility-qualification/1",
+  "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+  "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+  "preservation": {
+    "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+    "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+    "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+    "donor": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+    "claim": "d216ce4e2e8ffbdd99685cad59ebf0b0afc5ce99",
+    "changed_paths": [
+      "apps/web/e2e/https-rpc-compatibility.spec.ts",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/pages/tor-rpc-compatibility.md"
+    ],
+    "exact_donor_entries": [
+      {
+        "path": "apps/web/e2e/https-rpc-compatibility.spec.ts",
+        "donor_and_selected_entry": "100644 blob e21f24efec4eaf8bea121adceb3f188d8c6f2521\tapps/web/e2e/https-rpc-compatibility.spec.ts"
+      },
+      {
+        "path": "docs/pages/tor-rpc-compatibility.md",
+        "donor_and_selected_entry": "100644 blob f1692ab905b527f7665c34b11a184da234b56664\tdocs/pages/tor-rpc-compatibility.md"
+      }
+    ],
+    "all_base_implementation_existing_tests_manifests_workflows_unchanged": true,
+    "base_and_donor_ancestors": true,
+    "prior_export_branch_unchanged": true,
+    "workspace_links_local": 68,
+    "package_sources_identical_to_previous_qualified_export_source": true,
+    "full_lean_desktop_discovery_static": "Spec is in e2e, matches neither desktop ignore pattern nor lean embed-only exclusion; there are no skip/fixme annotations. Collection commands separately verify registration.",
+    "native_launch_attempted": false,
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+    "node": "v24.22.3"
+  },
+  "checks": [
+    {
+      "name": "web-typecheck",
+      "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "started_at": "2026-11-24T12:55:22.989697+00:00",
+      "seconds": 21.48,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/web-typecheck.log",
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "name": "web-lint",
+      "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "started_at": "2026-11-24T12:55:44.484990+00:00",
+      "seconds": 42.987,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/web-lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "name": "consumer-units",
+      "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/views/Settings.test.tsx",
+        "src/views/Settings.race.test.tsx",
+        "src/views/Settings.scanPrivacy.test.tsx",
+        "src/lib/scanPrivacy.test.ts",
+        "src/lib/scanPrivacy.transport.test.ts",
+        "src/lib/scanPrivacy.clients.test.ts",
+        "src/lib/invoiceCreate.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics/apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "started_at": "2026-11-24T12:56:27.473289+00:00",
+      "seconds": 16.766,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/consumer-units.log",
+      "log_sha256": "fad31ae81100d3c09bf0320d09ec692e3e62e1aa786346d50660aea39a97be22"
+    },
+    {
+      "name": "full-native-collection",
+      "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "command": [
+        "npm",
+        "run",
+        "test:e2e",
+        "-w",
+        "@ghostpay/web",
+        "--",
+        "e2e/https-rpc-compatibility.spec.ts",
+        "--project=desktop",
+        "--list"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full"
+      },
+      "started_at": "2026-11-24T12:56:44.240778+00:00",
+      "seconds": 2.253,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/full-native-collection.log",
+      "log_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e"
+    },
+    {
+      "name": "lean-native-collection",
+      "source": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "tree": "2cbd6aa5a1f7989fa4521c353b2a601b4d886fb5",
+      "command": [
+        "npm",
+        "run",
+        "test:e2e",
+        "-w",
+        "@ghostpay/web",
+        "--",
+        "e2e/https-rpc-compatibility.spec.ts",
+        "--project=desktop",
+        "--list"
+      ],
+      "cwd": "/workspace/scratch/f80482f352bc/react-pages-diagnostics",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "started_at": "2026-11-24T12:56:46.495471+00:00",
+      "seconds": 1.348,
+      "exit_code": 0,
+      "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/lean-native-collection.log",
+      "log_sha256": "d38c22f0013be360a8c802250f726ab16f032e6eed0bf687984007b07b7fa44e"
+    }
+  ],
+  "unit_tests": {
+    "passed": 70,
+    "files": 7,
+    "skipped": 0,
+    "coverage_run": false
+  },
+  "native_collection": {
+    "full": {
+      "listed": 1,
+      "executed": 0
+    },
+    "lean": {
+      "listed": 1,
+      "executed": 0
+    }
+  },
+  "historical_donor_evidence": {
+    "source": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+    "native": [
+      {
+        "profile": "full",
+        "job_id": 138275203455,
+        "run_id": 45334840342,
+        "requested_head": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+        "actual_pr_merge": "b608fefcb27d8f72e27372d936a5080c12582b8f",
+        "base": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+        "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/45334840342/job/138275203455",
+        "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/donor-full-native.log",
+        "excerpts": [
+          "2026-11-24T08:25:26.9691816Z HEAD is now at b608fef Merge 20733b6a8ebc6a2598d5baff2eed62d58a0a7675 into f76904301cff0b24d65ea4e31cbf37d470db4d95",
+          "2026-11-24T08:27:22.6813161Z   \u2713  45 [desktop] \u203a e2e/https-rpc-compatibility.spec.ts:15:1 \u203a HTTPS invoice review and selected RPC health check with the Tor Browser scan preference (1.3s)",
+          "2026-11-24T08:28:52.9546846Z   1 skipped",
+          "2026-11-24T08:28:52.9548728Z   83 passed (2.9m)",
+          "2026-11-24T08:28:52.9903054Z   PR_HEAD: 20733b6a8ebc6a2598d5baff2eed62d58a0a7675"
+        ],
+        "saved_log_sha256": "34cafa8df8953d5052a895a6163a321d6c33f4b9b3af9040ab7d1badec93e9cf",
+        "executed_spec_passed": true,
+        "whole_job_tests": {
+          "passed": 83,
+          "skipped": 1
+        }
+      },
+      {
+        "profile": "lean",
+        "job_id": 138275203494,
+        "run_id": 45334840342,
+        "requested_head": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+        "actual_pr_merge": "b608fefcb27d8f72e27372d936a5080c12582b8f",
+        "base": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+        "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/45334840342/job/138275203494",
+        "log": "/workspace/scratch/f80482f352bc/https-rpc-qualification/donor-lean-native.log",
+        "excerpts": [
+          "2026-11-24T08:12:41.9974926Z HEAD is now at b608fef Merge 20733b6a8ebc6a2598d5baff2eed62d58a0a7675 into f76904301cff0b24d65ea4e31cbf37d470db4d95",
+          "2026-11-24T08:14:05.7465113Z   \u2713  37 [desktop] \u203a e2e/https-rpc-compatibility.spec.ts:15:1 \u203a HTTPS invoice review and selected RPC health check with the Tor Browser scan preference (1.1s)",
+          "2026-11-24T08:15:13.9937833Z   3 skipped",
+          "2026-11-24T08:15:13.9938134Z   71 passed (2.1m)",
+          "2026-11-24T08:15:14.0544675Z   PR_HEAD: 20733b6a8ebc6a2598d5baff2eed62d58a0a7675"
+        ],
+        "saved_log_sha256": "fae4d1b962a084efe4a691cf3e863a89f361574c12f9b1b93a51ffe5dee535f7",
+        "executed_spec_passed": true,
+        "whole_job_tests": {
+          "passed": 71,
+          "skipped": 3
+        }
+      }
+    ],
+    "workflows": [
+      {
+        "id": 45334840408,
+        "name": "Beta acceptance",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 703,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840408/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840408/logs",
+        "workflow_id": 414091144
+      },
+      {
+        "id": 45334840361,
+        "name": "Pages",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 698,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840361/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840361/logs",
+        "workflow_id": 392799214
+      },
+      {
+        "id": 45334840342,
+        "name": "CI",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 2210,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840342/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/45334840342/logs",
+        "workflow_id": 391558649
+      }
+    ],
+    "limits": "Historical exact-donor PR checks at its PR merge. Not a native pass of current e2401baa or the eventual combined source."
+  },
+  "local_native_execution": {
+    "attempted": false,
+    "reason": "Known environment Chromium Unix-socket restriction; no repeated launch, installation or workaround."
+  },
+  "local_bundle_build": {
+    "repeated": false,
+    "reason": "Only E2E and documentation additions; all application bundle inputs preserved. Fresh full/lean hosted build and native acceptance remain required."
+  },
+  "archive": {
+    "path": "run-logs.tar.gz",
+    "sha256": "005c978f3d77994c7e07a11e597b3a513bbf1ea7641d4fd4c6c15ee0d2d84642",
+    "bytes": 1110,
+    "command_logs": 5,
+    "all_hashes_verified_after_readback": true
+  },
+  "independent_review": "Coordinator owns independent final source review before acceptance.",
+  "limits": [
+    "Historical native success is not current combined native acceptance.",
+    "No real Tor routing, live RPC provider, wallet or payment was exercised.",
+    "Frozen 698-ref index remains unchanged; this is a later recovery."
+  ]
+}

@@ -72,3 +72,37 @@ Status: **research draft; not a privacy certification**. Prepared 2026-11-10 (Am
 - PR #113 beta hard-lane candidate (unmerged at inspection)
 
 No claim of runtime qualification, security certification or network anonymity is made by this document.
+
+## Evidence update 2026-11-25 (PRIV-T02, T01, T07 and checkpoint safety)
+
+Branch `claude/priv-t02-rpc-disclosure`. Tested code commit: `2ab3b243a57bb4e917fb6b9848f78a2a4347d312` (later commits on the branch change docs only). Evidence level **T** (deterministic automated test against synthetic chains and mock transports). **No L or E evidence was produced**: no live RPC, indexer, light-client, PIR or operator traffic was measured, no packet capture was taken, and nothing here is a privacy guarantee, an anonymity claim or a production qualification. The call graph and measured table are in [privacy-rpc-call-graph.md](privacy-rpc-call-graph.md).
+
+Test command (from `apps/web`): `npx vitest run src/test/rpcDisclosure.test.ts src/lib/scanDisclosure.test.ts src/lib/scanPrivacy.indexer.omission.test.ts src/lib/scanClient.checkpoint.test.ts --coverage=false`. Result: 4 files, 111 passed, 2 expected-fail (`test.fails`, see finding F1). From `packages/scan-source`: `npx vitest run`: 10 files, 121 passed, coverage thresholds met.
+
+| Boundary | Query privacy (Q), as measured in the mock | Authenticity (A) | Completeness (C) | Level | Limitations and remaining verification |
+|---|---|---|---|---|---|
+| Fixed-window public scan (`runScan` over `createClient` and the windowed client) | Zero address, recipient or token requests in all 17 scenarios. Every log request names only the public announcer and the announcement topic. A matched router payment adds one receipt and one transaction lookup (duplicated to a second provider); a tag-valid but unverifiable claim sends the same lookups. Exact block reads reveal scan position, including the resume anchor read. Retries repeat the same shape and add one chain-id re-check | Provider assertion | Provider assertion | T | Mock chain only. The classifier is a heuristic over request shape; unknown shapes are reported as `unknown` and every scenario asserts zero. Padding does not hide timing, match count or position. Live provider behaviour, TLS metadata and IP exposure are unmeasured (needs L) |
+| Public announcement indexer | Public block range and page size only in the mock | Continuity, head and sampled block hashes checked; `integrity` stays `unverified` | **Not established.** Omission inside genuine headers is asserted as undetected, reported `unverified`. CONTINUITY, HEAD_MISMATCH, TRUNCATED, OUT_OF_RANGE and BAD_RESPONSE fail closed | T | No test expects detection of an undetectable omission. See finding F3 |
+| Light-client wrapper | Same exposure as the inner source | `blockIdentity: 'verified'` assumes a correct client implementation; none in this repo is audited | `recordInclusion` and `intervalCompleteness` are always `unverified`; `describeScanEvidence` cannot return `verified` for either | T | See finding F2. A real inclusion-proof path does not exist yet (needs E) |
+| Resume and checkpoint | Resume reads an exact anchor block (position disclosure, measured) | n/a | Checkpoint safety regressions pass; reorg at the anchor re-reads the range | T | See finding F1 |
+
+### Open findings (reported, not fixed here)
+
+- **F1, checkpoint last-writer-wins** (`apps/web/src/lib/scanClient.ts` near line 503). Concurrent scans can overwrite a newer checkpoint with an older one. Two `test.fails` cases document it; convert them to plain `it` when the owner fixes it. Not fixed here because open PRs own that file.
+- **F2, latent light-source label** (`packages/scan-source/src/light.ts` near line 22). Integrity is labelled `'proof'` from a capability flag, not from a checked proof. The app does not use the light source today. `describeScanEvidence` ignores the flag.
+- **F3, indexer UI wording.** The checkpoint advances over records an indexer may have hidden, and `scan.done.finished` carries no indexer caveat. UI or wording change for the owner.
+- **F4, `ScanProgress.caughtUp`** is true when the secondary provider lags; `Scan.tsx` does not read it. Observation only.
+
+### Test matrix status
+
+| Test ID | Status at this commit |
+|---|---|
+| PRIV-T01 | Implemented (T). Omission within genuine headers stays `unverified` |
+| PRIV-T02 | Implemented (T), scenarios A to K plus J0 and twins; sanitized report writer via `GHOSTPAY_DISCLOSURE_REPORT` |
+| PRIV-T03 | Truncation and head mismatch fail closed (T, part of the indexer tests); PIR and other providers not covered |
+| PRIV-T07 | Evidence proposal and tests (T): header verification or a capability flag never yields a completeness claim |
+| PRIV-T04, T05, T06, T08 | Not started here |
+
+### Not performed
+
+No live-network measurement, no privacy improvement (Phase 8 candidates are documented in the call-graph file and none is implemented because none was measured as a benefit), and no independent professional review: Phase 9 was an AI-assisted review by a separate agent and is not an audit.

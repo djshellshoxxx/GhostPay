@@ -1,4 +1,4 @@
-import { verifyDeployment as defaultVerify, type DeploymentManifest, type RpcClient, type VerifiedDeployment } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, verifyDeployment as defaultVerify, type DeploymentManifest, type RpcClient, type VerifiedDeployment } from '@ghostpay/chain-adapters';
 
 /**
  * Result of reading the bundled manifest back from the chain (S3-01). Pay, Scan and Sweep stay disabled unless this is
@@ -11,7 +11,7 @@ export type DeploymentCheck =
 
 export type VerifyFn = (m: DeploymentManifest, client: RpcClient, opts?: { readonly secondary?: RpcClient }) => Promise<VerifiedDeployment>;
 
-/** Never throws. `reason` is a fixed-form adapter message (no URLs, no provider text). */
+/** Never throws. `reason` is a fixed message (no URLs, no provider text). */
 export async function checkDeployment(
   manifest: DeploymentManifest,
   primary: RpcClient | undefined,
@@ -23,7 +23,7 @@ export async function checkDeployment(
     const verified = await verify(manifest, primary, secondary === undefined ? {} : { secondary });
     return { status: 'verified', verified };
   } catch (e) {
-    const msg = e instanceof Error && e.name === 'ChainAdapterError' ? e.message.replace(/^[A-Z_]+: /, '') : 'the RPC could not be read';
+    const msg = e instanceof ChainAdapterError ? 'the contract checks failed' : 'the RPC could not be read';
     return { status: 'unverified', reason: msg };
   }
 }

@@ -4,8 +4,10 @@ import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
+import { PaymentRequestDownload } from '../components/PaymentRequestDownload';
 import { ContextHelp } from '../components/ContextHelp';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
@@ -17,6 +19,7 @@ import { registrationFromInvoice } from '../lib/reconciliationMatch';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
+import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -90,6 +93,14 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
     mounted.current = true;
     return () => { mounted.current = false; };
   }, []);
+  // #287 item 4: only the generated result shown here is enrolled. A confirmed cleanup or an opted-in expiry closes it;
+  // links already shared stay valid, and the invoice, its registration and every saved record are untouched.
+  // An expiry happens without user action, so it is announced; a confirmed cleanup reports through its own control.
+  const [previewExpired, setPreviewExpired] = useState(false);
+  useInvoicePreviewRetention(created, (reason) => {
+    setCreated((current) => current === created ? undefined : current);
+    setPreviewExpired(reason === 'expired');
+  });
 
   if (app.session === undefined) {
     return (
@@ -373,14 +384,16 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <ContextHelp id="register-matching-help" label={t('help.about', { control: t('create.matching.label') })}>{t('help.merchantRegistration')}</ContextHelp>
         </fieldset>
 
+        <Notice kind="warn">{t('ledger.late.beforeCreate')}</Notice>
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {visibleCreated !== undefined && (
-        <div className="result" aria-live="polite">
+        <div className="result">
           <h3>{t('create.result.title')}</h3>
+          <p>{t('reuse.invoiceMeta')}</p>
           <Notice kind="warn" title={t('create.bearer.title')}>
             {t('create.bearer.lead')} {visibleCreated.passphraseProtected ? t('create.bearer.passphrase') : visibleCreated.encrypted ? t('create.bearer.encrypted') : t('create.bearer.plain')} {t('create.bearer.copies')}
           </Notice>
@@ -388,8 +401,9 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
-          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} autoClearAfterMs={app.settings.invoiceLinkClipboardDelaySec * 1_000} /></p>
           <DownloadInvoiceLink link={visibleCreated.link} />
+          <PaymentRequestDownload fragment={visibleCreated.fragment} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
@@ -399,6 +413,11 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           />
         </div>
       )}
+      <div aria-live="polite">
+        {previewExpired && visibleCreated === undefined && <Notice kind="info">{t('retention.expired')}</Notice>}
+      </div>
+      {/* Outside the result, so focus and the outcome message survive the cleanup it performs. */}
+      <MetadataRetentionControls />
     </section>
   );
 }
