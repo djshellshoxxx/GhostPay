@@ -37,7 +37,7 @@ describe('Scan privacy (spec 10)', () => {
     const rpc = chainWithLogs(84532, 2500, []);
     await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     expect(screen.getByText(/Scan RPC/)).toBeTruthy();
-    expect(screen.queryByText(/groups of 4 identical lookups/)).toBeNull();
+    expect(screen.queryByText(/about half of the other router payments there are looked up/)).toBeNull();
   });
 
   it('discloses cover lookups when the opt-in is on, and still scans', async () => {
@@ -46,7 +46,7 @@ describe('Scan privacy (spec 10)', () => {
     window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ floodPerBlock: 32, spamScoring: true, privacySetTransfers: false, matchCover: true }));
     const rpc = chainWithLogs(84532, 2500, []);
     const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
-    expect(screen.getByText(/groups of 4 identical lookups/)).toBeTruthy();
+    expect(screen.getByText(/about half of the other router payments there are looked up/)).toBeTruthy();
     await user.type(screen.getByLabelText('Start block'), '0');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });

@@ -229,14 +229,15 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
   it('saves the opt-in cover lookups for matched payments and discloses what the provider still learns', async () => {
     const user = await open();
     const section = screen.getByRole('group', { name: 'Scan privacy' });
-    const cover = within(section).getByLabelText(/Hide which payments matched among other lookups/);
+    const cover = within(section).getByLabelText(/Hide which payments matched among other payments/);
     expect(cover).toHaveProperty('checked', false);
-    expect(within(section).queryByText(/groups of 4 identical lookups/)).toBeNull();
+    expect(within(section).queryByText(/about half of the other router payments there are looked up/)).toBeNull();
     expect(section.textContent).toMatch(/costs more RPC calls/);
     await user.click(cover);
-    expect(within(section).getByText(/groups of 4 identical lookups/)).toBeTruthy();
+    expect(within(section).getByText(/about half of the other router payments there are looked up/)).toBeTruthy();
     // Truthful limits, no anonymity claim.
-    expect(section.textContent).toMatch(/still learns that a payment matched in that range and how many/);
+    expect(section.textContent).toMatch(/still learns that a payment matched in that range, roughly how many/);
+    expect(section.textContent).toMatch(/re-checking one payment from the result list is not covered/);
     expect(section.textContent).not.toMatch(/anonym|unlinkab|untraceab/i);
     await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
     expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();

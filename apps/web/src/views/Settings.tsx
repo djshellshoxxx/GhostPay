@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { MATCH_COVER_SIZE } from '../lib/matchCover';
+import { MAX_COVER_PER_PAGE } from '../lib/matchCover';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import {
@@ -510,14 +510,14 @@ function ScanPrivacySection(): ReactNode {
           <input id="scan-match-cover" type="checkbox" checked={lanes.matchCover} onChange={(e) => { setLane({ matchCover: e.target.checked }); }} />
           <label htmlFor="scan-match-cover">{t('settings.scanLanes.matchCover')}</label>
         </div>
-        <p className="hint">{t('settings.scanLanes.matchCoverHint', { size: String(MATCH_COVER_SIZE), others: String(MATCH_COVER_SIZE - 1) })}</p>
+        <p className="hint">{t('settings.scanLanes.matchCoverHint', { max: String(MAX_COVER_PER_PAGE) })}</p>
         <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
         <ul>
           {describeScanDisclosureMessages(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {lanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
-          {lanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover', { size: String(MATCH_COVER_SIZE) })}</li>}
+          {lanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover')}</li>}
         </ul>
         <div className="actions">
           <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>

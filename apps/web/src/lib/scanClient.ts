@@ -4,6 +4,7 @@ import {
   compareProviders,
   dedupeClaims,
   fetchAnnouncements,
+  findToken,
   verifyClaimedPayment,
   type Address,
   type ChainConfig,
@@ -17,7 +18,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
-import { coverWindow, createMatchCover } from './matchCover';
+import { createMatchCover } from './matchCover';
 import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
@@ -135,11 +136,11 @@ export interface ScanParams {
   /** Independent second provider on the same chain; compared at every checkpoint. */
   readonly secondaryClient?: RpcClient;
   /**
-   * Cover lookups (opt-in): verify each matched router payment together with `matchCover - 1` other router
-   * announcements of the same block window, in random order and through the same verification path, so the RPC
-   * providers cannot tell which lookup is the payment. Decoy results are discarded. Absent or below 2: off.
+   * Cover lookups (opt-in, see matchCover.ts): a page with a matched router payment also verifies a fixed, keyed share
+   * of the other router payments in the same block windows, through the same path and in chain order, so the RPC
+   * providers see the payment among other payments' lookups. Decoy results are discarded.
    */
-  readonly matchCover?: number;
+  readonly matchCover?: boolean;
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
   /** Spec 05: non-router announcements processed per run (default 20,000). Overflow is deferred, never skipped. */
   readonly openLaneBudget?: number;
@@ -164,12 +165,15 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
-  // Derived before the viewing key is handed to the worker (which zeroizes it); undefined when cover is off.
-  const cover = createMatchCover(p.matchCover, p.viewingKey);
+  // Derived before the viewing key is handed to the worker (which zeroizes it); undefined when cover is off. A failure
+  // here still wipes the viewing key, like every other exit of this function.
+  let cover: ReturnType<typeof createMatchCover>;
+  try { cover = createMatchCover(p.matchCover, p.viewingKey); } catch (e) { zeroizeBytes(p.viewingKey); throw e; }
   const stopWorker = (): void => {
     if (stopped) return;
     stopped = true;
     zeroizeBytes(p.viewingKey);
+    cover?.dispose();
     if (worker === undefined) return;
     // Teardown must reach terminate even if a broken worker rejects further messages.
     try { if (p.signal.aborted) worker.postMessage({ type: 'cancel' }); } catch { /* best effort */ }
@@ -427,23 +431,24 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageMatches: ScanMatch[] = [];
       const pageEvidence = new Set(evidenceLedger.keys());
       const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
-      // Real claims in chain order (it decides which of two claims sharing a transfer is credited); with cover on,
-      // decoy lookups of other router announcements in the same block window are interleaved at random positions.
-      // Only claims that will actually be looked up get cover.
+      // Real claims in chain order (it decides which of two claims sharing a transfer is credited). With cover on, the
+      // keyed share of other router payments in the covered windows is merged in, also in chain order. Cover and
+      // covered claims both pass the checks verification applies before its first request, so every cover lookup
+      // sends the same requests a real one does.
       const steps = cover === undefined
         ? uniqueClaims.items.map((item) => ({ item, decoy: false }))
         : (() => {
+            const routerLookup = (c: { readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }): boolean =>
+              c.viaRouter && c.metadata !== undefined && sendsLookups(p.chain, p.manifest.router, c.announcement, c.metadata);
             const matchedIds = new Set(claims.map((c) => c.announcement.id));
             const candidates = lanes.trusted.flatMap((announcement) => {
-              if (matchedIds.has(announcement.id) || announcement.transactionHash === undefined) return [];
+              if (matchedIds.has(announcement.id)) return [];
               let metadata: ParsedMetadata | undefined;
               try { metadata = parseMetadata(announcement.metadata); } catch { return []; }
-              return [{ stealthAddress: announcement.stealthAddress, announcement, metadata, viaRouter: true }];
+              const candidate = { stealthAddress: announcement.stealthAddress, announcement, metadata, viaRouter: true };
+              return routerLookup(candidate) ? [candidate] : [];
             });
-            return cover.plan(uniqueClaims.items, candidates, {
-              covered: (c) => c.viaRouter && c.metadata !== undefined && !all.some((x) => x.announcement.id === c.announcement.id),
-              group: (c) => coverWindow(c.announcement.blockNumber),
-            });
+            return cover.plan(uniqueClaims.items, candidates, (c) => routerLookup(c) && !all.some((x) => x.announcement.id === c.announcement.id));
           })();
       for (const step of steps) {
         if (p.signal.aborted) break;
@@ -803,6 +808,21 @@ const encodeCursor = (cursor: ScanCursor): string =>
  * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
  * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
  */
+/**
+ * Whether verifying this router announcement reaches the network: the same conditions `verifyClaimedPayment` checks
+ * before its first request (router caller, router metadata with a positive amount and a supported asset, well-formed
+ * transaction hash, block hash and log index). Cover is drawn only from announcements that pass, so a cover lookup
+ * is never a silent one.
+ */
+function sendsLookups(chain: ChainConfig, router: Address, a: ScannedAnnouncement, meta: ParsedMetadata): boolean {
+  if (a.caller.toLowerCase() !== router.toLowerCase()) return false;
+  if (a.blockNumber < 0n || meta.netAmount <= 0n) return false;
+  if (meta.kind === 'erc20' && findToken(chain.chainId, meta.token) === undefined) return false;
+  const hash32 = /^0x[0-9a-fA-F]{64}$/;
+  return a.transactionHash !== undefined && hash32.test(a.transactionHash) && hash32.test(a.blockHash)
+    && Number.isSafeInteger(a.logIndex) && a.logIndex >= 0 && a.logIndex <= 0xffffff;
+}
+
 export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
   sweepLegacySlots(storage);
   const named = checkpointSlotNamer(viewingKey);

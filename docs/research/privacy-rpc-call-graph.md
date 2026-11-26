@@ -115,13 +115,16 @@ make match-time or position-bearing requests uniform.
 ## Phase 8: privacy improvement candidates
 
 **Implemented after this analysis (owner-approved, opt-in, off by default): cover lookups for matched router payments.**
-With `matchCover` (Settings: "Hide which payments matched among other lookups"), each matched router payment is verified
-together with three other router announcements of the same 1000-block window, through the same `verifyClaimedPayment`
-path, in random order, on both providers; decoy results are discarded and the real verification is unchanged. Decoys
-are chosen with a key derived from the viewing key, so a rescan repeats the same set. Measured in
-`src/lib/scanDisclosure.cover.test.ts`: off, 1 receipt and 1 transaction request (as in C); on, 4 of each, 2 of the 8
-about the payment, the same set on rescan, the same set on the second provider, none from another window. Items 2 and 3
-above then hold per group of four, not per payment; the count of groups still reveals the number of matches.
+With `matchCover` (Settings: "Hide which payments matched among other payments' lookups"), a page with a matched router
+payment also verifies the other router payments of the same 1000-block window that a keyed rule selects (about half,
+at most 32 per page), through the same `verifyClaimedPayment` path, in chain order, on both providers; their results
+are discarded and the real verification is unchanged. Selection is per announcement (an HMAC, keyed from the viewing
+key, of its transaction hash and ephemeral key against a fixed share), so it does not depend on page boundaries, a
+resume or a reorg: two scans that overlap look up the same cover in the overlap. Cover and covered payments must pass
+the checks verification applies before its first request (router caller, positive amount, supported token,
+well-formed hashes), so no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts`. Remaining
+exposure: that a page had a match and roughly how many; the single-payment re-check from the result list; the
+checkpoint replay after a failed verification (item 6 above).
 
 The candidates below remain open.
 

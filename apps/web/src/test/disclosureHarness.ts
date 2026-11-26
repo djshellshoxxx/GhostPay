@@ -40,13 +40,15 @@ export interface LogSpec {
   readonly index: number;
   readonly caller?: `0x${string}`;
   readonly wrongTag?: boolean;
+  /** ERC-20 named in the router metadata (default: the supported test token). */
+  readonly token?: `0x${string}`;
 }
 
 export function sellerLog(s: Seller, spec: LogSpec): MadeLog {
   return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: s.meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.wrongTag === true ? { wrongTag: true } : {}) });
 }
 export function strangerLog(spec: LogSpec): MadeLog {
-  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: newSeller().meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER });
+  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: newSeller().meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.token === undefined ? {} : { token: spec.token }) });
 }
 
 export interface ScenarioInput {
@@ -65,8 +67,8 @@ export interface ScenarioInput {
   readonly signal?: AbortSignal;
   /** Recorder to continue (resume scenarios keep one recorder per scenario id). */
   readonly recorder?: DisclosureRecorder;
-  /** Cover lookups per matched router payment (`runScan`'s `matchCover`); absent: off. */
-  readonly matchCover?: number;
+  /** Cover lookups for matched router payments (`runScan`'s `matchCover`); absent: off. */
+  readonly matchCover?: boolean;
 }
 
 export interface ScenarioOutput {

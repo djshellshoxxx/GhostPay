@@ -99,14 +99,18 @@ and [seller privacy](seller-privacy.md).
   it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
   hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
 - **Which announcement was yours.** Checking a matched router payment asks your RPC (and the second RPC, if set) for
-  that payment's block, receipt and transaction. Nothing else in a scan is payment-specific, so by default the provider
-  can tell which public announcement matched your keys and how many did. The opt-in **Hide which payments matched among
-  other lookups** setting (Settings, scan lanes) checks each matched payment together with three other router payments
-  from the same 1000-block range, in a random order and in exactly the same way, so each provider sees four identical
-  lookups. The extra results are discarded; your payment is verified exactly as before. The three are chosen with a
-  secret derived from your viewing key, so a later rescan looks up the same four. It does not hide that some payment
-  matched in that range, how many (in groups of four), when you scanned or your IP address, and a range with fewer
-  router payments gives a smaller group. It costs four times the verification requests.
+  that payment's block, receipt and transaction. By default no other announcement gets these lookups, so the provider
+  can tell which public announcement matched your keys and how many did. The opt-in **Hide which payments matched
+  among other payments' lookups** setting (Settings, scan lanes) makes a scan range that has a matched payment also
+  check about half of the other router payments in the same 1000-block range (at most 32 per page), the same way and
+  in chain order, and discard their results; your payment is verified exactly as before. Which others are checked is
+  decided by a key derived from your viewing key and by each payment's transaction and ephemeral key, so a later scan,
+  a resume or a reorg checks the same ones and comparing two scans does not leave your payment alone. Limits: the
+  provider still learns that some payment matched in that range, roughly how many, when you scanned and your IP
+  address; a range with few router payments gives little or no cover; only router payments in supported tokens are
+  used; re-checking a single payment from the result list (for example accepting a late payment) is not covered; and a
+  failed verification makes the next scan restart from that payment's block, which is visible. It costs more
+  verification requests, roughly in proportion to how busy the range is.
 
 ## Specific limits to remember
 

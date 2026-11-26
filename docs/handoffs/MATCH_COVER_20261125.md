@@ -1,38 +1,44 @@
 # Cover lookups for matched router payments — 2026-11-25 UTC
 
-Worker: Claude Code session `newghostpay-ae`, branch `claude/w-match-cover-20261125`. Owner-approved in-session as a new
-capability, **off by default**. W3 confirmed it is outside W3/P14 scope.
+Worker: Claude Code session `newghostpay-ae`, branch `claude/w-match-cover-20261125` (PR #696). Owner-approved in-session
+as a new capability, **off by default**. W3 confirmed it is outside W3/P14 scope.
 
 ## Problem
 
 `docs/research/privacy-rpc-call-graph.md` (items 2 and 3): verifying a matched router payment sends the announcement's
 block read, `eth_getTransactionReceipt` and `eth_getTransactionByHash` to the scan RPC and to a configured second RPC.
-No non-matching announcement gets these, so each provider learns which public announcements matched the seller's keys.
+No non-matching announcement gets these, so each provider learns which public announcements matched.
 
-## Change
+## Design (v2, after independent review)
 
-- `apps/web/src/lib/matchCover.ts`: `createMatchCover(size, viewingKey)` derives a domain-separated HMAC key from the
-  viewing key (one-way, memory only, created before the worker zeroizes the key). `plan(ordered, candidates, {covered,
-  group})` returns every real claim once **in its original order** (verification order decides which of two claims
-  sharing a transfer is credited) plus, for each covered claim, the `size - 1` candidates of the same 1000-block window
-  with the lowest keyed score, placed at CSPRNG-uniform positions.
-- `scanClient.ts`: optional `matchCover`; the per-page loop runs the planned steps. Decoys go through the real
-  `verifyClaimedPayment` (same requests, same client caching, second provider included) with a throwaway evidence set;
-  results are discarded. Without `matchCover` the steps are exactly the old loop.
-- Setting `matchCover` in the scan-lane store (`scanSpam.ts`, only a literal `true` enables it), a Settings checkbox,
-  Scan passes `MATCH_COVER_SIZE` (4) and both screens disclose it.
+- `apps/web/src/lib/matchCover.ts`: `createMatchCover(true, viewingKey)` derives a domain-separated HMAC key from the
+  viewing key (memory only, created before the worker zeroizes the key, zeroized by `dispose()` when the scan ends).
+  `selects(item)` is a per-announcement decision: HMAC of the **transaction hash and ephemeral key** (both survive a
+  reorg; block hash and log index do not) under a fixed share (1/2). `plan(ordered, candidates, covered)` keeps every
+  real claim once in its original order and merges, **in chain order**, the selected candidates from the windows of
+  covered claims (at most 32 per page; past the cap the lowest keyed ranks).
+- `scanClient.ts`: optional `matchCover`; cover and covered claims must pass `sendsLookups` (the checks
+  `verifyClaimedPayment` applies before its first request: router caller, positive amount, supported token,
+  well-formed tx hash, block hash and log index). Decoys run through the real `verifyClaimedPayment` (same requests,
+  caching and second provider) with a throwaway evidence set; results are discarded. Off: exactly the old loop.
+- Setting `matchCover` in the scan-lane store (literal `true` only), Settings checkbox and disclosure, Scan passes it.
 
-## Properties and limits
+v1 (random per-payment decoys scored on `blockHash:logIndex` from the current page, shuffled) was rejected by the
+review: decoys changed on resume, reorg and page splits (the payment was often the only common lookup), the shuffle
+leaked order with several payments, and junk-token or malformed candidates sent no requests. v2 fixes all three.
 
-Kept: real verification and its order, evidence crediting, finality, reorg handling, the second-provider comparison.
-Hidden from each provider (per page): which of the four lookups is the payment. Deterministic decoys per payment and
-window, so a reorg or a later rescan does not let two lookup sets be intersected. Not hidden: that some payment
-matched in that window, how many (groups of four), timing, IP address. A thin window gives a smaller group. Cost: four
-times the verification requests. This is not anonymity and the texts do not claim it.
+## Limits (disclosed in Settings, Scan and docs/user/privacy-limits.md)
+
+Visible: that a page had a match and roughly how many; timing; IP address. Little or no cover in a sparse window.
+Not covered: the single-payment re-check from the result list (late acceptance) and the checkpoint replay after a
+failed verification (call-graph item 6). Past 32 selected cover lookups in a page the set may differ between pages.
+Cost grows with how busy the window is. Not anonymity.
 
 ## Evidence
 
-`matchCover.test.ts` (unit and seeded property), `scanDisclosure.cover.test.ts` (PRIV-T02 instrumentation over the
-real scanner: off = 1 pair, on = 4 pairs with 2 of 8 about the payment, same set on rescan and on the second
-provider, none from another window), Settings and Scan view tests. Mutation checks: decoys skipping the second
-provider, and random instead of keyed decoys, each fail tests. Existing scan, disclosure and privacy suites pass.
+`matchCover.test.ts` (share, reorg-stable selection, chain-order merge, windows, cap, monotone property, dispose);
+`scanDisclosure.cover.test.ts` (PRIV-T02 instrumentation over the real scanner: off = 1 pair; on = the payment plus
+exactly the key-selected window payments, never another window or an unsupported-token one; each cover lookup repeats
+the block read, receipt and transaction in chain order; identical results with one and two payments; same selection
+on rescan and on a resume that sees part of the window; same lookups on the second provider); Settings and Scan view
+tests. Mutation checks recorded in the PR.
