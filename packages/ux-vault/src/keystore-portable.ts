@@ -307,8 +307,10 @@ function generatePassphrase(): string {
     // 2^16 is a multiple of the 2^10 list, so each 16-bit value modulo 1024 picks every word with the same probability.
     const words = Array.from({ length: GENERATED_PASSPHRASE_WORDS }, (_, i) => PASSPHRASE_WORDS[(((picks[2 * i] as number) << 8) | (picks[2 * i + 1] as number)) % PASSPHRASE_WORDS.length] as string);
     const phrase = words.join('-');
-    // Draws the estimator would refuse (such as one word six times) are vanishingly rare; draw again rather than offer one.
-    if (passphraseProblem(phrase) === undefined) return phrase;
+    // Draws the estimator would refuse or rate below "strong" (such as one word six times, or two words alternating) are
+    // vanishingly rare; draw again rather than offer one. None appeared in 200,000 draws; rejecting them costs a
+    // negligible fraction of the 60 bits.
+    if (passphraseProblem(phrase) === undefined && passphraseStrength(phrase).label === 'strong') return phrase;
   }
 }
 
@@ -370,11 +372,19 @@ function hex(v: unknown, min: number, max: number): Uint8Array {
 
 /** Validates the complete bounded envelope before a QR/file transfer may request a passphrase. */
 function validateKeystoreEnvelope(text: string): KeystoreFile {
-  if (typeof text !== 'string' || text.length > MAX_KEYSTORE_BYTES || new TextEncoder().encode(text).byteLength > MAX_KEYSTORE_BYTES) throw new UserFacingError(BAD);
+  if (typeof text !== 'string') throw new UserFacingError(BAD);
+  if (text.length > MAX_KEYSTORE_BYTES || new TextEncoder().encode(text).byteLength > MAX_KEYSTORE_BYTES) {
+    throw new UserFacingError({ key: 'error.keystore.fileTooLarge' });
+  }
   let parsed: unknown;
   try { parsed = parseStrictJson(text); } catch { throw new UserFacingError(BAD); }
-  const f = rec(parsed, ['v', 'kdf', 'kdfParams', 'cipher', 'iv', 'meta', 'ciphertext']);
-  if (f['v'] !== 1 || f['kdf'] !== 'scrypt' || f['cipher'] !== 'AES-256-GCM') throw new UserFacingError(BAD);
+  const envelope = rec(parsed);
+  const version = envelope['v'];
+  if (typeof version === 'number' && Number.isInteger(version) && version !== 1) {
+    throw new UserFacingError({ key: 'error.keystore.unsupportedVersion' });
+  }
+  const f = rec(envelope, ['v', 'kdf', 'kdfParams', 'cipher', 'iv', 'meta', 'ciphertext']);
+  if (version !== 1 || f['kdf'] !== 'scrypt' || f['cipher'] !== 'AES-256-GCM') throw new UserFacingError(BAD);
   const kp = rec(f['kdfParams'], ['N', 'r', 'p', 'salt']);
   const N = kp['N']; const r = kp['r']; const p = kp['p'];
   if (typeof N !== 'number' || !Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError(BAD);
@@ -415,18 +425,19 @@ async function decryptKeystore(text: string, passphrase: string): Promise<Keysto
     const out: Record<string, Uint8Array> = {};
     for (const k of ['spendingKey', 'viewingKey', 'signingKey']) {
       const v = body[k];
-      if (typeof v !== 'string' || !HEX64.test(v)) throw new UserFacingError(BAD);
+      if (typeof v !== 'string' || !HEX64.test(v)) throw new UserFacingError({ key: 'error.keystore.invalidKeys' });
     }
     for (const k of ['spendingKey', 'viewingKey', 'signingKey']) out[k] = hexToBytes(body[k] as string);
     const secrets = { spendingKey: out['spendingKey'] as Uint8Array, viewingKey: out['viewingKey'] as Uint8Array, signingKey: out['signingKey'] as Uint8Array };
     try {
       const publicOf = (bytes: Uint8Array): string => {
-        const scalar = secretScalarFromBytes(bytes);
+        let scalar: ReturnType<typeof secretScalarFromBytes>;
+        try { scalar = secretScalarFromBytes(bytes); } catch { throw new UserFacingError({ key: 'error.keystore.invalidKeys' }); }
         try { return signerPublicKeyHex(scalar); } finally { zeroize(scalar); }
       };
       const spendPub = publicOf(secrets.spendingKey); const viewPub = publicOf(secrets.viewingKey); const signingPub = publicOf(secrets.signingKey);
       const actualMeta = encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(hexToBytes(spendPub)), viewingPublicKey: parseCompressedPoint(hexToBytes(viewPub)) });
-      if (actualMeta !== metaAddress || signingPub !== signer || signingPub === spendPub || signingPub === viewPub) throw new UserFacingError({ key: 'error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys' });
+      if (actualMeta !== metaAddress || signingPub !== signer || spendPub === viewPub || signingPub === spendPub || signingPub === viewPub) throw new UserFacingError({ key: 'error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys' });
       return secrets;
     } catch (error) {
       zeroize(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);

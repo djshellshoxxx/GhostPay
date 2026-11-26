@@ -24,6 +24,14 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'walletAttempts.privateWarning',
+      'walletAttempts.connectToReveal',
+      'walletAttempts.noneForWallet',
+      'walletAttempts.unsaved',
+      'walletAttempts.retrySave',
+      'walletAttempts.recoveryChain',
+      'walletAttempts.findWallet',
+
       'policy.pay.committedAssetNotWithdrawable',
       'policy.create.withdrawableAny',
       'policy.create.withdrawableOnly',
@@ -116,7 +124,9 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
       'backupGate.waiverLabel', 'backupGate.waiverPhrase', 'backupGate.waive',
       'about.feeNote', 'sweep.relayerFee', 'btc.review.approve', 'btc.sweep.destinationHint',
-      'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.signerLost',
+      'sellerKeys.deleteSoleCopy', 'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.signerLost',
+      'app.idle.keptSigner', 'app.idle.keptUnconfirmed', 'app.idle.suspended.title',
+      'app.idle.suspended.body', 'error.session.lockedBackupOnly',
       'policy.create.keepBody', 'policy.create.alreadySaved', 'policy.account.withdrawal', 'policy.account.cancel',
       'sweep.attempt.unknownDirect', 'sweep.note.pendingDirect', 'settings.outside.title',
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',

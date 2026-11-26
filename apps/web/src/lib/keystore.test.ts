@@ -83,9 +83,9 @@ describe('keystore', () => {
       return decryptKeystore(JSON.stringify(f), 'correct horse battery');
     };
     await expect(decryptKeystore('not json', 'x')).rejects.toThrow(/not a valid/);
-    await expect(decryptKeystore('x'.repeat(9000), 'x')).rejects.toThrow(/not a valid/);
+    await expect(decryptKeystore('x'.repeat(9000), 'x')).rejects.toThrow(/size limit/);
     await expect(decryptKeystore('[]', 'x')).rejects.toThrow(/not a valid/);
-    await expect(bad((f) => { f['v'] = 2; })).rejects.toThrow(/not a valid/);
+    await expect(bad((f) => { f['v'] = 2; })).rejects.toThrow(/does not support/);
     await expect(bad((f) => { f['kdf'] = 'pbkdf2'; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { kp(f)['N'] = 1 << 30; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { kp(f)['N'] = 3; })).rejects.toThrow(/not a valid/);
@@ -116,7 +116,7 @@ describe('keystore', () => {
 
   it('rejects a decrypted body with malformed keys', async () => {
     const text = await encryptKeystore({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(31) }, META, 'correct horse battery', FAST);
-    await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/not a valid|different length/i);
+    await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/invalid seller keys/i);
   });
 });
 
@@ -188,6 +188,24 @@ describe('L1-06: generated passphrases', () => {
       }
       expect(seen.size).toBe(200);
       expect(random).toHaveBeenCalled();
+    } finally { random.mockRestore(); }
+  });
+
+  it('redraws an accepted passphrase that the estimator rates below strong', () => {
+    // "acorn-adobe-acorn-adobe-acorn-adobe" passes the policy but rates "fair"; the generator must not offer it.
+    const fair = [0, 2, 0, 2, 0, 2];
+    expect(passphraseProblem(fair.map((i) => PASSPHRASE_WORDS[i]).join('-'))).toBeUndefined();
+    expect(passphraseStrength(fair.map((i) => PASSPHRASE_WORDS[i]).join('-')).label).not.toBe('strong');
+    const strong = [0, 1, 1023, 2, 0x234, 1023];
+    const bytes = (indices: readonly number[]): Uint8Array => Uint8Array.from(indices.flatMap((i) => [i >> 8, i & 0xff]));
+    const draws = [bytes(fair), bytes(strong)];
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(<T extends ArrayBufferView | null>(array: T): T => {
+      (array as unknown as Uint8Array).set(draws.shift() ?? bytes(strong));
+      return array;
+    });
+    try {
+      expect(generatePassphrase()).toBe(strong.map((i) => PASSPHRASE_WORDS[i]).join('-'));
+      expect(random).toHaveBeenCalledTimes(2);
     } finally { random.mockRestore(); }
   });
 

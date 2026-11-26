@@ -33,6 +33,14 @@ describe('sanitizeSettings', () => {
     expect(sanitizeSettings([])).toEqual(DEFAULT_SETTINGS);
     expect(sanitizeSettings('x')).toEqual(DEFAULT_SETTINGS);
   });
+  it('enables invoice link cleanup only for an explicitly stored delay', () => {
+    for (const value of [undefined, null, '30', true, -1, 15, 30.5, 600]) {
+      expect(sanitizeSettings({ invoiceLinkClipboardDelaySec: value }).invoiceLinkClipboardDelaySec).toBe(0);
+    }
+    for (const seconds of [0, 30, 60]) {
+      expect(sanitizeSettings({ invoiceLinkClipboardDelaySec: seconds }).invoiceLinkClipboardDelaySec).toBe(seconds);
+    }
+  });
   it('keeps valid fields and drops invalid ones individually', () => {
     const s = sanitizeSettings({
       rpcUrls: { '84532': 'https://rpc.example', 'x': 'https://y', '1': 'http://insecure', '2': 5 },
@@ -56,7 +64,7 @@ describe('sanitizeSettings', () => {
     expect(t.relayerUrl).toBe('');
     expect(t.delayMinSec).toBe(DEFAULT_SETTINGS.delayMinSec);
     expect(t.lockTimeoutMin).toBe(DEFAULT_SETTINGS.lockTimeoutMin);
-    expect(t.theme).toBe('system');
+    expect(t.theme).toBe(DEFAULT_SETTINGS.theme);
     expect(sanitizeSettings({ relayerUrl: 5 }).relayerUrl).toBe('');
   });
 });
@@ -75,7 +83,7 @@ describe('persistence', () => {
     expect(saveSettings(s, { setItem: () => { throw new Error('full'); } })).toBe(false);
   });
   it('never stores key material fields', () => {
-    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
+    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'invoiceLinkClipboardDelaySec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
     const store = new Map<string, string>();
     const settingsWithExtraFields = { ...DEFAULT_SETTINGS, theme: 'dark' as const, spendingKey: 'secret-spend', viewingKey: 'secret-view', passphrase: 'secret-password' };
     expect(saveSettings(settingsWithExtraFields, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);

@@ -28,6 +28,6 @@ Append-only. Each entry: what merged, the exact source, the evidence, and the lo
     envelopes) all failed closed.
 - Scope note: no workspace currently imports `@ghostpay/ux-receipts`. The web app's receipt verification uses
   `@ghostpay/invoice-schema`. Runtime fund-safety impact today is therefore nil; the fix matters when the package is wired in.
-- Follow-ups (low, see [SECURITY_FINDINGS.md](SECURITY_FINDINGS.md)): RCPT-L1 vacuous proxy test case
-  (`verify.accessor-boundary.test.ts:44-50`), RCPT-L2 accessors read twice in `verify.ts:139-177`.
+- Follow-ups (low, see [SECURITY_FINDINGS.md](SECURITY_FINDINGS.md)): RCPT-L1 and RCPT-L2 are fixed on the FC-04 branch (commit 752828f6, tests in
+  `packages/ux-receipts/src/verify.accessor-boundary.test.ts`), pending integration; not merged.
 - Post-merge CI on `8ddb3449`: pending at time of writing (see [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md)).

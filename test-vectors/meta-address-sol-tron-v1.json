@@ -1,0 +1,393 @@
+{
+  "description": "TB-08 shared meta-address vectors: the CLI-side packages (@ghostpay/chain-solana, @ghostpay/chain-tron) must emit and parse exactly the formats the web packages (@ghostpay/solana-stealth, @ghostpay/tron-adapter) ship. Generated from the web packages only. Test-only public keys and secrets: NEVER fund these addresses.",
+  "version": 1,
+  "generator": "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+  "generatedAt": "2026-11-18",
+  "node": "v22.23.5",
+  "consumers": [
+    "packages/chain-solana/src/interop.test.ts (chain-solana and solana-stealth source)",
+    "packages/chain-tron/src/interop.test.ts (chain-tron and tron-adapter source)"
+  ],
+  "solana": {
+    "spec": "docs/adr/ADR-0017-solana-stealth.md section 3 (Meta-address, Cryptographic scheme) and section 5 (Memo)",
+    "format": "st:sol: + base58(0x01 || cluster || S || V || SHA-256(u8(len(tag)) || tag || payload)[0..4]), tag = 'GhostPay/solana-stealth/v1/checksum'; cluster bytes mainnet 0, devnet 1, testnet 2, localnet 3",
+    "memoFormat": "gpst1: + base58(R || viewTag), exactly 33 bytes",
+    "metaAddresses": [
+      {
+        "name": "seed-0-mainnet",
+        "cluster": "mainnet",
+        "spendPublicKey": "25f2f241d8d6acf5f7bb1f1d95dcf5db72a75a2473d6994019d8b09a0cf71396",
+        "viewPublicKey": "cf0908f7493ecc70391ccda2acbc2b66d61e4b802663fb41f17074e6ff92db4c",
+        "metaAddress": "st:sol:3YuwVawHZGcPWPqbMGttRREpmhWfEiSkpjt22gzxgJy2F2sv4VFALt92ddLJ8TYRaqSAy1Y5riS2K31oQE9YgeA5LedauyF"
+      },
+      {
+        "name": "seed-0-devnet",
+        "cluster": "devnet",
+        "spendPublicKey": "25f2f241d8d6acf5f7bb1f1d95dcf5db72a75a2473d6994019d8b09a0cf71396",
+        "viewPublicKey": "cf0908f7493ecc70391ccda2acbc2b66d61e4b802663fb41f17074e6ff92db4c",
+        "metaAddress": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov"
+      },
+      {
+        "name": "seed-0-testnet",
+        "cluster": "testnet",
+        "spendPublicKey": "25f2f241d8d6acf5f7bb1f1d95dcf5db72a75a2473d6994019d8b09a0cf71396",
+        "viewPublicKey": "cf0908f7493ecc70391ccda2acbc2b66d61e4b802663fb41f17074e6ff92db4c",
+        "metaAddress": "st:sol:3a4vaMn7dMPH9XRqBe9KDcMjjf2vsKVguzQw12p5Yn4nHReFoyt6gexKtpwGYtTGt5JT5ZfqwneKrML9FpfMqBDu2F2Bso6"
+      },
+      {
+        "name": "seed-0-localnet",
+        "cluster": "localnet",
+        "spendPublicKey": "25f2f241d8d6acf5f7bb1f1d95dcf5db72a75a2473d6994019d8b09a0cf71396",
+        "viewPublicKey": "cf0908f7493ecc70391ccda2acbc2b66d61e4b802663fb41f17074e6ff92db4c",
+        "metaAddress": "st:sol:3aeR7kCXfPmiy6Dx6pmXchvCDdo4gd29xcgPVCidz1cfJd2RgjCZrYMyXRjkm6uhXhEb8qjizKkUd1VKBcvGQSkos56q1ZX"
+      },
+      {
+        "name": "seed-1-devnet",
+        "cluster": "devnet",
+        "spendPublicKey": "a85e2350627b122823cb9161b3cd78938b56450587bb32dba2f5142f82f143c5",
+        "viewPublicKey": "6e4ae016556a2f964d35410cbd81ac80c35dbae75698c5ede101ef2898a5ede6",
+        "metaAddress": "st:sol:3ZnVfAEwc2LSkmZ65HKTEgQYDxNiy8FDE2KEMuvaTunKwc2rZGBEDjpAdJ5pLsgu4sHT17DRxzdQCfrWPVonDw39UT4rYP1"
+      },
+      {
+        "name": "seed-1-testnet",
+        "cluster": "testnet",
+        "spendPublicKey": "a85e2350627b122823cb9161b3cd78938b56450587bb32dba2f5142f82f143c5",
+        "viewPublicKey": "6e4ae016556a2f964d35410cbd81ac80c35dbae75698c5ede101ef2898a5ede6",
+        "metaAddress": "st:sol:3aMzCYfMe4itaLMCzTwfdmxzhw8rnRmgGeagr5q8u9LCxoR2S1VhPdDpFttJZ69KiVDb4PHK1XjYyL1gKJ4goCa4KKScwdK"
+      },
+      {
+        "name": "seed-2-devnet",
+        "cluster": "devnet",
+        "spendPublicKey": "81109ea4b3fa7336132d8b819ef98e8c7e599d5deb847d8718a14d15b7d67809",
+        "viewPublicKey": "3be48096c5ad5d38eadd5d5e7d2a6bfdebd5248f528dbff79f54ce48eea347f2",
+        "metaAddress": "st:sol:3ZhMRimyqANwFJPL73h1Nq5Fns8Datiz6jHiz6Ghtsw2hKjD7BEF7YqJWQnbuoFKb9r9MCgAUtwjs3SwBHsn56zXdNH56dK"
+      },
+      {
+        "name": "seed-2-testnet",
+        "cluster": "testnet",
+        "spendPublicKey": "81109ea4b3fa7336132d8b819ef98e8c7e599d5deb847d8718a14d15b7d67809",
+        "viewPublicKey": "3be48096c5ad5d38eadd5d5e7d2a6bfdebd5248f528dbff79f54ce48eea347f2",
+        "metaAddress": "st:sol:3aGqy7CPsCmP4sBT2EKDmvdiGqtMQCFT9MZBUGBGL7UuiX7NyvYiHSEx91b681hkEmnHQUk3XS3tdhc7768geNXSUBPqnfQ"
+      },
+      {
+        "name": "scalars-1-2-devnet",
+        "cluster": "devnet",
+        "spendPublicKey": "5866666666666666666666666666666666666666666666666666666666666666",
+        "viewPublicKey": "c9a3f86aae465f0e56513864510f3997561fa2c9e85ea21dc2292309f3cd6022",
+        "metaAddress": "st:sol:3Zc2rogbSktNzD1WMNduTXJrxqiAa8tbQjs1X5CbhtcnD9oiqXcKB236ja5af5Vfazb5KPFajbMhfzKqbZJNRZ8ZtH7HjkP"
+      },
+      {
+        "name": "scalars-1-2-testnet",
+        "cluster": "testnet",
+        "spendPublicKey": "5866666666666666666666666666666666666666666666666666666666666666",
+        "viewPublicKey": "c9a3f86aae465f0e56513864510f3997561fa2c9e85ea21dc2292309f3cd6022",
+        "metaAddress": "st:sol:3aBXQC71UoGpomodGZG7rcsKSpUJPSR4TN8U1F7A98AfEMBtiGvnLuSkNAt4sHx6EcXDNfKTn8TrSeV1XMZGzpfUj55or5L"
+      }
+    ],
+    "invalidMetaAddresses": [
+      {
+        "name": "legacy gpsol: (retired chain-solana form) of the seed-0 keys",
+        "legacy": true,
+        "input": "gpsol:fTW1bcamvsPD5BXZgNsyYPm9UJGfVrHHvaB8vMjjohyzQVx33hssAaicxGRhN4BrQkZNUfhxPTyGh9srcQRMFkfwgKMx7"
+      },
+      {
+        "name": "legacy gpsol: vector 1 from the retired packages/chain-solana/test-vectors/self-generated-v1.json",
+        "legacy": true,
+        "input": "gpsol:iVPRKEPsBrg9QjbrbTCwPpfqABVe6AgZGSnE3hPZFWJJY9G8coNm6o2by4A2777LoAyj3Rxh6f1VBUWUgUHxs3uinozTS"
+      },
+      {
+        "name": "uppercase prefix",
+        "input": "ST:SOL:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov"
+      },
+      {
+        "name": "missing prefix",
+        "input": "3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov"
+      },
+      {
+        "name": "leading space",
+        "input": " st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov"
+      },
+      {
+        "name": "trailing newline",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov\n"
+      },
+      {
+        "name": "empty body",
+        "input": "st:sol:"
+      },
+      {
+        "name": "truncated (last character dropped)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVo"
+      },
+      {
+        "name": "extra base58 character",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov2"
+      },
+      {
+        "name": "bad checksum (last checksum byte flipped)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVou"
+      },
+      {
+        "name": "invalid base58 character",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVo0"
+      },
+      {
+        "name": "longer than 128 characters",
+        "input": "st:sol:22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+      },
+      {
+        "name": "unsupported version 0x02 (valid checksum)",
+        "input": "st:sol:67KQZw7nbr4oGiCF1MMpm44AkD5HqNSbTSNNratgVME6YU7fvS5Z9fvmoqKJFedeH4KsVCjG6YgtC7ennCCW6U8Dh2rvSAr"
+      },
+      {
+        "name": "unsupported version 0x00 (valid checksum)",
+        "input": "st:sol:1fTW1bcamvsPD5BXZgNsyYPm9UJGfVrHHvaB8vMjjohyzQVx33hssAaicxGRhN4BrQkZNUfhxPTyGh9srcQRMFkfrGGzcx"
+      },
+      {
+        "name": "unknown cluster byte 0x04 (valid checksum)",
+        "input": "st:sol:3bDuf8cwhSAAnf2521Pk1oUehcZCVvYd1EwqyNdCRFAYKpQbZUX32RmdA2YEyKN8BKAjC7oc2rrdPfeV7RBAyiHihuZyJgz"
+      },
+      {
+        "name": "payload one byte too long (valid checksum)",
+        "input": "st:sol:CJQVVhkNASSGJgZ39E3rgiXGjnLiGKH9oJLQSoGout6ygDXanNs2APcpJCyM7q8LJPP4YgHKjdAbViK1cyCWtoZVNrR6bvqL"
+      },
+      {
+        "name": "payload one byte too short (valid checksum)",
+        "input": "st:sol:aeFjb4nSu7JkGKjt5edfQWyFCckWgeCyiwwGNjFymJCPUviSt72vsRPwesFMKMMfr2Cnc2aWWaLxSR1XbJYn4nJwih4f5"
+      },
+      {
+        "name": "small-order spend key (valid checksum)",
+        "input": "st:sol:3ZrWntkx6YXLA2wJwWU8vWY1LoiGwDeG8AisSPDSRvZXPMvw68ZtKCVmdsErRkdrhCFrveFtEK243BsHDB7wXzUTy8EtYWi"
+      },
+      {
+        "name": "identity view key (valid checksum)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGChM3Kg2g12kYyeyRx7UB3HQ6xNiWKJYe8VvoCAHwhMHv1XZybo"
+      },
+      {
+        "name": "mixed-order view key V + T (valid checksum)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEUcvLzFpdMyJgwJK6UT3pTm72bijGLk8SGkzewXQ7xG1ADqbYx"
+      },
+      {
+        "name": "non-canonical spend key y = p + 1 (valid checksum)",
+        "input": "st:sol:3Zwjcv81jYc8YQNZnb6Twnrn9mifTUrMQyDtDa3gvNw8E884mC3EZX4G1JHrSMaLKP4nqGLKNcdjpq5T7evoC5g38YknAnE"
+      },
+      {
+        "name": "view key not on the curve (valid checksum)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGChnarYCecF92sixTWsLUFN4o3AAivabZKkDb1mnvLRppDQzqUQ"
+      },
+      {
+        "name": "TRON meta-address given to the Solana decoder",
+        "input": "st:trx:0x0365204b60bd4e117c17aad7f7a7779eb35dbf8218e88e62fad17788ab644167c30228fccf8fd7401f351d9b67c97e4024fd1f1b2c795cf7b10c2d9d23b909b6c397"
+      }
+    ],
+    "networkMismatch": [
+      {
+        "name": "devnet meta-address, testnet expected",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov",
+        "expectedCluster": "testnet"
+      },
+      {
+        "name": "mainnet meta-address, devnet expected",
+        "input": "st:sol:3YuwVawHZGcPWPqbMGttRREpmhWfEiSkpjt22gzxgJy2F2sv4VFALt92ddLJ8TYRaqSAy1Y5riS2K31oQE9YgeA5LedauyF",
+        "expectedCluster": "devnet"
+      }
+    ],
+    "stricterInCli": [
+      {
+        "name": "spend key equals view key (S == V)",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGCycrU5vXHNwSHFf6S8Lke9pHkWjUGzQ9FaW27BhKcvZHsUtdXs",
+        "reason": "chain-solana keeps its KEY_REUSE rejection; a payer cannot be harmed by refusing it (fails closed)"
+      }
+    ],
+    "payments": [
+      {
+        "name": "seed-0",
+        "metaAddress": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov",
+        "spendSecret": "e673e071b2a293424e91f9c1760cda2ce2dbfe91459600c2e3f449dfabd8230b",
+        "viewSecret": "7473d1b34dc4164a0422d78a7a99e7484ea65db9421e68c785b5ba9414369d00",
+        "ephemeralSecret": "574e2e0187639587585d103d837ee3d4f646e696a4e4ed588c8d2609a45f650e",
+        "ephemeralPublicKey": "6a3bbf11baffeb482b99d658cd9dce76e5aa594b2f615f508197643390832e0f",
+        "viewTag": 251,
+        "tweak": "692fc55989219dd679811ca3aa05fb278dc01bfb70fb7067d4f650f35e29b007",
+        "stealthPublicKey": "ca70c5ece14de42fcede5dcd401487be0a25a98f9250d48158e27859a897c551",
+        "stealthAddress": "EdF6LnnD9U1xzUmJqbphuE9ChGCa2nqv3uYYqgT6ghZA",
+        "spendKey": "62cfaf6e21611ec1f1751ec24218f63f6f9c1a8db6917129b8eb9ad20a02d402",
+        "memo": "gpst1:YZMoKkNoYXFuBXU7Hu8zQqGGFC4D7M9ToPzDaGAX3U44A"
+      },
+      {
+        "name": "seed-1",
+        "metaAddress": "st:sol:3ZnVfAEwc2LSkmZ65HKTEgQYDxNiy8FDE2KEMuvaTunKwc2rZGBEDjpAdJ5pLsgu4sHT17DRxzdQCfrWPVonDw39UT4rYP1",
+        "spendSecret": "c74bfd95eedcb3d2071aa8aef5d2186e491661ce3c035ba1c8813721db5ed108",
+        "viewSecret": "7388aece26ebe9f4e33699c410b9192f5f5c501057654b154c3e4964bb428201",
+        "ephemeralSecret": "64b1abf54aa82e34ebb1d2ccb04b07f1abada2b1ed55274afd936d29f8800f0f",
+        "ephemeralPublicKey": "4119270d12f6c8bc018929d89364edac1426d97e2e6ee592bbd55f2ac1387360",
+        "viewTag": 140,
+        "tweak": "1c8172d3cc286792768d8fb526d0a61eebc821cce539c714de5f967c3133eb00",
+        "stealthPublicKey": "e8ae29aa5faa0bd0703279966adc847d09926de21373dd5363cbc8204ede873d",
+        "stealthAddress": "GfHckFUYfEvFoDWFYiSCBydPxyZixUnzvnAbDYVX5iWg",
+        "spendKey": "e3cc6f69bb051b657ea737641ca3bf8c34df829a223d22b6a6e1cd9d0c92bc09",
+        "memo": "gpst1:LLcmpa1HL54BuF8gnd2BWKswiZpUEqcE9wxBd2MiqgiM9"
+      },
+      {
+        "name": "scalars-1-2",
+        "metaAddress": "st:sol:3Zc2rogbSktNzD1WMNduTXJrxqiAa8tbQjs1X5CbhtcnD9oiqXcKB236ja5af5Vfazb5KPFajbMhfzKqbZJNRZ8ZtH7HjkP",
+        "spendSecret": "0100000000000000000000000000000000000000000000000000000000000000",
+        "viewSecret": "0200000000000000000000000000000000000000000000000000000000000000",
+        "ephemeralSecret": "8cf542b138ef08890cbfa5424eb2f3c50388b4c393f5ce235daa971f74407007",
+        "ephemeralPublicKey": "11b65b614b3cc31ad41ff1d589cb1142eb67155d23268e0bfc80ffd0825dcf01",
+        "viewTag": 113,
+        "tweak": "f0491ec918762a23d19eac7042088a86bf3d19d5ea52657efca3c7b784272d0f",
+        "stealthPublicKey": "d50c29f519dbce7939a0b26c1c790e0a39428073213a2270f2b0ed3c08eafa09",
+        "stealthAddress": "FLebemfJeFU1EAwDhyazRfhvDEVg8k4jMDuVUzZohYu6",
+        "spendKey": "f1491ec918762a23d19eac7042088a86bf3d19d5ea52657efca3c7b784272d0f",
+        "memo": "gpst1:6GBEKUt5CA2cA8WFPqMjGR9PTm3TF4e8QtLMUMZss4AQY"
+      }
+    ],
+    "invalidMemos": [
+      {
+        "name": "legacy base64url memo (retired chain-solana form, vector 1 of self-generated-v1.json)",
+        "legacy": true,
+        "input": "gpst1:AYEKd6bmXL1BYPhrlLZhw7F_hlJlffn-kilJlc0bBeLSZA"
+      },
+      {
+        "name": "legacy base64url memo with 2 metadata bytes (retired chain-solana form)",
+        "legacy": true,
+        "input": "gpst1:AWo7vxG6_-tIK5nWWM2dznblqllLL2FfUIGXZDOQgy4PEQEC"
+      },
+      {
+        "name": "uppercase prefix",
+        "input": "GPST1:YZMoKkNoYXFuBXU7Hu8zQqGGFC4D7M9ToPzDaGAX3U44A"
+      },
+      {
+        "name": "empty body",
+        "input": "gpst1:"
+      },
+      {
+        "name": "body of 32 bytes (view tag missing)",
+        "input": "gpst1:89h4FDYg6L6Bv8ovY1wNcm1jso1GtHM3SvEsRkmJEFHY"
+      },
+      {
+        "name": "body of 34 bytes",
+        "input": "gpst1:3QHpoTkTES8YmKTUemb8GQC2NHdoAT1vMHnTYVow1btQ9uK"
+      },
+      {
+        "name": "small-order ephemeral key",
+        "input": "gpst1:229GSGTUHJUwd9HBFpZMCp99eMgNU5uFY6CTGuyX4GXjr6"
+      },
+      {
+        "name": "invalid base58 character",
+        "input": "gpst1:YZMoKkNoYXFuBXU7Hu8zQqGGFC4D7M9ToPzDaGAX3U440"
+      }
+    ]
+  },
+  "tron": {
+    "spec": "docs/adr/ADR-0019-tron.md section 2 (Meta-address st:trx:0x, memo GPT1 || R || viewTag)",
+    "format": "st:trx:0x + lowercase hex(compressed spend key 33 || compressed view key 33); hex case accepted on input",
+    "metaAddresses": [
+      {
+        "name": "seed-0",
+        "spendingPublicKey": "02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac",
+        "viewingPublicKey": "0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc",
+        "metaAddress": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "seed-1",
+        "spendingPublicKey": "026eb7fa88521fed437bfdb941bb356bbe4d3dd109ab5aa529a4742af19bf3396b",
+        "viewingPublicKey": "033a3f479729d0c7f6693d3536297f8c781c0a0848775f757fda82ec9da265542f",
+        "metaAddress": "st:trx:0x026eb7fa88521fed437bfdb941bb356bbe4d3dd109ab5aa529a4742af19bf3396b033a3f479729d0c7f6693d3536297f8c781c0a0848775f757fda82ec9da265542f"
+      },
+      {
+        "name": "seed-2",
+        "spendingPublicKey": "02859c0ae941525d1230f3aa7e5b6762850c963bed1acb5e311b7ab719e5220351",
+        "viewingPublicKey": "03a92ac12e624efe07ca87db9534f72d20bd3bc945d6f3a00def66662cf548c4a0",
+        "metaAddress": "st:trx:0x02859c0ae941525d1230f3aa7e5b6762850c963bed1acb5e311b7ab719e522035103a92ac12e624efe07ca87db9534f72d20bd3bc945d6f3a00def66662cf548c4a0"
+      }
+    ],
+    "nonCanonicalAccepted": [
+      {
+        "name": "uppercase hex digits are accepted and canonicalised to lowercase",
+        "input": "st:trx:0x02A3ED440501AE40C390A42D707DD74219BB97F584E00DFCDFD0AF03B2A59EFFAC0280162B636A35A78A90E73678A87EB4FAB5F0DE051E444A9849A4D4CF6E5F3EDC",
+        "canonical": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      }
+    ],
+    "invalidMetaAddresses": [
+      {
+        "name": "legacy st:eth:0x form (what chain-tron accepted before; it is the EVM meta-address)",
+        "legacy": true,
+        "input": "st:eth:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "uppercase prefix",
+        "input": "ST:TRX:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "uppercase 0X",
+        "input": "st:trx:0X02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "missing 0x",
+        "input": "st:trx:02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "leading space",
+        "input": " st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "trailing newline",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc\n"
+      },
+      {
+        "name": "single key (66 hex digits)",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac"
+      },
+      {
+        "name": "131 hex digits",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3ed"
+      },
+      {
+        "name": "133 hex digits",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc0"
+      },
+      {
+        "name": "non-hex character",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edg"
+      },
+      {
+        "name": "uncompressed-key prefix byte 0x04",
+        "input": "st:trx:0x04a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "spend key x not on the curve",
+        "input": "st:trx:0x02ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc"
+      },
+      {
+        "name": "spend key equals view key",
+        "input": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac"
+      },
+      {
+        "name": "Solana meta-address given to the TRON decoder",
+        "input": "st:sol:3ZVS2yMhbJzqKxdiGTX6pWoHFgGo41yDsN9UWruX7YWuGEG5wEZdWmYgGE8nLfzrETNK2HbxuFYB5hAyL2QTFugzBQooVov"
+      }
+    ],
+    "payments": [
+      {
+        "name": "seed-0",
+        "metaAddress": "st:trx:0x02a3ed440501ae40c390a42d707dd74219bb97f584e00dfcdfd0af03b2a59effac0280162b636a35a78a90e73678a87eb4fab5f0de051e444a9849a4d4cf6e5f3edc",
+        "ephemeralSecret": "9de15a816dde409dff0a4f5a1fa16ec8e24fe5867b2180981dd55ba2bfbb1055",
+        "ephemeralPublicKey": "0387edd57ad59fe0c7024c17d60c74a1600cbbc3abbd2c92c6277eab1ba78cc1b2",
+        "viewTag": 233,
+        "stealthAddress": "TQgvjD77K7GVCJJhUsj9RJ4estzjdqN1CM",
+        "memoHex": "475054310387edd57ad59fe0c7024c17d60c74a1600cbbc3abbd2c92c6277eab1ba78cc1b2e9"
+      },
+      {
+        "name": "seed-1",
+        "metaAddress": "st:trx:0x026eb7fa88521fed437bfdb941bb356bbe4d3dd109ab5aa529a4742af19bf3396b033a3f479729d0c7f6693d3536297f8c781c0a0848775f757fda82ec9da265542f",
+        "ephemeralSecret": "1ec8dab20378778b873b7f785129e996ad109f80c6f71d314081914ac5d20eda",
+        "ephemeralPublicKey": "03ceb2e1cd10da4fd810c8f58759876a4db1436bfe2f8e2069147a2830c36179a6",
+        "viewTag": 34,
+        "stealthAddress": "TK6PCu2n1HHuS89r6YUHXv1oNuWst98Eyi",
+        "memoHex": "4750543103ceb2e1cd10da4fd810c8f58759876a4db1436bfe2f8e2069147a2830c36179a622"
+      }
+    ]
+  }
+}

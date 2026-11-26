@@ -1,10 +1,12 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useMemo, useState, type ReactNode } from 'react';
 import { buildEip681Erc20, buildEip681Native, buildSolanaPay, buildTronUri, type TronNetwork } from '@ghostpay/payment-uri';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { LocalReceipt } from '../lib/payExec';
 import { makeQr } from '../lib/qr';
 import { kindForPayload } from '../lib/qrKinds';
+import { usePresentationRetention } from '../lib/useInvoicePreviewRetention';
 import { CopyButton, Mono, Notice, downloadText } from './Common';
+import { MetadataRetentionControls } from './MetadataRetentionControls';
 import { QrFrame } from './QrFrame';
 
 /** One payment request per chain family. Amounts follow each standard: atomic units for EVM, whole units for Solana/TRON. */
@@ -82,11 +84,19 @@ export function PaymentRequestQr(props: PaymentRequestQrProps): ReactNode {
  * Payer-side proof of payment: the local receipt this device built, as a QR and a download. It records what the payer
  * submitted; it is not independent payment proof (only the chain, or a seller-signed receipt, is evidence).
  */
-export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): ReactNode {
+export function PaymentProofQr(props: { readonly receipt: LocalReceipt; readonly sourceIdentity?: object }): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [shown, setShown] = useState(false);
+  const [showOccurrence, setShowOccurrence] = useState<object | undefined>();
   const [error, setError] = useState<string | undefined>(undefined);
+  const sourceIdentity = props.sourceIdentity ?? props.receipt;
+  // #287 item 4. The live receipt bytes remain unchanged by retention. Only a Show/source lifetime is registered;
+  // ordinary timestamp rerenders cannot restart its age, while changed sources or current status revoke the previous plan.
+  const retentionIdentity = useMemo(() => shown && props.receipt.status === 'included'
+    ? { sourceIdentity, showOccurrence } : undefined, [shown, props.receipt.status, sourceIdentity, showOccurrence]);
+  const [proofExpired, setProofExpired] = useState(false);
+  usePresentationRetention(retentionIdentity, (reason) => { setShown(false); setProofExpired(reason === 'expired'); }, 'proof');
   const textId = useId();
   const text = JSON.stringify(props.receipt, null, 2);
   const compact = JSON.stringify(props.receipt);
@@ -94,6 +104,8 @@ export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): React
     try {
       makeQr(compact);
       setError(undefined);
+      setShowOccurrence({});
+      setProofExpired(false);
       setShown(true);
     } catch {
       setShown(false);
@@ -114,6 +126,10 @@ export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): React
         <button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>{t('proof.download')}</button>
       </div>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+      <div aria-live="polite">
+        {proofExpired && !shown && <Notice kind="info">{t('retention.proof.expired')}</Notice>}
+      </div>
+      <MetadataRetentionControls scope="proof" />
       {shown && (
         <>
           <QrFrame kind={kindForPayload('payment-proof', { unverified: props.receipt.status !== 'included' })} text={compact} caption={t('proof.qrCaption')} />

@@ -1,4 +1,4 @@
-import { ATTEMPT_JOURNAL_LOCK, readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
+import { browserAttemptLocks, readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { UserFacingError } from '../../lib/errors';
 import { sendViaWallet, walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 
@@ -13,10 +13,8 @@ export function policyAttemptStorage(): AttemptStorage {
 }
 
 function locks(): PolicyLockManager {
-  if (typeof navigator === 'undefined' || navigator.locks === undefined) throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' });
-  return { async request<T>(name: string, callback: () => Promise<T>): Promise<T> {
-    return await navigator.locks.request(name, { mode: 'exclusive' }, callback);
-  } };
+  try { return browserAttemptLocks(); }
+  catch { throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' }); }
 }
 
 export function policyActionKey(wallet: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, scope: string): string {
@@ -45,15 +43,20 @@ export async function sendPolicyAction(p: {
   readonly storage?: AttemptStorage; readonly lockManager?: PolicyLockManager;
 }): Promise<`0x${string}`> {
   const storage = p.storage ?? policyAttemptStorage();
-  const manager = p.lockManager ?? locks();
-  return manager.request(ATTEMPT_JOURNAL_LOCK, async () => {
-    p.assertCurrent();
-    const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
-    if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
-    const tx = await p.prepare();
-    p.assertCurrent();
-    // This callback already holds the non-reentrant journal lock: sendViaWallet must write in place, not request it again.
-    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, ...(p.storage === undefined ? {} : { storage }), journalLockHeld: true });
+  const manager = p.lockManager;
+  // Check capability before preparation, but let the default journal choose bounded begin and unbounded finish waits.
+  if (manager === undefined) locks();
+  p.assertCurrent();
+  const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
+  if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+  const tx = await p.prepare();
+  p.assertCurrent();
+  return sendViaWallet(p.wallet, tx, p.assertCurrent, {
+    kind: 'transaction', logicalAction: true, scope: p.scope,
+    ...(p.storage === undefined ? {} : { storage }), ...(manager === undefined ? {} : { lockManager: manager }),
+    beforeAttemptStart: (attemptKey, journal) => {
+      if (attemptKey !== key || policyActionAttempts(key, journal).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+    },
   });
 }
 

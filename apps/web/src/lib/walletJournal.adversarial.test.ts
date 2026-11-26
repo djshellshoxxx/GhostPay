@@ -14,6 +14,8 @@ import {
   LOCK_WAIT_MS,
 
   readAttempts,
+  readReturnedAttempts,
+  retryReturnedAttempts,
   withAttemptJournal,
   type AttemptLockManager,
   type AttemptStorage,
@@ -931,12 +933,27 @@ describe('default browser journal: authoritative IndexedDB snapshot, localStorag
     const log: SendEntry[] = [];
     const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
     vi.stubGlobal('indexedDB', faultyIdb(inner, fault, () => sends(log) > 0));
-    const error = await sendViaWallet(s, txOf(1), undefined, pay(1)).catch((e: unknown) => e);
-    expect(error).toBeInstanceOf(WalletBroadcastError);
-    expect(error).toMatchObject({ hash: hashOf(1) });
-    vi.stubGlobal('indexedDB', inner);
-    expect(await committedRecords()).toMatchObject([{ key: keyOf(1), status: 'unknown' }]);
-    expect(readAttempts(window.localStorage)).toMatchObject([{ key: keyOf(1), status: 'unknown' }]);
+    try {
+      const error = await sendViaWallet(s, txOf(1), undefined, pay(1)).catch((e: unknown) => e);
+      expect(error).toBeInstanceOf(WalletBroadcastError);
+      expect(error).toMatchObject({ hash: hashOf(1) });
+      vi.stubGlobal('indexedDB', inner);
+      const committed = await committedRecords();
+      expect(committed).toMatchObject([{ key: keyOf(1), status: 'unknown' }]);
+      // The durable mirror is still unknown; readAttempts also includes the retained returned hash.
+      expect(JSON.parse(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY) ?? '[]')).toEqual(committed);
+      expect(readAttempts(window.localStorage)).toMatchObject([{ key: keyOf(1), status: 'submitted', hash: hashOf(1) }]);
+      expect(readReturnedAttempts()).toMatchObject([{ key: keyOf(1), hash: hashOf(1) }]);
+      await expect(sendViaWallet(s, txOf(1), undefined, pay(1))).rejects.toThrow(DUPLICATE_ERROR);
+      expect(sends(log)).toBe(1);
+    } finally {
+      // End the synthetic fault through real persistence, without deleting the production fallback.
+      vi.stubGlobal('indexedDB', inner);
+      await retryReturnedAttempts();
+    }
+    expect(readReturnedAttempts()).toEqual([]);
+    expect(await committedRecords()).toMatchObject([{ key: keyOf(1), status: 'submitted', hash: hashOf(1) }]);
+    expect(sends(log)).toBe(1);
   });
 
   it.each([
@@ -1080,10 +1097,14 @@ describe('bounded waits (JRNL-L1, QA-6)', () => {
     const error = await sending.catch((e: unknown) => e);
     expect(error).toBeInstanceOf(WalletBroadcastError);
     expect((error as WalletBroadcastError).hash).toBe(hashOf(0x101));
+    expect(readReturnedAttempts()).toMatchObject([{ status: 'submitted', hash: hashOf(0x101) }]);
+    expect(JSON.parse(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ status: 'unknown' }]);
     vi.useRealTimers();
     releaseLock();
     await other;
     await vi.waitFor(async () => { expect((await committedRecords()).map((r) => r.hash)).toEqual([hashOf(0x101)]); });
+    await vi.waitFor(() => { expect(readReturnedAttempts()).toEqual([]); });
+    expect(sends(log)).toBe(1);
   });
 
   it('an IndexedDB open that never answers is abandoned after a bounded wait', async () => {
