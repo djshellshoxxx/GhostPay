@@ -439,6 +439,8 @@ export interface WalletAttemptOptions {
   readonly storage?: AttemptStorage;
   /** Journal lock; defaults to `navigator.locks` (missing locks refuse before any wallet request). */
   readonly lockManager?: AttemptLockManager;
+  /** Synchronous policy guard using the authoritative journal snapshot. */
+  readonly beforeAttemptStart?: (key: string, storage: AttemptStorage) => void;
   /**
    * The caller already holds `ATTEMPT_JOURNAL_LOCK` around this call (Web Locks are not reentrant, so requesting it
    * again would deadlock): journal writes then run in place. Only for a caller that really holds it.
@@ -590,6 +592,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
         await withAttemptJournal((store) => {
           refuseIfAbandoned();
           check();
+          attemptOptions?.beforeAttemptStart?.(input.key, store);
           return beginAttempt(input, store);
         }, access, (attempt) => {
           refuseIfAbandoned();
@@ -626,7 +629,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     const normalized = hash.toLowerCase() as Hex;
     const attempt = started.attempt;
     if (attempt !== undefined) {
-      // The hash is recorded under the lock, which another tab may hold across a wallet prompt (policy actions). Never
+      // The hash is recorded under the lock, which a stale client or another browser context may still hold. Never
       // keep a returned hash from the caller meanwhile: after a bounded wait surface it as a broadcast whose follow-up
       // failed, and let the queued write still record it when the lock frees (JRNL-L1).
       const finishing = finishReturnedAttempt(attempt, normalized, access, journalStorage);
