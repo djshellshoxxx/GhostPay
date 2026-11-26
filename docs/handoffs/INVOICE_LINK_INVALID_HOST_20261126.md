@@ -15,3 +15,7 @@ Node 22.16.0, TypeScript 5.8.3: strict standalone compilation of the two exact m
 
 ## Gates
 Keep draft until hosted exact-head required CI, applicable browser verification, independent review, refreshed ownership and legitimate integration lease. Do not merge or deploy before those gates; no other worker branch changes, archived refs, dependencies, contract, chain or fund interactions. Next: independently review and qualify this patch and continue already-authorized payment/recovery bug discovery. #390 is merged and its five historical head workflows are green; no submitted review found. #726 refreshed head five workflows successful, review and reconciliation remain outstanding.
+
+## Reconciliation checkpoint — 2026-11-26 UTC
+
+Main `b044dd452a932d3446c6155bf97e977b707c4c00`; prior qualified head `0b2649c42bec9617c05965efcc91e3067358d4a2` (five hosted workflows successful, no submitted independent review); production blob `ab41f925ae7f17f9512d8a13b7d85db8ad9515d6`, regression blob `11751a999695d5906b37c582d534152ee2513764` unchanged. Four open PRs updated since the original census cutoff checked, with no competing source changes; full refreshed census limited by connector. Preserve main registry and both parent histories. Fresh exact-head hosted CI and independent review remain outstanding; lock generation 57 released, not acquired. No local tests rerun, no main merge.

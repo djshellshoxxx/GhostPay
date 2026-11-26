@@ -71,3 +71,27 @@ export function safeToken(s: string): string {
   const t = s.replace(/[^A-Za-z0-9_.=-]/g, '?');
   return t.length > 40 ? `${t.slice(0, 40)}...` : t;
 }
+
+/**
+ * Escapes untrusted text for human terminal output the way JSON.stringify does, and additionally
+ * escapes format, bidi, private-use and line/paragraph separator characters, so it cannot move the
+ * cursor, erase lines or reorder what is shown.
+ */
+export function escapeDisplay(s: string): string {
+  return JSON.stringify(s).slice(1, -1).replace(/[\p{C}\u2028\u2029]/gu, (c) => `\\u${(c.codePointAt(0) as number).toString(16).padStart(4, '0')}`);
+}
+
+/** Longest file name echoed in an error; longer values are more likely a pasted document than a name. */
+const MAX_DISPLAY_NAME = 64;
+
+/**
+ * The quoted basename of a plain local path, for error messages, or undefined when the value must not be
+ * echoed: anything URL-like or carrying a fragment or query (for example a bearer `#gpi=` payment link),
+ * control or format characters, document-like punctuation, or an over-long name. Directories are never shown.
+ */
+export function displayPath(path: string): string | undefined {
+  if (/^[A-Za-z][A-Za-z0-9+.-]+:/.test(path) || /[#?\p{C}\u2028\u2029]/u.test(path)) return undefined;
+  const base = path.slice(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1);
+  if (base.length === 0 || base.length > MAX_DISPLAY_NAME || !/^[\p{L}\p{N} ._+,=~@()[\]-]+$/u.test(base)) return undefined;
+  return JSON.stringify(base);
+}
