@@ -1097,10 +1097,16 @@ test.describe('GitHub Pages artifact: refusals', () => {
   // Last in the file: it moves the anvil clock forward for good, which later payments would otherwise inherit.
   test('g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain', async ({ browser, baseURL }) => {
     const net = new PagesNetwork(dn, siteOrigin(baseURL));
-    const c = await newContext(browser, baseURL, net);
+    // Preserve UI-saved settings across payer loads instead of reapplying the per-document RPC preset.
+    const c = await newContext(browser, baseURL, net, { presetRpc: false });
     const extra: BrowserContext[] = [];
     try {
       const s = await quickSeller(c);
+      await configureRpc(s, APP_RPC);
+      // This context shares its clock: keep both seller and payer inside the idle window while the invoice expires.
+      await s.getByLabel('Idle lock after minutes without activity', { exact: true }).fill('240');
+      await s.getByRole('button', { name: 'Save settings' }).click();
+      await expect(s.getByText('Settings saved.', { exact: true })).toBeVisible();
       const invoice = await createPagesInvoice(s, baseURL ?? '', { description: 'Pages expiry check', expiryHours: 1 });
       const parsed = await parseFragment(new URL(invoice).hash);
       const createdAt = Math.floor(Date.now() / 1000);
@@ -1113,6 +1119,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
 
       // 1. Valid when prepared, expired by the time of the send click: refused before the wallet is asked.
       await openFresh(p, invoice);
+      expect(await storedSettings(p)).toMatchObject({ lockTimeoutMin: 240 });
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.clock.setSystemTime(past);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
