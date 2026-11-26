@@ -208,7 +208,7 @@ describe('deriveStealthPayment is testnet-only for text meta-addresses', () => {
       deriveStealthPayment(encodeMetaAddress({ ...keys, cluster: 'mainnet' }), rng);
       expect.unreachable();
     } catch (e) {
-      expect((e as Error).message).toBe('Solana cluster is not enabled (devnet, testnet and localnet only)');
+      expect((e as Error).message).toBe('Solana cluster is not enabled for this operation; this testnet proof of concept refuses mainnet');
     }
   });
   it('still derives for devnet, testnet and localnet', () => {

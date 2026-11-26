@@ -29,9 +29,9 @@ Status: testnet proof of concept, unaudited, never run against a cluster. Compan
   fees `not_enforceable` on every line.
 
 ## Decisions taken where `solana.md` left choices open
-Hash binds `S` as well as `K, R`; length-prefixed domain tags; meta-address and memo encodings above;
+Hash binds `S` as well as `R, Z` (`Z = r·V`, see DEVIATIONS.md section 1); length-prefixed domain tags; meta-address and memo encodings above;
 announcement has a version byte instead of a scheme id; fee lines `not_enforceable` (spec said
-`not_deployed`). All need the scheme ADR. Table: DEVIATIONS.md section 1.
+`not_deployed`). The scheme is recorded in ADR-0017 (status: Proposed, proof of concept). Table: DEVIATIONS.md section 1.
 
 ## Test evidence (real numbers, 2026-10-21)
 97 tests, coverage 98.71% statements / 97.77% branches / 98.3% functions / 99.61% lines (thresholds
