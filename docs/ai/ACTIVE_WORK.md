@@ -3,7 +3,8 @@
 Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (base main `601f2095`). Owned paths:
 `apps/web/src/lib/scanClient.ts` (checkpoint save guard and `localCheckpointStore.save` only), new
 `apps/web/src/lib/scanClient.checkpointOwnership.test.ts`, the two PRIV-06 `it.fails` cases in
-`apps/web/src/lib/scanClient.checkpoint.test.ts`, the F1 rows of `docs/research/privacy-evidence-matrix-2026-11-10.md`,
+`apps/web/src/lib/scanClient.checkpoint.test.ts`, the replay-tail recording wrapper in `apps/web/src/lib/scanClient.test.ts`
+(forwards the new `expected` argument), the F1 rows of `docs/research/privacy-evidence-matrix-2026-11-10.md`,
 `apps/web/DEVIATIONS.md` (if needed) and `docs/handoffs/SCAN_CHECKPOINT_OWNERSHIP_20261126.md`. Overlap: #696 edits other
 regions of `scanClient.ts` (cover lookups); rebase/merge whichever lands second. Not claimed: F2-F4, `Scan.tsx`.
 Acceptance: both PRIV-06 expected-fail regressions pass as plain tests; a scan that owns the slot can still move its own
