@@ -216,5 +216,7 @@ argument on `GhostPayRouter` (the audit's other option) so the audited scheme-1 
   and signed permits), the Echidna harness (`payWithPermitBuffer`, own canary `echidna_canary_permit_buffer_success`)
   and the chain-adapters anvil sweep test on buffered gas. **Not** deployed, no manifest, not re-audited. The pinned
   Foundry build could not be installed in the authoring sandbox (the change was syntax- and type-checked with solc
-  0.8.26 only), so the `.gas-snapshot` lines for the eight `test_permitBuffer_*` tests are pasted from the CI
-  `forge test` output; until they are in, `contracts-static` (`forge snapshot --check`) fails on this branch.
+  0.8.26 only), so `.gas-snapshot` was regenerated from the CI `forge test` output (run 45820406747, head
+  6d8dbf60): eight new `test_permitBuffer_*` lines, and 96 existing values moved because the new entry point changes
+  the router's dispatch and deployment cost. Later commits on the branch touch comments, docs, the Echidna harness and
+  the invariant handler only, none of which the snapshot measures (`bytecode_hash = "none"`, `cbor_metadata = false`).
