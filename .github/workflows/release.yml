@@ -27,7 +27,7 @@ concurrency:
 jobs:
   verify:
     name: Verify (tests on a clean checkout)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -103,7 +103,7 @@ jobs:
   build:
     name: Build, attest (requires approval)
     needs: [verify, contract-analysis]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: release
     permissions:
@@ -205,7 +205,7 @@ jobs:
   draft-release:
     name: Draft GitHub release (requires approval)
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: release
     permissions:
