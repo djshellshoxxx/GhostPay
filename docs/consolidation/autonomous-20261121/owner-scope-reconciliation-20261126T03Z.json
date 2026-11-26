@@ -1,0 +1,219 @@
+{
+  "checkpoint": "2026-11-26T03Z",
+  "priorLedger": "d175fa12e6d74fc58f6f8a8168585e57a8c503ca",
+  "priorSnapshot": "docs/consolidation/autonomous-20261121/owner-scope-reconciliation-20261126T02Z.json",
+  "format": "incremental snapshot; apply ref changes and open PR additions/removals to prior inventory; unchanged PR metadata not republished",
+  "main": "1bea3df3448569254774747d694e71e155c3eb98",
+  "mainTree": "f8dfe003e6877e5c0fc649231d4c24e275128dff",
+  "branchCount": 807,
+  "openPRCount": 228,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    7,
+    0
+  ],
+  "prPageLengths": [
+    100,
+    100,
+    28,
+    0
+  ],
+  "frozenRefsVerified": 34,
+  "archiveMismatches": [],
+  "delta": {
+    "changed": [
+      [
+        "automation/ghostpay-integration-lock",
+        "9d8f424215a1e93c7be12ce3cd1f97813623e6be",
+        "17292b4b0e82113663c73adece34e075683c77d5",
+        "coordination only"
+      ],
+      [
+        "finish/account-privacy-core-20261125-8812",
+        null,
+        "f8145c1cb8d806f1d8b134c159eb00f595e6769a",
+        "active owner, blocked CI"
+      ],
+      [
+        "finish/idle-recovery-core-20261125-8812",
+        "2a70c04124cba1d8c2d5145ef5a4ba4bcb6c2911",
+        "0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff",
+        "active owner, blocked CI"
+      ],
+      [
+        "finish/policy-journal-lock-20261125-8812",
+        null,
+        "c6f15cfeddaa508c9df646d336ae1b071b3f5b69",
+        "active owner, blocked dependency and CI"
+      ],
+      [
+        "finish/shared-payment-utilities-20261125-8812",
+        null,
+        "62d8ff681b3ce3916d7aa4639c73437856ef8e48",
+        "merged exact tree"
+      ],
+      [
+        "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+        "602b131f40cee40afc1f53f0593cf7a9c9b8634a",
+        "d175fa12e6d74fc58f6f8a8168585e57a8c503ca",
+        "prior ledger publication"
+      ],
+      [
+        "main",
+        "edcca81906c304499c436083dec3b598680de188",
+        "1bea3df3448569254774747d694e71e155c3eb98",
+        "two verified coordinator merges"
+      ],
+      [
+        "nodata/elegant-tesla-kpeojx",
+        "9f15760d9f72f758a085e38adda26ee21edf94ca",
+        "40603a6ee52dda5031808820544e6240b1e284a4",
+        "active W5 qualification"
+      ]
+    ],
+    "removed": [],
+    "closed": [
+      310,
+      319,
+      595,
+      628,
+      634,
+      650,
+      654,
+      663,
+      686,
+      688
+    ],
+    "addedPRs": [
+      691,
+      692
+    ]
+  },
+  "policy": "Read current main AGENTS.md, STOP_WORK_20261125.md, WORKFLOW, HANDOFF and ownership registry. All ten exclusions and mandatory shared core binding; #659 merged.",
+  "lease": {
+    "head": "17292b4b0e82113663c73adece34e075683c77d5",
+    "generation": 38,
+    "status": "released at read; not acquired"
+  },
+  "newlyIntegrated": [
+    {
+      "pr": 688,
+      "head": "521a917da4dabe02d5e0075e750c7b4ec10e7d5f",
+      "merge": "84b80260b9c16b928e440dd81750d9bfb6cdb2b4",
+      "tree": "1b8f5d3732f0366425bd0b9e54a860fc568c4741",
+      "exactTreeVerified": true,
+      "checks": {
+        "success": 41,
+        "skipped": 3
+      }
+    },
+    {
+      "pr": 690,
+      "head": "62d8ff681b3ce3916d7aa4639c73437856ef8e48",
+      "merge": "1bea3df3448569254774747d694e71e155c3eb98",
+      "tree": "f8dfe003e6877e5c0fc649231d4c24e275128dff",
+      "exactTreeVerified": true,
+      "checks": {
+        "success": 40,
+        "skipped": 3
+      },
+      "donorParents": [
+        "0fe0f06f1f7cd1dde2c4dc849702f0ab4cd509cd",
+        "898106124f7fc2ae90916a8d62348d0d4dd5e120",
+        "d05108873af1ab79edee9c22fe01b0a22cf3a213"
+      ]
+    }
+  ],
+  "mainPushWorkflows": [
+    {
+      "id": 45742191891,
+      "name": "Hosting kit",
+      "conclusion": "success"
+    },
+    {
+      "id": 45742191917,
+      "name": "Push on main",
+      "conclusion": "success"
+    },
+    {
+      "id": 45742191590,
+      "name": "CI",
+      "conclusion": "success"
+    }
+  ],
+  "currentQualification": [
+    {
+      "pr": 689,
+      "head": "0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff",
+      "checks": {
+        "success": 37,
+        "skipped": 3,
+        "failure": 2
+      },
+      "ci": 45743191055
+    },
+    {
+      "pr": 691,
+      "head": "f8145c1cb8d806f1d8b134c159eb00f595e6769a",
+      "checks": {
+        "success": 32,
+        "skipped": 3,
+        "failure": 4,
+        "in_progress": 2
+      },
+      "ci": 45743729535,
+      "pages": 45743729598,
+      "beta": 45743729477
+    },
+    {
+      "pr": 692,
+      "head": "c6f15cfeddaa508c9df646d336ae1b071b3f5b69",
+      "checks": {
+        "success": 34,
+        "skipped": 3,
+        "failure": 4,
+        "in_progress": 2
+      },
+      "ci": 45744477356,
+      "pages": 45744477475,
+      "beta": 45744477469
+    },
+    {
+      "pr": 665,
+      "head": "40603a6ee52dda5031808820544e6240b1e284a4",
+      "checks": {
+        "success": 31
+      },
+      "ci": 45743422700
+    }
+  ],
+  "logReview": {
+    "head": "f8145c1cb8d806f1d8b134c159eb00f595e6769a",
+    "jobs": [
+      139655022238,
+      139654656248,
+      139654655573
+    ],
+    "findings": [
+      "flows.spec.ts:379/449 expect unconnected history hash after revocation/reload; pages-devnet.spec.ts:472 and devnet-journey.spec.ts:139/261 have the same issue. The UI instead correctly requires explicit relevant wallet account and chain; adapt fixtures while retaining privacy and duplicate protections.",
+      "devnet-journey.spec.ts:306 expected wrong-network warning not visible following send click. Distinct failure needs investigation, do not presume fixture-only or remove no-send and empty-journal assertions."
+    ]
+  },
+  "limitations": [
+    "Local Git DNS failure reproduced; no new local product tests.",
+    "Incremental census, not exhaustive behavioral disposition; prior unresolved obligations remain.",
+    "No main write, merge, archive change or deployment by this worker."
+  ],
+  "next": [
+    "Existing coordinator owns #689/#691/#692; finish history fixture and warning investigation, then requalify exact composed head and policy lock dependency.",
+    "Rerun #665 against qualified current app; preserve ambiguity and unqualified hashless identities.",
+    "Keep mixed composition holds and prior source/ancestry obligations."
+  ]
+}
