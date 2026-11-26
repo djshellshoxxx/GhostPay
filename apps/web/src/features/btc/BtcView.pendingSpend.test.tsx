@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import type { EsploraFetch } from './esplora';
-import { appendBlocks, coinbase, mockChain, SEED_A, spendTx, walletA } from './fixtures.testutil';
+import { appendBlocks, coinbase, forkChain, mockChain, SEED_A, spendTx, walletA } from './fixtures.testutil';
 import { inlineBtcScanWorker } from './scanWorker.testutil';
 
 // renderWith also exports a full-app helper; these tests exercise only the production Bitcoin view.
@@ -61,7 +61,7 @@ describe('session pending-spend guard', () => {
     expect(review === null || review.disabled).toBe(true);
   });
 
-  it('releases the guard once a later local scan confirms the spend', async () => {
+  it('stops listing the output, and so the notice, once a later local scan confirms the spend', async () => {
     const chain = mockChain('regtest', walletA()); const user = await open(chain.fetchFn);
     await broadcastSweep(user);
     const payment = chain.blocks[3]!.txs.find((tx) => tx.vout.some((out) => out.scriptpubkey.startsWith('5120')))!;
@@ -87,5 +87,46 @@ describe('session pending-spend guard', () => {
     await screen.findByText(/1 unspent payment/);
     expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).disabled).toBe(false);
     expect(screen.queryByText(PENDING)).toBeNull();
+  });
+
+  // FC-05b review M1: the swept transaction stays valid across a reorganization, so its inputs stay unsweepable.
+  it('keeps the guard through a chain reorganization that cuts the scan above the paying block', async () => {
+    const chain = mockChain('regtest', walletA()); const user = await open(chain.fetchFn);
+    await broadcastSweep(user);
+    // Block 4 (above the payment in block 3) is replaced by a heavier two-block branch.
+    forkChain(chain.blocks, 4, 2, 7);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Scan' }).disabled).toBe(false));
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).disabled).toBe(true);
+    expect(screen.getByText(PENDING)).toBeTruthy();
+  });
+
+  // FC-05b review L2: re-sending the identical signed transaction cannot double-spend; signing a new one stays refused.
+  it('allows broadcasting the identical signed transaction again after an unknown outcome', async () => {
+    const chain = mockChain('regtest', walletA()); const user = await open(chain.fetchFn);
+    chain.broadcastStatus = 500;
+    await broadcastSweep(user);
+    await waitFor(() => expect(document.querySelector('[data-transaction-phase="broadcast-unknown"]')).not.toBeNull());
+    expect(chain.broadcasts).toHaveLength(0);
+    chain.broadcastStatus = undefined;
+    const again = screen.getByRole<HTMLButtonElement>('button', { name: /Broadcast to/ });
+    expect(again.disabled).toBe(false);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' }).disabled).toBe(true);
+    await user.click(again);
+    await waitFor(() => expect(chain.broadcasts).toHaveLength(1));
+    await waitFor(() => expect(document.querySelector('[data-transaction-phase="pending-confirmation"]')).not.toBeNull());
+  });
+
+  // FC-05b review M2: the notice says the protection lives only in this page's memory.
+  it('says the guard is memory-only and survives neither reload nor lock', async () => {
+    const chain = mockChain('regtest', walletA()); const user = await open(chain.fetchFn);
+    await broadcastSweep(user);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    const text = (await screen.findByText(PENDING)).textContent ?? '';
+    expect(text).toMatch(/only in this page's memory/);
+    expect(text).toMatch(/reloading the page/);
+    expect(text).toMatch(/same signed transaction again/);
+    expect(text).not.toMatch(/reorganization cuts the scan/);
   });
 });
