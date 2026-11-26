@@ -267,6 +267,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Exact tests, independent AI-assisted review and remaining qualification limits are recorded in
     `docs/handoffs/btc-spent-20261118/README.md`.
 
+26. **L2-I4 two-provider manifest read-back (2026-11-26).** `verifyManifestState`/`verifyManifestForFlow`
+    (`src/lib/manifest.ts`) take the user's second RPC and run the existing `verifyManifestOnChain` checks through
+    `createReconciledClient`, so every `eth_getCode` and `eth_call` must agree on both providers before Pay, Sweep or
+    Scan proceeds. A disagreement, a second RPC that cannot be opened (unreachable, wrong chain) or one that fails
+    mid-read refuses the flow with a fixed-form reason; there is no silent fallback to one provider (remove the second
+    RPC in Settings to opt out), matching the Scan rule in `docs/pages/README.md`. Scan skips the second RPC only where
+    it already did (a required private path, `plan.useSecondary`). The audit-recommended `verifyDeployment` path was not
+    adopted because it requires a canonical announcer entry for the chain, which local chains and devnets lack; the
+    unused `src/lib/deployment.ts` (`checkDeployment`) and its tests were removed. `settings.rpc.secondary.hint` and
+    `scan.error.manifestDisagree` carry reviewed English in all catalogs until native review.
+
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
 150-case tag-archive fuzz (`src/lib/tagArchive.fuzz.nocov.test.ts`) does: v8 block coverage deoptimises scrypt ~10x (measured 13.9 s

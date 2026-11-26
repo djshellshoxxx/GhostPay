@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
 import { ed25519 } from '@noble/curves/ed25519.js';
-import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
+import { manifestSigningBytes, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
-import { loadBundledManifest, loadManifest, verifyManifestForFlow, verifyManifestState } from './manifest';
+import { loadBundledManifest, loadManifest, NO_SECONDARY, openSecondaryReadback, READBACK_REASONS, verifyManifestForFlow, verifyManifestState, type SecondaryReadback } from './manifest';
 
 const ok = (body: string, status = 200): Promise<Response> => Promise.resolve(new Response(body, { status }));
 
@@ -136,5 +136,64 @@ describe('static Pages deployment-manifest gates', () => {
     const offline = mockRpc(84532, () => { throw new Error('offline'); });
     expect((await verifyManifestForFlow(state, offline)).status).toBe('invalid');
     expect((await verifyManifestForFlow(state, withManifestChain(offline))).status).toBe('loaded');
+  });
+});
+
+describe('two-provider manifest read-back (L2-I4)', () => {
+  const noSleep = { sleep: (): Promise<void> => Promise.resolve() };
+  const state = { status: 'loaded', manifest: backedManifest(84532) } as const;
+  const WRONG_FEE = { feeRecipient: '0x00000000000000000000000000000000deadbeef' };
+  const LEAK = 'https://secret@rpc.example/leak';
+  const broken = (chainId = 84532): RpcClient => mockRpc(chainId, () => { throw new Error(LEAK); });
+  const good = (chainId = 84532): RpcClient => withManifestChain(broken(chainId));
+  const second = (client: RpcClient): SecondaryReadback => ({ kind: 'client', client });
+  const counting = (client: RpcClient, log: string[]): RpcClient => ({ ...client, request: (m, p) => { log.push(m); return client.request(m, p); } });
+  const causeOf = (s: Awaited<ReturnType<typeof verifyManifestState>>): string | undefined => (s.status === 'invalid' ? s.cause : s.status);
+
+  it('opens the second RPC: none when unconfigured, client when it opens, unavailable when it cannot be used', async () => {
+    expect(await openSecondaryReadback(() => Promise.resolve(undefined))).toEqual({ kind: 'none' });
+    const c = good();
+    expect(await openSecondaryReadback(() => Promise.resolve(c))).toEqual({ kind: 'client', client: c });
+    expect(await openSecondaryReadback(() => Promise.reject(new Error(LEAK)))).toEqual({ kind: 'unavailable' });
+  });
+  it('keeps a manifest that both providers confirm, asking both for every read', async () => {
+    const la: string[] = [];
+    const lb: string[] = [];
+    const s = await verifyManifestState(state, counting(good(), la), second(counting(good(), lb)), noSleep);
+    expect(s.status).toBe('loaded');
+    expect(la.length).toBeGreaterThan(0);
+    expect(lb).toEqual(la);
+    expect(la).toContain('eth_getCode');
+    expect(la).toContain('eth_call');
+  });
+  it('refuses when the providers disagree, with the fixed-form reason and the cause', async () => {
+    const s = await verifyManifestState(state, good(), second(withManifestChain(broken(), WRONG_FEE)), noSleep);
+    expect(s).toEqual({ status: 'invalid', reason: READBACK_REASONS['providers-disagree'], cause: 'providers-disagree' });
+  });
+  it('refuses when the second RPC could not be opened, fails mid-read or is on another chain: no fallback to one provider', async () => {
+    const expected = { status: 'invalid', reason: READBACK_REASONS['second-rpc-unavailable'], cause: 'second-rpc-unavailable' };
+    expect(await verifyManifestState(state, good(), { kind: 'unavailable' }, noSleep)).toEqual(expected);
+    expect(await verifyManifestState(state, good(), second(broken()), noSleep)).toEqual(expected);
+    expect(await verifyManifestState(state, good(), second(good(1)), noSleep)).toEqual(expected);
+  });
+  it('blames the chain, not the second provider, when the primary fails or both providers agree on a mismatch', async () => {
+    expect(causeOf(await verifyManifestState(state, broken(), second(good()), noSleep))).toBe('readback');
+    expect(causeOf(await verifyManifestState(state, withManifestChain(broken(), WRONG_FEE), second(withManifestChain(broken(), WRONG_FEE)), noSleep))).toBe('readback');
+  });
+  it('is unchanged with no second RPC and passes non-loaded states through', async () => {
+    expect((await verifyManifestState(state, good(), NO_SECONDARY)).status).toBe('loaded');
+    expect(causeOf(await verifyManifestState(state, withManifestChain(broken(), WRONG_FEE), NO_SECONDARY))).toBe('readback');
+    expect(await verifyManifestState({ status: 'absent' }, good(), { kind: 'unavailable' })).toEqual({ status: 'absent' });
+  });
+  it('verifyManifestForFlow forwards the second provider and still fails closed without a primary', async () => {
+    expect(causeOf(await verifyManifestForFlow(state, good(), second(withManifestChain(broken(), WRONG_FEE)), noSleep))).toBe('providers-disagree');
+    expect((await verifyManifestForFlow(state, good(), second(good()), noSleep)).status).toBe('loaded');
+    const noRpc = await verifyManifestForFlow(state, undefined, { kind: 'unavailable' });
+    expect(noRpc.status === 'invalid' && noRpc.reason).toMatch(/RPC.*needed/);
+  });
+  it('never puts provider text or URLs into a reason', async () => {
+    for (const r of Object.values(READBACK_REASONS)) expect(r).not.toMatch(/https?:|@/);
+    const s = await verifyManifestState(state, good(), second(broken()), noSleep);
+    expect(JSON.stringify(s)).not.toContain(LEAK);
   });
 });

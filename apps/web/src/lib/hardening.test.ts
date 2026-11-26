@@ -1,15 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { checkDeployment, deploymentProblem } from './deployment';
 import { decryptKeystore, encryptKeystore, passphraseProblem, passphraseStrength } from './keystore';
 import { sanitizeDisplayText } from './sanitize';
 import { DEFAULT_SETTINGS, sanitizeSettings } from './settings';
 import { MemoryTagStore, TagVault } from './tags';
 import { walletWarnings, discoverWallets, type WalletInfo, type WindowLike } from './wallet';
-import { fakeManifest, fakeVerified } from '../test/fakeManifest';
-import { mockRpc } from '../test/mockRpc';
 
 describe('S3-13: keystore import ceilings and passphrase policy', () => {
   const secrets = { spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(32).fill(3) };
@@ -172,45 +168,5 @@ describe('S3-14: second provider setting', () => {
     expect(s.rpcUrlsSecondary).toEqual({ '84532': 'https://b.test/' });
     expect(DEFAULT_SETTINGS.rpcUrlsSecondary).toEqual({});
     expect(sanitizeSettings(null).rpcUrlsSecondary).toEqual({});
-  });
-});
-
-describe('S3-01: deployment check', () => {
-  const m = fakeManifest(84532);
-  const rpc = mockRpc(84532, () => null);
-  it('is verified only when the read-back succeeds; the values come from the chain', async () => {
-    const r = await checkDeployment(m, rpc, undefined, () => Promise.resolve({ ...fakeVerified(m), feeRecipient: '0x9999999999999999999999999999999999999999', providers: 1 }));
-    expect(r.status === 'verified' && r.verified.feeRecipient).toBe('0x9999999999999999999999999999999999999999');
-    expect(deploymentProblem(r)).toBeUndefined();
-  });
-  it('passes the second provider through', async () => {
-    let seen: unknown;
-    await checkDeployment(m, rpc, mockRpc(84532, () => null), (_m, _c, o) => { seen = o?.secondary; return Promise.resolve(fakeVerified(m)); });
-    expect(seen).toBeDefined();
-  });
-  it('fails closed with a fixed-form reason, and reports no RPC', async () => {
-    const detail = 'router code hash differs from the manifest';
-    const failing = (): Promise<never> => Promise.reject(new ChainAdapterError('DEPLOYMENT_UNVERIFIED', detail));
-    const bad = await checkDeployment(m, rpc, undefined, failing);
-    expect(bad).toEqual({ status: 'unverified', reason: 'the contract checks failed' });
-    expect(deploymentProblem(bad)).toMatch(/Payments are disabled/);
-    expect(JSON.stringify(bad)).not.toContain(detail);
-    expect(deploymentProblem(bad)).not.toContain(detail);
-
-    const providerText = 'https://secret@rpc.example/leak';
-    for (const failure of [
-      Object.assign(new Error(providerText), { name: 'ChainAdapterError' }),
-      new Error(providerText),
-    ]) {
-      const weird = await checkDeployment(m, rpc, undefined, () => Promise.reject(failure));
-      expect(weird).toEqual({ status: 'unverified', reason: 'the RPC could not be read' });
-      expect(JSON.stringify(weird)).not.toContain(providerText);
-      expect(deploymentProblem(weird)).not.toContain(providerText);
-      expect(deploymentProblem(weird)).toMatch(/Payments are disabled/);
-    }
-    expect(await checkDeployment(m, undefined, undefined)).toEqual({ status: 'no-rpc' });
-    expect(deploymentProblem({ status: 'no-rpc' })).toMatch(/Configure an RPC/);
-    expect(deploymentProblem('checking')).toMatch(/Checking/);
-    expect(deploymentProblem(undefined)).toMatch(/Checking/);
   });
 });

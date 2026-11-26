@@ -1733,6 +1733,7 @@ export const SECURITY_KEY_GROUPS = {
     'scan.error.noRpc',
     'scan.error.secondRpc',
     'scan.error.manifestMismatch',
+    'scan.error.manifestDisagree',
     'scan.error.reorg',
     'scan.error.observationLimit',
     'scan.error.discrepancy',

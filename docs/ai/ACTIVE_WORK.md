@@ -1,3 +1,22 @@
+# L2-I4: two-provider manifest read-back for Pay, Sweep and Scan (2026-11-26 UTC)
+
+Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b` (stacked on the PR #720 commits), base main
+`e7e98109`. Source: audit 24 finding L2-I4 (deferred, Info) and docs/beta/CORE_BETA_COMPLETION_TRACKER.md:111; ranked
+first by an adversarial gap-analysis workflow on 2026-11-26. Owned paths: `apps/web/src/lib/manifest.ts` and its test,
+the manifest read-back call sites in `apps/web/src/views/{Pay,Sweep,Scan}.tsx`, removal of the dead `apps/web/src/lib/deployment.ts`
+(+ `deployment.test.ts`, the S3-01 block of `hardening.test.ts`), `apps/web/locales/*.json` keys `settings.rpc.secondary.hint`
+and `scan.error.manifestDisagree`, `apps/web/src/i18n/securityKeys.ts`, `apps/web/deployments/README.md` item 2,
+`apps/web/DEVIATIONS.md`, `docs/engineering/SECURITY_FINDINGS.md` (L2-I4 row), `docs/beta/CORE_BETA_COMPLETION_TRACKER.md:111`,
+this entry. Not touched: `packages/chain-adapters` (its `createReconciledClient` is reused as is), scan checkpoint code
+(open PRs #696, #723, #725 own `scanClient.ts`), settings schema.
+Acceptance: when Settings has a second RPC for the chain, Pay, Sweep and Scan confirm the deployment manifest through
+both providers (`eth_getCode`/`eth_call` reconciled) and refuse the flow when the providers disagree or the second one
+cannot be opened or read; with no second RPC the single-provider behaviour is unchanged; no silent downgrade to one
+provider; the refusal text is fixed-form (no URLs, no provider text) and names the remedy; unit tests cover agree,
+disagree, second provider unavailable at open and mid-read, chain mismatch, and no-secondary; `npm run typecheck`,
+`npm run lint`, `node scripts/i18n/check.mjs` and `npm test -w apps/web` pass; the Settings hint and the deployments
+README describe the real mechanism; SECURITY_FINDINGS records L2-I4 as fixed with the test path.
+
 # Spec 13 section 2: router `payERC20WithPermitAndBuffer` (2026-11-26 UTC)
 
 Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b`, base main `e7e98109`. Owner-instructed
