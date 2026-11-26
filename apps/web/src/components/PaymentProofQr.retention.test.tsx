@@ -16,6 +16,10 @@ const RECEIPT = Object.freeze<LocalReceipt>({
 const show = (): void => { fireEvent.click(screen.getByRole('button', { name: 'Show proof QR' })); };
 const preview = (): void => { fireEvent.click(screen.getByRole('button', { name: 'Preview proof cleanup' })); };
 const proofText = (): HTMLTextAreaElement | null => screen.queryByLabelText('Proof of payment text');
+const RESUME_EVENTS = ['focus', 'pageshow', 'visibilitychange', 'resume'] as const;
+function resume(event: (typeof RESUME_EVENTS)[number]): void {
+  (event === 'focus' || event === 'pageshow' ? window : document).dispatchEvent(new Event(event));
+}
 
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); });
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -74,6 +78,34 @@ describe('included-payment proof presentation retention', () => {
     act(() => { vi.advanceTimersByTime(1_000); });
     expect(proofText()).toBeNull();
     expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
+  });
+
+  it.each(RESUME_EVENTS)('enforces the exact proof deadline on %s without waiting for a suspended timer', (event) => {
+    vi.useFakeTimers(); vi.setSystemTime(1_000);
+    localStorage.setItem(PROOF_POLICY, '{"delay":300000}');
+    localStorage.setItem('synthetic-retained-invoice', 'saved-invoice');
+    sessionStorage.setItem('synthetic-retained-attempt', 'pending-attempt');
+    const source = Object.freeze({ result: Object.freeze({ hash: RECEIPT.txHash }) });
+    const sourceBefore = JSON.stringify(source);
+    render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
+    show();
+    const displayed = proofText()?.value;
+    // Only wall time moves: none of the interval callbacks run while the page is suspended.
+    act(() => { vi.setSystemTime(300_999); resume(event); });
+    expect(proofText()?.value).toBe(displayed);
+    act(() => { vi.setSystemTime(301_000); resume(event); });
+    expect(proofText()).toBeNull();
+    expect(screen.getByText(/The payment proof preview closed under your retention setting/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
+    expect(JSON.stringify(source)).toBe(sourceBefore);
+    expect(localStorage.getItem('synthetic-retained-invoice')).toBe('saved-invoice');
+    expect(sessionStorage.getItem('synthetic-retained-attempt')).toBe('pending-attempt');
+    act(() => { resume(event); });
+    expect(proofText()).toBeNull();
+    // Cleanup closes presentation only; the retained receipt can still be displayed deliberately.
+    show();
+    expect(proofText()?.value).toBe(displayed);
   });
 
   it('gives each deliberate Show a new lifetime and invalidates an older confirmation', () => {
@@ -207,6 +239,16 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).toBeNull();
   });
 
+  it('stops reading the preview policy on resume after the view unmounts', () => {
+    const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
+    show();
+    const read = vi.spyOn(Storage.prototype, 'getItem');
+    view.unmount();
+    read.mockClear();
+    act(() => { for (const event of RESUME_EVENTS) resume(event); });
+    expect(read.mock.calls.filter(([key]) => key === PROOF_POLICY)).toEqual([]);
+  });
+
   it('fails closed when saving the separate preference is denied', () => {
     vi.useFakeTimers(); vi.setSystemTime(1_000);
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('denied'); });
@@ -219,14 +261,14 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).not.toBeNull();
   });
 
-  it('reconciles a missed policy revocation on focus without closing the proof or losing receipt exports', () => {
+  it.each(RESUME_EVENTS)('reconciles a missed policy revocation on %s without closing the proof or losing receipt exports', (event) => {
     vi.useFakeTimers(); vi.setSystemTime(1_000);
     localStorage.setItem(PROOF_POLICY, '{"delay":300000}');
     render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
     show(); preview();
     const displayed = proofText()?.value;
     localStorage.setItem(PROOF_POLICY, '{"delay":0}');
-    act(() => { window.dispatchEvent(new Event('focus')); });
+    act(() => { vi.setSystemTime(301_000); resume(event); });
     expect(screen.getByLabelText<HTMLSelectElement>('Close payment proof previews automatically').value).toBe('0');
     expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
     act(() => { vi.advanceTimersByTime(301_000); });

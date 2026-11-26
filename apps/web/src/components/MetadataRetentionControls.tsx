@@ -29,7 +29,7 @@ function PresentationRetentionControls({ scope, manual }: { readonly scope: Rete
   useEffect(() => {
     const refresh = (): void => { setDelay(readRetentionDelay(undefined, scope)); setReview(undefined); };
     const onStorage = (event: StorageEvent): void => { if (event.key === policy.key || event.key === null) refresh(); };
-    const onFocus = (): void => {
+    const onReturn = (): void => {
       // A returning tab may not have received the storage event that expiry already accounts for.
       const current = readRetentionDelay(undefined, scope);
       setDelay(current);
@@ -37,8 +37,18 @@ function PresentationRetentionControls({ scope, manual }: { readonly scope: Rete
     };
     window.addEventListener(policy.event, refresh);
     window.addEventListener('storage', onStorage);
-    window.addEventListener('focus', onFocus);
-    return () => { window.removeEventListener(policy.event, refresh); window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
+    window.addEventListener('focus', onReturn);
+    window.addEventListener('pageshow', onReturn);
+    document.addEventListener('visibilitychange', onReturn);
+    document.addEventListener('resume', onReturn);
+    return () => {
+      window.removeEventListener(policy.event, refresh);
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', onReturn);
+      window.removeEventListener('pageshow', onReturn);
+      document.removeEventListener('visibilitychange', onReturn);
+      document.removeEventListener('resume', onReturn);
+    };
   }, [delay, policy, scope]);
   return <section className="stack" aria-label={t(`${prefix}.title`)}>
     <Field label={t(`${prefix}.label`)} hint={t(`${prefix}.scope`)}>

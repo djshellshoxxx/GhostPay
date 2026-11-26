@@ -4662,3 +4662,32 @@ required; no new local test run or browser execution is claimed.
 - Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
 - Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
 - Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
+
+
+## Privacy preview retention on page return — 2026-11-26 (9d8f)
+
+- Worker: ChatGPT coordinator `/root`, session `9d8f35d3c02b`; branch
+  `finish/privacy-preview-resume-20261126-9d8f`.
+- Base: current main `601f20955b435eede448c6d82d8315705d7e381d`.
+- Continue the merged #676/#681 presentation-only portion of #287 item 4:
+  recheck opted-in invoice/proof preview expiry and reconcile saved preferences
+  on page-history restoration, visibility changes and frozen-page resume.
+- Owns: `apps/web/src/lib/useInvoicePreviewRetention.ts`,
+  `apps/web/src/components/MetadataRetentionControls.tsx`, their focused tests,
+  `apps/web/src/components/PaymentProofQr.retention.test.tsx`,
+  `apps/web/src/views/CreateInvoice.retention.test.tsx`, a separate bounded
+  browser acceptance test if needed, `docs/specs/19-local-metadata-retention.md`,
+  this additive entry and `docs/handoffs/PRIVACY_PREVIEW_RESUME_20261126.md`.
+- Overlap checked against current main and open #696/#717/#718/#719/#722 file lists;
+  none owns these runtime files. Original #676 claim records its completed merge.
+- Acceptance: first supported lifecycle event rechecks expiry without a timer
+  tick; before-deadline and default-off previews remain; fresh saved policy is
+  used after missed storage events; invoice/proof scopes remain independent;
+  stale approvals and replaced previews cannot affect successors; event
+  listeners are removed on unmount; recovery/financial records and exports
+  remain intact. Deterministic synthetic regressions must fail before the
+  repair and pass afterward, followed by relevant typecheck/lint/build and
+  independent review.
+- Persistent vault timestamp retention and vault-format migration remain
+  deferred. No contract, dependency, wallet/network, active-worker branch,
+  privacy-profile activation, release-gate or deployment changes.
