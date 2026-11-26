@@ -1,0 +1,170 @@
+{
+  "checkpoint": "2026-11-26T04Z",
+  "priorLedger": "cf743bfdbbbaee9c6c3c764e6e25523c03ae1de6",
+  "priorSnapshot": "docs/consolidation/autonomous-20261121/owner-scope-reconciliation-20261126T03Z.json",
+  "format": "incremental snapshot; apply deltas to prior census, not a full behavioral disposition audit",
+  "main": "1bea3df3448569254774747d694e71e155c3eb98",
+  "mainTree": "f8dfe003e6877e5c0fc649231d4c24e275128dff",
+  "branchCount": 808,
+  "openPRCount": 229,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    9,
+    0
+  ],
+  "prPageLengths": [
+    100,
+    100,
+    29,
+    0
+  ],
+  "frozenRefsVerified": 34,
+  "originalRefsVerified": 34,
+  "archiveMismatches": [],
+  "delta": {
+    "changed": [
+      [
+        "claude/w3-keystore-canonical-vector",
+        null,
+        "af8314d15a00d286df3500636b583e99fa0479f2",
+        "active W3 test-only recovery follow-up #693"
+      ],
+      [
+        "finish/account-privacy-core-20261125-8812",
+        "f8145c1cb8d806f1d8b134c159eb00f595e6769a",
+        "6b4bbe17b436344b05d2942ccb0633de43e43fa0",
+        "active owner; green hosted, draft, dependency/review gate"
+      ],
+      [
+        "finish/policy-journal-lock-20261125-8812",
+        "c6f15cfeddaa508c9df646d336ae1b071b3f5b69",
+        "c7b9badcfaff027e9847f65d10f021111809c48e",
+        "active owner; green hosted, draft, dependency/review gate"
+      ],
+      [
+        "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+        "d175fa12e6d74fc58f6f8a8168585e57a8c503ca",
+        "cf743bfdbbbaee9c6c3c764e6e25523c03ae1de6",
+        "prior ledger publication"
+      ]
+    ],
+    "removed": [],
+    "closed": [],
+    "addedPRs": [
+      693
+    ]
+  },
+  "policy": "Current main AGENTS.md, STOP_WORK_20261125.md, WORKFLOW, HANDOFF and ownership registry read; #659 merged. All ten exclusions and mandatory shared core binding.",
+  "lease": {
+    "head": "17292b4b0e82113663c73adece34e075683c77d5",
+    "generation": 38,
+    "status": "released, not acquired"
+  },
+  "newlyIntegrated": [],
+  "mainPushWorkflows": [
+    {
+      "id": 45742191891,
+      "name": "Hosting kit",
+      "conclusion": "success"
+    },
+    {
+      "id": 45742191917,
+      "name": "Push on main / CodeQL",
+      "conclusion": "success"
+    },
+    {
+      "id": 45742191590,
+      "name": "CI",
+      "conclusion": "success"
+    }
+  ],
+  "currentQualification": [
+    {
+      "pr": 689,
+      "head": "0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff",
+      "checks": {
+        "success": 37,
+        "failure": 2,
+        "skipped": 3
+      },
+      "ci": 45743191055,
+      "draft": true
+    },
+    {
+      "pr": 691,
+      "head": "6b4bbe17b436344b05d2942ccb0633de43e43fa0",
+      "checks": {
+        "success": 41,
+        "skipped": 3
+      },
+      "ci": 45747473777,
+      "draft": true,
+      "dependsOn": 689,
+      "ancestryVerified": true
+    },
+    {
+      "pr": 692,
+      "head": "c7b9badcfaff027e9847f65d10f021111809c48e",
+      "checks": {
+        "success": 41,
+        "skipped": 3
+      },
+      "ci": 45748076877,
+      "draft": true,
+      "dependsOn": 691,
+      "ancestryVerified": true
+    },
+    {
+      "pr": 693,
+      "head": "af8314d15a00d286df3500636b583e99fa0479f2",
+      "checks": {
+        "success": 35,
+        "skipped": 3,
+        "in_progress": 3
+      },
+      "ci": 45752129661,
+      "scope": "W3 test-only canonical v1 keystore vector; no production changes, retain owner"
+    },
+    {
+      "pr": 665,
+      "head": "40603a6ee52dda5031808820544e6240b1e284a4",
+      "checks": {
+        "success": 31
+      },
+      "draft": true,
+      "scope": "current-main synthetic rerun remains outstanding"
+    }
+  ],
+  "logReview": {
+    "pr": 689,
+    "job": 139653073679,
+    "tests": "3973 passed, 2 failed, 2 expected fail, 1 skipped",
+    "findings": [
+      "TagArchive post-idle form is intentionally hidden during suspended authority. #691 already adds absence, secret clearing, encrypted backup/verification and legitimate restore assertions.",
+      "Retention-off test crossed independent idle deadline. #691 already separates retention activity from idle closure and adds dedicated idle regression.",
+      "Current #691 replaces obsolete network-only warning assertion with public cause alert, concealed account and removed send controls while preserving zero-send/empty journal checks. Source/handoff and green hosted checks support the fixture correction."
+    ],
+    "comments": [
+      7182295638,
+      7182309775
+    ],
+    "followup": "No duplicate corrections. Existing coordinator must choose reviewed combined composition or fresh standalone qualification; no red intermediate merge."
+  },
+  "limitations": [
+    "Local git ls-remote failed with could not resolve host github.com; no local tests executed.",
+    "All three stacked candidates draft; no formal GitHub reviews at read. Hosted green is not permission to bypass ownership/review, required browser gates or composition qualification.",
+    "Census updated, not exhaustive semantic classification. Global unresolved count remains unestablished."
+  ],
+  "next": [
+    "Coordinate #689/#691/#692 without red intermediate merge; retain actual tested tree, dependency ancestry, exact-head checks, review and lease.",
+    "W3 #693 exact-head CI completion and review; keep canonical source and old vector history.",
+    "W5 #665 rerun against newly integrated main; retain existing owner. Keep all held mixed/archive refs unchanged."
+  ]
+}
