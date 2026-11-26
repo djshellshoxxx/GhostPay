@@ -1703,6 +1703,7 @@
     "error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd": "The wallet attempt journal reached its safety limit. Review and explicitly clear old attempts before starting another.",
     "error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt": "Explicit confirmation is required to clear a wallet attempt.",
     "error.duplicateAttemptJournal.locksUnavailable": "This browser cannot lock the wallet attempt journal against other tabs. No new wallet request was started.",
+    "error.duplicateAttemptJournal.returnedHashStillSaving": "A returned hash for this attempt has not finished saving. Retry saving returned hashes first; nothing was cleared.",
     "error.attemptStatus.replacementRecordChanged": "This wallet attempt was cleared or changed, or its recorded nonce differs. The replacement hash was not saved.",
     "error.attemptStatus.replacementLimit": "This wallet attempt already has the maximum number of linked replacement hashes.",
     "error.attemptStatus.replacementHashFormat": "Enter a transaction hash: 0x followed by 64 hexadecimal characters.",

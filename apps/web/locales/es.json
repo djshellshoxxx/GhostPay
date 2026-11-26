@@ -1703,6 +1703,7 @@
     "error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd": "El registro de intentos de la cartera alcanzó su límite de seguridad. Revisa y borra explícitamente los intentos antiguos antes de iniciar otro.",
     "error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt": "Se requiere una confirmación explícita para borrar un intento de la cartera.",
     "error.duplicateAttemptJournal.locksUnavailable": "Este navegador no puede bloquear el registro de intentos de billetera frente a otras pestañas. No se inició ninguna solicitud nueva a la billetera.",
+    "error.duplicateAttemptJournal.returnedHashStillSaving": "A returned hash for this attempt has not finished saving. Retry saving returned hashes first; nothing was cleared.",
     "error.attemptStatus.replacementRecordChanged": "Este intento de billetera se borró o cambió, o su nonce registrado es distinto. El hash de reemplazo no se guardó.",
     "error.attemptStatus.replacementLimit": "Este intento de billetera ya tiene el número máximo de hashes de reemplazo vinculados.",
     "error.attemptStatus.replacementHashFormat": "Introduce un hash de transacción: 0x seguido de 64 caracteres hexadecimales.",

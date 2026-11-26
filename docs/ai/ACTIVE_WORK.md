@@ -1,3 +1,19 @@
+# #706 journal model fuzzing — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/journal-fuzz-20261126`, local head
+`17d55c90` plus this change, merged with main `e7e98109`. Owned paths: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts`,
+#706's other paths and this entry. #710 (separate worker) also edits `duplicateAttemptJournal.ts` and adds
+`returned.fuzz`/`returned.stress` tests; this change edits no production file.
+Acceptance: the 2026-11-26T07:03:35Z review points (independent expected-state model, exact membership, deterministic
+sensitivity checks, schema refusal separated from schema-valid edits); every hosted check green at the exact head;
+independent review.
+
+## Post-#691/#692 journal fuzzing and audit fix — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`. Branch `claude/journal-fuzz-20261126`, base main `e1d0eb0f7c8688ae280f774f36e01e08d2435deb`.
+- Owns: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts` (new seeded model fuzz: never-overwrite hash, duplicate refusal, malformed journal fails closed; a seeded mutant that overwrites hashes is caught), `apps/web/src/lib/duplicateAttemptJournal.clearUnsaved.test.ts` (new), the `clearAttempt` guard in `duplicateAttemptJournal.ts`, one new error key in four catalogs plus `securityKeys.ts`, and two rows in `docs/engineering/SECURITY_FINDINGS.md` (JRNL-L4 fixed; IDLE-M1 recorded as an accepted-design residual risk awaiting an owner decision, not changed).
+- Acceptance: the new regression is red before and green after; neighboring journal, policy, wallet-attempt and i18n suites pass; lint is clean; hosted CI is green on the exact head. No change to idle/recovery behavior, thresholds, dependencies, workflows or contracts.
+
 # #707 integration with main `e7e98109` — newghostpay-4e/features2 (2026-11-26 UTC)
 
 Worker: newghostpay-4e/features2, successor of the workers below after a machine crash. Branch
