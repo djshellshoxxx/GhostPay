@@ -10,6 +10,7 @@ import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { captureSessionGuard } from '../../lib/session';
+import { scopeWalletRpc, useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { CameraImporter } from '../../components/CameraImporter';
 import { parsePublicMetaQr } from '../../lib/qrPayload';
@@ -100,10 +101,27 @@ export function RegistryView(): ReactNode {
     return () => { mounted.current = false; };
   }, []);
   useEffect(() => { setConsent(false); }, [chainId, app.session]);
+  const walletPrivacy = useWalletPrivacy(wallet, () => {
+    lookupVersion.current++;
+    setWallet(undefined);
+    setWallets(undefined);
+    setWho('');
+    setScanEpoch((revision) => revision + 1);
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setPub(undefined);
+    setFound(undefined);
+    setLook(undefined);
+    setScannedMeta(undefined);
+    setScanError(undefined);
+    app.announce('');
+  });
   const captureAuthority = (): (() => void) => {
     const expected = latest.current;
+    const privacyScope = walletPrivacy.capture();
     const guardSession = captureSessionGuard();
     return () => {
+      privacyScope.assertCurrent();
       guardSession();
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
@@ -116,26 +134,37 @@ export function RegistryView(): ReactNode {
 
   const rpcFor = async (): Promise<NonNullable<Awaited<ReturnType<typeof app.getRpc>>>> => {
     if (chainId === undefined) throw new Error('chain');
+    const scope = walletPrivacy.capture();
     const rpc = await app.getRpc(chainId);
+    scope.assertCurrent();
     if (rpc === undefined) throw new Error('rpc');
-    return rpc;
+    return scopeWalletRpc(rpc, scope);
   };
   const rpcMissing = (e: unknown): boolean => e instanceof Error && e.message === 'rpc';
   const noRpc: Msg = { kind: 'error', text: { key: 'registry.noRpc' } };
 
   const onDiscover = (): void => {
     setPub(undefined);
-    void services.discoverWallets().then(setWallets, () => {
+    let scope;
+    try { scope = walletPrivacy.begin(); } catch { return; }
+    void services.discoverWallets().then((foundWallets) => {
+      try { scope.assertCurrent(); } catch { return; }
+      setWallets(foundWallets);
+    }, () => {
+      try { scope.assertCurrent(); } catch { return; }
       setWallets([]);
     });
   };
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
-    const guard = captureAuthority();
+    let scope;
+    let authority;
+    try { scope = walletPrivacy.begin(); authority = captureAuthority(); } catch { return; }
+    const guard = (): void => { scope.assertCurrent(); authority(); };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
     // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
-    connectWallet(w, chainId, guard, undefined, { disclosure: walletDisclosure }).then(
+    connectWallet(w, chainId, guard, scope.signal, { disclosure: walletDisclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
@@ -210,7 +239,7 @@ export function RegistryView(): ReactNode {
         app.announce(displayMessage({ key: 'registry.announceSubmitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' } } }, tRef.current));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
-        if (!mounted.current) return;
+        try { guard(); } catch { return; }
         if (returnedHash !== undefined) {
           setPub({ kind: 'warn', text: { key: 'registry.walletReturned' }, reference: returnedHash });
           return;
@@ -257,7 +286,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts getRpc={app.getRpc} />
+      <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>

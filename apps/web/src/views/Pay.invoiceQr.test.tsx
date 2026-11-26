@@ -135,7 +135,7 @@ describe('Pay invoice QR intake', () => {
   it('does not install a late ordinary parser result after confirming QR then changing seller session', async () => {
     const { fragment } = await makeParsed();
     const ready = await invoices.openFragment(fragment);
-    const { user } = await openInput();
+    const { user, discoverWallets, createRpc, loadManifest } = await openInput();
     await scanText(fragment, user);
     await screen.findByRole('button', { name: 'Open scanned invoice' });
     let complete!: (result: Awaited<ReturnType<typeof invoices.openFragment>>) => void;
@@ -145,7 +145,13 @@ describe('Pay invoice QR intake', () => {
     act(() => { clearSession(); });
     await act(async () => { complete(ready); await pending; });
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
-    expect(await screen.findByText(/Seller keys changed while opening this invoice/)).toBeTruthy();
+    // The shell revoked the capability before this parse completed; no old error or preview may restore it.
+    expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Open scanned invoice' })).toBeNull();
+    expect(window.location.hash).toBe('');
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(loadManifest).not.toHaveBeenCalled();
   });
 
   it('keeps newer invoice B when an old confirmed QR parse A returns after session change', async () => {

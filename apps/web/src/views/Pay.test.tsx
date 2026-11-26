@@ -25,6 +25,7 @@ import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
 import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
+import { readAttempts } from '../lib/duplicateAttemptJournal';
 
 beforeEach(() => {
   clearSession();
@@ -970,7 +971,7 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(2);
   });
 
-  it('keeps the approval hash when the invoice changes after broadcast but before confirmation', async () => {
+  it('keeps the approval hash account-scoped when the invoice changes after broadcast but before confirmation', async () => {
     let releaseReceipt: (() => void) | undefined;
     const t = await toPreparedBuffer(() => NOW, {
       allowanceAfterSend: true,
@@ -985,12 +986,15 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     });
     await screen.findByRole('heading', { name: 'Review payment' });
     act(() => { releaseReceipt?.(); });
-    const warning = await screen.findByText(/This approval was for the invoice/);
     const reference = `0x${'9'.repeat(64)}`;
-    expect(warning.textContent).not.toContain(reference);
-    const summary = screen.getByText('Transaction reference', { selector: 'summary' });
-    await t.user.click(summary);
-    await waitFor(() => { expect(summary.parentElement?.querySelector('code')?.textContent).toBe(reference); });
+    await waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash: reference, kind: 'approval', account: t.wallet.account }]); });
+    expect(document.body.textContent).not.toContain(reference);
+    expect(await screen.findByText(/A previous wallet request may already have been submitted/)).toBeTruthy();
+    await t.user.selectOptions(screen.getByLabelText('Network for wallet history'), '84532');
+    await t.user.click(screen.getByRole('button', { name: 'Find wallet for history' }));
+    await t.user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    const shown = await screen.findByText(reference, { exact: true });
+    expect(shown.closest('[role="status"], [role="alert"], [aria-live]')).toBeNull();
     expect(screen.queryByText('Token approval confirmed')).toBeNull();
     expect(t.wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   });

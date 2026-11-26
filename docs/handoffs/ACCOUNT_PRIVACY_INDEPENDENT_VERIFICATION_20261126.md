@@ -7,30 +7,35 @@ AI-assisted source and test verification, not an independent professional audit.
 
 | Item | SHA |
 |---|---|
-| Main at verification | `019d5d18c8992f63fe77740f75ad04d86d3d9b07` (#699, docs only) |
+| Main at verification start | `019d5d18c8992f63fe77740f75ad04d86d3d9b07` (#699, docs only) |
 | #691 handoff head (contains corrected #689 and #690) | `6b4bbe17b436344b05d2942ccb0633de43e43fa0` |
 | Corrected #689 idle/recovery | `0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff` |
 | #692 journal-lock head | `c7b9badcfaff027e9847f65d10f021111809c48e` |
-| #697 (#691 + main `a9d2a033`) | `7eb94c8e6209a9b0bb2d4ee8f6072beaf3a87335` |
-| #698 (#692 on #697), full composition | `c2427b6f657b8ffd2c595ddb9dd47420480aa239` |
-| Local test composition (main `019d5d18` merged into #698) | tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` |
+| #697 head first verified / final merged head | `7eb94c8e6209a9b0bb2d4ee8f6072beaf3a87335` / `abeeb0cb365b6bd7ea7686b50da693865c4bb09d` |
+| #698 head first verified / final merged head | `c2427b6f657b8ffd2c595ddb9dd47420480aa239` / `f45025b5f2cfa27f938c10c35490b42768b8ae0a` |
+| Local test composition (main `019d5d18` merged into #698 `c2427b6f`) | tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` |
+| Merge of #697 into main | `045ac2d329d1ab68ba8f3896b21e17427ca3a5f0` |
+| Resulting main (merge of #698) | `e1d0eb0f7c8688ae280f774f36e01e08d2435deb`, tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` |
 
-`git merge-tree --write-tree origin/main <#698 head>` is clean and produces the same tree `3dc2d133…` that was
-tested locally. The #691, #689, #692 and #697 heads are ancestors of #698. The #698→main delta is only
-`docs/ai/ACTIVE_WORK.md` and `docs/specs/19-local-metadata-retention.md` (main moved by #699).
+The resulting main tree, the final #698 head tree and the locally tested tree are identical
+(`3dc2d13377e22fe12a1664559c7af6c5f381b257`), so every local result below applies byte-for-byte to main. The coordinator's
+only change between the heads first verified and the merged heads was merging main `019d5d18` (docs-only #699) into
+#697 and #698: `docs/ai/ACTIVE_WORK.md` and `docs/specs/19-local-metadata-retention.md`. The #691, #689, #692 and #697 heads
+are ancestors of main.
 
 ## Ownership
 
-`ghostpay-backup-60` is the recorded sole integration coordinator for #697/#698 (additive claim in their
-ACTIVE_WORK entry, 05:22 UTC). This worker (`ghostpay-71`) owns only this record on an isolated branch. It did not
-edit, rebase, merge, mark ready, comment on or retarget #691/#692/#697/#698, and did not acquire the integration
-lock (generation 41 was released at 05:39:43 UTC, owner `claude-ghostpay-42`).
+`ghostpay-backup-60` (lock owner `claude-ghostpay-backup-60`) was the recorded sole integration coordinator for #697/#698
+(additive ACTIVE_WORK claim, 05:22 UTC). It took integration lock generation 42 at 06:33:27 UTC, merged #697 and #698 and
+released the lock at 06:37:19 UTC. This worker (`ghostpay-71`) owns only this record on an isolated branch. It did not
+edit, rebase, merge, mark ready, comment on or retarget #691/#692/#697/#698, and never acquired the integration lock
+(generation 41 was released at 05:39:43 UTC, owner `claude-ghostpay-42`).
 
 ## Remaining-difference analysis
 
-Not integrated: main contains none of #691, #689, #692, #697 or #698. The earlier completion task did not merge
-the corrected composition, so evidence was gathered on #698 rather than assumed. The only open differences are the
-integration steps below; no source defect was found, so no runtime or test file was changed.
+Integrated. Resulting main `e1d0eb0f` has the identical tree to the composition verified here, so there is no remaining
+source difference between the verified composition and main. No source defect was found, so no runtime or test file was
+changed by this worker.
 
 ## Acceptance map (existing tests, run on the composition)
 
@@ -69,6 +74,12 @@ integration steps below; no source defect was found, so no runtime or test file 
 - #697 `7eb94c8e`: all checks passed except `ts-test (web)` (and the dependent `typescript` gate), which failed one case:
   `src/i18n/LanguagePicker.test.tsx > follows browser language changes in Automatic…` (`expected 'en' to be 'ar'`,
   line 55). 4,108 other cases passed.
+- Final #698 head `f45025b5` (tree identical to resulting main), observed before the merge: `CI` (run 45764930082), `Pages`
+  (45764930062), `Beta acceptance` (45764930091), `Mobile browser qualification` (45764930083), `Hosting kit`
+  (45764930053) and `CLI operator qualification` (45764930037) all concluded success on attempt 1.
+- Resulting main `e1d0eb0f`: `Hosting kit` (45769417486) succeeded. The push `CI` run (45769417481) was still queued
+  behind the earlier main run when last read (06:51 UTC), so no main push-CI result is claimed here. Its tree equals the
+  one that passed on `f45025b5`.
 
 ### LanguagePicker failure: unrelated flake, not changed
 
@@ -87,10 +98,11 @@ live wallet, funds, or real transaction. No native-language review of the added 
 Persistent storage failure plus tab closure can still lose the extra in-memory returned hash; the durable unknown
 record remains the duplicate and recovery blocker.
 
-## Remaining integration steps (owner `ghostpay-backup-60`, or an explicit owner takeover)
+## Remaining items
 
-1. Re-confirm heads and claims; main `019d5d18` is ahead of the #697/#698 base `a9d2a033` by docs only.
-2. Take the cooperative lock (generation 42) immediately before each merge; mark ready for review.
-3. Land #697, then #698 (or #698 alone, which contains #697); `mergeable_state` was `clean` for #698.
-4. Verify the resulting main: CI on the merge commit, `git diff` of the tree against `3dc2d133…`, Pages artifact and beta.
-5. Release the lock; supersede the stale #691/#689/#692 drafts without deleting any ref.
+1. Confirm the push `CI` run on main `e1d0eb0f` (45769417481) when it completes; reuse nothing from here for that gate.
+2. The #691, #689 and #692 drafts are superseded by the merged integration; closing them without deleting any ref is
+   the coordinator's decision (their heads are ancestors of main).
+3. Separate bug-only follow-up: the `LanguagePicker` test timing race above.
+4. Not part of this change: manual global masking (a separately authorized core follow-on) and any native-language review
+   of the added history strings.
