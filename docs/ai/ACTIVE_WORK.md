@@ -1,3 +1,10 @@
+# #707 integration with main `e7e98109` — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor of the workers below after a machine crash. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `9d373b2b` merged with main `e7e98109` (#624, docs only; the sole conflict
+was this file, resolved as a union). Owned paths: #707's owned paths below and this entry.
+Acceptance: every hosted check green at the exact head; independent review.
+
 # #707 CI repair — newghostpay-7d/features (2026-11-26 UTC)
 
 Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
@@ -36,6 +43,14 @@ Not owned: WalletAttempts*, duplicateAttemptJournal*, reconciliation*, Sweep, re
 Acceptance: encrypted all-discovered archive and master backup behind re-authentication; recovery of any
 ghostpay-stealth-* file in a fresh session; tampered/wrong-passphrase/oversize/wrong-chain/unknown-format refused; secrets
 wiped; lock/session/chain cancellation; full web, ux-vault and recovery gates; no new endpoint or fallback client.
+
+# Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
+
+Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
+`docs/engineering/ESSENTIAL_FEATURE_MATRIX.md`, `ESSENTIAL_FEATURE_PROGRESS.md`, `FEATURE_INTEGRATION_LOG.md`,
+`REMAINING_WORK.md` and this entry. The cut-off worker's uncommitted matrix edit was a file of NUL bytes only (no text
+to recover), so it was rewritten from the last commit. Docs only; facts checked against git history and GitHub PR and
+run records.
 
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
