@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+  "tree": "0074dde6081e45188c45feb39503c64243ef99b8",
+  "node": "v22.23.5",
+  "checks": [
+    {
+      "name": "secrets",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exitCode": 0,
+      "seconds": 0.935,
+      "log": "secrets.log"
+    },
+    {
+      "name": "i18n-check",
+      "command": [
+        "node",
+        "scripts/i18n/check.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 3.333,
+      "log": "i18n-check.log"
+    },
+    {
+      "name": "i18n-extract",
+      "command": [
+        "node",
+        "scripts/i18n/extract.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 2.221,
+      "log": "i18n-extract.log"
+    },
+    {
+      "name": "pages-verifier-tests",
+      "command": [
+        "node",
+        "--test",
+        "scripts/pages/serve-pages.test.mjs",
+        "scripts/pages/smoke-url.test.mjs",
+        "scripts/pages/verify-pages-site.test.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 3.188,
+      "log": "pages-verifier-tests.log"
+    },
+    {
+      "name": "network-egress",
+      "command": [
+        "node",
+        "--test",
+        "scripts/tests/network-egress-inventory.test.mjs",
+        "scripts/tests/network-isolation-native.test.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 13.782,
+      "log": "network-egress.log"
+    }
+  ]
+}

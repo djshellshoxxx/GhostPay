@@ -22,7 +22,7 @@ async function openInput(baseUrl = 'https://app.test/', extra: Parameters<typeof
   const rendered = renderApp(makeServices({ ...extra, discoverWallets, loadManifest, createRpc, baseUrl: () => baseUrl }));
   const user = userEvent.setup();
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
-  await user.click(screen.getByText('Scan an invoice QR'));
+  await user.click(screen.getByText('Scan an invoice QR or open a request file'));
   // Home loads the deployment list before navigation; measure side effects from QR intake only.
   loadManifest.mockClear(); createRpc.mockClear(); discoverWallets.mockClear();
   return { ...rendered, user, discoverWallets, loadManifest, createRpc };
@@ -135,7 +135,7 @@ describe('Pay invoice QR intake', () => {
   it('does not install a late ordinary parser result after confirming QR then changing seller session', async () => {
     const { fragment } = await makeParsed();
     const ready = await invoices.openFragment(fragment);
-    const { user } = await openInput();
+    const { user, discoverWallets, createRpc, loadManifest } = await openInput();
     await scanText(fragment, user);
     await screen.findByRole('button', { name: 'Open scanned invoice' });
     let complete!: (result: Awaited<ReturnType<typeof invoices.openFragment>>) => void;
@@ -145,7 +145,13 @@ describe('Pay invoice QR intake', () => {
     act(() => { clearSession(); });
     await act(async () => { complete(ready); await pending; });
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
-    expect(await screen.findByText(/Seller keys changed while opening this invoice/)).toBeTruthy();
+    // The shell revoked the capability before this parse completed; no old error or preview may restore it.
+    expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Open scanned invoice' })).toBeNull();
+    expect(window.location.hash).toBe('');
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(loadManifest).not.toHaveBeenCalled();
   });
 
   it('keeps newer invoice B when an old confirmed QR parse A returns after session change', async () => {
@@ -171,7 +177,7 @@ describe('Pay invoice QR intake', () => {
     const { user } = await openInput();
     await scanText(fragment, user);
     const activate = await screen.findByRole('button', { name: 'Open scanned invoice' });
-    const details = screen.getByText('Scan an invoice QR').closest('details')!;
+    const details = screen.getByText('Scan an invoice QR or open a request file').closest('details')!;
     await act(async () => {
       details.open = false;
       details.open = true;
@@ -190,7 +196,7 @@ describe('Pay invoice QR intake', () => {
     const pending = new Promise<Awaited<ReturnType<typeof invoices.openFragment>>>((resolve) => { complete = resolve; });
     vi.spyOn(invoices, 'openFragment').mockReturnValueOnce(pending);
     await scanText(fragment, user);
-    const details = screen.getByText('Scan an invoice QR').closest('details')!;
+    const details = screen.getByText('Scan an invoice QR or open a request file').closest('details')!;
     await act(async () => {
       details.open = false;
       details.open = true;
@@ -210,8 +216,8 @@ describe('Pay invoice QR intake', () => {
     const original = invoices.openFragment;
     vi.spyOn(invoices, 'openFragment').mockImplementation((fragment, options) => fragment === first.fragment ? pending : original(fragment, options));
     await scanText(first.fragment, user);
-    if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR'));
-    if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear invoice QR' }));
+    if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR or open a request file'));
+    if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear imported invoice' }));
     if (change === 'session') act(() => { clearSession(); });
     if (change === 'fragment') act(() => { setHash(second.fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
     if (change === 'input') fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'another candidate' } });
@@ -234,8 +240,8 @@ describe('Pay invoice QR intake', () => {
       expect(getUserMedia).not.toHaveBeenCalled();
       await user.click(screen.getByRole('button', { name: 'Scan with camera' }));
       await waitFor(() => { expect(getUserMedia).toHaveBeenCalledOnce(); });
-      if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR'));
-      if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear invoice QR' }));
+      if (change === 'collapse') await user.click(screen.getByText('Scan an invoice QR or open a request file'));
+      if (change === 'reset') await user.click(screen.getByRole('button', { name: 'Clear imported invoice' }));
       if (change === 'session') act(() => { clearSession(); });
       if (change === 'fragment') act(() => { setHash(fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
       if (change === 'unmount') unmount();
@@ -261,7 +267,7 @@ describe('Pay invoice QR intake', () => {
     const view = (pinnedSigners: readonly string[]) => <ServicesContext.Provider value={services}><AppContext.Provider value={{ ...app, settings: { ...DEFAULT_SETTINGS, pinnedSigners } }}><Pay /></AppContext.Provider></ServicesContext.Provider>;
     const { rerender } = render(view([]));
     const user = userEvent.setup();
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     let complete!: (result: Awaited<ReturnType<typeof invoices.openFragment>>) => void;
     const pending = new Promise<Awaited<ReturnType<typeof invoices.openFragment>>>((resolve) => { complete = resolve; });
     vi.spyOn(invoices, 'openFragment').mockReturnValueOnce(pending);
@@ -279,9 +285,9 @@ describe('Pay invoice QR intake', () => {
     const { user } = await openInput();
     await scanText(fragment, user);
     await screen.findByRole('button', { name: 'Open scanned invoice' });
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     await waitFor(() => { expect(screen.queryByRole('button', { name: 'Open scanned invoice', hidden: true })).toBeNull(); });
-    await user.click(screen.getByText('Scan an invoice QR'));
+    await user.click(screen.getByText('Scan an invoice QR or open a request file'));
     await scanText(fragment, user);
     await screen.findByRole('button', { name: 'Open scanned invoice' });
     act(() => { clearSession(); });

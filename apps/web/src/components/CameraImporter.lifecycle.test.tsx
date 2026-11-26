@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
 import { CameraImporter } from './CameraImporter';
 
 // Real @ghostpay/qr-exchange camera code against fake MediaDevices: these tests observe actual track lifetimes.
@@ -76,6 +77,58 @@ async function startScan(user: ReturnType<typeof userEvent.setup>): Promise<void
 }
 
 describe('CameraImporter camera lifecycle', () => {
+  it.each(['idle', 'manual'] as const)('stops every track on %s app lock, preserves the draft node, and requires a new click', async (reason) => {
+    const media = fakeMedia();
+    const user = userEvent.setup();
+    const onInputChange = vi.fn();
+    render(<CameraImporter label="Import a QR" onText={() => true} onInputChange={onInputChange} />);
+    const draft = screen.getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    fireEvent.change(draft, { target: { value: 'unfinished invoice draft' } });
+    await startScan(user);
+    expect(media.live.size).toBe(1);
+    onInputChange.mockClear();
+
+    act(() => { notifyAppLock(reason); });
+    expect(media.live.size).toBe(0);
+    expect(status()).toBe('Camera stopped.');
+    expect(screen.getByRole('button', { name: 'Scan with camera' })).toBeTruthy();
+    expect(onInputChange).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText('Or paste QR text')).toBe(draft);
+    expect(draft.isConnected).toBe(true);
+    expect(draft.value).toBe('unfinished invoice draft');
+    await act(async () => { await Promise.resolve(); });
+    expect(media.getUserMedia).toHaveBeenCalledOnce();
+
+    await startScan(user);
+    expect(media.getUserMedia).toHaveBeenCalledTimes(2);
+    expect(media.live.size).toBe(1);
+  });
+
+  it.each(['idle', 'manual'] as const)('disposes a late camera permission grant after %s app lock', async (reason) => {
+    const media = fakeMedia({ hold: true });
+    const user = userEvent.setup();
+    const onText = vi.fn(() => true);
+    render(<CameraImporter label="Import a QR" onText={onText} />);
+    await user.click(screen.getByRole('button', { name: 'Scan with camera' }));
+    act(() => { notifyAppLock(reason); });
+    await act(async () => { media.pending.forEach((grant) => { grant(); }); await Promise.resolve(); await Promise.resolve(); });
+    await waitFor(() => { expect(media.live.size).toBe(0); });
+    expect(media.getUserMedia).toHaveBeenCalledOnce();
+    expect(onText).not.toHaveBeenCalled();
+    expect(status()).toBe('Camera stopped.');
+  });
+
+  it('removes the app-lock listener on unmount', () => {
+    fakeMedia();
+    const onInputChange = vi.fn();
+    const { unmount } = render(<CameraImporter label="Import a QR" onText={() => true} onInputChange={onInputChange} />);
+    act(() => { notifyAppLock('idle'); });
+    expect(onInputChange).toHaveBeenCalledOnce();
+    unmount();
+    act(() => { notifyAppLock('manual'); });
+    expect(onInputChange).toHaveBeenCalledOnce();
+  });
+
   it('stops every track when the page becomes hidden and needs a new click to restart', async () => {
     const media = fakeMedia();
     const user = userEvent.setup();

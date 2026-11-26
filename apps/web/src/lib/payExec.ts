@@ -73,7 +73,7 @@ export class PostBroadcastError extends TransactionOutcomeError {
       phase: 'verification-incomplete', hash,
       ...(code === undefined ? {} : { code }),
       message: { key: 'transaction.postBroadcast', values: {
-        hash, detail,
+        detail,
         diagnostic: code === undefined ? '' : { key: 'transaction.code', values: { code: String(code) } },
       } },
     });
@@ -379,8 +379,9 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     invoiceNonce: inv.nonce,
     fiat: `${inv.fiat.currency} ${inv.fiat.minorUnits}`,
     quote: { source: inv.quote.source, timestamp: inv.quote.timestamp, expiresAt: inv.quote.expiresAt },
-    // L2-F3: `included` only for a receipt whose transaction was compared with the preview on the user's RPC.
-    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status !== 'success' ? 'reverted' : result.verification === 'verified' ? 'included' : 'unconfirmed',
+    // A receipt for an unmatched transaction cannot establish either outcome for this invoice.
+    status: result.verification !== 'verified' || result.receipt === undefined ? 'unconfirmed'
+      : result.receipt.status === 'success' ? 'included' : 'reverted',
     createdAt: now.toISOString(),
   };
 }

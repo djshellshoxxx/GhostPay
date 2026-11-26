@@ -21,7 +21,7 @@ const other: SettingsData = {
   relayerUrl: 'https://relay.example',
   pinnedSigners: [PIN_A, PIN_B],
 };
-const mine: SettingsData = { ...DEFAULT_SETTINGS, rpcUrls: { '84532': 'https://old.example/', '97': 'https://keep.example/' }, pinnedSigners: [PIN_B, PIN_C] };
+const mine: SettingsData = { ...DEFAULT_SETTINGS, theme: 'system', rpcUrls: { '84532': 'https://old.example/', '97': 'https://keep.example/' }, pinnedSigners: [PIN_B, PIN_C] };
 const code = (s: SettingsData, sections = EXCHANGE_SECTIONS): string => exportSettingsExchange(s, sections, CHAIN_IDS);
 const stored = (): Record<string, unknown> => JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as Record<string, unknown>;
 

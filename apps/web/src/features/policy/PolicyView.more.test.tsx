@@ -15,6 +15,10 @@ import * as chainModule from './chain';
 const realVerifyDeployment = chainModule.verifyPolicyDeployment;
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const LABEL = 'Policy accounts (experimental)';
 const a1 = account('acct-001');

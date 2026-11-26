@@ -64,7 +64,9 @@ export function referencedBroadcastOutcome(phase: ReferencedBroadcastPhase, refe
     reference,
     ...(phase === 'broadcast-unknown' ? { code: 'RPC_BROADCAST_UNVERIFIED' }
       : phase === 'verification-incomplete' ? { code: 'RPC_REFERENCE_MISMATCH' } : {}),
-    message: { key: REFERENCED_BROADCAST_KEYS[phase], values: { reference } },
+    message: phase === 'broadcast-unknown' || phase === 'verification-incomplete'
+      ? { key: REFERENCED_BROADCAST_KEYS[phase] }
+      : { key: REFERENCED_BROADCAST_KEYS[phase], values: { reference } },
   };
 }
 
@@ -101,7 +103,6 @@ export function approvedPaymentOutcome(error: unknown, requested: boolean, appro
     message: {
       key: requested ? 'transaction.approved.paymentUnknown' : 'transaction.approved.paymentNotSent',
       values: {
-        reference: approvalHash === undefined ? '' : ` (${approvalHash})`,
         detail: afterApprovalDetail(error, requested),
       },
     },

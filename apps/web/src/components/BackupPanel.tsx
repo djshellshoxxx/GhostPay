@@ -59,7 +59,7 @@ export function BackupPanel(): ReactNode {
     deleted: t('backup.status.deleted'),
     failed: t('backup.status.failed'),
   };
-  const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{label[s]}</strong>: {note}</p>;
+  const status = (s: ItemStatus, note: string): ReactNode => <p><strong role="status" data-status={s}>{label[s]}</strong>: {note}</p>;
 
   const goToKeystore = (): void => {
     const heading = document.getElementById('keystore-backup-h');

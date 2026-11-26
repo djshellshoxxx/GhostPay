@@ -1,0 +1,20 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "240s",
+    "npm",
+    "run",
+    "build",
+    "-w",
+    "@ghostpay/web"
+  ],
+  "cwd": ".",
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=1536",
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+  },
+  "exit_code": 137,
+  "elapsed_seconds": 13.39,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317"
+}

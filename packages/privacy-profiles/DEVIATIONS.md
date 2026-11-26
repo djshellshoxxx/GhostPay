@@ -1,6 +1,6 @@
 # Deviations and owner-review items
 
-Items marked [new] are rules or choices no method spec states. They are implemented as specified in profiles.md / chaining.md (or as noted) and need owner review.
+Items marked [new] are rules or choices no method spec states. The original package recorded them for owner review. The later [configuration decision record](../../docs/handoffs/PR644_CONFIGURATION_DECISIONS_20261124.md) selects the policy for the named open choices; this completion implements only its D05 gas-preference follow-up. Application integration and qualification remain separate work.
 
 ## Deviations from profiles.md
 
@@ -32,6 +32,33 @@ From chaining.md: C-04, C-06, C-07, C-14, C-17 (FEE-2 part), C-34; isolation def
 - Pipeline-only warning keys (`chain.longRun`, `chain.appMustStayOpen`, `chain.combinationFingerprint`) and error key `chain.layerChanged` have no rule row here; the pipeline package emits them.
 - `chainMatrix()` is one cell per rule (spec 4 compact table is a hand layout).
 
+## Completion work, 2026-11-25 (issue 284 / F18 standalone package slice)
+
+Originally recorded as owner-review items because profiles.md did not state them. The selected configuration decision record above resolves the named policy choices without implying that the future application behavior is implemented.
+
+1. [new, policy selected by D04/D05] `shielded` preset (issue 284 section 2, F18 section 1). Membership: the pool track only, with the same preferences as `maximum` for `sweep.exit`, `sweep.poolAmountPlan` and `pay.source`, and `pay.amountBlur` limited to `delay`. No network hardening, hops, payer sponsors or amount splitting. D05 is now implemented: `buffer` is Shielded's sole automatic exit-gas preference; Maximum retains `eip7702`, `permit-sponsored`, `buffer`. The advanced values remain explicit validated edits with their existing capability, context, warning and consent checks. Buffer funding can reveal funding relationships and does not remove a pool relayer or its consent. Saved values remain intact across import and migration. Confidential amounts remain excluded by R-11 and R-13; both presets remain unqualified proposals.
+2. [new] Input guards: `E_INVALID_SELECTION` and `E_INVALID_CONTEXT` (keys `privacy.err.invalidSelection`, `privacy.err.invalidContext`) and `privacy.err.unknownPreset`. profiles.md says every function is total; before this change a non-object selection or context threw and a string in `acks` acknowledged by substring match.
+3. [new] Version 2 stored configuration (`parseConfig`, `serializeConfig`, `loadConfig`). profiles.md specifies only version 1 (`serializeSelection`, `sanitizeSelection`), which is unchanged and still lenient. Version 2 adds `consents` and strict, all-or-nothing parsing; version 1 migrates with an empty consent list.
+4. [new] Consent model (`reviewConfig`, `createSnapshot`): a configuration needs `party:<trust party>` consent for every party an effective value relies on, and `experimental:<option>=<value>` for each experimental value, on top of the existing acknowledgements. Includes parties that are GhostPay's own unaudited code (`own-circuits-dev-ceremony`, `own-unaudited-contracts`). Owner may narrow which parties need consent. No fee, quote or provider consent exists here because nothing in the catalogue is paid.
+5. [new] Capability claims (`describeConfig`, `describePreset`): `qualification` is always `unqualified` and `verified` always `false`. F18 AC06 asks for exact-context evidence before any label says otherwise; this package has no evidence input, so it never does.
+6. [new] `validateDefinitions` treats any cycle through `requires` rules or `activeWhen` conditions as an error. The shipped data has none. A cycle is not strictly unsatisfiable (both options can be set), so this is a conservative authoring check; the owner may relax it.
+7. Static tables (catalogue, rules, presets, chain rules, steps) and every result are now deeply frozen. A consumer that mutated them (none in the repository does) now gets a `TypeError`.
+8. `sanitizeSelection` still returns the default selection for any version other than 1, silently. Use `parseConfig` where the user must be told.
+9. Test strengthening: `rules.test.ts` now checks each rule fires as a blocking issue or a warning according to the kind written out in the test (a mutation check found a conflict demoted to a warning passed unnoticed). The preset id lists in `presets.test.ts` and `serialize.test.ts` gained `shielded`; the four existing preset snapshot contexts gained `shielded` entries and no existing snapshot changed.
+
+Decisions taken after an independent review of the first version of this work (16 findings; 15 fixed, one declined):
+
+10. [new] Review and snapshot normalise first. `reviewConfig` runs the strict stored-format rules on the input (own properties only, lists bounded) and evaluates the normalised result, so the evaluation, the stored config and `snapshotIsCurrent` cannot disagree. An invalid entry anywhere makes the review not ready (`privacy.err.snapshot.invalidConfig`) instead of being dropped silently.
+11. [new] A snapshot stores only the acknowledgements and consents the configuration needs, and keeps a preset label only when the values equal what that preset resolves to in that context (the default selection keeps `standard`). Otherwise the label is `custom`. A stored config that says `maximum` with no values is therefore not a Maximum snapshot.
+12. [new] Scope: values for options that do not apply to the snapshot's action are kept (rules such as R-21 read the full selection, so dropping them can break a satisfied rule) and listed in `outOfScope` as not reviewed for that action. Any change to them makes the snapshot stale.
+13. [new] A capability set must contain only known capability names; a symbol, number, object or unknown string is an invalid context, so a snapshot can never throw or carry a foreign value. This also means a caller built against a newer capability list is blocked until this package learns the name (fail closed).
+14. `honestLabel` given something that is not an evaluation reports `profiles:unknown-evaluation` in `stillVisible`, never an empty list.
+15. `setOption` and `acknowledge` return a `Selection` and do not carry `consents`; re-attach them with `toConfig`. Non-string entries in `values` are copied as `null` (still reported as unknown values) so no caller object is ever frozen.
+16. `CONFIG_ERROR_KEYS` and `SNAPSHOT_ERROR_KEYS` are part of `ERROR_KEYS`. All exported lists (`TESTNET_CHAIN_IDS`, `OPTION_IDS`, `ACK_KEYS`, `ALL_CAPABILITIES`, `STEP_ASSETS` and the rest) are frozen; before, `TESTNET_CHAIN_IDS.push(1)` removed the chain guard for chain 1.
+17. Declined: moving `definitions.ts` out of the shipped bundle. It is exported on purpose (F18 section 6: reject cycles and unknown fields before evaluation), the package is `sideEffects: false` so bundlers drop it from builds that do not import it, and it is not a defect.
+
+Historical open-question list from the original completion: Q1 (third-party pool first), Q2 (`standard` changes four defaults), Q3 (R-12, R-13, R-14 blocking), Q4 (spike-gated capability names), Q5 (per-role selections), Q6 (legal). The configuration decision record selects their technical policy and retains the legal/release boundary. This D05 change implements no other application or release follow-up.
+
 ## Mutation check (manual, 2026-10-21)
 
 Deleting R-11, R-12 or R-29, or flipping `sweep.destination` default, makes tests fail (2, 3, 3 and 1 failures).
@@ -39,3 +66,5 @@ Deleting R-11, R-12 or R-29, or flipping `sweep.destination` default, makes test
 ## Not done
 
 UI wiring (lane E6), capability detection, umbrella end-to-end per preset, `selectionToPipeline` (pipeline package), numeric performance bench (PP-19 informational, not run).
+
+Also not done, outside this package: the F18 app layer (`apps/web/src/features/privacy-modes/`: review reducer, accessible dependency and cost UI, saved variants, tab conflict handling), fee quotes (FEE01), live capability observations and their expiry, reconciling `@ghostpay/privacy-pipeline`'s local copy of the rules with `RULES`, and any Maximum or Shielded end-to-end evidence.

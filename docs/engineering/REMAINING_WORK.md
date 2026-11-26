@@ -17,7 +17,7 @@ Pages beta release. "Future" = not a current release requirement.
 
 ## Follow-ups (not blocking)
 
-- RCPT-L1/L2 in `packages/ux-receipts` (vacuous proxy test; double getter reads). The package has no app consumer yet.
+- RCPT-L1/L2 in `packages/ux-receipts` (vacuous proxy test; double getter reads): fixed on the FC-04 branch (commit 752828f6, `verify.accessor-boundary.test.ts`), pending integration. The package has no app consumer yet.
 - QA-I1: a confirmed in-app reset for a corrupt journal mirror (today: clear site data).
 - JRNL-L1 residual: policy withdrawals still hold the journal lock across their own wallet prompt. Payments now
   wait at most 20 s and then refuse with a typed error.

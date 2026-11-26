@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { encodeAnnouncementMemo, encodeMetaAddress as solanaMeta, secretScalarFromBytes as solanaSecret, stealthKeysFromSecrets } from '@ghostpay/chain-solana';
+import { encodeAnnouncementMemo, encodeMetaAddress as solanaMeta, secretScalarFromBytes as solanaSecret, SolanaStealthError, stealthKeysFromSecrets } from '@ghostpay/chain-solana';
+import { TronError } from '@ghostpay/chain-tron';
 import { encodeSilentPaymentAddress } from '@ghostpay/btc-silent-payments';
 import { chainCommands, diagnosticsRpcCommands } from './commands/chain.js';
 import { Ctx } from './ctx.js';
 import { parseArgs } from './args.js';
 import { G, G2, makeIo, stdoutJson, type TestIo } from './fixtures.testutil.js';
 import { paymentWorld, PIN } from './payment-fixtures.testutil.js';
+import { chainBoundary } from './payment-context.js';
+import { run } from './run.js';
 
 const GENESIS = { height: 0, hash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
   headerHex: '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c' };
+const LEGACY_SOLANA = 'gpsol:iVPRKEPsBrg9QjbrbTCwPpfqABVe6AgZGSnE3hPZFWJJY9G8coNm6o2by4A2777LoAyj3Rxh6f1VBUWUgUHxs3uinozTS';
 const BLOCK_ONE = '010000006fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000982051fd1e4ba744bbbe680e1fee14677ba1a3c3540bf7b1cdb606e857233e0e61bc6649ffff001d01e36299';
 
 async function execute(path: string, io: TestIo, argv: readonly string[] = []): Promise<number> {
@@ -27,10 +31,33 @@ describe('chain and operator inspection', () => {
     ['evm', 'bad', [], 'INVALID_INPUT'], ['bitcoin', 'x'.repeat(2049), [], 'INVALID_INPUT'],
     ['future-chain', 'public', [], 'UNSUPPORTED_FAMILY'], ['evm', `st:eth:0x${G}${G2}`, ['--network', 'testnet'], 'BAD_NETWORK'],
     ['bitcoin', 'public', ['--network', 'regtest'], 'BAD_NETWORK'],
+    ['solana', LEGACY_SOLANA, [], 'LEGACY_META_ADDRESS'],
   ])('rejects unsupported or invalid %s recipient input', async (family, value, extra, code) => {
     const io = makeIo({ 'address.txt': value });
     await expect(execute('chain recipient inspect', io, ['--family', family, '--in', 'address.txt', ...extra])).rejects.toMatchObject({ code });
     expect(io.out).toHaveLength(0);
+  });
+
+  it('tells the user a recipient uses a retired meta-address format, in the CLI JSON error shape', async () => {
+    const io = makeIo({ 'address.txt': LEGACY_SOLANA });
+    expect(await run(['chain', 'recipient', 'inspect', '--family', 'solana', '--in', 'address.txt', '--json'], io)).toBe(1);
+    expect(io.out).toHaveLength(0);
+    const error = (JSON.parse(io.err.join('')) as { ok: boolean; error: { code: string; message: string } });
+    expect(error).toMatchObject({ ok: false, error: { code: 'LEGACY_META_ADDRESS' } });
+    expect(error.error.message).toMatch(/retired gpsol: .*st:sol: meta-address/);
+    expect(io.err.join('')).not.toContain(LEGACY_SOLANA.slice(6));
+  });
+
+  it('surfaces only the legacy-format chain codes and keeps every other chain error generic', async () => {
+    await expect(chainBoundary(() => { throw new TronError('LEGACY_META_ADDRESS'); })).rejects.toMatchObject({
+      kind: 'fail', code: 'LEGACY_META_ADDRESS', exitCode: 1, message: expect.stringContaining('st:trx:0x') as unknown });
+    await expect(chainBoundary(() => { throw new SolanaStealthError('LEGACY_META_ADDRESS'); })).rejects.toMatchObject({
+      kind: 'fail', code: 'LEGACY_META_ADDRESS', message: expect.stringContaining('st:sol:') as unknown });
+    for (const error of [new TronError('INVALID_CHECKSUM'), new SolanaStealthError('NETWORK_MISMATCH'),
+      Object.assign(new Error('PRIVATE_DETAIL'), { code: 'LEGACY_META_ADDRESS' })]) {
+      const rejected = chainBoundary(() => { throw error; });
+      await expect(rejected).rejects.toMatchObject({ kind: 'fail', code: 'INVALID_INPUT', message: 'chain input or evidence is invalid.' });
+    }
   });
 
   it('rejects mismatched Bitcoin recipient networks and malformed Solana announcements', async () => {
@@ -108,22 +135,42 @@ describe('chain and operator inspection', () => {
   });
   it('inspects a valid Solana announcement memo offline without promoting its opaque metadata to a payment', async () => {
     const keys = solanaKeys();
-    const memo = encodeAnnouncementMemo({ ephemeralPublicKey: keys.viewPublicKey, viewTag: 17, metadata: new Uint8Array([1, 2]) });
+    const memo = encodeAnnouncementMemo({ ephemeralPublicKey: keys.viewPublicKey, viewTag: 17 });
     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
     const io = makeIo({ 'memo.txt': memo });
     expect(await execute('chain solana announcement inspect', io, ['--in', 'memo.txt'])).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ valid: true, family: 'solana', status: 'announced', viewTag: 17,
-      metadataHex: '0102', paymentVerified: false, networkUsed: false });
+      metadataHex: '', paymentVerified: false, networkUsed: false });
   });
 
   it.each(['evm', 'solana', 'bitcoin'] as const)('validates %s public recipient encoding with its shared decoder', async (family) => {
     const keys = solanaKeys();
-    const canonical = family === 'evm' ? `st:eth:0x${G}${G2}` : family === 'solana' ? solanaMeta(keys)
+    const canonical = family === 'evm' ? `st:eth:0x${G}${G2}` : family === 'solana' ? solanaMeta({ ...keys, cluster: 'devnet' })
       : encodeSilentPaymentAddress('testnet', Buffer.from(G, 'hex'), Buffer.from(G2, 'hex'));
     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
     const io = makeIo({ 'address.txt': canonical });
     expect(await execute('chain recipient inspect', io, ['--family', family, '--in', 'address.txt', ...(family === 'bitcoin' ? ['--network', 'testnet'] : [])])).toBe(0);
-    expect(stdoutJson(io)).toMatchObject({ family, valid: true, canonical, paymentVerified: false, identityVerified: false });
+    expect(stdoutJson(io)).toMatchObject({ family, valid: true, canonical, paymentVerified: false, identityVerified: false,
+      network: family === 'evm' ? null : family === 'solana' ? 'devnet' : 'testnet' });
+  });
+
+  it.each(['devnet', 'testnet', 'localnet'] as const)('reports the decoded Solana %s cluster of a public recipient', async (cluster) => {
+    const keys = solanaKeys();
+    const canonical = solanaMeta({ ...keys, cluster });
+    keys.spendSecret.fill(0); keys.viewSecret.fill(0);
+    const io = makeIo({ 'address.txt': canonical });
+    expect(await execute('chain recipient inspect', io, ['--family', 'solana', '--in', 'address.txt'])).toBe(0);
+    expect(stdoutJson(io)).toMatchObject({ family: 'solana', valid: true, canonical, network: cluster });
+  });
+
+  it('refuses a Solana mainnet recipient because experimental chains are testnet-only', async () => {
+    const keys = solanaKeys();
+    const io = makeIo({ 'address.txt': solanaMeta({ ...keys, cluster: 'mainnet' }) });
+    keys.spendSecret.fill(0); keys.viewSecret.fill(0);
+    const refused = execute('chain recipient inspect', io, ['--family', 'solana', '--in', 'address.txt']);
+    await expect(refused).rejects.toMatchObject({ kind: 'unsupported', code: 'CHAIN_DISABLED', exitCode: 5 });
+    await expect(refused).rejects.toThrow(/mainnet recipients are refused/);
+    expect(io.out).toHaveLength(0);
   });
   it('lists actual enabled testnets and keeps mainnets and experimental families explicitly gated', async () => {
     const io = makeIo();
