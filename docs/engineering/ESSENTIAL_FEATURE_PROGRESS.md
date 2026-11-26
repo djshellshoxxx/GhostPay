@@ -32,10 +32,10 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 - **Not covered:** a different browser, profile or device; a private window; the opt-in embedded-iframe checkout
   (`VITE_EMBED_IFRAME`), whose storage and locks are partitioned from a top-level tab; site data cleared by the user; a
   payment made outside GhostPay. These are documented in the privacy docs and the user guide.
-- **Status:** implementation complete on branch. Full web gates and anvil browser suite: see REGRESSION_RESULTS.
-  Merge pending exact-head hosted CI.
+- **Status:** merged into `main` as `c8e131c1` on 2026-11-24 (see the status update below). Full web gates and anvil
+  browser suite: see REGRESSION_RESULTS.
 
-## M3 — P1-LATE seller late-payment and reorg-safe invoice status (next)
+## M3 — P1-LATE seller late-payment and reorg-safe invoice status (merged via #635)
 
 - Scope and gaps pinned in [ESSENTIAL_FEATURE_MATRIX.md](ESSENTIAL_FEATURE_MATRIX.md) §P1-LATE. It starts after #500
   merges, because both touch `apps/web/locales/*`.
@@ -44,3 +44,20 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 
 - M2 P0-KEYS (branch `claude/nifty-bohr-5ra2ap`) and M4-DORM371 (`claude/nifty-bohr-5ra2ap-dormant-371`). Evidence goes in
   `docs/engineering/milestones/` on those branches.
+
+## M1 status update (2026-11-24)
+
+- **Merged** into `main` as `c8e131c1` (PR #500, head `9a67daf2`), including #545 (REV-L2). See FEATURE_INTEGRATION_LOG.
+- **M3 (P1-LATE) reassigned:** the open stack #533 (`90e3fff0`) → #546 (`711168f1`) → #575 (`5a225f6c`), by another agent,
+  already implements seller late-payment and reorg invoice-credit handling in `ReconciliationLedger`/`reconciliationMatch`.
+  Per the no-rewrite rule, this session reviews and qualifies that stack instead of implementing M3 again. No M3 code was written here.
+
+## M3 status update (2026-11-26)
+
+- **Merged** into `main` as `aaa71a11` on 2026-11-25 through PR #635 (`claude/p1-late-reconciliation`, head `205f8fd7`),
+  a consolidation by another session of #533 → #546 → #575 → #599 → #625 plus #590's receipt-binding commit. The
+  `claude/keen-volta-8ctx9x` session did not write or merge it. Post-merge push CI run 45595034543 on `aaa71a11`
+  succeeded. Details:
+  [`docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`](../handoffs/P1_LATE_CONSOLIDATION_20261124.md).
+- Stack PRs on 2026-11-26: #533 shows merged; #575, #590, #599 and #625 are closed as superseded and #546 as already
+  integrated.

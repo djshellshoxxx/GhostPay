@@ -104,8 +104,8 @@ record remains the duplicate and recovery blocker.
 ## Remaining items
 
 1. None for the push `CI` gate: both main runs above succeeded.
-2. The #691, #689 and #692 drafts are superseded by the merged integration; closing them without deleting any ref is
-   the coordinator's decision (their heads are ancestors of main).
+2. None for the donor PRs: GitHub records #691 and #689 (06:35 UTC) and #692 (06:36 UTC) as merged, because their
+   heads are ancestors of main. No ref was deleted by this worker.
 3. Separate bug-only follow-up: the `LanguagePicker` test timing race above.
 4. Not part of this change: manual global masking (a separately authorized core follow-on) and any native-language review
    of the added history strings.
