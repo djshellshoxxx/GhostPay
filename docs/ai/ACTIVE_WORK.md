@@ -5,6 +5,39 @@ Owned paths: `docs/ai/HANDOFF.md` (replaced the unfilled template with source-pi
 Finding: `docs/ai/HANDOFF.md` still said "TO BE VERIFIED" for base SHA, PRs and CI; AGENTS.md requires source-pinned, current handoffs.
 Acceptance: docs-only diff; no code, test, workflow or dependency change; facts in the handoff match the read-only checks recorded in it.
 Read-only screens (no edits to code): relative markdown links, i18n catalog check, relative imports in scripts and test-vectors. No unclaimed microtask qualified; no worker tasks assigned.
+# W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
+
+Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
+Why: the previous W4 (feature-completion-06's subagent) exited before continuing #585/#600; ghostpay-42 and newghostpay-ae confirmed no driver.
+Owned paths: #585/#600's files and the merge resolution in `apps/web/src/views/CreateInvoice.tsx` link row (main's auto-clearing Copy, #585's exact-link .txt download and #688's request-file download, all three kept), this entry.
+Acceptance: minimal mode omits memo and item breakdown after totals are computed; payment and verification fields, canonical serialization, signatures and envelopes unchanged; downloads carry the exact signed link; full hosted CI on the exact head.
+
+# PR #585 native typecheck resumption — 2026-11-24 UTC
+
+Worker: `/root/recover_local_workers`, coordinated by `/root`. Isolated successor branch `resume/privacy-minimal-typecheck-20261124`; exact saved parent #585 `b82be893d3d360064222fafcce8cef2033cd23a5`, main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only the invalid role-query option in `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/PR585_NATIVE_TYPECHECK_20261124.md`.
+
+Acceptance: reproduce TS2769 from the unsupported `exact` option, remove only that option after verifying the string accessible-name matcher remains exact, retain every privacy-minimal and stale-result assertion, and run focused native tests plus full web typecheck and scoped typed lint. Preserve all production code, dependencies, schemas and signing/payment behavior. #586, #571, Pay paths and original owner branches remain outside this assignment. Root owns independent review and publication. No merge, deployment or real-funds operation.
+
+---
+
+# Issue 287 invoice metadata minimization
+
+Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.
+
+---
+# Browser self-check feature completion (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
+existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
+other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
+`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
+`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
+`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
+`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
+Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
+handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
+unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
+payments, network egress or release gates.
 
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
@@ -4053,6 +4086,115 @@ CI and actual full/lean browser acceptance remain mandatory before parent integr
 Handoff: `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. No remote mutation,
 activation of an excluded product, dependency/workflow change or live transaction was performed by this worker.
 
+## Core idle suspension and sole-signer recovery continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/branch_triage`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/idle-recovery-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427` (tree
+  `529af494cdd8713b2dd0478f3f528260291bd830`).
+- Authorized core donors: #365 `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`,
+  #544 `4b077d2b13f956cfcf9bce1726f929cca40c7394`, and #577
+  `2363943571de84bfd5da0b3f167699f34eb53ce7`. Preserve their original refs.
+  Port only independently required session suspension and encrypted recovery; do not
+  merge mixed #372 history, restore excluded products, or call a mixed branch completed.
+- Owned paths: `apps/web/src/lib/session.ts`, `apps/web/src/lib/keyVault.ts`,
+  `apps/web/src/AppShell.tsx` idle clock/suspension routing and navigation hunks,
+  `apps/web/src/views/SellerKeys.tsx` suspension visibility hunks, focused session/vault,
+  AppShell/App and SellerKeys regression tests, additive idle/recovery catalog keys in
+  `apps/web/locales/{en,ar,es,ja}.json` and `apps/web/src/i18n/securityKeys{,.test}.ts`,
+  directly affected idle-policy user documentation, this record and a source-pinned handoff.
+- Shared-path agreement: `/root/artifact_review` owns account/privacy presentation
+  revocation and only AppShell's boundary import/provider mounting. It will not change
+  this worker's session/vault APIs, idle effect or suspended routing. Final composition
+  receives independent `/root/help_review` review before root publication.
+- Acceptance: revoke active key authority synchronously at expiry; retain a sole signer
+  or unconfirmed backup in boxed memory for encrypted save/export/verification only;
+  resume ordinary authority only through normal import/unlock; keep stale async results
+  invalid, clock and replacement generations isolated, and current beforeunload protection.
+  Preserve `verifyCredentialForCurrentSession`, raw export credential checks, full vault
+  identity checks, current backup operation ownership, wallet disclosure, clipboard,
+  payment, retention and privacy guards. Retain existing regression coverage and the
+  earlier credential-specific idle cases as well as newer recovery tests.
+- Qualification: bounded ordinary synthetic lifecycle and regression cases, affected
+  library builds, web typecheck/lint and catalog checks. No fuzz/mutation/exploitation
+  campaign, deployed target, real funds, dependency/workflow/contract change or remote
+  publication. Parent owns fresh hosted gates, integration lock and remote merge.
+
+## Core account and vault presentation revocation continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/privacy-revocation-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427`, with the independently owned idle/recovery
+  checkpoint `9816c7c030bd35ec35ec94ff43382ef324fac800` composed before edits.
+- Source donors: #571 `63f40efac175e5ee49563326dbef930aafb14235`, #612
+  `e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8`, #645
+  `3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7`, #652
+  `724afdcf557178d8b78d841b681f50e99d41935f`, and #655
+  `1dcd5a25130b9db6afc4d224c619cd4dbcf0307c`. Mixed #372
+  `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` is a source reference only; preserve all
+  donor refs and do not merge excluded-product or unreviewed dependency history.
+- Owned implementation: `apps/web/src/components/SessionPresentationBoundary.tsx`,
+  `apps/web/src/lib/useWalletPrivacy.ts`, wallet lifecycle and returned-outcome retention
+  in `lib/wallet.ts` and `lib/duplicateAttemptJournal.ts`, account-scoped
+  `components/WalletAttempts.tsx`, vault access notifications in `lib/tags.ts`, and
+  presentation cleanup in `views/{Pay,CreateInvoice,Scan,Sweep}.tsx`,
+  `components/ReconciliationLedger.tsx`, and `features/registry/RegistryView.tsx`.
+  `features/policy/PolicyPay.tsx` is limited to passing the existing connected wallet to
+  the shared history component; no policy feature behavior or activation is in scope.
+  AppShell ownership is only the boundary import/provider mount; session/keyVault APIs,
+  idle handlers and suspended routing remain `/root/branch_triage`'s work.
+- Supporting scope: focused ordinary regression fixtures adjacent to those paths,
+  additive localized revocation/history text in `apps/web/locales/{en,ar,es,ja}.json`
+  with security classification, this additive ownership log, and source-pinned
+  `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md`.
+- Acceptance: revoke old account/vault/session presentation and async authority before
+  stale results repaint; preserve D1 QR input, existing disclosure and cryptographic
+  checks, #635 payment outcomes, #683 Sweep controls, clipboard and retention behavior.
+  Keep returned hashes recoverable only to the matching connected account/chain and
+  duplicate-blocking until actual durable journal completion. Preserve the current
+  Web Lock/IndexedDB/mirror journal, nonce/replacement union and unknown blockers.
+  Keep encrypted history and durable bytes intact. Adapt donor assertions to current
+  interfaces with all substantive no-send, concealment and recovery checks retained.
+- Dependency closure, workflows, contracts and product activation stay unchanged;
+  in particular no `@ghostpay/ux-core` dependency or reachability allowlist extension.
+  Qualify with bounded synthetic regressions, affected builds, typecheck, lint and
+  retention/release checks. No fuzz/mutation/exploitation campaigns or live transactions.
+  This worker performs no remote mutation; parent owns independent final review, fresh
+  hosted CI, integration lock and publication.
+
+### Idle recovery acceptance and tag-vault boundary addendum — 2026-11-26 UTC
+
+The same worker owns `apps/web/e2e/idle-session.spec.ts` and the sole-signer idle
+case in `apps/web/e2e/pages-devnet.spec.ts`, preserving ordinary deterministic
+browser acceptance from the pinned donors without merging their older infrastructure.
+Collection/typecheck is local evidence only; browser execution remains a parent gate.
+The continuation also owns `apps/web/src/lib/tags.ts` and a focused
+`apps/web/src/lib/tags.idleSession.test.ts`: the supplied viewing-key buffer must be
+wiped even if the new synchronous expiry check rejects before a storage read, and
+tag unlock must use empty-session-capable active authority rather than a recovery-only
+revision guard. Preserve existing tag formats, stores, retention and tests.
+
+### Idle recovery local handoff — 2026-11-26 UTC
+
+Scoped source `14aa1742a7c4f60fbbb851b55581e532e8961e57`, tree
+`0ad292f2b8eeda5b7d2ca3c3df7a343d843742de`, passed 241 selected ordinary unit
+cases, a focused rerun of the restored signer-only banner assertions, web TypeScript,
+catalog validation (0 errors; 853 draft/fallback warnings) and secret/whitespace
+checks. Initial typed lint required the correction recorded immediately below. Fourteen browser cases were collected only. `/root/help_review`
+approved this exact implementation/tree. Full/lean browser execution, devnet acceptance,
+combined privacy-interface review, fresh hosted checks and integration remain with root.
+See `docs/handoffs/IDLE_RECOVERY_CORE_20261126.md`. Original mixed donor refs remain
+preserved; no whole-backlog or excluded-feature completion is asserted.
+
+Final qualification follow-on: `2936c8e3f91c99b4d86c29f5071f4d0566c938aa`, tree
+`90ca16eb10eb520dfdaafde6d3648b4bc789090c`. Strict lint exposed two unsafe-return
+errors in the donor test's untyped signer spy; the one-line `vi.fn<() => void>()`
+correction then passed the exact sole-signer case, web TypeScript and typed ESLint
+over all changed TS/TSX files with completed zero-exit processes. Runtime source
+remains identical to `0e301a14`; `/root/help_review` extended approval to this exact
+final source/tree after checking that no assertions or production code changed.
+
+
 ## Coordinator request-file hosted browser qualification — 2026-11-25 (8812)
 
 - Worker: /root coordinator; branch: fix/request-file-browser-qualification-20261125-8812.
@@ -4080,6 +4222,115 @@ Typed lint and full web typecheck passed; Playwright collected 20 cases without 
 execution. Both initial hosted profiles had the same five fixture failures, documented
 in docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md. Independent source
 review and fresh hosted combined/full/lean qualification remain the promotion gates.
+
+
+### Core presentation concealment regression delegation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review/concealment_tests`, delegated by
+  `/root/artifact_review`; branch `finish/privacy-concealment-tests-20261126`.
+  Source base `6cea65ce4aa7db69ace0733eceef1b3b8b6df28c`, the composed privacy
+  continuation, with existing owned runtime changes preserved.
+- Own only new focused fixtures: `apps/web/src/lib/tags.revocation.test.ts`,
+  `apps/web/src/views/Scan.tags.revocation.test.tsx`,
+  `apps/web/src/components/ReconciliationLedger.revocation.test.tsx`,
+  `apps/web/src/views/CreateInvoice.revocation.test.tsx`, and
+  `apps/web/src/views/Sweep.revocation.test.tsx`, plus this additive record.
+- Acceptance: access/session/app-lock changes conceal decrypted history, tags and
+  drafts; obsolete asynchronous results cannot repaint a later access interval;
+  encrypted durable bytes and already-recorded sweep outcomes remain intact, with
+  no additional transaction or RPC action caused by revocation.
+- Ordinary deterministic synthetic regressions only. No production changes,
+  dependency/workflow change, experimental activation, fuzz/mutation campaign,
+  remote mutation or broad mixed-donor merge. Parent owns implementation review,
+  combined qualification and integration.
+
+### Core presentation concealment regression result — 2026-11-26 UTC
+
+At test source `14ca56a7d548c151b39a66524827d67fed9f600b` / tree
+`23c1c5970390fffdefe2833b66463eb7d0ab67ea`, five new fixtures add 21 ordinary
+synthetic cases without changing production source or existing assertions:
+
+- TagVault (3): access notifications occur after key install/erase, observer errors
+  do not interrupt lock, obsolete unlocks stay revoked, and encrypted bytes survive.
+- ReconciliationLedger (3): manual/idle lock clears decrypted rows, backup drafts
+  and errors; a late vault-open result is locked; encrypted and legacy records remain.
+- CreateInvoice (5): manual/idle lock and session replacement discard draft fields
+  and passphrases; late construction success/failure does not restore the old invoice.
+- Scan (4): locked tags and drafts disappear; old find/list/save completions cannot
+  overwrite a later access interval; saved encrypted tag records remain recoverable.
+- Sweep (6): presentation revocation scrubs the detached credential field, clears
+  selection and destination, cancels a pending balance read, and preserves submitted
+  or uncertain handoff outcomes. Explicit reselection, balance read and destination
+  entry still leave signing blocked by the retained outcome; no second send occurs.
+
+Qualification completed with zero exits on that source: the five fixtures together
+passed 21/21 with coverage disabled, full web TypeScript passed, and typed ESLint
+over those fixtures passed. `git diff --check` passed. Dependencies were installed
+locally with `npm ci --ignore-scripts --no-audit --no-fund`; unchanged package builds
+were copied from the parent worktree based on the same package source. The initial
+five test failures were exact-label selector mistakes, corrected without runtime or
+acceptance changes. No production gap was found within this bounded test scope.
+Browser execution, full-suite/coverage qualification, independent implementation
+review and hosted checks remain with the parent/coordinator. No remote changes or
+additional donor merges were performed by this delegated worker.
+
+
+## Shared policy journal lock completion — 2026-11-25 Pacific (8812)
+
+Worker: root `chatgpt-8812-branch-completion`. Branch `finish/policy-journal-lock-20261125-8812`; base privacy checkpoint `e8857e0292dd06bed85a17ba49d9f6701979e83c`, pending its separate final source review. Current main is `84b80260b9c16b928e440dd81750d9bfb6cdb2b4`; canonical idle prerequisite is `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5` with shared utility #690 ancestry.
+
+Owner seam expressly agreed with `/root/artifact_review`: this task owns only `WalletAttemptOptions.beforeAttemptStart` and its synchronous invocation immediately before `beginAttempt` inside the authoritative journal transaction in `apps/web/src/lib/wallet.ts`. Retained-hash completion, lifecycle and disclosure changes remain with the privacy worker. Also own `apps/web/src/features/policy/withdrawalJournal.ts` and its existing test file, an additive handoff, original donor handoff adoption and directly affected JRNL-L1 status documentation. No other wallet, journal, payment or private-presentation source changes.
+
+Donor: #528 `ff274a08de2a84bcbdf0e373fb607666543554a2`. Its unique current-history delta is limited to these three source/test files and two documentation files. The source snapshot is older than current disclosure/receipt/late-hash controls: retain those newer controls and invoke the hook from captured `attemptOptions`, never substitute the historical wallet file. Prepare and recheck outside the global journal lock, use the existing bounded browser lock manager, and run the synchronous duplicate-policy guard inside the durable begin transaction.
+
+Acceptance: preserve exact current disclosure, transaction snapshot, asynchronous authority, late-hash durability, post-send ownership and receipt-correlation behavior; refuse duplicates and stale sessions before provider invocation; prove another independent send progresses while a policy prompt remains open and bounded lock refusal makes no provider call. Preserve original refs, assertions and all other claims. Use bounded synthetic ordinary regressions, affected typecheck/lint/build and actual full/lean browser qualification; no mutation/fuzz campaign, new dependency, contract change, activation, release or real funds. Final approved privacy and canonical idle/utility inputs must be adopted normally before publication. Independent review, fresh exact-composition hosted CI and cooperative integration lock remain mandatory.
+
+## PR #500 policy wallet lock release — 2026-11-23
+
+- Worker: `/root` (coordinator and implementation owner); isolated from the PR branch.
+- Branch: `codex/ghostpay-policy-lock-release-20261123`; base: PR #500 exact head `d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea`.
+- Owned paths: `apps/web/src/lib/wallet.ts`, `apps/web/src/features/policy/withdrawalJournal.ts`, its focused test, this claim, and `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+- Finding: `sendPolicyAction` awaited `prepare()` and then the full wallet send under the global attempt journal lock. The full wallet send also performs asynchronous account/chain rechecks before provider invocation, so holding the non-reentrant lock through it blocked unrelated journal work during wallet prompts.
+- Planned correction: perform the existing fast duplicate check before prepare; prepare and wallet rechecks outside the global lock; repeat the policy duplicate guard synchronously inside `sendViaWallet`'s journal-locked start callback immediately before durable attempt creation/provider invocation. Keep the attempt write and provider invocation atomic under the lock; release it while the wallet request is pending; hash persistence still reacquires the journal lock.
+- Acceptance: focused policy and durable wallet journal tests passed (20/20); web typecheck, production build/postbuild scan, scoped ESLint, and diff check passed. The regression proves a distinct wallet send completes through the same lock manager while the policy prompt remains unresolved; existing same-action coverage still proves one provider invocation. Independent review found no blocker and recommends real two-page Web Locks integration coverage. Hosted qualification remains outstanding. No deploy, main merge, or mutation of PR #500. See `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+
+## 2026-11-26 UTC — chatgpt-8812 policy browser continuation (#541)
+
+- Owner: chatgpt-8812-branch-completion. Additive continuation of the completed #541 handoff alongside #528; original refs preserved.
+- Scope: apps/web/e2e/flows.spec.ts, apps/web/e2e/policy-action.fixture.ts, and the policy completion handoff. Preserve every current invoice/disclosure/stale-mirror case and helper; retain the two-tab policy regression using the current production journal.
+- Gates: independent current-composition review, bounded ordinary local checks and fresh hosted full/lean browser qualification before integration. No production fixture exposure, dependency or workflow changes.
+
+## Policy-prompt browser verification
+
+- Worker: Codex, branch `verify/policy-prompt-two-tabs-20261124`, stacked on #528 at `ff274a08de2a84bcbdf0e373fb607666543554a2`. Current #500 is `ad67862f63590fe38410d21b88ebf0e05329da47`. #528 branched at `a23a9f994709e021c479adb0bcc10afcd79fea4b`.
+- Owns the new case in `apps/web/e2e/flows.spec.ts` and its test-only policy fixture. Reuse the injected wallet, invoice checkout and two same-origin pages. While the first policy prompt is pending, the other page must send an unrelated invoice and refuse a duplicate of the policy action. The existing owners retain the journal and integration branches.
+
+## Coordinator idle invoice-expiry browser qualification — 2026-11-26
+
+- Worker: `/root/branch_triage`; branch: `fix/idle-expiry-fixture-20261126`.
+- Base: canonical idle candidate `2a70c04124cba1d8c2d5145ef5a4ba4bcb6c2911`
+  (PR #689); preserve original local `6e7147d1` and all donor refs.
+- Owns: `apps/web/e2e/core-journey.spec.ts`, `apps/web/e2e/pages-devnet.spec.ts`,
+  this additive claim and `docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md`.
+- Observed gate: the Pages invoice-expiry case and the full/lean core invoice-expiry
+  case advance the browser wall clock beyond the default 15-minute idle deadline.
+  The newly synchronous idle guard revokes the prepared flow before its Send handler
+  can display the separate invoice-expiry refusal. Hosted idle cases otherwise passed.
+- Acceptance: isolate those invoice-expiry fixtures with the supported 240-minute idle
+  setting through the real Settings UI; retain each original clock jump, expiry/refusal
+  assertion, no-wallet-send/journal/submission assertion, on-chain refusal check and
+  timeout. Preserve all idle cases and production guards. Avoid per-load RPC fixture
+  initialization resetting the selected setting before the relevant payment flow.
+- Qualification: exact changed-file typed lint, web typecheck, bounded browser-case
+  collection and source preservation checks locally; execution requires fresh hosted
+  full/lean/Pages gates. No local browser, fuzz/mutation/reproduction campaign, dependency,
+  workflow, runtime or contract change. Root owns independent review and publication.
+
+Root additionally authorizes normal adoption of the independently reviewed shared
+utility candidate #690, `62d8ff681b3ce3916d7aa4639c73437856ef8e48`, into this
+continuation. Reconcile only the additive ownership record, retain both histories,
+all seven exact utility source/test blobs and unchanged idle runtime, and record the
+combined source pin before renewed hosted qualification. No utility source changes.
 
 
 ## Shared payment utility completion — 2026-11-25 Pacific (8812)
@@ -4111,3 +4362,269 @@ Evidence: baseline source Git blob `c325f1ee544da5f9f75ac7bc400b961deee63033`, r
 
 - Worker: fc02 (Claude Code), branch `claude/fc04-hardening-tests-20261125`, base `origin/main` `595a184b381980a440165832f51a83e8dfd3e8a8`. Owned paths: `packages/chain-adapters/src/quote.test.ts`, `packages/ux-receipts/src/verify.ts`, `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, `docs/consolidation/feature-completion-20261125/FC-04-hardening-tests.md`, this entry.
 - Acceptance: recover the missing #271 quote decimals regression test; close RCPT-L1 and RCPT-L2 test-first; keep coverage thresholds; local only until the coordinator approves a push.
+
+### Idle invoice-expiry fixture qualification result — 2026-11-26
+
+Combined source `18bfb7f937013af77736e5c80a8310d9114b5ffd`, tree
+`40923721a273d5d390749e6f240ab7a8b300cb06`, retains both ownership histories,
+all seven exact utility donor blobs, all idle runtime and every original expiry,
+no-send, clock and timeout assertion. Web TypeScript, both changed-file typed lint,
+15 core/idle plus one Pages case collection, whitespace and committed-secret scan
+all completed successfully. No browser execution is claimed locally. See
+`docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md` for the original hosted
+failure evidence, real Settings isolation and remaining independent/hosted gates.
+
+### Returned-outcome fixture compatibility addendum — 2026-11-26 UTC
+
+Root explicitly delegates `apps/web/src/lib/walletJournal.adversarial.test.ts` to
+`/root/artifact_review` on the existing privacy branch, base `28f7b3c0b46f5fa360389a1986f51304302901d2`.
+Own only the ordinary default-browser post-send persistence cases and bounded-return
+fixture isolation. Preserve actual IndexedDB/mirror unknown-state assertions, every
+no-send/duplicate-blocking assertion and all seeded scheduling cases unchanged.
+Drain retained fixture outcomes through actual successful persistence after restoring
+the local synthetic fault; do not reset or weaken production retention. Run named
+ordinary affected cases only, with no new seeded/fuzz/mutation campaign. Root owns the
+separate policy-lock continuation and will adopt this reviewed compatibility patch.
+
+## Account/vault presentation revocation local result — 2026-11-26 UTC
+
+Worker `/root/artifact_review`, branch `finish/privacy-revocation-core-20261126`.
+Runtime `28f7b3c0b46f5fa360389a1986f51304302901d2`, tree
+`f37b883abaa3e447555ccef664accd4d117ef2f8`, retains canonical idle/utility candidate `4af78c8c` and the
+independent 21-case concealment delegation by normal merges. Only additive claims
+conflicted. `/root/help_review` approved exact source, assertions and composition.
+
+Final ordinary qualification passed 1,011/1,011 cases in 61 fixtures, changed-file
+strict lint, dependency builds, full/lean web TypeScript/build/artifact scans, four
+unchanged reachability checks and catalogs (0 errors; 874 fallback warnings). Root
+then identified fourteen journal fixture failures in its policy integration run;
+fixture-only `994be97cfb8fc28237b0f99648ca818758129498` preserves raw durable unknown
+state, distinguishes the returned overlay and finishes actual persistence between
+fixtures. Root independently approved that exact repair; 14/14 named ordinary cases,
+typed lint and final full web TypeScript passed. Its remaining 128 cases were not run.
+
+See `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md` for source pins,
+initial failures, corrections and remaining gates. Global/manual masking and older
+selected-seller foundations are not included. No dependency/workflow/contract/chain
+expansion, excluded-product activation, live transaction or remote mutation occurred.
+Root owns the reviewed #689 fixture follow-on, fresh combined hosted/coverage/browser
+gates, final evidence review, cooperative lock and integration. #528/#604 stay separate.
+
+## Pages expiry clock-origin fixture correction — 2026-11-26
+
+- Worker: `/root/help_review`; branch: `fix/pages-expiry-clock-origin-20261126`.
+- Base: canonical PR #689 head `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5`.
+  Root explicitly handed off this remaining hosted Pages failure; the prior idle
+  fixture worker is assisting read-only and the privacy worker owns separate paths.
+- Owns: `apps/web/e2e/pages-devnet.spec.ts`, this additive claim/results entry and
+  `docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`.
+- Evidence: Pages run `45741328280`, job `139646779828`, tested merge
+  `11fd6dcb3fa6f041d7eccccdcc1a153f4b58fc03` (this head into main `84b80260`).
+  Sixteen cases passed; expiry stopped at the Send click after the clock jump,
+  with pointer interception followed by a detached button. The final expiry
+  assertion was not reached. Both mocked browser profiles now pass the expiry
+  case and all fourteen idle cases (full 182 passed / 2 skipped; lean 170 / 4).
+- Acceptance: diagnose from actual hosted logs and exact source; correct only the
+  expiry fixture's clock setup, preserve every current assertion, clock jump,
+  timeout, wallet disclosure and idle case, and add a clock-origin assertion if
+  needed to distinguish wall-clock expiry from a fixture-created monotonic rollback.
+  No runtime, dependency, workflow, manifest, contract or excluded-product change.
+- Qualification: bounded local clock diagnostics, exact-file typed lint, web
+  typecheck, browser-case collection, source preservation and secret/whitespace
+  checks. The local browser is unavailable; do not reinstall or probe it. Actual
+  corrected-source browser qualification requires fresh hosted CI. Root owns
+  independent review and publication; this worker will not publish or merge.
+
+### Pages clock-origin fixture result — 2026-11-26
+
+Reviewed source `cb2e5c5ce81b895817ca8da3b1590f2bf04f46a1` and normal current-main
+composition `97f026a7fe92062e97e86ab5a8ae633377cf0b64` share tree
+`ef5f6462918ca57f50d5b6af4fc492d107565f91`. Only four Pages fixture lines were
+added; every original source line and all other fixtures are retained. Web
+TypeScript, exact-file typed lint, collection of 17 Pages and 14 idle cases,
+preservation, secret and whitespace checks completed with zero exits. A bounded
+actual-Playwright clock diagnostic confirmed the monotonic-origin mechanism; it
+did not execute the browser. Root independently approved the source. See
+`docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`. Final evidence review
+and fresh corrected-source hosted CI remain required.
+
+### Account privacy final dependency composition — 2026-11-26 UTC
+
+Normal merge `f451c6206f2e0434ec8386b6ca1602a3c82ed969`, tree
+`1f88c12e9247d692ec9d9724892937b1ad0c72b3`, adopts canonical corrected idle #689
+`0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff`. All current ownership text and the 38
+incoming lines are preserved, and both incoming non-log blobs are exact. Approved
+privacy runtime remains unchanged from 28f; only the reviewed four-line Pages fixture
+and its evidence are added. Fresh combined hosted gates remain the coordinator's work.
+
+## Policy journal completion qualification — 2026-11-26 UTC
+
+- Worker: chatgpt-8812-branch-completion, branch `finish/policy-journal-lock-20261125-8812`.
+- Independently approved runtime/default-manager repair: `3c9835afe838a710101ce66eb23a7e492530d328`. Final source composition `f79117395fe04098d1aebd09a36fdacefb955212`, tree `2c3956b95d4bae5fbe0726a2803a7c359737910b`, normally adopts canonical privacy `f8145c1c` and corrected idle `0ae8a9d1`.
+- #528 and #541 whole legitimate donor ancestry retained; current disclosure, frozen arguments, authoritative transaction journal and retained-hash behavior preserved. All current browser suite lines retained.
+- Initial broad check: 314 passes, 14 fixture failures; reviewed privacy compatibility repair994be97 adopted. Final selected policy/journal follow-up: 26 passes, 128 unrelated cases unselected. Default-manager regression failed before correction and passed afterward.
+- Final full web typecheck, changed-file typed lint, full/lean production builds and 20/18-file postbuild scans passed. Unchanged reachability gate4/4; two browser cases collected only. Secret and whitespace checks passed.
+- Source and composition independently approved. Final evidence handoff: `docs/handoffs/POLICY_JOURNAL_COMPLETION_20261125_8812.md`; narrow final evidence review and fresh hosted full/lean/Pages qualification remain required before cooperative-lock integration. No release, deployment or live transaction.
+
+
+## Policy dependency qualification follow-up — 2026-11-26
+
+Worker `/root`, branch `finish/policy-journal-lock-20261125-8812`, canonical base
+`c6f15cfeddaa508c9df646d336ae1b071b3f5b69`. Own additive ledger/handoff updates
+and normal adoption of corrected canonical privacy #691
+`6b4bbe17b436344b05d2942ccb0633de43e43fa0`. Preserve every approved policy runtime
+and unit-test blob and the complete appended #541 browser case while adopting
+all six reviewed privacy fixtures. Require independent exact-composition review
+and fresh hosted gates before cooperative-lock integration. No new runtime,
+dependency, contract, workflow, timeout or gate change.
+
+
+## Account privacy / idle combined qualification — coordinator, 2026-11-26
+
+- Worker: `/root`, session `8812`; branch `fix/account-privacy-qualification-20261126-8812`.
+- Base: canonical #691 `f8145c1cb8d806f1d8b134c159eb00f595e6769a`, which already contains #689 `0ae8a9d1` and main `1bea3df3`.
+- Owned paths: additive coordinator ledger and `docs/handoffs/ACCOUNT_PRIVACY_BROWSER_QUALIFICATION_20261126.md`; compose only independently reviewed TagArchive and owner-history browser fixture commits on their existing owners' source pins.
+- Acceptance: preserve the recovery-only idle model, owner/chain history concealment, real wallet disclosure, original duplicate/no-extra-send/recovery assertions and the Pages monotonic clock correction. No runtime, dependency, workflow, timeout or release gate change is authorized by this composition claim.
+- Qualification: review exact combined blobs and donor ancestry, use the workers' bounded test/lint/type results, then publish a nonforce #691 follow-up and require fresh actual-composition hosted checks. #689 is integrated only through a green combined #691, never claimed independently green. Root owns publication and cooperative-lock integration; original mixed source refs remain unchanged.
+
+## Tag archive idle suspension fixture correction — 2026-11-26 (8812)
+
+- Worker: `/root/branch_triage`; isolated branch `fix/tag-archive-idle-fixture-20261126`.
+- Base: canonical privacy #691 `f8145c1cb8d806f1d8b134c159eb00f595e6769a`.
+- Root handed off hosted #689 web job `139653073679`: C-R11 expects the tag archive
+  form after idle, while the current session is correctly suspended for backup-only
+  recovery. Own only `apps/web/src/components/TagArchive.test.tsx`, this additive
+  claim/result and `docs/handoffs/TAG_ARCHIVE_IDLE_FIXTURE_20261126.md`.
+- Preserve every existing passphrase value/attribute assertion, sole-copy retention,
+  backup-only restrictions and current active-session controls. Add explicit normal
+  restoration before assertions that require the active archive form; no runtime,
+  dependency, workflow, contract, timeout or security-assertion weakening.
+- Qualification: exact hosted-log/source inspection, independent locked install,
+  bounded ordinary fixture plus web typecheck/typed lint. No browser, fuzz, mutation
+  or exploitation campaign. Root independently reviews and integrates the pin with
+  its separate #691 browser-fixture correction; no publication by this worker.
+
+TagArchive local result: fixture source `d012ac99f2b6e94ca6ff1a3ec46ac4b5c30fb497`
+retains every original assertion and all other cases, with no runtime changes.
+The whole ordinary fixture passed 9/9; exact-file typed lint and full web TypeScript
+both exited 0. The existing one-minute idle and 61-second advance are unchanged.
+Root independently approved the exact fixture source with no finding. See
+`docs/handoffs/TAG_ARCHIVE_IDLE_FIXTURE_20261126.md`. Root owns combined #691
+qualification and integration; no remote mutation occurred here.
+
+## Account-scoped history browser fixtures — 2026-11-26
+
+- Worker: `/root/help_review`; branch: `fix/account-history-browser-fixtures-20261126-8812`.
+- Base: canonical PR #691 head `f8145c1cb8d806f1d8b134c159eb00f595e6769a`.
+  Root explicitly delegates the two existing history/reconnect browser cases;
+  root's additive #541 policy case remains on the separate #692 branch.
+- Owns: the two affected cases and narrowly required fixture helpers in
+  `apps/web/e2e/flows.spec.ts`, this additive claim/results entry and
+  `docs/handoffs/ACCOUNT_HISTORY_BROWSER_QUALIFICATION_20261126.md`.
+- Evidence: source inspection found history assertions after account/session
+  replacement or reload without the newly required matching account/network
+  recovery, plus an invoice continuation after the private capability was cleared.
+  Original #691 hosted run `45743729535` remains in progress at claim time;
+  no hosted failure or corrected browser pass is asserted before logs are available.
+- Acceptance: assert concealed history before explicit matching-owner recovery
+  through current wallet disclosures, explicitly reopen the saved invoice for a
+  retry, and retain durable hashes, receipt binding, cross-account duplicate
+  refusal, confirmed clear, and every no-extra-send assertion and timeout.
+  No production, dependency, workflow, contract, chain or excluded-product change.
+- Qualification: exact-file typed lint, web typecheck, browser-case collection,
+  original-assertion preservation and secret/whitespace checks. No browser install
+  or launch locally; fresh hosted qualification and independent root review are
+  required. This worker will not publish or merge.
+
+### Owner-scoped devnet fixture extension — 2026-11-26
+
+Root additionally delegates the same source-proven post-reload history assumptions
+in `apps/web/e2e/devnet-journey.spec.ts` (submitted and pending reload cases) and
+`apps/web/e2e/pages-devnet.spec.ts` (native payment reload case). Extend ownership
+only to those existing cases and their narrow local recovery helpers. Conceal
+history until real matching-owner/network recovery; preserve all nonce, balance,
+hash, receipt, duplicate-refusal and no-extra-send assertions, the exact #689
+four-line clock-origin correction, and all fourteen idle cases. These additional
+fixture paths have no production changes. Qualify their typed lint/typecheck and
+case collection; actual browser execution remains a fresh hosted gate.
+
+### Silent wallet-recheck browser notice — 2026-11-26
+
+Root additionally delegates the existing devnet wrong-chain/final-send case after
+actual job `139654655573` failed its old network-only message assertion. Source
+inspection confirms `recheckWallet` revokes the wallet before throwing, and Pay
+retains the intentional public account/network/provider-change cause notice while
+dropping stale operation state. Both existing plain-invoice silent network/account
+component regressions passed (2 selected, 26 unselected) before any fixture edit.
+Own only that case's obsolete notice assertion and added revocation assertions;
+retain its chain change, no-send, empty-journal, nonce checks and all timeouts.
+No production correction is needed or authorized by this finding.
+
+### Account-history browser fixture local result — 2026-11-26
+
+Fixture source `36917b8920cd6ac478b2efaf15fd4195fc91a6f7`, tree
+`5a9a89efc8f6bf56424921c166c974d466054788`, changes three e2e files only.
+The independently reviewed history correction `0305cd2c` is retained; the only
+additional assertion replacement follows the proven silent-recheck cause notice.
+All original no-send, durable-outcome, receipt, nonce, balance and timeout checks
+remain, with stronger concealment/revocation assertions and real wallet disclosure.
+Web typecheck, affected-file typed lint, secret/whitespace checks and collection
+completed with zero exits: full flows12 + idle14, lean flows11, devnet3, Pages17.
+Two existing silent-mismatch component cases passed; 26 others were unselected.
+No browser bodies ran locally. Actual original #691 hosted failures and the
+combined #689/#691 dependency plan are recorded in
+`docs/handoffs/ACCOUNT_HISTORY_BROWSER_QUALIFICATION_20261126.md`. Root owns final
+independent review, the separate TagArchive composition, fresh hosted qualification
+and integration. No runtime, dependency, workflow, contract or chain change.
+
+## Wallet disclosure/discovery qualification fixtures — 2026-11-26
+
+- Worker: `/root/help_review`, delegated by root on coordinator branch
+  `fix/account-privacy-qualification-20261126-8812`; composed base
+  `ea9ddeecc2e4ab1dca56a4bf467747c67235b0e7`.
+- Owns: `apps/web/src/lib/walletDisclosure.callsites.test.ts`,
+  `apps/web/src/lib/walletDiscovery.hardening.test.ts`, additive results here and
+  the already-claimed coordinator handoff. Runtime stays unchanged.
+- Actual #691 web job `139655022034` reported 4 failures, 4,053 passes, 2 expected
+  failures and 1 skip. The composed TagArchive donor covers one failure. The other
+  three are the old three-file connection inventory, its literal-only disclosure
+  spelling check, and the exact discovery object missing `requireLifecycleEvents`.
+- Source confirms the fourth call in WalletAttempts passes its actual disclosure
+  hook by shorthand; EIP-6963 metadata deliberately requires lifecycle events.
+  Preserve exhaustive four-file enumeration and require a real hook-backed final
+  disclosure option, including the reviewed shorthand. Preserve exact metadata
+  equality and all oversized-input limits; add only the required lifecycle field.
+- Qualification: bounded source-gate and named metadata cases, affected-file typed
+  lint, web typecheck and final composition review. No browser, generated/mutation
+  campaign, production change, remote mutation or integration by this worker.
+
+### Combined account privacy / idle qualification result — 2026-11-26
+
+Root delegated coordinator review and the newly observed wallet-test reconciliation
+to `/root/help_review`. Source `ed5ea96e17333f5ec71380882ce56abb753362a3`, tree
+`3be592cc3f82a713aa3c93d10041c57a9162b3cc`, preserves both normal donor ancestries,
+all four exact prior fixture blobs, both handoffs and the complete ownership history.
+Independent TagArchive review found no issue; all 53 original assertion/idle/timeout
+lines remain. Runtime/configuration, every idle case and the Pages clock case are exact.
+The two additional wallet tests preserve exhaustive four-file consent inventory,
+hook-backed options, exact metadata equality and bounds. The local baseline failed
+3 selected cases; the corrected selection passed 8, with 30 unselected. Typed lint
+and full web TypeScript completed exit 0. Root independently approved that exact
+follow-on. Actual hosted failures, donor results, no-local-browser limits and fresh
+combined #691 requirements are recorded in
+`docs/handoffs/ACCOUNT_PRIVACY_BROWSER_QUALIFICATION_20261126.md`. No production,
+dependency, workflow, contract or chain change, remote mutation or integration occurred.
+
+Policy dependency adoption result: normal source composition `0cfe4e3c` keeps
+the approved runtime/unit blobs and complete policy browser case, while adopting
+all corrected #691 fixtures. Only additive ownership text required reconciliation.
+Fresh exact-composition hosted qualification and the integration lock remain
+required; no new local test run or browser execution is claimed.
+
+## Integration coordinator: #691 then #692 onto current main — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`, sole integration coordinator for #691 and #692 under the owner's integration instruction.
+- Branches: `claude/integrate-691-20261126` = #691 head `6b4bbe17b436344b05d2942ccb0633de43e43fa0` (contains corrected #689 `0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff` and #690) merged with main `a9d2a033` (#693 `0afab048`, #694); `claude/integrate-692-20261126` = #692 head `c7b9badcfaff027e9847f65d10f021111809c48e` merged with the #691 integration head. Source refs of #689/#691/#692 and all donor refs stay unchanged; the older #689 intermediate is not merged separately.
+- Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
+- Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
+- Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.

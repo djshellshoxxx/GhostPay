@@ -3,7 +3,7 @@ import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { RETENTION_KEY } from '../lib/metadataRetention';
-import { clearSession, getSessionPublic } from '../lib/session';
+import { clearSession, getSessionPublic, isSessionSuspended } from '../lib/session';
 import { generateWaivedSession } from '../test/keys';
 import { makeServices, renderApp } from '../test/render';
 
@@ -73,10 +73,34 @@ it('closes the preview on opted-in expiry, announces why, and keeps the form and
   expect({ ...localStorage }).toEqual(storedBefore);
 });
 
-it('does not expire anything while the preference is off', async () => {
+it('does not expire the preview while the preference is off and the user remains active', async () => {
   await createdInvoice();
-  vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 10 * 3_600_000);
+  const now = Date.now();
+  const clock = vi.spyOn(Date, 'now');
+  // This tests retention, so actual activity stays inside the independent fifteen-minute idle deadline.
+  act(() => {
+    for (let elapsed = 10 * 60_000; elapsed <= 10 * 3_600_000; elapsed += 10 * 60_000) {
+      clock.mockReturnValue(now + elapsed);
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift' }));
+    }
+  });
   act(() => { window.dispatchEvent(new Event('focus')); });
   expect(screen.getByLabelText('Link')).toBeTruthy();
   expect(screen.queryByText(EXPIRED)).toBeNull();
+  expect(isSessionSuspended()).toBe(false);
+});
+
+it('still revokes an idle invoice view when preview retention is off', async () => {
+  const fetchFn = vi.fn(() => Promise.reject(new Error('no network')));
+  await createdInvoice(fetchFn);
+  const storedBefore = { ...localStorage };
+  vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 10 * 3_600_000);
+  act(() => { window.dispatchEvent(new Event('focus')); });
+  expect(screen.queryByLabelText('Link')).toBeNull();
+  expect(screen.queryByDisplayValue('Retained editable draft')).toBeNull();
+  expect(screen.getByText('Session locked after inactivity')).toBeTruthy();
+  expect(isSessionSuspended()).toBe(true);
+  expect(screen.queryByText(EXPIRED)).toBeNull();
+  expect({ ...localStorage }).toEqual(storedBefore);
+  expect(fetchFn).not.toHaveBeenCalled();
 });

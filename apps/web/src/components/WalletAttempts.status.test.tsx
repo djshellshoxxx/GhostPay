@@ -6,6 +6,11 @@ import * as journal from '../lib/duplicateAttemptJournal';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt } from '../lib/duplicateAttemptJournal';
 import * as errors from '../lib/errors';
 import { mockRpc } from '../test/mockRpc';
+import { MockWallet } from '../test/mockWallet';
+import type { WalletSession } from '../lib/wallet';
+
+const owner: WalletSession = { account: `0x${'1'.repeat(40)}`, chainId: 1, wallet: { id: 'fixture', name: 'Fixture', kind: 'injected', provider: new MockWallet({ account: `0x${'1'.repeat(40)}`, chainId: 1 }) } };
+
 
 const outcome = vi.hoisted(() => ({ next: undefined as AttemptResolution | undefined }));
 vi.mock('../lib/attemptStatus', async (actual) => ({
@@ -44,7 +49,7 @@ async function statusFor(next: AttemptResolution): Promise<string> {
     migration = migrate();
     return migration;
   });
-  render(<WalletAttempts getRpc={() => Promise.resolve(mockRpc(1, () => { throw new Error('not used'); }))} />);
+  render(<WalletAttempts wallet={owner} getRpc={() => Promise.resolve(mockRpc(1, () => { throw new Error('not used'); }))} />);
   expect(migration).toBeDefined();
   await act(async () => { await migration; });
   fireEvent.click(await screen.findByRole('button', { name: 'Check status on my RPC' }));
@@ -100,7 +105,7 @@ it.each(['resolve', 'reject'] as const)('settles a delayed migration %s after th
   const migrate = vi.spyOn(journal, 'migrateBrowserAttempts').mockReturnValueOnce(migration);
   const captureError = vi.spyOn(errors, 'captureUserMessage');
   const getRpc = vi.fn(() => Promise.resolve(mockRpc(1, () => { throw new Error('not used'); })));
-  const view = render(<WalletAttempts getRpc={getRpc} />);
+  const view = render(<WalletAttempts wallet={owner} getRpc={getRpc} />);
   expect(migrate).toHaveBeenCalledOnce();
   view.unmount();
 

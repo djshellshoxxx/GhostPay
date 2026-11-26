@@ -224,7 +224,8 @@ th, td { text-align: start; vertical-align: top; padding: 8px 12px; border-top: 
 .browser-checks-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; min-width: 0; }
 .browser-checks-list strong { font-weight: 600; }
 .browser-checks-list strong[data-result='fail'] { color: var(--danger); }
-.browser-checks-list strong[data-result='warn'] { color: var(--warn-border); }
+.browser-checks-list strong[data-result='unavailable'] { color: var(--warn-border); }
+.browser-checks-explain { flex-basis: 100%; max-width: 60ch; margin: 0; overflow-wrap: anywhere; font-weight: 400; }
 .browser-checks-list strong[data-result='pass'] { color: var(--ok); }
 .browser-checks-limits { max-width: 60ch; overflow-wrap: anywhere; font-weight: 400; }
 
