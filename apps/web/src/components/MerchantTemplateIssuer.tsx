@@ -6,6 +6,7 @@ import { formatUnits, fiatDecimals } from '../lib/format';
 import { buildMerchantTemplateInvoice, merchantTemplateAmount, merchantTemplateAssets } from '../lib/merchantTemplate';
 import { getSessionBackup, getSessionPublic, subscribeSession, subscribeSessionBackup, type SessionPublic } from '../lib/session';
 import { useServices } from '../lib/services';
+import { InvoiceMetadataChoice, DownloadInvoiceLink } from './InvoiceSharing';
 import { CopyButton, Field, Mono, Notice } from './Common';
 
 /** A local merchant authoring action. A payer profile never grants access to the matching signing key. */
@@ -19,6 +20,7 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
   const [tokenAmount, setTokenAmount] = useState('');
   const [amountRequest, setAmountRequest] = useState(props.requestedAmount ?? '');
   const [feePolicy, setFeePolicy] = useState<'seller_pays' | 'payer_pays'>('seller_pays');
+  const [minimalMetadata, setMinimalMetadata] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>();
   const [created, setCreated] = useState<{ readonly link: string; readonly session: SessionPublic } | undefined>();
@@ -39,7 +41,7 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
     void buildMerchantTemplateInvoice({
       profile: props.profile, templateId: props.templateId,
       ...(amountRequest === '' ? {} : { requestedAmount: amountRequest }),
-      chainId: selected.chainId, token: selected.token, tokenAmount, feePolicy,
+      chainId: selected.chainId, token: selected.token, tokenAmount, feePolicy, minimalMetadata,
       baseUrl: services.baseUrl(), nowSeconds: () => Math.floor(services.nowMs() / 1000),
       isCurrent: () => generation.current === revision && getSessionPublic() === captured,
     }).then((result) => {
@@ -76,11 +78,13 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
               <option value="seller_pays">{t('create.feePolicy.seller')}</option><option value="payer_pays">{t('create.feePolicy.payer')}</option>
             </select>}
           </Field>
+          <InvoiceMetadataChoice minimal={minimalMetadata} onChange={(minimal) => { invalidate(); setMinimalMetadata(minimal); }} />
           <button type="button" className="btn" disabled={busy || !backedUp || effectiveAmount === undefined || tokenAmount === ''} onClick={issue}>{t('merchantProfile.issue.action')}</button>
         </>}
         {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
         {created !== undefined && created.session === session && <>
           <Field label={t('merchantProfile.issue.link')}>{(id) => <textarea id={id} readOnly value={created.link} />}</Field>
+          <DownloadInvoiceLink link={created.link} />
           <CopyButton text={created.link} label={t('merchantProfile.issue.copy')} />
         </>}
       </>}
