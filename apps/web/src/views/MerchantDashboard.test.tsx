@@ -157,6 +157,8 @@ it('requires a fresh preview if an expiry changes the selected status before app
   expect(downloaded).not.toHaveBeenCalled();
   expect(readState).toHaveBeenCalledTimes(1);
   expect(screen.getByText('No records match this view.')).toBeTruthy();
+  expect(screen.getByRole('alert').textContent).toBe(
+    'The export selection changed before download, so no file was saved. Preview the export again.');
 });
 
 it.each(['opening', 'ready', 'refreshing', 'error'] as const)(
@@ -321,4 +323,69 @@ it('withholds the payment history file when the encrypted ledger changed after p
   expect(await screen.findByText('No payment observations are saved in this vault for this network.')).toBeTruthy();
   expect(downloaded).not.toHaveBeenCalled();
   expect(readState).toHaveBeenCalledTimes(3);
+});
+
+it('keeps a merchant typing in Search when another tab changes the ledger', async () => {
+  generateSession();
+  const invoices = [{ invoiceDigest: '0x' + 'a'.repeat(64), chainId: 84532, asset: 'native', expectedNetMinorUnits: '1', expiresAt: 4_000_000_000 }];
+  openVault.mockResolvedValue({ lock: vi.fn(), readState: () => Promise.resolve({ invoices, records: [], receipts: [], readOnly: false }) });
+  const user = userEvent.setup();
+  renderWith(<DashboardApp />);
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  await user.selectOptions(await screen.findByLabelText('Network'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  await user.type(await screen.findByRole('searchbox'), '0xa');
+  await settle(() => { window.dispatchEvent(new Event(RECONCILIATION_VAULT_CHANGE_EVENT)); });
+  const search = await screen.findByRole<HTMLInputElement>('searchbox');
+  await waitFor(() => { expect(document.activeElement).toBe(search); });
+  expect(search.value).toBe('0xa');
+  expect(search.selectionStart).toBe(3);
+  await user.type(search, 'a');
+  expect(search.value).toBe('0xaa');
+});
+
+it('moves focus to the announced range when a pager button disables itself', async () => {
+  generateSession();
+  const invoices = Array.from({ length: 27 }, (_, index) => ({
+    invoiceDigest: '0x' + index.toString(16).padStart(64, '0'),
+    chainId: 84532, asset: 'native', expectedNetMinorUnits: '1', expiresAt: 4_000_000_000 + index,
+  }));
+  openVault.mockResolvedValue({ lock: vi.fn(), readState: () => Promise.resolve({ invoices, records: [], receipts: [], readOnly: false }) });
+  const user = userEvent.setup();
+  renderWith(<DashboardApp />);
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  await user.selectOptions(await screen.findByLabelText('Network'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  const next = await screen.findByRole('button', { name: 'Next page' });
+  next.focus();
+  await user.keyboard('{Enter}');
+  expect((next as HTMLButtonElement).disabled).toBe(true);
+  expect(document.activeElement?.textContent).toBe('Showing 26–27 of 27');
+  const previous = screen.getByRole('button', { name: 'Previous page' });
+  previous.focus();
+  await user.keyboard('{Enter}');
+  expect(document.activeElement?.textContent).toBe('Showing 1–25 of 27');
+});
+
+it('tells the merchant when a reviewed export was withdrawn and finds payments regardless of hex case', async () => {
+  generateSession();
+  const downloaded = vi.spyOn(downloads, 'downloadText').mockImplementation(() => undefined);
+  const ledger = { receipts: [], readOnly: false, invoices: [], records: [scopedRecord({ transactionHash: '0x' + 'ab'.repeat(32) })] };
+  const readState = vi.fn().mockResolvedValue(ledger);
+  openVault.mockResolvedValue({ readState, lock: vi.fn() });
+  const user = userEvent.setup();
+  renderWith(<DashboardApp />);
+  await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
+  await user.selectOptions(await screen.findByLabelText('Network'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Open encrypted dashboard' }));
+  const filters = within(await screen.findByRole('group', { name: 'Browse records' }));
+  await user.selectOptions(filters.getByLabelText('Record type'), 'payments');
+  await user.type(filters.getByRole('searchbox'), 'ABAB');
+  expect(screen.getByText('Showing 1–1 of 1')).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Preview payment export' }));
+  readState.mockResolvedValue({ ...ledger, records: [] });
+  await user.click(screen.getByRole('button', { name: 'Agree and download' }));
+  expect((await screen.findByRole('alert')).textContent).toBe(
+    'The export selection changed before download, so no file was saved. Preview the export again.');
+  expect(downloaded).not.toHaveBeenCalled();
 });

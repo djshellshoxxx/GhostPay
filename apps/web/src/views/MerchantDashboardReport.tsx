@@ -64,7 +64,7 @@ function StateCounts<S extends InvoiceState | ObservationState>({ title, states,
  * Consent-gated transaction history CSV. The selection is captured at preview; the file is released only after a
  * fresh authenticated ledger read still matches the reviewed one. Remount (via key) revokes a pending preview.
  */
-export function PaymentHistoryExport({ payments, chain, fingerprint, ledgerFingerprint, openLedger, stillCurrent, onStale }: {
+export function PaymentHistoryExport({ payments, chain, fingerprint, ledgerFingerprint, openLedger, stillCurrent, onStale, onPreview }: {
   readonly payments: readonly LedgerObservation[];
   readonly chain: number;
   readonly fingerprint: string;
@@ -72,6 +72,7 @@ export function PaymentHistoryExport({ payments, chain, fingerprint, ledgerFinge
   readonly openLedger: () => Promise<LedgerReader>;
   readonly stillCurrent: () => boolean;
   readonly onStale: () => void;
+  readonly onPreview?: () => void;
 }): ReactNode {
   const t: Translate = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [preview, setPreview] = useState<readonly LedgerObservation[]>();
@@ -90,6 +91,7 @@ export function PaymentHistoryExport({ payments, chain, fingerprint, ledgerFinge
     <button ref={previewButton} className="btn" type="button" disabled={payments.length === 0} onClick={() => {
       attempt.current++;
       setFailed(false);
+      onPreview?.();
       setPreview([...payments]);
     }}>{t('dashboard.paymentPreview')}</button>
     {preview !== undefined && <div className="dashboard-actions">

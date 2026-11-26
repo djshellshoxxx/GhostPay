@@ -89,6 +89,8 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const [format, setFormat] = useState<DashboardExportFormat>('csv');
   const [preview, setPreview] = useState<ExportConsent>();
   const [exportError, setExportError] = useState(false);
+  // Set when GhostPay withdrew a reviewed export (expiry boundary or ledger change) so the user is told, not left guessing.
+  const [exportNotice, setExportNotice] = useState(false);
   const [clock, setClock] = useState(Date.now);
   const [exporter] = useState(() => new DashboardExportCoordinator());
   const active = useRef<AbortController | undefined>(undefined);
@@ -96,6 +98,10 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const revision = useRef(0);
   const exportRevision = useRef(0);
   const focusOrigin = useRef<Element | null>(null);
+  /** A filter control that had focus when a background refresh replaced the results; it gets focus back when ready. */
+  const restoreControl = useRef<string | null>(null);
+  const pageStatus = useRef<HTMLSpanElement>(null);
+  const focusPageStatus = useRef(false);
   const results = useRef<HTMLDivElement>(null);
   const readStatus = useRef<HTMLParagraphElement>(null);
   const overview = useRef<HTMLHeadingElement>(null);
@@ -105,6 +111,20 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   const previewControls = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
+    const control = restoreControl.current;
+    if (control !== null && viewState !== 'loading' && viewState !== 'refreshing') {
+      restoreControl.current = null;
+      // Only reclaim focus nobody else took while the encrypted read was in flight.
+      if (document.activeElement === document.body || document.activeElement === null) {
+        const target = viewState === 'ready'
+          ? results.current?.querySelector<HTMLElement>(`[data-dashboard-control="${control}"]`)
+          : viewState === 'error' ? retry.current : null;
+        target?.focus();
+        if (target instanceof HTMLInputElement && (target.type === 'search' || target.type === 'text')) {
+          target.setSelectionRange(target.value.length, target.value.length);
+        }
+      }
+    }
     const origin = focusOrigin.current;
     focusOrigin.current = null;
     if (origin === null) return;
@@ -116,13 +136,23 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     } else if (viewState === 'ready') overview.current?.focus();
     else if (viewState === 'error') retry.current?.focus();
   }, [viewState]);
+  useLayoutEffect(() => {
+    // A pager button can disable itself on the last page; keep focus on the announced range instead of the body.
+    if (!focusPageStatus.current) return;
+    focusPageStatus.current = false;
+    pageStatus.current?.focus();
+  }, [page]);
   const seller = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
 
   const load = useCallback((reason: 'open' | 'refresh' | 'background'): void => {
     if (getSessionPublic() !== session) return;
     const focused = document.activeElement;
     const ownsFocus = results.current?.contains(focused) || focused === readStatus.current || focused === retry.current;
-    focusOrigin.current = reason !== 'background' || ownsFocus ? focused : null;
+    // Someone typing in a filter when another tab changes the ledger keeps their place instead of being moved away.
+    const control = reason === 'background' && focused instanceof HTMLElement && results.current?.contains(focused)
+      ? focused.dataset['dashboardControl'] : undefined;
+    restoreControl.current = control ?? null;
+    focusOrigin.current = control !== undefined ? null : reason !== 'background' || ownsFocus ? focused : null;
     active.current?.abort();
     const operation = new AbortController();
     active.current = operation;
@@ -176,6 +206,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       setData(undefined);
       setPreview(undefined);
       setExportError(false);
+      setExportNotice(false);
       setQuery('');
       setPage(0);
       setViewState('locked');
@@ -203,9 +234,10 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     const update = (): void => {
       const time = Date.now();
       if (preview !== undefined && expiryChanged(data, status, preview.selectedAt, time)) {
-        if (previewControls.current?.contains(document.activeElement)) overview.current?.focus();
+        if (previewControls.current?.contains(document.activeElement)) previewButton.current?.focus();
         exporter.cancel();
         setPreview(undefined);
+        setExportNotice(true);
       }
       setClock(time);
     };
@@ -219,6 +251,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     exporter.cancel();
     setPreview(undefined);
     setExportError(false);
+    setExportNotice(false);
     setPage(0);
     update();
   };
@@ -267,7 +300,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     const trusted = state !== 'ambiguous';
     return inRange(trusted ? observationTime(record) : undefined) && (asset === '' || (trusted && assetId(record.asset) === asset)) &&
       (kind !== 'payments' || status === '' || state === status) &&
-      (record.transactionHash.includes(needle) || invoiceRefs.some((ref) => ref.includes(needle)));
+      (record.transactionHash.toLowerCase().includes(needle) || invoiceRefs.some((ref) => ref.toLowerCase().includes(needle)));
   }).sort((a, b) => {
     const first = a.state === 'ambiguous' ? undefined : observationTime(a.record);
     const second = b.state === 'ambiguous' ? undefined : observationTime(b.record);
@@ -312,25 +345,25 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
     <fieldset>
       <legend>{t('dashboard.browse')}</legend>
       <div className="dashboard-fields">
-        <Field label={t('dashboard.list')}>{(id) => <select id={id} value={kind} onChange={(e) => {
+        <Field label={t('dashboard.list')}>{(id) => <select id={id} data-dashboard-control="kind" value={kind} onChange={(e) => {
           const value = e.target.value;
           change(() => { setKind(value === 'payments' ? 'payments' : 'invoices'); setStatus(''); });
         }}><option value="invoices">{t('dashboard.invoices')}</option><option value="payments">{t('dashboard.payments')}</option></select>}</Field>
-        <Field label={t('dashboard.search')}>{(id) => <input ref={searchInput} id={id} type="search" autoComplete="off" maxLength={256} value={query} onChange={(e) => { change(() => { setQuery(e.target.value); }); }} />}</Field>
-        <Field label={t('dashboard.status')}>{(id) => <select id={id} value={status} onChange={(e) => { change(() => { setStatus(e.target.value); }); }}>
+        <Field label={t('dashboard.search')}>{(id) => <input ref={searchInput} id={id} data-dashboard-control="search" type="search" autoComplete="off" maxLength={256} value={query} onChange={(e) => { change(() => { setQuery(e.target.value); }); }} />}</Field>
+        <Field label={t('dashboard.status')}>{(id) => <select id={id} data-dashboard-control="status" value={status} onChange={(e) => { change(() => { setStatus(e.target.value); }); }}>
           <option value="">{t('dashboard.all')}</option>
           {statuses.map((item) =>
             <option key={item} value={item}>{t(STATUS[item])}</option>)}
         </select>}</Field>
-        <Field label={t('dashboard.asset')}>{(id) => <select id={id} value={asset} onChange={(e) => { change(() => { setAsset(e.target.value); }); }}>
+        <Field label={t('dashboard.asset')}>{(id) => <select id={id} data-dashboard-control="asset" value={asset} onChange={(e) => { change(() => { setAsset(e.target.value); }); }}>
           <option value="">{t('dashboard.allAssets')}</option>
           {assetOptions.map((item) => <option key={item} value={item}>{item}</option>)}
         </select>}</Field>
-        <Field label={t('dashboard.sort')}>{(id) => <select id={id} value={newest ? 'newest' : 'oldest'} onChange={(e) => { change(() => { setNewest(e.target.value === 'newest'); }); }}>
+        <Field label={t('dashboard.sort')}>{(id) => <select id={id} data-dashboard-control="sort" value={newest ? 'newest' : 'oldest'} onChange={(e) => { change(() => { setNewest(e.target.value === 'newest'); }); }}>
           <option value="newest">{t('dashboard.newest')}</option><option value="oldest">{t('dashboard.oldest')}</option>
         </select>}</Field>
-        <Field label={t('dashboard.from')}>{(id) => <input id={id} type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={from} onChange={(e) => { change(() => { setFrom(e.target.value); }); }} />}</Field>
-        <Field label={t('dashboard.through')}>{(id) => <input id={id} type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={through} onChange={(e) => { change(() => { setThrough(e.target.value); }); }} />}</Field>
+        <Field label={t('dashboard.from')}>{(id) => <input id={id} data-dashboard-control="from" type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={from} onChange={(e) => { change(() => { setFrom(e.target.value); }); }} />}</Field>
+        <Field label={t('dashboard.through')}>{(id) => <input id={id} data-dashboard-control="through" type="date" aria-invalid={range === undefined} aria-describedby={dateDescription} value={through} onChange={(e) => { change(() => { setThrough(e.target.value); }); }} />}</Field>
       </div>
       <div className="dashboard-filter-footer">
         <p className="hint" id="dashboard-date-hint">{t(kind === 'invoices' ? 'dashboard.byExpiry' : 'dashboard.byInclusion')}</p>
@@ -364,21 +397,22 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
           </li>)}
         </ul>
         <div className="dashboard-actions">
-          <button className="btn" type="button" disabled={offset === 0} onClick={() => { setPage(offset / PAGE_SIZE - 1); }}>{t('dashboard.previous')}</button>
-          <span role="status">{t('dashboard.page', { first: offset + 1, last: offset + pageRows.length, total: count })}</span>
-          <button className="btn" type="button" disabled={offset + PAGE_SIZE >= count} onClick={() => { setPage(offset / PAGE_SIZE + 1); }}>{t('dashboard.next')}</button>
+          <button className="btn" type="button" disabled={offset === 0} onClick={() => { focusPageStatus.current = true; setPage(offset / PAGE_SIZE - 1); }}>{t('dashboard.previous')}</button>
+          <span ref={pageStatus} tabIndex={-1} role="status">{t('dashboard.page', { first: offset + 1, last: offset + pageRows.length, total: count })}</span>
+          <button className="btn" type="button" disabled={offset + PAGE_SIZE >= count} onClick={() => { focusPageStatus.current = true; setPage(offset / PAGE_SIZE + 1); }}>{t('dashboard.next')}</button>
         </div>
       </>}
     {kind === 'invoices' && <section aria-labelledby="dashboard-export-title">
       <h3 id="dashboard-export-title">{t('dashboard.export')}</h3>
       <p>{t('dashboard.exportDisclosure')}</p>
-      <Field label={t('dashboard.format')}>{(id) => <select id={id} value={format} onChange={(e) => { change(() => { setFormat(e.target.value === 'json' ? 'json' : 'csv'); }); }}>
+      <Field label={t('dashboard.format')}>{(id) => <select id={id} data-dashboard-control="format" value={format} onChange={(e) => { change(() => { setFormat(e.target.value === 'json' ? 'json' : 'csv'); }); }}>
         <option value="csv">CSV</option><option value="json">JSON</option>
       </select>}</Field>
       <button ref={previewButton} className="btn" type="button" disabled={invoices.length === 0} onClick={() => {
         try {
           exportRevision.current++;
           setExportError(false);
+          setExportNotice(false);
           const consent = exporter.preview(data.projection, {
             invoiceRefs: invoices.map(({ row }) => row.invoiceRef), columns: EXPORT_COLUMNS, format,
           }, data.context);
@@ -400,6 +434,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
             if (expiryChanged(data, status, preview.selectedAt, time)) {
               exporter.cancel();
               setClock(time);
+              setExportNotice(true);
               return;
             }
             const file = exporter.approve(preview.preview, data.context);
@@ -413,7 +448,10 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
                   downloadText('ghostpay-invoices.' + preview.preview.format, file.content, file.mimeType);
                   released = true;
                 }, current);
-                if (!released && current()) load('background');
+                if (!released && current()) {
+                  load('background');
+                  setExportNotice(true);
+                }
               } catch {
                 if (current()) setExportError(true);
               }
@@ -429,7 +467,9 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       payments={payments} chain={chain} fingerprint={data.fingerprint} ledgerFingerprint={ledgerFingerprint}
       openLedger={() => createCurrentReconciliationVault(chain, seller)}
       stillCurrent={() => !data.context.signal.aborted && getSessionPublic() === session}
-      onStale={() => { load('background'); }} />}
+      onStale={() => { load('background'); setExportNotice(true); }}
+      onPreview={() => { setExportNotice(false); }} />}
+    {exportNotice && <p role="alert">{t('dashboard.exportChanged')}</p>}
   </div>;
 }
 
