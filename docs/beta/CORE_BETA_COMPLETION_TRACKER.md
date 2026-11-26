@@ -108,7 +108,7 @@ Covered: the scan client's claim-ledger rebuild after a reorg now has direct tes
 Areas the review found clean: invoice signing, digest and envelopes; tx build and guards; manifest verification; receipt binding; direct sweep; no plaintext secret persistence.
 
 Already recorded and still open:
-- L2-I4: fixed on branch `claude/vibrant-cori-scu18b` (2026-11-26): the manifest read-back before Pay, Sweep and Scan goes through the second RPC too and refuses on disagreement or an unusable second provider (`apps/web/src/lib/manifest.test.ts`, "two-provider manifest read-back (L2-I4)").
+- L2-I4: still open on main; fixed on branch `claude/vibrant-cori-scu18b` (862722f2 and the review follow-up, 2026-11-26), pending integration: the manifest read-back before Pay, Sweep and Scan goes through the second RPC too and refuses on disagreement or an unusable second provider (`apps/web/src/lib/manifest.test.ts`, "two-provider manifest read-back (L2-I4)").
 - Provider privacy disclosures (audit 17).
 - Parent #84 Sonar gate (PR #98 item 2).
 

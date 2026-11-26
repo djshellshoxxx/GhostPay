@@ -146,19 +146,22 @@ function nativeLog(metaAddress: string): RpcLog {
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string; nativePayment?: boolean; wrongTag?: boolean; secondPayment?: (stealthAddress: string) => void } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; secondaryCode?: Record<string, string>; unsigned?: boolean; vaultPass?: string; nativePayment?: boolean; wrongTag?: boolean; secondPayment?: (stealthAddress: string) => void } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   if (opts.vaultPass !== undefined) await saveEncryptedVault(opts.vaultPass, { N: 1 << 14 });
-  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.secondaryCode === undefined ? {} : { rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }), ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
   const mine = opts.nativePayment === true
     ? { log: nativeLog(pub.metaAddress) }
     : makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n, ...(opts.wrongTag === true ? { wrongTag: true } : {}) });
   // A second payment to the same keys, later in the range, so its one-time address is a known own address.
   const second = opts.secondPayment === undefined ? undefined : makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 60, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
   if (second !== undefined) opts.secondPayment?.(second.stealthAddress);
-  const rpc = chainWithLogs(84532, 100, second === undefined ? [mine.log] : [mine.log, second.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
+  const logs = second === undefined ? [mine.log] : [mine.log, second.log];
+  const rpc = chainWithLogs(84532, 100, logs, extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
+  // An optional independent second provider (L2-I4) with its own runtime-code table, answering the same chain data.
+  const rpc2 = opts.secondaryCode === undefined ? undefined : withManifestChain(chainWithLogs(84532, 100, logs, extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, {})), { code: opts.secondaryCode });
   const user = userEvent.setup();
-  renderApp(makeServices({ loadManifest: opts.unsigned === true ? (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) : loaded, createRpc: () => Promise.resolve(withManifestChain(rpc, { code: opts.code ?? FAKE_CODE })), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
+  renderApp(makeServices({ loadManifest: opts.unsigned === true ? (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) : loaded, createRpc: (_c, url) => Promise.resolve(rpc2 !== undefined && new URL(url).host === 'rpc2.test' ? rpc2 : withManifestChain(rpc, { code: opts.code ?? FAKE_CODE })), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
   await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
   await user.type(screen.getByLabelText('Start block'), '0');
@@ -280,6 +283,20 @@ describe('Sweep', () => {
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/do not match the deployment manifest/);
+    expect(raw.raw).toBeUndefined();
+  });
+
+  it('L2-I4: refuses to sign when the second RPC disagrees with the primary about the manifest', async () => {
+    const code2: Record<string, string> = { ...FAKE_CODE };
+    const raw: { raw?: string } = {};
+    const user = await toSweep({ raw, secondaryCode: code2 });
+    await screen.findByText('5 USDC');
+    // The second provider now reports different runtime code for every contract: the providers disagree.
+    for (const k of Object.keys(code2)) code2[k] = '0x00';
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/two RPC providers disagree about the contracts/);
     expect(raw.raw).toBeUndefined();
   });
 

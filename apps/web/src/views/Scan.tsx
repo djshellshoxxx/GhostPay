@@ -259,9 +259,14 @@ export function Scan(): ReactNode {
         // The manifest read-back goes through the second RPC too (L2-I4): both providers must agree before scanning.
         const checked = await verifyManifestState(manifest, rpc, rpc2 === undefined ? NO_SECONDARY : { kind: 'client', client: rpc2 }, { sleep: services.sleep });
         assertScopeCurrent();
+        // A route change during the read-back surfaces as SCAN_ROUTE_CHANGED, not as a provider failure.
+        assertScanPath();
         if (checked.status !== 'loaded') {
           const cause = checked.status === 'invalid' ? checked.cause : undefined;
-          setError(msg(cause === 'second-rpc-unavailable' ? 'scan.error.secondRpc' : cause === 'providers-disagree' ? 'scan.error.manifestDisagree' : 'scan.error.manifestMismatch'));
+          setError(msg(cause === 'second-rpc-unavailable' ? 'scan.error.secondRpc'
+            : cause === 'providers-disagree' ? 'scan.error.manifestDisagree'
+              : cause === 'rpc-unreadable' ? 'scan.error.manifestUnreadable'
+                : 'scan.error.manifestMismatch'));
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.

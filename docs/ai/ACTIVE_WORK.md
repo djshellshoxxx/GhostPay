@@ -3,12 +3,15 @@
 Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b` (stacked on the PR #720 commits), base main
 `e7e98109`. Source: audit 24 finding L2-I4 (deferred, Info) and docs/beta/CORE_BETA_COMPLETION_TRACKER.md:111; ranked
 first by an adversarial gap-analysis workflow on 2026-11-26. Owned paths: `apps/web/src/lib/manifest.ts` and its test,
-the manifest read-back call sites in `apps/web/src/views/{Pay,Sweep,Scan}.tsx`, removal of the dead `apps/web/src/lib/deployment.ts`
-(+ `deployment.test.ts`, the S3-01 block of `hardening.test.ts`), `apps/web/locales/*.json` keys `settings.rpc.secondary.hint`
-and `scan.error.manifestDisagree`, `apps/web/src/i18n/securityKeys.ts`, `apps/web/deployments/README.md` item 2,
-`apps/web/DEVIATIONS.md`, `docs/engineering/SECURITY_FINDINGS.md` (L2-I4 row), `docs/beta/CORE_BETA_COMPLETION_TRACKER.md:111`,
-this entry. Not touched: `packages/chain-adapters` (its `createReconciledClient` is reused as is), scan checkpoint code
-(open PRs #696, #723, #725 own `scanClient.ts`), settings schema.
+the manifest read-back call sites in `apps/web/src/views/{Pay,Sweep,Scan}.tsx` and their tests (`Pay.test.tsx`, `Sweep.test.tsx`,
+`Scan.test.tsx`, `Scan.privacy.test.tsx`), `apps/web/src/state.tsx` (doc comment), removal of the dead `apps/web/src/lib/deployment.ts`
+(+ `deployment.test.ts`, the S3-01 block of `hardening.test.ts`), `apps/web/locales/*.json` keys `settings.rpc.secondary.hint`,
+`scan.error.manifestDisagree`, `scan.error.manifestUnreadable` and `manifest.readback.*`, `apps/web/src/i18n/securityKeys.ts`,
+`apps/web/deployments/README.md` item 2, `apps/web/DEVIATIONS.md` item 26, `docs/engineering/SECURITY_FINDINGS.md` (L2-I4 row),
+`docs/beta/CORE_BETA_COMPLETION_TRACKER.md`, `docs/developer/architecture.md` (manifest bullet), `docs/pages/README.md` (RPC bullet),
+`docs/user/privacy-limits.md` (provider row), this entry. Overlap: open PRs #696 (`Scan.tsx`, `Scan.privacy.test.tsx`, `en.json`) and
+#723 (`Scan.tsx`, `Scan.test.tsx`) edit files touched here; reconcile at integration. Not touched: `packages/chain-adapters`
+(its `createReconciledClient` is reused as is), `scanClient.ts` and checkpoint code, settings schema, the generated audit-24 report.
 Acceptance: when Settings has a second RPC for the chain, Pay, Sweep and Scan confirm the deployment manifest through
 both providers (`eth_getCode`/`eth_call` reconciled) and refuse the flow when the providers disagree or the second one
 cannot be opened or read; with no second RPC the single-provider behaviour is unchanged; no silent downgrade to one

@@ -4,7 +4,7 @@ import { ed25519 } from '@noble/curves/ed25519.js';
 import { manifestSigningBytes, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
-import { loadBundledManifest, loadManifest, NO_SECONDARY, openSecondaryReadback, READBACK_REASONS, verifyManifestForFlow, verifyManifestState, type SecondaryReadback } from './manifest';
+import { loadBundledManifest, loadManifest, MANIFEST_READBACK_KEYS, NO_SECONDARY, openSecondaryReadback, READBACK_REASONS, verifyManifestForFlow, verifyManifestState, type SecondaryReadback } from './manifest';
 
 const ok = (body: string, status = 200): Promise<Response> => Promise.resolve(new Response(body, { status }));
 
@@ -176,14 +176,19 @@ describe('two-provider manifest read-back (L2-I4)', () => {
     expect(await verifyManifestState(state, good(), second(broken()), noSleep)).toEqual(expected);
     expect(await verifyManifestState(state, good(), second(good(1)), noSleep)).toEqual(expected);
   });
-  it('blames the chain, not the second provider, when the primary fails or both providers agree on a mismatch', async () => {
-    expect(causeOf(await verifyManifestState(state, broken(), second(good()), noSleep))).toBe('readback');
+  it('attributes a primary read failure to the RPC and an agreed mismatch to the chain, never to the second provider', async () => {
+    expect(causeOf(await verifyManifestState(state, broken(), second(good()), noSleep))).toBe('rpc-unreadable');
     expect(causeOf(await verifyManifestState(state, withManifestChain(broken(), WRONG_FEE), second(withManifestChain(broken(), WRONG_FEE)), noSleep))).toBe('readback');
   });
-  it('is unchanged with no second RPC and passes non-loaded states through', async () => {
+  it('keeps the single-provider behaviour with no second RPC and passes non-loaded states through', async () => {
     expect((await verifyManifestState(state, good(), NO_SECONDARY)).status).toBe('loaded');
-    expect(causeOf(await verifyManifestState(state, withManifestChain(broken(), WRONG_FEE), NO_SECONDARY))).toBe('readback');
+    expect(await verifyManifestState(state, withManifestChain(broken(), WRONG_FEE), NO_SECONDARY)).toEqual({ status: 'invalid', reason: READBACK_REASONS.readback, cause: 'readback' });
+    expect(await verifyManifestState(state, broken(), NO_SECONDARY)).toEqual({ status: 'invalid', reason: READBACK_REASONS['rpc-unreadable'], cause: 'rpc-unreadable' });
     expect(await verifyManifestState({ status: 'absent' }, good(), { kind: 'unavailable' })).toEqual({ status: 'absent' });
+  });
+  it('has a catalog key for every cause', () => {
+    expect(Object.keys(MANIFEST_READBACK_KEYS).sort()).toEqual(Object.keys(READBACK_REASONS).sort());
+    for (const key of Object.values(MANIFEST_READBACK_KEYS)) expect(key).toMatch(/^manifest\.readback\./);
   });
   it('verifyManifestForFlow forwards the second provider and still fails closed without a primary', async () => {
     expect(causeOf(await verifyManifestForFlow(state, good(), second(withManifestChain(broken(), WRONG_FEE)), noSleep))).toBe('providers-disagree');
@@ -191,9 +196,15 @@ describe('two-provider manifest read-back (L2-I4)', () => {
     const noRpc = await verifyManifestForFlow(state, undefined, { kind: 'unavailable' });
     expect(noRpc.status === 'invalid' && noRpc.reason).toMatch(/RPC.*needed/);
   });
-  it('never puts provider text or URLs into a reason', async () => {
+  it('never puts provider text or URLs into a reason, whichever provider failed', async () => {
     for (const r of Object.values(READBACK_REASONS)) expect(r).not.toMatch(/https?:|@/);
-    const s = await verifyManifestState(state, good(), second(broken()), noSleep);
-    expect(JSON.stringify(s)).not.toContain(LEAK);
+    for (const s of [
+      await verifyManifestState(state, good(), second(broken()), noSleep),
+      await verifyManifestState(state, broken(), second(good()), noSleep),
+      await verifyManifestState(state, broken(), NO_SECONDARY),
+    ]) {
+      expect(s.status).toBe('invalid');
+      expect(JSON.stringify(s)).not.toContain(LEAK);
+    }
   });
 });

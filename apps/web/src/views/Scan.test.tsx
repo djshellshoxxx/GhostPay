@@ -19,7 +19,7 @@ import { verifyReceipt } from '../lib/receipts';
 import { RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
 import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
 import { captureSessionGuard, revealViewingKey } from '../lib/session';
-import { ghostPayRouterAbi, grossForNet, validateAnnouncementLog, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { ghostPayRouterAbi, grossForNet, validateAnnouncementLog, type Address, type Hex, type RpcClient } from '@ghostpay/chain-adapters';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { parseMetadata } from '@ghostpay/core-crypto';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
@@ -365,6 +365,22 @@ describe('Scan and receive', () => {
     await waitFor(() => { expect(screen.getByText(/two RPC providers disagree about the contracts/)).toBeTruthy(); }, { timeout: 5000 });
     expect(primary.calls.some((c) => c.method === 'eth_getLogs')).toBe(false);
     expect(secondary.calls.some((c) => c.method === 'eth_getLogs')).toBe(false);
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
+  it('blocks the scan when the second RPC fails during the manifest read-back instead of continuing with one provider (L2-I4)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
+    const primary = chainWithLogs(84532, 500, []);
+    const healthy = withManifestChain(chainWithLogs(84532, 500, []));
+    const flaky: RpcClient = { ...healthy, request: (m, p) => (m === 'eth_call' ? Promise.reject(new Error('HTTP 429 https://secret@rpc2.test/leak')) : healthy.request(m, p)) };
+    const createRpc: Services['createRpc'] = (_c, url) => Promise.resolve(new URL(url).host === 'rpc2.test' ? flaky : withManifestChain(primary));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/second RPC configured for this chain could not be used/)).toBeTruthy(); }, { timeout: 5000 });
+    expect(primary.calls.some((c) => c.method === 'eth_getLogs')).toBe(false);
+    expect(document.body.textContent).not.toContain('secret@rpc2.test');
     expect(screen.queryByText(/Finished\./)).toBeNull();
   });
 

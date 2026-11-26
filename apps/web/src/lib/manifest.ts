@@ -19,10 +19,11 @@ import { RELEASE_PUBLIC_KEYS } from './releaseKeys';
  * - `loaded`: validated manifest (the only source of the fee recipient and contract addresses).
  */
 /**
- * Why a loaded manifest became `invalid` at read-back time (L2-I4): the chain disagrees with the manifest, the second
- * RPC configured for the chain could not be opened or read, or the two providers disagree with each other.
+ * Why a loaded manifest became `invalid` at read-back time (L2-I4): the chain disagrees with the manifest (`readback`),
+ * the primary RPC could not be read (`rpc-unreadable`), the second RPC configured for the chain could not be opened or
+ * read (`second-rpc-unavailable`), or the two providers disagree with each other (`providers-disagree`).
  */
-export type ManifestInvalidCause = 'readback' | 'second-rpc-unavailable' | 'providers-disagree';
+export type ManifestInvalidCause = 'readback' | 'rpc-unreadable' | 'second-rpc-unavailable' | 'providers-disagree';
 
 export type ManifestState =
   | { readonly status: 'absent' }
@@ -124,6 +125,7 @@ export const NO_SECONDARY: SecondaryReadback = Object.freeze({ kind: 'none' });
 /** Fixed-form refusal texts (no URLs, no provider text), one per {@link ManifestInvalidCause}. */
 export const READBACK_REASONS: Readonly<Record<ManifestInvalidCause, string>> = Object.freeze({
   readback: 'The contracts on-chain do not match the deployment manifest.',
+  'rpc-unreadable': 'The contracts could not be read from your RPC, so the deployment manifest could not be confirmed. Check the RPC in Settings and try again.',
   'second-rpc-unavailable': 'The second RPC configured for this chain could not be used to confirm the contracts against the deployment manifest. Check it in Settings, or remove it to verify with one provider.',
   'providers-disagree': 'Your two RPC providers disagree about the contracts on this chain, so the deployment manifest could not be confirmed. Try another provider, or remove the second RPC in Settings.',
 });
@@ -141,9 +143,15 @@ export async function openSecondaryReadback(open: () => Promise<RpcClient | unde
   }
 }
 
-const invalid = (cause: ManifestInvalidCause): ManifestState => ({ status: 'invalid', reason: READBACK_REASONS[cause], cause });
+/** Catalog keys for the same causes, for views that render translated text; the English entries equal {@link READBACK_REASONS}. */
+export const MANIFEST_READBACK_KEYS = Object.freeze({
+  readback: 'manifest.readback.mismatch',
+  'rpc-unreadable': 'manifest.readback.rpcUnreadable',
+  'second-rpc-unavailable': 'manifest.readback.secondRpc',
+  'providers-disagree': 'manifest.readback.disagree',
+} as const) satisfies Readonly<Record<ManifestInvalidCause, string>>;
 
-const defaultSleep = (ms: number): Promise<void> => new Promise((resolve) => { setTimeout(resolve, ms); });
+const invalid = (cause: ManifestInvalidCause): ManifestState => ({ status: 'invalid', reason: READBACK_REASONS[cause], cause });
 
 /** Same client, but remembers whether one of its requests failed (to tell "second RPC unusable" from a mismatch). */
 function tracked(client: RpcClient, onFailure: () => void): RpcClient {
@@ -180,7 +188,7 @@ export async function verifyManifestState(
   if (secondary.kind === 'client' && secondary.client.chainId !== client.chainId) return invalid('second-rpc-unavailable');
   let secondFailed = false;
   const readback = secondary.kind === 'client'
-    ? createReconciledClient(client, tracked(secondary.client, () => { secondFailed = true; }), { sleep: deps.sleep ?? defaultSleep })
+    ? createReconciledClient(client, tracked(secondary.client, () => { secondFailed = true; }), deps.sleep === undefined ? {} : { sleep: deps.sleep })
     : client;
   try {
     await verifyManifestOnChain(state.manifest, readback);
@@ -188,7 +196,9 @@ export async function verifyManifestState(
   } catch (e) {
     if (secondFailed) return invalid('second-rpc-unavailable');
     if (secondary.kind === 'client' && e instanceof Error && e.message === 'RPC_FAILURE: providers disagree') return invalid('providers-disagree');
-    return invalid('readback');
+    // verifyManifestOnChain reports a chain/manifest mismatch as INVALID_MANIFEST; anything else is a read failure.
+    if (e instanceof Error && e.message.startsWith('INVALID_MANIFEST')) return invalid('readback');
+    return invalid('rpc-unreadable');
   }
 }
 

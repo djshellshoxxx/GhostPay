@@ -31,7 +31,9 @@ import {
   type SweepSimulation,
   type PayContext,
 } from '../lib/pay';
-import { openSecondaryReadback, verifyManifestForFlow } from '../lib/manifest';
+import { MANIFEST_READBACK_KEYS, NO_SECONDARY, openSecondaryReadback, verifyManifestForFlow } from '../lib/manifest';
+import { browserStorage, loadScanPrivacy, privatePathForbidsDirect } from '../lib/scanPrivacy';
+// i18n-use: manifest.readback.mismatch manifest.readback.rpcUnreadable manifest.readback.secondRpc manifest.readback.disagree
 import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
@@ -504,14 +506,19 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       const rpc = await app.getRpc(p.invoice.chainId);
       if (!current()) return undefined;
       // WEB-APP-01: read the manifest back from the chain before any payment is built from it; a configured second
-      // RPC must agree (L2-I4) and an unusable one blocks instead of falling back to one provider.
-      const secondary = await openSecondaryReadback(() => app.getSecondaryRpc(p.invoice.chainId));
+      // RPC must agree (L2-I4) and an unusable one blocks instead of falling back to one provider. It is not opened
+      // without a primary (nothing to cross-check) nor behind a required private path (never contacted directly, as in Scan).
+      const secondary = rpc === undefined || privatePathForbidsDirect(loadScanPrivacy(browserStorage()))
+        ? NO_SECONDARY
+        : await openSecondaryReadback(() => app.getSecondaryRpc(p.invoice.chainId));
       if (!current()) return undefined;
       const checked = await verifyManifestForFlow(m, rpc, secondary, { sleep: services.sleep });
       if (!current()) return undefined;
       if (checked.status !== 'loaded') {
         setCtx(undefined);
-        setCtxError(checked.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
+        setCtxError(checked.status === 'invalid'
+          ? (checked.cause === undefined ? checked.reason : { key: MANIFEST_READBACK_KEYS[checked.cause] })
+          : { key: 'pay.error.noManifest' });
         return undefined;
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });

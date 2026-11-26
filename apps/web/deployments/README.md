@@ -15,7 +15,8 @@ shows "payments disabled on this chain" and never builds a payment transaction.
    `apps/web/src/lib/manifest.ts` before Pay, Sweep and Scan), through the user's RPC and, when a second RPC is configured
    for the chain, through that independent provider as well (`createReconciledClient`): every `eth_getCode` and `eth_call`
    must return identical results from both, a disagreement refuses the flow, and a second RPC that cannot be opened or read
-   refuses it too (no silent fallback to one provider; remove the second RPC in Settings to opt out). The checks: the
+   refuses it too (no silent fallback to one provider; remove the second RPC in Settings to opt out; behind a required
+   private path the second RPC is not contacted, as for scans). The checks: the
    router's `FEE_RECIPIENT()`, `ANNOUNCER()` and `FEE_BPS()` must equal the manifest; the runtime code of router, sweep
    relayer and (when the manifest has a policy section) the policy implementation and factory must hash to
    `bytecodeHashes`; the announcer must have code. Pay, Scan and Sweep are disabled until this passes. The refusal texts

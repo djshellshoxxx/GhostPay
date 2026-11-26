@@ -271,12 +271,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     (`src/lib/manifest.ts`) take the user's second RPC and run the existing `verifyManifestOnChain` checks through
     `createReconciledClient`, so every `eth_getCode` and `eth_call` must agree on both providers before Pay, Sweep or
     Scan proceeds. A disagreement, a second RPC that cannot be opened (unreachable, wrong chain) or one that fails
-    mid-read refuses the flow with a fixed-form reason; there is no silent fallback to one provider (remove the second
-    RPC in Settings to opt out), matching the Scan rule in `docs/pages/README.md`. Scan skips the second RPC only where
-    it already did (a required private path, `plan.useSecondary`). The audit-recommended `verifyDeployment` path was not
+    mid-read refuses the flow with a fixed-form reason and a `cause` (`readback` for a chain/manifest mismatch,
+    `rpc-unreadable` for a primary read failure, `second-rpc-unavailable`, `providers-disagree`); there is no silent
+    fallback to one provider (remove the second RPC in Settings to opt out), matching the Scan rule in
+    `docs/pages/README.md`. The second RPC is not opened without a primary (nothing to cross-check) and not behind a
+    required private path (`privatePathForbidsDirect`, including unreadable saved scan-privacy settings), the rule Scan
+    already applied, so the "skip the direct second RPC behind a local proxy" promise and the unreadable-settings
+    disclosure stay true for Pay and Sweep. Views render the cause through catalog keys (`manifest.readback.*`,
+    `scan.error.manifestDisagree`, `scan.error.manifestUnreadable`; reviewed English in all catalogs until native
+    review); `ManifestState.reason` keeps the English fallback. The audit-recommended `verifyDeployment` path was not
     adopted because it requires a canonical announcer entry for the chain, which local chains and devnets lack; the
-    unused `src/lib/deployment.ts` (`checkDeployment`) and its tests were removed. `settings.rpc.secondary.hint` and
-    `scan.error.manifestDisagree` carry reviewed English in all catalogs until native review.
+    unused `src/lib/deployment.ts` (`checkDeployment`) and its tests were removed.
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
