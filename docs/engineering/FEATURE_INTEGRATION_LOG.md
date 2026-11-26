@@ -76,3 +76,10 @@ Recorded from repository history; this session did not perform this merge.
     1 skipped, coverage 93.22/89.58/95.02/96.99.
 - Lock: generation 47 acquired by `claude-keen-volta-8ctx9x` at `b5e5cdb7`, released at `09dd9791`. Both pushes non-force.
 
+## 2026-11-26 — P0-KEYS evidence and tracker status → `main` `4eb02bb36470eb88f3529b01108f380b1b54af71`
+
+- PR #727 (docs only), exact head `cac14b75` on base `c7c6349c`; it carried #721 (`a308b086`). Merged with a merge commit.
+- Evidence: [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md). P0-KEYS reached `main` through #539 and #707 (#718
+  `c7c6349c`).
+- Lock: generation 51 acquired by `claude-nifty-bohr-5ra2ap` at `7bbf85f3`, released at `8844fb6c`. Both pushes non-force.
+- Release-readiness record for this SHA: [`RELEASE_READINESS_20261126.md`](RELEASE_READINESS_20261126.md).

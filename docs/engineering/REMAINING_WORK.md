@@ -18,6 +18,10 @@ Pages beta release. "Future" = not a current release requirement.
    wallet-attempt journal and lock (now persistent). A custom domain removes it.
 5. ~~Close or retarget #450~~ Done: closed as already integrated (2026-11-26). Its commits are in `main` via `8ddb3449`.
 
+Release readiness on `4eb02bb3` (2026-11-26): [`RELEASE_READINESS_20261126.md`](RELEASE_READINESS_20261126.md). Automated
+gates pass. Release still needs the owner decisions above, the Mythril gate disposition, exact-SHA Pages-on-anvil and beta
+acceptance runs, and manual browser/device passes.
+
 ## Follow-ups (not blocking)
 
 - ~~RCPT-L1/L2 in `packages/ux-receipts`~~ (vacuous proxy test; double getter reads): fix commit `752828f6` reached `main` through #690 (`1bea3df3`, 2026-11-25).
