@@ -56,6 +56,7 @@ deferred) and `product-backup-retry`.
 | Pages release build with the REL-EXCL step | OK: "Release exclusions verified: 364 rendered modules and 17 site files contain no F01, F02, F04, F08, F09, F11, F12, F13, F14, P07, FUTURE module"; DEMO |
 | Lean artifact packages | same 11 core packages; no `privacy-profiles`, `confidential-amounts` or `future/` module |
 | Web unit tests on this branch | 268 files pass, 2 skipped; 3696 tests pass, 13 skipped; coverage 93.16 / 89.42 / 94.65 / 96.89 |
+| Newest main `edcca819` (#687 clipboard cleanup and P14 evidence, merged during packaging) | branch rebased cleanly; claims guard 27/27 on its catalog; other checks not re-run on it |
 | Lean e2e on this branch (Chrome for Testing 153) | desktop 113 pass, 4 skip (same full-profile-only specs), 0 fail; Chromium device emulation 30 pass |
 
 ## 3. Shipped artifact (lean Pages site from `8aca5a06`)
