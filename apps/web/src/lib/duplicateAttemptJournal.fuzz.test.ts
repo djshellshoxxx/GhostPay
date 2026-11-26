@@ -424,9 +424,15 @@ function applyEdit(rows: readonly WalletAttempt[], e: Edit, step: number): Walle
     if (n !== i) return row;
     if (e.t === 'rekey') return { ...row, key: KEYS[e.pick]! };
     if (e.t === 'chain') return { ...row, chainId: e.pick + 1 };
-    const { hash: _hash, nonce: _nonce, replacements: _replacements, ...rest } = row;
-    return e.t === 'unsubmit' ? { ...rest, status: 'unknown' as const } : { ...rest, status: 'submitted' as const, hash: HASHES[e.pick % HASHES.length]! };
+    const bare = withoutOutcome(row);
+    return e.t === 'unsubmit' ? bare : { ...bare, status: 'submitted' as const, hash: HASHES[e.pick % HASHES.length]! };
   });
+}
+/** The record as it was before any returned hash: unknown, without the evidence a hash adds. */
+function withoutOutcome(row: WalletAttempt): WalletAttempt {
+  const bare: WalletAttempt = { ...row, status: 'unknown' };
+  const absent = new Set(['hash', 'nonce', 'replacements']);
+  return Object.fromEntries(Object.entries(bare).filter(([field]) => !absent.has(field))) as unknown as WalletAttempt;
 }
 
 describe('stored wallet attempt journal validation', () => {
