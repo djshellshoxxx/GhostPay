@@ -1,4 +1,4 @@
-# P14 finding F1: scan checkpoint ownership (stale run cannot overwrite a newer checkpoint) — 2026-11-26 UTC
+# P14 finding F1: scan checkpoint ownership (mitigates stale-run overwrites of a newer checkpoint) — 2026-11-26 UTC
 
 Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (base main `601f2095`). Owned paths:
 `apps/web/src/lib/scanClient.ts` (checkpoint save guard and `localCheckpointStore.save` only), new

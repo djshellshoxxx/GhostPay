@@ -805,6 +805,9 @@ function parseCursor(text: string): ScanCursor | undefined {
   return { nextBlock: BigInt(o.nextBlock) };
 }
 
+/** localCheckpointStore's read result when getItem throws (distinct from an empty or malformed slot). */
+const UNREADABLE: unique symbol = Symbol('unreadable checkpoint slot');
+
 const encodeCursor = (cursor: ScanCursor): string =>
   JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
 
@@ -820,20 +823,22 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
   sweepLegacySlots(storage);
   const named = checkpointSlotNamer(viewingKey);
   const slot = (chainId: number, keyId: string): string | undefined => (validScope(chainId, keyId) ? named(chainId, keyId) : undefined);
-  /** The stored cursor; an unreadable, unparsable or malformed value counts as absent (it is overwritten, never trusted). */
-  const read = (name: string): ScanCursor | undefined => {
-    try {
-      const text = storage?.getItem(name);
-      return text === null || text === undefined ? undefined : parseCursor(text);
-    } catch {
-      return undefined;
-    }
+  /**
+   * The stored cursor. `undefined` is an empty slot, or a value that was read but is unparsable or malformed (overwritten,
+   * never trusted). UNREADABLE means getItem itself failed: the slot may hold a newer cursor, so it must not be replaced.
+   */
+  const read = (name: string): ScanCursor | undefined | typeof UNREADABLE => {
+    let text: string | null | undefined;
+    try { text = storage?.getItem(name); } catch { return UNREADABLE; }
+    if (text === null || text === undefined) return undefined;
+    try { return parseCursor(text); } catch { return undefined; }
   };
   return {
     load(chainId, keyId) {
       try {
         const name = slot(chainId, keyId);
-        return name === undefined ? undefined : read(name);
+        const cursor = name === undefined ? undefined : read(name);
+        return cursor === UNREADABLE ? undefined : cursor;
       } catch {
         return undefined;
       }
@@ -846,6 +851,7 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
         // This is not a cross-document atomic compare-and-swap: another tab's recent write may not be visible here yet,
         // so a stale write can still land (residual race; its effect is a later rescan, never a skipped block).
         const current = read(name);
+        if (current === UNREADABLE) return;
         if (expected === undefined ? current !== undefined && cursor.nextBlock < current.nextBlock : !sameCursor(current, expected ?? undefined)) return;
         storage?.setItem(name, encodeCursor(cursor));
         storage?.removeItem(legacyCheckpointSlot(chainId, keyId));

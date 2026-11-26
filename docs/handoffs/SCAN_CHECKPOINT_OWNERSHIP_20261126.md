@@ -1,4 +1,4 @@
-# Handoff: scan checkpoint ownership (P14 finding F1), 2026-11-26
+# Handoff: scan checkpoint ownership (P14 finding F1, mitigated), 2026-11-26
 
 - Branch: `nodata/tender-mccarthy-a61kj6`, base main `601f2095`.
 - Source finding: F1 in [the privacy evidence matrix](../research/privacy-evidence-matrix-2026-11-10.md), recorded by #658 with two
@@ -13,7 +13,9 @@ The next scan then re-read ranges it had already covered: more RPC reads of the 
 ## Change
 
 - `CheckpointStore.save(chainId, keyId, cursor, expected?)`. Without `expected` a save is forward-only. With `expected` (the
-  cursor the writer last read or wrote, `null` for none) it is a compare-and-swap. An unparsable stored value counts as empty.
+  cursor the writer last read or wrote, `null` for none) it is a compare-and-swap within this document. A value that was read
+  but is unparsable counts as empty. A slot whose read throws refuses every write (it may hold a newer cursor) and loads as
+  no checkpoint.
 - `runScan` takes its initial ownership from `checkpointSeen`, the checkpoint the caller chose `cursor` against. `Scan.tsx`
   passes the checkpoint its render showed, so a write or clear by another tab during the view's async setup (RPC, manifest
   and vault checks before `runScan` starts) is foreign to the run. Without `checkpointSeen` the run reads the slot at
@@ -59,6 +61,11 @@ A separate subagent reviewed `05f6f06a` and found no skipped-block or liveness d
 A later owner-account consolidation review of `d04036ed` (PR comment) found that `runScan` took ownership from a fresh
 read at entry, not from the checkpoint `Scan.tsx` resumed after its async setup, and that the docs overstated cross-tab
 atomicity. Both are addressed: `checkpointSeen` (with view-level and run-level regressions) and the Limits above.
+
+A follow-up owner-account review of `c720d24a` found that a thrown getItem read as an empty slot, so a transient read
+failure let a write replace an existing, possibly newer cursor in one document, and that the evidence matrix still said
+"fixed". The store now refuses writes on a read failure (a newer cursor survives with setItem working; regressions at store,
+run and fuzz level), and F1 is recorded as mitigated, not fixed.
 
 ## Evidence
 
