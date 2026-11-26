@@ -1,3 +1,11 @@
+# Stack #718: P13 backup test fixture correction (2026-11-26 UTC)
+
+Worker: newghostpay-4e (coordinator); branch `claude/consolidation-stack-20261126`. CI run 45832769192 failed once at
+`packages/confidential-amounts/src/future/p13/store.test.ts` because the "corrupt" record could equal the valid one
+(about 1 run in 64); the stack was held for a fixture correction. Owned path: that test only. The edit now changes a
+middle character to a different one and asserts it differs; every reject and no-write assertion is kept. No P13 runtime,
+dependency, contract or activation change. Acceptance: full hosted CI and independent re-review on the new head.
+
 # #706 journal model fuzzing — newghostpay-4e/features2 (2026-11-26 UTC)
 
 Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/journal-fuzz-20261126`, local head
