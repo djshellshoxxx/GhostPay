@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { formatDate, formatDateParts, formatNumber, formatNumberParts } from './format.js';
-import { defaultIntl } from './intl.js';
+import { defaultIntl, type IntlLike } from './intl.js';
 
 // Simulate a host that silently resolves an unsupported locale to German, independently
 // of the CI machine's real default locale. The constructors retain native locale support.
-const nonEnglishHost = {
+const nonEnglishHost: IntlLike = {
   ...defaultIntl,
-  NumberFormat: class extends Intl.NumberFormat {
-    public constructor(locale?: string | string[], options?: Intl.NumberFormatOptions) {
-      super(locale === 'zz' ? 'de' : locale, options);
-    }
-  },
-  DateTimeFormat: class extends Intl.DateTimeFormat {
-    public constructor(locale?: string | string[], options?: Intl.DateTimeFormatOptions) {
-      super(locale === 'zz' ? 'de' : locale, options);
-    }
-  },
+  NumberFormat: new Proxy(Intl.NumberFormat, {
+    construct(target, [locale, options]: [locale?: string | string[], options?: Intl.NumberFormatOptions]) {
+      return new target(locale === 'zz' ? 'de' : locale, options);
+    },
+  }),
+  DateTimeFormat: new Proxy(Intl.DateTimeFormat, {
+    construct(target, [locale, options]: [locale?: string | string[], options?: Intl.DateTimeFormatOptions]) {
+      return new target(locale === 'zz' ? 'de' : locale, options);
+    },
+  }),
 };
 
 describe('unsupported formatting locale', () => {
