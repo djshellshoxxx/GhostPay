@@ -155,6 +155,9 @@ export function selectorOf(signature: string): string {
  * @returns JSON-serializable body with hex (`visible:false`) addresses.
  * @throws {TronError} On any invalid address, amount, fee limit or call value.
  * @security Never trust the node's response blindly; verify before signing.
+ * @security WARNING: this builds a plain transfer with NO announcement memo. Sending to a stealth address derived
+ * by `deriveTronStealthPayment` with this request is memo-less and the recipient cannot discover it; the adapter
+ * fails closed with `MEMO_NOT_BOUND` for that reason (ADR-0019). Do not compose them. Testnet proof of concept only.
  */
 export function buildTrc20TransferRequest(p: Trc20TransferParams): TriggerSmartContractBody {
   const callValue = p.callValue ?? 0n;

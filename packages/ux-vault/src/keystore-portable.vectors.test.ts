@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { createKeystoreApi } from './keystore-portable.js';
 import { KEYSTORE_V1, KEYSTORE_V1_PASSPHRASE, SCHEME1_001 } from './keystore-portable.vectors.testutil.js';
 
-// Known-answer test for the unchanged v1 seller keystore (Spec 18 "Legacy keystore compatibility"). The fixed file in
-// keystore-portable.vectors.testutil.ts must keep decrypting: a format change that breaks it would strand every backup
-// users already hold.
+// Known-answer test for the unchanged v1 seller keystore (Spec 18 "Legacy keystore compatibility"). The canonical file in
+// test-vectors/seller-keystore-v1.json (via keystore-portable.vectors.testutil.ts) must keep decrypting: a format change
+// that breaks it would strand every backup users already hold.
 interface Scheme1Vector {
   readonly id: string;
   readonly spendingPrivateKey: string;
@@ -81,9 +81,9 @@ describe('v1 seller keystore known-answer restoration (scheme1-001)', () => {
       ['first ciphertext byte', mutate((f) => { f['ciphertext'] = flipHexChar(ct, 0); }), wrong],
       ['authentication tag', mutate((f) => { f['ciphertext'] = flipHexChar(ct, ct.length - 1); }), wrong],
       ['nonce', mutate((f) => { f['iv'] = flipHexChar(f['iv'] as string, 0); }), wrong],
-      ['salt', mutate((f) => { (f['kdfParams'] as Record<string, unknown>)['salt'] = flipHexChar('1f0b8f2c7bd26980b3fddfc4bb05851e', 0); }), wrong],
+      ['salt', mutate((f) => { (f['kdfParams'] as Record<string, unknown>)['salt'] = flipHexChar((f['kdfParams'] as Record<string, string>)['salt']!, 0); }), wrong],
       // The header is authenticated data: substituting another signer cannot pass as the same backup.
-      ['signer header', mutate((f) => { (f['meta'] as Record<string, unknown>)['signer'] = hex(secp256k1.getPublicKey(Uint8Array.from(Buffer.from('55'.repeat(32), 'hex')), true)); }), wrong],
+      ['signer header', mutate((f) => { (f['meta'] as Record<string, unknown>)['signer'] = hex(secp256k1.getPublicKey(Uint8Array.from(Buffer.from('66'.repeat(32), 'hex')), true)); }), wrong],
       ['truncated ciphertext', mutate((f) => { f['ciphertext'] = ct.slice(0, 64); }), wrong],
       ['truncated file', KEYSTORE_V1.slice(0, KEYSTORE_V1.length / 2), bad],
       ['extra field', mutate((f) => { f['note'] = 'x'; }), bad],
@@ -91,7 +91,7 @@ describe('v1 seller keystore known-answer restoration (scheme1-001)', () => {
       ['oversized file', KEYSTORE_V1 + ' '.repeat(8 * 1024), 'error.keystore.fileTooLarge'],
     ];
     for (const [name, text, expected] of cases) {
-      const passphrase = name === 'wrong passphrase' ? 'synthetic vector harbor lantern quartzz' : PASSPHRASE;
+      const passphrase = name === 'wrong passphrase' ? `${PASSPHRASE}x` : PASSPHRASE;
       expect(await errorKey(api.decryptKeystore(text, passphrase)), name).toBe(expected);
     }
   });

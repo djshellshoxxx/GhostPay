@@ -19,7 +19,7 @@ describe('properties (fast-check)', () => {
       fc.property(scalar, scalar, scalar, fc.uint8Array({ maxLength: 64 }), (s, v, r, msg) => {
         fc.pre(s !== v);
         const keys = stealthKeysFromSecrets(scalarFromValue(s), scalarFromValue(v));
-        const meta = decodeMetaAddress(encodeMetaAddress(keys));
+        const meta = decodeMetaAddress(encodeMetaAddress({ ...keys, cluster: 'devnet' }), 'devnet');
         const pay = deriveWithEphemeral(meta, scalarFromValue(r));
         const ann = decodeAnnouncementMemo(encodeAnnouncementMemo(pay));
         const found = checkAnnouncement(ann, keys.viewSecret, keys.spendPublicKey, pay.stealthAddress);

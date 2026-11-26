@@ -208,3 +208,18 @@ describe('announcement memo', () => {
     expect(code(() => encodeAnnouncementMemo(torsion, 1))).toBe('INVALID_POINT');
   });
 });
+
+describe('encodeMetaAddress cluster guard (FC-03: pre-existing silent-mainnet defect)', () => {
+  it('rejects an unknown cluster instead of silently encoding the mainnet byte', () => {
+    const k = generateStealthKeys(seededRng('cluster-guard'));
+    for (const bad of ['bogus', 'toString', '__proto__', 'constructor', '']) {
+      let thrown: unknown;
+      try {
+        encodeMetaAddress(bad as never, k.spendPublicKey, k.viewPublicKey);
+      } catch (e) {
+        thrown = e;
+      }
+      expect((thrown as SolanaStealthError | undefined)?.code).toBe('INVALID_META_ADDRESS');
+    }
+  });
+});

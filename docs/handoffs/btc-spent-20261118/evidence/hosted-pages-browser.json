@@ -1,0 +1,22 @@
+{
+  "pullRequestHead": "ef08170a83d86d194b8ce4186299e791027e461e",
+  "testedMergeCommit": "278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+  "testedTree": "0074dde6081e45188c45feb39503c64243ef99b8",
+  "runId": 44472294261,
+  "jobId": 135384438580,
+  "jobURL": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294261/job/135384438580",
+  "name": "Pages Chromium on anvil",
+  "testsPassed": 16,
+  "testsFailed": 0,
+  "testsSkipped": 0,
+  "conclusion": "success",
+  "bitcoinRuntimeCovered": false,
+  "excerpts": [
+    "2026-11-19T06:29:27.4276975Z node: v22.23.5",
+    "2026-11-19T06:29:27.4277389Z npm: 10.9.9",
+    "2026-11-19T06:32:54.4201097Z Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1248",
+    "2026-11-19T06:33:21.3632667Z [WebServer] Pages site verified: 16 files; DEVELOPMENT BUILD (not release evidence): TESTNET: payments enabled only on the listed testnet chains",
+    "2026-11-19T06:34:37.5080750Z   16 passed (1.6m)",
+    "2026-11-19T06:34:37.5367118Z browser-devnet: PASS (pages)"
+  ]
+}
