@@ -14,7 +14,7 @@ append rows; keep the starting baseline unchanged.
 | | Value |
 |---|---|
 | Starting baseline (2026-11-25 12:50 UTC) | `origin/main` = `32ae3977b6026991ae0591daf385d3c536e2132f` (Merge PR #660) |
-| Current integration baseline | `29d21c1b` (2026-11-26 00:55 UTC, Merge #684). It contains #673 at exact head `e2bd32c5`, merged under lock generation 34 by `chatgpt-8812-branch-completion` |
+| Current integration baseline | `194e225c` (2026-11-26, Merge #695). #673 landed at exact head `e2bd32c5` via #684 (`29d21c1b`, lock generation 34, `chatgpt-8812-branch-completion`) |
 | Integration lock | `automation/ghostpay-integration-lock` `d1e2e037`: **released**, generation 26, last owner `claude-feature-completion-20261125` (candidate #664 `7b47c3dd` failed e2e lean, main unchanged) |
 | Remote heads | 791 (`git ls-remote --heads`), incl. 34 frozen `archive/owner-stop-20261125/*` snapshots |
 | Open PRs | 256 (pages 1–3 of the PR list at 13:40 UTC) |
@@ -181,6 +181,24 @@ Pages artifact.
 - Source-level dormancy of product code embedded in core modules.
 - Shared-core retention review.
 - Physical-device and real-Tor testing.
+
+## 8b. Owner decisions applied (2026-11-26, main `194e225c`)
+
+The owner approved the cloud lead's recommendations. Outcomes:
+
+| # | Recommendation | Outcome |
+|---|---|---|
+| 1 | Port #577 (sole invoice signer kept under the idle lock) | Already on main: `2a70c041` "Finish core idle suspension and sole-copy signer recovery". No port needed |
+| 2 | Re-cut #372 masking, quick-hide and private history in small PRs (not a #372 merge) | In progress by the home team: #708 (global masking, 30 s reveal). Wallet disclosure already landed (#677/#679) |
+| 3 | Close open PRs whose head is provably in main | 32 closed with a note naming head and main SHA; branches kept: #548 #547 #546 #541 #528 #527 #523 #515 #512 #485 #482 #476 #450 #443 #441 #440 #435 #425 #423 #422 #412 #402 #385 #379 #375 #374 #370 #369 #368 #362 #347 #277 |
+| 4 | #587 vault format v4→v5: not for beta | Declined for beta. Revisit only with old-backup restore tests and #647 recovery-script compatibility |
+| 5 | #544's ~84-commit base stack: do not land | Declined. #577's behaviour reached main separately (row 1) |
+| 6 | #558/#559 dormant future modules: do not merge | Left on their branches; PRs remain open for the owner to close or keep |
+| 7 | F02/F04 wording per #667 | #667 merged by the owner at 00:55 UTC: deferred and disabled through v1.0, restart only by new instruction |
+| 8 | Lean guard also covers `packages/*/(src|dist)/future/**` | Done on this branch (`c1e075dc`): 54/54 tests, red on the old table; real lean artifact on `194e225c` clean (372 rendered modules, 17 files) |
+
+Open PRs after closing: 172 (of 204 at 09:00 UTC). `OPEN_PR_CLASSIFICATION.tsv` is still the `32ae3977` snapshot; a
+full re-classification of the remaining 172 is the next bookkeeping unit.
 
 ## 9. Outstanding owner decisions
 
