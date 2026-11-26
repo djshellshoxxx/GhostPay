@@ -774,6 +774,7 @@ export const SECURITY_KEY_GROUPS = {
     'error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd',
     'error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt',
     'error.duplicateAttemptJournal.locksUnavailable',
+    'error.duplicateAttemptJournal.returnedHashStillSaving',
     'error.attemptStatus.replacementRecordChanged',
     'error.attemptStatus.replacementLimit',
     'error.attemptStatus.replacementHashFormat',

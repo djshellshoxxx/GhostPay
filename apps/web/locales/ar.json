@@ -1678,6 +1678,7 @@
     "error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd": "وصل سجل محاولات المحفظة إلى حد الأمان الخاص به. راجع المحاولات القديمة وامسحها صراحةً قبل بدء محاولة أخرى.",
     "error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt": "يلزم تأكيد صريح لمسح محاولة محفظة.",
     "error.duplicateAttemptJournal.locksUnavailable": "لا يستطيع هذا المتصفح قفل سجل محاولات المحفظة أمام علامات التبويب الأخرى. لم يُبدأ أي طلب جديد إلى المحفظة.",
+    "error.duplicateAttemptJournal.returnedHashStillSaving": "A returned hash for this attempt has not finished saving. Retry saving returned hashes first; nothing was cleared.",
     "error.attemptStatus.replacementRecordChanged": "تم مسح محاولة المحفظة هذه أو تغييرها، أو أن الرقم nonce المسجل لها مختلف. لم يُحفظ تجزئة الاستبدال.",
     "error.attemptStatus.replacementLimit": "لدى محاولة المحفظة هذه بالفعل الحد الأقصى من تجزئات الاستبدال المرتبطة.",
     "error.attemptStatus.replacementHashFormat": "أدخل تجزئة معاملة: 0x متبوعة بـ 64 حرفًا ست عشريًا.",

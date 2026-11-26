@@ -401,6 +401,12 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
 export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptStorage): void {
   if (!confirmed) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt' });
   const store = requiredStorage(storage);
+  // A returned hash still awaiting its durable write lives only in memory, keyed by the stable store; every later read and
+  // write merges it back. Clearing it would report success and then restore the record, so refuse until it is saved.
+  const stable = store === stagedStorage ? browserAttemptStorage() : store;
+  if (stable !== undefined && readReturnedAttempts(stable).some((a) => a.id === key || a.key === key)) {
+    throw new UserFacingError({ key: 'error.duplicateAttemptJournal.returnedHashStillSaving' });
+  }
   write(readAttempts(store).filter((a) => a.id !== key && a.key !== key), store);
 }
 /**

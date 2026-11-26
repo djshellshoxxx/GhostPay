@@ -1678,6 +1678,7 @@
     "error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd": "ウォレットの試行記録が安全上限に達しました。別の試行を始める前に、古い試行を確認して明示的に消去してください。",
     "error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt": "ウォレットの試行を消去するには明示的な確認が必要です。",
     "error.duplicateAttemptJournal.locksUnavailable": "このブラウザーではウォレット試行の記録を他のタブからロックできません。新しいウォレット要求は開始されていません。",
+    "error.duplicateAttemptJournal.returnedHashStillSaving": "A returned hash for this attempt has not finished saving. Retry saving returned hashes first; nothing was cleared.",
     "error.attemptStatus.replacementRecordChanged": "このウォレット試行は消去または変更されたか、記録された nonce が異なります。置き換えハッシュは保存されていません。",
     "error.attemptStatus.replacementLimit": "このウォレット試行には、リンクできる置き換えハッシュの上限数がすでにあります。",
     "error.attemptStatus.replacementHashFormat": "トランザクションハッシュを入力してください: 0x に続く 64 文字の 16 進数です。",

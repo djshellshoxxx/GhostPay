@@ -4587,3 +4587,9 @@ required; no new local test run or browser execution is claimed.
 - Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
 - Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
 - Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
+
+## Post-#691/#692 journal fuzzing and audit fix — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`. Branch `claude/journal-fuzz-20261126`, base main `e1d0eb0f7c8688ae280f774f36e01e08d2435deb`.
+- Owns: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts` (new seeded model fuzz: never-overwrite hash, duplicate refusal, malformed journal fails closed; a seeded mutant that overwrites hashes is caught), `apps/web/src/lib/duplicateAttemptJournal.clearUnsaved.test.ts` (new), the `clearAttempt` guard in `duplicateAttemptJournal.ts`, one new error key in four catalogs plus `securityKeys.ts`, and two rows in `docs/engineering/SECURITY_FINDINGS.md` (JRNL-L4 fixed; IDLE-M1 recorded as an accepted-design residual risk awaiting an owner decision, not changed).
+- Acceptance: the new regression is red before and green after; neighboring journal, policy, wallet-attempt and i18n suites pass; lint is clean; hosted CI is green on the exact head. No change to idle/recovery behavior, thresholds, dependencies, workflows or contracts.
