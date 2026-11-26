@@ -8,6 +8,15 @@ Acceptance: off by default and byte-identical behaviour when off; real verificat
 
 ---
 
+# Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
+
+Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the
+v1.0 beta: invoice-registration and receipt-archive timestamp cleanup in the encrypted reconciliation vault (#383 →
+#587 → #609). Reason: a v3 → v4/v5 vault format change that older app builds and the CLI cannot open, applied to
+recovery-critical data, for a small privacy gain. No worker may claim or implement it without new owner approval. The
+donor branches and PRs stay open and untouched. The on-screen presentation half is on main (#676). Spec:
+`docs/specs/19-local-metadata-retention.md`. #287 stays open (v1.1).
+
 # Orphaned FC round-1 PRs onto current main: FC-03 and FC-05a (2026-11-26 UTC)
 
 Worker: Claude Code session `ghostpay-42`, on the owner's instruction to finish the orphaned feature-completion PRs
