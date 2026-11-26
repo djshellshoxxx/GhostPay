@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 145,
+  "offset_end": 159,
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 741,
+      "merge_base": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/qualify-98-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1029,
+      "merge_base": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1057,
+      "merge_base": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1056,
+      "merge_base": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1055,
+      "merge_base": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1054,
+      "merge_base": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1057,
+      "merge_base": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 1058,
+      "merge_base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files": [
+        [
+          "packages/ux-schedule/src/scheduled.test.ts",
+          "modified",
+          15,
+          0
+        ],
+        [
+          "packages/ux-schedule/src/scheduled.ts",
+          "modified",
+          4,
+          2
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "status": "diverged",
+      "ahead": 3,
+      "behind": 1058,
+      "merge_base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files": [
+        [
+          "packages/ux-guide/src/profiles.test.ts",
+          "modified",
+          25,
+          0
+        ],
+        [
+          "packages/ux-guide/src/profiles.ts",
+          "modified",
+          5,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex-continuation-spec-20261109",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1637,
+      "merge_base": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "checkpoint/ghostpay-recovery-20261102",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1649,
+      "merge_base": "1dffa5a366fc88a4428823634f43247913048915",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 1328,
+      "merge_base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files": [
+        [
+          "docs/handoffs/SOURCE_RECONCILIATION_2026-11-01.md",
+          "added",
+          135,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/admiring-albattani-6kydor",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 147,
+      "merge_base": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/adoring-wozniak-850ue6",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1648,
+      "merge_base": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

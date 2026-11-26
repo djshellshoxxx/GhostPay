@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { loadLayers, type CatalogLayer, type CatalogLoader, defaultCatalogLoader, SOURCE_CATALOG } from './catalog';
 import { AUTO, isValidPreference, loadPreference, savePreference, type LocalePreference } from './storage';
 import { detectLocale, directionOf, fallbackChain, SOURCE_LOCALE, type Direction } from './languages';
@@ -38,17 +38,27 @@ export { SOURCE_TRANSLATOR } from './source';
 
 function browserLanguages(): readonly string[] {
   try {
-    const n = globalThis.navigator as Navigator | undefined;
-    if (n === undefined) return [];
-    return n.languages.length > 0 ? n.languages : [n.language];
+    const languages = globalThis.navigator?.languages;
+    if (languages?.length) return languages;
+  } catch {
+    // The primary language can still be available when the preference list is unreadable.
+  }
+  try {
+    const primary = globalThis.navigator?.language;
+    return primary ? [primary] : [];
   } catch {
     return [];
   }
 }
 
+function subscribeToLanguageChanges(onChange: () => void): () => void {
+  window.addEventListener('languagechange', onChange);
+  return () => window.removeEventListener('languagechange', onChange);
+}
+
 function devWarn(issue: I18nIssue): void {
   if (!import.meta.env.DEV) return;
-  console.warn(`[i18n] ${issue.kind}: ${issue.key} (${issue.locale})`);
+  console.warn(`[i18n] ${issue.kind}`);
 }
 
 export function I18nProvider(props: I18nProviderProps): ReactNode {
@@ -63,10 +73,9 @@ export function I18nProvider(props: I18nProviderProps): ReactNode {
     return given !== undefined && isValidPreference(given, allowPseudo) ? given : loadPreference(allowPseudo);
   });
   const [persisted, setPersisted] = useState(true);
-  const requested = useMemo(
-    () => (preference === AUTO ? detectLocale(props.languages ?? browserLanguages()) : preference),
-    [preference, props.languages],
-  );
+  const requestedLocale = (): string =>
+    preference === AUTO ? detectLocale(props.languages ?? browserLanguages()) : preference;
+  const requested = useSyncExternalStore(subscribeToLanguageChanges, requestedLocale, requestedLocale);
   // English is bundled, so the first render already has text; other catalogs replace it when they arrive.
   const [loaded, setLoaded] = useState<{ readonly locale: string; readonly layers: readonly CatalogLayer[] }>({
     locale: SOURCE_LOCALE,

@@ -1,0 +1,31 @@
+{
+  "original_evidence_branch": "qualify/ghostpay-hygiene-evidence-20261120-9a4ab6",
+  "original_evidence_head_observed": "c1ec0046c87bd01a940c8ccfec92d8b66b3b4ce3",
+  "original_evidence_sha256": "678817732ab73f0a289421956ad9a71c1bb880c9b1aec507ffcade0f10ea959e",
+  "original_build": {
+    "source_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene",
+    "argv": [
+      "npm",
+      "run",
+      "build",
+      "-w",
+      "@ghostpay/hygiene"
+    ],
+    "environment_override": {
+      "NODE_OPTIONS": "--max-old-space-size=256"
+    },
+    "started_utc": "2026-11-21T00:00:00.260872+00:00",
+    "completed_utc": "2026-11-21T00:00:02.540070+00:00",
+    "duration_seconds": 2.279,
+    "exit_code": 0,
+    "merged_stdout_stderr_encoding": "base64",
+    "merged_stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgYnVpbGQKPiB0c2MgLXAgdHNjb25maWcuYnVpbGQuanNvbgoK",
+    "merged_stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 build\n> tsc -p tsconfig.build.json\n\n",
+    "raw_sha256": "09f896713f8ef44360426e6a47f3f8a6d6b270a135bde1115673ab74149e0913",
+    "node_version": "v24.22.3",
+    "npm_version": "11.19.1"
+  },
+  "reuse_reason": "All production/build inputs are unchanged; the only changed test path is explicitly excluded by tsconfig.build.json. This records the earlier executed build and does not claim a new build execution at the correction commit.",
+  "input_proof_file": "HYGIENE_LINT_SOURCE_PROOF.json"
+}

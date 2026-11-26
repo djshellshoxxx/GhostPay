@@ -46,3 +46,15 @@ describe('checkDeployment fails closed (A7-2)', () => {
     expect(deploymentProblem('checking')).toMatch(/Checking/);
   });
 });
+
+it('keeps provider-controlled adapter diagnostics out of the deployment banner', async () => {
+  const privateText = 'invoice-winter-sample 76219.843';
+  for (const failure of [
+    new ChainAdapterError('DEPLOYMENT_UNVERIFIED', privateText),
+    Object.assign(new Error(privateText), { name: 'ChainAdapterError' }),
+  ]) {
+    const check = await checkDeployment(manifest, rpc(), undefined, () => Promise.reject(failure));
+    expect(check.status).toBe('unverified');
+    expect(deploymentProblem(check)).not.toContain(privateText);
+  }
+});

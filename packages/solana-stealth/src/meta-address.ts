@@ -48,6 +48,7 @@ export function encodeMetaAddress(
   spendPublicKey: Uint8Array,
   viewPublicKey: Uint8Array,
 ): string {
+  if (typeof cluster !== 'string' || !Object.hasOwn(CLUSTER_BYTE, cluster)) return fail('INVALID_META_ADDRESS');
   const S = parsePublicPoint(spendPublicKey);
   const V = parsePublicPoint(viewPublicKey);
   const payload = concatBytes(Uint8Array.of(META_ADDRESS_VERSION, CLUSTER_BYTE[cluster]), S, V);

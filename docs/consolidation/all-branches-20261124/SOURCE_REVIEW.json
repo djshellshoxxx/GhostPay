@@ -1,0 +1,47 @@
+{
+  "format": "ghostpay-composition-source-review/1",
+  "review_type": "independent assistant source review plus coordinator verification; not a GitHub account approval",
+  "reviews": [
+    {
+      "reviewer": "historical_review",
+      "source": "b3d6338ab0f7c4119678462a0c0c8584e87526e7",
+      "result": "approved for qualification",
+      "findings": [
+        "PR615 product/test/tool changes retain 229 of 231 exact paths; the two JSON paths deliberately use stronger #567.",
+        "The narrow checkpoint retains 45 of 47 product/test paths; formatter source/tests combine the intended C1 and input-contract safeguards.",
+        "124 original donor heads remain ancestors.",
+        "All 18 inherited C1 raw evidence logs remain byte-identical.",
+        "Current main recent 14 source files and ownership-line multiplicities retained."
+      ]
+    },
+    {
+      "reviewer": "historical_review",
+      "source": "a107d993c1aed73827d853924ea36036f083400f",
+      "tree": "85ce383194962080baf8b6d741111f8523b843bb",
+      "result": "approved; no source-composition blocker",
+      "findings": [
+        "All seven linear replacements preserve documented formatting and wallet-taxonomy behavior.",
+        "C1 bigint, precision, rounding and sparse-entry guards retained.",
+        "958 existing test/specification files retain prior blobs and modes; the new ordinary compatibility file adds 24 cases.",
+        "No dependencies, workflows, configuration, existing test files or other product files changed in the linear-repair delta."
+      ]
+    },
+    {
+      "reviewer": "root",
+      "source": "fb12a3302d9a85aa8777805bbdaab1bf2770ea16",
+      "tree": "8086add0f3c77a80ae953e45d50b179244261248",
+      "result": "two final fixture reconciliations approved; production unchanged",
+      "non_documentation_delta": [
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/ux-fiat/src/view.quote-accessor.test.ts"
+      ],
+      "findings": [
+        "Two existing array delete operations now use equivalent Reflect.deleteProperty calls; all assertions retained.",
+        "Two existing fiat-view message expectations now match the stronger parser diagnostic; exact whole-object assertions and all controls retained.",
+        "Registry union verified both parents nonblank-line multiplicities.",
+        "Remote source 7b4af29882ad2e7acefdcb83d5a949cd516d100f exactly matches the local fb12a330 tree."
+      ]
+    }
+  ],
+  "qualification_boundary": "Reviews approve source composition only; final hosted tests, CodeQL and merge remain separate gates."
+}

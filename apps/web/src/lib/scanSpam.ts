@@ -170,7 +170,7 @@ export interface AnonymitySet {
   readonly level: 'low' | 'medium' | 'high';
   readonly count7d: number;
   readonly count30d: number;
-  /** The scan did not cover the whole 7-day span up to the head, so the counts are lower bounds. */
+  /** The scan did not cover the whole available 30-day span up to the head, so at least one count is a lower bound. */
   readonly partial: boolean;
   /** Opt-in same-token transfer estimate; it never changes `level`. */
   readonly transfers?: TransferEstimate;
@@ -192,7 +192,7 @@ export function anonymitySet(o: { readonly chain: ChainConfig; readonly routerBl
   const count30d = o.routerBlocks.filter((b) => b >= from30 && b <= o.head).length;
   return {
     level: count7d >= HIGH_AT ? 'high' : count7d >= MEDIUM_AT ? 'medium' : 'low', count7d, count30d,
-    partial: o.scannedFrom > (from7 > 0n ? from7 : 0n) || (o.scannedTo !== undefined && o.scannedTo < o.head),
+    partial: o.scannedFrom > (from30 > 0n ? from30 : 0n) || (o.scannedTo !== undefined && o.scannedTo < o.head),
     ...(o.transfers === undefined ? {} : { transfers: o.transfers }),
   };
 }

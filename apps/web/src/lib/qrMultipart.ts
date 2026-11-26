@@ -1,4 +1,4 @@
-import { encodeMultipart } from '@ghostpay/qr-exchange';
+import { encodeMultipart, QrExchangeError } from '@ghostpay/qr-exchange';
 import { makeQr } from './qr';
 
 /**
@@ -18,6 +18,8 @@ export function fitsSingleQr(text: string): boolean {
 
 /** Splits text (as UTF-8) into GPQ1 parts with the default part size (each part fits a mid-size QR). */
 export function toMultipart(text: string): readonly string[] {
+  // TextEncoder silently replaces unpaired UTF-16 surrogates with U+FFFD; never change a QR payload's bytes.
+  if (/\p{Cs}/u.test(text)) throw new QrExchangeError('BAD_INPUT');
   // Copy into this realm's Uint8Array: encodeMultipart checks `instanceof`, and TextEncoder may belong to another
   // realm (an embedding frame, or jsdom in tests).
   return encodeMultipart(Uint8Array.from(new TextEncoder().encode(text)));

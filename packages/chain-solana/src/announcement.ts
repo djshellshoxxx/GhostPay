@@ -1,4 +1,5 @@
-import { base64urlnopad } from '@scure/base';
+import { concatBytes } from '@noble/curves/utils.js';
+import { base58 } from '@scure/base';
 import { fail } from './errors.js';
 import { decodePrimeOrderPoint, type PrimeOrderPoint } from './point.js';
 
@@ -8,8 +9,12 @@ export const ANNOUNCEMENT_VERSION = 0x01;
 export const ANNOUNCEMENT_HEADER_LENGTH = 34;
 /** Maximum opaque metadata length in bytes. */
 export const MAX_ANNOUNCEMENT_METADATA = 256;
-/** Text prefix of the SPL Memo form (the Memo program requires valid UTF-8). */
+/** Text prefix of the SPL Memo form (ADR-0017 section 5; the Memo program requires valid UTF-8). */
 export const MEMO_PREFIX = 'gpst1:';
+/** Memo body: R(32) || view_tag(1), exactly as `@ghostpay/solana-stealth` writes it. */
+const MEMO_BODY_LENGTH = 33;
+/** Longest memo text accepted (same bound as `@ghostpay/solana-stealth`). */
+const MAX_MEMO_LENGTH = 96;
 
 /** Decoded announcement. */
 export interface SolanaAnnouncement {
@@ -30,8 +35,10 @@ export interface AnnouncementInput {
  * Encodes the binary announcement:
  * `version(1)=0x01 || R(32) || view_tag(1) || metadata(0..256)`.
  *
- * @remarks Used verbatim as announcer-program event data. There is no length
- * field: metadata is the remainder, so the encoding is unique per input.
+ * @remarks This package's proposed announcer-program event payload. No such program exists, ADR-0017
+ * section 6 specifies a different instruction, and the web app never reads this form: interoperable
+ * announcements use the memo form ({@link encodeAnnouncementMemo}). There is no length field: metadata is
+ * the remainder, so the encoding is unique per input.
  *
  * @param a R (validated prime-order point), view tag, optional metadata.
  * @returns Encoded bytes.
@@ -89,37 +96,44 @@ export function decodeAnnouncement(bytes: Uint8Array): SolanaAnnouncement {
 }
 
 /**
- * Encodes the SPL Memo text form: `gpst1:` + base64url-no-padding(binary).
+ * Encodes the SPL Memo text form exactly as `@ghostpay/solana-stealth` does (ADR-0017 section 5):
+ * `gpst1:` + base58(R(32) || view_tag(1)).
+ *
+ * @remarks The memo carries no metadata (the web scanner rejects a longer body), so a non-empty `metadata` is
+ * refused rather than silently dropped. Opaque metadata exists only in the binary announcer-event form
+ * ({@link encodeAnnouncement}).
  *
  * @param a Announcement fields.
- * @returns ASCII memo string.
+ * @returns ASCII memo string (at most 52 characters).
  * @throws {SolanaStealthError} `INVALID_ANNOUNCEMENT`.
  */
 export function encodeAnnouncementMemo(a: AnnouncementInput): string {
-  return MEMO_PREFIX + base64urlnopad.encode(encodeAnnouncement(a));
+  if (a.metadata !== undefined && a.metadata.length > 0) return fail('INVALID_ANNOUNCEMENT');
+  const bin = encodeAnnouncement({ ephemeralPublicKey: a.ephemeralPublicKey, viewTag: a.viewTag });
+  return MEMO_PREFIX + base58.encode(bin.subarray(1)); // R || view_tag (metadata is empty)
 }
 
 /**
- * Strictly decodes the SPL Memo text form.
+ * Strictly decodes the SPL Memo text form `gpst1:` + base58(R || view_tag).
  *
- * @remarks Exact, case-sensitive prefix; base64url alphabet without padding; the
- * text must re-encode identically (rejects non-zero trailing bits).
+ * @remarks Exact, case-sensitive prefix; at most 96 characters; base58 body of exactly 33 bytes; R must be a
+ * canonical prime-order non-identity point. The retired `gpst1:` + base64url form is rejected (it is not valid
+ * base58 or not 33 bytes). The result has empty `metadata`.
  *
  * @param memo Untrusted memo text.
  * @returns Decoded announcement.
  * @throws {SolanaStealthError} `INVALID_ANNOUNCEMENT`.
  */
 export function decodeAnnouncementMemo(memo: string): SolanaAnnouncement {
-  if (typeof memo !== 'string' || !memo.startsWith(MEMO_PREFIX) || memo.length > 512) {
+  if (typeof memo !== 'string' || !memo.startsWith(MEMO_PREFIX) || memo.length > MAX_MEMO_LENGTH) {
     return fail('INVALID_ANNOUNCEMENT');
   }
-  const body = memo.slice(MEMO_PREFIX.length);
-  let bytes: Uint8Array;
+  let body: Uint8Array;
   try {
-    bytes = base64urlnopad.decode(body);
+    body = base58.decode(memo.slice(MEMO_PREFIX.length));
   } catch {
     return fail('INVALID_ANNOUNCEMENT');
   }
-  if (base64urlnopad.encode(bytes) !== body) return fail('INVALID_ANNOUNCEMENT');
-  return decodeAnnouncement(bytes);
+  if (body.length !== MEMO_BODY_LENGTH) return fail('INVALID_ANNOUNCEMENT');
+  return decodeAnnouncement(concatBytes(Uint8Array.of(ANNOUNCEMENT_VERSION), body));
 }

@@ -1,10 +1,8 @@
-import { readAttempts, clearAttempt, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
+import { browserAttemptLocks, readAttempts, clearAttempt, withAttemptJournal, type AttemptLockManager, type AttemptStorage, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { UserFacingError } from '../../lib/errors';
 import { sendViaWallet, walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 
-export interface PolicyLockManager {
-  request<T>(name: string, callback: () => Promise<T>): Promise<T>;
-}
+export type PolicyLockManager = AttemptLockManager;
 
 /** Reuses the bounded attempt schema. Only metadata and hashes persist; never request calldata or seller secrets. */
 export function policyAttemptStorage(): AttemptStorage {
@@ -15,10 +13,8 @@ export function policyAttemptStorage(): AttemptStorage {
 }
 
 function locks(): PolicyLockManager {
-  if (typeof navigator === 'undefined' || navigator.locks === undefined) throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' });
-  return { async request<T>(name: string, callback: () => Promise<T>): Promise<T> {
-    return await navigator.locks.request(name, { mode: 'exclusive' }, callback);
-  } };
+  try { return browserAttemptLocks(); }
+  catch { throw new UserFacingError({ key: 'policy.withdraw.journalUnavailable' }); }
 }
 
 export function policyActionKey(wallet: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, scope: string): string {
@@ -30,13 +26,12 @@ export function policyActionAttempts(key: string, storage = policyAttemptStorage
 }
 
 /** No automatic clearing: a reorg or absent transaction is not proof that a prior submission cannot mine. */
-export async function clearPolicyAction(key: string, confirmed: boolean, storage = policyAttemptStorage(), lockManager = locks(), assertCurrent: () => void = () => undefined): Promise<void> {
-  await lockManager.request('ghostpay:durable-wallet-attempts:v1', () => {
+export async function clearPolicyAction(key: string, confirmed: boolean, storage: AttemptStorage | undefined = undefined, lockManager = locks(), assertCurrent: () => void = () => undefined): Promise<void> {
+  await withAttemptJournal((journal) => {
     assertCurrent();
-    clearAttempt(key, confirmed, storage);
+    clearAttempt(key, confirmed, journal);
     assertCurrent();
-    return Promise.resolve();
-  });
+  }, { ...(storage === undefined ? {} : { storage }), lockManager });
 }
 
 /**
@@ -48,14 +43,20 @@ export async function sendPolicyAction(p: {
   readonly storage?: AttemptStorage; readonly lockManager?: PolicyLockManager;
 }): Promise<`0x${string}`> {
   const storage = p.storage ?? policyAttemptStorage();
-  const manager = p.lockManager ?? locks();
-  return manager.request('ghostpay:durable-wallet-attempts:v1', async () => {
-    p.assertCurrent();
-    const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
-    if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
-    const tx = await p.prepare();
-    p.assertCurrent();
-    return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage });
+  const manager = p.lockManager;
+  // Check capability before preparation, but let the default journal choose bounded begin and unbounded finish waits.
+  if (manager === undefined) locks();
+  p.assertCurrent();
+  const key = policyActionKey(p.wallet, { to: p.wallet.account, data: '0x', value: 0n }, p.scope);
+  if (policyActionAttempts(key, storage).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+  const tx = await p.prepare();
+  p.assertCurrent();
+  return sendViaWallet(p.wallet, tx, p.assertCurrent, {
+    kind: 'transaction', logicalAction: true, scope: p.scope,
+    ...(p.storage === undefined ? {} : { storage }), ...(manager === undefined ? {} : { lockManager: manager }),
+    beforeAttemptStart: (attemptKey, journal) => {
+      if (attemptKey !== key || policyActionAttempts(key, journal).length > 0) throw new UserFacingError({ key: 'policy.withdraw.previousAttempt' });
+    },
   });
 }
 

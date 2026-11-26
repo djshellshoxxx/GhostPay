@@ -85,6 +85,13 @@ async function collect(it: AsyncIterable<unknown>): Promise<unknown[]> {
 }
 const sc = new AbortController();
 
+describe('block range completeness (SOLANA-TRON-08)', () => {
+  it('fails closed when the node omits blocks from the requested range', async () => {
+    const rpc = mockRpc([{ number: 1 }, { number: 3 }, { number: 4 }]); // block 2 missing
+    await expect(collect(scanTron(rpc, { fromBlock: 1n, toBlock: 4n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }))).rejects.toThrow(/invalid response/);
+  });
+});
+
 describe('scan with mock RPC', () => {
   it('adapter.scan needs an rpc', () => {
     expect(() => adapter.scan({ fromBlock: 1n }, { viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey }, sc.signal)).toThrow();
@@ -184,7 +191,7 @@ describe('scan with mock RPC', () => {
     await expect(collect(scanTron(bad({ block: [{ blockID: 'x', block_header: { raw_data: { number: 0 } } }] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad({ block: [{ blockID: BLOCK_ID, block_header: { raw_data: { number: -1 } } }] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad(null), o))).rejects.toThrow();
-    expect(await collect(scanTron(bad({}), o))).toEqual([]);
+    await expect(collect(scanTron(bad({}), o))).rejects.toThrow(); // SOLANA-TRON-08: an empty answer for a non-empty range is a gap
     const dup = { blockID: BLOCK_ID, block_header: { raw_data: { number: 0 } } };
     await expect(collect(scanTron(bad({ block: [dup, dup] }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad({ block: [{ ...dup, transactions: 3 }] }), o))).rejects.toThrow();

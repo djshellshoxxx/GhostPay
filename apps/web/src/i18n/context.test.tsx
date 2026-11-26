@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider, useI18n, useI18nOptional, useT } from './context';
-import type { Catalog } from './catalog';
+import type { Catalog, MessageKey } from './catalog';
 
 afterEach(() => {
   cleanup();
@@ -55,6 +55,17 @@ describe('I18n context lifecycle', () => {
     expect(screen.getByTestId('state').textContent).toContain('ready|en|ltr|true|en');
     await user.click(screen.getByRole('button', { name: 'Spanish' }));
     await waitFor(() => { expect(screen.getByTestId('state').textContent).toContain('ready|es|ltr|false|es'); });
+  });
+
+  it('logs a missing translation without its caller-supplied key', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    function MissingKey(): null {
+      useT()('invoice-private-fixture' as MessageKey);
+      return null;
+    }
+    render(<I18nProvider initialPreference="en"><MissingKey /></I18nProvider>);
+    expect(warn).toHaveBeenCalledWith('[i18n] missing-key');
+    expect(JSON.stringify(warn.mock.calls)).not.toContain('invoice-private-fixture');
   });
 
   it('supports optional context access and rejects required access without its provider', () => {

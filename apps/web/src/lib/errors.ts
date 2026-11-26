@@ -59,10 +59,7 @@ const INVOICE_TEXT: Readonly<Record<string, MessageKey>> = {
 };
 
 /** A safe render-time value: no arbitrary exception or sensitive cause is retained. */
-export type DisplayMessage = string | MessageDescriptor | {
-  readonly invoiceMessage: MessageKey;
-  readonly field: string;
-};
+export type DisplayMessage = string | MessageDescriptor;
 
 /** Capture only public diagnostics and formatting arguments for later rendering. */
 export function captureUserMessage(error: unknown): DisplayMessage {
@@ -70,9 +67,7 @@ export function captureUserMessage(error: unknown): DisplayMessage {
   if (error instanceof UserFacingError) return error.translation ?? error.message;
   if (error instanceof InvoiceError) {
     const key = INVOICE_TEXT[error.code] ?? 'error.invoice.rejected';
-    return error.code === 'SCHEMA' && error.path !== undefined
-      ? { invoiceMessage: key, field: error.path }
-      : { key };
+    return { key };
   }
   if (error instanceof ChainAdapterError) return { key: 'error.chain', values: { code: error.code } };
   if (error instanceof GhostPayCryptoError) return { key: 'error.crypto', values: { code: error.code } };
@@ -82,7 +77,6 @@ export function captureUserMessage(error: unknown): DisplayMessage {
 /** Render existing trusted copy or a public descriptor with the language current now. */
 export function displayMessage(message: DisplayMessage, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
   if (typeof message === 'string') return message;
-  if ('invoiceMessage' in message) return t('error.invoice.field', { message: t(message.invoiceMessage), field: message.field });
   return renderDescriptor(message, t);
 }
 

@@ -31,3 +31,5 @@ export { createScanSource } from './create.js';
 export type { ScanSourceConfig } from './create.js';
 export { SCAN_MODE_CLAIMS, describeScanMode } from './claims.js';
 export type { ScanModeClaims } from './claims.js';
+export { describeScanEvidence } from './evidence.js';
+export type { ScanEvidence, ScanEvidenceOptions } from './evidence.js';

@@ -66,6 +66,34 @@ for (const basePath of ['/', '/mirror/app/']) {
       await fs.rm(outDir, { recursive: true, force: true });
     }
   });
+
+  for (const { label, seconds, wholeSeconds } of [
+    { label: 'submillisecond second boundary', seconds: '1795078174.9996', wholeSeconds: 1795078174 },
+    { label: 'epoch', seconds: '0', wholeSeconds: 0 },
+    { label: 'pre-epoch', seconds: '-86400.25', wholeSeconds: -86401 },
+  ]) {
+    test(`preserves ${label} source timestamp under www${basePath}`, async () => {
+      const siteDir = await tempDir('ext');
+      const outDir = await tempDir('ext-out');
+      const rel = 'assets/font.woff2';
+      try {
+        await writeTree(siteDir, { 'index.html': '<p>x</p>', [rel]: new Uint8Array([0x77, 0x4f, 0x46, 0x32, 0, 1, 0, 0]) });
+        await fs.utimes(path.join(siteDir, rel), seconds, seconds);
+        const source = await fs.stat(path.join(siteDir, rel));
+        assert.ok(Math.abs(source.mtimeMs - Number(seconds) * 1000) < 0.01, 'fixture retains submillisecond precision');
+        assert.equal(Math.floor(source.mtimeMs / 1000), wholeSeconds);
+        const res = await exportStatic({ siteDir, files: ['index.html', rel], entrypoint: 'index.html', hostConfig: hc(basePath), policy: POLICY, outDir });
+        const dest = path.join(res.wwwRoot, ...basePath.split('/').filter(Boolean), rel);
+        const exported = await fs.stat(dest);
+        assert.equal(Math.floor(exported.mtimeMs / 1000), wholeSeconds, 'HTTP Last-Modified/ETag second must equal the source');
+        assert.ok(Math.abs(exported.mtimeMs - source.mtimeMs) < 0.01, 'export retains submillisecond precision');
+        assert.deepEqual(await fs.readFile(dest), await fs.readFile(path.join(siteDir, rel)));
+      } finally {
+        await fs.rm(siteDir, { recursive: true, force: true });
+        await fs.rm(outDir, { recursive: true, force: true });
+      }
+    });
+  }
 }
 
 test('refuses symlinks without leaving a partial export', async () => {

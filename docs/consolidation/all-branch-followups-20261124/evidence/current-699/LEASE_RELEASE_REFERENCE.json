@@ -1,0 +1,18 @@
+{
+  "head": "c69bca412c25647388d36eb64f18c592f3a9b67e",
+  "path": "integration-lock.json",
+  "content_sha256": "8786fa426a0e57cdbf13b4517017e543f9b469f7841c5e6471424efe7a745b8c",
+  "record": {
+    "format": "ghostpay-integration-lock/1",
+    "status": "released",
+    "owner": "chatgpt-f80482f352bc-all-branch-review",
+    "token": "36c9831e-b7a4-45ea-81b2-e3f71fe89067",
+    "generation": 18,
+    "base_sha": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+    "acquired_at": "2026-11-24T12:56:13.635Z",
+    "heartbeat_at": "2026-11-24T12:56:13.635Z",
+    "expires_at": "2026-11-24T13:16:13.635Z",
+    "transport": "github-connector-expected-head-nonforce",
+    "released_at": "2026-11-24T12:58:12.000Z"
+  }
+}

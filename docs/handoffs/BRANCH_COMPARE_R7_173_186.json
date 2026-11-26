@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 173,
+  "offset_end": 187,
+  "results": [
+    {
+      "branch": "claude/ar-c5-device-matrix",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1314,
+      "merge_base": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ar-c7-embed-iframe-e2e",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1313,
+      "merge_base": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/consolidation-2026-11-04",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1184,
+      "merge_base": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cool-albattani-xopr89",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1561,
+      "merge_base": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-c2",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1219,
+      "merge_base": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-c4",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1225,
+      "merge_base": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-c5",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1219,
+      "merge_base": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w1",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1225,
+      "merge_base": "704e268bfa7df57964175f820f67400834bdce43",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w5",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1224,
+      "merge_base": "f030376a331445f5059061f24238acb5cf867b29",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w6",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1219,
+      "merge_base": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w7",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1203,
+      "merge_base": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w8",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1640,
+      "merge_base": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w9",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1203,
+      "merge_base": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/cw-w10",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1202,
+      "merge_base": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

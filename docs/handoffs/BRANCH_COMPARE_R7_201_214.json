@@ -1,0 +1,499 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 201,
+  "offset_end": 215,
+  "results": [
+    {
+      "branch": "claude/ghostpay-github-pages-up6cj6",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 744,
+      "merge_base": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "status": "diverged",
+      "ahead": 8,
+      "behind": 1638,
+      "merge_base": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "files": [
+        [
+          ".github/agent-prompts/openai-agents.steps.disabled.yml.txt",
+          "renamed",
+          5,
+          0
+        ],
+        [
+          ".github/workflows/ci.yml",
+          "modified",
+          1,
+          1
+        ],
+        [
+          ".github/workflows/ghostpay-codex-cloud.yml",
+          "modified",
+          44,
+          8
+        ],
+        [
+          "apps/web/src/lib/deployment.test.ts",
+          "added",
+          48,
+          0
+        ],
+        [
+          "apps/web/src/lib/manifest.test.ts",
+          "modified",
+          19,
+          1
+        ],
+        [
+          "apps/web/src/lib/pay.test.ts",
+          "modified",
+          31,
+          0
+        ],
+        [
+          "apps/web/src/lib/pay.ts",
+          "modified",
+          19,
+          1
+        ],
+        [
+          "apps/web/src/lib/payExec.test.ts",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "apps/web/src/lib/payExec.ts",
+          "modified",
+          5,
+          1
+        ],
+        [
+          "apps/web/src/views/Pay.test.tsx",
+          "modified",
+          28,
+          0
+        ],
+        [
+          "scripts/scan-secrets.sh",
+          "modified",
+          10,
+          2
+        ],
+        [
+          "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+          "added",
+          39,
+          0
+        ],
+        [
+          "scripts/tests/lean-core-reachability.test.mjs",
+          "added",
+          144,
+          0
+        ],
+        [
+          "scripts/tests/scan-secrets.test.mjs",
+          "added",
+          72,
+          0
+        ],
+        [
+          "scripts/tests/workflow-files.test.mjs",
+          "added",
+          18,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "status": "diverged",
+      "ahead": 4,
+      "behind": 1341,
+      "merge_base": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "files": [
+        [
+          "apps/relayer/src/api.test.ts",
+          "modified",
+          24,
+          1
+        ],
+        [
+          "apps/relayer/src/service.ts",
+          "modified",
+          7,
+          5
+        ],
+        [
+          "apps/web/src/lib/sweep.test.ts",
+          "modified",
+          3,
+          0
+        ],
+        [
+          "apps/web/src/lib/sweep.ts",
+          "modified",
+          5,
+          3
+        ],
+        [
+          "apps/web/src/lib/txGuard.ts",
+          "modified",
+          12,
+          0
+        ],
+        [
+          "docs/developer/api/chain-adapters.md",
+          "modified",
+          8,
+          5
+        ],
+        [
+          "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "modified",
+          3,
+          7
+        ],
+        [
+          "packages/chain-adapters/src/errors.ts",
+          "modified",
+          8,
+          1
+        ],
+        [
+          "packages/chain-adapters/src/logs.ts",
+          "modified",
+          9,
+          4
+        ],
+        [
+          "packages/chain-adapters/src/rpc.test.ts",
+          "modified",
+          20,
+          1
+        ],
+        [
+          "packages/chain-adapters/src/rpc.ts",
+          "modified",
+          16,
+          4
+        ],
+        [
+          "packages/chain-adapters/src/scanHardening.test.ts",
+          "modified",
+          33,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/gracious-heisenberg-97ji6q",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1616,
+      "merge_base": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/haiku-wave-2-handoff-qepfoe",
+      "status": "diverged",
+      "ahead": 3,
+      "behind": 1328,
+      "merge_base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files": [
+        [
+          "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "modified",
+          5,
+          0
+        ],
+        [
+          "docs/handoffs/WAVE-2-REPORT-2026-10-30.md",
+          "added",
+          109,
+          0
+        ],
+        [
+          "docs/handoffs/WAVE-2-STATUS-2026-10-30.md",
+          "added",
+          56,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/happy-maxwell-onl4x5",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 1328,
+      "merge_base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "files": [
+        [
+          "scripts/audit/gen-audit24-report.py",
+          "modified",
+          8,
+          0
+        ],
+        [
+          "scripts/tests/audit-report-paths.test.mjs",
+          "modified",
+          15,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/hopeful-bardeen-8ch6l8",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1637,
+      "merge_base": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/inspiring-fermat-vxv689",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2328,
+      "merge_base": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/kind-faraday-8qzf6e",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1037,
+      "merge_base": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/laughing-bardeen-4t20ys",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2168,
+      "merge_base": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/lucid-meitner-apalzc",
+      "status": "diverged",
+      "ahead": 19,
+      "behind": 476,
+      "merge_base": "0d2ea8b40d6eea95388ace12d1bb03049f5d181e",
+      "files": [
+        [
+          "apps/web/scripts/scan-bundle.d.mts",
+          "modified",
+          1,
+          1
+        ],
+        [
+          "apps/web/scripts/scan-bundle.mjs",
+          "modified",
+          28,
+          29
+        ],
+        [
+          "apps/web/src/scanBundle.test.ts",
+          "modified",
+          32,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_COMPLETION_AUDIT.md",
+          "added",
+          40,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_HAIKU_RANDOM_AUDIT.md",
+          "added",
+          35,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_HAIKU_RANDOM_AUDIT_ROUND3.md",
+          "added",
+          173,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_HISTORICAL_BRANCH_AUDIT.md",
+          "added",
+          31,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_REGRESSION_MUTATION_CHECK.md",
+          "added",
+          33,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_SECURITY_REASSESSMENT.md",
+          "added",
+          49,
+          0
+        ],
+        [
+          "docs/audits/GHOSTPAY_SECURITY_REASSESSMENT_WORKER_E.md",
+          "added",
+          134,
+          0
+        ],
+        [
+          "docs/consolidation/GHOSTPAY_FINAL_INTEGRATION_LEDGER.md",
+          "added",
+          129,
+          0
+        ],
+        [
+          "docs/consolidation/ghostpay-final-ledger.json",
+          "added",
+          697,
+          0
+        ],
+        [
+          "docs/handoffs/GHOSTPAY_REMAINING_WORK.md",
+          "added",
+          26,
+          0
+        ],
+        [
+          "packages/chain-adapters/src/deployments.test.ts",
+          "modified",
+          2,
+          0
+        ],
+        [
+          "packages/chain-adapters/src/deployments.ts",
+          "modified",
+          8,
+          1
+        ],
+        [
+          "packages/chain-adapters/src/quote.test.ts",
+          "modified",
+          4,
+          0
+        ],
+        [
+          "packages/chain-adapters/src/quote.ts",
+          "modified",
+          1,
+          1
+        ],
+        [
+          "packages/chain-adapters/src/rpc.test.ts",
+          "modified",
+          6,
+          0
+        ],
+        [
+          "packages/chain-adapters/src/rpc.ts",
+          "modified",
+          3,
+          1
+        ],
+        [
+          "packages/ops-monitor/src/w3.test.ts",
+          "modified",
+          2,
+          2
+        ],
+        [
+          "packages/pool-circuits/src/helpers.test.ts",
+          "modified",
+          20,
+          1
+        ],
+        [
+          "packages/pool-circuits/src/inputs.ts",
+          "modified",
+          5,
+          0
+        ],
+        [
+          "packages/pool-relayer/src/service.ts",
+          "modified",
+          4,
+          0
+        ],
+        [
+          "packages/pool-relayer/src/workerB.test.ts",
+          "modified",
+          14,
+          0
+        ],
+        [
+          "packages/tron-adapter/src/rpc.ts",
+          "modified",
+          7,
+          5
+        ],
+        [
+          "packages/tron-adapter/src/scan.test.ts",
+          "modified",
+          8,
+          1
+        ],
+        [
+          "scripts/check-tx-origin.sh",
+          "modified",
+          33,
+          0
+        ],
+        [
+          "scripts/tests/check-tx-origin.test.mjs",
+          "modified",
+          11,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/nice-ritchie-8vivls",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1048,
+      "merge_base": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/pages-site-1",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2284,
+      "merge_base": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/portable-hosting-kit",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1609,
+      "merge_base": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

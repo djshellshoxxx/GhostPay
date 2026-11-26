@@ -1,0 +1,13 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@0.1.0 build
+> tsc -p tsconfig.json --noEmit && vite build
+
+Killed
+npm error Lifecycle script `build` failed with error:
+npm error code 137
+npm error path /workspace/scratch/63789860705e/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/63789860705e/GhostPay/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit && vite build

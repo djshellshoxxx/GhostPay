@@ -1,0 +1,1737 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "method": "GitHub connector creation-date pagination, 100/100/100/46 rows",
+  "count": 346,
+  "pull_requests": [
+    {
+      "number": 51,
+      "title": "ci: continue GhostPay API-funded backlog development twice daily",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/51"
+    },
+    {
+      "number": 52,
+      "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/52"
+    },
+    {
+      "number": 82,
+      "title": "Configure OpenAI autonomous development workflow and prompts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/82"
+    },
+    {
+      "number": 87,
+      "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/87"
+    },
+    {
+      "number": 139,
+      "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/139"
+    },
+    {
+      "number": 140,
+      "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/140"
+    },
+    {
+      "number": 153,
+      "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/153"
+    },
+    {
+      "number": 160,
+      "title": "docs(pages): source-pinned integration and release-gate inventory",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/160"
+    },
+    {
+      "number": 205,
+      "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/205"
+    },
+    {
+      "number": 209,
+      "title": "Completion run 2026-11-18: claims + integration",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/209"
+    },
+    {
+      "number": 211,
+      "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/211"
+    },
+    {
+      "number": 212,
+      "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/212"
+    },
+    {
+      "number": 213,
+      "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/213"
+    },
+    {
+      "number": 215,
+      "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/215"
+    },
+    {
+      "number": 217,
+      "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/217"
+    },
+    {
+      "number": 218,
+      "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/218"
+    },
+    {
+      "number": 219,
+      "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/219"
+    },
+    {
+      "number": 220,
+      "title": "Security remediation 2026-11-18: Mythril re-evaluation, red-team fixes (CI policy, RPC egress, confidential router, ledger), key-boundary docs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/220"
+    },
+    {
+      "number": 221,
+      "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/221"
+    },
+    {
+      "number": 222,
+      "title": "privacy: implement threat-model recommendations TM1-TM15",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/222"
+    },
+    {
+      "number": 223,
+      "title": "docs: sync docs with current code (2026-11-18)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/223"
+    },
+    {
+      "number": 224,
+      "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/224"
+    },
+    {
+      "number": 225,
+      "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/225"
+    },
+    {
+      "number": 226,
+      "title": "fix(audit): contain static helper symlinks and malformed requests",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/226"
+    },
+    {
+      "number": 228,
+      "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/228"
+    },
+    {
+      "number": 229,
+      "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/229"
+    },
+    {
+      "number": 230,
+      "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/230"
+    },
+    {
+      "number": 231,
+      "title": "fix(web): ask before refreshing the displayed Sweep balance",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/231"
+    },
+    {
+      "number": 232,
+      "title": "docs: preserve beta execution results, source pins and remaining gates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/232"
+    },
+    {
+      "number": 233,
+      "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/233"
+    },
+    {
+      "number": 238,
+      "title": "Consolidate Pages beta security, privacy, and recovery",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/238"
+    },
+    {
+      "number": 239,
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/239"
+    },
+    {
+      "number": 240,
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/240"
+    },
+    {
+      "number": 243,
+      "title": "feat(web): complete selected invoice signer pin validation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/243"
+    },
+    {
+      "number": 244,
+      "title": "Complete Bitcoin spent-output detection and private scan consent",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/244"
+    },
+    {
+      "number": 246,
+      "title": "Complete remaining GhostPay fixes and reviewed completion ledger",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/246"
+    },
+    {
+      "number": 248,
+      "title": "Complete private seller scan checkpoints and durable discovery",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/248"
+    },
+    {
+      "number": 249,
+      "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/249"
+    },
+    {
+      "number": 250,
+      "title": "Recover historical adapter date, retry and TRON completeness safeguards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/250"
+    },
+    {
+      "number": 251,
+      "title": "feat(privacy): enforce browser network authorization and cancellation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/251"
+    },
+    {
+      "number": 252,
+      "title": "fix(web): repair standalone Sweep consent disclosure and reconcile main",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/252"
+    },
+    {
+      "number": 253,
+      "title": "fix(net-harness): reject decoded SOCKS chunks in major dependency candidate",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/253"
+    },
+    {
+      "number": 254,
+      "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/254"
+    },
+    {
+      "number": 255,
+      "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/255"
+    },
+    {
+      "number": 256,
+      "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/256"
+    },
+    {
+      "number": 259,
+      "title": "Recover historical documentation and reconcile current Pages guidance",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/259"
+    },
+    {
+      "number": 260,
+      "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/260"
+    },
+    {
+      "number": 261,
+      "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/261"
+    },
+    {
+      "number": 262,
+      "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/262"
+    },
+    {
+      "number": 263,
+      "title": "Record current branch audit, recovery evidence and consolidation checkpoint",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/263"
+    },
+    {
+      "number": 264,
+      "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/264"
+    },
+    {
+      "number": 265,
+      "title": "fix(invoice-schema): reject sparse or decorated arrays during canonical JSON encoding",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/265"
+    },
+    {
+      "number": 268,
+      "title": "fix(invoice-schema): reject invalid merchant profile verification clocks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/268"
+    },
+    {
+      "number": 269,
+      "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/269"
+    },
+    {
+      "number": 270,
+      "title": "Harden canonical arrays and skip unsupported scanner schemes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/270"
+    },
+    {
+      "number": 271,
+      "title": "Repair historical adapter qualification without weakening TRON completeness",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/271"
+    },
+    {
+      "number": 272,
+      "title": "Prevent stale Sweep quotes and signing handoffs; preserve explicit balance consent",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/272"
+    },
+    {
+      "number": 273,
+      "title": "Preserve complete consolidation records and recovered documentation history",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/273"
+    },
+    {
+      "number": 274,
+      "title": "fix(web): keep jittered invoice expiry monotonic across clock rollback",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/274"
+    },
+    {
+      "number": 275,
+      "title": "test(policy-scheme): repair mismatched-leaf Anvil fixture",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/275"
+    },
+    {
+      "number": 276,
+      "title": "feat(pages): independently verify release artifact integrity before promotion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/276"
+    },
+    {
+      "number": 277,
+      "title": "fix(pages): bind artifact checks to verified bytes and file identities",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/277"
+    },
+    {
+      "number": 278,
+      "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/278"
+    },
+    {
+      "number": 289,
+      "title": "fix(invoice-schema): reject non-string runtime base64url decoder inputs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/289"
+    },
+    {
+      "number": 290,
+      "title": "fix(web): reject non-string QR classification keys before coercion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/290"
+    },
+    {
+      "number": 292,
+      "title": "Gate Pages artifact promotion and qualify adversarial security fixtures",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/292"
+    },
+    {
+      "number": 293,
+      "title": "feat(web): add opt-in race-aware clipboard cleanup primitive",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/293"
+    },
+    {
+      "number": 294,
+      "title": "fix(qr-exchange): preserve idle deadline after rejected conflicts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/294"
+    },
+    {
+      "number": 295,
+      "title": "test(web): complete unverified QR and flag-combination coverage",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/295"
+    },
+    {
+      "number": 296,
+      "title": "docs: preserve verified engineering cycle and consolidation evidence",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/296"
+    },
+    {
+      "number": 297,
+      "title": "test(web): qualify clipboard privacy regressions with repository tooling",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/297"
+    },
+    {
+      "number": 298,
+      "title": "fix(web): bind RPC receipts to the submitted transaction hash",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/298"
+    },
+    {
+      "number": 299,
+      "title": "docs: checkpoint receipt repair, clipboard qualification and security gates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/299"
+    },
+    {
+      "number": 300,
+      "title": "feat(web): add one-way privacy quick-hide shortcut and button",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/300"
+    },
+    {
+      "number": 301,
+      "title": "fix(web): fail closed on invalid base-unit parsing inputs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/301"
+    },
+    {
+      "number": 302,
+      "title": "fix: consolidate QR, receipt and Pages validation repairs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/302"
+    },
+    {
+      "number": 303,
+      "title": "fix(web): qualify amount-parser runtime guards on consolidated source",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/303"
+    },
+    {
+      "number": 304,
+      "title": "docs: preserve verified recovery, artifacts and final worker handoffs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/304"
+    },
+    {
+      "number": 305,
+      "title": "fix(web): classify noncanonical ERC-20 dry-run Boolean responses as unavailable",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/305"
+    },
+    {
+      "number": 307,
+      "title": "Consolidate reviewed fixes and complete invoice, backup, print and Tor features",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/307"
+    },
+    {
+      "number": 308,
+      "title": "Complete static Tor hosting preparation and qualification gates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/308"
+    },
+    {
+      "number": 309,
+      "title": "docs(qa): read-only GhostPay QA, stress findings and repair handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/309"
+    },
+    {
+      "number": 310,
+      "title": "feat: add signed invoice request-file interchange (F03)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/310"
+    },
+    {
+      "number": 312,
+      "title": "docs: record core and latest-feature bugcheck audit",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/312"
+    },
+    {
+      "number": 313,
+      "title": "fix(payment-uri): reject invalid decimal precision options with typed errors",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/313"
+    },
+    {
+      "number": 314,
+      "title": "fix(web): bind backup controls to operation ownership",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/314"
+    },
+    {
+      "number": 315,
+      "title": "test(web): synchronize ledger activation after delayed vault read",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/315"
+    },
+    {
+      "number": 316,
+      "title": "fix(web): isolate receipt and bill print output",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/316"
+    },
+    {
+      "number": 317,
+      "title": "fix(web): scope encrypted tag list to selected chain and seller session",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/317"
+    },
+    {
+      "number": 319,
+      "title": "fix(web): separate unlock cancellation from durable vault writes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/319"
+    },
+    {
+      "number": 320,
+      "title": "Complete static Tor qualification inputs and exact origin assertions",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/320"
+    },
+    {
+      "number": 322,
+      "title": "feat(f04): add evidence-qualified local merchant projections",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/322"
+    },
+    {
+      "number": 323,
+      "title": "feat(f05): add offline receipt assurance review",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/323"
+    },
+    {
+      "number": 324,
+      "title": "feat(f10): add bounded recurring-invoice previews",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/324"
+    },
+    {
+      "number": 326,
+      "title": "Add opt-in payment proof preview cleanup",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/326"
+    },
+    {
+      "number": 327,
+      "title": "Reconcile retention preferences when returning to a tab",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/327"
+    },
+    {
+      "number": 328,
+      "title": "fix(ux-vault): keep address-book session locked after in-flight password rekey",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/328"
+    },
+    {
+      "number": 332,
+      "title": "fix(web): bind receipt archival to exact signed receipt identity (GP-BUG-01)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/332"
+    },
+    {
+      "number": 333,
+      "title": "fix(web): finish backup preflight and durable-write ownership",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/333"
+    },
+    {
+      "number": 335,
+      "title": "fix(web): bind archive completion to the signed receipt",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/335"
+    },
+    {
+      "number": 336,
+      "title": "Fix wallet disclosure steps in devnet acceptance journeys",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/336"
+    },
+    {
+      "number": 337,
+      "title": "fix(embed): stop false popup-blocked warnings for no-opener checkout",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/337"
+    },
+    {
+      "number": 338,
+      "title": "fix(btc): reject cross-network silent-payment sweep previews (GP-BUG-17)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/338"
+    },
+    {
+      "number": 339,
+      "title": "fix(hygiene): bind and deduplicate Transfer RPC evidence (GP-BUG-11)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/339"
+    },
+    {
+      "number": 340,
+      "title": "fix(tron): bind selected Nile/Shasta testnet to exact genesis (TRON-4)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/340"
+    },
+    {
+      "number": 341,
+      "title": "fix(privacy): retain sweep reuse warnings on all seven enabled EVM testnets (GP-BUG-06)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/341"
+    },
+    {
+      "number": 343,
+      "title": "docs(coordination): reconcile 423 branches and 123 PR claims",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/343"
+    },
+    {
+      "number": 344,
+      "title": "Synchronize request-file passphrase test with real decryption completion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/344"
+    },
+    {
+      "number": 345,
+      "title": "fix(policy): revoke pending reviewed sends after form edits (GP-BUG-07)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/345"
+    },
+    {
+      "number": 346,
+      "title": "test(web): verify payment exports with standalone recovery",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/346"
+    },
+    {
+      "number": 347,
+      "title": "test(hygiene): repair typed lint for evidence fixtures",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/347"
+    },
+    {
+      "number": 348,
+      "title": "test(privacy): align wallet context and reviewed RPC inventory",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/348"
+    },
+    {
+      "number": 349,
+      "title": "fix(web): validate saved Sweep journals with strict JSON",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/349"
+    },
+    {
+      "number": 350,
+      "title": "fix(scan): avoid shared-address warning on duplicate router callback",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/350"
+    },
+    {
+      "number": 352,
+      "title": "test(devnet): enforce wallet journal concealment until renewed consent",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/352"
+    },
+    {
+      "number": 353,
+      "title": "test(web): preserve unsaved settings drafts across partial imports (GP-BUG-04)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/353"
+    },
+    {
+      "number": 354,
+      "title": "fix(web): restore privacy-safe focus after wallet disclosure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/354"
+    },
+    {
+      "number": 355,
+      "title": "test(web): preserve quick-hide focus regressions above privacy repair",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/355"
+    },
+    {
+      "number": 356,
+      "title": "test(settings): correct partial-import relayer URL expectations",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/356"
+    },
+    {
+      "number": 357,
+      "title": "fix(policy): bind imported policy recovery records to seller identity (GP-BUG-08)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/357"
+    },
+    {
+      "number": 358,
+      "title": "feat(coordination): reconcile captured GhostPay branches and claims",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/358"
+    },
+    {
+      "number": 360,
+      "title": "fix(payment-uri): refuse malformed UTF-16 instead of silently replacing query text",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/360"
+    },
+    {
+      "number": 361,
+      "title": "test(recovery): recover application export interoperability coverage",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/361"
+    },
+    {
+      "number": 362,
+      "title": "fix(policy): distinguish recovery exports and restore catalog parity",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/362"
+    },
+    {
+      "number": 363,
+      "title": "Qualify static Tor hosting with pinned identities and recovery checks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/363"
+    },
+    {
+      "number": 365,
+      "title": "merge(web): consolidate idle backup and receipt work with main and Scan fixes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/365"
+    },
+    {
+      "number": 367,
+      "title": "Compose idle recovery, current-main fixes, scan deduplication and wallet regressions",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/367"
+    },
+    {
+      "number": 368,
+      "title": "fix(i18n): guard imported policy already-loaded status and restore IN-3 parity",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/368"
+    },
+    {
+      "number": 369,
+      "title": "fix(tron): reconcile selected-genesis validation with current main",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/369"
+    },
+    {
+      "number": 370,
+      "title": "fix(payment-uri): reject runtime nonstring query encoding inputs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/370"
+    },
+    {
+      "number": 371,
+      "title": "Consolidate dormant F04/F05/F10 modules and repair CI gates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/371"
+    },
+    {
+      "number": 372,
+      "title": "fix: compose independent key recovery with privacy and custody guards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/372"
+    },
+    {
+      "number": 373,
+      "title": "ci: qualify recovery privacy flows in Firefox and WebKit",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/373"
+    },
+    {
+      "number": 374,
+      "title": "fix(policy): restore withdrawal asset coverage and wallet-time guards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/374"
+    },
+    {
+      "number": 375,
+      "title": "fix(policy): restore defensive validation and prepared-payment guards",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/375"
+    },
+    {
+      "number": 376,
+      "title": "fix(chains): recover Solana and TRON interoperability alignment",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/376"
+    },
+    {
+      "number": 377,
+      "title": "fix(deps): scope patched cookie to existing Sentry development tooling",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/377"
+    },
+    {
+      "number": 378,
+      "title": "docs(consolidation): R9 exhaustive 447-branch exact-current-main census and semantic handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/378"
+    },
+    {
+      "number": 379,
+      "title": "fix(payment-uri): validate decoder inputs and builder query keys",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/379"
+    },
+    {
+      "number": 380,
+      "title": "Continue the authoritative consolidation ledger with verified source and CI evidence",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/380"
+    },
+    {
+      "number": 381,
+      "title": "test(a11y): exclude closed disclosure geometry while preserving visible reflow checks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/381"
+    },
+    {
+      "number": 382,
+      "title": "Recover Bitcoin lifecycle consent and checked worker results",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/382"
+    },
+    {
+      "number": 383,
+      "title": "Add explicit invoice registration-time cleanup without deleting records",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/383"
+    },
+    {
+      "number": 384,
+      "title": "fix(web): reject malformed runtime inputs in exact amount parser",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/384"
+    },
+    {
+      "number": 385,
+      "title": "test(policy): cover payee/token edits and mined-approval review races",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/385"
+    },
+    {
+      "number": 386,
+      "title": "test(web): require no actionable Continue after revoked signer pin",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/386"
+    },
+    {
+      "number": 387,
+      "title": "fix(web): restore usable responsive RPC Settings layout",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/387"
+    },
+    {
+      "number": 388,
+      "title": "fix(merchant-ledger): reject invalid minor-unit formatting precision",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/388"
+    },
+    {
+      "number": 389,
+      "title": "fix(web): reject malformed pasted invoice fragment boundaries",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/389"
+    },
+    {
+      "number": 390,
+      "title": "fix(web): bound rendered invoice text after Unicode marker expansion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/390"
+    },
+    {
+      "number": 391,
+      "title": "feat(f10): guarded recurring-plan lifecycle (M2, stacked draft)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/391"
+    },
+    {
+      "number": 392,
+      "title": "fix(qr): reject malformed UTF-16 in QR capacity checks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/392"
+    },
+    {
+      "number": 393,
+      "title": "fix(merchant-ledger): neutralize CSV formula prefixes behind mixed whitespace",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/393"
+    },
+    {
+      "number": 395,
+      "title": "feat(web): local startup and runtime browser self-check footer (Workstream I)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/395"
+    },
+    {
+      "number": 396,
+      "title": "feat(f10): stage single-use reviewed invoice references (M3)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/396"
+    },
+    {
+      "number": 397,
+      "title": "feat(f04): add explicit private merchant CSV/JSON export approvals",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/397"
+    },
+    {
+      "number": 398,
+      "title": "fix(webhook): refuse timestamps the verifier cannot parse",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/398"
+    },
+    {
+      "number": 399,
+      "title": "fix(ux-links): fail closed on invalid payment-request lifetime overrides",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/399"
+    },
+    {
+      "number": 401,
+      "title": "docs(consolidation): R12 468-branch source-pinned delta and CI handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/401"
+    },
+    {
+      "number": 402,
+      "title": "fix(web): omit unavailable browser self-check providers under exact optional types",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/402"
+    },
+    {
+      "number": 403,
+      "title": "docs(consolidation): classify capped branch ancestry and resume 470-head R13 census",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/403"
+    },
+    {
+      "number": 404,
+      "title": "fix(metadata-hardening): accept uint256-sized CSPRNG amount-noise ranges",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/404"
+    },
+    {
+      "number": 405,
+      "title": "fix(web): reject invalid runtime Unix timestamps before date coercion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/405"
+    },
+    {
+      "number": 406,
+      "title": "fix(merchant-hooks): reject invalid POS clocks and non-bigint runtime amounts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/406"
+    },
+    {
+      "number": 407,
+      "title": "fix(ux-flow): enforce integer capacity for UndoQueue maxPending",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/407"
+    },
+    {
+      "number": 408,
+      "title": "docs(consolidation): R15 475-branch delta, security-donor overlap and CI handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/408"
+    },
+    {
+      "number": 409,
+      "title": "fix(ux-notify): keep no-cache responses out of cache-first storage",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/409"
+    },
+    {
+      "number": 410,
+      "title": "fix(web): preserve bearer QR warning for malformed protection flags",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/410"
+    },
+    {
+      "number": 411,
+      "title": "test(pos): correct 60-second parity expiry boundary blocking #406 CI",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/411"
+    },
+    {
+      "number": 412,
+      "title": "test(web): repair browser self-check require-await lint failures in #402",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/412"
+    },
+    {
+      "number": 413,
+      "title": "fix(ux-fiat): parse overlapping locale separators without false decimal errors",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/413"
+    },
+    {
+      "number": 415,
+      "title": "fix(ux-export): reject unsupported summary periods instead of silent day buckets",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/415"
+    },
+    {
+      "number": 416,
+      "title": "fix(web): reject malformed runtime countdown inputs (#394)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/416"
+    },
+    {
+      "number": 417,
+      "title": "fix(ux-presets): avoid false pay-again blocks on EVM address casing",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/417"
+    },
+    {
+      "number": 418,
+      "title": "fix(ux-core): stop reporting stale network probes as healthy",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/418"
+    },
+    {
+      "number": 419,
+      "title": "fix(web): preserve valid surrogate pairs at display truncation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/419"
+    },
+    {
+      "number": 420,
+      "title": "fix(ux-schedule): keep weekly occurrences within supported year",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/420"
+    },
+    {
+      "number": 421,
+      "title": "fix(ux-fees): reject malformed urgency in sweep timing advice",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/421"
+    },
+    {
+      "number": 422,
+      "title": "test/fix(web): compose Unicode input cut with bounded display escaping (#390 + #419)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/422"
+    },
+    {
+      "number": 423,
+      "title": "fix(ux-fees): reject malformed runtime sweep privacy options (stacked #421)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/423"
+    },
+    {
+      "number": 424,
+      "title": "fix(ux-intake): reject explicit default HTTPS ports in deep links",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/424"
+    },
+    {
+      "number": 425,
+      "title": "test(ux-fees): repair waiting-privacy expectation blocking #423 CI",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/425"
+    },
+    {
+      "number": 426,
+      "title": "fix(ux-receipts): match mixed-case truncated EVM receipt addresses",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/426"
+    },
+    {
+      "number": 427,
+      "title": "fix(web): preserve first submitted wallet-attempt hash on duplicate completion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/427"
+    },
+    {
+      "number": 428,
+      "title": "docs(consolidation): R24 495-branch census, qualified PR reviews and donor triage",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/428"
+    },
+    {
+      "number": 429,
+      "title": "fix(ux-guide): require forced review before clearing onboarding quiz attempts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/429"
+    },
+    {
+      "number": 430,
+      "title": "fix(ux-connect): reject unknown pending-reference kinds",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/430"
+    },
+    {
+      "number": 431,
+      "title": "fix(web): freeze settings-exchange preview basis against in-place mutations",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/431"
+    },
+    {
+      "number": 432,
+      "title": "fix(address-safety): reject malformed UTF-16 meta fingerprints",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/432"
+    },
+    {
+      "number": 433,
+      "title": "fix(ux-notify): avoid half-emoji truncation in notification labels",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/433"
+    },
+    {
+      "number": 434,
+      "title": "fix(ux-vault): match canonically equivalent address-book tag filters",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/434"
+    },
+    {
+      "number": 435,
+      "title": "fix(web): detach reviewed settings import from mutable source",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/435"
+    },
+    {
+      "number": 436,
+      "title": "test(tor): assert the actual localized scan-privacy save confirmation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/436"
+    },
+    {
+      "number": 437,
+      "title": "fix(ux-privacy): reject thresholds without guardians",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/437"
+    },
+    {
+      "number": 438,
+      "title": "docs(consolidation): R30 504-branch/196-PR SHA census and security gate triage",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/438"
+    },
+    {
+      "number": 439,
+      "title": "fix(ux-notify): accept valid manifest icon purpose whitespace",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/439"
+    },
+    {
+      "number": 440,
+      "title": "fix(web): reject non-string wallet completion hashes with typed journal error",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/440"
+    },
+    {
+      "number": 441,
+      "title": "test(web): cover wallet journal post-broadcast read-back failures",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/441"
+    },
+    {
+      "number": 442,
+      "title": "test(confidential): diagnose CT-C-2 fee-byte log collision",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/442"
+    },
+    {
+      "number": 443,
+      "title": "test(web): repair wallet read-back regression TypeScript options in #441",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/443"
+    },
+    {
+      "number": 444,
+      "title": "fix(ux-export): reject a repeated CSV ChunkWriter header",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/444"
+    },
+    {
+      "number": 445,
+      "title": "docs(consolidation): R32 branch-head ledger, qualified wallet test and donor ancestry",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/445"
+    },
+    {
+      "number": 446,
+      "title": "fix(ux-schedule): reject unpaired Unicode surrogates in template text",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/446"
+    },
+    {
+      "number": 447,
+      "title": "fix(web): reject unpaired UTF-16 QR classifier input",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/447"
+    },
+    {
+      "number": 448,
+      "title": "docs(consolidation): R33 515-branch SHA audit, 206-PR inventory and CI handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/448"
+    },
+    {
+      "number": 450,
+      "title": "fix(ux-receipts): fail closed on malformed chain lookup envelopes and evidence",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/450"
+    },
+    {
+      "number": 451,
+      "title": "fix(ux-guide): detect extra imported profile settings as custom",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/451"
+    },
+    {
+      "number": 453,
+      "title": "fix(ux-intake): return typed errors for non-string raw addresses",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/453"
+    },
+    {
+      "number": 454,
+      "title": "fix(ux-fiat): reject malformed runtime separator descriptors",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/454"
+    },
+    {
+      "number": 455,
+      "title": "docs(audit): source-pin P0 fund recovery, expiry and refund safety gaps",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/455"
+    },
+    {
+      "number": 456,
+      "title": "feat(f10): encrypted recurring snapshot CAS and safe reviewed reservation (M4, stacked draft)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/456"
+    },
+    {
+      "number": 457,
+      "title": "docs(f05): pin receipt-assurance coverage and completion gates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/457"
+    },
+    {
+      "number": 458,
+      "title": "fix(ux-notify): never store no-cache responses as cache-first assets",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/458"
+    },
+    {
+      "number": 459,
+      "title": "docs(policy): source-pinned Scheme-2 completion and recovery-authority matrix",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/459"
+    },
+    {
+      "number": 460,
+      "title": "feat(f04): add evidence-qualified local merchant analytics and completion tracker",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/460"
+    },
+    {
+      "number": 461,
+      "title": "fix(ux-presets): reject disappearing ciphertext after observed preset state",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/461"
+    },
+    {
+      "number": 462,
+      "title": "fix(ux-fees): block asset-id symbol collisions in payer fee totals",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/462"
+    },
+    {
+      "number": 463,
+      "title": "fix(web): contain OP Stack fee serialization failures in typed quote error",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/463"
+    },
+    {
+      "number": 464,
+      "title": "docs(audit): R38 exhaustive branch and PR SHA census plus beta handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/464"
+    },
+    {
+      "number": 465,
+      "title": "fix(ux-notify): reject snapshot counters that reuse notification ids",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/465"
+    },
+    {
+      "number": 466,
+      "title": "feat(audit): uncapped Git-tree branch provenance scanner and R39 recovery ledger",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/466"
+    },
+    {
+      "number": 467,
+      "title": "fix(ux-export): reject untyped CSV amount inputs before regex coercion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/467"
+    },
+    {
+      "number": 468,
+      "title": "feat(audit): source-pinned, fail-closed Mythril artifact evidence summary",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/468"
+    },
+    {
+      "number": 469,
+      "title": "docs(consolidation): R40 verify 44 donor dispositions, record scanner race",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/469"
+    },
+    {
+      "number": 470,
+      "title": "fix(ux-connect): reject invalid WalletConnect request clocks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/470"
+    },
+    {
+      "number": 471,
+      "title": "fix(consolidation): R41\u2013R55 source-pinned histories, ledger transition and retired-ref safety",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/471"
+    },
+    {
+      "number": 472,
+      "title": "fix(ux-flow): reject non-string runtime base64url values",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/472"
+    },
+    {
+      "number": 473,
+      "title": "fix(web): render QR SVG from a validated stable matrix snapshot",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/473"
+    },
+    {
+      "number": 474,
+      "title": "fix(ux-core): reject non-plain store schema records",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/474"
+    },
+    {
+      "number": 475,
+      "title": "fix(ux-fiat): reject unsupported parseUnits rounding modes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/475"
+    },
+    {
+      "number": 476,
+      "title": "test(web): repair QR snapshot regression strict-lint failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/476"
+    },
+    {
+      "number": 477,
+      "title": "fix(ux-links): reject sparse handle-book entries instead of dropping records",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/477"
+    },
+    {
+      "number": 478,
+      "title": "fix(ux-schedule): cancel using the checked clock sample",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/478"
+    },
+    {
+      "number": 479,
+      "title": "fix(ux-core): freeze validated palette command actions",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/479"
+    },
+    {
+      "number": 480,
+      "title": "fix(hygiene): reject non-bigint bufferDust amounts with typed error",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/480"
+    },
+    {
+      "number": 481,
+      "title": "fix(ux-guide): reject sparse pre-send checklist safety lists",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/481"
+    },
+    {
+      "number": 482,
+      "title": "fix(ux-privacy): reject sparse policy records before preview and conversion",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/482"
+    },
+    {
+      "number": 483,
+      "title": "fix(ux-export): reject pre-epoch calendar timestamps",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/483"
+    },
+    {
+      "number": 484,
+      "title": "fix(ux-vault): reject noncanonical base64url trailing pad bits",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/484"
+    },
+    {
+      "number": 485,
+      "title": "test(ux-privacy): satisfy exact-optional threshold regression typing",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/485"
+    },
+    {
+      "number": 486,
+      "title": "fix(ux-receipts): reject sparse arrays in canonical JSON",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/486"
+    },
+    {
+      "number": 487,
+      "title": "fix(ux-connect): reject non-bigint transaction signing amounts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/487"
+    },
+    {
+      "number": 488,
+      "title": "fix(ux-core): snapshot untrusted theme before generating CSS",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/488"
+    },
+    {
+      "number": 489,
+      "title": "fix(amount-blur): avoid overflow-distorted crowd estimate labels",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/489"
+    },
+    {
+      "number": 490,
+      "title": "fix(ux-export): reject sparse or malformed column configurations",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/490"
+    },
+    {
+      "number": 491,
+      "title": "fix(ux-fiat): snapshot validated rate quote fields before return",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/491"
+    },
+    {
+      "number": 492,
+      "title": "ci: bump the actions group across 1 directory with 3 updates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/492"
+    },
+    {
+      "number": 493,
+      "title": "deps: bump the npm-minor-patch group across 1 directory with 11 updates",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/493"
+    },
+    {
+      "number": 494,
+      "title": "fix(ux-flow): accept canonical HTTPS return origins with explicit max port",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/494"
+    },
+    {
+      "number": 495,
+      "title": "fix(ux-intake): reject normalized-away HTTPS ports in invoice links",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/495"
+    },
+    {
+      "number": 496,
+      "title": "fix(payment-uri): reject invalid EIP-3770 custom registry chain mappings",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/496"
+    },
+    {
+      "number": 497,
+      "title": "fix(ux-notify): exclude JWT-shaped long query values from static cache",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/497"
+    },
+    {
+      "number": 498,
+      "title": "fix(ux-flow): reject malformed embed snippet option records",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/498"
+    },
+    {
+      "number": 499,
+      "title": "fix(payment-uri): serialize validated EIP-681 amounts exactly once",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/499"
+    },
+    {
+      "number": 500,
+      "title": "P0: durable cross-tab wallet-attempt journal and payment outcome recovery (carries #427\u2192#443)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/500"
+    },
+    {
+      "number": 501,
+      "title": "fix(ux-links): reject sparse tip suggested preset arrays",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/501"
+    },
+    {
+      "number": 502,
+      "title": "fix(payment-uri): snapshot checked Bitcoin amount and network inputs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/502"
+    },
+    {
+      "number": 503,
+      "title": "fix(qr-exchange): stop acquired camera tracks if video attachment fails",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/503"
+    },
+    {
+      "number": 504,
+      "title": "C1: integrate 93 independently reviewed fix PRs (fast-track consolidation)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/504"
+    },
+    {
+      "number": 505,
+      "title": "fix(metadata-hardening): ignore prefixed target/rel anchor attributes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/505"
+    },
+    {
+      "number": 507,
+      "title": "fix(payment-uri): validate Solana reference list in a single snapshot pass",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/507"
+    },
+    {
+      "number": 508,
+      "title": "fix(qr-exchange): select a usable QR from multiple native detections",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/508"
+    },
+    {
+      "number": 509,
+      "title": "fix(ux-presets): reject fabricated native CryptoKey records",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/509"
+    },
+    {
+      "number": 511,
+      "title": "fix(ux-fiat): return invalid for unreadable injected rate quote",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/511"
+    },
+    {
+      "number": 512,
+      "title": "fix(web): align primary and secondary RPC inputs at 900px in C1",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/512"
+    },
+    {
+      "number": 515,
+      "title": "test(web): independently qualify expiry rollback boundary behavior (stacked on #274)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/515"
+    },
+    {
+      "number": 516,
+      "title": "fix(ux-notify): return typed errors for unreadable scheduled reminders",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/516"
+    },
+    {
+      "number": 522,
+      "title": "fix(merchant-ledger): reject nonadjacent duplicate invoice IDs in exports",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/522"
+    },
+    {
+      "number": 523,
+      "title": "test(scan-source): correct unsafe proxy fixture return type",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/523"
+    },
+    {
+      "number": 525,
+      "title": "fix(qr-exchange): reject sparse QR SVG matrix cells",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/525"
+    },
+    {
+      "number": 526,
+      "title": "docs: refresh GhostPay branch and PR census",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/526"
+    },
+    {
+      "number": 527,
+      "title": "test(scan-source): verify record isolation across range windows",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/527"
+    },
+    {
+      "number": 528,
+      "title": "fix: release policy journal lock during wallet prompt",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/528"
+    },
+    {
+      "number": 529,
+      "title": "fix(web): avoid false mixed-script warnings from Unicode display markers",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/529"
+    },
+    {
+      "number": 530,
+      "title": "Verify selected seller keystore recovery without changing custody",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/530"
+    },
+    {
+      "number": 531,
+      "title": "fix(web): restore Pages manifest validation command",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/531"
+    },
+    {
+      "number": 532,
+      "title": "fix(web): integrate receipt and bill print isolation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/532"
+    },
+    {
+      "number": 533,
+      "title": "Handle late invoice payments in seller reconciliation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/533"
+    },
+    {
+      "number": 534,
+      "title": "fix(web): require Sweep balance consent and reject stale signing context",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/534"
+    },
+    {
+      "number": 535,
+      "title": "Add an encrypted merchant dashboard preview to Pages",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/535"
+    },
+    {
+      "number": 536,
+      "title": "fix(ux-intake): avoid false mixed-script warnings for Japanese kana letters",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/536"
+    },
+    {
+      "number": 538,
+      "title": "fix(ux-vault): retain independent duplicate-group warnings",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/538"
+    },
+    {
+      "number": 539,
+      "title": "P0-KEYS: independent payment-key export and recovery (Spec 18, extracted from #372)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/539"
+    },
+    {
+      "number": 540,
+      "title": "Cover switching verified seller keystores in the Seller Keys browser flow",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/540"
+    },
+    {
+      "number": 541,
+      "title": "Test policy lock lifetime across two browser tabs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/541"
+    },
+    {
+      "number": 542,
+      "title": "Test single-payment keypair export after cancelling a scan",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/542"
+    },
+    {
+      "number": 543,
+      "title": "Preserve the Network picker\u2019s focus during automatic dashboard refresh",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/543"
+    },
+    {
+      "number": 544,
+      "title": "test(web): verify the first invoice signature after sleep",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/544"
+    },
+    {
+      "number": 545,
+      "title": "Check the committed payment journal before permit and approval prompts (REV-L2)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/545"
+    },
+    {
+      "number": 546,
+      "title": "Keep accepted late payments in the rescan range until the reorg is resolved",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/546"
+    },
+    {
+      "number": 547,
+      "title": "test(qr-exchange): qualify native image decoding with signed invoice links",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/547"
+    },
+    {
+      "number": 548,
+      "title": "Fix receipt print pagination, controls and dark-theme paper colors",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/548"
+    },
+    {
+      "number": 549,
+      "title": "Apply the optional clipboard delay to Create Invoice\u2019s Copy link button",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/549"
+    },
+    {
+      "number": 550,
+      "title": "Add offline GhostStore catalog and cart review (F02)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/550"
+    },
+    {
+      "number": 551,
+      "title": "Keep Pages in sync with browser language changes in Automatic mode",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/551"
+    },
+    {
+      "number": 552,
+      "title": "Review GhostTeams invitations offline (F11)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/552"
+    },
+    {
+      "number": 553,
+      "title": "Integrate invoice-link clipboard cleanup and protect pending recopies",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/553"
+    },
+    {
+      "number": 554,
+      "title": "Prepare GhostTeams invitation acceptance and member revocation (F11)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/554"
+    },
+    {
+      "number": 555,
+      "title": "Qualify #522 merchant ledger export on updated main",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/555"
+    },
+    {
+      "number": 556,
+      "title": "Qualify the offline GhostStore merchant proof provider contract",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/556"
+    },
+    {
+      "number": 557,
+      "title": "fix(merchant-billing): preserve uint256 decimal round trips",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/557"
+    },
+    {
+      "number": 558,
+      "title": "Map existing key operations to P06 roles for offline review",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/558"
+    },
+    {
+      "number": 559,
+      "title": "Distinguish missing local history from complete empty history (P08-A04)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/559"
+    },
+    {
+      "number": 560,
+      "title": "Verify spending from an encrypted payment backup and protect header inspection",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/560"
+    },
+    {
+      "number": 562,
+      "title": "Commit offline GhostTeams membership changes against the owner-reviewed revision",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/562"
+    },
+    {
+      "number": 563,
+      "title": "Review a local signed merchant profile in the optional GhostID preview",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/563"
+    },
+    {
+      "number": 564,
+      "title": "Improve merchant dashboard record browsing on mobile and desktop",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/564"
+    },
+    {
+      "number": 566,
+      "title": "Validate offline fiat quote terms (F13)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/566"
+    },
+    {
+      "number": 567,
+      "title": "Recover canonical invoice array descriptor snapshot",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/567"
+    },
+    {
+      "number": 568,
+      "title": "fix(ux-fiat): bound forward conversion output magnitude",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/568"
+    },
+    {
+      "number": 569,
+      "title": "Close hidden-DOM disclosure in global Pages privacy masking (#286)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/569"
+    },
+    {
+      "number": 570,
+      "title": "Protect Pages export metadata, diagnostics and lock-screen notifications",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/570"
+    },
+    {
+      "number": 571,
+      "title": "fix(web): clear account-bound presentation on wallet and vault changes (#286)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/571"
+    },
+    {
+      "number": 572,
+      "title": "Connect individual stealth-key export to the scanned payment and verify offline recovery",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/572"
+    },
+    {
+      "number": 573,
+      "title": "Protect sole seller keys and prove payment recovery in a fresh Pages profile",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/573"
+    },
+    {
+      "number": 574,
+      "title": "Fix invalid countdown labels and verify rollovers (#394)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/574"
+    },
+    {
+      "number": 575,
+      "title": "Keep partial and on-time invoice credit consistent across rescans",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/575"
+    },
+    {
+      "number": 576,
+      "title": "Complete POS terminal reliability checks and protect session state",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/576"
+    },
+    {
+      "number": 577,
+      "title": "Keep the only invoice signer recoverable after idle without restoring signing access",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/577"
+    },
+    {
+      "number": 578,
+      "title": "Review Pages HTTPS, Tor and RPC compatibility against shipped behavior",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/578"
+    },
+    {
+      "number": 579,
+      "title": "Qualify exact invoice and historical scan totals in the merchant dashboard",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/579"
+    },
+    {
+      "number": 580,
+      "title": "Apply opt-in clipboard protection to remaining Pages copy actions",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/580"
+    },
+    {
+      "number": 581,
+      "title": "Complete QR camera fallback and qualify invoice image exchange",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/581"
+    },
+    {
+      "number": 582,
+      "title": "Qualify native Chromium freeze and pending Sweep signatures under GP-PAGES-04",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/582"
+    },
+    {
+      "number": 583,
+      "title": "Complete responsive RPC and Circuit Drift Labs Pages presentation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/583"
+    },
+    {
+      "number": 584,
+      "title": "Warn about locally observed address reuse in EVM invoice checkout (#287)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/584"
+    },
+    {
+      "number": 585,
+      "title": "Add privacy-minimal signed invoice links and exports",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/585"
+    },
+    {
+      "number": 586,
+      "title": "Detect repeated EVM checkout and sweep destinations locally (#287)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/586"
+    },
+    {
+      "number": 587,
+      "title": "Complete local invoice and payment receipt timestamp retention",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/587"
+    },
+    {
+      "number": 588,
+      "title": "Qualify Pages wallet, QR and backup workflows in mobile Chromium and WebKit",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/588"
+    },
+    {
+      "number": 589,
+      "title": "Show exact contract arguments in external wallet disclosure and track actual handoff",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/589"
+    },
+    {
+      "number": 590,
+      "title": "Keep interrupted checkout unconfirmed until the receipt and transaction match",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/590"
+    },
+    {
+      "number": 591,
+      "title": "Recover encrypted invoice drafts and handle interrupted Pages payments",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/591"
+    },
+    {
+      "number": 592,
+      "title": "Complete spec 03 fiat quote validation and enforce feed qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/592"
+    },
+    {
+      "number": 593,
+      "title": "fix(payment-uri): snapshot TRON optional builder inputs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/593"
+    },
+    {
+      "number": 594,
+      "title": "Reject duplicate canonical locales in catalog completeness checks",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/594"
+    },
+    {
+      "number": 595,
+      "title": "Finish wallet-attempt status fixture lifetime qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/595"
+    },
+    {
+      "number": 596,
+      "title": "test(recovery): qualify suspended-signer recovery regression",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/596"
+    },
+    {
+      "number": 597,
+      "title": "Complete mobile QR-import memo verification after interrupted qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/597"
+    },
+    {
+      "number": 598,
+      "title": "fix(privacy): explain wallet changes after immediate state cleanup",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/598"
+    },
+    {
+      "number": 599,
+      "title": "test(reconciliation): qualify imported history and duplicate rejection",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/599"
+    },
+    {
+      "number": 600,
+      "title": "test(invoices): unblock privacy-minimal invoice typecheck",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/600"
+    },
+    {
+      "number": 601,
+      "title": "Finish unique fee timing and payment-asset validation work",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/601"
+    },
+    {
+      "number": 602,
+      "title": "Finish recurring-state M4 native qualification",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/602"
+    },
+    {
+      "number": 604,
+      "title": "Finish interrupted-payment and encrypted offline draft branches",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/604"
+    },
+    {
+      "number": 605,
+      "title": "Finish QR image exchange with bounded dense-code decoder repairs",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/605"
+    }
+  ]
+}

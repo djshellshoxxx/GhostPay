@@ -230,6 +230,8 @@ function checkValue(v: unknown): void {
 /** Schema helper: true when `o` is a plain object whose own keys are all within `allowed` (LOCAL-4). */
 export function hasOnlyKeys(o: unknown, allowed: readonly string[]): o is Record<string, unknown> {
   if (typeof o !== 'object' || o === null || Array.isArray(o)) return false;
+  const prototype: unknown = Object.getPrototypeOf(o);
+  if (prototype !== Object.prototype && prototype !== null) return false;
   return Object.keys(o).every((k) => allowed.includes(k));
 }
 

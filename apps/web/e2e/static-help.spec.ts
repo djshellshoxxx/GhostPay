@@ -13,7 +13,9 @@ for (const guide of [
     await expect(page).toHaveTitle(guide.title);
     await expect(page.getByRole('heading', { level: 1, name: guide.heading, exact: true })).toBeVisible();
     expect(await page.locator('.brand img').evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    expect(await page.locator('link[rel="stylesheet"]').evaluate((link) => (link as HTMLLinkElement).sheet !== null)).toBe(true);
+    const stylesheets = page.locator('link[rel="stylesheet"]');
+    await expect(stylesheets).toHaveCount(2);
+    expect(await stylesheets.evaluateAll((links) => links.every((link) => (link as HTMLLinkElement).sheet !== null))).toBe(true);
 
     for (const viewport of [{ width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
       await page.setViewportSize(viewport);
@@ -42,5 +44,67 @@ test.describe('help without JavaScript', () => {
     await page.getByRole('navigation', { name: 'Site' }).getByRole('link', { name: 'Privacy', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Privacy and local data', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'What stays in this browser', exact: true })).toBeVisible();
+  });
+});
+
+test.describe('help guide coverage', () => {
+  test('the guide covers every required topic and has no inline styles or scripts', async ({ page }) => {
+    await page.goto('/help.html');
+    for (const heading of [
+      'Start here (plain language)',
+      'How a payment works',
+      'Keys and backups',
+      'Connect a wallet',
+      'Create an invoice',
+      'Pay an invoice',
+      'What counts as evidence',
+      'Receipts and QR codes',
+      'RPC and network configuration',
+      'Privacy in brief',
+      'Merchant guidance',
+      'Contextual help in the app',
+      'Technical glossary',
+      'Accessibility and layout',
+    ]) {
+      // Numbered headings ("1. How a payment works") match as substrings.
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+    }
+    await expect(page.locator('[style]')).toHaveCount(0);
+    await expect(page.locator('script')).toHaveCount(0);
+    await expect(page.locator('.flow-lanes .flow > li')).toHaveCount(10);
+  });
+
+  test('merchant help preserves ordinary reconciliation without promising excluded products', async ({ page }) => {
+    await page.goto('/help.html');
+    const merchant = page.getByRole('table', { name: 'Merchant capabilities and their status' });
+    for (const [name, notes] of [
+      ['Aggregate merchant dashboard (totals and records)', 'Archived indefinitely; ordinary invoice status and reconciliation remain available'],
+      ['Subscriptions and installments', 'Outside the browser payment and recovery scope'],
+      ['Point-of-sale terminal and NFC', 'Terminal product archived; ordinary invoice QR exchange remains available'],
+    ] as const) {
+      const row = merchant.getByRole('row').filter({
+        has: page.getByRole('rowheader', { name, exact: true }),
+      });
+      await expect(row).toHaveCount(1);
+      await expect(row).toBeVisible();
+      await expect(row.getByRole('cell').first()).toHaveText('Unsupported beta and v1.0');
+      await expect(row.getByRole('cell').last()).toHaveText(notes);
+    }
+    const ledger = merchant.getByRole('row').filter({
+      has: page.getByRole('rowheader', { name: 'Per-invoice payment summary in the scan ledger', exact: true }),
+    });
+    await expect(ledger.getByRole('cell').first()).toHaveText('Implemented Both builds');
+    await expect(page.getByText('Keep aggregate bookkeeping outside the app.', { exact: false })).toContainText('excluded products have no scheduled restart.');
+  });
+
+  test('the privacy matrix uses only the status labels defined by the guide legend', async ({ page }) => {
+    await page.goto('/help.html');
+    const legend = (await page.locator('.legend .status').allTextContents()).map((s) => s.trim()).sort();
+    expect(legend).toEqual(['Experimental', 'Implemented', 'Planned', 'Unsupported']);
+    await page.goto('/privacy.html');
+    await expect(page.getByRole('table', { name: 'What each feature stores, exposes and leaves unprotected' })).toBeVisible();
+    const used = new Set((await page.locator('.matrix .status').allTextContents()).map((s) => s.trim()));
+    expect(used.size).toBeGreaterThan(1);
+    for (const status of used) expect(legend).toContain(status);
   });
 });

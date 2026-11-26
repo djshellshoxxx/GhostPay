@@ -1,6 +1,6 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -8,11 +8,12 @@ import {
   clearReconciliationRecords,
   exportUntrustedLegacyReconciliation,
   readReconciliationRecords,
+  recordFromObservedMatch,
   recordFromVerifiedMatch,
   searchReconciliationRecords,
   type ReconciliationRecord,
 } from '../lib/reconciliationLedger';
-import { proposeInvoiceMatch, type MatchProposal, type RegisteredInvoice } from '../lib/reconciliationMatch';
+import { matchesInvoiceEvidence, proposeInvoiceMatch, type MatchProposal, type RegisteredInvoice } from '../lib/reconciliationMatch';
 import {
   createCurrentReconciliationVault,
   MAX_VAULT_BYTES,
@@ -24,6 +25,7 @@ import {
   type VaultRecord,
 } from '../lib/reconciliationVault';
 import { getSessionPublic, subscribeSession } from '../lib/session';
+import { subscribeAppLock } from '../lib/appLock';
 import type { ScanMatch } from '../lib/scanClient';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, userMessage } from '../lib/errors';
@@ -39,6 +41,8 @@ export interface ReconciliationLedgerProps {
   readonly sellerKeyId: string | undefined;
   readonly matches: readonly ScanMatch[];
   readonly scanMatchesCurrentScope: boolean;
+  readonly freshLateMatches?: readonly ScanMatch[] | undefined;
+  readonly verifyLateEvidence?: ((match: ScanMatch) => Promise<boolean>) | undefined;
   readonly onAnnounce?: (message: string) => void;
 }
 function assetLabel(record: ReconciliationRecord, t: Translator['t']): string {
@@ -61,11 +65,25 @@ function ProposalView(props: {
   readonly proposal: MatchProposal | undefined;
   readonly busy: boolean;
   readonly onConfirm: (invoiceDigest: string) => void;
+  readonly onAcceptLate?: ((invoiceDigest: string) => void) | undefined;
 }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const proposal = props.proposal;
   if (proposal === undefined) return null;
   if (proposal.kind === 'none') return <p className="hint">{t('ledger.ui.noRegisteredInvoiceMatchesThisPayment')}</p>;
+  if (proposal.kind === 'ambiguous' && proposal.reason === 'late-observation') {
+    const invoice = proposal.candidates[0]!;
+    return (
+      <Notice kind="warn" title={t('ledger.late.verified')}>
+        <p>{t('ledger.ambiguity.late')} <Mono>{invoice.invoiceDigest}</Mono></p>
+        <p>{t('ledger.late.decision')}</p>
+        {props.onAcceptLate === undefined
+          ? <p>{t('ledger.late.rescan')}</p>
+          : <button type="button" className="btn" disabled={props.busy}
+              onClick={() => props.onAcceptLate?.(invoice.invoiceDigest)}>{t('ledger.late.accept')}</button>}
+      </Notice>
+    );
+  }
   if (proposal.kind === 'ambiguous')
     return (
       <Notice kind="warn" title={t('ledger.ui.ambiguousInvoiceMatchNotConfirmed')}>
@@ -97,6 +115,7 @@ function MatchLedgerAction(props: {
   readonly onError: (error: UserFacingError) => void;
   readonly proposal: MatchProposal | undefined;
   readonly onConfirm: (invoiceDigest: string) => void;
+  readonly onAcceptLate?: ((invoiceDigest: string) => void) | undefined;
 }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [invoiceDigest, setInvoiceDigest] = useState('');
@@ -108,8 +127,10 @@ function MatchLedgerAction(props: {
     match.announcement.transactionHash === undefined
   )
     return null;
+  const late = props.proposal?.kind === 'ambiguous' && props.proposal.reason === 'late-observation';
   return (
     <div className="ledger-save">
+      {!late && <>
       <Field
         label={t('ledger.ui.invoiceDigestOptionalManualLink')}
         hint={t('ledger.ui.yourAnnotationOnlyTheInvoiceIsNotOpenedOrChecked')}
@@ -142,10 +163,12 @@ function MatchLedgerAction(props: {
           }
         }}
       >{t('ledger.ui.addVerifiedPaymentToLedger')}</button>
+      </>}
       <ProposalView
         proposal={props.proposal}
         busy={props.busy}
         onConfirm={props.onConfirm}
+        onAcceptLate={props.onAcceptLate}
       />
     </div>
   );
@@ -186,21 +209,20 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     for (const match of props.matches) {
       if (match.chainId !== props.chainId) continue;
       try {
-        out.set(match, recordFromVerifiedMatch(match, keyId, undefined, now));
+        out.set(match, recordFromObservedMatch(match, keyId, undefined, now));
       } catch {
-        /* Unverified, claimed or hash-less matches are never proposed. */
+        /* Non-router or hash-less matches lack a compatible evidence identity. */
       }
     }
     return out;
   }, [props.matches, props.scanMatchesCurrentScope, props.sellerKeyId, props.chainId]);
-  const proposals = useMemo(() => {
-    const result = new Map<string, MatchProposal>();
-    if (invoices.length === 0) return result;
-    const stored = new Set(records.map((r) => r.id));
-    const context = [...records, ...[...currentRecords.values()].filter((r) => !stored.has(r.id))];
-    for (const record of context) result.set(record.id, proposeInvoiceMatch(record, invoices, context));
-    return result;
-  }, [records, invoices, currentRecords]);
+  const context = useMemo(() => {
+    const stored = new Set(records.map((record) => record.id));
+    return [...records, ...[...currentRecords.values()].filter((record) => !stored.has(record.id))];
+  }, [records, currentRecords]);
+  const proposals = useMemo(() => new Map(invoices.length === 0 ? [] :
+    context.map((record) => [record.id, proposeInvoiceMatch(record, invoices, context)] as const)
+  ), [context, invoices]);
   const proposalFor = (record: ReconciliationRecord | undefined): MatchProposal | undefined => {
     if (record === undefined) return undefined;
     const stored = records.find((r) => r.id === record.id);
@@ -237,9 +259,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setPreview(undefined);
     setBackup('');
     setQuery('');
+    setError(undefined);
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     mounted.current = true;
+    const stopLock = subscribeAppLock(reset);
     const unsubscribe = subscribeSession(() => {
       if (mounted.current) reset();
     });
@@ -249,9 +273,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       vault.current?.lock();
       vault.current = undefined;
       unsubscribe();
+      stopLock();
     };
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     reset();
   }, [props.chainId, props.sellerKeyId]);
   useEffect(() => {
@@ -353,11 +378,29 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         throw new UserFacingError({ key: 'ledger.ui.scanEvidenceIsNoLongerCurrentRescanBeforeSavingOr' });
     };
   };
-  const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch): void =>
+  const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch, acceptLate = false): void =>
     run(async (current, guard) => {
-      const scanGuard = scanActionGuard(guard, match);
+      const guardMatches = scanActionGuard(guard, match);
+      const fresh = latest.current.freshLateMatches;
+      const scanGuard = (): void => {
+        guardMatches();
+        if (acceptLate && (match === undefined || fresh !== latest.current.freshLateMatches || !fresh?.includes(match)))
+          throw new UserFacingError({ key: 'ledger.ui.scanEvidenceIsNoLongerCurrentRescanBeforeSavingOr' });
+      };
       scanGuard();
-      await current.confirmProposal(record, invoiceDigest, { current: [...currentRecords.values()], guard: scanGuard });
+      if (acceptLate && match !== undefined) {
+        const verify = latest.current.verifyLateEvidence;
+        const valid = await verify?.(match).catch(() => false);
+        scanGuard();
+        if (valid !== true) {
+          await current.quarantineInvoicePayments(BigInt(record.blockNumber), scanGuard);
+          const next = await current.readState();
+          scanGuard();
+          apply(next);
+          throw new UserFacingError({ key: 'ledger.late.recheckFailed' });
+        }
+      }
+      await current.confirmProposal(record, invoiceDigest, { current: [...currentRecords.values()], guard: scanGuard, acceptLate });
       guard();
       props.onAnnounce?.(latestT.current('ledger.ui.invoiceMatchConfirmedInTheEncryptedReconciliationVault'));
     });
@@ -427,6 +470,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   proposal={proposalFor(currentRecords.get(match))}
                   // A proposal is shown only for a match that produced a current record.
                   onConfirm={(digest) => confirmMatch(currentRecords.get(match)!, digest, match)}
+                  onAcceptLate={props.verifyLateEvidence !== undefined && props.freshLateMatches?.includes(match)
+                    ? (digest) => confirmMatch(currentRecords.get(match)!, digest, match, true) : undefined}
                   onSave={(record) =>
                     run(async (current, guard) => {
                       const scanGuard = scanActionGuard(guard, match);
@@ -455,11 +500,18 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                       ? t('ledger.ui.invalidatedAfterAReorgDoNotRelyOnThisObservation')
                       : record.provenance === 'imported-history'
                         ? t('ledger.ui.importedHistoricalObservationUntrustedUntilIndependentlyRescanned')
-                        : t('ledger.ui.routerVerifiedWhenScannedHistoricalObservationNotCurrentPaymentProof')}
+                        : record.evidenceStatus === 'pending-at-scan'
+                          ? t('ledger.late.pending')
+                          : record.evidenceStatus === 'unverified-at-scan'
+                            ? t('ledger.late.unverified')
+                            : t('ledger.ui.routerVerifiedWhenScannedHistoricalObservationNotCurrentPaymentProof')}
                   </p>
                   {record.invoiceDigest !== undefined && (
                     <p>{t('ledger.ui.manualInvoiceLinkOrALocalMatchYouConfirmed')}<Mono>{record.invoiceDigest}</Mono>
                     </p>
+                  )}
+                  {record.lateAcceptedAt !== undefined && (
+                    <p>{t('ledger.late.decisionHistory', { time: new Date(record.lateAcceptedAt).toISOString() })}</p>
                   )}
                   <ProposalView
                     proposal={proposalFor(record)}
@@ -480,6 +532,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           <InvoiceRegistry
             invoices={invoices}
             records={records}
+            context={context}
+            proposals={proposals}
             sellerKeyId={props.sellerKeyId}
             chainId={props.chainId}
             busy={busy}
@@ -668,9 +722,46 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
   );
 }
 
+function invoiceEvidenceStates(
+  invoice: RegisteredInvoice,
+  records: readonly (ReconciliationRecord | VaultRecord)[],
+  proposals: ReadonlyMap<string, MatchProposal>,
+): readonly MessageKey[] {
+  const states = new Set<MessageKey>();
+  for (const record of records) {
+    const linked = record.invoiceDigest === invoice.invoiceDigest;
+    if (record.invoiceDigest !== undefined && !linked) continue;
+    if (!linked && !matchesInvoiceEvidence(invoice, record)) continue;
+    if (record.evidenceStatus === 'invalidated-after-reorg') {
+      states.add('ledger.late.invalidated');
+    } else if (('provenance' in record && record.provenance === 'imported-history') ||
+        record.evidenceStatus === 'unverified-at-scan') {
+      states.add('ledger.late.unverified');
+    } else if (record.evidenceStatus === 'pending-at-scan') {
+      states.add('ledger.late.pending');
+    } else if (linked) {
+      if (record.blockTimestamp !== undefined && BigInt(record.blockTimestamp) >= BigInt(invoice.expiresAt))
+        states.add(record.lateAcceptedAt === undefined ? 'ledger.late.verified' : 'ledger.late.accepted');
+      else states.add('ledger.ui.linkedToAVerifiedObservation');
+    } else {
+      // A proposal speaks only for the invoices it names; one resolved to another invoice says nothing about this one.
+      const proposal = proposals.get(record.id);
+      if (proposal?.kind === 'exact') {
+        if (proposal.invoice.invoiceDigest === invoice.invoiceDigest) states.add('ledger.late.onTime');
+      } else if (proposal?.kind === 'ambiguous') {
+        if (proposal.candidates.some((candidate) => candidate.invoiceDigest === invoice.invoiceDigest))
+          states.add(proposal.reason === 'late-observation' ? 'ledger.late.verified' : 'ledger.late.ambiguous');
+      } else states.add('ledger.late.ambiguous');
+    }
+  }
+  return [...states];
+}
+
 function InvoiceRegistry(props: {
   readonly invoices: readonly RegisteredInvoice[];
   readonly records: readonly VaultRecord[];
+  readonly context: readonly (ReconciliationRecord | VaultRecord)[];
+  readonly proposals: ReadonlyMap<string, MatchProposal>;
   readonly sellerKeyId: string | undefined;
   readonly chainId: number;
   readonly busy: boolean;
@@ -681,11 +772,6 @@ function InvoiceRegistry(props: {
   const summarize = useMemo(() => props.sellerKeyId === undefined ? undefined : createInvoicePaymentSummarizer(
     props.records, { sellerKeyId: props.sellerKeyId, chainId: props.chainId },
   ), [props.records, props.sellerKeyId, props.chainId]);
-  const linked = new Set(
-    props.records
-      .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.provenance === 'live-scan' && r.invoiceDigest !== undefined)
-      .map((r) => r.invoiceDigest),
-  );
   return (
     <div className="panel">
       <h4>{t('ledger.invoices.title')}</h4>
@@ -695,16 +781,25 @@ function InvoiceRegistry(props: {
       ) : (
         <>
           <ul className="plain-list">
-            {props.invoices.map((invoice) => (
+            {props.invoices.map((invoice) => {
+              const expired = Date.now() >= invoice.expiresAt * 1000;
+              const states = invoiceEvidenceStates(invoice, props.context, props.proposals);
+              return (
               <li key={invoice.invoiceDigest} className="card">
                 <p>{t('ledger.ui.invoice')}<Mono>{invoice.invoiceDigest}</Mono>
                 </p>
                 <p className="hint">
                   <bdi dir="ltr">{invoice.expectedNetMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{invoice.asset}</bdi>{t('ledger.ui.validUntil')}{' '}
                   {new Date(invoice.expiresAt * 1000).toISOString()}.{' '}
-                  {linked.has(invoice.invoiceDigest) ? t('ledger.ui.linkedToAVerifiedObservation') : t('ledger.ui.noLinkedObservation')}
+                  {states.length === 0 && t(expired ? 'ledger.late.expired' : 'ledger.ui.noLinkedObservation')}
                 </p>
-                <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
+                {states.map((state) => <p key={state}>{t(state)}</p>)}
+                {expired && states.some((state) => state !== 'ledger.late.accepted' && state !== 'ledger.ui.linkedToAVerifiedObservation') && (
+                  <Notice kind="warn">{t('ledger.late.reissue')}</Notice>
+                )}
+                {(states.length === 0 || states.includes('ledger.late.accepted') || states.includes('ledger.ui.linkedToAVerifiedObservation')) && (
+                  <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
+                )}
                 <button
                   type="button"
                   className="btn"
@@ -715,7 +810,8 @@ function InvoiceRegistry(props: {
                   }}
                 >{t('ledger.ui.removeRegistration')}</button>
               </li>
-            ))}
+              );
+            })}
           </ul>
           <button
             type="button"

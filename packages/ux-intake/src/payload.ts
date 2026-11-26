@@ -137,7 +137,9 @@ function parseInvoiceLink(s: string, policy: PayloadPolicy): Result<InvoiceLinkP
   }
   if (url.protocol !== 'https:') return err('insecure-scheme');
   if (url.username !== '' || url.password !== '') return err('credentials-not-allowed');
-  if (url.port !== '') return err('port-not-allowed');
+  // URL.port hides explicit default/empty HTTPS ports after normalization.
+  const authority = /^https:[\\/]*([^\\/?#]*)/i.exec(s)?.[1] ?? '';
+  if (/:\d*$/.test(authority) || url.port !== '') return err('port-not-allowed');
   if (!hostFromPolicy(url.hostname, policy)) return err('host-not-allowed');
   if (url.search !== '') return err('query-not-allowed');
   if (!PATH_RE.test(url.pathname)) return err('bad-path');

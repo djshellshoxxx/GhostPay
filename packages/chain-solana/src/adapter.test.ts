@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSolanaAdapter, SOLANA_FEES } from './adapter.js';
 import type { AnnouncementRecord, AnnouncementSource } from './adapter-types.js';
-import { encodeAnnouncement } from './announcement.js';
+import { encodeAnnouncement, encodeAnnouncementMemo } from './announcement.js';
 import { encodeMetaAddress, generateStealthKeys } from './keys.js';
 import { getAssociatedTokenAddress } from './pda.js';
 import { seededRng } from './rng.testutil.js';
@@ -51,9 +51,9 @@ describe('createSolanaAdapter', () => {
     });
   });
 
-  it('parseRecipient canonicalizes and validates', () => {
+  it('parseRecipient canonicalizes and validates, bound to the adapter cluster', () => {
     const keys = generateStealthKeys(rng);
-    const meta = encodeMetaAddress(keys);
+    const meta = encodeMetaAddress({ ...keys, cluster: 'testnet' });
     const a = createSolanaAdapter({ chainId: 'sol-testnet', source: sourceOf([]) });
     const rec = a.parseRecipient(meta);
     expect(rec).toEqual({
@@ -63,17 +63,29 @@ describe('createSolanaAdapter', () => {
       viewingPublicKey: keys.viewPublicKey,
     });
     expect(() => a.parseRecipient('nope')).toThrow(code('INVALID_META_ADDRESS'));
+    expect(() => a.parseRecipient(encodeMetaAddress({ ...keys, cluster: 'devnet' }))).toThrow(
+      code('NETWORK_MISMATCH'),
+    );
+    expect(() => a.parseRecipient(encodeMetaAddress({ ...keys, cluster: 'mainnet' }))).toThrow(
+      code('NETWORK_MISMATCH'),
+    );
+    expect(() => a.parseRecipient('gpsol:abc')).toThrow(code('LEGACY_META_ADDRESS'));
   });
 
   it('buildPaymentRequest: zero fee, native and SPL, quote, validation', () => {
     const keys = generateStealthKeys(rng);
-    const metaAddress = encodeMetaAddress(keys);
+    const metaAddress = encodeMetaAddress({ ...keys, cluster: 'devnet' });
     const a = createSolanaAdapter({ chainId: 'sol-devnet', source: sourceOf([]) });
     const req = a.buildPaymentRequest({ chainId: 'sol-devnet', metaAddress, asset: 'native', amount: 1000n });
     expect([req.grossAmount, req.netAmount, req.feeAmount]).toEqual([1000n, 1000n, 0n]);
     const built = req.build({ rng });
     expect(built.associatedTokenAddress).toBeUndefined();
-    expect(built.memo.startsWith('gpst1:')).toBe(true);
+    expect(built.memo).toBe(
+      encodeAnnouncementMemo({
+        ephemeralPublicKey: built.announcement.subarray(1, 33),
+        viewTag: built.announcement[33] as number,
+      }),
+    );
     expect(built.announcement.length).toBe(34);
     expect(req.build().stealthAddress).not.toBe(built.stealthAddress);
 
@@ -98,6 +110,10 @@ describe('createSolanaAdapter', () => {
     expect(() =>
       a.buildPaymentRequest({ chainId: 'sol-devnet', metaAddress: 'x', asset: 'native', amount: 1n }),
     ).toThrow(code('INVALID_META_ADDRESS'));
+    const testnetMeta = encodeMetaAddress({ ...keys, cluster: 'testnet' });
+    expect(() =>
+      a.buildPaymentRequest({ chainId: 'sol-devnet', metaAddress: testnetMeta, asset: 'native', amount: 1n }),
+    ).toThrow(code('NETWORK_MISMATCH'));
   });
 
   it('scan detects own payments over memo and binary payloads and skips junk', async () => {
@@ -107,9 +123,11 @@ describe('createSolanaAdapter', () => {
     const mine2 = deriveStealthPayment(keys, rng);
     const foreign = deriveStealthPayment(other, rng);
     const withMeta = encodeAnnouncement({ ...mine2, metadata: Uint8Array.of(9, 9) });
-    const memo = (p: typeof mine1): string => 'gpst1:' + Buffer.from(p.announcement).toString('base64url');
+    const memo = (p: typeof mine1): string => encodeAnnouncementMemo(p);
+    const legacyMemo = 'gpst1:' + Buffer.from(mine1.announcement).toString('base64url');
     const records: AnnouncementRecord[] = [
       { slot: 1n, signature: 'a', payload: memo(mine1), destination: mine1.stealthAddress },
+      { slot: 1n, signature: 'a2', payload: legacyMemo, destination: mine1.stealthAddress },
       { slot: 2n, signature: 'b', payload: withMeta, destination: mine2.stealthAddress },
       { slot: 3n, signature: 'c', payload: foreign.announcement, destination: foreign.stealthAddress },
       { slot: 4n, signature: 'd', payload: 'garbage' },

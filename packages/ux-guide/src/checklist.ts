@@ -156,7 +156,7 @@ function validInput(i: unknown): i is SendCheckInput {
   if (typeof r['source'] !== 'string' || !SOURCES.includes(r['source'])) return false;
   for (const k of ['valid', 'inContacts', 'previouslyPaid', 'changedSinceEntry'])
     if (typeof r[k] !== 'boolean') return false;
-  const strArr = (v: unknown): boolean => Array.isArray(v) && v.every((s) => typeof s === 'string');
+  const strArr = (v: unknown): boolean => Array.isArray(v) && Array.from(v as readonly unknown[]).every((s) => typeof s === 'string');
   if (!strArr(w['ownAddresses']) || !strArr(x['acknowledged'])) return false;
   for (const k of ['baseUnits', 'feeBaseUnits', 'balanceBaseUnits'])
     if (typeof a[k] !== 'string') return false;
@@ -169,7 +169,7 @@ function validInput(i: unknown): i is SendCheckInput {
   if (typeof x['backupConfirmed'] !== 'boolean' || typeof x['addressReviewed'] !== 'boolean') return false;
   const ka = x['knownAddresses'];
   if (!Array.isArray(ka)) return false;
-  return ka.every((k: unknown) => {
+  return Array.from(ka as readonly unknown[]).every((k: unknown) => {
     const o = k as Record<string, unknown> | null;
     return (
       typeof o === 'object' &&

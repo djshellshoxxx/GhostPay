@@ -16,6 +16,10 @@ import { ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { encodeAbiParameters } from 'viem/utils';
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+const disclosures = useAutoApprovedWalletDisclosures();
 
 const LABEL = 'Policy accounts (experimental)';
 const a1 = account('acct-001');
@@ -82,6 +86,8 @@ describe('policy view: session guard before the wallet request', () => {
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     expect(await screen.findByText(/Payment submitted/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
+    // The refused first send never reached a review; the fresh one was shown before the wallet was asked.
+    expect(disclosures.methods).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
   });
 
   it('refuses an account deployment when the keys are re-imported during the wallet re-check', async () => {
@@ -178,12 +184,12 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
     expect(asked).toBe(1);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
-    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this browser profile/)).toBeTruthy();
     expect(asked).toBe(1);
   });
 });
 
-const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab: transaction 0x9{64}\. Check it in your wallet or a block explorer\. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval\./;
+const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab\. Check it in your wallet or a block explorer\. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval\./;
 const journal = () => screen.getByRole('region', { name: 'Wallet attempt journal' });
 
 describe('policy pay: a verified repeat stays blocked until cleared (by design)', () => {
@@ -245,10 +251,12 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     await screen.findByText(/Payment submitted/);
     await user.click(within(journal()).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
-    expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull();
+    await vi.waitFor(() => { expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull(); });
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     await vi.waitFor(() => { expect(walletSends(w)).toBe(2); });
+    // Let the second payment finish recording its hash in the durable journal before the next test starts.
+    await screen.findByText(/Payment submitted/, {}, { timeout: 5000 });
   });
 
   it('fails closed when the attempt journal cannot be read: no wallet request', async () => {
@@ -308,7 +316,7 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
     await clearRecord(user, 'approval');
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
-    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this browser profile/)).toBeTruthy();
     expect(asked).toHaveLength(2);
   });
 

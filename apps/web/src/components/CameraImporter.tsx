@@ -13,6 +13,7 @@ import {
 } from '@ghostpay/qr-exchange';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import { subscribeAppLock } from '../lib/appLock';
 
 export interface CameraImporterProps {
   readonly label: string;
@@ -87,7 +88,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   callback.current = onText;
   const isMultipart = useRef(multipart); isMultipart.current = multipart;
   const assemblerConfig = useRef(assemblerOptions); assemblerConfig.current = assemblerOptions;
-  // One transfer at a time, bounded by the Assembler (64 parts); dropped on stop, scope change, hidden page, unmount.
+  // One transfer at a time, bounded by the Assembler (64 parts); dropped on stop, scope change, app lock, hidden page, unmount.
   const assembler = useRef<Assembler | null>(null);
   /** Session of a completed transfer whose payload was refused; its parts are ignored until the user scans again. */
   const refusedSession = useRef<string | null>(null);
@@ -124,7 +125,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       if (element instanceof HTMLDetailsElement && !element.open) return false;
       element = element.parentElement;
     }
-    return isEnabled.current && live.current;
+    return document.visibilityState !== 'hidden' && isEnabled.current && live.current;
   };
 
   useEffect(() => {
@@ -132,21 +133,33 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     const disclosureChanged = (): void => {
       if (!visible()) { stop(); resetTransfer(); setText(''); setStatus('camera.status.closed'); }
     };
-    // A hidden page must not keep the camera: stop it and require a new click (no automatic restart on return).
+    // Hiding revokes camera, paste and image work. Returning requires a new user action; it does not resume an import.
     const visibilityChanged = (): void => {
       if (document.visibilityState !== 'hidden') return;
       const cameraOn = abort.current !== null || (video.current?.srcObject ?? null) !== null;
+      const localImport = pasteAbort.current !== null;
       const partial = assembler.current !== null;
-      if (cameraOn) stop();
+      if (cameraOn || localImport) stop();
       if (partial) resetTransfer();
       if (cameraOn) setStatus('camera.status.hidden');
       else if (partial) setStatus('camera.multipart.hiddenReset');
+      else if (localImport) setStatus(undefined);
     };
+    // Lock revokes pending work without remounting the importer or erasing an unfinished pasted draft.
+    const unsubscribeLock = subscribeAppLock(() => {
+      const cameraOn = abort.current !== null || (video.current?.srcObject ?? null) !== null;
+      stop();
+      resetTransfer();
+      refusedSession.current = null;
+      setStatus(cameraOn ? 'camera.status.stopped' : undefined);
+      inputChanged.current?.();
+    });
     // toggle does not bubble; capture observes every containing disclosure, including nested details.
     document.addEventListener('toggle', disclosureChanged, true);
     document.addEventListener('visibilitychange', visibilityChanged);
     return () => {
       live.current = false;
+      unsubscribeLock();
       stop();
       resetTransfer();
       document.removeEventListener('toggle', disclosureChanged, true);
@@ -156,6 +169,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   useEffect(() => { stop(); resetTransfer(); refusedSession.current = null; setText(''); setStatus(undefined); }, [active, scopeKey, stop, resetTransfer]);
 
   const deliver = async (candidate: string, signal: AbortSignal): Promise<boolean> => {
+    if (signal.aborted || !visible()) return false;
     try {
       const accepted = (await callback.current(candidate, signal)) === true;
       if (signal.aborted || !visible()) return false;
@@ -240,6 +254,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     if (el === null || abort.current !== null || !visible()) return;
     pasteAbort.current?.abort();
     inputChanged.current?.();
+    if (!visible()) return;
     setStatus('camera.status.requesting'); setRunning(true);
     const controller = new AbortController(); abort.current = controller;
     const isActive = (): boolean => abort.current === controller && !controller.signal.aborted && visible();
@@ -298,6 +313,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     if (file === undefined || pasteAbort.current !== null || !visible()) return;
     stop();
     inputChanged.current?.();
+    if (!visible()) return;
     const controller = new AbortController(); pasteAbort.current = controller; setBusy(true);
     setStatus('camera.file.reading');
     void (async () => {

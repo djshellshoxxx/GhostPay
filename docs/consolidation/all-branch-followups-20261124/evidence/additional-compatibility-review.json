@@ -1,0 +1,88 @@
+{
+  "reviewer": "/root",
+  "observed_at": "2026-11-24T13:04:06.217410+00:00",
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "units": [
+    {
+      "name": "HTTPS/RPC compatibility",
+      "head": "d995764543041b0d971db2759be9b2f3f9afc9a7",
+      "tested": "e2401baa939359b67b5f0541cdb92edcc8c6bd1f",
+      "donor": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675",
+      "paths": [
+        "apps/web/e2e/https-rpc-compatibility.spec.ts",
+        "docs/pages/tor-rpc-compatibility.md"
+      ],
+      "tree": "a46bfd5b46e50c4b666dd652d5f8947fd89f2dbc",
+      "exact_donor_entries": {
+        "apps/web/e2e/https-rpc-compatibility.spec.ts": "100644 blob e21f24efec4eaf8bea121adceb3f188d8c6f2521\tapps/web/e2e/https-rpc-compatibility.spec.ts",
+        "docs/pages/tor-rpc-compatibility.md": "100644 blob f1692ab905b527f7665c34b11a184da234b56664\tdocs/pages/tor-rpc-compatibility.md"
+      },
+      "post_test_delta": [
+        "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+        "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json",
+        "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz"
+      ],
+      "existing_tree_changes": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "verdict": "approve_source; fresh exact-composition hosted acceptance required"
+    },
+    {
+      "name": "Claim comparator",
+      "head": "7851c5063282255117709296ddde7dcef148444c",
+      "tested": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "donor": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "paths": [
+        "scripts/coordination/reconcile-claims.mjs",
+        "scripts/coordination/reconcile-claims.test.mjs",
+        "scripts/tests/reconcile-claims.test.mjs"
+      ],
+      "tree": "c59b6770f2ba4a448cd6485c59335c2602040fa7",
+      "exact_donor_entries": {
+        "scripts/coordination/reconcile-claims.mjs": "100644 blob 2f644028be422170922728d93b0640bcc512f0bd\tscripts/coordination/reconcile-claims.mjs",
+        "scripts/coordination/reconcile-claims.test.mjs": "100644 blob a52b00eb5a997870bbf25700005cd120f6b111bc\tscripts/coordination/reconcile-claims.test.mjs",
+        "scripts/tests/reconcile-claims.test.mjs": "100644 blob 478e1aef52c3ebd788a3c08d8766a3c5aa1f818f\tscripts/tests/reconcile-claims.test.mjs"
+      },
+      "post_test_delta": [
+        "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+        "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+        "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz"
+      ],
+      "existing_tree_changes": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "verdict": "approve_source; fresh exact-composition hosted acceptance required"
+    },
+    {
+      "name": "Offline Mythril evidence formatter",
+      "head": "7851c5063282255117709296ddde7dcef148444c",
+      "tested": "90415efdbc9af2db3537148f4702e8f8f5791815",
+      "donor": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "paths": [
+        "scripts/audit/mythril-evidence.mjs",
+        "scripts/tests/mythril-evidence.test.mjs"
+      ],
+      "tree": "c59b6770f2ba4a448cd6485c59335c2602040fa7",
+      "exact_donor_entries": {
+        "scripts/audit/mythril-evidence.mjs": "100644 blob 32834b760e90d53b43515bf8935b81a9e2cb9762\tscripts/audit/mythril-evidence.mjs",
+        "scripts/tests/mythril-evidence.test.mjs": "100644 blob ce1ae5f4da22f84080b369bc57c8cf7dea384193\tscripts/tests/mythril-evidence.test.mjs"
+      },
+      "post_test_delta": [
+        "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+        "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+        "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz"
+      ],
+      "existing_tree_changes": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "verdict": "approve_source; fresh exact-composition hosted acceptance required"
+    }
+  ],
+  "method": "Full source and contract-document inspection; immutable mode/blob identities; existing helper, browser configuration and source-contract comparison. No new runtime/native execution by this review.",
+  "findings": [
+    "HTTPS fixture uses owned temporary loopback TLS material, fixed OpenSSL arguments, intercepted synthetic RPC and cleanup at all resource layers. It asserts secure context, signed-invoice review without RPC, saved scan preference, selected-chain test and wrong-chain refusal. It does not certify Tor routing.",
+    "Comparator accepts its explicit complete snapshot contract, validates immutable commit objects, disables replacements/lazy fetch, rejects shallow/grafted history, preserves mode/type/deletions and noncomparable histories. It writes only its chosen report/temp file and does not change refs or execute workflows.",
+    "Formatter enforces its bounded five-report shape and selected fields; positional target labels and zero findings do not authenticate execution or establish clearance. Existing analyzer gates remain unchanged.",
+    "Original tests and interfaces remain, with explicit input/evidence limits; no current-census adapter or native/analyzer success is inferred."
+  ]
+}

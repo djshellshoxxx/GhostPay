@@ -1,7 +1,7 @@
 import { fail } from './errors.js';
 import { parseBtcAddress, parseSilentPaymentAddress, type BtcNetwork } from './addresses.js';
 import { formatAtomic, parseDecimal, toAtomic } from './decimal.js';
-import { buildQuery, parseQuery, splitUri } from './query.js';
+import { boundBuiltUri, buildQuery, parseQuery, splitUri } from './query.js';
 import { recipientInfo, type RecipientInfo } from './recipient.js';
 import { checkText, hasMixedScript, MAX_LABEL_BYTES, MAX_MESSAGE_BYTES } from './text.js';
 
@@ -83,9 +83,10 @@ export function parseBitcoinUri(uri: string, opts: BitcoinParseOptions = {}): Bi
   if (allowed.length === 0) return fail('INVALID_QUERY');
   const common = ORDER.filter((n) => allowed.every((a) => a.includes(n)));
   if (common.length === 0) return fail('NETWORK_MISMATCH');
-  if (opts.expectedNetwork !== undefined && !common.includes(opts.expectedNetwork))
+  const expectedNetwork = opts.expectedNetwork;
+  if (expectedNetwork !== undefined && !common.includes(expectedNetwork))
     return fail('NETWORK_MISMATCH');
-  const network = opts.expectedNetwork ?? common[0]!;
+  const network = expectedNetwork ?? common[0]!;
   const am = vals.get('amount');
   const amountSats = am === undefined ? undefined : toAtomic(parseDecimal(am, 8, MAX_SATS), 8);
   const label = vals.has('label') ? checkText(vals.get('label'), MAX_LABEL_BYTES) : undefined;
@@ -131,12 +132,13 @@ export function buildBitcoinUri(p: BuildBitcoinParams): string {
     if (net !== undefined && (net === 'main') !== (s.network === 'main')) return fail('NETWORK_MISMATCH');
     pairs.push(['sp', s.address]);
   }
-  if (p.amountSats !== undefined) {
-    if (typeof p.amountSats !== 'bigint' || p.amountSats <= 0n || p.amountSats > MAX_SATS)
+  const amountSats = p.amountSats;
+  if (amountSats !== undefined) {
+    if (typeof amountSats !== 'bigint' || amountSats <= 0n || amountSats > MAX_SATS)
       return fail('INVALID_AMOUNT');
-    pairs.push(['amount', formatAtomic(p.amountSats, 8)]);
+    pairs.push(['amount', formatAtomic(amountSats, 8)]);
   }
   if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);
   if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
-  return `bitcoin:${head}${pairs.length === 0 ? '' : `?${buildQuery(pairs)}`}`;
+  return boundBuiltUri(`bitcoin:${head}${pairs.length === 0 ? '' : `?${buildQuery(pairs)}`}`);
 }

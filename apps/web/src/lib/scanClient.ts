@@ -17,6 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -103,6 +104,16 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
+  /** Preserve relevant evidence before a checkpoint can advance past it. */
+  readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
+    readonly finalizedThrough: bigint;
+    readonly resumed: boolean;
+    readonly from: bigint;
+    readonly through: bigint;
+    readonly canonicalHash: (height: bigint) => Promise<Hex>;
+    readonly retryFrom: (height: bigint) => void;
+  }) => Promise<boolean>;
+  readonly onUnresolvedEvidence?: (from: bigint) => Promise<void>;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
   readonly onQuarantine?: (rolledBackTo: bigint) => void;
   /**
@@ -219,6 +230,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
+  let canSaveCheckpoint = true;
+  let retryHeight: bigint | undefined;
+  const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
+  const uncertainFrom = (from: bigint, head: bigint): bigint => {
+    const first = finalizedAt(head) + 1n;
+    return first < 0n ? 0n : first < from ? first : from;
+  };
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -266,6 +284,17 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const res = await fetchAnnouncements({
         chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+      }).catch(async (cause: unknown) => {
+        if (!p.signal.aborted && p.onUnresolvedEvidence !== undefined) {
+          let from = cursor.nextBlock;
+          if (cursor.last !== undefined) {
+            // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.
+            if (secondaryHead !== undefined) from = uncertainFrom(from, secondaryHead);
+            try { from = uncertainFrom(from, await p.client.blockNumber()); } catch { /* Retain the known boundary. */ }
+          }
+          if (!p.signal.aborted) await p.onUnresolvedEvidence(from);
+        }
+        throw cause;
       });
       if (p.signal.aborted) break;
       // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
@@ -313,13 +342,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             discrepancies.push(...conflicts);
             p.onDiscrepancy?.(conflicts);
             if (p.signal.aborted) break;
+            await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
             // An unconfirmed fork report must not delete the saved checkpoint either: keep it and this run's
             // position, so the next scan checks the same anchor again.
             p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
             break;
           }
         }
-        await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        try {
+          await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
+        } catch (cause) {
+          if (!p.signal.aborted) await p.onUnresolvedEvidence?.(res.reorg.rolledBackTo);
+          throw cause;
+        }
         if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
@@ -469,6 +504,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // or continue into later pages, since a later successful page could otherwise checkpoint
       // past these withheld logs and permanently skip them on resume.
       if (disagree) {
+        await p.onUnresolvedEvidence?.(uncertainFrom(pageFrom, pageHead));
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
@@ -476,6 +512,20 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
       }
+      // Include the agreed finality boundary even when no new blocks were scanned.
+      const finalizedThrough = finalizedAt(pageHead);
+      const resumed = p.cursor.last !== undefined;
+      if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed,
+        canonicalHash: (height) => canonicalHashAt(p, height),
+        retryFrom: (height) => {
+          const retry = height > pageHead ? pageHead + 1n : height;
+          // A resumed scan may need to revisit a linked observation quarantined during an earlier interruption.
+          if (retry >= 0n && (resumed || retry > finalizedThrough) && retry < persistenceFloor) persistenceFloor = retry;
+          if (retryHeight === undefined || retry < retryHeight) retryHeight = retry;
+        },
+      }) === false) canSaveCheckpoint = false;
+      if (p.signal.aborted) break;
       if (deferred > 0) {
         backlog = deferred;
         if (res.reorg !== undefined) {
@@ -487,10 +537,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       }
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
-      if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
+      if (canSaveCheckpoint && p.checkpoints !== undefined) {
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches, retryHeight);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
+          await p.onUnresolvedEvidence?.(pageFrom);
           // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);
@@ -593,7 +644,7 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
  * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[], retryHeight?: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   let settled = head + 1n > depth ? head + 1n - depth : 0n;
@@ -609,6 +660,8 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
   for (const m of pageMatches) {
     if (m.viaRouter && m.receipt === 'claimed' && m.announcement.blockNumber > floor && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   }
+  // A previously accepted payment disappeared from this run but its block could not be confirmed as replaced.
+  if (retryHeight !== undefined && retryHeight < next) next = retryHeight;
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) {
     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
@@ -658,50 +711,88 @@ function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
 const KEY_ID = /^[0-9a-f]{64}$/;
-const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+const validScope = (chainId: number, keyId: string): boolean => Number.isSafeInteger(chainId) && KEY_ID.test(keyId);
 
 interface StorageLike {
   getItem(k: string): string | null;
   setItem(k: string, v: string): void;
   removeItem(k: string): void;
+  /** Web Storage enumeration, used only to purge legacy slots; adapters without it cannot purge unknown names. */
+  readonly length?: number;
+  key?(index: number): string | null;
 }
 
-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
-export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+/** Snapshot names before removing them: Web Storage indexes shift after each removal. Never read legacy values. */
+function sweepLegacySlots(storage: StorageLike | undefined): void {
+  const stale: string[] = [];
+  try {
+    const count = storage?.length;
+    if (storage === undefined || typeof storage.key !== 'function' || count === undefined || !Number.isSafeInteger(count)) return;
+    for (let i = 0; i < count; i++) {
+      const name = storage.key(i);
+      if (name !== null && isLegacyCheckpointSlot(name)) stale.push(name);
+    }
+  } catch {
+    /* still remove any names already found */
+  }
+  for (const name of stale) {
+    try { storage?.removeItem(name); } catch { /* best effort */ }
+  }
+}
+
+function parseCursor(text: string): ScanCursor | undefined {
+  const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+  if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
+  const last = o.last;
+  if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+    return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+  }
+  return { nextBlock: BigInt(o.nextBlock) };
+}
+
+const encodeCursor = (cursor: ScanCursor): string =>
+  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
+
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ *
+ * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
+ * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
+ * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
+ * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
+ */
+export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
+  sweepLegacySlots(storage);
+  const named = checkpointSlotNamer(viewingKey);
+  const slot = (chainId: number, keyId: string): string | undefined => (validScope(chainId, keyId) ? named(chainId, keyId) : undefined);
   return {
     load(chainId, keyId) {
       try {
-        const k = slot(chainId, keyId);
-        const text = k === undefined ? undefined : storage?.getItem(k);
-        if (text === null || text === undefined) return undefined;
-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
-        if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
-        const last = o.last;
-        if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
-          return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
-        }
-        return { nextBlock: BigInt(o.nextBlock) };
+        const name = slot(chainId, keyId);
+        const text = name === undefined ? undefined : storage?.getItem(name);
+        return text === null || text === undefined ? undefined : parseCursor(text);
       } catch {
         return undefined;
       }
     },
     save(chainId, keyId, cursor) {
       try {
-        const k = slot(chainId, keyId);
-        if (k === undefined) return;
-        const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
-        storage?.setItem(k, JSON.stringify(body));
+        const name = slot(chainId, keyId);
+        if (name === undefined) return;
+        storage?.setItem(name, encodeCursor(cursor));
+        storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
         /* checkpoints are an optimisation */
       }
     },
     clear(chainId, keyId) {
+      if (!validScope(chainId, keyId)) return;
+      // A v2 name is public and can be removed even without the seller keys.
+      try { storage?.removeItem(legacyCheckpointSlot(chainId, keyId)); } catch { /* best effort */ }
       try {
-        const k = slot(chainId, keyId);
-        if (k !== undefined) storage?.removeItem(k);
+        const name = slot(chainId, keyId);
+        if (name !== undefined) storage?.removeItem(name);
       } catch {
         /* ignore */
       }

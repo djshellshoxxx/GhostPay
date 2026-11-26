@@ -31,33 +31,39 @@ function bigField(v: unknown): bigint | undefined {
  */
 export function parseAnnouncement(raw: unknown, schemeId = 1n): ScanAnnouncement | undefined {
   if (typeof raw !== 'object' || raw === null) return undefined;
-  const r = raw as Record<string, unknown>;
-  const scheme = bigField(r['schemeId']);
-  const blockNumber = bigField(r['blockNumber']);
-  const logIndex = r['logIndex'];
-  const stealthAddress = hexField(r['stealthAddress'], 20);
-  const caller = hexField(r['caller'], 20);
-  const ephemeralPublicKey = hexField(r['ephemeralPublicKey'], 33);
-  const metadata = hexField(r['metadata'], undefined);
-  const blockHash = hexField(r['blockHash'], 32);
-  if (scheme === undefined || scheme !== schemeId || blockNumber === undefined) return undefined;
-  if (typeof logIndex !== 'number' || !Number.isInteger(logIndex) || logIndex < 0 || logIndex > 0xffff_ffff) return undefined;
-  if (!stealthAddress || !caller || !ephemeralPublicKey || !metadata || !blockHash) return undefined;
-  // Optional: lets the app fetch the receipt that binds a router payment to this exact log. A malformed value is dropped,
-  // never trusted, and does not reject the record (the hash is not part of the announcement's identity).
-  const transactionHash = hexField(r['transactionHash'], 32);
-  return {
-    ...(transactionHash === undefined ? {} : { transactionHash }),
-    schemeId: scheme,
-    stealthAddress,
-    caller,
-    ephemeralPublicKey,
-    metadata,
-    blockNumber,
-    blockHash,
-    logIndex,
-    id: `${blockHash}:${String(logIndex)}`,
-  };
+  // Injected scan-source adapters can return getter-backed or revoked Proxy records.
+  // A failed read invalidates this record; it must not interrupt the entire scan.
+  try {
+    const r = raw as Record<string, unknown>;
+    const scheme = bigField(r['schemeId']);
+    const blockNumber = bigField(r['blockNumber']);
+    const logIndex = r['logIndex'];
+    const stealthAddress = hexField(r['stealthAddress'], 20);
+    const caller = hexField(r['caller'], 20);
+    const ephemeralPublicKey = hexField(r['ephemeralPublicKey'], 33);
+    const metadata = hexField(r['metadata'], undefined);
+    const blockHash = hexField(r['blockHash'], 32);
+    if (scheme === undefined || scheme !== schemeId || blockNumber === undefined) return undefined;
+    if (typeof logIndex !== 'number' || !Number.isInteger(logIndex) || logIndex < 0 || logIndex > 0xffff_ffff) return undefined;
+    if (!stealthAddress || !caller || !ephemeralPublicKey || !metadata || !blockHash) return undefined;
+    // Optional: lets the app fetch the receipt that binds a router payment to this exact log. A malformed value is dropped,
+    // never trusted, and does not reject the record (the hash is not part of the announcement's identity).
+    const transactionHash = hexField(r['transactionHash'], 32);
+    return {
+      ...(transactionHash === undefined ? {} : { transactionHash }),
+      schemeId: scheme,
+      stealthAddress,
+      caller,
+      ephemeralPublicKey,
+      metadata,
+      blockNumber,
+      blockHash,
+      logIndex,
+      id: `${blockHash}:${String(logIndex)}`,
+    };
+  } catch {
+    return undefined;
+  }
 }
 
 /** Sorts by `(blockNumber, logIndex)` and removes duplicate ids and records outside `[from, to]`. Returns the dropped count. */

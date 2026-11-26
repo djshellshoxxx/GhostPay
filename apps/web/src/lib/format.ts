@@ -15,6 +15,7 @@ export function formatUnits(value: bigint, decimals: number): string {
 
 /** Strictly parses a decimal string into base units. Returns undefined for anything unexpected (never rounds). */
 export function parseUnits(text: string, decimals: number): bigint | undefined {
+  if (typeof text !== 'string' || !Number.isInteger(decimals) || decimals < 0 || decimals > 36) return undefined;
   const m = DECIMAL_RE.exec(text.trim());
   if (m === null) return undefined;
   const whole = m[1] as string;
@@ -48,6 +49,8 @@ export function shortHex(value: string, head = 8, tail = 6): string {
 
 /** `mm:ss` or `h:mm:ss` countdown label from milliseconds (never negative). */
 export function formatCountdown(ms: number): string {
+  // Runtime JavaScript callers can bypass the number type. Do not coerce malformed durations.
+  if (typeof ms !== 'number' || !Number.isFinite(ms)) return 'invalid time';
   const total = Math.max(0, Math.ceil(ms / 1000));
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
@@ -62,6 +65,8 @@ export function formatCountdown(ms: number): string {
  * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).
  */
 export function formatUnix(seconds: number): string {
+  // Reject runtime-invalid values before arithmetic; coercion can mislabel dates or run hostile hooks.
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return 'invalid time';
   const date = new Date(seconds * 1000);
   if (Number.isNaN(date.getTime())) return 'invalid time';
   return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');

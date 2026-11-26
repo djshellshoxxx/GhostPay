@@ -57,7 +57,7 @@ export interface QueueConfig {
   maxSize?: number;
   coalesceWindowMs?: number;
   defaultTtlMs?: number;
-  /** Generic label for lock-screen title. Must not name the product. */
+  /** Optional 'Inbox' title. All other values use the generic OS title. */
   lockScreenLabel?: string;
 }
 
@@ -230,7 +230,7 @@ export function renderRecord(
   if (surface === 'lockscreen') {
     return {
       ...base,
-      title: lockLabel,
+      title: typeof lockLabel === 'string' && lockLabel.trim() === 'Inbox' ? 'Inbox' : GENERIC_TITLE,
       body: LOCK_BODY,
       titleKey: 'notify.lockscreen.title',
       bodyKey: 'notify.lockscreen.body',
@@ -321,8 +321,7 @@ export class NotificationQueue {
         : 60_000;
     this.ttl =
       cfg.defaultTtlMs !== undefined && intIn(cfg.defaultTtlMs, 1, 365 * DAY) ? cfg.defaultTtlMs : 7 * DAY;
-    const l = cfg.lockScreenLabel !== undefined ? sanitizeLabel(cfg.lockScreenLabel, 24) : '';
-    this.lockLabel = l !== '' && !containsSensitive(l) ? l : GENERIC_TITLE;
+    this.lockLabel = cfg.lockScreenLabel ?? GENERIC_TITLE;
   }
 
   get discreet(): boolean {
@@ -580,7 +579,12 @@ export function parseSnapshot(data: unknown): Result<QueueSnapshot> {
       read,
       alerted,
     } = raw;
-    if (typeof id !== 'string' || !/^n\d{1,15}$/.test(id) || ids.has(id)) return fail('record_id');
+    if (
+      typeof id !== 'string' ||
+      !/^n\d{1,15}$/.test(id) ||
+      ids.has(id) ||
+      Number(id.slice(1)) > seq
+    ) return fail('record_id');
     ids.add(id);
     if (typeof kind !== 'string' || !(NOTIFICATION_KINDS as readonly string[]).includes(kind))
       return fail('record_kind');

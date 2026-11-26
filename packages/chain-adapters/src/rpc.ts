@@ -224,7 +224,9 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   const transport = opts.transport ?? fetchTransport;
   const timeoutMs = opts.timeoutMs ?? 10_000;
   const maxBytes = opts.maxResponseBytes ?? 2 * 1024 * 1024;
-  const retries = Math.min(Math.max(opts.retries ?? 2, 0), 5);
+  const requestedRetries = opts.retries ?? 2;
+  // NaN would make `attempt >= retries` never true (unbounded loop): treat any non-finite value as 0.
+  const retries = Number.isFinite(requestedRetries) ? Math.min(Math.max(requestedRetries, 0), 5) : 0;
   const base = opts.baseDelayMs ?? 200;
   const sleep = opts.sleep ?? defaultSleep;
   const random = opts.random ?? cryptoRandom;

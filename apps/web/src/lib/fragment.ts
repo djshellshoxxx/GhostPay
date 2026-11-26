@@ -28,8 +28,20 @@ export function clearFragment(loc: LocationLike, hist: HistoryLike): void {
 /** Normalizes pasted text (full link or bare fragment) into a `#gpi=v1.` fragment. */
 export function extractFragment(input: string): string | undefined {
   const trimmed = input.trim();
-  const idx = trimmed.indexOf(FRAGMENT_PREFIX);
-  if (idx === -1) return undefined;
-  const frag = trimmed.slice(idx);
-  return /\s/.test(frag) ? undefined : frag;
+  // URL() silently discards tabs/newlines; reject them before it can change the invoice hash.
+  if (/\s/.test(trimmed)) return undefined;
+  let fragment: string;
+  if (trimmed.startsWith(FRAGMENT_PREFIX)) {
+    fragment = trimmed;
+  } else {
+    // Treat pasted links as URLs, not arbitrary text containing an invoice marker.
+    // Preserve the HTTP(S) links supported by the SDK and local deployments.
+    // This only extracts text; the QR importer has its own stricter URL policy.
+    if (!/^https?:\/\//i.test(trimmed)) return undefined;
+    let url: URL;
+    try { url = new URL(trimmed); } catch { return undefined; }
+    if ((url.protocol !== 'https:' && url.protocol !== 'http:') || !url.hostname) return undefined;
+    fragment = url.hash;
+  }
+  return /^#gpi=v1\.[A-Za-z0-9_-]+$/.test(fragment) ? fragment : undefined;
 }

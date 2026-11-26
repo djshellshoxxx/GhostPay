@@ -1,7 +1,7 @@
 import { fail } from './errors.js';
 import { parseSolanaAddress } from './addresses.js';
 import { parseDecimal, toAtomic, type Decimal } from './decimal.js';
-import { buildQuery, parseQuery, splitUri } from './query.js';
+import { boundBuiltUri, buildQuery, parseQuery, splitUri } from './query.js';
 import { recipientInfo, type RecipientInfo } from './recipient.js';
 import { checkText, hasMixedScript, MAX_LABEL_BYTES, MAX_MEMO_BYTES, MAX_MESSAGE_BYTES } from './text.js';
 
@@ -95,11 +95,19 @@ export function buildSolanaPay(p: BuildSolanaParams): string {
   if (p.amount !== undefined) pairs.push(['amount', parseDecimal(p.amount, MAX_SCALE, BOUND).canonical]);
   if (p.splToken !== undefined) pairs.push(['spl-token', parseSolanaAddress(p.splToken)]);
   const refs = p.references ?? [];
-  if (refs.length > MAX_REFERENCES || new Set(refs).size !== refs.length) return fail('INVALID_QUERY');
-  for (const r of refs) pairs.push(['reference', parseSolanaAddress(r)]);
+  if (refs.length > MAX_REFERENCES) return fail('INVALID_QUERY');
+  const seen = new Set<string>();
+  // Validate and serialize the same reference snapshot. A mutable/getter-backed array can change
+  // between a separate Set uniqueness check and a second iteration over its contents.
+  for (const raw of refs) {
+    const reference = parseSolanaAddress(raw);
+    if (seen.has(reference) || seen.size >= MAX_REFERENCES) return fail('INVALID_QUERY');
+    seen.add(reference);
+    pairs.push(['reference', reference]);
+  }
   if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);
   if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
   if (p.memo !== undefined) pairs.push(['memo', checkText(p.memo, MAX_MEMO_BYTES)]);
   const head = `solana:${parseSolanaAddress(p.recipient)}`;
-  return pairs.length === 0 ? head : `${head}?${buildQuery(pairs)}`;
+  return boundBuiltUri(pairs.length === 0 ? head : `${head}?${buildQuery(pairs)}`);
 }

@@ -1,13 +1,12 @@
 import {
+  ZERO_ADDRESS,
   ZERO_HASH,
   buildPolicyRecord,
   decodeScheme2MetaAddress,
   findPolicyFromCandidates,
   parsePolicyRecord,
   serializePolicyRecord,
-  type PolicyRecord,
 } from '@ghostpay/policy-scheme';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import { useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
@@ -16,14 +15,10 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { getAddress, isAddress } from 'viem/utils';
 import { createPolicyMetaAddress, DELAY_PRESETS, type LimitRow } from './create';
 import type { PolicyCtx } from './PolicyView';
+import { recordBelongsToSeller } from './recordIdentity';
 import { BackupGate } from '../../views/SellerKeys';
 
 const EMPTY_ROW: LimitRow = { token: '', limit: '', windowSeconds: '' };
-
-function ownsRecord(rec: PolicyRecord, spendHex: string, viewHex: string): boolean {
-  const m = decodeScheme2MetaAddress(rec.metaAddress);
-  return bytesToHex(m.spendingPublicKey) === spendHex.replace(/^0x/, '').toLowerCase() && bytesToHex(m.viewingPublicKey) === viewHex.replace(/^0x/, '').toLowerCase();
-}
 
 /** Create a policy meta-address, keep its record, and recover a lost record (no contract change). */
 export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
@@ -57,11 +52,14 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
     setImportMsg(undefined);
     try {
       const rec = parsePolicyRecord(importText.trim());
-      addRecord(rec);
-      const mine = session !== undefined && ownsRecord(rec, session.spendingPublicKey, session.viewingPublicKey);
+      if (!addRecord(rec)) {
+        setImportMsg({ kind: 'warn', text: t('policy.create.alreadySaved') });
+        return;
+      }
+      const mine = session !== undefined && recordBelongsToSeller(rec, session.spendingPublicKey, session.viewingPublicKey);
       setImportMsg(mine ? { kind: 'ok', text: t('policy.create.imported') } : { kind: 'warn', text: t('policy.create.otherKeys') });
-    } catch (e) {
-      setImportMsg({ kind: 'error', text: t('policy.create.rejected', { reason: e instanceof Error && e.name === 'PolicySchemeError' ? e.message : userMessage(e) }) });
+    } catch {
+      setImportMsg({ kind: 'error', text: t('policy.create.rejected') });
     }
   };
 
@@ -87,8 +85,8 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
         return;
       }
       const limits = found.limitsRoot === ZERO_HASH ? [] : (records.find((r) => r.policy.limitsRoot === found.limitsRoot)?.limits ?? []);
-      addRecord(buildPolicyRecord({ metaAddress: lostMeta.trim(), policy: found, limits }));
-      setLostMsg({ kind: 'ok', text: t('policy.create.restored') });
+      const added = addRecord(buildPolicyRecord({ metaAddress: lostMeta.trim(), policy: found, limits }));
+      setLostMsg(added ? { kind: 'ok', text: t('policy.create.restored') } : { kind: 'warn', text: t('policy.create.alreadySaved') });
     } catch (e) {
       setLostMsg({ kind: 'error', text: userMessage(e) });
     }
@@ -135,11 +133,14 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
           </Notice>
           <ul className="plain">
             {records.map((r) => (
-              <li key={r.policyHash}>
+              <li key={r.metaAddress}>
                 <p><Mono>{r.metaAddress}</Mono></p>
                 <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
+                <Notice kind={r.policy.limitsRoot === ZERO_HASH ? 'info' : 'warn'}>
+                  {r.policy.limitsRoot === ZERO_HASH ? t('policy.create.withdrawableAny') : t('policy.create.withdrawableOnly', { tokens: r.limits.map((l) => l.token === ZERO_ADDRESS ? 'native' : l.token).join(', ') })}
+                </Notice>
                 <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
-                <button type="button" onClick={() => { downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}.json`, serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
+                <button type="button" onClick={() => { downloadText('ghostpay-policy-record.json', serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
               </li>
             ))}
           </ul>

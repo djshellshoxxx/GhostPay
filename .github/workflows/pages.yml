@@ -103,6 +103,47 @@ jobs:
         run: bash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"
       - name: Secret and egress scan of the source tree
         run: bash scripts/scan-secrets.sh
+      - name: Install managed Chromium for local Pages smoke
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Smoke the built Pages artifact locally
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          GHOSTPAY_CHROMIUM="$(node --input-type=module -e "import { chromium } from '@playwright/test'; process.stdout.write(chromium.executablePath());")"
+          test -x "$GHOSTPAY_CHROMIUM"
+          export GHOSTPAY_CHROMIUM
+
+          node scripts/pages/serve-pages.mjs "$RUNNER_TEMP/pages/site" --port 4194 --base /GhostPay/ \
+            > "$RUNNER_TEMP/pages/evidence/local-smoke-server.log" 2>&1 &
+          pages_smoke_pid=$!
+          cleanup_pages_smoke() {
+            pages_smoke_status=$?
+            trap - EXIT
+            kill "$pages_smoke_pid" 2>/dev/null || true
+            wait "$pages_smoke_pid" 2>/dev/null || true
+            exit "$pages_smoke_status"
+          }
+          trap cleanup_pages_smoke EXIT
+
+          pages_smoke_ready=0
+          for pages_smoke_attempt in {1..30}; do
+            if ! kill -0 "$pages_smoke_pid" 2>/dev/null; then
+              cat "$RUNNER_TEMP/pages/evidence/local-smoke-server.log"
+              exit 1
+            fi
+            if curl --fail --silent --max-time 1 http://127.0.0.1:4194/GhostPay/build-info.json > /dev/null; then
+              pages_smoke_ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$pages_smoke_ready" != 1 ]; then
+            cat "$RUNNER_TEMP/pages/evidence/local-smoke-server.log"
+            exit 1
+          fi
+
+          node scripts/pages/smoke.mjs http://127.0.0.1:4194/GhostPay/ --commit "$GITHUB_SHA" --timeout-s 0 \
+            2>&1 | tee "$RUNNER_TEMP/pages/evidence/local-smoke.log"
       - name: Summary (served-file hashes and payment state)
         run: |
           set -euo pipefail

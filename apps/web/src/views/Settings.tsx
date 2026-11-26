@@ -9,8 +9,9 @@ import {
 import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
-import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
+import { checkDelayRange, checkRelayerUrl, checkRpcUrl, INVOICE_LINK_CLIPBOARD_DELAYS_SEC, invoiceLinkClipboardDelay, type Settings as SettingsData } from '../lib/settings';
 import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
@@ -32,6 +33,7 @@ export function Settings(): ReactNode {
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
   const [lock, setLock] = useState(s.lockTimeoutMin);
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
+  const [clipboardDelaySec, setClipboardDelaySec] = useState(s.invoiceLinkClipboardDelaySec);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
@@ -69,7 +71,10 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
-      const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = {
+        rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec,
+        lockTimeoutMin: lock, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
+      };
       const saved = app.updateSettings(next);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
@@ -106,20 +111,25 @@ export function Settings(): ReactNode {
       <Notice kind="warn" title={t('settings.outside.title')}>
         {t('settings.outside.body')}
       </Notice>
+      {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
+      <MetadataRetentionControls manual={false} />
+      <MetadataRetentionControls scope="proof" manual={false} />
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
-            <div key={c.chainId} className="row">
+            <div key={c.chainId} className="rpc-row">
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
                 {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
-              <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-              <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
+              <div className="rpc-test-row">
+                <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
+                <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
+              </div>
             </div>
           ))}
         </fieldset>
@@ -154,6 +164,17 @@ export function Settings(): ReactNode {
             <input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} />
             <label htmlFor="autoclear">{t('settings.autoclear.label')}</label>
           </div>
+          <Field label={t('settings.invoiceClipboard.label')} hint={t('settings.invoiceClipboard.hint')}>
+            {(id, describedBy) => (
+              <select id={id} aria-describedby={describedBy} value={clipboardDelaySec}
+                onChange={(e) => { setClipboardDelaySec(invoiceLinkClipboardDelay(Number(e.target.value))); }}>
+                <option value={0}>{t('settings.invoiceClipboard.off')}</option>
+                {INVOICE_LINK_CLIPBOARD_DELAYS_SEC.map((seconds) => (
+                  <option key={seconds} value={seconds}>{t('settings.invoiceClipboard.seconds', { seconds })}</option>
+                ))}
+              </select>
+            )}
+          </Field>
           <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
             {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>
@@ -416,8 +437,10 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
       const next = { ...cfg, endpoints, indexerUrls };
-      setCfg(next);
-      const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      const savedPrivacy = saveScanPrivacy(browserStorage(), next);
+      // A successful save replaces settings that could not be read: show what is saved now, without the lock.
+      setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
+      const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });

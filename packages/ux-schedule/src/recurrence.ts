@@ -144,7 +144,7 @@ function* candidateDays(rule: RecurrenceRule): Generator<number> {
     const weekStart = startDays - weekdayOfDays(startDays);
     for (let base = weekStart; base < maxDays; base += 7 * rule.interval) {
       for (const wd of rule.weekdays ?? []) {
-        if (base + wd >= startDays) yield base + wd;
+        if (base + wd >= startDays && base + wd < maxDays) yield base + wd;
       }
     }
   } else {

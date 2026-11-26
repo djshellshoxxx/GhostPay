@@ -208,6 +208,73 @@ describe('local spent tracking in ScanState', () => {
   }
   const spent = { height: 102, blockHash: blockHashOf(102), spentBy: fakeTxid('spender') };
 
+  it('keeps the first canonical spending block when a later duplicate is orphaned', async () => {
+    const duplicateSpends = {
+      102: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('spender') }],
+      103: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('duplicate') }],
+    };
+    const { state } = await run(resumeScan({ source: spending(blocks(), duplicateSpends), keys, state: createScanState('mainnet', 100) }));
+    expect(state.matches[0]?.spent).toEqual(spent);
+    const rec = await reconcileScanState(state, (h) => h <= 102 ? blockHashOf(h) : undefined);
+    expect(rec.state.matches[0]?.spent).toEqual(spent);
+  });
+
+  it('rejects a replayed confirmed outpoint instead of reviving its spent state at a new height', async () => {
+    const { state, found } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const original = found[0]!;
+    expect(state.matches[0]?.spent).toEqual(spent);
+    expect(codeOf(() => recordScannedBlock(state, 104, blockHashOf(104), [{ ...original, height: 104, blockHash: blockHashOf(104) }])))
+      .toBe('INVALID_INPUT');
+  });
+
+  it('records continuous local input coverage and resets it across a source without spends', async () => {
+    const first = await run(resumeScan({ source: spending(blocks(), {}), keys, state: createScanState('mainnet', 100) }));
+    expect(first.state.spendsFromHeight).toBe(100);
+    expect(parseScanState(serializeScanState(first.state)).spendsFromHeight).toBe(100);
+    const more = [...blocks(), makeBlock(104, []), makeBlock(105, [])];
+    const gap = await run(resumeScan({ source: new InMemoryTweakSource(more), keys, state: first.state, toHeight: 104 }));
+    expect(gap.state.spendsFromHeight).toBeUndefined();
+    const resumed = await run(resumeScan({ source: spending(more, {}), keys, state: gap.state }));
+    expect(resumed.state.spendsFromHeight).toBe(105);
+  });
+
+  it('does not upgrade legacy metadata into complete historical spend evidence', async () => {
+    const legacy = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const more = [...blocks(), makeBlock(104, [])];
+    const resumed = await run(resumeScan({ source: spending(more, {}), keys, state: legacy.state }));
+    expect(resumed.state.spendsFromHeight).toBe(104);
+    expect(resumed.state.matches[0]?.height).toBe(100);
+  });
+
+  it('retains only local coverage below the reorganization ancestor', async () => {
+    const first = await run(resumeScan({ source: spending(blocks(), {}), keys, state: createScanState('mainnet', 100) }));
+    const shallow = await reconcileScanState(first.state, (h) => h <= 101 ? blockHashOf(h) : undefined);
+    expect(shallow.state.spendsFromHeight).toBe(100);
+    const partial = { ...first.state, spendsFromHeight: 102 };
+    const rolledPast = await reconcileScanState(partial, (h) => h <= 101 ? blockHashOf(h) : undefined);
+    expect(rolledPast.state.spendsFromHeight).toBeUndefined();
+    const deep = await reconcileScanState(first.state, () => undefined);
+    expect(deep.state.spendsFromHeight).toBeUndefined();
+  });
+
+  it('rejects malformed coverage markers, duplicate identities and inconsistent chain evidence', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const good = JSON.parse(serializeScanState(state)) as Record<string, unknown>;
+    const matches = good['matches'] as Record<string, unknown>[];
+    const first = matches[0]!;
+    for (const spendsFromHeight of [-1, 99, 104, 100.5, '100', null]) {
+      expect(codeOf(() => parseScanState(JSON.stringify({ ...good, spendsFromHeight })))).toBe('INVALID_INPUT');
+    }
+    const bad = [
+      { ...good, matches: [...matches, first] },
+      { ...good, matches: [{ ...first, amountSats: '2000' }, ...matches] },
+      { ...good, matches: [{ ...first, blockHash: 'ff'.repeat(32) }, matches[1]] },
+      { ...good, matches: [{ ...first, spent: { ...spent, blockHash: 'ff'.repeat(32) } }, matches[1]] },
+      { ...good, matches: [{ ...first, status: 'pending' }, matches[1]] },
+    ];
+    for (const value of bad) expect(codeOf(() => parseScanState(JSON.stringify(value)))).toBe('INVALID_INPUT');
+  });
+
   it('recordScannedBlock marks the spent match; unknown outpoints and inconsistent spends are handled', async () => {
     const { state } = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state: createScanState('mainnet', 100) }));
     expect(state.matches.every((m) => m.spent === undefined)).toBe(true);

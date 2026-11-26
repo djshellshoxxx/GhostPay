@@ -1,0 +1,93 @@
+{
+  "profile": "lean",
+  "source_commit": "e543d25fc7f3b65460518f4b3df4c513d34a1215",
+  "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "files": [
+    {
+      "path": "_headers",
+      "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+      "bytes": 1761
+    },
+    {
+      "path": "assets/ar-B7hqN6M8.js",
+      "sha256": "b96e832600bf1db9be47abaf08560fa86bd86543440515b56b813d33b7f1c70c",
+      "bytes": 305263
+    },
+    {
+      "path": "assets/es-EiI9qdRS.js",
+      "sha256": "fcf3f4ac4aa94474cbf8831b52e50d584ea3e562dea5a53483313de1df8d8d2f",
+      "bytes": 251960
+    },
+    {
+      "path": "assets/index-CORUp_Gf.js",
+      "sha256": "ff428c3113454394151e30c9c5a42c2d41f169882313d31de669af0388fe7469",
+      "bytes": 1284191
+    },
+    {
+      "path": "assets/ja-Blk8DGS3.js",
+      "sha256": "83955f103046d3f2ea6d8051a3756c4c9446ca7d9c545857a52672115792e1b8",
+      "bytes": 298707
+    },
+    {
+      "path": "assets/jsQR-Ct1FLwmy.js",
+      "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f",
+      "bytes": 129988
+    },
+    {
+      "path": "assets/rolldown-runtime-XKyaHtl9.js",
+      "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+      "bytes": 726
+    },
+    {
+      "path": "assets/scanner.worker-aBRK3D4k.js",
+      "sha256": "03b6482738650680fb02b7272232a207fb2d49a195ad960628683fd7e881f7b5",
+      "bytes": 62152
+    },
+    {
+      "path": "assets/style-sbKVpGL7.css",
+      "sha256": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+      "bytes": 11944
+    },
+    {
+      "path": "build-info.json",
+      "sha256": "53d7a38ff35cb0a9be6cd57680ae7a02c23f25d5f6b44d9dc6f368e287f44b36",
+      "bytes": 145
+    },
+    {
+      "path": "deployments/README.md",
+      "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d",
+      "bytes": 861
+    },
+    {
+      "path": "favicon.svg",
+      "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+      "bytes": 332
+    },
+    {
+      "path": "ghostpay-lean-build.json",
+      "sha256": "833f060b1c81b76c99bc7c5cf34b8c7a1f6c93875ee1f9e8567fc7f0ab9a6eab",
+      "bytes": 99100
+    },
+    {
+      "path": "help.css",
+      "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+      "bytes": 3283
+    },
+    {
+      "path": "help.html",
+      "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1",
+      "bytes": 16853
+    },
+    {
+      "path": "index.html",
+      "sha256": "4516b78b6429650473c9b4613602de76ecd13d067e17a668bd1f4ca9be1a908c",
+      "bytes": 3369
+    },
+    {
+      "path": "privacy.html",
+      "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7",
+      "bytes": 8029
+    }
+  ],
+  "limits": "Local static output inventory only; no browser execution, release attestation, trusted deployment manifest or publication."
+}

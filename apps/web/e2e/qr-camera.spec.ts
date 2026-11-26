@@ -41,6 +41,24 @@ test.describe('virtual camera: single QR', () => {
     await expect(page.getByRole('button', { name: 'Generate new keys' })).toBeVisible();
   });
 
+  test('scans the virtual camera with jsQR when the native detector rejects video frames', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'BarcodeDetector', {
+        value: class {
+          detect(video: HTMLVideoElement) {
+            video.dataset.nativeAttempts = String(Number(video.dataset.nativeAttempts ?? 0) + 1);
+            return Promise.reject(new Error('unsupported video frame'));
+          }
+        },
+      });
+    });
+    const pairing = await openPairing(page);
+    await pairing.getByRole('button', { name: 'Scan with camera' }).click();
+    await expect(pairing.locator('code', { hasText: META })).toBeVisible({ timeout: 20_000 });
+    await expect(pairing.locator('video')).toHaveAttribute('data-native-attempts', '1');
+    await expect.poll(() => liveTracks(page)).toBe(0);
+  });
+
   test('stopping, navigating away and reopening never leaves a live camera track', async ({ page }) => {
     const pairing = await openPairing(page);
     await pairing.getByRole('button', { name: 'Scan with camera' }).click();

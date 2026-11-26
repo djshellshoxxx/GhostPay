@@ -105,14 +105,22 @@ export function planRefund(
   return { plan, replayed: false, remainingRefundable: original.paidAmount - counted - req.amount };
 }
 
+// A submitted refund may already be on chain, so it never becomes `failed` here: that would release its
+// reservation without evidence and allow a second refund of the same funds. This plan-only API does not
+// verify chain evidence or resolve a submitted refund's failure.
 const NEXT: Record<RefundStatus, readonly RefundStatus[]> = {
   planned: ['submitted', 'failed'],
-  submitted: ['confirmed', 'failed'],
+  submitted: ['confirmed'],
   confirmed: [],
   failed: [],
 };
 
-/** Moves a refund through planned, submitted, confirmed or failed. Terminal states are final. */
+/**
+ * Moves a plan-only refund through planned, submitted, confirmed or failed. Terminal states are final.
+ *
+ * @remarks Only a never-submitted plan can fail. Status changes record caller assertions and do not verify
+ * chain evidence. This API does not provide evidence-based failure resolution for a signed or broadcast refund.
+ */
 export function transitionRefund(plan: RefundPlan, to: RefundStatus): RefundPlan {
   if (plan.status === to) return plan;
   if (!NEXT[plan.status].includes(to)) throw new BillingError('REFUND', 'illegal transition');

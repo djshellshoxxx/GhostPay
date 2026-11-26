@@ -14,7 +14,7 @@ import {
   type TronChainParams,
   type TronRpc,
 } from '@ghostpay/tron-adapter';
-import { MAINNET_GENESIS } from './network';
+import { MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS, type TronNetworkId } from './network';
 
 /** An error whose message is written for the user and safe to display. */
 export class TronViewError extends UserFacingError {
@@ -34,13 +34,24 @@ const rec = (v: unknown): Record<string, unknown> => {
   return v as Record<string, unknown>;
 };
 
-/** Refuses a node whose block 0 is the TRON mainnet genesis block, whatever network was selected. */
-export async function checkNetwork(rpc: TronRpc, signal?: AbortSignal): Promise<void> {
+/**
+ * Bind a user-selected TRON testnet to its pinned block-0 identity before any scan,
+ * signing review, or broadcast. "local" is explicit: it cannot silently connect
+ * to the known Nile/Shasta public endpoints. Mainnet is always disabled.
+ */
+export async function checkNetwork(rpc: TronRpc, selected: TronNetworkId, signal?: AbortSignal): Promise<void> {
+  if (selected === 'mainnet') throw new TronViewError({ key: 'tron.error.mainnet' });
+  if (selected !== 'nile' && selected !== 'shasta' && selected !== 'local') {
+    throw new TronViewError({ key: 'tron.error.chainMismatch' });
+  }
   const [genesis] = await getBlockRange(rpc, 0n, 0n, signal);
   if (genesis === undefined) throw new TronViewError({ key: 'tron.error.firstBlock' });
-  if (genesis.blockId.toLowerCase() === MAINNET_GENESIS) {
-    throw new TronViewError({ key: 'tron.error.mainnet' });
-  }
+  const actual = genesis.blockId.toLowerCase();
+  if (actual === MAINNET_GENESIS) throw new TronViewError({ key: 'tron.error.mainnet' });
+  if (selected === 'nile' && actual === NILE_GENESIS) return;
+  if (selected === 'shasta' && actual === SHASTA_GENESIS) return;
+  if (selected === 'local' && actual !== NILE_GENESIS && actual !== SHASTA_GENESIS) return;
+  throw new TronViewError({ key: 'tron.error.chainMismatch' });
 }
 
 async function account(rpc: TronRpc, address: string, signal?: AbortSignal): Promise<Record<string, unknown>> {

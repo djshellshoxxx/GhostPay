@@ -63,10 +63,11 @@ export function unneutralizeFormula(value: string): string {
 
 /**
  * RFC 4180 quoting: wraps in double quotes (doubling embedded quotes) when the
- * field contains a comma, quote, CR or LF, or when `force` is set.
+ * field contains a comma, quote, CR or LF, starts with a literal BOM (which
+ * could otherwise be stripped at the start of a CSV file), or when `force` is set.
  */
 export function quoteField(value: string, force = false): string {
-  if (force || /[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
+  if (force || value.startsWith('\uFEFF') || /[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
   return value;
 }
 

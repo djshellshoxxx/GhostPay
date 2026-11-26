@@ -1,0 +1,3290 @@
+{
+  "format": "ghostpay-live-branch-census-v1",
+  "source": "GitHub REST branches collection; complete pages 100,100,100,87",
+  "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "combined_candidate": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "candidate": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+  "branch_refs": 387,
+  "distinct_heads": 382,
+  "counts": {
+    "main-ancestor": 185,
+    "docs-only": 64,
+    "needs-semantic-review": 107,
+    "coordination-metadata": 1,
+    "compared-code-exact": 15,
+    "combined-ancestor": 10,
+    "sweep-ancestor": 4,
+    "unrelated": 1
+  },
+  "classification_filter": "Excludes docs/, doc/, .agents/ and .md/.txt/.log/.gz/.png/.svg/.pdf/.jpg/.webp plus LICENSE/NOTICE/CHANGELOG. Full local trees; exact compares every code path changed by the branch since its merge base with main to the candidate. Ancestry alone is not semantic preservation; differing code is not proof of a missing feature.",
+  "refs": [
+    {
+      "name": "ai/agent-harness-20261113",
+      "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "audit/bugcheck-core-latest-20261120",
+      "sha": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+      "protected": false,
+      "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "audit/f03-browser-qualification-20261120",
+      "sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+      "protected": false,
+      "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "changed_code": 19,
+      "different": 5,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "audit/ghostpay-blue-team-20261119",
+      "sha": "6dcd163413fc94d5b2db760d5e15db391760a099",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "audit/ghostpay-core-latest-security-20261119",
+      "sha": "b6e484c252723fc3293c7106ce2c46069c2668a8",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "audit/ghostpay-qa-stress-20261119",
+      "sha": "e9643073be74dac54c2875143501451812763f9c",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "audit/zero-cool-core-20261119",
+      "sha": "bdffcb1d88557b3ca9110c20e03261508011c902",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "automation/api-funded-ghostpay-cloud-20261103",
+      "sha": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "sha": "849b20733e6fd396a1ed354b284335019500946b",
+      "protected": false,
+      "state": "coordination-metadata"
+    },
+    {
+      "name": "automation/ghostpay-parallel-four-agents-20261103",
+      "sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "protected": false,
+      "base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        ".github/workflows/ghostpay-parallel-agents.yml",
+        "scripts/tests/ghostpay-parallel-workflow.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/ghostpay-parallel-review-wave-20261103",
+      "sha": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/ghostpay-recurrent-backlog-20261103",
+      "sha": "5835736c12968231ac7b3152e394077bee453622",
+      "protected": false,
+      "base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261119-c977/bug/build-profile-failclosed",
+      "sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "sha": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 2,
+      "different": 1,
+      "different_paths": [
+        "packages/invoice-schema/src/base64url.test.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Runtime blob already matches candidate; sole test difference removes unused callback parameter."
+    },
+    {
+      "name": "automation/20261119T073600Z/bug/camera-visibility",
+      "sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261119T073600Z/coordinator/integration-lock",
+      "sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261119T083600Z/audit/merchant-clock",
+      "sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261119T083600Z/bug/json-canonical-array",
+      "sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/invoice-schema/src/json.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "stronger-successor-present",
+      "semantic_note": "Candidate retains dense-array refusal and extends it to descriptor-based data snapshots rejecting accessors and hostile map/get behavior."
+    },
+    {
+      "name": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "sha": "89942105c48df03b9351f777278b6a992e35a95e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 489,
+      "different": 457,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "sha": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+      "protected": false,
+      "base": "89942105c48df03b9351f777278b6a992e35a95e",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Runtime guard is identical except comment wording; current type/own-key refusal retained."
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 493,
+      "different": 463,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 499,
+      "different": 466,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T0243Z/worker/format-units-validation",
+      "sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 3,
+      "different": 3,
+      "different_paths": [
+        "apps/web/e2e/backup-ownership.spec.ts",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "automation/20261120T1241Z/bug/receipt-print-css",
+      "sha": "e0c583be2514b44af7f3b15619fb8160358f1470",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "automation/20261120T1635Z/bug/tron-scan-abort",
+      "sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "packages/tron-adapter/src/scan.cancellation.test.ts",
+        "packages/tron-adapter/src/scan.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "recoverable-current-donor",
+      "semantic_note": "PR321; genuinely absent cancellation checks, source-only review completed; preserve pending current-head gates."
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 489,
+      "different": 458,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qualification-evidence",
+      "sha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 489,
+      "different": 458,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "automation/20261120T004531Z/feature/clipboard-guard",
+      "sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 493,
+      "different": 463,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "backup/codex-observed-pr37-915d710-20261028",
+      "sha": "915d71053e2335dfff638b729b160f9df3200c22",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "backup/pr30-before-consolidation-20261025",
+      "sha": "356fe5e44d42db1731d6b35794c6474afcc23037",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "backup/pr31-before-consolidation-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/btc-spent-private-scan-20261118",
+      "sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "protected": false,
+      "base": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "changed_code": 38,
+      "different": 38,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/btc-spent-qualification-20261119",
+      "sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "protected": false,
+      "base": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "changed_code": 38,
+      "different": 38,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/btc-spentness-private-scan-20261118",
+      "sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "protected": false,
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "changed_code": 36,
+      "different": 36,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "protected": false,
+      "base": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-qualification-20261112",
+      "sha": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "sha": "eb21d57c8ad1550481d5d674fa6356ac98f146f0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "sha": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "protected": false,
+      "base": "a89a2e948321314acf97db435e9776d9322a9461",
+      "changed_code": 7,
+      "different": 5,
+      "different_paths": [
+        "apps/web/e2e/pages-devnet.spec.ts",
+        "apps/web/src/features/registry/RegistryView.test.tsx",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/SellerKeys.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 285,
+      "different": 274,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "sha": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "protected": false,
+      "base": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+      "changed_code": 14,
+      "different": 14,
+      "different_paths": [
+        "apps/web/e2e/idle-session.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/AppShell.idleClock.test.tsx",
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/scanCursorSlot.test.ts",
+        "apps/web/src/lib/scanCursorSlot.ts",
+        "apps/web/src/lib/session.idleLock.test.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "superseded-donor",
+      "semantic_note": "Retained by PR256; later candidate includes additional fixture corrections, still not qualified."
+    },
+    {
+      "name": "chatgpt/ghostpay-integration-matrix-20261112",
+      "sha": "1a5e815d8446f00a63f98de261081910c9c78ce6",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "sha": "bbc7dda4ce275613296609a5001bac36c888229e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 7,
+      "different": 7,
+      "different_paths": [
+        ".github/dependabot.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        "apps/web/package.json",
+        "apps/web/src/validateDeploymentsScript.test.ts",
+        "scripts/contract-analysis/mythril-disposition-check.mjs",
+        "scripts/tests/mythril-disposition-check.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "sha": "8277879eeaa003c31fd76b4f840b9628f4b02cf7",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-own-node-guard-20261118",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 93,
+      "different": 93,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "protected": false,
+      "base": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "scripts/pages/verify-pages-artifact.mjs",
+        "scripts/pages/verify-pages-artifact.test.mjs"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "stronger-successor-present",
+      "semantic_note": "Current verifier adds stable identity checks, no-follow/nonblocking reads, strict UTF-8 and final inventory checks over older donor."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 297,
+      "different": 290,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 100,
+      "different": 99,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "protected": false,
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "changed_code": 23,
+      "different": 23,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-recovery-review-20261118",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "protected": false,
+      "base": "71abc7e55c25d45b206ac47e5ddd24e072805710",
+      "changed_code": 36,
+      "different": 36,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-remaining-work-20261119",
+      "sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 402,
+      "different": 400,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "protected": false,
+      "base": "a89a2e948321314acf97db435e9776d9322a9461",
+      "changed_code": 2,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Off-filter token refusal present; candidate additionally corrects 30-day partial-history semantics."
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "protected": false,
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "changed_code": 4,
+      "different": 3,
+      "different_paths": [
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "protected": false,
+      "base": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "changed_code": 6,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/ghostpay-sonar-review-20261118",
+      "sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 33,
+      "different": 33,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "protected": false,
+      "state": "sweep-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 93,
+      "different": 93,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-tm-hardening-20261118",
+      "sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 299,
+      "different": 287,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/ghostpay-top-down-audit-20261115",
+      "sha": "775756931be4683f47e8af6b2ecf26f9458897d7",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "sha": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "sha": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 69,
+      "different": 69,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "protected": false,
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "changed_code": 4,
+      "different": 3,
+      "different_paths": [
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/pages-release-gate-audit-20261114",
+      "sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "protected": false,
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-completion-20261118",
+      "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 287,
+      "different": 276,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 289,
+      "different": 277,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "protected": false,
+      "base": "e802d5c1ff131762477b485af3046446e8576be5",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "protected": false,
+      "base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "protected": false,
+      "base": "17158f4c62f8f968853c3ffdd0cb3572455038f5",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-wiki-20261110",
+      "sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "protected": false,
+      "base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "changed_code": 1,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "protected": false,
+      "base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "protected": false,
+      "base": "b1150eb8280ac5259fad620f0b762e83c19cf71d",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/lib/format.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Current formatFiat uses absolute magnitude plus exactly one leading minus sign; other file changes explain differing blob."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "protected": false,
+      "base": "85f525165d6c94c3c6b908930df712e9e7ac66f7",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "protected": false,
+      "base": "a89a2e948321314acf97db435e9776d9322a9461",
+      "changed_code": 2,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Transfer filter behavior retained; candidate differences are updated 30-day partial-history warning."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "protected": false,
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "changed_code": 6,
+      "different": 5,
+      "different_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "protected": false,
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "changed_code": 2,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "protected": false,
+      "base": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/components/TagArchive.test.tsx"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "stronger-successor-present",
+      "semantic_note": "Current TagArchive suite retains blocked-click cleanup and verifies explicit failure reporting."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/qualify-98-20261110",
+      "sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "protected": false,
+      "base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "protected": false,
+      "base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "checkpoint/ghostpay-recovery-20261102",
+      "sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "sha": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "protected": false,
+      "base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/adoring-wozniak-850ue6",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-a4-btc-headersync",
+      "sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-a6-combined-backup",
+      "sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-b1-core-journey",
+      "sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-b2-lean-bound-receipts",
+      "sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-b3-sweep-permit-states",
+      "sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-b5-testnet-feeds",
+      "sha": "76199cdac3ee336e2751995d511111467141d943",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c1-reconciliation-adr",
+      "sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c2-qr-pairing",
+      "sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c5-device-matrix",
+      "sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ar-c7-embed-iframe-e2e",
+      "sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/consolidation-2026-11-04",
+      "sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cool-albattani-xopr89",
+      "sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-c2",
+      "sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-c4",
+      "sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-c5",
+      "sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w1",
+      "sha": "704e268bfa7df57964175f820f67400834bdce43",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w5",
+      "sha": "f030376a331445f5059061f24238acb5cf867b29",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w6",
+      "sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w7",
+      "sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w8",
+      "sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w9",
+      "sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w10",
+      "sha": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/cw-w11",
+      "sha": "764020c208c144e165437e244b6a1bc43673dc5f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/docs-snapshot-1",
+      "sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/docs-snapshot-2",
+      "sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/exciting-brown-7v69cr",
+      "sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 36,
+      "different": 36,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/friendly-turing-1ui0on",
+      "sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-prompt-scpgun",
+      "sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ghostpay-completion-audit-ot5jjm",
+      "sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 40,
+      "different": 40,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg",
+      "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 5,
+      "different": 5,
+      "different_paths": [
+        "packages/contracts/.gas-snapshot",
+        "packages/contracts/script/DeployPolicy.s.sol",
+        "packages/contracts/scripts/pre-deploy-check.sh",
+        "packages/contracts/test/DeployChecksum.t.sol",
+        "packages/contracts/test/DeployPolicy.t.sol"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 7,
+      "different": 7,
+      "different_paths": [
+        ".github/dependabot.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        "apps/web/package.json",
+        "apps/web/src/validateDeploymentsScript.test.ts",
+        "scripts/contract-analysis/mythril-disposition-check.mjs",
+        "scripts/tests/mythril-disposition-check.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "protected": false,
+      "base": "71abc7e55c25d45b206ac47e5ddd24e072805710",
+      "changed_code": 36,
+      "different": 36,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "protected": false,
+      "base": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "changed_code": 14,
+      "different": 10,
+      "different_paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        "apps/web/src/lib/manifest.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/lib/payExec.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+        "scripts/tests/lean-core-reachability.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "protected": false,
+      "base": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "changed_code": 10,
+      "different": 10,
+      "different_paths": [
+        "apps/relayer/src/api.test.ts",
+        "apps/relayer/src/service.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/scanHardening.test.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/gracious-heisenberg-97ji6q",
+      "sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/haiku-wave-2-handoff-qepfoe",
+      "sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "protected": false,
+      "base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "claude/happy-maxwell-onl4x5",
+      "sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "protected": false,
+      "base": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "scripts/audit/gen-audit24-report.py",
+        "scripts/tests/audit-report-paths.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/kind-faraday-8qzf6e",
+      "sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/laughing-bardeen-4t20ys",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/lucid-meitner-apalzc",
+      "sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "protected": false,
+      "base": "0d2ea8b40d6eea95388ace12d1bb03049f5d181e",
+      "changed_code": 18,
+      "different": 15,
+      "different_paths": [
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/src/scanBundle.test.ts",
+        "packages/chain-adapters/src/deployments.test.ts",
+        "packages/chain-adapters/src/quote.test.ts",
+        "packages/chain-adapters/src/quote.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/pool-circuits/src/helpers.test.ts",
+        "packages/pool-circuits/src/inputs.ts",
+        "packages/pool-relayer/src/service.ts",
+        "packages/pool-relayer/src/workerB.test.ts",
+        "packages/tron-adapter/src/rpc.ts",
+        "packages/tron-adapter/src/scan.test.ts",
+        "scripts/check-tx-origin.sh",
+        "scripts/tests/check-tx-origin.test.mjs"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/nice-ritchie-8vivls",
+      "sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/portable-hosting-kit",
+      "sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-2",
+      "sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-3",
+      "sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-4",
+      "sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-5",
+      "sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-6",
+      "sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-7",
+      "sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-9",
+      "sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/remote-extensions-10",
+      "sha": "698404ca488c87347858105bda66be21bf428303",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/sharp-bohr-uigfgh",
+      "sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "claude/vibrant-cori-scu18b",
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 24,
+      "different": 24,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "claude/vigilant-johnson-yjgq94",
+      "sha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "protected": false,
+      "base": "36bcdb7470caf7e563b4f72cadc209504137fd6f",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/views/Settings.test.tsx"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "behavior-present",
+      "semantic_note": "Current Settings test retains verified-keystore and unverified-download wording assertions."
+    },
+    {
+      "name": "claude/wizardly-babbage-mfsdrl",
+      "sha": "ade77362de33156de849989e26206126f978bb8f",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "claude/wonderful-thompson-ir89i9",
+      "sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "sha": "e36786bce4e752cb79d60bdca4b640e36ad45753",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-browser-isolation-20261118",
+      "sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-canonical-time-20261116",
+      "sha": "27852ba898968a08f7d7c448fac8b19058189281",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-cloud-41868394956",
+      "sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "protected": false,
+      "base": "0014bc5b26c7487ea1f9fb230194c36673193236",
+      "changed_code": 3,
+      "different": 2,
+      "different_paths": [
+        "packages/invoice-schema/src/schema.test.ts",
+        "packages/invoice-schema/src/schema.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-audit-20261104",
+      "sha": "e2ac398c2c8943a244239b9d6ffa2181e13e7782",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-followthrough-20261119",
+      "sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "protected": false,
+      "base": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "changed_code": 451,
+      "different": 437,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-records-20261119",
+      "sha": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-export-authorization-20261119",
+      "sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 453,
+      "different": 439,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 449,
+      "different": 438,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-integrate-product-cli-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-mythril-recovery-20261116",
+      "sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-observability-20261116",
+      "sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-ops-response-cap-20261116",
+      "sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 455,
+      "different": 441,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-private-scan-lint-20261119",
+      "sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 450,
+      "different": 436,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "sha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 167,
+      "different": 143,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-registry-recovery-20261116",
+      "sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-research-documentation-ux-41750257638",
+      "sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-research-release-qualification-41750257638",
+      "sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-research-security-review-41750257638",
+      "sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-resume-20261028",
+      "sha": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "protected": false,
+      "base": "6a3e85c084661532619d72475641732e21b7f740",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "protected": false,
+      "base": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "changed_code": 12,
+      "different": 12,
+      "different_paths": [
+        "apps/relayer/src/api.test.ts",
+        "apps/relayer/src/secrets.test.ts",
+        "apps/relayer/src/secrets.ts",
+        "apps/relayer/src/service.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/scanHardening.test.ts"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/ghostpay-spec09-matrix-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/network-isolation-complete-20261119",
+      "sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "protected": false,
+      "base": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "changed_code": 312,
+      "different": 299,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "codex/recovery-spec02-unqualified-20261116",
+      "sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "protected": false,
+      "base": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "codex/seller-ledger-receipt-qr",
+      "sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "codex/setup-autonomous-agent-20261104",
+      "sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "protected": false,
+      "base": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        ".github/workflows/openai-agents.yml"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "dependabot/github_actions/actions-b9ade1236b",
+      "sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 5,
+      "different": 5,
+      "different_paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/contract-analysis.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/nightly.yml"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 69,
+      "different": 69,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 69,
+      "different": 69,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "protected": false,
+      "base": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "docs/ghostpay-core-readonly-audit-20261119",
+      "sha": "8d03ebe48a9f6184d9905c2a9c93e8dc080f2618",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "docs/ghostpay-deep-research-20261103",
+      "sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "docs/ghostpay-future-module-specs-20261119",
+      "sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "sha": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "docs/lean-release-handoff-2026-10-24",
+      "sha": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "docs/readme-and-wiki",
+      "sha": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "evidence/ghostpay-completion-20261120",
+      "sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 504,
+      "different": 461,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "evidence/ghostpay-remediation-20261120",
+      "sha": "6fe35de42587e8da06e2590983b584ffde93d40f",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 495,
+      "different": 463,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "evidence/ghostpay-web-qualification-20261120",
+      "sha": "6152dd035822fe6ee97fba712ef1c37434e19035",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 91,
+      "different": 6,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "feat/ghostpay-privacy-quick-hide-20261120",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 525,
+      "different": 495,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "feat/ghostpay-tor-completion-20261119",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "feature/ghostpay-invoice-file-completion-20261120",
+      "sha": "7de737b5c8c5fc02086ba0030d78c181d239590c",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "feature/ghostpay-retention-completion-20261120",
+      "sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 582,
+      "different": 552,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "fix/ghostpay-backup-completion-20261120",
+      "sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "protected": false,
+      "base": "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ],
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "fix/ghostpay-format-validation-20261120",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 506,
+      "different": 461,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "fix/ghostpay-pages-integrity-gate-20261120",
+      "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 495,
+      "different": 463,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "sha": "172695efb41665a4e50d335029e54184bbb5b328",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 491,
+      "different": 459,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "sha": "a864949d9ee48cb48a43710f5dbd382032ab8db9",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "fix/ghostpay-tor-qualification-20261120",
+      "sha": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "fix/remediation-b16c7936-5ce634",
+      "sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "protected": false,
+      "base": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "changed_code": 1,
+      "different": 1,
+      "different_paths": [
+        "apps/web/src/lib/scanClient.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "stronger-successor-present",
+      "semantic_note": "Candidate retains replay of current-page unverified claims and adds floor guard so repeated resumes make progress."
+    },
+    {
+      "name": "fix/remediation-f95457fd-22ecf9",
+      "sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "protected": false,
+      "base": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "changed_code": 2,
+      "different": 2,
+      "different_paths": [
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "not-ready-for-recovery",
+      "semantic_note": "Donor calls every other payment key for same payer/chain legacy, including modern scoped payments. Needs explicit journal-version/migration design; do not port broad refusal as-is."
+    },
+    {
+      "name": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f03-private-payment-links",
+      "sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 19,
+      "different": 5,
+      "state": "needs-semantic-review",
+      "semantic_disposition": "reconciled-evidence-successor",
+      "semantic_note": "Head dad6bc74 merges current main into original 1de98f6c product and adds independent qualification evidence. F03 product behavior already retained by307; shared catalogs have additive candidate changes."
+    },
+    {
+      "name": "future/f03-private-payment-links-spec",
+      "sha": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 5,
+      "different": 5,
+      "different_paths": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "active-isolated-feature",
+      "semantic_note": "Draft322, head066731b4; preserve current owner and evidence-qualified local projection module."
+    },
+    {
+      "name": "future/f05-ghostproof",
+      "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 8,
+      "different": 8,
+      "different_paths": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+        "apps/web/src/features/future/ghostproof/index.ts",
+        "apps/web/src/features/future/ghostproof/review.test.ts",
+        "apps/web/src/features/future/ghostproof/review.ts",
+        "apps/web/src/features/future/ghostproof/session.test.ts",
+        "apps/web/src/features/future/ghostproof/session.ts",
+        "package-lock.json"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "active-isolated-feature",
+      "semantic_note": "Draft323, headccd1b16d; preserve current owner and offline receipt-assurance module/dependency metadata."
+    },
+    {
+      "name": "future/f06-encrypted-backups",
+      "sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f07-ghostpayouts",
+      "sha": "90b86766119d3f72870948ee83d039b989659b5f",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f10-private-recurring",
+      "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 8,
+      "different": 8,
+      "different_paths": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+        "apps/web/src/features/future/private-recurring/index.ts",
+        "apps/web/src/features/future/private-recurring/model.test.ts",
+        "apps/web/src/features/future/private-recurring/model.ts",
+        "apps/web/src/features/future/private-recurring/review.test.ts",
+        "apps/web/src/features/future/private-recurring/review.ts",
+        "package-lock.json"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "active-isolated-feature",
+      "semantic_note": "Draft324, head4a48f2f0; preserve current owner and bounded recurring-invoice preview module/dependency metadata."
+    },
+    {
+      "name": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f15-private-rpc",
+      "sha": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f16-per-client-identities",
+      "sha": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f17-private-funds",
+      "sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/f18-privacy-modes",
+      "sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/fee01-modular-fee-policy",
+      "sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p01-tor-onion-hosting",
+      "sha": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p02-rpc-policy",
+      "sha": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p03-local-stealth-scanning",
+      "sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p04-encrypted-offline-invoices",
+      "sha": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p05-encrypted-local-state",
+      "sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p06-key-role-separation",
+      "sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p08-linkability-analysis",
+      "sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p09-noncustodial-gas-services",
+      "sha": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p10-private-submission",
+      "sha": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p11-metadata-timing-policy",
+      "sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p12-selective-disclosure-proofs",
+      "sha": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p13-confidential-amounts",
+      "sha": "8846d5553469753d963258023974ea044467cd6c",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p14-shielded-payments",
+      "sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p15-anonymous-withdrawals",
+      "sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p16-shielded-cross-chain",
+      "sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p17-private-fee-outputs",
+      "sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p18-telemetry-release-integrity",
+      "sha": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/p19-optional-fee-gateway",
+      "sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/t01-staggered-transfers",
+      "sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "future/t02-intermediary-routing",
+      "sha": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "gh-pages",
+      "sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "protected": false,
+      "state": "unrelated"
+    },
+    {
+      "name": "ghostpay-cloud-recovery-2026-10-26",
+      "sha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 155,
+      "different": 131,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "ghostpay-local-lean-boundary-20261027",
+      "sha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 167,
+      "different": 143,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "ghostpay-offline-deps-2026-10-27",
+      "sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 158,
+      "different": 134,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "ghostpay-sbom-repro-2026-10-27",
+      "sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "protected": false,
+      "base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "changed_code": 160,
+      "different": 136,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "haiku/l1-i18n-20261114",
+      "sha": "c6a9033449cd9717d022f1c37913f951b1baaa6e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "haiku/l2-pkg-20261114",
+      "sha": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "haiku/l3-ledger-20261114",
+      "sha": "8c91051b449248bfc822a6578a3815b3c9d83ce3",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-adapter-qualification-20261119",
+      "sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "protected": false,
+      "base": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "changed_code": 9,
+      "different": 7,
+      "different_paths": [
+        "apps/web/src/features/tron/chain.hardening.test.ts",
+        "apps/web/src/features/tron/fixtures.testutil.ts",
+        "packages/chain-adapters/src/deployments.test.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/tron-adapter/src/rpc.ts",
+        "packages/tron-adapter/src/scan.test.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "recoverable-selective-donor",
+      "semantic_note": "PR271; recover only missing TRON contiguous-range validation, original scanner regressions, complete browser fixture and missing-offset regressions. Stronger current EVM privacy options must remain."
+    },
+    {
+      "name": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-completion-20261120",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 504,
+      "different": 461,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "integration/ghostpay-docs-recovery-20261119",
+      "sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "protected": false,
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "integration/ghostpay-historical-promotion-20261118",
+      "sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "protected": false,
+      "base": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+      "changed_code": 7,
+      "different": 5,
+      "different_paths": [
+        "packages/chain-adapters/src/deployments.test.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/tron-adapter/src/rpc.ts",
+        "packages/tron-adapter/src/scan.test.ts"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "superseded-donor",
+      "semantic_note": "PR250 is retained by PR271 with corrected complete browser fixtures; use qualified successor source rather than this older fixture set."
+    },
+    {
+      "name": "integration/ghostpay-historical-security-promotion-20261119",
+      "sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-idle-session-completion-20261119",
+      "sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "protected": false,
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "changed_code": 16,
+      "different": 16,
+      "different_paths": [
+        "apps/web/e2e/idle-session.spec.ts",
+        "apps/web/e2e/pages-devnet.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/AppShell.idleClock.test.tsx",
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/components/TagArchive.test.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/scanCursorSlot.test.ts",
+        "apps/web/src/lib/scanCursorSlot.ts",
+        "apps/web/src/lib/session.idleLock.test.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "state": "needs-semantic-review",
+      "semantic_disposition": "accepted-feature-needs-reconciliation",
+      "semantic_note": "PR256 retains sleep-aware locking and checkpoint revocation absent from current candidate. Overlaps SellerKeys; both full/lean E2E gates fail. Lean failure is invoice-expiry assertion after +2h clock jump; preserve all authority assertions."
+    },
+    {
+      "name": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "protected": false,
+      "state": "combined-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-master-consolidation-20261118",
+      "sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "protected": false,
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "changed_code": 486,
+      "different": 476,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "integration/ghostpay-mythril-security-closure-20261118",
+      "sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "protected": false,
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "changed_code": 21,
+      "different": 21,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 283,
+      "different": 271,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "integration/ghostpay-qualified-fixes-20261118",
+      "sha": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "integration/ghostpay-recovery-reconciled-20261119",
+      "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "protected": false,
+      "base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "changed_code": 289,
+      "different": 278,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "integration/ghostpay-sweep-consent-20261120",
+      "sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "protected": false,
+      "state": "sweep-ancestor"
+    },
+    {
+      "name": "main",
+      "sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "maintenance/ghostpay-branch-audit-20261119",
+      "sha": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "protected": false,
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "nodata/doc-sweep-20261118",
+      "sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "nodata/eager-babbage-0w6sf6",
+      "sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 33,
+      "different": 33,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "nodata/wizardly-allen-qwol6u",
+      "sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "nodata/wonderful-darwin-kd1h22",
+      "sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 70,
+      "different": 70,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "nodata/zealous-hopper-lr0nxe",
+      "sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 92,
+      "different": 92,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "release/ghostpay-beta-qualification-20261119",
+      "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 493,
+      "different": 463,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-270-policy-fixture-20261119",
+      "sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "protected": false,
+      "base": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "changed_code": 452,
+      "different": 438,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-276-artifact-races-20261119",
+      "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "protected": false,
+      "base": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "changed_code": 2,
+      "different": 0,
+      "different_paths": [],
+      "state": "compared-code-exact"
+    },
+    {
+      "name": "repair/ghostpay-analyzer-recovered-20261119",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 469,
+      "different": 452,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-final-lint-20261119",
+      "sha": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 472,
+      "different": 453,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-history-pool-values-20261118",
+      "sha": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "repair/ghostpay-history-scanner-20261118",
+      "sha": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "repair/ghostpay-native-fee-recovered-20261119",
+      "sha": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+      "protected": false,
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "changed_code": 462,
+      "different": 445,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-pr-87-20261119",
+      "sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "protected": false,
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "changed_code": 71,
+      "different": 69,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "repair/ghostpay-pr-231-20261118",
+      "sha": "4085622463411d3ba27f4efb7b73a70575170535",
+      "protected": false,
+      "state": "sweep-ancestor"
+    },
+    {
+      "name": "repair/ghostpay-qr-surrogates-20261119",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 472,
+      "different": 453,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "protected": false,
+      "state": "sweep-ancestor"
+    },
+    {
+      "name": "security/mythril-full-remediation-20261118",
+      "sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "protected": false,
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "changed_code": 22,
+      "different": 22,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 522,
+      "different": 492,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "work/future-feature-coordination-20261120",
+      "sha": "c6f73ebb177fc76aa74172b86e3f173263c64195",
+      "protected": false,
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "changed_code": 0,
+      "different": 0,
+      "different_paths": [],
+      "state": "docs-only"
+    },
+    {
+      "name": "work/ghostpay-consolidation-review-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "work/ghostpay-pr26-qa-2026-10-24",
+      "sha": "77e7d7b6dd21da1995259c8950141db0d34bcb6e",
+      "protected": false,
+      "state": "main-ancestor"
+    },
+    {
+      "name": "work/ghostpay-required-v1-candidate-20261120",
+      "sha": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 541,
+      "different": 511,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "work/ghostpay-required-v11-candidate-20261120",
+      "sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "protected": false,
+      "base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "changed_code": 580,
+      "different": 550,
+      "state": "needs-semantic-review"
+    },
+    {
+      "name": "work/local-reconstruction-2026-10-24",
+      "sha": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+      "protected": false,
+      "state": "main-ancestor"
+    }
+  ],
+  "capture_started_at": "2026-11-20 17:49:34 UTC",
+  "capture_completed_at": "2026-11-20 17:49:36 UTC",
+  "pages": [
+    100,
+    100,
+    100,
+    87
+  ],
+  "semantic_review_scope": "Targeted source inspection of 20 priority branch refs. Other differing heads are retained for further review; the census is exhaustive as an inventory, not an exhaustive correctness audit.",
+  "qualified_target_note": "Candidate307 has separate local qualification. Candidate325 is stacked and focused-qualified; neither this inventory nor ancestry promotes a draft.",
+  "path_list_policy": "Changed-path lists are omitted; differing paths are retained for small candidates only. Reproduce all paths with git diff --name-only <base> <sha> and the documented code filter, then compare mode/type/blob against the pinned candidate."
+}
