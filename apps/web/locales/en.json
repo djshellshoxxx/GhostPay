@@ -528,6 +528,7 @@
     "btc.scan.mode.light": "Spent-check mode: light oracle. Provider checks are required and must be explicitly allowed before scanning.",
     "btc.scan.unknownCount": "{count} payment(s) found with unknown spent status; unavailable for sweeping.",
     "btc.scan.spentEvidenceChanged": "The checked chain changed or advanced beyond the spentness evidence. Discovered payments are retained, but their spent status must be refreshed by scanning again before they can be swept.",
+    "btc.scan.pendingSpend": "Pending spend: {count} output(s) listed below belong to a transaction this session sent to the server for broadcast. This device sees only confirmed blocks and cannot see mempool spends, so it cannot tell whether that transaction was accepted. These outputs stay unavailable for sweeping until a later scan of confirmed blocks shows them spent, a chain reorganization cuts the scan, or you lock this session.",
     "btc.headers.heading": "Block headers",
     "btc.headers.update": "Update headers",
     "btc.headers.checking": "Checking block headers…",

@@ -26,6 +26,17 @@ function spendFound(chain: ReturnType<typeof mockChain>, found: { readonly txid:
 }
 
 describe('local spend tracking (spec 12): spent status without per-outpoint provider queries', () => {
+  // Recovered-from: 524215eb (PR #254).
+  it('rejects oversized resumed output metadata before requesting any source data', async () => {
+    const f = await fixture(); let saved = createScanState('regtest', 1);
+    const first = await scanForPayments({ ...f, fromHeight: 1, resumeState: saved, onState: (s) => { saved = s; } });
+    wipeFound(first.found);
+    const oversized = { ...saved, matches: Array.from({ length: MAX_SCAN_MATCHES + 1 }, (_, vout) => ({ ...saved.matches[0]!, vout })) };
+    f.chain.requests.length = 0;
+    await expect(scanForPayments({ ...f, fromHeight: 1, resumeState: oversized })).rejects.toMatchObject({ code: 'UNSUPPORTED' });
+    expect(f.chain.requests).toEqual([]);
+  });
+
   it('reports unknown while the local range stops before the known chain tip', async () => {
     const f = await fixture();
     const result = await scanForPayments({ ...f, fromHeight: 1, toHeight: 3 });
