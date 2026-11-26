@@ -3,6 +3,7 @@
  * Data only: no imports of any method package. Copy text lives in the apps, keyed by the ids here.
  * @security Every non-default value carries `privacy.warn.noAnonymity` and a non-empty `doesNotHide` list.
  */
+import { deepFreeze } from './freeze.js';
 import type {
   AckKey,
   Action,
@@ -889,15 +890,18 @@ function buildCatalogue(): Readonly<Record<OptionId, OptionDef>> {
   return out as Readonly<Record<OptionId, OptionDef>>;
 }
 
-/** Every option, keyed by id. */
-export const OPTION_CATALOGUE: Readonly<Record<OptionId, OptionDef>> = buildCatalogue();
+/** Every option, keyed by id. Deeply frozen: the catalogue cannot be edited at run time. */
+export const OPTION_CATALOGUE: Readonly<Record<OptionId, OptionDef>> = deepFreeze(buildCatalogue());
 
 /** Options grouped for display, in catalogue order. */
-export const OPTION_GROUPS: readonly { readonly id: GroupId; readonly options: readonly OptionId[] }[] = (
-  ['sweep', 'pay', 'invoice', 'network', 'btc', 'operator'] as const
-).map((id) => ({ id, options: OPTION_IDS.filter((o) => OPTION_CATALOGUE[o].group === id) }));
+export const OPTION_GROUPS: readonly { readonly id: GroupId; readonly options: readonly OptionId[] }[] = deepFreeze(
+  (['sweep', 'pay', 'invoice', 'network', 'btc', 'operator'] as const).map((id) => ({
+    id,
+    options: OPTION_IDS.filter((o) => OPTION_CATALOGUE[o].group === id),
+  })),
+);
 
 /** Exit values that go through a pool. */
-export const POOL_EXIT_VALUES: readonly string[] = POOL_EXITS;
+export const POOL_EXIT_VALUES: readonly string[] = deepFreeze([...POOL_EXITS]);
 /** Payer modes that call a sponsor. */
-export const SPONSORED_PAYER_MODES: readonly string[] = SPONSORED;
+export const SPONSORED_PAYER_MODES: readonly string[] = deepFreeze([...SPONSORED]);

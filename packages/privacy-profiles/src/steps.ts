@@ -2,6 +2,7 @@
  * Step catalogue for pipelines (chaining spec section 3). Data and pure projections only: no executor here.
  * @security Projection sets only the options that describe the payment or sweep transaction of that step.
  */
+import { deepFreeze } from './freeze.js';
 import type { AssetKind, Maturity, OptionId, Pred, SpecRef } from './types.js';
 
 /** Step kinds. */
@@ -60,7 +61,7 @@ const ANY_ASSET = ['erc20', 'erc20-permit', 'native', 'confidential'];
 const none = (): Partial<Record<OptionId, string>> => ({});
 
 /** All step kinds, with typed inputs and outputs and projection to profile options. */
-export const STEP_CATALOGUE: Readonly<Record<StepKind, StepDef>> = {
+export const STEP_CATALOGUE: Readonly<Record<StepKind, StepDef>> = deepFreeze({
   'src.wallet': { kind: 'src.wallet', role: 'payer', accepts: [], produces: { t: 'payer-funds', wallet: ['long-lived'] }, fan: 'one', waits: false, purposes: [], params: NONE, project: () => ({ 'pay.payerMode': 'direct' }), specRef: { file: 'payer-hiding.md', ids: ['PH-0'] }, maturity: 'existing' },
   'payer.fresh-wallet': { kind: 'payer.fresh-wallet', role: 'payer', accepts: [{ t: 'payer-funds', wallet: ['long-lived'] }], produces: { t: 'payer-funds', wallet: ['fresh'] }, fan: 'one', waits: true, purposes: ['rpc'], params: NONE, project: () => ({ 'pay.payerMode': 'fresh-wallet' }), specRef: { file: 'payer-hiding.md', ids: ['PH-1'] }, maturity: 'poc' },
   'ct.wrap': { kind: 'ct.wrap', role: 'payer', accepts: [{ t: 'payer-funds', asset: ['erc20', 'erc20-permit'] }], produces: { t: 'payer-funds', asset: ['confidential'] }, fan: 'one', waits: true, purposes: ['rpc'], params: { backend: en('ct1-zama', 'ct2-fhenix', 'ct3-inco', 'ctm-cleartext') }, project: (p) => ({ 'pay.amountVisibility': str(p, 'backend', 'ct1-zama') }), specRef: { file: 'confidential-tokens.md', ids: ['CT-1', 'CT-UX-4'] }, maturity: 'poc' },
@@ -79,8 +80,8 @@ export const STEP_CATALOGUE: Readonly<Record<StepKind, StepDef>> = {
   'btc.send': { kind: 'btc.send', role: 'payer', accepts: [{ t: 'btc-utxo' }], produces: { t: 'paid' }, fan: 'one', waits: false, purposes: ['rpc', 'payjoin-directory'], params: { mode: en('silent-payment', 'plain', 'payjoin-v2', 'payjoin-v1') }, project: (p) => ({ 'btc.mode': str(p, 'mode', 'silent-payment') }), specRef: { file: 'btc-payjoin.md', ids: ['BPJ-SND'] }, maturity: 'poc' },
   'btc.recv': { kind: 'btc.recv', role: 'seller', accepts: [], produces: { t: 'btc-utxo', kind: ['sp', 'payjoin-addr', 'plain'] }, fan: 'one', waits: false, purposes: ['payjoin-directory'], params: { mode: en('silent-payment', 'plain', 'payjoin-v2', 'payjoin-v1') }, project: (p) => ({ 'btc.mode': str(p, 'mode', 'silent-payment') }), specRef: { file: 'btc-payjoin.md', ids: ['BPJ-RCV-1'] }, maturity: 'poc' },
   'btc.payjoin-contribute': { kind: 'btc.payjoin-contribute', role: 'seller', accepts: [{ t: 'btc-utxo', kind: ['sp'] }], produces: { t: 'btc-utxo', kind: ['payjoin-addr'] }, fan: 'one', waits: false, purposes: ['payjoin-directory'], params: NONE, project: () => ({ 'btc.contributeFromSp': 'on' }), specRef: { file: 'btc-payjoin.md', ids: ['BPJ-RCV-9'] }, maturity: 'poc' },
-};
+});
 
 /** Asset kinds a step may handle (helper for validators). */
-export const STEP_ASSETS: readonly string[] = ANY_ASSET;
+export const STEP_ASSETS: readonly string[] = deepFreeze([...ANY_ASSET]);
 export type { Pred };

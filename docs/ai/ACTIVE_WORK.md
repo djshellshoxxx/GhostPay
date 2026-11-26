@@ -3649,3 +3649,31 @@ Independent source review also approved #666 `92ff633176760a513a37cb12e3ef96b0e0
 ### Same candidate — finish PR #647 independent seller-keystore recovery
 
 Independent source review approved #647 `6fd126dbb4d3377ff3cf7d97cfcb426a1e22fee3`. Preserve all ten nonlog donor files byte-for-byte and its existing recovery ownership entries; resolve only the additive work-log conflict. This completes existing independently useful backup verification and payment-key recovery without GhostPay app code. Acceptance: ordinary offline backup compatibility/CLI tests, current application build and locale checks already recorded for the unchanged app tree, source-composition review and fresh combined hosted CI. No new formats, crypto primitives, network discovery, transactions, deployment or product activation.
+
+
+## Privacy profiles D05 completion — November 25, 2026 Pacific
+
+- Worker: ChatGPT `/root/artifact_review`, assigned by the unfinished-branch coordinator. Isolated branch `finish/privacy-profiles-d05-20261125`, base candidate `04b1a5acf6b48313178af85a3217512e57453dd5`; worktree `/workspace/scratch/8812b4211518/GhostPay-d05`.
+- Preserve donor ancestry with normal merges: #644 `94ab256e5285f4009f915be18415bf0146a1242f` and the selected decision record #651 `be04d1167aeb24025f5a4970833ebb2dbb98af70`. Both published heads rechecked unchanged; current main is `8aca5a06a9435dd30e40378ba606da3c68f94863`. Resolve only additive ownership-log conflicts; original branches remain untouched.
+- Own only the selected D05 follow-up in `packages/privacy-profiles/src/presets.ts`, its directly affected package tests/snapshots and package README/DEVIATIONS/COMPLETION documentation, this additive claim and `docs/handoffs/PRIVACY_PROFILES_D05_COMPLETION_20261125.md`.
+- Acceptance: Shielded automatically proposes buffer-funded exit gas only; Maximum keeps its existing advanced preference order; explicit sponsored and EIP-7702 edits retain applicability, capability and consent checks; legacy config and all other preset behavior stay unchanged. Focused regression plus full package typecheck, lint, build and coverage tests must pass without weakening gates or assertions.
+- Scope: standalone configuration library only. No app integration, execution, provider activation, fees, dependency changes, other packages or workflow edits. No further policy decision is needed for D05; #651 already selected it. Existing donor claims and historical evidence remain intact.
+- Publication: local commits and source-pinned handoff only for independent coordinator review. No push, remote mutation, main merge, lock acquisition, deployment or release by this worker. Keep candidate #684 and its active CI untouched.
+
+## 2026-11-25 — privacy-profiles standalone completion (issue 284 / F18 package slice)
+
+- Worker: Claude Code session (single worker, one read-only reviewer agent). Local branch `worktree-privacy-profiles-completion`, published to `nodata/peaceful-faraday-enxrin`. Base/main: `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Checked 2026-11-25: of the open PRs that mention the package, only draft #278 touches it, and only the devDependency versions in `packages/privacy-profiles/package.json` (vitest 5.1.0); this work does not edit that file.
+- Owned paths: `packages/privacy-profiles/**` (src, tests, snapshots, README, DEVIATIONS, COMPLETION) and this additive claim. Not touched: `packages/metadata-hardening`, confidential amounts, contracts, payment execution, `apps/web`, `packages/privacy-pipeline`.
+- Acceptance: five presets (adds Shielded), versioned config with migration and strict parse, consent review and immutable snapshots, truthful capability descriptions, definition self-validation, fail-closed input guards; typecheck, lint, build and coverage thresholds (95/90/95/95) pass; nothing claimed beyond the package.
+- Out of scope and unclaimed: F18 app layer in `apps/web`, FEE01 quotes, live capability observations, reconciling the pipeline package rules copy.
+
+
+## Privacy-profile configuration decisions — November 24, 2026 Pacific
+
+- Worker: ChatGPT `/root`, session `20d1eadb5dc2`; two read-only configuration reviewers.
+- Branch: `docs/privacy-profile-decisions-20261124`; base main: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`.
+- Owned paths: new `docs/handoffs/PR644_CONFIGURATION_DECISIONS_20261124.md` and this additive claim only.
+- User scope: resolve the configuration choices left by PR #644. Inspect #644 at `94ab256e5285f4009f915be18415bf0146a1242f`, the legacy profile specification, issue #284 and full F18 specification at `5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a`.
+- Acceptance: every named open choice has an explicit selected policy, a distinction between existing behavior and follow-up work, and measurable integration criteria. Verify source references, option/rule names, document links, whitespace and secrets. No runtime test result is implied by a documentation check.
+- Ownership: #644's Claude Code worker owns `packages/privacy-profiles/**`; draft #278 separately touches its devDependencies. Preserve those files and branches. The record covers decisions only, with no application integration, provider activation, fee policy, main merge, deployment or release.
+- Status: decision record complete. Source/path/identifier/link checks, staged whitespace check and secret scan passed; final read-only review approved the documentation scope after a terminology correction. Publish as a draft from this isolated branch; no package implementation or integration claim.
