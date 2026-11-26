@@ -2,7 +2,6 @@ import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type O
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { BroadcastReference } from '../components/BroadcastReference';
 import { TransactionStatusLine } from '../components/TransactionStatusLine';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { useWalletDisclosure } from '../components/WalletDisclosure';
@@ -47,6 +46,7 @@ import { connectWallet, paymentAttemptKey, walletWarnings, type WalletInfo, type
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
+import { scopeWalletRpc, useWalletPrivacy, type WalletPrivacyScope } from '../lib/useWalletPrivacy';
 import { classifyQrText } from '../lib/qrClassify';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
@@ -158,7 +158,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // Every wallet request from checkout (connect, network switch, permit, send) is shown and approved first.
   const walletDisclosure = useWalletDisclosure();
   const latestT = useRef(t); latestT.current = t;
-  const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
+  const announce = (message: MessageDescriptor): void => { if (mounted.current) app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
   const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
@@ -223,7 +223,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
   const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
-  const [previousBroadcast, setPreviousBroadcast] = useState<{ readonly hash: string; readonly kind: 'approval' | 'payment' } | undefined>(undefined);
+  // A public reconnect reason can outlive a cleared private invoice without retaining its contents or an outcome claim.
+  const [showWalletChangeNotice, setShowWalletChangeNotice] = useState(false);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
@@ -340,6 +341,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setWallet(undefined);
     setStatus('');
     setError(undefined);
+    if (fragment !== undefined) setShowWalletChangeNotice(false);
     setPhase('input');
     setParsed(undefined);
     setUnlocking(false);
@@ -401,11 +403,69 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
   const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
   latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
+  // A disconnected route cannot observe the wallet. Drop the private reopening capability when leaving checkout.
+  useEffect(() => () => {
+    const checkout = latest.current;
+    if (checkout.wallet === undefined || checkout.fragment === undefined ||
+        !(checkout.parsed?.encrypted === true || checkout.parsed?.passphraseProtected === true)) return;
+    if (window.location.hash === checkout.fragment) clearFragment(window.location, window.history);
+    app.setFragment(undefined);
+  }, [app.setFragment]);
+  const walletPrivacy = useWalletPrivacy(wallet, (cause) => {
+    flowRevision.current++;
+    scheduler.current?.cancel();
+    setWallet(undefined);
+    setWallets(undefined);
+    setStatus('');
+    setError(undefined);
+    setShowWalletChangeNotice(cause === 'wallet');
+    app.announce('');
+    setSchedule(undefined);
+    setCtxError(undefined);
+    // Outcomes are retained at the wallet/journal boundary even when a hash arrives after this view is revoked.
+    setResult(undefined);
+    setResultForContext(undefined);
+    setBroadcast(undefined);
+    setPaymentMayHaveBeenSent(false);
+    setBuilt(undefined);
+    setBuiltFor(undefined);
+    setBuiltForContext(undefined);
+    setApproval(undefined);
+    setGranted(undefined);
+    setApprovalHash(undefined);
+    setBufferQuote(undefined);
+    setUseBuffer(false);
+    setPermitDeclined(false);
+    receiptImportRevision.current++;
+    receiptBusyRef.current = false;
+    setReceiptBusy(false);
+    setReceiptConsent(false);
+    setReceiptTrustedKey('');
+    setBoundReceipt(undefined);
+    setReceiptError(undefined);
+    invalidateInvoiceQr(); // Keep the explicitly preserved QR text area; revoke its parsed preview and work.
+    setPaste('');
+    if (parsed?.encrypted === true || parsed?.passphraseProtected === true) {
+      setParsed(undefined);
+      setCtx(undefined);
+      setInvoicePassphrase('');
+      if (window.location.hash === fragment) clearFragment(window.location, window.history);
+      app.setFragment(undefined);
+      setPhase('input');
+    } else {
+      setPhase(latest.current.parsed === undefined ? 'input' : 'ready');
+    }
+  });
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
   // payment and scope instead, so an ordinary rerender cannot restart its age.
   const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  const authorityMatches = (scope?: WalletPrivacyScope): boolean => {
+    if (!mounted.current) return false;
+    // Completion is also a protected presentation boundary, including expiry before a timer/restoration event runs.
+    try { scope?.assertCurrent(); } catch { return false; }
+    return latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  };
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -430,7 +490,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setCtx(undefined);
       return undefined;
     }
-    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const revision = flowRevision.current;
+    const current = (): boolean => mounted.current && flowRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -731,35 +792,42 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
   useEffect(() => {
     if (phase === 'ready' && wallets === undefined) onFindWallets();
-  }, [phase]);
+  }, [phase, wallets]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
+    const privacyScope = walletPrivacy.capture();
     const rpc = chainId === undefined ? undefined : await app.getRpc(chainId);
-    return { rpc, nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep };
-  }, [app, chainId, services]);
+    privacyScope.assertCurrent();
+    return { rpc: rpc === undefined ? undefined : scopeWalletRpc(rpc, privacyScope), nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep };
+  }, [app, chainId, services, walletPrivacy.capture]);
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined) return;
     const revision = flowRevision.current;
-    const sessionGuard = captureSessionVersionGuard();
+    let privacyScope;
+    try { privacyScope = walletPrivacy.begin(); } catch { return; }
     const invoice = parsed?.invoice;
     setError(undefined);
+    setShowWalletChangeNotice(false);
     setStatus({ key: 'pay.status.walletWaiting' });
     // A changed invoice, flow or session ends an open review and the connection; the handlers below then stay silent.
     const connectionCurrent = (): void => {
-      sessionGuard();
+      privacyScope.assertCurrent();
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
     };
-    connectWallet(w, chainId, connectionCurrent, undefined, { disclosure: walletDisclosure }).then(
+    connectWallet(w, chainId, connectionCurrent, privacyScope.signal, { disclosure: walletDisclosure }).then(
       (s) => {
-        try { sessionGuard(); } catch { return; }
-        if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
+        try { connectionCurrent(); } catch { return; }
+        // A hard reload does not run React cleanup; remove a connected private invoice's URL capability now.
+        if ((parsed?.encrypted === true || parsed?.passphraseProtected === true) && window.location.hash === fragment) {
+          clearFragment(window.location, window.history);
+        }
         setWallet(s);
         setStatus('');
         announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
-        if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
+        try { connectionCurrent(); } catch { return; }
         setStatus('');
         setError(captureUserMessage(e));
       },
@@ -769,9 +837,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const onPrepare = (): void => {
     if (wallet === undefined || ctx === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
     const revision = flowRevision.current;
-    const sessionGuard = captureSessionVersionGuard();
+    let privacyScope;
+    try { privacyScope = walletPrivacy.capture(); } catch { return; }
+    const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const guard = (): void => {
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
@@ -844,9 +914,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const onSend = (): void => {
     if (wallet === undefined || ctx === undefined || built === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice || builtFor !== parsed.invoice || builtForContext !== ctx) return;
     const revision = flowRevision.current;
-    const sessionGuard = captureSessionVersionGuard();
+    let privacyScope;
+    try { privacyScope = walletPrivacy.capture(); } catch { return; }
+    const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
     const guard = (): void => {
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
@@ -880,7 +952,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-            else setPreviousBroadcast({ hash, kind: 'approval' });
           });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
@@ -892,11 +963,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           requestedThisAttempt = true;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
-        if (!isCurrent()) {
-          setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
-          announce({ key: 'pay.announce.previous' });
-          return;
-        }
+        if (!isCurrent()) return;
         setResult(res);
         setResultForContext(ctx);
         setPhase('done');
@@ -906,15 +973,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         catch { /* The exact hash and verification result remain visible and available for export here. */ }
         announce({ key: 'pay.announce.submitted' });
       } catch (e) {
-        if (!isCurrent()) {
-          if (e instanceof PostBroadcastError) {
-            setPreviousBroadcast({ hash: e.hash, kind: stage });
-            announce({ key: 'pay.announce.previous' });
-          } else if (approvalBroadcastHash !== undefined) {
-            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
-          }
-          return;
-        }
+        if (!isCurrent()) return;
         setStatus('');
         if (e instanceof PostBroadcastError) {
           // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
@@ -944,9 +1003,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const onRevoke = (): void => {
     if (wallet === undefined || ctx === undefined || approval === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
     const revision = flowRevision.current;
-    const sessionGuard = captureSessionVersionGuard();
+    let privacyScope;
+    try { privacyScope = walletPrivacy.capture(); } catch { return; }
+    const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
@@ -957,17 +1018,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
           sessionGuard();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
-        }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
+        });
         if (!isCurrent()) return;
         setGranted(undefined);
         setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
         announce({ key: 'pay.announce.revoked' });
       } catch (e) {
-        if (!isCurrent()) {
-          if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
-          return;
-        }
+        if (!isCurrent()) return;
         setError(captureUserMessage(e));
       } finally {
         if (isCurrent()) {
@@ -980,6 +1038,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   const forget = (): void => {
     resetInvoiceQr();
+    setShowWalletChangeNotice(false);
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
     scheduler.current?.cancel();
@@ -1006,19 +1065,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   /* ------------------------------- rendering ------------------------------- */
 
+  const walletChangeNotice = showWalletChangeNotice && <Notice kind="error">{t('error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview')}</Notice>;
   const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
   const inputRejection = buildRejection ?? rejected;
   if (parsed === undefined || review === undefined || buildRejection !== undefined) {
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">{t('pay.title.input')}</h2>
-        <WalletAttempts getRpc={app.getRpc} />
-        {previousBroadcast !== undefined && (
-          <>
-            <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
-            <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
-          </>
-        )}
+        <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
+        {walletChangeNotice}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
         {needsPassphrase && (
@@ -1081,13 +1136,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   return (
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">{t('pay.title.review')}</h2>
-      <WalletAttempts getRpc={app.getRpc} />
-      {previousBroadcast !== undefined && (
-        <>
-          <Notice kind="warn" title={t('pay.previous.title')}>{t('pay.previous.body', { kind: previousBroadcast.kind })}</Notice>
-          <BroadcastReference key={previousBroadcast.hash} reference={previousBroadcast.hash} />
-        </>
-      )}
+      <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
+      {walletChangeNotice}
 
       <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
         {displayMessage(review.trust.message, t)}
