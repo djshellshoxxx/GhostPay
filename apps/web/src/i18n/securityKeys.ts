@@ -32,7 +32,16 @@ export const SECURITY_KEY_GROUPS = {
     'wallet.disclosure.expiry',
     'wallet.disclosure.domainChain',
   ],
-  browserCapabilityLimits: ['app.checks.limits'],
+  // Self-check limits and unsupported-capability explanations: trust and data-loss guidance stays reviewed-only.
+  browserCapabilityLimits: [
+    'app.checks.limits',
+    'app.checks.secure.fail',
+    'app.checks.secure.unavailable',
+    'app.checks.digest.fail',
+    'app.checks.digest.unavailable',
+    'app.checks.storage.fail',
+    'app.checks.storage.unavailable',
+  ],
   // #287 item 4: retention of on-screen invoice and payment-proof previews (consent, scope and preserved records).
   metadataRetention: [
     'retention.title',
@@ -2156,7 +2165,7 @@ export const NEUTRAL_KEY_LIST = [
   'app.checks.digest',
   'app.checks.storage',
   'app.checks.pass',
-  'app.checks.warn',
+  'app.checks.unavailable',
   'app.checks.fail',
   'requestFile.download',
   'requestFile.summary',
