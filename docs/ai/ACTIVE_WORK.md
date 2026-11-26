@@ -60,17 +60,6 @@ Acceptance: encrypted all-discovered archive and master backup behind re-authent
 ghostpay-stealth-* file in a fresh session; tampered/wrong-passphrase/oversize/wrong-chain/unknown-format refused; secrets
 wiped; lock/session/chain cancellation; full web, ux-vault and recovery gates; no new endpoint or fallback client.
 
-# Security remediation PR #220 — refresh onto main `e7e98109` (2026-11-26 UTC)
-
-Worker: Claude session 01KtKj8hxPXds2YXGcbiFzEw; branch `security/mythril-full-remediation-20261118` (base `5467c158`, merged
-with main `e7e98109`). Owned paths: agent path policy and runner pins in `.github/workflows/*` and
-`.github/actions/setup-forge/action.yml`, `scripts/tests/ghostpay-{automation-hardening,parallel-review-workflow}.test.mjs`,
-`packages/confidential-contracts` (A-3 no-copy forward + ReturnBombStealth test), `packages/core-crypto/src/viewing-key-boundary.test.ts`,
-the `confirm()` doc comment in `packages/ux-flow/src/reconcile.ts` (no code change), `packages/contracts/DEVIATIONS.md` P3 note,
-`docs/audits/security-remediation-20261118.md` and `docs/audits/data/mythril-local-20261118/`. `packages/contracts/src` untouched.
-Not claimed: `classifyAmount` tolerance validation (reported on #220 by the owner account), D-1 payer binding, #213/#217/#212 scopes.
-Acceptance: regression tests fail before / pass after each fix; full hosted CI green on the exact head except the base-wide Mythril gate.
-
 # Accessibility reflow counts rendered controls only (2026-11-26 UTC)
 
 Continued by worker `newghostpay-7d/small` after the claiming worker was cut off: reviewed the uncommitted one-line predicate change, committed it unchanged and opened the PR. Hosted CI is the gate; no Playwright run on this machine.
@@ -192,6 +181,18 @@ changed restore spec, runs on the exact head; hosted CI green.
 
 Worker: GhostPay bug-only sequential worker. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`; base `a9d2a033c1055c59765b388a02512c6285764dae`. Owned paths: `packages/i18n/src/ux/format.ts`, new `packages/i18n/src/ux/format.unsupported-locale.test.ts`, this additive claim, new `docs/handoffs/I18N_UNSUPPORTED_LOCALE_FALLBACK_20261126.md`. Scope: existing documented English fallback for unsupported number/date locales; no new feature, amount parsing, fiat integration, network, payment, dependency or release changes. All 223 open PR file inventories from the initial date-partitioned search plus three newly published PRs (#697–699) checked without an overlap in `packages/i18n/src/ux/`; no direct formatter claim in main ACTIVE_WORK. Recheck before integration. Acceptance: test-first deterministic injected non-English default and native source-matched reproduction, preserve supported/invalid locale and RangeError behavior; exact-head CI, independent review and legitimate integration lease required. Baseline isolated Node 22.16.0 with LANG=de_DE.UTF-8: 8/12 probes pass, four fallback failures; four source Git blobs hash-verified. Generation 40 integration lease observed released, not acquired. No other branch writes or merge.
 
+# Security remediation PR #220 — refresh onto main `e7e98109` (2026-11-26 UTC)
+
+Worker: Claude session 01KtKj8hxPXds2YXGcbiFzEw; branch `security/mythril-full-remediation-20261118` (base `5467c158`, merged
+with main `e7e98109`). Owned paths: agent path policy and runner pins in `.github/workflows/*` and
+`.github/actions/setup-forge/action.yml`, `scripts/tests/ghostpay-{automation-hardening,parallel-review-workflow}.test.mjs`,
+`packages/confidential-contracts` (A-3 no-copy forward + ReturnBombStealth test), `packages/core-crypto/src/viewing-key-boundary.test.ts`,
+the `confirm()` doc comment in `packages/ux-flow/src/reconcile.ts` (no code change), `packages/contracts/DEVIATIONS.md` P3 note,
+`docs/audits/security-remediation-20261118.md` and `docs/audits/data/mythril-local-20261118/`. `packages/contracts/src` untouched.
+Not claimed: `classifyAmount` tolerance validation (reported on #220 by the owner account), D-1 payer binding, #213/#217/#212 scopes.
+Acceptance: regression tests fail before / pass after each fix; full hosted CI green on the exact head except the base-wide Mythril gate.
+
+---
 # #701 review upkeep (2026-11-26 UTC)
 
 Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
