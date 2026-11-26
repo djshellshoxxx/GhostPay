@@ -24,6 +24,20 @@ handling of absent or throwing browser APIs, same footer in full and lean shells
 unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
 payments, network egress or release gates.
 
+# Seller keystore recovery: audit follow-ups after the #693 close-out (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`; branch `claude/keystore-recovery-followups-20261126`, base main `e1d0eb0f`.
+Why: #693 verified complete (no regression). The close-out review and a follow-on audit of the same restore path found
+three gaps (a prompt bug, a restore step that could pass without running, a path filter that missed the spec's inputs).
+Owned paths: `scripts/recovery/stealth-export-recover.mjs` (terminal passphrase prompt only), its tests in
+`scripts/recovery/seller-keystore-recover.test.mjs`, the `paths` filter of
+`.github/workflows/mobile-browser-qualification.yml`, the wrong-passphrase step of
+`apps/web/e2e/devices-mobile-restore.spec.ts`, the header comment of test-only
+`packages/ux-vault/src/keystore-portable.vectors.testutil.ts`, this entry. No application, codec, format, vector or
+dependency change.
+Acceptance: the prompt fix has a regression test that fails without it; the WebKit phone/tablet workflow, with the
+changed restore spec, runs on the exact head; hosted CI green.
+
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
 Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the
@@ -4613,3 +4627,8 @@ required; no new local test run or browser execution is claimed.
 - Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
 - Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
 - Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
+
+
+# BUG — deterministic unsupported-locale formatter fallback (2026-11-25 local / 2026-11-26 UTC)
+
+Worker: GhostPay bug-only sequential worker. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`; base `a9d2a033c1055c59765b388a02512c6285764dae`. Owned paths: `packages/i18n/src/ux/format.ts`, new `packages/i18n/src/ux/format.unsupported-locale.test.ts`, this additive claim, new `docs/handoffs/I18N_UNSUPPORTED_LOCALE_FALLBACK_20261126.md`. Scope: existing documented English fallback for unsupported number/date locales; no new feature, amount parsing, fiat integration, network, payment, dependency or release changes. All 223 open PR file inventories from the initial date-partitioned search plus three newly published PRs (#697–699) checked without an overlap in `packages/i18n/src/ux/`; no direct formatter claim in main ACTIVE_WORK. Recheck before integration. Acceptance: test-first deterministic injected non-English default and native source-matched reproduction, preserve supported/invalid locale and RangeError behavior; exact-head CI, independent review and legitimate integration lease required. Baseline isolated Node 22.16.0 with LANG=de_DE.UTF-8: 8/12 probes pass, four fallback failures; four source Git blobs hash-verified. Generation 40 integration lease observed released, not acquired. No other branch writes or merge.

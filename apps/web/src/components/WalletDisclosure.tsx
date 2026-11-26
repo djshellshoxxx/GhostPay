@@ -2,6 +2,7 @@ import { Fragment, createContext, useContext, useEffect, useId, useLayoutEffect,
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { subscribeAppLock } from '../lib/appLock';
 import { UserFacingError } from '../lib/errors';
+import { usePrivacy } from '../lib/privacyMode';
 import { subscribeSession } from '../lib/session';
 import { WalletDisclosureController, type PendingWalletDisclosure, type WalletDisclosureGate } from '../lib/walletDisclosure';
 import '../styles/walletDisclosure.css';
@@ -159,12 +160,11 @@ export function WalletDisclosureProvider(props: { readonly scope: unknown; reado
       return Object.freeze({ assertCurrent });
     };
   }, [controller, props.scope]);
-  useLayoutEffect(() => {
-    const unmount = controller.mount();
-    // Main has no global privacy mask yet (#569): the dialog is always allowed to present while mounted.
-    controller.allowPresentation(true);
-    return unmount;
-  }, [controller]);
+  useLayoutEffect(() => controller.mount(), [controller]);
+  // #286 item 1: account, destination and amount are shown only on a revealed screen. Masking cancels an open review
+  // and refuses new ones (nothing reaches the wallet); the user reveals, then repeats the action.
+  const { masked } = usePrivacy();
+  useLayoutEffect(() => { controller.allowPresentation(!masked); }, [controller, masked]);
   useLayoutEffect(() => { controller.revoke(); }, [controller, props.scope, props.revokeOn]);
   useEffect(() => {
     const revoke = (): void => { controller.revoke(); };
