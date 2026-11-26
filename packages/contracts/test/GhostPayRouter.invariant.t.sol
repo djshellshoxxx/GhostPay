@@ -206,7 +206,9 @@ contract RouterHandler is Test {
         returns (IGhostPayRouter.PermitSig memory sig)
     {
         sig.v = 27;
-        if (t == PERMIT_TOKEN) (sig.v, sig.r, sig.s) = _permitSig(payerKeys[pi], payers[pi], gross);
+        if (t == PERMIT_TOKEN) {
+            (sig.v, sig.r, sig.s) = _permitSig(payerKeys[pi], payers[pi], gross);
+        }
     }
 
     function _tryPermitBuffer(
