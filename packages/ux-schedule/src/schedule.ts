@@ -35,7 +35,7 @@ export function evaluateSchedule(
 
 /** Record that the user handled (confirmed or dismissed) everything up to `occurrenceMs`. */
 export function markHandled(s: RecurringSchedule, occurrenceMs: number): RecurringSchedule {
-  if (!Number.isSafeInteger(occurrenceMs)) throw new RangeError('invalid occurrence');
+  if (!Number.isSafeInteger(occurrenceMs) || occurrenceMs < 0) throw new RangeError('invalid occurrence');
   const last = s.lastHandledMs === null ? occurrenceMs : Math.max(s.lastHandledMs, occurrenceMs);
   return { ...s, lastHandledMs: last };
 }

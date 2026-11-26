@@ -1,6 +1,7 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
+import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
 import type { ExportRpc } from '../lib/paymentKeyExport';
 import { loadSettings } from '../lib/settings';
@@ -123,7 +124,9 @@ export function Scan(): ReactNode {
       autoTick.current();
     }, randomDelayMs(AUTO_RESCAN_MIN_MS, AUTO_RESCAN_MAX_MS));
     return () => { window.clearTimeout(handle); };
-  }, [autoArmed, autoWake]);
+    // `done` is new after every scan: a re-check that starts and finishes within one render never shows `autoArmed`
+    // as false, and would otherwise leave no timer for the next one.
+  }, [autoArmed, autoWake, done]);
 
   useEffect(
     () => () => {
@@ -595,6 +598,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
+      <StealthExportArchive matches={matches} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
