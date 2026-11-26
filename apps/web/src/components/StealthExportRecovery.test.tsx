@@ -84,7 +84,7 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/larger than the stealth key export limit/);
   });
 
-  it.each(['Open export', 'Verify backup without importing'] as const)('rejects actual UTF-8 BOM bytes before %s can certify a normalized file', async (action) => {
+  it.each(['Open export', 'Check export without importing'] as const)('rejects actual UTF-8 BOM bytes before %s can certify a normalized file', async (action) => {
     const user = userEvent.setup();
     generateSession();
     const before = getSessionPublic();
@@ -299,7 +299,7 @@ describe('verify an existing backup without importing', () => {
     render(<StealthExportRecovery announce={announce} />);
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.archive.text));
     await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
-    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await user.click(screen.getByRole('button', { name: 'Check export without importing' }));
     const verified = await screen.findByTestId('stealth-export-verified', {}, { timeout: 30_000 });
     expect(within(verified).getByText(A1.announcement.stealthAddress)).toBeTruthy();
     expect(screen.getByText(/Backup verified\. It decrypted successfully/)).toBeTruthy();
@@ -321,7 +321,7 @@ describe('verify an existing backup without importing', () => {
     render(<StealthExportRecovery announce={announce} />);
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.master.text));
     await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
-    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await user.click(screen.getByRole('button', { name: 'Check export without importing' }));
     const verified = await screen.findByTestId('stealth-export-verified', {}, { timeout: 30_000 });
     expect(within(verified).getByText(VECTORS.seller.metaAddress)).toBeTruthy();
     expect(within(verified).getByText(/does not include the invoice-signing key/)).toBeTruthy();
@@ -334,12 +334,12 @@ describe('verify an existing backup without importing', () => {
     const user = userEvent.setup();
     render(<StealthExportRecovery announce={announce} />);
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.public.text));
-    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await user.click(screen.getByRole('button', { name: 'Check export without importing' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/contains no private keys/);
     expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.single.text));
     await user.type(screen.getByLabelText('Export file passphrase'), 'wrong passphrase');
-    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await user.click(screen.getByRole('button', { name: 'Check export without importing' }));
     expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
     expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
     expect(passwordValues().every((value) => value === '')).toBe(true);
@@ -360,7 +360,7 @@ describe('verify an existing backup without importing', () => {
     render(<StealthExportRecovery announce={announce} />);
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.single.text));
     await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
-    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await user.click(screen.getByRole('button', { name: 'Check export without importing' }));
     await verifying;
     expect(screen.getByLabelText('Export file passphrase').hasAttribute('disabled')).toBe(true);
     await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.master.text, 'another.json'));

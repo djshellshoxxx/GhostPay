@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import * as exportModule from '../lib/paymentKeyExport';
 import { TEST_N, VECTORS, VECTOR_PASS, captureDownloads } from '../lib/paymentKeyExport.testutil';
-import { clearSession, generateSession, getSessionBackup, getSessionPublic } from '../lib/session';
+import { captureSessionGuard, clearSession, generateSession, getSessionBackup, getSessionPublic, markKeystoreDownloaded } from '../lib/session';
 import { decryptMasterBackup } from '../lib/stealthExport';
 import { makeServices, renderApp } from '../test/render';
 
@@ -54,6 +54,20 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     expect(await screen.findByRole('heading', { name: 'Master stealth key backup (encrypted)' })).toBeTruthy();
     // A key change wipes what the recovery panel had opened.
     expect(within(panel).queryByText(/1 payment key on Ethereum Sepolia/)).toBeNull();
+  });
+
+  it('keeps the keystore "Verify backup" control uniquely named beside the export check', async () => {
+    // Voice control and role queries match accessible names by substring: the export check must not reuse the keystore
+    // control's established "Verify backup" name, or both answer to the same command.
+    generateSession();
+    markKeystoreDownloaded(captureSessionGuard());
+    await open();
+    const panel = screen.getByTestId('stealth-export-open');
+    expect(within(panel).getByRole('button', { name: 'Check export without importing', exact: true })).toBeTruthy();
+    const verify = screen.getAllByRole('button', { name: /verify backup/i });
+    expect(verify).toHaveLength(1);
+    expect(verify[0]!.textContent).toBe('Verify backup');
+    expect(panel.contains(verify[0]!)).toBe(false);
   });
 
   it('downloads the master backup after the vault step-up', async () => {

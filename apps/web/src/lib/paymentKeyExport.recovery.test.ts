@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SecretBox } from '@ghostpay/secret-box';
-import { clearSession, exportKeystore, getSessionBackup, getSessionPublic } from './session';
+import { clearSession, exportKeystore, getSessionBackup, getSessionPublic, isSessionSuspended, suspendSession } from './session';
 import * as stealthExport from './stealthExport';
 import { decryptMasterBackup, decryptPaymentKeys } from './stealthExport';
 import {
@@ -160,6 +160,32 @@ describe('master backup', () => {
       return text;
     });
     await expect(exportMasterBackup(keystore, EXPORT_PASS, { N: TEST_N })).rejects.toThrow(/Load or generate seller keys first|changed during this action/);
+  });
+});
+
+describe('secret exports while idle-suspended (#689)', () => {
+  it('refuses the master backup and the payment archive while suspended and keeps the retained keys', async () => {
+    const before = getSessionPublic();
+    suspendSession();
+    const sealMaster = vi.spyOn(stealthExport, 'encryptMasterBackup');
+    const sealArchive = vi.spyOn(stealthExport, 'encryptPaymentKeys');
+    await expect(exportMasterBackup(keystore, EXPORT_PASS, { N: TEST_N })).rejects.toThrow(/locked after inactivity/);
+    await expect(exportPaymentArchive([vectorMatch('a1'), vectorMatch('a2')], 'all-discovered', keystore, EXPORT_PASS, { rpc: codeRpc(), N: TEST_N })).rejects.toThrow(/locked after inactivity/);
+    expect(sealMaster).not.toHaveBeenCalled();
+    expect(sealArchive).not.toHaveBeenCalled();
+    expect(isSessionSuspended()).toBe(true);
+    expect(getSessionPublic()).toBe(before);
+  });
+
+  it('discards a master backup sealed while the idle lock suspended the session', async () => {
+    const actual = stealthExport.encryptMasterBackup;
+    vi.spyOn(stealthExport, 'encryptMasterBackup').mockImplementation(async (keys, options) => {
+      const text = await actual(keys, options);
+      suspendSession();
+      return text;
+    });
+    await expect(exportMasterBackup(keystore, EXPORT_PASS, { N: TEST_N })).rejects.toThrow(/changed during this action/);
+    expect(isSessionSuspended()).toBe(true);
   });
 });
 

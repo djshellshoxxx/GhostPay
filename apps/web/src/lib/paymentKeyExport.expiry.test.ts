@@ -14,8 +14,8 @@ afterEach(() => {
   clearSession();
 });
 
-// Adapted for main (no sleep-aware suspendSession/subscribeSessionExpiryCheck lineage): the idle lock on main revokes by
-// wiping the session (clearSession), which advances the session revision every recovered-key loan is bound to.
+// A wipe (clearSession) advances the session revision every recovered-key loan is bound to; the idle suspension
+// (suspendSession) advances it too, and paymentKeyExport.recovery.test.ts covers the secret exports under it.
 function expireSession(): void {
   clearSession();
 }
