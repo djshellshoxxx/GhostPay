@@ -1,3 +1,10 @@
+# Cover lookups (#696): merge of main `e7e98109` and review follow-up — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/w-match-cover-20261125`, head
+`cb119fa1` merged with main `e7e98109` (#624, docs only; the sole conflict was this file, resolved as a union).
+Owned paths: the #696 entries below and this entry. Acceptance: independent review (worker "reviewer2") addressed,
+hosted CI green at the exact head.
+
 # Cover lookups (#696): integration and review follow-up (2026-11-26 UTC)
 
 Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
@@ -31,6 +38,14 @@ Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg 
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
 
 ---
+
+# Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
+
+Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
+`docs/engineering/ESSENTIAL_FEATURE_MATRIX.md`, `ESSENTIAL_FEATURE_PROGRESS.md`, `FEATURE_INTEGRATION_LOG.md`,
+`REMAINING_WORK.md` and this entry. The cut-off worker's uncommitted matrix edit was a file of NUL bytes only (no text
+to recover), so it was rewritten from the last commit. Docs only; facts checked against git history and GitHub PR and
+run records.
 
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
