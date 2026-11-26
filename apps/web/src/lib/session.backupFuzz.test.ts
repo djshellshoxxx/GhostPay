@@ -8,6 +8,8 @@ import { clearSession, exportKeystore, generateSession, getSessionBackup, getSes
 afterEach(() => { clearSession(); });
 
 const PASS = 'a long passphrase for fuzzing';
+// Fixed so CI is reproducible; change it locally to explore other cases.
+const SEED = 20261125;
 
 async function refused(text: string, passphrase = PASS): Promise<void> {
   const before = getSessionPublic();
@@ -21,7 +23,7 @@ async function refused(text: string, passphrase = PASS): Promise<void> {
 describe('verifyDownloadedBackup fuzzing', () => {
   it('arbitrary text never verifies and never throws a raw error', async () => {
     generateSession();
-    await fc.assert(fc.asyncProperty(fc.oneof(fc.string({ maxLength: 300 }), fc.json({ maxDepth: 3 })), async (text) => { await refused(text); }), { numRuns: 300 });
+    await fc.assert(fc.asyncProperty(fc.oneof(fc.string({ maxLength: 300 }), fc.json({ maxDepth: 3 })), async (text) => { await refused(text); }), { numRuns: 300, seed: SEED });
   });
 
   it('single-character damage to a real export never verifies a changed file', async () => {
@@ -32,7 +34,7 @@ describe('verifyDownloadedBackup fuzzing', () => {
       // Lowercase hex inside the envelope: every replacement changes an authenticated or keyed byte.
       const c = text[at] === '0' ? '1' : '0';
       await refused(text.slice(0, at) + c + text.slice(at + 1));
-    }), { numRuns: 12 });
+    }), { numRuns: 12, seed: SEED });
     // The undamaged file still verifies, so the refusals above are about the damage.
     await verifyDownloadedBackup(text, PASS);
     expect(sessionHasExternalCopy()).toBe(true);

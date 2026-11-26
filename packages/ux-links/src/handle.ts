@@ -131,7 +131,9 @@ export function checkHandle(input: unknown): HandleCheck {
   if (/[\p{Cc}\p{Cf}\p{Zs}\p{Zl}\p{Zp}\p{Co}\p{Cn}\p{M}]/u.test(s)) return bad('INVISIBLE');
   if (/[^\p{ASCII}]/u.test(s)) {
     const lookalike = [...s].some(
-      (c) => c.charCodeAt(0) > 0x7f && (CONFUSABLES.has(c) || /^\p{ASCII}+$/u.test(c.normalize('NFKC'))),
+      (c) =>
+        c.charCodeAt(0) > 0x7f &&
+        (CONFUSABLES.has(c.toLowerCase()) || /^\p{ASCII}+$/u.test(c.normalize('NFKC'))),
     );
     return bad(lookalike ? 'CONFUSABLE_NON_ASCII' : 'NON_ASCII');
   }

@@ -32,6 +32,14 @@ describe('BTC main-thread source bridge', () => {
     expect(fetchFn).not.toHaveBeenCalled(); expect(b.fail).toHaveBeenCalledOnce(); b.source.dispose();
   });
 
+  it('rejects per-outpoint requests without the scan owner’s explicit consent', () => {
+    const fetchFn = vi.fn<EsploraFetch>(); const b = bridge(fetchFn);
+    b.source.handle(request(1, `/tx/${'ab'.repeat(32)}/outspend/0`));
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(b.fail).toHaveBeenCalledWith(expect.objectContaining({ code: 'INVALID_RESPONSE' }));
+    b.source.dispose();
+  });
+
   it('caps simultaneous requests and refuses duplicate request IDs', async () => {
     const fetchFn = vi.fn<EsploraFetch>(() => new Promise(() => {})); const b = bridge(fetchFn);
     for (let id = 1; id <= 5; id++) b.source.handle(request(id));

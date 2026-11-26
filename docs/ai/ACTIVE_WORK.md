@@ -1,3 +1,287 @@
+# W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
+
+Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
+Why: the previous W4 (feature-completion-06's subagent) exited before continuing #585/#600; ghostpay-42 and newghostpay-ae confirmed no driver.
+Owned paths: #585/#600's files and the merge resolution in `apps/web/src/views/CreateInvoice.tsx` link row (main's auto-clearing Copy, #585's exact-link .txt download and #688's request-file download, all three kept), this entry.
+Acceptance: minimal mode omits memo and item breakdown after totals are computed; payment and verification fields, canonical serialization, signatures and envelopes unchanged; downloads carry the exact signed link; full hosted CI on the exact head.
+
+# PR #585 native typecheck resumption — 2026-11-24 UTC
+
+Worker: `/root/recover_local_workers`, coordinated by `/root`. Isolated successor branch `resume/privacy-minimal-typecheck-20261124`; exact saved parent #585 `b82be893d3d360064222fafcce8cef2033cd23a5`, main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only the invalid role-query option in `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/PR585_NATIVE_TYPECHECK_20261124.md`.
+
+Acceptance: reproduce TS2769 from the unsupported `exact` option, remove only that option after verifying the string accessible-name matcher remains exact, retain every privacy-minimal and stale-result assertion, and run focused native tests plus full web typecheck and scoped typed lint. Preserve all production code, dependencies, schemas and signing/payment behavior. #586, #571, Pay paths and original owner branches remain outside this assignment. Root owns independent review and publication. No merge, deployment or real-funds operation.
+
+---
+
+# Issue 287 invoice metadata minimization
+
+Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.
+
+---
+# Browser self-check feature completion (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
+existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
+other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
+`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
+`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
+`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
+`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
+Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
+handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
+unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
+payments, network egress or release gates.
+
+# Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
+
+Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the
+v1.0 beta: invoice-registration and receipt-archive timestamp cleanup in the encrypted reconciliation vault (#383 →
+#587 → #609). Reason: a v3 → v4/v5 vault format change that older app builds and the CLI cannot open, applied to
+recovery-critical data, for a small privacy gain. No worker may claim or implement it without new owner approval. The
+donor branches and PRs stay open and untouched. The on-screen presentation half is on main (#676). Spec:
+`docs/specs/19-local-metadata-retention.md`. #287 stays open (v1.1).
+
+# Orphaned FC round-1 PRs onto current main: FC-03 and FC-05a (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-42`, on the owner's instruction to finish the orphaned feature-completion PRs
+(coordinator `feature-completion-06` exited before merging candidate #664). Branch: `claude/fc-round1-rest-20261126`,
+base main `1bea3df3`. Inputs merged with `--no-ff` at their exact reviewed heads: #648 FC-03 `a13ab24d`, #661 FC-03-T
+`a2b14ca8`, #656 FC-05a `8e7b1915`, #662 FC-05a-T `22c3cb1d` (each green at its own head; reviews APPROVE or
+APPROVE-WITH-NITS, recorded in `docs/consolidation/feature-completion-20261125/CAMPAIGN.md` on the coordinator branch).
+Already landed by others: #650 (in #688), #663 (in #690), #649 (as #683 by W3). Not in this branch: FC-05b #669, which
+has an unaddressed CHANGES-REQUIRED review on its pending-spend guard; it follows as a separate PR after this lands.
+Stop-work check: no F14 routing, bridging or chain selection; FC-03 adds mainnet refusals to existing PoC libraries,
+FC-05a reduces Bitcoin provider disclosure (consent-only spent checks). Owned: this branch only; donor branches untouched.
+Acceptance: hosted CI green at the exact head; merge through the shared lock queue.
+
+# W3 follow-up to #647: one canonical v1 seller keystore vector (2026-11-26 UTC)
+
+Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-keystore-canonical-vector`; base main `1bea3df3` (#647 merged via #684).
+Owned paths: `packages/ux-vault/src/keystore-portable.vectors.testutil.ts` and `keystore-portable.vectors.test.ts` (test-only), this entry.
+Change: the ux-vault known-answer, fuzz and mobile-restore e2e tests read #647's canonical `test-vectors/seller-keystore-v1.json` instead of a second hard-coded v1 file (agreed with #647's author). No production, vector or format change.
+Acceptance: affected unit tests and the device-restore e2e pass in hosted CI on the exact head.
+
+# SEC-1 follow-up — in-app payment-key warnings name the payer (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-15` (the PR #647 session). Branch `claude/sec1-payer-key-warning`, base main
+`aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. Finding (from the #647 audit): in scheme 1 the payer chose the ephemeral
+secret, so the payer knows the tweak and can compute the master spending key from a revealed one-time key. The
+in-app warnings cover only viewing-key holders. Owned paths: the values of `stealthExport.details.futureDeposits` and
+`stealthExport.raw.confirm.body` in `apps/web/locales/{en,es,ja,ar}.json` (all four hold the same English today), new
+`apps/web/src/i18n/stealthExportPayerWarning.test.ts`, this entry. Not owned: StealthExport components (#622 and
+earlier owners), other locale keys. Acceptance: both warnings name the payer and say never to send the key; no
+catalog keeps a stale English copy; the i18n check has 0 errors; i18n and StealthExportPayment tests pass.
+
+---
+
+# W3 — successor of #649 (FC-02 Sweep balance consent) with stale-consent binding (2026-11-25 UTC)
+
+Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-sweep-consent-successor`, from #649 head `790de53e` (ancestry kept; original branch untouched) merged with main `e2c11634`.
+Why: #649 (all hosted checks green at 790de53e) and its combined candidate #664 lost their driver when feature-completion-06 exited; ghostpay-42 and newghostpay-ae confirmed nobody else took it.
+Owned paths: #649's files (`apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, `Sweep.quoteLifecycle.test.tsx`, `Sweep.test.tsx`, `lib/scanPrivacy.ts` disclosure line, e2e journeys), the merge resolution with #674/#675 in Sweep, one additive `sweep.balanceRead.settingsChanged` key, this entry.
+W3 addition: a balance read is consented to for the saved RPCs and scan privacy settings Sweep opened with; if another tab changed them, nothing is sent (checked at the click and again after the RPC lookup) and a late balance is discarded. #675's live-region rule is kept: the new message names no address, amount or hash.
+Acceptance: #649's tests plus two stale-consent regressions; full hosted CI on the exact head.
+
+# FC-02 — Sweep balance consent and quote/signing lifecycle onto current main (2026-11-25)
+
+- Worker: fc02 (Claude Code implementation worker, feature-completion campaign). Branch `claude/fc02-sweep-consent-20261125`, base `origin/main` `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`. Donor: PR #534 head `5c93c3b172cd002f1cdc68232b1a0f3335aadb76` (merged with `git merge --no-ff`; #252 `4085622463411d3ba27f4efb7b73a70575170535` and selected #272 commits `ab40d79a`, `9e4ec2da`, `a67d0975` stay in history).
+- Owned paths: `apps/web/src/views/Sweep{,.test,.privacy.test,.quoteLifecycle.test}.tsx`, `apps/web/src/lib/scanPrivacy{,.test}.ts`, `apps/web/locales/*.json`, `apps/web/src/i18n/securityKeys.ts`, e2e specs `core-journey`, `devnet-journey`, `pages-devnet`, `sweep`, this entry, and `docs/consolidation/feature-completion-20261125/FC-02-sweep-consent.md`. Not touching #586 or #610 work.
+- Acceptance: Sweep balance refresh only after explicit consent; any change to quote, amount, destination, chain or account invalidates the pre-broadcast signing context; post-handoff evidence retained; current-main Sweep/scanPrivacy behavior preserved; focused tests, typecheck and lint pass; hosted CI pending until reported.
+
+# W3 — EVM provider/privacy boundary: fail-closed scan privacy settings and per-request route checks (2026-11-25 UTC)
+
+Worker: W3 (Claude Code session `ghostpay-backup-60`, home team per `%USERPROFILE%\GhostPay-coordination\TEAM.md`); branch `claude/w3-provider-privacy-boundary`; base main `32ae3977`.
+Builds on, without taking over: #658 (RPC disclosure evidence), #228 (dispatch-time own-node guard idea; not on main), #649/#664 (Sweep balance consent, owned by feature-completion-06).
+Owned paths (milestone 1): `apps/web/src/lib/scanPrivacy.ts`, new `apps/web/src/lib/scanPrivacy.integrity.test.ts`, the scan-start wiring in `apps/web/src/views/Scan.tsx` (route guard only), additive `scanPrivacy.*` keys in the four locales and `apps/web/src/i18n/securityKeys.ts`, this entry and `docs/handoffs/W3_PROVIDER_PRIVACY_BOUNDARY_20261125.md`.
+Acceptance (M1): saved scan privacy settings that are present but not exactly valid, or a storage read that throws, never fall back to Direct; scanning is blocked with a review message, the second RPC is skipped and Sweep stays on-request until the user saves valid settings.
+Acceptance (M2): every scan request (custom endpoint transport including retries and chain re-checks, the app RPC client, the indexer fetch and the second RPC) re-checks the saved scan privacy settings and the RPC URLs it started with, before sending and after the answer; a change in this or another tab stops the scan with a typed error and discards the delayed answer. Submitted hashes, checkpoints and recovery records are not touched.
+Out of scope: wallet-extension traffic (explained, not controlled), Tor/proxy certification, new transports, F14 routing.
+
+# External wallet disclosure gate on main (#287 item 3; owner gate 4) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-wallet-disclosure-287-20261125`, base main `e6faa19b`. Previous claimant `feature-completion-06` ("FC-07") exited without a branch; ghostpay-backup-60 (W3) and ghostpay-42 informed.
+Donors (ported by hand, branches untouched): the disclosure parts of #372 `8c196d12` and `8ce7f1db`, and #589 `902464ad`/`697cb731` + #606 `f941ac01` (head of `codex/recover-wallet-disclosure-qualification-20261124`). Not ported: their retention (ghostpay-42, #676), invoice metadata (W4) and addressReuse (superseded by #674) files, and the donor-only connect hardening (extra `eth_accounts` re-read).
+PR A (this branch): `apps/web/src/lib/walletDisclosure*.ts`, `apps/web/src/lib/walletCallSummary*.ts`, an optional `disclosure` gate in `apps/web/src/lib/wallet.ts` (`connectWallet`, `sendViaWallet`, `signTypedDataViaWallet`, `walletAuthority`, new `observeWalletLifecycle`), `apps/web/src/lib/wallet.disclosure.test.ts`, the `wallet.disclosure.*` catalog keys and security-key group. No call site passes a gate yet, so app behavior is unchanged.
+PR B (next, separate PR): `components/WalletDisclosure.tsx` provider and dialog, AppShell wiring, Pay/Registry call sites and their tests and e2e fixtures. W3 owns the docs/scan wording on wallet-extension RPC traffic.
+Not owned: #675 (`WalletBroadcastError`/`PostBroadcastError` messages), the payment-attempt journal internals, Sweep, scan.
+Acceptance: without a gate, identical requests and call sequences (existing wallet, payExec, pay, policy, journal and Pay/Registry view suites pass); with a gate, nothing reaches the wallet before an explicit approval, the exact reviewed bytes are sent, the approval is re-checked immediately before the provider call and never after a returned hash, wallet changes cancel an open review; full hosted CI; independent review; merge through the lock queue.
+
+---
+
+# Local destination-reuse warnings consolidated onto main (#287 item 1) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-reuse-287-20261125`, base main `32ae3977`. Slice assigned by coordinator `feature-completion-06`.
+Donors (merged with `--no-ff`, original branches untouched): #586 `codex/287-local-destination-reuse` `f024ce3e` -> #610 `finish/destination-reuse-type-20261124` `874d3809`.
+Not merged: #584 `codex/287-evm-payment-destination-reuse` `17c5a2ee`, a sibling design that writes fingerprints into the fund-safety payment-attempt journal; superseded by #586's separate advisory history, which cannot veto or alter a payment. #341 (GP-BUG-06) fixes the hygiene `DestLedger`, which main's web app does not use; not applicable to main.
+Owned paths: `apps/web/src/lib/destinationReuse*.ts`, `apps/web/src/lib/destinationWalletScope*.ts`, `apps/web/src/components/DestinationReuseNotice.tsx`, the reuse hunks only in `apps/web/src/views/{Pay,Sweep}.tsx` and their tests, the one meta-address hint in `CreateInvoice.tsx` (not the Copy-link row, which W4 owns), reuse keys in `apps/web/locales/*.json` and `securityKeys.ts`, the reuse section of `docs/user/privacy-limits.md`, the reuse case in `apps/web/e2e/flows.spec.ts`, this entry and a handoff.
+Not owned: Sweep balance consent (FC-02, #664), CreateInvoice clipboard and minimal invoices (W4), the payment-attempt journal, scan code.
+Acceptance: advisory only (never blocks or authorizes a wallet action); no RPC, explorer, wallet or telemetry request; no raw address stored; bounded salted session history; denied or full storage degrades to an "unavailable" notice; web typecheck, lint, unit tests, lean build, Playwright reuse case and full hosted CI pass; independent review; merge through the integration lock queue.
+
+
+# P13 confidential amounts — protocol-neutral client core — 2026-11-25
+
+Worker: Claude Code session `nodata/eloquent-shannon-gfv6t9` (P13 only).
+Branch: `nodata/eloquent-shannon-gfv6t9`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`
+with `future/p13-confidential-amounts` `8846d555` merged for spec ancestry.
+Owned paths: new `packages/confidential-amounts/src/future/p13/**`, new
+`packages/confidential-amounts/browser/**`, additive edits to `packages/confidential-amounts/`
+`package.json`, `README.md`, `DEVIATIONS.md`, new `docs/future/modules/P13-confidential-amounts/IMPLEMENTATION.md`,
+`docs/handoffs/P13_CONFIDENTIAL_AMOUNTS_20261125.md`, lockfile entry for the new workspace dependency, this claim.
+Acceptance: strict amount/asset validation, exact arithmetic, data models, invoice compatibility,
+secret lifecycle, encrypted records with recovery export/import, default-off gate, unsupported-operation
+results and disclosures, each with tests; existing 88 package tests unchanged and passing.
+Out of scope: contracts (incl. the unmerged router return-bomb fix `cd544529`), apps/web wiring,
+settlement activation, deployment, fees, new cryptographic primitives, other modules' files.
+
+# P13 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/p13-confidential-amounts`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/P13-confidential-amounts/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
+
+# Issue #287 item 4 · local metadata retention controls, presentation slice (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-retention-287-20261125`, base main
+`32ae3977`. Claim confirmed with no overlap by `newghostpay-ae` (#670, #674 address reuse) and `ghostpay-backup-60`
+(W3, #672; it keeps the `saveScanPrivacy` handler in Settings.tsx). Ported, not merged, from the diverged 2026-11-20
+privacy candidate line (`Recovered-from:` trailers); donor branches stay untouched.
+Owned paths: `apps/web/src/lib/metadataRetention*`, `lib/useInvoicePreviewRetention.ts`,
+`components/MetadataRetentionControls*`, the retention hunks in `CreateInvoice.tsx`, `PaymentRequestQr.tsx`, `Pay.tsx`
+and `Settings.tsx`, the `retention.*` catalog keys and `metadataRetention` security group, spec 19.
+Not owned: invoice metadata minimization and CreateInvoice's Copy-link row (W4), persistent timestamp retention in
+the reconciliation vault (#383/#587/#609; a later slice), merchant template issuer (full profile, deferred-adjacent).
+Acceptance: default-off preferences; preview, count and explicit confirmation; stale plans clear nothing; only
+presentation copies close and every saved record stays; hosted CI green at the exact head; merge via the shared queue.
+Status (2026-11-25 18:03Z): **merged** as PR #676 (`e2c11634`) through candidate #681 (42 pass, 0 fail at the exact
+head), lock generation 29 (released `62a6ea30`). Open follow-ups: persistent timestamp cleanup in the reconciliation
+vault (#383/#587/#609; vault format change shared with the CLI, owner decision pending).
+
+# payment-uri invoice-link browser-canonical origin and path — 2026-11-25 UTC
+
+Worker: Claude Code (local). Branch `claude/small-fix-20261125`, base main `aaa71a11`.
+Owned paths: `packages/payment-uri/src/invoice-link.ts`, additive cases in `packages/payment-uri/src/{negative,vectors}.test.ts`, `packages/payment-uri/DEVIATIONS.md` item 10, this entry. No `apps/web` changes.
+Acceptance: `parseInvoiceLink`/`buildInvoiceLink` reject whole `.` path segments like `..`, and `origin` omits the scheme's default port; package tests, typecheck and lint pass.
+
+---
+
+# Seller-key restoration on phones, tablets and other devices (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60`; branch `claude/mobile-restore`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
+Resumes the mobile qualification stack with ancestry: #588 `46150f4c` → #597 `a929b178` (all hosted checks green at a929b178). Original branches untouched.
+Owned paths: new `apps/web/e2e/devices-mobile-restore.spec.ts`, its `testMatch` entry in `apps/web/playwright.mobile.config.ts`,
+restore rows in `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md` and `docs/qr/PHYSICAL_DEVICE_ACCEPTANCE.md` (D4 to D6),
+the device-restore section of `docs/user/product-guide.md`, and this entry. No production, crypto-format or workflow-gate changes.
+Acceptance: in Chromium (Pixel, Galaxy Tab, and the default-config iPhone/iPad descriptors) and native WebKit (iPhone SE, iPad Mini) profiles, a fresh device restores the fixed v1 vector keystore and refuses damage and a wrong passphrase. The restored keys survive vault save, reload and unlock. The encrypted backup QR from a separate desktop context restores the same identity, as one code and as out-of-order multi-part codes. Hosted mobile qualification (lean and full) and full CI pass. Physical-device cases stay pending until recorded.
+
+# P0-KEYS — GhostPay-independent recovery of the seller keystore backup (2026-11-25 UTC)
+
+Worker: Claude Code session (Opus 5.5), local worktree `.claude/worktrees/p0-keys-recovery`. Branch
+`claude/p0-keys-independent-recovery`, exact base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Gap: the reference recovery script reads only the Spec 18 `ghostpay-stealth-*` files. The seller keystore
+(`ghostpay-keystore.json`, v1, scrypt + AES-256-GCM) can only be opened by GhostPay code itself. This adds an
+independent reader so that file can be verified and used to recover one-time payment keys without GhostPay code,
+the original browser profile, device or storage. The keystore format and the app are unchanged.
+Owned paths: additive seller-keystore reader and `--expected-meta-address` in
+`scripts/recovery/stealth-export-recover.mjs`; new `scripts/recovery/seller-keystore-recover.test.mjs` and
+`scripts/recovery/seller-keystore-recover.fuzz.test.mjs`; new
+`test-vectors/generate-seller-keystore.mjs`, `test-vectors/seller-keystore-v1.json` and their README entry; new
+`docs/specs/18-seller-keystore-v1-format.md`; additive sections in `docs/user/recover-stealth-payment-keys.md`; new
+`apps/web/e2e/independent-keystore-recovery.spec.ts`; this claim; new
+`docs/handoffs/P0_KEYS_INDEPENDENT_KEYSTORE_RECOVERY_20261125.md` (checkpoint).
+Not owned (other workers' scope, not edited): #641, merged into main at `60824005`, seller-keystore verify/restore UI and codec (`SellerKeys.tsx`,
+`session.ts`, `keyVault.ts`, `keystore*.ts`, `portable-errors.ts`, `recovery.spec.ts`, `pages-devnet.spec.ts`,
+`product-guide.md`, locales); #622 archive, master backup and in-app Spec 18 recovery (`paymentKeyExport*`,
+`StealthExport*`, `Scan.tsx`); #635 late reconciliation; #636 merchant dashboard; #588 mobile engines.
+Acceptance: the reader accepts every keystore GhostPay writes (fixed vector and freshly written files from the built
+`@ghostpay/ux-vault` codec, including production N=2^17), and the codec accepts the vector. The reader recovers the same
+one-time keys as the Spec 18 master-backup vectors. Wrong passphrase, tampering, truncation, oversize, unsupported
+versions and another seller's backup are refused with fixed codes. No seller secret is printed; the passphrase is
+never read from argv or the environment. Recovery runs in an isolated directory with only the script and two noble
+packages readable. A browser-downloaded keystore is decoded after its profile is closed. No new dependency,
+primitive, endpoint or contract change.
+
+# W4 — clipboard cleanup (#553 + #580) onto current main — 2026-11-25 UTC
+
+Worker: Claude Code W4 (feature-completion), branch `claude/w4-clipboard-286-main-20261125`. Base: #580 head
+`e68d32d7e424daf7264165987868eb6b891048b2` (contains #553 `068fbc36b80311c107dfd3619d631fca794fac58`) merged with main
+`aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. Donor branches and PRs #553/#580 stay unchanged; superseded only once this merges.
+Owned paths: the merge resolution (`apps/web/src/AppShell.tsx` imports, this file), fixes for defects reproduced on the
+merged head inside the stack's existing paths (`apps/web/src/lib/clipboardPrivacy*`, `apps/web/src/components/{Common,SecretBackup,SensitiveClipboard}*`,
+the clipboard preference in `apps/web/src/{lib/settings*,views/Settings.tsx}`, clipboard locale keys, `apps/web/e2e/{invoice-link,sensitive}-clipboard.spec.ts`,
+`docs/privacy/clipboard-actions.md`), and a new handoff. W4 also coordinates the Create Invoice copy-link row for the
+related #585/#600 privacy-minimal invoice continuation (next task) so both compose with FC-01 #650's request-file download.
+Not owned: #664/#650/#649/#656/#661–#663 branches, Pay/wallet/journal, recovery, provider policy, verification directories.
+Acceptance: opt-in (default Off) cleanup applies to every programmatic copy; newer or different clipboard contents are never
+erased; invoice totals, canonical signatures and verification unchanged; merged head passes focused clipboard suites, web
+typecheck/lint where memory allows (skips recorded), and full hosted CI; handed to W1 for integration (no lock taken, no merge).
+
+---
+
+# P1-LATE stack consolidation onto main — 2026-11-24 UTC
+
+Worker: Claude Code (local, `claude/p1-late-reconciliation`). Base: stack tip PR #625 `694383f7` (contains #533 → #546 → #575 → #599) merged with main `c8e131c1`.
+Own only the merge resolution (`apps/web/src/views/Scan.tsx` scan-owner state, this file), fixes for failures reproduced on the merged head inside the stack's existing owned paths, and `docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`. All donor branches stay unchanged; their PRs are superseded only after this merges.
+Acceptance: the merged head passes web/ux-vault/cli typecheck, lint and tests locally and the full hosted CI; never show an unverified or late payment as confirmed; integration lock acquired before merge.
+
+---
+
+# Resumed seller browser qualification — 2026-11-24 UTC
+
+Worker: root. Branch: `resume/seller-reconciliation-20261124`. Parent: PR #575 at `5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727`. Main observed: `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the imported-history assertions in `apps/web/e2e/pages-devnet.spec.ts`, the mismatched-observation fixture in `apps/web/src/lib/reconciliationVault.invoices.test.ts`, this claim, and a new handoff. Resume the existing task after the reported interruption. Preserve parent branches and all production code.
+Acceptance: imported historical records display the current unverified state and no credited amount summary; saving the freshly verified observation produces one link and one distinct observation. Preserve the existing encrypted-backup, duplicate, sweep and network checks. Local fixtures only; hosted browser qualification remains required.
+
+---
+
+# Seller payment reconciliation on the #533 → #546 stack
+
+Worker: Codex. Branch `fix/seller-linked-payment-reconciliation` starts at #546 `711168f18e5d808df4e3153da8898cd86fae5266`. Main inspected at `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Own the linked-payment retry and duplicate-observation handling in the portable reconciliation vault, its invoice regressions, the seller assertions in flows.spec.ts and pages-devnet.spec.ts, and the CLI history test fixture that uses that vault. Extend the scanClient.ts page-finality/checkpoint logic and its local scanClient.test.ts fixtures for a retreating tip. Update the reconciliation ADR. The Scan privacy localization fixture has a separate worker and candidate. Leave both parent branches and its test untouched.
+Acceptance: count only distinct verified linked payments, revisit unresolved linked inclusions, withhold credit through interruptions, preserve seller decisions on invalidation, and prove repeated reconciliation and reload against local fixtures. No hosted blockchain, deployment or shared-branch integration.
+
+## FC-01 independent qualification (2026-11-25)
+
+Worker: Claude Code session `focused-meitner-07a9u7`. Branch `nodata/focused-meitner-07a9u7`, a descendant of the FC-01
+head `5543c2a3670ceffc43fd7751edeab74feac4f3e4` (main `5dc05bd6b73effef3d6fd3443a2e2fdde1103d3a`). The owner `fc01`
+was still pushing when this started, so its branch is not edited and integration stays with that owner. Owned
+paths: this subsection, `docs/consolidation/feature-completion-20261125/FC-01-f03-request-file-QUALIFICATION.md` (the owner keeps
+`FC-01-f03-request-file.md`) and the new
+browser regression `apps/web/e2e/payment-request-file-attempt.spec.ts` (file entry versus the #500 journal). No
+production source change. Acceptance: the affected local gates, the six request-file browser scenarios on fresh full and lean
+builds, union and hunk checks against main and the donor, an independent review, and hosted CI recorded against
+exact SHAs. The handoff is left ready for the owner's integration.
+
+# FC-03 — Solana/TRON meta-address and memo interoperability alignment (2026-11-25 UTC)
+
+- Worker: fc03. Branch: `claude/fc03-chain-interop-20261125`. Base: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f` (origin/main). Donor: PR #376 head `f717157271fe494eb8094e504e9fec8276d51fcc`, merged with `--no-ff`.
+- Owned paths: the donor's 34 source paths (Solana/TRON libraries, adapters, CLI inspection), this claim, `docs/consolidation/feature-completion-20261125/FC-03-chain-interop.md`, plus follow-up paths `packages/solana-stealth/README.md`, `packages/solana-stealth/src/meta-address.ts`, `packages/solana-stealth/src/stealth.test.ts` and `docs/remote/chain-ports/solana-impl.md`.
+- Excluded: apps/web, contracts, workflows, root manifests/lockfile.
+- Acceptance: Solana/TRON/CLI workspace tests, typecheck and lint pass with coverage thresholds held; web and library vectors agree; TRON build stays fail-closed (`MEMO_NOT_BOUND`); no mainnet enablement. Testnet/proof-of-concept only.
+
+# FC-05a — Bitcoin spent-output detection and private-scan consent (2026-11-25 UTC)
+
+- Worker: fc03 session (feature-completion campaign), task FC-05a. Branch: `claude/fc05a-btc-spentness-20261125`. Base: `60824005b89611aea2b16d3355378eebf072eedb` (origin/main). Donor: PR #244 head `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f` (contains #219 `9617e857`), merged `--no-ff`. PR #254 is NOT merged (FC-05b).
+- Owned paths: `apps/web/src/features/btc/**`, `packages/btc-silent-payments/src/scan/**`, `apps/web/e2e/btc-spent-consent.spec.ts`, `apps/web/e2e/btc-worker.spec.ts`, the donor's locale/securityKeys hunks, this claim, `docs/consolidation/feature-completion-20261125/FC-05a-btc-spentness.md`.
+- Acceptance: unknown never becomes spent or sweepable without complete canonical header-covered coverage; consent revocation stops network use; chain change invalidates evidence; non-BTC paths equal current main unless the feature needs them; `spend.preview.network.test.ts` still present and passing. Full profile only, testnet, proof of concept.
+
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
 Worker: Claude Code session `ghostpay-backup-60`; branch `claude/backup-recovery`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
@@ -13,6 +297,8 @@ independent verification controller is not. Verify is disabled while an unlock i
 Acceptance: keystore codec typed errors, panel-local verification status that never survives a seller change or a
 file switch, typed deletion of an unrelated or locked vault, leave-page warning without a verified external copy,
 fresh-profile restoration and derived-address consistency; focused unit, typecheck, lint, build and hosted CI.
+
+---
 
 # REV-L2 — checkout with a stale payment-attempt mirror
 
@@ -263,6 +549,27 @@ Trace the lean Pages asset graph and RPC dispatch, exercise synthetic invoice an
 scan settings, and distinguish application results from live Tor qualification.
 Network transport, wallet, scanner, hosted onion acceptance and release controls
 remain with their existing owners (#241, #308, #320, #363, #436).
+
+## Issue #286 · private export and notification surfaces
+
+Worker: Codex on `codex/286-private-export-surfaces`, based on main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the Pages download boundary, policy/adapter/schema error presentation, React and i18n diagnostics, the ux-notify lock-screen formatter, and associated regressions and qualification notes. Keep clipboard, masking, idle-lock, serialization, import and recovery workers' changes separate. Acceptance requires fixed filenames and lock-screen copy, public diagnostics and titles, and exact preservation of explicitly exported bytes. Hosted checks and independent review gate integration.
+
+## Issue #286 item 5 · privacy-safe exports and notifications onto current main (2026-11-25 UTC)
+
+Worker: Claude Code session `ghostpay-42` (main checkout). Branch: `claude/w-export-privacy-286-20261125`, base main
+`32ae3977`, donor #570 `codex/286-private-export-surfaces` @ `55781533` merged with `--no-ff` (not rebased).
+Assigned by the feature-completion coordinator (`feature-completion-06`) after its shared-core privacy triage.
+Owned paths: the Pages download boundary (`apps/web/src/components/Common.tsx` download helpers), the call sites'
+fixed file names, donor #570's error/announcement/diagnostic surfaces, `packages/ux-notify` lock-screen title, and
+their regressions and docs. Not owned: clipboard (W4 #668), CreateInvoice's Copy-link row, privacy-minimal invoices
+(W4), masking (#569), vault/session isolation (#571/#655), RPC disclosure (W3), wallet disclosure (FC-07), address
+reuse (newghostpay-ae).
+Acceptance: no address, hash, amount, invoice detail, date or key in any suggested download name; exported bytes
+unchanged and importable; recovery file names stay recognizable; no secret in notifications, alerts, live regions,
+titles, URLs or console; hosted CI green at the exact head; independent review; merge via the shared queue.
+Status (2026-11-25 18:03Z): **merged** as PR #675 (`236501fe`) through candidate #681 (42 pass, 0 fail at the exact
+head), lock generation 29 (released `62a6ea30`). Donor #570 is superseded by #675.
+
 
 # Scan-source consolidation candidate — 2026-11-24 UTC
 
@@ -964,6 +1271,33 @@ Scope: startup and resumed/runtime local capability checks, displayed at the bot
 Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
 Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
 
+# Solana/TRON interoperability recovery — 2026-11-21 UTC (HISTORICAL: donor claim, its branch lease is not active; superseded by the FC-03 claim at the top of this file)
+
+Worker: `/root/chain_interop_recovery`, delegated by coordinator `5ceb6203640a-root`.
+Owned branch: `recover/ghostpay-chain-interop-20261121-5ceb`.
+Verified live main/base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**`,
+`test-vectors/meta-address-sol-tron-v1.json`, and the three relevant CLI files
+`packages/cli/src/chain-commands.test.ts`, `packages/cli/src/commands/chain.ts`,
+`packages/cli/src/payment-context.ts`; additive claim and a source-pinned handoff.
+Task: selectively recover existing #211 G5/G5b compatibility and safe request
+construction changes, preserving exact current browser-facing adapter sources.
+Current #211 head `a92658b1ef6b95ff0145b2e1933d0047d51289d5` says its workers
+finished; its original branch remains reserved and unchanged. #218 remains an
+open historical CLI owner, but its three relevant files match current main.
+No existing PR or other worktree is modified. #369 owns separate web TRON adapter
+paths, which are outside this recovery.
+Acceptance: documented Solana/TRON formats and deterministic shared reference
+vectors agree with the browser packages; unsupported unbound TRON construction
+refuses; CLI reports the supported Solana cluster and fixed legacy-format errors.
+Run corrected-source package/CLI coverage, ordinary interoperability properties,
+typecheck, lint and builds. Preserve original assertions and exact donor SHAs.
+Do not execute vulnerability reproductions, construct exploits or send real
+payments. No contracts, fees, custody, dependencies or network policy changes.
+The generation-11 integration lease remains held by `994a0d214fb9-root-r3`.
+This worker has no remote-write, merge, deployment or release authority. Root
+owns independent review, new owned publication and final shared integration gates.
+
 ---
 
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
@@ -1305,6 +1639,27 @@ Out of scope: money movement, backend, contracts, relayer, production deployment
 Status: regression committed first at `2b7cedbd`, repaired at `dbe6e975`, and source-blob-identity Node verification passed (two RED-on-base/GREEN-on-fix scenarios, seven existing controls); isolated source TypeScript check passed. Repository Vitest/lint/build, exact-head hosted CI and independent verification remain pending. See `docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md` (handoff commit `3503075a`).
 
 ---
+
+# Bitcoin spent-output/private-scan completion — 2026-11-18
+
+Worker: ChatGPT coordinator and three independent engineering/review lanes.
+Branch: `chatgpt/btc-spent-private-scan-20261118`.
+Base: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.
+Integrated main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` after independent compatibility
+review; only this registry overlapped, and both ownership records are preserved.
+User explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only
+comparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.
+
+| Lane | Owned paths | Acceptance |
+| --- | --- | --- |
+| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |
+| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |
+| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |
+| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |
+
+No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
+contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
@@ -1707,6 +2062,26 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Sweep balance query consent — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -1767,6 +2142,21 @@ coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existin
 artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+## PR 231 standalone pre-merge disclosure repair — 2026-11-18
+
+Worker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.
+Branch: `repair/ghostpay-pr-231-20261118`.
+Source: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).
+Target: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`
+regressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.
+Acceptance: reproduce the two exact hosted disclosure-equivalence failures;
+extract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;
+retain every balance-consent/session guard and disclosure assertion; verify the
+actual combined main/source tree. #222/#238 and their active source branches
+are read-only. All source commits remain ancestors. Both sides of the only
+merge conflict (independent ACTIVE_WORK claims) are retained. No contract,
+dependency, cryptographic or gate changes.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -1934,6 +2324,27 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+## Late-payment handling — Pages seller reconciliation (2026-11-23)
+
+- Worker: Codex. Isolated branch: `codex/ghostpay-late-payment-20261123`. Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`.
+- Owned paths on this branch: seller reconciliation matcher, encrypted vault, Scan and invoice registry/create UI, narrowly scoped web locale keys and regression tests, and `docs/handoffs/LATE_PAYMENT_20261123.md`.
+- Continue the M3 source analysis from `6b6a030c598b0beeb3d38846e753a8b2249e96d6` without modifying the M1 wallet-attempt paths or its owner's branch. No shared integration under this claim.
+- Acceptance: canonical timing and existing transfer finality; durable visible provisional, accepted and invalidated evidence; explicit local seller decision; replacement warning; regression and affected Pages qualification on the resulting commit.
+
+## Accepted late payment after a reorg
+
+Worker: Codex on `test/seller-accepted-late-reorg`, stacked on PR #533 at `90e3fff019d14d8df4c610daf2080a32140686de`.
+Own the late-payment case in `apps/web/e2e/core-journey.spec.ts` and this claim. Exercise the existing seller scanner and encrypted ledger through a confirming-block replacement, rescan, and page reload. Check the same invoice loses its paid status and the same payment retains its original seller decision.
+
+Follow-up QA on `qa/accepted-late-reorg-546`, based on the #546 head `7391b31e37d319e79a21b0aa9af89f6900e41241`, for integration into the same PR. Exercise generated reorg, rescan and reload sequences, transient canonical-header loss, and unchanged-block controls. Paths in scope are the existing core browser journey, invoice vault regressions, and the seller reconciliation/scanner code for failures reproduced by those tests.
+
+ 
+## 2026-11-24 — scan locale reconciliation fixture qualification
+- Worker: sequential ChatGPT cycle 20261124T1437Z; branch `automation/20261124T1437Z/bug/scan-locale-vault-fixture`; exact #599 parent `0c7f680d0791668a68c3a92d7d4ba44087dcf2b8`; main observed `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+- Owned paths: `apps/web/src/views/ScanPrivacy.i18n.test.tsx`, this additive claim and `docs/handoffs/SCAN_LOCALE_VAULT_FIXTURE_20261124.md`. Explicit continuation of #599; preserve #575/#546/#533 and their original branches. No product, storage policy, or deployment edits.
+- Evidence: #599 native web job 138355406523 fails at checkpoint count > 0. Its Scan awaits actual reconciliation vault persistence before allowing checkpoint advancement; this jsdom test lacks the browser IndexedDB fixture. Reuse the existing Scan.test.tsx in-memory ciphertext CAS adapter and actual guarded vault. Preserve all locale, no-replay, checkpoint and settings assertions.
+- Acceptance: native web tests, typed lint/typecheck, fresh hosted acceptance and independent review of this exact child. Local checkout DNS blocked; no local native test pass claimed. Bounded ownership checks found no same-file change in 14 relevant PR inventories, no exact-path claim on main, no #599 child returned by search. Integration lock observed released at generation 20; not acquired; no shared integration.
 ## 2026-11-19T08:36Z — isolated JSON canonicalization correctness repair
 
 - Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.
@@ -2351,6 +2762,41 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+## Issue #286 — merge and fuzz the Create Invoice copy action
+
+Worker: Codex on `integrate/invoice-clipboard-286`, from main
+`e0cb4681e453af77bb10be45ba61b4d19579f41b`. Main-targeted integration of
+#293 (6c648770), #297 (04910f65), and #549 (21b1d68c). Own only the clipboard
+helper and its CopyButton integration, invoice-link preference and translations,
+their tests, and this claim. Preserve the owners' existing branch histories.
+Exercise the real button with a mock clipboard, fake time, and seeded copy and
+completion orderings, including an in-flight same-link recopy at the old deadline.
+Verify default-off, unchanged-link clearing, and preservation of newer clipboard text.
+
+## Issue 286 remaining clipboard actions
+
+Worker: Codex, branch `feat/remaining-sensitive-clipboard-286`. Base: PR #553 at `068fbc36b80311c107dfd3619d631fca794fac58`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the shared copy button, confirmed backup copy and associated lock hooks, shared clipboard helper, Settings copy, tests and clipboard documentation on this branch. #553 retains Create Invoice ownership. Reconcile relevant clipboard behavior from broad donor #372 without importing its second preference or other beta features.
+
+Acceptance: every programmatic copy uses #553's saved Off/30/60-second preference and helper. Only matching readable text may be cleared. Cover denied and missing APIs, newer/repeated copies, component unmount, preference revocation and pending native writes with controlled clocks and synthetic clipboards. Preserve backup reveal, auto-hide, confirmation and local recovery. Release qualification requires independent review and testing on an integrated candidate.
+
+## Finish #580 clipboard regression typing — 2026-11-24
+
+Worker: `/root` in the near-finished branch completion task. Isolated branch:
+`finish/clipboard-580-20261124`, based on #580 exact head
+`b634e816a403ac6b07a6685bac575ca683a17cb5`. Main observed at
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+
+Owned paths: the mock return types in `apps/web/src/lib/clipboardPrivacy.test.ts`,
+this additive ownership record, and a dedicated completion handoff. The original
+#580 source remains in history. The #553 branch and all production clipboard code
+are unchanged. Any continuation of #580 requires its observed head to match.
+
+Acceptance: reproduce the two `no-misused-promises` failures from hosted job
+138271835214, retain the actual promise signatures in the mock fixture, pass typed
+lint and the existing five helper/component suites without changing assertions,
+and obtain independent review. Refresh exact heads before publication. Hosted
+qualification remains a separate gate; no release or deployment is included.
 # R37 — Block ambiguous fee-preview asset symbols (2026-11-22)
 
 - Worker: branch consolidation coordinator, isolated from concurrent automation workers.
@@ -3215,6 +3661,11 @@ Acceptance: retain exact reviewed donor postimages, ordinary original tests and 
 - Acceptance: documentation-only; no executable behavior, dependency, release or security-policy change; links verified; inventories and reconciliation reports carry source-pinned evidence and do not mark unmerged work as merged.
 - Integration: draft PR only; no merges, no force-pushes, no closing of issues or PRs.
 
+## Interrupted payer verification on Pages
+
+Worker: Codex on `fix/pages-offline-session` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own payment result presentation and exported receipt classification in Pay and payExec, their regression fixtures, and browser coverage for interrupted receipt verification. Coordinate with `codex/offline-interrupted-invoice`, which owns draft recovery, the offline notice and review retry. Reuse existing receipt-correlation work from #298/#302 where applicable. Verify unknown outcomes through disconnect, reconnect and same-tab reload, including zero wallet replay. Keep existing release gates.
+
+
 
 ## #573 browser fixture continuation — 2026-11-24
 
@@ -3237,8 +3688,944 @@ Worker: Codex. Branch: `fix/364-responsive-pages`. Base: C1 #504 at `1a7447d58c0
 - Fix: `responsive-pages.spec.ts` counted a 304 revalidation as a failed asset. 304 now passes; failures (4xx/5xx) still fail. Reproduced with a same-context navigation probe.
 - Acceptance: static help and privacy pages cover EL5, EL10 and technical explanations, buyer/seller diagrams with text equivalents, backup and recovery, wallet connection, invoices and receipts, merchant status, RPC/network configuration, privacy matrix, glossary, and disclosure-based contextual help. Every feature carries an implemented, experimental, planned or unsupported label checked against source. Responsive at 320/375/768/1280/1920 CSS px and 200% zoom, no horizontal overflow, no remote fonts or scripts, CSP unchanged, axe clean on help and privacy pages, existing unit and e2e tests green.
 - Verification plan: vitest for the touched components, `static-help` and `responsive-pages` Playwright specs on desktop plus mobile projects, typecheck, lint, build with scan-bundle, `node scripts/check-*` guards that cover help assets. Independent review before merge.
+
 ## POS terminal session lifecycle completion — 2026-11-25 UTC
 
 Worker: Claude Code cloud session, branch `nodata/gracious-meitner-0yy6do`, base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Preflight: #406 and #576 (issue #400 guards, POS reliability) are merged; open #411 is a stale ancestor of main; open #614 is docs-only. A scan of every remote branch found no POS source blob newer than main. F09 GhostPOS (`future/f09-ghostpos`) remains specification-only and is not implemented here.
 Owned paths: `examples/pos-terminal/**` (new `pos-session.js`, `session.test.mjs`; `index.html`, `pos.js`, `pos.css`, `README.md`), `apps/web/e2e/pos-terminal.spec.ts` (additive scenarios; existing five scenarios unchanged), the POS parity line in `.github/workflows/ci.yml`, this entry, new `docs/handoffs/POS_TERMINAL_COMPLETION_20261125.md`. Not modified: `packages/merchant-hooks`, `packages/merchant-ledger`, `packages/invoice-schema`, `examples/pos-terminal/pos-logic.js` reducer semantics.
 Acceptance: pure lifecycle module with deterministic clock, mock storage and synthetic feed/mock-wallet fixtures covering creation, amount validation and exact precision, presentation, expiry/countdown, cancellation/reset, feed-sourced completion (strict webhook-event validation matching `parseWebhookEvent`, cumulative-to-delta, replay dedup, invoice/currency binding, late rejection, ledger `reconcile` agreement), customer display model, persistence/restore without the bearer link, corrupt-storage recovery; terminal UI keypad, customer screen, live status and focus handling; Playwright desktop and touch-tablet scenarios; existing parity and e2e unchanged and passing.
+
+
+## Sweep balance consent integration — 2026-11-23
+
+- Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-sweep-balance-integration-20261123`.
+- Base: `8ddb344973e80b8e1eda6821e970ee6a2b808b29`. Preserve PR #252 donor `4085622463411d3ba27f4efb7b73a70575170535` as a parent and reconcile additive work claims.
+- Acceptance: require an explicit action before an RPC balance read for a one-time address, preserve selected-provider policy and discard late results on selection, provider, session or lock changes. Run the existing Sweep, privacy, and lean-browser acceptance tests.
+- PR #272 is a follow-on. The recovery stack #361/#372/#373 already contains #252. Preserve their code and branch ownership and reconcile current C1 and reserved workstreams before integration.
+## Sweep quote and relayed signing lifecycle correction — 2026-11-19
+
+Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`.
+Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
+and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
+Acceptance: prevent stale quotes and stale relayed submissions after a balance,
+recipient, payment, provider, session, mode, manifest or transport change; retain
+submitted and uncertain-outcome evidence after irreversible handoff; preserve
+explicit balance consent and existing vault, session, fee and journal guards.
+The original stale quote was reproduced against exact source. The full component
+regressions, typecheck, lint and hosted checks remain qualification gates.
+The execution environment became unavailable during dependency setup. The
+reconstructed candidate is an unqualified draft, not a completed acceptance claim.
+Existing #231/#252 and broad #262/#264 remain unchanged. Main integration belongs
+to the root coordinator. No deployment, release or real transaction is authorized
+by this worker claim.
+
+Sweep integration follow-up: Independent review found that #252 alone lets a
+balance refresh invalidate displayed context while a prior direct sweep waits
+for the vault or RPC. Add the reviewed #272 lifecycle and regression commits
+`ab40d79a4452e618dd3f6f462fde2829f5ba7e05`,
+`9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac` and
+`a67d09750f13ae2cfee3a0ad7bdc3ccb6c28b4f0`. Keep unrelated donor changes in
+their existing branches. Verify the refresh, stale handoff and post-handoff
+evidence cases on the composed tree.
+
+## Mobile browser workflow qualification — 2026-11-23 Pacific
+
+Codex owns branch `codex/qualify-mobile-browser-engines` from main `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Scope is an additive mobile Playwright configuration, mobile-specific regression coverage and an evidence handoff. Reuse existing signed-invoice, injected-wallet, backup, layout and camera tests. Exercise touch navigation and raster QR imports. Preserve the QR and recovery workers' source paths and #373's separate native-engine branch. Record actual browser/OS, device-emulation scope and physical checks still open.
+
+## Mobile qualification resume: exact memo assertion — 2026-11-24 Pacific
+
+Worker: `/root/missed_work_census`, assigned by the resumed-work coordinator. Isolated branch: `fix/mobile-588-memo-assertion-20261124`, based on PR #588 at `46150f4ce0a34da0e23dda36642ba9463ff1e4a1`. The owner branch stays unchanged. Owned paths are `apps/web/e2e/devices-mobile-workflows.spec.ts`, this additive claim, and `docs/handoffs/MOBILE_588_MEMO_ASSERTION_20261124.md`.
+
+Hosted mobile run `45338469535` failed in both profiles. All four devices reached the payment review after QR import, then failed the exact standalone memo-text selector; the production memo paragraph includes its label. Acceptance: reproduce that assertion failure, assert the exact labeled memo in its visible paragraph, and rerun the existing mobile scenarios in available Chromium and WebKit engines. Preserve the review-before-open assertion, camera-denial route, file chooser and backup round trip. Do not change QR/payment production source, parent branches, release gates or deployment. Record runtime limitations and exact source evidence. Integration remains coordinator-owned.
+
+Completion evidence at test-source commit `7d112a5678496d851e8ec22d6603fbb4dec971cf`: original assertion reproduced two failures in the lean Chromium phone/tablet projects; repaired source passed 24/24 selected mobile tests in lean and 24/24 in full across Chromium and native WebKit. Six virtual-camera cases per profile require full Chromium and remain hosted qualification; the first local all-case attempt is explicitly interrupted after one unsupported-camera failure. The changed test passed typed lint, both web builds/typechecks/bundle scans passed, and the secret/whitespace checks passed. Additive evidence is owned under `docs/handoffs/mobile-588-evidence-20261124/`. The coordinator independently reviewed the test correction and found it preserves exact payload verification. Parent branch and production source remain unchanged; no merge or deployment.
+
+## Cloud consolidation lead `ghostpay-6a` — 2026-11-25 UTC
+
+- Worker: Claude Code cloud session `ghostpay-6a` (no home-PC access; peers unreachable by message, so coordination is through this registry, the lock ref and PR text).
+- Branch: `nodata/optimistic-maxwell-epuo8f`; base main `32ae3977b6026991ae0591daf385d3c536e2132f`.
+- Respects: FC campaign (`claude/feature-completion-20261125`, #664, FC-05b #669), W1 (#667, sole merger of W2–W4), W4 (#668, #287 minimal invoices), W5 (#665, exclusive `verification/independent-beta/**`), `ghostpay-15` (#647), `newghostpay-ae` (#670), backup-60, the shared main-merge queue and `automation/ghostpay-integration-lock`. Never takes or renews another holder's lock; joins the queue at its tail.
+- Owned paths (new unless noted): `docs/GHOSTPAY_CONSOLIDATION_TRACKER.md`; `apps/web/scripts/stoppedProducts.mjs`, `scripts/release/verify-release-exclusions.mjs`, `scripts/tests/release-exclusions.test.mjs`; additive guard lines in `apps/web/scripts/localBuildProfile.mjs` and `apps/web/scripts/localBuildProfile.test.mjs`; one additive verification step in `scripts/pages/build-pages.sh`; this entry.
+- Unit REL-EXCL (directive §11, STOP_WORK "exact emitted-artifact exclusion remains a release check"): fail the lean/Pages build and the emitted-artifact check if any module of a stopped or deferred product (F01/F02/F04/F08/F09/F11/F12/F13/F14/P07, `src/features/future/**`) is rendered. Containment only: no product code changed, enabled or removed; shared-core mechanisms untouched.
+- Unit TRACKER: one consolidated, source-pinned inventory of all open PRs (A–K classes) reusing prior censuses (`docs/consolidation/branch-comparison-20261124-68c82b9`, FC `BRANCH_INVENTORY.tsv`, archive manifest) instead of repeating them.
+- Acceptance: new script tests pass; lean web build passes with the guard and fails on a planted stopped-product module; full/lean web typecheck, lint and affected tests pass; hosted CI green at exact head. No dependency, workflow, contract, deployment or product-feature change. No main merge outside the lock queue.
+
+# GP-BUG — Preserve adjacent ICU quoted literals (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator, isolated branch `automation/20261124/bug/i18n-adjacent-quoted-literals-r11`; base `03695a7bbb2ad178a729da612bc578ed9a42c4d7`. Own only `apps/web/src/i18n/message.ts`, new `apps/web/src/i18n/message.quoted-literals.test.ts`, additive registry claim and `docs/handoffs/I18N_ADJACENT_QUOTED_LITERALS_20261124.md`. All 237 open PR filename inventories in the dated snapshot through #622 were inspected; no selected source or new test path collision. Six existing broad PRs own message.test.ts; leave it untouched. Main registry had no matching production claim. Existing bigint plural arithmetic issue is separate and out of scope.
+
+Observed failure: stringifyMessage(parseMessage("'{}'")) emits adjacent quote boundaries interpreted as an escaped apostrophe, changing literal {} to {'}. Four of eight direct parser/serializer round-trip probes failed on exact-ref source (type annotations erased for isolated JS execution). Acceptance: regression commit first, group adjacent quoted syntax and apostrophes, preserve ordinary text, literal apostrophes, plural pound, interpolation and nested markup. No dependencies, features, funds, deployment or release. PR #390 already merged, exact head five workflow groups and Snyk succeeded; no submitted review found. Integration lease generation 19 released, not acquired. Full checkout DNS blocked; fresh hosted CI and genuine independent review required before any merge.
+
+---
+
+# GP-BUG — QR intake assembly clock rollback (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator (no separate verifier available); isolated branch `automation/20261124/bug/ux-intake-qr-clock-rollback-r11`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-intake/src/qr.ts`, new `packages/ux-intake/src/qr.clock-rollback.test.ts`, this additive branch-only claim and `docs/handoffs/UX_INTAKE_QR_CLOCK_ROLLBACK_20261124.md`. All 238 open PR changed-file lists at discovery were inspected in bounded batches; no overlap on production or proposed new test path; registry inspected for matching claims. Recheck before integration.
+Observed defect: a backward injected clock (1000 -> 999) retains the old incomplete assembly, either mixing old parts or rejecting a new session. Acceptance: test-first two failing rollback cases, discard stale parts on backwards clock, preserve exact TTL boundary, normal progress, duplicate and conflict behavior. No QR format, crypto, payment, dependencies, deployment or release changes. Generation 20 integration lease released, not acquired. Source-hash-matched isolated V8 probes only; full checkout DNS unavailable. Native hosted CI and independent review required before merge.
+
+# GP-BUG — accessible name truncation splits Unicode characters (2026-11-24)
+
+Worker: sequential bug-only coordinator, isolated branch `automation/20261124/bug/i18n-accessible-name-surrogate-r11`, base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Own `packages/i18n/src/ux/a11y.ts`, new `packages/i18n/src/ux/a11y.surrogate-boundary.test.ts`, this additive claim, and `docs/handoffs/I18N_ACCESSIBLE_NAME_SURROGATE_20261124.md`. All 239 open PR changed-file inventories checked, no matching a11y source/test paths; no matching main ownership claim found. Existing tests untouched. Source blobs `6cb723a259bfa65992e1c3045d473f83125c1e11` and `c378304ba02359d6bf28efa9b81affe326251e1d` hash-verified: 4/6 baseline probes pass, 2 produce lone high surrogates; proposed fix 6/6. Acceptance: failing test commit first, retain 160-unit cap and ellipsis, preserve whole code points at the truncation boundary, unchanged ordinary names. No dependency, feature, payment, release or deployment changes. Generation 20 lease released, not acquired; independent review and applicable exact-head hosted gates outstanding.
+
+## GP-BUG — preserve Swiss locale prefix in amount parsing (2026-11-24)
+
+Worker: sequential ChatGPT BUG-ONLY coordinator; independent verifier unavailable.
+Branch: `automation/20261124/bug/nl-amount-locale-prefix-r11`, exact base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-intake/src/nlamount.ts`, new `packages/ux-intake/src/nlamount.locale-prefix.test.ts`, this additive claim, new `docs/handoffs/NL_AMOUNT_LOCALE_PREFIX_20261124.md`. Previous locale snapshot #521 is merged; do not edit the existing nlamount.test.ts owned by #224/#238/#262/#264/#278/#372. All 245 discovered open PR file inventories inspected: no collision for production or new test path. Rechecked live main and today's open PR IDs before claim. No lock acquisition: generation 20 released at 4fe0656517a03cb7a39d4e248187c76ffaa3238a.
+Observed: with the accepted locale tag de-CH-1996 (or de_CH_1996), lookup falls straight to generic de and reads 1.234 USDC as 1234 USDC instead of 1.234 USDC. Exact de-CH works. Source-hash-matched isolated V8 probes reproduced the mismatch; synthetic parser values only, no real wallet/fund or external service operations. Acceptance: regression commit first, prefer most-specific known locale prefix before language fallback, normalize accepted underscore separators, preserve existing locale grammar, ordinary tags, immutable returned descriptors and unknown/malformed rejection. Require fresh hosted gates and independent review; do not merge or deploy while gates are unresolved.
+
+## Issue #287 — local EVM destination reuse
+
+Worker: Codex, branch `codex/287-local-destination-reuse`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+Scope: destination-history helper/tests, checkout final review, seller sweep destination and successful submission, warning catalog entries, focused browser coverage and v1.1 evidence. The invoice's reusable meta-address is not a payment destination. Compare actual destinations locally within the current account and chain. Verify same and different invoices, address normalization, deliberate sweeps, account changes, reload, storage failure and nonblocking review. Keep payment journals, signing, release and custody gates with their existing owners.
+
+## PR #586 typed notice completion — 2026-11-24
+
+- Worker: `/root/local_handoffs`; coordinator: `/root`. Isolated branch: `finish/destination-reuse-type-20261124`; source parent: `f024ce3e0eab91df40bfd5a75aee2a56d9158e5a` (PR #586), tree `b86ab0da102ab4f7b366acdd23847d8c016958d3`.
+- Owned source: only the `FinalPreview` notice prop annotation in `apps/web/src/views/Pay.tsx`; additive ownership and `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`. Acceptance: reproduce hosted TS2322 locally, admit the existing `wallet-changed` notice already supported by the receiving component, prove emitted JavaScript unchanged, and run available focused checks with existing dependencies only.
+- Coordination: #584 (`17c5a2ee3828d0132cfdf21e4c966ca7550d07f2`) and #586 are siblings of `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Their journal-backed and separate session-storage histories are alternative mechanisms; neither is adopted as the other's successor. Active wallet/account/privacy owners retain their listeners, authority, signing and transaction semantics. No other branch, test assertion, storage mechanism, catalog or runtime body is edited by this lane.
+- Boundaries: no dependency installation, main integration, remote writes, deployment, browser/real-wallet acceptance claim or release-gate change. This narrow repair does not resolve the address-reuse architecture choice or close #287.
+
+Completion: qualified source `3de310900e0261bbfbc00fa30383ca9afcd094c7` passed the original full web typecheck, seven existing focused tests and scoped typed lint. Pay's emitted JavaScript is byte-identical to #586. Root independently approved the one-line prop annotation and subsequently authorized this worker to publish a draft child targeting `codex/287-local-destination-reuse`, preserving #586 ancestry and #584 unchanged. This bounded publication authorization supersedes only the original claim's no-remote-writes boundary; no main integration, shared lease, deployment or gate change is authorized. Source-pinned evidence: `docs/handoffs/DESTINATION_REUSE_TYPE_COMPLETION_20261124.md`.
+
+
+## 2026-11-25 Pacific — complete reviewed in-scope branches
+
+- Worker: ChatGPT coordinator `/root`, with independent read-only source reviewers.
+- Branch: `finish/in-scope-branches-20261125-8812`; base `8aca5a06a9435dd30e40378ba606da3c68f94863`.
+- Donors: #680 `f1ec352245d8a9bcb9a201a50db0569b1ec31652`, #671 `4f674cdd71706d1c2566f8cb67cc8421fdc89d6a`, #673 `e2bd32c55155f345e52630910135bf32ed1318a0`. Preserve all donor commits and refs.
+- Own only this isolated candidate, additive coordination/handoff records and necessary merge resolutions. All donor nonlog postimages must remain exact; any new behavioral fix needs a separate scoped claim and review.
+- Acceptance: preserve latest main and all ownership entries; retain mandatory shared-core privacy including P14; finish scope/help containment, release-artifact exclusion and the four donor QR/i18n fixes; targeted existing tests, affected typecheck/lint, static Pages build, available browser acceptance, independent source review and fresh combined hosted CI.
+- Integration: re-read main/donor heads and the cooperative lock; use legitimate lock acquisition and ordinary ancestry-preserving merge only after applicable gates pass. No archive-ref deletion, contract change, chain expansion, wallet transaction, release or deployment.
+
+
+## Owner scope landing continuation — 2026-11-25 UTC
+
+- Worker: sequential ChatGPT consolidation coordinator, cycle `20261125T1635Z`. Isolated branch `automation/20261125T1635Z/coordinator/owner-scope-landing`; main `694857731aa96d224ba6f83d2e4cf28d77bc35e3`; existing W1 donor #667 `67a241c7589fd97b085c83efd4bfca4147a4114d`, preserving #659 ancestry.
+- Owned paths: additive ownership claim and exactly the seven documentation/manifest postimages plus the two additive owner/W1 claims from #667. No source, workflows, package, contract, archive-ref or tracker changes. Existing #659/#667 branches remain untouched.
+- Acceptance: exact donor blobs for all seven paths, complete main ownership file retained byte-for-byte as prefix, original freeze/W1 entries retained once, only eight changed paths relative to pinned main. Fresh CI/CodeQL and independent review required; no deployment or main merge authorized by this checkpoint. Lease generation 28 released at preflight; no shared lease acquired.
+
+
+## Owner privacy-beta scope freeze — 2026-11-25
+
+- Worker/coordinator: ChatGPT `/root`; independent read-only scope and privacy reviews: `/root/stop_inventory` and `/root/privacy_product`.
+- Branch: `owner/privacy-beta-scope-20261125`; base main: `595a184b381980a440165832f51a83e8dfd3e8a8`.
+- Owner authorization: stop and archive GhostStore, GhostTeams, GhostTips, merchant dashboard, GhostID, GhostPOS, GhostBridge/P2P-Offramp integration, fiat conversion and P07; retain the earlier F14 stop. Preserve branches, commits and already integrated source; keep stopped products dormant for beta.
+- Owned paths: `AGENTS.md`, `CLAUDE.md`, the scope notice in `README.md`, `docs/ai/STOP_WORK_20261125.md`, `docs/ai/ACTIVE_WORK.md` (this additive entry), `docs/future/privacy-first/README.md`, `docs/archive/feature-freeze-20261125.json`, and `docs/product/PRIVACY_PAYMENT_BETA.md`. No application, contract, dependency or workflow changes.
+- Acceptance: canonical ten-feature directive with shared-core boundaries; exact preserved branch/PR heads; feature-only PRs archived and mixed PRs held; existing integrated code preserved; source-grounded privacy proposal clearly separated from authorized implementation and current release qualification. Verify changed-file scope, links, archive SHA/ref consistency and secret scan; do not claim runtime/build/browser qualification from documentation changes.
+- Parallel ownership: `/root/scope_tracker` owns only the external completion tracker Page. This coordinator owns five existing worker-prompt updates and repository/PR archival metadata. No deployment or publication authorization is implied.
+
+Scope-freeze verification: all 34 new archive refs equal their recorded commits and all 34 original refs are unchanged; 17 feature-only PRs are closed and four mixed/adjacent PRs held. Five saved worker prompts retain schedules and explicitly exclude the archive namespace. Tracker sequence 32 archived 23 launch prompts without changing checkbox states. Independent `/root/scope_tracker` read-only review approved scope, claims, links, counts and preserved commit objects with no material issues. `git diff --check` and `bash scripts/scan-secrets.sh` passed. Documentation/metadata only; no new runtime/build/browser/privacy-audit qualification claimed. Normal PR/CI integration remains the next step.
+
+## W1 reconciliation of #659 with newer main — 2026-11-25
+
+- Worker: Claude Code W1 coordinator (local session `ghostpay-58`). Branch: `claude/w1-reconcile-659-20261125` = #659 head `ea94ba7cf2dd5865da4199ed04294f9a71496798` merged with main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. The #659 branch itself is unchanged.
+- Owned paths: the merge resolution of `AGENTS.md` and reconciliation lines in #659's own files (`CLAUDE.md`, `README.md` scope notice, `docs/ai/STOP_WORK_20261125.md`, `docs/future/privacy-first/README.md`, `docs/product/PRIVACY_PAYMENT_BETA.md`) plus this entry. `docs/archive/feature-freeze-20261125.json` is a dated record and stays unchanged.
+- Acceptance: keep both the ten-product stop (#659) and main's mandatory shared-core privacy clarification (`c365dc41`, verbatim). F02/F04 read as archived indefinitely and deferred/disabled for beta/v1.0; P07 stays a separate exclusion; P14 RPC disclosure is in scope and is not F14. Documentation only; no application, contract, dependency or workflow change. Merge only after the integration lock is free and current-head required checks pass.
+
+
+## 2026-11-25 — owner freeze: static help release-scope containment
+
+- Worker: sequential ChatGPT coordinator, cycle `20261125T1241Z`; branch `automation/20261125T1241Z/containment/help-scope`; exact base `32ae3977b6026991ae0591daf385d3c536e2132f`.
+- Owner instruction: ten archived/deferred products excluded from beta/v1.0. Main AGENTS was read; main STOP_WORK file is not yet present (404); read the reviewed #659/#667 candidate documents. No archived-feature development. F04 ordinary per-invoice status/reconciliation and F09 ordinary private QR remain core. No subscriptions program.
+- Own only `apps/web/help.html`, additive `apps/web/e2e/static-help.spec.ts` regression, this claim, and `docs/handoffs/HELP_STOP_SCOPE_20261125.md`. #640 has already merged the #583 responsive/static-help work; #640 explicitly states #583 can be closed. Recent #639/#651/#664/#665/#666/#667/#668 changed-file reads show no overlap with these two paths. Do not touch existing PR branches or archived refs.
+- Evidence: current help blob `750aee1b39d95b6e6d8a0364ab29d8b96bb6cc54` labels the aggregate dashboard and POS as Planned and tells readers to wait for features; subscriptions are also shown as planned in the app. This is obsolete after the explicit stop directive. Acceptance: show excluded status truthfully, no implied restart, preserve ordinary invoice ledger, all original help tests and content unrelated to this scope. Add exact visible-row regression, retain existing status legend and accessibility gates. No runtime/route/config/dependency/workflow edits, no deploy or real funds. Pages PR workflow validates only; deployment is manual on main. Fresh exact-head hosted checks and independent review required; no integration lock acquired by this cycle.
+
+
+### Same candidate — preserve PR #666 payment-key export warning
+
+Independent source review also approved #666 `92ff633176760a513a37cb12e3ef96b0e0cb9d80`. Carry its ancestry, its exact catalog regression and its two exact warning values in all four locale catalogs; retain every other current-main catalog value and its original SEC-1 ownership claim. This is existing payment/recovery safety wording, with no key derivation or export-behavior changes. Acceptance adds the existing export-warning/catalog/component tests and locale validation on the combined tree.
+
+
+### Same candidate — finish PR #647 independent seller-keystore recovery
+
+Independent source review approved #647 `6fd126dbb4d3377ff3cf7d97cfcb426a1e22fee3`. Preserve all ten nonlog donor files byte-for-byte and its existing recovery ownership entries; resolve only the additive work-log conflict. This completes existing independently useful backup verification and payment-key recovery without GhostPay app code. Acceptance: ordinary offline backup compatibility/CLI tests, current application build and locale checks already recorded for the unchanged app tree, source-composition review and fresh combined hosted CI. No new formats, crypto primitives, network discovery, transactions, deployment or product activation.
+
+
+## Privacy profiles D05 completion — November 25, 2026 Pacific
+
+- Worker: ChatGPT `/root/artifact_review`, assigned by the unfinished-branch coordinator. Isolated branch `finish/privacy-profiles-d05-20261125`, base candidate `04b1a5acf6b48313178af85a3217512e57453dd5`; worktree `/workspace/scratch/8812b4211518/GhostPay-d05`.
+- Preserve donor ancestry with normal merges: #644 `94ab256e5285f4009f915be18415bf0146a1242f` and the selected decision record #651 `be04d1167aeb24025f5a4970833ebb2dbb98af70`. Both published heads rechecked unchanged; current main is `8aca5a06a9435dd30e40378ba606da3c68f94863`. Resolve only additive ownership-log conflicts; original branches remain untouched.
+- Own only the selected D05 follow-up in `packages/privacy-profiles/src/presets.ts`, its directly affected package tests/snapshots and package README/DEVIATIONS/COMPLETION documentation, this additive claim and `docs/handoffs/PRIVACY_PROFILES_D05_COMPLETION_20261125.md`.
+- Acceptance: Shielded automatically proposes buffer-funded exit gas only; Maximum keeps its existing advanced preference order; explicit sponsored and EIP-7702 edits retain applicability, capability and consent checks; legacy config and all other preset behavior stay unchanged. Focused regression plus full package typecheck, lint, build and coverage tests must pass without weakening gates or assertions.
+- Scope: standalone configuration library only. No app integration, execution, provider activation, fees, dependency changes, other packages or workflow edits. No further policy decision is needed for D05; #651 already selected it. Existing donor claims and historical evidence remain intact.
+- Publication: local commits and source-pinned handoff only for independent coordinator review. No push, remote mutation, main merge, lock acquisition, deployment or release by this worker. Keep candidate #684 and its active CI untouched.
+
+## 2026-11-25 — privacy-profiles standalone completion (issue 284 / F18 package slice)
+
+- Worker: Claude Code session (single worker, one read-only reviewer agent). Local branch `worktree-privacy-profiles-completion`, published to `nodata/peaceful-faraday-enxrin`. Base/main: `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Checked 2026-11-25: of the open PRs that mention the package, only draft #278 touches it, and only the devDependency versions in `packages/privacy-profiles/package.json` (vitest 5.1.0); this work does not edit that file.
+- Owned paths: `packages/privacy-profiles/**` (src, tests, snapshots, README, DEVIATIONS, COMPLETION) and this additive claim. Not touched: `packages/metadata-hardening`, confidential amounts, contracts, payment execution, `apps/web`, `packages/privacy-pipeline`.
+- Acceptance: five presets (adds Shielded), versioned config with migration and strict parse, consent review and immutable snapshots, truthful capability descriptions, definition self-validation, fail-closed input guards; typecheck, lint, build and coverage thresholds (95/90/95/95) pass; nothing claimed beyond the package.
+- Out of scope and unclaimed: F18 app layer in `apps/web`, FEE01 quotes, live capability observations, reconciling the pipeline package rules copy.
+
+
+## Privacy-profile configuration decisions — November 24, 2026 Pacific
+
+- Worker: ChatGPT `/root`, session `20d1eadb5dc2`; two read-only configuration reviewers.
+- Branch: `docs/privacy-profile-decisions-20261124`; base main: `f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`.
+- Owned paths: new `docs/handoffs/PR644_CONFIGURATION_DECISIONS_20261124.md` and this additive claim only.
+- User scope: resolve the configuration choices left by PR #644. Inspect #644 at `94ab256e5285f4009f915be18415bf0146a1242f`, the legacy profile specification, issue #284 and full F18 specification at `5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a`.
+- Acceptance: every named open choice has an explicit selected policy, a distinction between existing behavior and follow-up work, and measurable integration criteria. Verify source references, option/rule names, document links, whitespace and secrets. No runtime test result is implied by a documentation check.
+- Ownership: #644's Claude Code worker owns `packages/privacy-profiles/**`; draft #278 separately touches its devDependencies. Preserve those files and branches. The record covers decisions only, with no application integration, provider activation, fee policy, main merge, deployment or release.
+- Status: decision record complete. Source/path/identifier/link checks, staged whitespace check and secret scan passed; final read-only review approved the documentation scope after a terminology correction. Publish as a draft from this isolated branch; no package implementation or integration claim.
+# Coordinator continuation: completed clipboard handoff and P14 evidence — 2026-11-26 UTC
+
+- Worker: ChatGPT coordinator delegate `branch_triage`; branch `finish/clipboard-p14-20261126`; base the published #685 head `db544fa5e2e28129d6e8e53bb293d72dc08b8c02`.
+- Authorization: the owner's instruction to finish unfinished approved-scope GhostPay branches and the lead coordinator's explicit delegation to compose #668 and #658. This is integration of delivered work, not reassignment of W4's next privacy-minimal-invoice task or W5's independent verifier.
+- Inputs: #668 `74e0c61dd0edddc7bcbc1a963d7f4e2481cdcda1` (W4's completed clipboard handoff to W1, preserving #553/#580 ancestry) and #658 `9aed3886693270524beb118685e5947469899c43` (P14 descriptive RPC disclosure evidence, reviewed by W1). Both live heads rechecked before composition. Original branches remain unchanged.
+- Owned paths: merge reconciliation in this additive registry and `docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md`; a new source-pinned integration handoff; only necessary, independently reviewable composition repairs in these inputs' existing clipboard and descriptive-evidence paths. Preserve all current base records, newest locale additions, shared-core scope and both donor histories.
+- Acceptance: normal ancestry-preserving merges; ordinary focused clipboard/backup and descriptive P14 regressions, relevant typecheck/lint and secret/whitespace checks; no new feature behavior, fuzz/mutation or vulnerability-reproduction campaign. Root owns independent final review, publication, fresh hosted CI and the integration lock. No remote mutations by this delegate.
+- Boundaries: preserve #685 privacy-profile choices; leave W4 minimal invoices, W5 `verification/independent-beta/**`, original donor refs, excluded/deferred products, dependencies and workflows untouched. The P14 addition supplies synthetic evidence only and makes no anonymity, audit, deployed or completeness claim.
+- Result: composed source `222d0708d4a05fb94e4b7b94f14e0811a1ad9b76`, tree `1ce5d98a9b977982ea01e31d09eca519db85e320`, retains both donor ancestries. Focused checks passed (170 web tests and 11 deterministic evidence tests; four randomized properties unrun), both affected typechecks and lint passed, and independent AI source review approved. See `docs/handoffs/CLIPBOARD_P14_INTEGRATION_20261126.md` for exact commands, environment prerequisite, reconciliation and remaining hosted gates. Root retains publication and lock ownership.
+
+# PRIV-T02 RPC disclosure instrumentation and scan-privacy qualification (2026-11-25 UTC)
+
+Worker: Claude Code lead (`priv-lead`) with delegated workers; coordinator branch `claude/priv-t02-rpc-disclosure`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
+Child branches (isolated worktrees, merged by the lead only): `claude/priv-t01-indexer-omission` (PRIV-04), `claude/priv-t07-light-evidence` (PRIV-05), `claude/priv-checkpoint-safety` (PRIV-06).
+Owned paths: new `apps/web/src/test/rpcDisclosure*.ts`, new `apps/web/src/lib/scanDisclosure*.test.ts`, new `packages/scan-source/src/*.omission.test.ts` and `*.evidence.test.ts`, new `apps/web/src/lib/scanClient.checkpoint*.test.ts`, `docs/research/privacy-evidence-matrix-2026-11-10.md`, `docs/research/privacy-rpc-call-graph.md`. Additive-only changes to `packages/scan-source/src/{light,types,index}.ts` if a typed evidence representation is justified.
+Not owned: `apps/web/src/lib/scanClient.ts` and `scannerCore.ts` runtime (many open PRs touch scan paths, e.g. #625, #635, #653); any change there is reported with a failing regression test first and coordinated. No production telemetry, no new runtime dependency, no change to payment verification.
+Acceptance: test-only instrumentation over the existing transport boundaries recording classes not values; scenarios A to J; indexer omission and truncation tests that never expect an undetectable omission to be detected; light-client evidence bounded; checkpoint safety regressions; matrix updated only with evidence actually produced; focused tests, typecheck, lint, hosted CI on the exact head.
+
+# Coordinator continuation: request-file completion — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review`, delegated by the unfinished-branch coordinator. Dedicated branch `finish/request-file-completion-20261126`; isolated worktree `/workspace/scratch/8812b4211518/GhostPay-request-files`; base the stable clipboard/P14 candidate `222d0708d4a05fb94e4b7b94f14e0811a1ad9b76`, itself descending from published #685 `db544fa5e2e28129d6e8e53bb293d72dc08b8c02`.
+- Inputs: #650 `3851f02b04325d417a52b80cc107290f1f434597` and #654 `a75ed0b14e26a0035f3922625d3b1ee3b06447da`, both freshly rechecked. Preserve both by normal merges and keep every original branch and ownership record. The coordinator confirmed succession after the feature-completion driver exited; #650 records explicit owner approval for the signed invoice request-file slice. Current main `29d21c1b2d8f8431115d99338db1667dc585ac16` instructions remain binding.
+- Own only additive merge reconciliation in this registry and `apps/web/src/i18n/securityKeys.ts`; the bounded app-lock cancellation follow-up in `apps/web/src/components/CameraImporter.tsx` and directly affected ordinary lifecycle tests; the real-passphrase timing fix in `apps/web/src/views/Pay.requestFile.test.tsx`; and a new `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. Preserve donor request-file behavior, latest 180-second interop timeout, clipboard policy, P14 evidence, existing locale values and current-main payment/recovery checks.
+- Acceptance: app lock aborts pending camera/paste/image work, stops tracks, clears partial transfer state and prevents automatic restart while keeping D1's textarea node and draft text; real scrypt remains exercised with a bounded per-case wait and total timeout; ordinary focused tests, affected typecheck/lint/build, source preservation, whitespace and secret checks pass. No assertion or coverage weakening.
+- Boundaries: approved request-file interchange and shared-core local privacy only; no broader F03 product, excluded/deferred feature activation, wallet/send/journal redesign, KDF weakening, dependency/workflow change, mutation/fuzz/exploit campaign or deployment. Root owns independent review, publication, combined hosted CI and integration. This worker makes local commits only and no remote mutations.
+
+# FC-01 — F03 signed invoice request-file interchange onto current main
+
+Worker `fc01`, branch `claude/fc01-f03-request-file-20261125`, base main
+`f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`; donor PR #310 head
+`dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec`, merged with `--no-ff`. Owned paths: the F03 request-file
+components, `requestFileInterop.test.ts`, `Pay.requestFile.test.tsx`, `Pay.invoiceQr.test.tsx`, F03 hunks of
+`apps/web/src/views/{Pay,CreateInvoice}.tsx`, F03 keys in `securityKeys.ts` and the four locale catalogs,
+`apps/web/e2e/payment-request-file.spec.ts`, `packages/invoice-schema/{src/requestFile*,src/index.ts,README.md}`, and
+`docs/consolidation/feature-completion-20261125/FC-01-f03-request-file.md`. Journal and attempt code are excluded.
+Acceptance: file selection never connects a wallet or submits payment; opened requests pass the existing
+signature, signer, passphrase, expiry and review flow and the #500 pre-send checks; hosted CI green.
+
+# F03 current-main reconciliation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; fresh integration reviewer: `f03_main_reconciliation_review`.
+Task branch: `continuation/f03-main-reconciliation-20261120`.
+Feature input: `1de98f6c9371010883253450446e6f7294da84fa` (`future/f03-private-payment-links`, PR #310).
+Main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3`; common base:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`. Separate source-pinned audit evidence remains
+at `9a0e268034ee2321c5e333c35a3aa1825b1c8f63` on `audit/f03-browser-qualification-20261120`.
+
+Owned changes: combine the additive ownership registries and add
+`docs/future/modules/F03-private-payment-links/round3/` reconciliation evidence/handoff.
+The reviewer owns only `round3/RECONCILIATION_REVIEW.md`; all source is read-only for it.
+Incoming main source/tests/docs are preserved exactly, as is the adopted F03 memo-test blob
+`085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f`. No unrelated source repair is authorized by this
+claim. Extend ownership before any demonstrated regression requires a fix.
+
+Acceptance: verify actual heads and merge preview, retain every incoming/base ownership entry,
+confirm main ancestry and the exact union of both inputs, inspect the small shared QR/build/profile
+and payment-URI integration surface, run appropriate focused regression gates, and obtain fresh
+independent review. The preview conflicts only in `docs/ai/ACTIVE_WORK.md`. Publish with an
+expected-head lease and retain actual-current-head full/lean browser qualification. Existing
+1de98f6c CI observations remain historical after any integration; no pass transfers automatically.
+No force update, merge to main, live transaction or deployment.
+
+Status: reviewed integration `f0968b9541dbd3234a6b0516023773845c04c4e4`, exact-tree API
+equivalent `7c30385a44d1cac76e9137eea9fc522865ac53f0`. Fresh source/standards/spec checks
+report zero findings. All 15 local commands passed: payment-URI 206 tests/coverage, package
+build/typecheck/lint, shared-web/F03/QR 294 tests, whole-web typecheck, scoped typed lint,
+full/lean static builds and original scans, both six-case collections, and scoped publication
+checks. Command records distinguish raw/normalized console bytes and preserve source pins.
+See `round3/QUALIFICATION.md` under this feature for the executed gates and successor prompt.
+Actual new published-head full/lean browser execution and required CI remain pending.
+
+# PR #310 invoice-file memo browser checks — 2026-11-20
+
+Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.
+Task branch: `fix/pr310-invoice-file-memo`; publication target: existing PR #310
+branch `future/f03-private-payment-links`.
+Base: `976d26ee791836c176431c8a5d0b825486f78caf`; observed main:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/e2e/payment-request-file.spec.ts`, this additive claim,
+and `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+Acceptance: match complete labeled memo text in the payment-review region;
+ensure locked and superseded memo absence checks detect labeled text; pass all
+six invoice-file browser cases in both original full and lean configurations,
+web typecheck and scoped typed lint; retain all existing assertions and gates.
+Evidence: CI run `44692101562`, full job `136181689920` and lean job `136181689927`,
+each failed the same four memo checks. Reinspect the PR head before publication.
+Scope: test assertions only; preserve the F03 implementation and other workers.
+Status: independent source review, full web typecheck, scoped typed lint, original
+full/lean collection (six cases each), secret scan and whitespace check pass.
+Local Chromium is blocked before assertions by socket permissions; hosted full/lean
+browser qualification is required. See `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+
+# F03 payment request interchange — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.
+Branch: `future/f03-private-payment-links`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (fresh origin/main clone).
+Authorization: the owner explicitly requested selection and implementation of one future feature,
+continuation of an existing branch if present, and fresh independent audits after completion.
+Git branch inventory and connector search found no existing F03 branch at discovery.
+Owned paths: new invoice-schema request-file module/tests/exports; new browser request-file
+components/tests; minimal CreateInvoice/Pay integration; additive English catalog entries;
+F03 specification, user guide, audit and handoff documents. No dependency, contract or fee changes.
+Acceptance: the same signed envelope round-trips unchanged through URL, QR and bounded JSON file;
+local explicit import preserves signature, signer, chain, expiry and payment review; stale reads
+cannot replace current intent; affected-package gates, browser checks and fresh audits pass.
+Existing invoice, QR and privacy work is preserved. No main merge or deployment is authorized.
+
+Fresh audit generation: `f03_audit_standards`, `f03_audit_spec`, `f03_audit_privacy`.
+Reviewed implementation: `f472030a1d9a993db1ba7a1a33f9a208c28ebf13`.
+Owned audit paths: respectively `docs/future/modules/F03-private-payment-links/audits/`
+`STANDARDS.md`, `SPEC.md`, and `PRIVACY_SECURITY.md`. Production source is read-only
+for all three auditors. Acceptance: full selected-feature source review, actual evidence limits,
+concrete findings and independent follow-up on coordinator repairs. Root owns serial broad gates.
+Audit repair: `f03_audit_spec` additionally owns focused app-lock regression additions in
+`apps/web/src/views/Pay.requestFile.test.tsx`; root owns the minimal production repair.
+Existing implementation is frozen until the new regression demonstrates the reported omission.
+Catalog qualification repair: `f03_audit_standards` additionally owns additive `requestFile.*`
+entries in `apps/web/locales/{ar,es,ja}.json`, using the existing unreviewed-English fallback
+convention, and its report follow-up. The 45 missing-key failures are recorded before edits.
+No existing translation or reviewed-security digest may change. Root owns final catalog check;
+the separate specification/privacy workers independently review this bounded repair.
+Status: selected implementation and fresh audits complete. The shared medium app-lock finding
+is repaired with four independently RED/GREEN regressions; combined focused suite 114/114 and
+full invoice-schema 813/813 with original coverage thresholds pass. Final product checkpoint
+`e543d25fc7f3b65460518f4b3df4c513d34a1215` is published as exact-tree equivalent
+`bd128598f1b4c5291dad5c003a4775ad47bbb888` in draft PR #310. Catalog, typed lint, typecheck,
+full/lean static builds and original bundle scans pass. Actual Chromium execution remains
+blocked locally and hosted checks remain pending. See the source map, audit reports, evidence
+and successor prompt in `docs/future/modules/F03-private-payment-links/{QUALIFICATION,HANDOFF}.md`.
+
+## Request-file claim reconciliation addendum — 2026-11-26 UTC
+
+The #650 merge also conflicts at the existing CopyButton/download adjacency in `apps/web/src/views/CreateInvoice.tsx` after clipboard integration. This coordinator owns only that conflict resolution: retain the clipboard `autoClearAfterMs` prop and add the donor's request-file download control immediately after it. No other CreateInvoice behavior is reassigned or changed.
+
+## Request-file download-name integration addendum — 2026-11-26 UTC
+
+Worker: ChatGPT `/root/artifact_review`, branch `finish/request-file-completion-20261126`,
+following the bounded claim above and the independent source review of `68753b5898a9407aa85ea4ce27baee8c6acdf687`.
+Additional owned paths: `apps/web/src/lib/downloadNames.ts` and
+`apps/web/src/components/PaymentRequestDownload.test.tsx`, only to retain the documented,
+fixed, value-free `ghostpay-request.gpr.json` name through the real shared download helper.
+Acceptance: an ordinary component-to-anchor regression must fail before the allowlist repair
+and pass afterward; preserve all fallback sanitization and existing download behavior.
+The parent coordinator authorized this integration repair. No other filename or download
+policy is changed. Clipboard/P14 source and its completed `66dc4af9f97c3f8898abee1c063921d08291dad9`
+handoff are preserved by normal merge before these edits.
+
+The filename repair additionally owns `apps/web/src/lib/downloadNames.test.ts` solely to
+reconcile its exact fixed-name/call-site audit with the documented `.gpr.json` name and
+the new request-file call. Existing fallback checks remain intact; the randomized property
+is preserved without being run as part of this bounded qualification.
+
+## Completed coordination handoff adoption — 2026-11-26 UTC
+
+Worker/branch: ChatGPT `/root/artifact_review`, `finish/request-file-completion-20261126`.
+The parent coordinator independently approved docs-only PR #686 at
+`487fb19b046966cd2f89ad0b83c17bcb66feea73` for this candidate. Owned path:
+`docs/GHOSTPAY_CONSOLIDATION_TRACKER.md`, only its normal-merge adoption and the correction
+of #673's hosted-check count from all 42 green to 39 successful checks and three intentional
+skips. Preserve all other donor content and ancestry. No product or integration gate changes.
+
+## Wallet-attempt fixture handoff adoption — 2026-11-26 UTC
+
+Worker/branch: ChatGPT `/root/artifact_review`, `finish/request-file-completion-20261126`.
+Base implementation: `7d7b25d4c4079f680c499736d399cdcf3bd13f73`. The parent coordinator
+accepted the newly explicit #686 handoff of test-only PR #595 at
+`534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c`; its #545 parent is already integrated.
+Owned paths: `apps/web/src/components/WalletAttempts.status.test.tsx`, additive ownership
+and the donor `docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md` for normal-merge
+preservation. Port only the awaited real IndexedDB migration, spy restoration and two
+delayed-settlement-after-unmount cases into the current fixture; preserve current #675
+live-region/hash privacy assertions and retain exactly one cleanup. Acceptance: run the
+whole composed fixture, typed lint and typecheck; obtain independent composition review.
+This explicit handoff supersedes the older ownership note only for this bounded test slice.
+No production wallet, journal, status or transaction behavior is changed.
+
+# Recover PR #545 wallet status fixture qualification — 2026-11-24 UTC
+
+Worker: `/root/resume_payment_safety`, delegated by the missed-worker recovery coordinator.
+Branch: `codex/recover-wallet-attempt-status-fixture-20261124`.
+Exact parent: PR #545 `d1e167f1b5372f74506fc104220b9a03cb6a3e92`; #500 remains the journal owner.
+Owned paths: `apps/web/src/components/WalletAttempts.status.test.tsx`, this additive claim, and `docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md`.
+Scope: repair the test lifecycle that allowed an asynchronous journal migration rejection to update React after the jsdom environment was destroyed. Hosted CI run `45311266153`, job `138198190848` passed all 3,057 tests but failed on that unhandled rejection.
+Acceptance: deterministic migration completion and rejection coverage, explicit component cleanup, unchanged status assertions and production code, focused native Vitest and typed ESLint, source-pinned handoff. Preserve #545/#500/#528/#541 branches and integration ownership. No deployment, shared-branch write, new dependencies, real wallets or real funds.
+
+---
+
+## Request-file completion qualification — 2026-11-26 UTC
+
+Worker: ChatGPT `/root/artifact_review`; branch `finish/request-file-completion-20261126`.
+Completed source: `28c45149da4bc0b6f2fc6e82cfcd09b185dc4ff3`, tree
+`89a3c3604005633b74ddfea98b3e567543bd2ab8`; bounded source repair commit
+`7d7b25d4c4079f680c499736d399cdcf3bd13f73`. Clipboard/P14 `66dc4af9`, #650 `3851f02b`,
+#654 `a75ed0b1`, #686 `487fb19b` and #595 `534bb380` ancestry is retained normally.
+
+App-lock cancellation preserves the same QR textarea/draft, fixed request downloads keep
+the documented value-free name, and real-scrypt acceptance has a bounded 120-second wait
+inside a 180-second case. The original 180-second interop donor remains exact. The #595
+fixture preserves all six status/privacy cases, adds its two delayed migration cases and
+has one cleanup. #686's sole donor correction records 39 successful checks and three skips.
+
+Fresh evidence: 12 new regressions failed before repair and passed afterward; 241 focused
+web + 85 request-file codec/interop + 26 composition tests passed (352 distinct selected
+cases). One existing filename fuzz property was deliberately unrun. Library builds,
+web/invoice-schema typecheck/lint, composed fixture typed lint, catalog validation
+(0 errors, 853 fallback warnings), full build and lean build/postbuild scan passed.
+The full browser command reached the server, but all 13 cases failed before assertions
+because the installed Chromium launcher refers to a missing executable. Lean collected
+the same 13 cases without an execution retry. No browser pass is asserted. Secret scan
+passed. Independent source review approved both repair and composed pins; hosted combined
+CI and actual full/lean browser acceptance remain mandatory before parent integration.
+
+Handoff: `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. No remote mutation,
+activation of an excluded product, dependency/workflow change or live transaction was performed by this worker.
+
+## Core idle suspension and sole-signer recovery continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/branch_triage`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/idle-recovery-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427` (tree
+  `529af494cdd8713b2dd0478f3f528260291bd830`).
+- Authorized core donors: #365 `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`,
+  #544 `4b077d2b13f956cfcf9bce1726f929cca40c7394`, and #577
+  `2363943571de84bfd5da0b3f167699f34eb53ce7`. Preserve their original refs.
+  Port only independently required session suspension and encrypted recovery; do not
+  merge mixed #372 history, restore excluded products, or call a mixed branch completed.
+- Owned paths: `apps/web/src/lib/session.ts`, `apps/web/src/lib/keyVault.ts`,
+  `apps/web/src/AppShell.tsx` idle clock/suspension routing and navigation hunks,
+  `apps/web/src/views/SellerKeys.tsx` suspension visibility hunks, focused session/vault,
+  AppShell/App and SellerKeys regression tests, additive idle/recovery catalog keys in
+  `apps/web/locales/{en,ar,es,ja}.json` and `apps/web/src/i18n/securityKeys{,.test}.ts`,
+  directly affected idle-policy user documentation, this record and a source-pinned handoff.
+- Shared-path agreement: `/root/artifact_review` owns account/privacy presentation
+  revocation and only AppShell's boundary import/provider mounting. It will not change
+  this worker's session/vault APIs, idle effect or suspended routing. Final composition
+  receives independent `/root/help_review` review before root publication.
+- Acceptance: revoke active key authority synchronously at expiry; retain a sole signer
+  or unconfirmed backup in boxed memory for encrypted save/export/verification only;
+  resume ordinary authority only through normal import/unlock; keep stale async results
+  invalid, clock and replacement generations isolated, and current beforeunload protection.
+  Preserve `verifyCredentialForCurrentSession`, raw export credential checks, full vault
+  identity checks, current backup operation ownership, wallet disclosure, clipboard,
+  payment, retention and privacy guards. Retain existing regression coverage and the
+  earlier credential-specific idle cases as well as newer recovery tests.
+- Qualification: bounded ordinary synthetic lifecycle and regression cases, affected
+  library builds, web typecheck/lint and catalog checks. No fuzz/mutation/exploitation
+  campaign, deployed target, real funds, dependency/workflow/contract change or remote
+  publication. Parent owns fresh hosted gates, integration lock and remote merge.
+
+## Core account and vault presentation revocation continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/privacy-revocation-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427`, with the independently owned idle/recovery
+  checkpoint `9816c7c030bd35ec35ec94ff43382ef324fac800` composed before edits.
+- Source donors: #571 `63f40efac175e5ee49563326dbef930aafb14235`, #612
+  `e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8`, #645
+  `3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7`, #652
+  `724afdcf557178d8b78d841b681f50e99d41935f`, and #655
+  `1dcd5a25130b9db6afc4d224c619cd4dbcf0307c`. Mixed #372
+  `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` is a source reference only; preserve all
+  donor refs and do not merge excluded-product or unreviewed dependency history.
+- Owned implementation: `apps/web/src/components/SessionPresentationBoundary.tsx`,
+  `apps/web/src/lib/useWalletPrivacy.ts`, wallet lifecycle and returned-outcome retention
+  in `lib/wallet.ts` and `lib/duplicateAttemptJournal.ts`, account-scoped
+  `components/WalletAttempts.tsx`, vault access notifications in `lib/tags.ts`, and
+  presentation cleanup in `views/{Pay,CreateInvoice,Scan,Sweep}.tsx`,
+  `components/ReconciliationLedger.tsx`, and `features/registry/RegistryView.tsx`.
+  `features/policy/PolicyPay.tsx` is limited to passing the existing connected wallet to
+  the shared history component; no policy feature behavior or activation is in scope.
+  AppShell ownership is only the boundary import/provider mount; session/keyVault APIs,
+  idle handlers and suspended routing remain `/root/branch_triage`'s work.
+- Supporting scope: focused ordinary regression fixtures adjacent to those paths,
+  additive localized revocation/history text in `apps/web/locales/{en,ar,es,ja}.json`
+  with security classification, this additive ownership log, and source-pinned
+  `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md`.
+- Acceptance: revoke old account/vault/session presentation and async authority before
+  stale results repaint; preserve D1 QR input, existing disclosure and cryptographic
+  checks, #635 payment outcomes, #683 Sweep controls, clipboard and retention behavior.
+  Keep returned hashes recoverable only to the matching connected account/chain and
+  duplicate-blocking until actual durable journal completion. Preserve the current
+  Web Lock/IndexedDB/mirror journal, nonce/replacement union and unknown blockers.
+  Keep encrypted history and durable bytes intact. Adapt donor assertions to current
+  interfaces with all substantive no-send, concealment and recovery checks retained.
+- Dependency closure, workflows, contracts and product activation stay unchanged;
+  in particular no `@ghostpay/ux-core` dependency or reachability allowlist extension.
+  Qualify with bounded synthetic regressions, affected builds, typecheck, lint and
+  retention/release checks. No fuzz/mutation/exploitation campaigns or live transactions.
+  This worker performs no remote mutation; parent owns independent final review, fresh
+  hosted CI, integration lock and publication.
+
+### Idle recovery acceptance and tag-vault boundary addendum — 2026-11-26 UTC
+
+The same worker owns `apps/web/e2e/idle-session.spec.ts` and the sole-signer idle
+case in `apps/web/e2e/pages-devnet.spec.ts`, preserving ordinary deterministic
+browser acceptance from the pinned donors without merging their older infrastructure.
+Collection/typecheck is local evidence only; browser execution remains a parent gate.
+The continuation also owns `apps/web/src/lib/tags.ts` and a focused
+`apps/web/src/lib/tags.idleSession.test.ts`: the supplied viewing-key buffer must be
+wiped even if the new synchronous expiry check rejects before a storage read, and
+tag unlock must use empty-session-capable active authority rather than a recovery-only
+revision guard. Preserve existing tag formats, stores, retention and tests.
+
+### Idle recovery local handoff — 2026-11-26 UTC
+
+Scoped source `14aa1742a7c4f60fbbb851b55581e532e8961e57`, tree
+`0ad292f2b8eeda5b7d2ca3c3df7a343d843742de`, passed 241 selected ordinary unit
+cases, a focused rerun of the restored signer-only banner assertions, web TypeScript,
+catalog validation (0 errors; 853 draft/fallback warnings) and secret/whitespace
+checks. Initial typed lint required the correction recorded immediately below. Fourteen browser cases were collected only. `/root/help_review`
+approved this exact implementation/tree. Full/lean browser execution, devnet acceptance,
+combined privacy-interface review, fresh hosted checks and integration remain with root.
+See `docs/handoffs/IDLE_RECOVERY_CORE_20261126.md`. Original mixed donor refs remain
+preserved; no whole-backlog or excluded-feature completion is asserted.
+
+Final qualification follow-on: `2936c8e3f91c99b4d86c29f5071f4d0566c938aa`, tree
+`90ca16eb10eb520dfdaafde6d3648b4bc789090c`. Strict lint exposed two unsafe-return
+errors in the donor test's untyped signer spy; the one-line `vi.fn<() => void>()`
+correction then passed the exact sole-signer case, web TypeScript and typed ESLint
+over all changed TS/TSX files with completed zero-exit processes. Runtime source
+remains identical to `0e301a14`; `/root/help_review` extended approval to this exact
+final source/tree after checking that no assertions or production code changed.
+
+
+## Coordinator request-file hosted browser qualification — 2026-11-25 (8812)
+
+- Worker: /root coordinator; branch: fix/request-file-browser-qualification-20261125-8812.
+- Base: published request-file candidate 39cece11afac78212d9f7331aeb1ab1a5fe8d427 (PR #688).
+- Owns: apps/web/e2e/app.spec.ts, apps/web/e2e/devices-mobile-workflows.spec.ts,
+  apps/web/e2e/payment-request-file-attempt.spec.ts, this additive record and
+  docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md.
+- Observed gate: hosted lean job 139628238899 failed four cases on the retired QR
+  disclosure label and one case because the request-file wallet fixture had not
+  adopted the current real wallet-disclosure interaction. Full profile is also red.
+- Acceptance: use the current request-file/QR section label, drive the real wallet
+  disclosure controls in both mock-wallet tabs, preserve every existing privacy,
+  camera-denial, invoice-review and duplicate-payment assertion, and require fresh
+  full/lean hosted browser success. Record actual local lint/typecheck/collection.
+- Scope: browser fixtures only; no runtime, policy, dependency, timeout, workflow,
+  deployment, excluded-product activation or donor-ref change. Existing idle and
+  privacy continuation owners keep their separately claimed runtime paths.
+
+### Request-file hosted browser correction result — 8812
+
+At local source 5fa157f509ca2e5bda198bf4b13e427273987bbd, the three claimed browser
+fixtures use the current QR/request summary and the existing real wallet-disclosure
+interaction. Original privacy and duplicate-payment assertions and time limits remain.
+Typed lint and full web typecheck passed; Playwright collected 20 cases without browser
+execution. Both initial hosted profiles had the same five fixture failures, documented
+in docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md. Independent source
+review and fresh hosted combined/full/lean qualification remain the promotion gates.
+
+
+### Core presentation concealment regression delegation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review/concealment_tests`, delegated by
+  `/root/artifact_review`; branch `finish/privacy-concealment-tests-20261126`.
+  Source base `6cea65ce4aa7db69ace0733eceef1b3b8b6df28c`, the composed privacy
+  continuation, with existing owned runtime changes preserved.
+- Own only new focused fixtures: `apps/web/src/lib/tags.revocation.test.ts`,
+  `apps/web/src/views/Scan.tags.revocation.test.tsx`,
+  `apps/web/src/components/ReconciliationLedger.revocation.test.tsx`,
+  `apps/web/src/views/CreateInvoice.revocation.test.tsx`, and
+  `apps/web/src/views/Sweep.revocation.test.tsx`, plus this additive record.
+- Acceptance: access/session/app-lock changes conceal decrypted history, tags and
+  drafts; obsolete asynchronous results cannot repaint a later access interval;
+  encrypted durable bytes and already-recorded sweep outcomes remain intact, with
+  no additional transaction or RPC action caused by revocation.
+- Ordinary deterministic synthetic regressions only. No production changes,
+  dependency/workflow change, experimental activation, fuzz/mutation campaign,
+  remote mutation or broad mixed-donor merge. Parent owns implementation review,
+  combined qualification and integration.
+
+### Core presentation concealment regression result — 2026-11-26 UTC
+
+At test source `14ca56a7d548c151b39a66524827d67fed9f600b` / tree
+`23c1c5970390fffdefe2833b66463eb7d0ab67ea`, five new fixtures add 21 ordinary
+synthetic cases without changing production source or existing assertions:
+
+- TagVault (3): access notifications occur after key install/erase, observer errors
+  do not interrupt lock, obsolete unlocks stay revoked, and encrypted bytes survive.
+- ReconciliationLedger (3): manual/idle lock clears decrypted rows, backup drafts
+  and errors; a late vault-open result is locked; encrypted and legacy records remain.
+- CreateInvoice (5): manual/idle lock and session replacement discard draft fields
+  and passphrases; late construction success/failure does not restore the old invoice.
+- Scan (4): locked tags and drafts disappear; old find/list/save completions cannot
+  overwrite a later access interval; saved encrypted tag records remain recoverable.
+- Sweep (6): presentation revocation scrubs the detached credential field, clears
+  selection and destination, cancels a pending balance read, and preserves submitted
+  or uncertain handoff outcomes. Explicit reselection, balance read and destination
+  entry still leave signing blocked by the retained outcome; no second send occurs.
+
+Qualification completed with zero exits on that source: the five fixtures together
+passed 21/21 with coverage disabled, full web TypeScript passed, and typed ESLint
+over those fixtures passed. `git diff --check` passed. Dependencies were installed
+locally with `npm ci --ignore-scripts --no-audit --no-fund`; unchanged package builds
+were copied from the parent worktree based on the same package source. The initial
+five test failures were exact-label selector mistakes, corrected without runtime or
+acceptance changes. No production gap was found within this bounded test scope.
+Browser execution, full-suite/coverage qualification, independent implementation
+review and hosted checks remain with the parent/coordinator. No remote changes or
+additional donor merges were performed by this delegated worker.
+
+
+## Shared policy journal lock completion — 2026-11-25 Pacific (8812)
+
+Worker: root `chatgpt-8812-branch-completion`. Branch `finish/policy-journal-lock-20261125-8812`; base privacy checkpoint `e8857e0292dd06bed85a17ba49d9f6701979e83c`, pending its separate final source review. Current main is `84b80260b9c16b928e440dd81750d9bfb6cdb2b4`; canonical idle prerequisite is `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5` with shared utility #690 ancestry.
+
+Owner seam expressly agreed with `/root/artifact_review`: this task owns only `WalletAttemptOptions.beforeAttemptStart` and its synchronous invocation immediately before `beginAttempt` inside the authoritative journal transaction in `apps/web/src/lib/wallet.ts`. Retained-hash completion, lifecycle and disclosure changes remain with the privacy worker. Also own `apps/web/src/features/policy/withdrawalJournal.ts` and its existing test file, an additive handoff, original donor handoff adoption and directly affected JRNL-L1 status documentation. No other wallet, journal, payment or private-presentation source changes.
+
+Donor: #528 `ff274a08de2a84bcbdf0e373fb607666543554a2`. Its unique current-history delta is limited to these three source/test files and two documentation files. The source snapshot is older than current disclosure/receipt/late-hash controls: retain those newer controls and invoke the hook from captured `attemptOptions`, never substitute the historical wallet file. Prepare and recheck outside the global journal lock, use the existing bounded browser lock manager, and run the synchronous duplicate-policy guard inside the durable begin transaction.
+
+Acceptance: preserve exact current disclosure, transaction snapshot, asynchronous authority, late-hash durability, post-send ownership and receipt-correlation behavior; refuse duplicates and stale sessions before provider invocation; prove another independent send progresses while a policy prompt remains open and bounded lock refusal makes no provider call. Preserve original refs, assertions and all other claims. Use bounded synthetic ordinary regressions, affected typecheck/lint/build and actual full/lean browser qualification; no mutation/fuzz campaign, new dependency, contract change, activation, release or real funds. Final approved privacy and canonical idle/utility inputs must be adopted normally before publication. Independent review, fresh exact-composition hosted CI and cooperative integration lock remain mandatory.
+
+## PR #500 policy wallet lock release — 2026-11-23
+
+- Worker: `/root` (coordinator and implementation owner); isolated from the PR branch.
+- Branch: `codex/ghostpay-policy-lock-release-20261123`; base: PR #500 exact head `d3bbc9aa555fa9f8eaea31ddc8c6d6e5e7a232ea`.
+- Owned paths: `apps/web/src/lib/wallet.ts`, `apps/web/src/features/policy/withdrawalJournal.ts`, its focused test, this claim, and `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+- Finding: `sendPolicyAction` awaited `prepare()` and then the full wallet send under the global attempt journal lock. The full wallet send also performs asynchronous account/chain rechecks before provider invocation, so holding the non-reentrant lock through it blocked unrelated journal work during wallet prompts.
+- Planned correction: perform the existing fast duplicate check before prepare; prepare and wallet rechecks outside the global lock; repeat the policy duplicate guard synchronously inside `sendViaWallet`'s journal-locked start callback immediately before durable attempt creation/provider invocation. Keep the attempt write and provider invocation atomic under the lock; release it while the wallet request is pending; hash persistence still reacquires the journal lock.
+- Acceptance: focused policy and durable wallet journal tests passed (20/20); web typecheck, production build/postbuild scan, scoped ESLint, and diff check passed. The regression proves a distinct wallet send completes through the same lock manager while the policy prompt remains unresolved; existing same-action coverage still proves one provider invocation. Independent review found no blocker and recommends real two-page Web Locks integration coverage. Hosted qualification remains outstanding. No deploy, main merge, or mutation of PR #500. See `docs/handoffs/POLICY_WALLET_LOCK_RELEASE_20261123.md`.
+
+## 2026-11-26 UTC — chatgpt-8812 policy browser continuation (#541)
+
+- Owner: chatgpt-8812-branch-completion. Additive continuation of the completed #541 handoff alongside #528; original refs preserved.
+- Scope: apps/web/e2e/flows.spec.ts, apps/web/e2e/policy-action.fixture.ts, and the policy completion handoff. Preserve every current invoice/disclosure/stale-mirror case and helper; retain the two-tab policy regression using the current production journal.
+- Gates: independent current-composition review, bounded ordinary local checks and fresh hosted full/lean browser qualification before integration. No production fixture exposure, dependency or workflow changes.
+
+## Policy-prompt browser verification
+
+- Worker: Codex, branch `verify/policy-prompt-two-tabs-20261124`, stacked on #528 at `ff274a08de2a84bcbdf0e373fb607666543554a2`. Current #500 is `ad67862f63590fe38410d21b88ebf0e05329da47`. #528 branched at `a23a9f994709e021c479adb0bcc10afcd79fea4b`.
+- Owns the new case in `apps/web/e2e/flows.spec.ts` and its test-only policy fixture. Reuse the injected wallet, invoice checkout and two same-origin pages. While the first policy prompt is pending, the other page must send an unrelated invoice and refuse a duplicate of the policy action. The existing owners retain the journal and integration branches.
+
+## Coordinator idle invoice-expiry browser qualification — 2026-11-26
+
+- Worker: `/root/branch_triage`; branch: `fix/idle-expiry-fixture-20261126`.
+- Base: canonical idle candidate `2a70c04124cba1d8c2d5145ef5a4ba4bcb6c2911`
+  (PR #689); preserve original local `6e7147d1` and all donor refs.
+- Owns: `apps/web/e2e/core-journey.spec.ts`, `apps/web/e2e/pages-devnet.spec.ts`,
+  this additive claim and `docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md`.
+- Observed gate: the Pages invoice-expiry case and the full/lean core invoice-expiry
+  case advance the browser wall clock beyond the default 15-minute idle deadline.
+  The newly synchronous idle guard revokes the prepared flow before its Send handler
+  can display the separate invoice-expiry refusal. Hosted idle cases otherwise passed.
+- Acceptance: isolate those invoice-expiry fixtures with the supported 240-minute idle
+  setting through the real Settings UI; retain each original clock jump, expiry/refusal
+  assertion, no-wallet-send/journal/submission assertion, on-chain refusal check and
+  timeout. Preserve all idle cases and production guards. Avoid per-load RPC fixture
+  initialization resetting the selected setting before the relevant payment flow.
+- Qualification: exact changed-file typed lint, web typecheck, bounded browser-case
+  collection and source preservation checks locally; execution requires fresh hosted
+  full/lean/Pages gates. No local browser, fuzz/mutation/reproduction campaign, dependency,
+  workflow, runtime or contract change. Root owns independent review and publication.
+
+Root additionally authorizes normal adoption of the independently reviewed shared
+utility candidate #690, `62d8ff681b3ce3916d7aa4639c73437856ef8e48`, into this
+continuation. Reconcile only the additive ownership record, retain both histories,
+all seven exact utility source/test blobs and unchanged idle runtime, and record the
+combined source pin before renewed hosted qualification. No utility source changes.
+
+
+## Shared payment utility completion — 2026-11-25 Pacific (8812)
+
+Worker: `chatgpt-8812-branch-completion` (root). Dedicated branch: `finish/shared-payment-utilities-20261125-8812`. Exact base: canonical request-file candidate `521a917da4dabe02d5e0075e750c7b4ec10e7d5f`; current main observed `edcca81906c304499c436083dec3b598680de188`.
+
+Owned scope: ordinary payment-history CSV text in `packages/ux-export/src/text.ts` and its new leading-BOM regression; local payment-handle diagnostics in `packages/ux-links/src/handle.ts` and its new confusable-case regression; payment receipt evidence snapshot and bounded regression in `packages/ux-receipts/src/verify.ts` and `verify.accessor-boundary.test.ts`; the existing exact-amount boundary regression in `packages/chain-adapters/src/quote.test.ts`; additive source-pinned handoff and donor documentation reconciliation. Donors: #628 `0fe0f06f1f7cd1dde2c4dc849702f0ab4cd509cd`, #634 `898106124f7fc2ae90916a8d62348d0d4dd5e120`, #663 `d05108873af1ab79edee9c22fe01b0a22cf3a213`.
+
+These are independently useful shared payment text, identity-warning and selective-disclosure utilities. This task does not change tip/donation, storefront, dashboard analytics, GhostID profiles, or any stopped-product path. Existing packages remain unmounted; no new dependency, product activation, workflow, protocol, contract or release change. Preserve every current assertion, all source refs, all other ownership claims and the current dependency-closure gate.
+
+Ownership reads: all three exact PR heads remain draft with completed original-worker handoffs; current comments and reviews contain no live edit claim or separate human gate. The current session idle/privacy workers own unrelated app/session paths. Acceptance: independently review the exact composition, execute the bounded existing regression and compatibility suites and affected typecheck/lint/build, confirm no app/package manifest or excluded-product change, then fresh actual-composition hosted CI and legitimate cooperative lock before ordinary integration. Original generated/property campaigns are preserved, not run locally.
+
+---
+
+# GP-BUG — CSV leading BOM data preservation (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY repair coordinator. Branch `automation/20261124T1821Z/bug/ux-export-leading-bom`; exact main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Owned paths: `packages/ux-export/src/text.ts`, new `packages/ux-export/src/text.leading-bom.test.ts`, this additive branch-local claim and `docs/handoffs/UX_EXPORT_LEADING_BOM_20261124.md`. All 240 open PR changed-file lists inspected; no `packages/ux-export/src/text.*` overlap. #616/#617 own encoder paths and #220 owns reconcile.ts; do not touch those paths or branches. Generation 20 lease released at `4fe0656517a03cb7a39d4e248187c76ffaa3238a`, not acquired. Source-matched parser/quoteField probes show initial U+FEFF is dropped from valid custom header when optional file BOM is disabled. Acceptance: preserve leading U+FEFF by quoting the field; keep ordinary, embedded BOM, delimiter/quote handling and explicit file BOM behavior; failing regression before fix, exact-head hosted CI and independent review before integration. No deployment, feature changes or fund/contract interactions.
+
+---
+
+# GP-BUG — uppercase confusable local handle diagnostic (2026-11-25 UTC)
+
+Worker: sequential BUG-ONLY coordinator, isolated branch `automation/20261125T0120Z/bug/ux-links-handle-confusable-case`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Owned paths: `packages/ux-links/src/handle.ts`, new `packages/ux-links/src/handle.confusable-case.test.ts`, append-only ownership entry here, and new `docs/handoffs/UX_LINKS_HANDLE_CONFUSABLE_CASE_20261125.md`.
+
+Evidence: baseline source Git blob `c325f1ee544da5f9f75ac7bc400b961deee63033`, recomputed from exact fetched UTF-8 bytes. Capital Cyrillic A and Greek Omicron/Rho are rejected with NON_ASCII instead of the documented CONFUSABLE_NON_ASCII diagnostic, while lower-case counterparts receive the specific reason. All remain rejected; no spoof acceptance, payment impact, or direct Pages reachability asserted. Acceptance: regression first, minimum case-aware lookup in the existing confusable map, preserve ASCII acceptance, reserved checks and ordinary Unicode rejection. Existing handle.test.ts belongs to #224/#238/#262/#264/#278/#372 and is untouched. All 246 discovered open PR changed-file lists checked; no owner of the production or new regression path; active registry checked. Recheck before integration. Integration lease generation 20 released, not acquired. Local checkout DNS blocked; exact source harness only, native CI and separate independent review required. No protocol, feature, dependency, fund or deployment changes.
+
+
+# FC-04 hardening regression tests and receipt follow-ups (2026-11-25)
+
+- Worker: fc02 (Claude Code), branch `claude/fc04-hardening-tests-20261125`, base `origin/main` `595a184b381980a440165832f51a83e8dfd3e8a8`. Owned paths: `packages/chain-adapters/src/quote.test.ts`, `packages/ux-receipts/src/verify.ts`, `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, `docs/consolidation/feature-completion-20261125/FC-04-hardening-tests.md`, this entry.
+- Acceptance: recover the missing #271 quote decimals regression test; close RCPT-L1 and RCPT-L2 test-first; keep coverage thresholds; local only until the coordinator approves a push.
+
+### Idle invoice-expiry fixture qualification result — 2026-11-26
+
+Combined source `18bfb7f937013af77736e5c80a8310d9114b5ffd`, tree
+`40923721a273d5d390749e6f240ab7a8b300cb06`, retains both ownership histories,
+all seven exact utility donor blobs, all idle runtime and every original expiry,
+no-send, clock and timeout assertion. Web TypeScript, both changed-file typed lint,
+15 core/idle plus one Pages case collection, whitespace and committed-secret scan
+all completed successfully. No browser execution is claimed locally. See
+`docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md` for the original hosted
+failure evidence, real Settings isolation and remaining independent/hosted gates.
+
+### Returned-outcome fixture compatibility addendum — 2026-11-26 UTC
+
+Root explicitly delegates `apps/web/src/lib/walletJournal.adversarial.test.ts` to
+`/root/artifact_review` on the existing privacy branch, base `28f7b3c0b46f5fa360389a1986f51304302901d2`.
+Own only the ordinary default-browser post-send persistence cases and bounded-return
+fixture isolation. Preserve actual IndexedDB/mirror unknown-state assertions, every
+no-send/duplicate-blocking assertion and all seeded scheduling cases unchanged.
+Drain retained fixture outcomes through actual successful persistence after restoring
+the local synthetic fault; do not reset or weaken production retention. Run named
+ordinary affected cases only, with no new seeded/fuzz/mutation campaign. Root owns the
+separate policy-lock continuation and will adopt this reviewed compatibility patch.
+
+## Account/vault presentation revocation local result — 2026-11-26 UTC
+
+Worker `/root/artifact_review`, branch `finish/privacy-revocation-core-20261126`.
+Runtime `28f7b3c0b46f5fa360389a1986f51304302901d2`, tree
+`f37b883abaa3e447555ccef664accd4d117ef2f8`, retains canonical idle/utility candidate `4af78c8c` and the
+independent 21-case concealment delegation by normal merges. Only additive claims
+conflicted. `/root/help_review` approved exact source, assertions and composition.
+
+Final ordinary qualification passed 1,011/1,011 cases in 61 fixtures, changed-file
+strict lint, dependency builds, full/lean web TypeScript/build/artifact scans, four
+unchanged reachability checks and catalogs (0 errors; 874 fallback warnings). Root
+then identified fourteen journal fixture failures in its policy integration run;
+fixture-only `994be97cfb8fc28237b0f99648ca818758129498` preserves raw durable unknown
+state, distinguishes the returned overlay and finishes actual persistence between
+fixtures. Root independently approved that exact repair; 14/14 named ordinary cases,
+typed lint and final full web TypeScript passed. Its remaining 128 cases were not run.
+
+See `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md` for source pins,
+initial failures, corrections and remaining gates. Global/manual masking and older
+selected-seller foundations are not included. No dependency/workflow/contract/chain
+expansion, excluded-product activation, live transaction or remote mutation occurred.
+Root owns the reviewed #689 fixture follow-on, fresh combined hosted/coverage/browser
+gates, final evidence review, cooperative lock and integration. #528/#604 stay separate.
+
+## Pages expiry clock-origin fixture correction — 2026-11-26
+
+- Worker: `/root/help_review`; branch: `fix/pages-expiry-clock-origin-20261126`.
+- Base: canonical PR #689 head `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5`.
+  Root explicitly handed off this remaining hosted Pages failure; the prior idle
+  fixture worker is assisting read-only and the privacy worker owns separate paths.
+- Owns: `apps/web/e2e/pages-devnet.spec.ts`, this additive claim/results entry and
+  `docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`.
+- Evidence: Pages run `45741328280`, job `139646779828`, tested merge
+  `11fd6dcb3fa6f041d7eccccdcc1a153f4b58fc03` (this head into main `84b80260`).
+  Sixteen cases passed; expiry stopped at the Send click after the clock jump,
+  with pointer interception followed by a detached button. The final expiry
+  assertion was not reached. Both mocked browser profiles now pass the expiry
+  case and all fourteen idle cases (full 182 passed / 2 skipped; lean 170 / 4).
+- Acceptance: diagnose from actual hosted logs and exact source; correct only the
+  expiry fixture's clock setup, preserve every current assertion, clock jump,
+  timeout, wallet disclosure and idle case, and add a clock-origin assertion if
+  needed to distinguish wall-clock expiry from a fixture-created monotonic rollback.
+  No runtime, dependency, workflow, manifest, contract or excluded-product change.
+- Qualification: bounded local clock diagnostics, exact-file typed lint, web
+  typecheck, browser-case collection, source preservation and secret/whitespace
+  checks. The local browser is unavailable; do not reinstall or probe it. Actual
+  corrected-source browser qualification requires fresh hosted CI. Root owns
+  independent review and publication; this worker will not publish or merge.
+
+### Pages clock-origin fixture result — 2026-11-26
+
+Reviewed source `cb2e5c5ce81b895817ca8da3b1590f2bf04f46a1` and normal current-main
+composition `97f026a7fe92062e97e86ab5a8ae633377cf0b64` share tree
+`ef5f6462918ca57f50d5b6af4fc492d107565f91`. Only four Pages fixture lines were
+added; every original source line and all other fixtures are retained. Web
+TypeScript, exact-file typed lint, collection of 17 Pages and 14 idle cases,
+preservation, secret and whitespace checks completed with zero exits. A bounded
+actual-Playwright clock diagnostic confirmed the monotonic-origin mechanism; it
+did not execute the browser. Root independently approved the source. See
+`docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`. Final evidence review
+and fresh corrected-source hosted CI remain required.
+
+### Account privacy final dependency composition — 2026-11-26 UTC
+
+Normal merge `f451c6206f2e0434ec8386b6ca1602a3c82ed969`, tree
+`1f88c12e9247d692ec9d9724892937b1ad0c72b3`, adopts canonical corrected idle #689
+`0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff`. All current ownership text and the 38
+incoming lines are preserved, and both incoming non-log blobs are exact. Approved
+privacy runtime remains unchanged from 28f; only the reviewed four-line Pages fixture
+and its evidence are added. Fresh combined hosted gates remain the coordinator's work.
+
+## Policy journal completion qualification — 2026-11-26 UTC
+
+- Worker: chatgpt-8812-branch-completion, branch `finish/policy-journal-lock-20261125-8812`.
+- Independently approved runtime/default-manager repair: `3c9835afe838a710101ce66eb23a7e492530d328`. Final source composition `f79117395fe04098d1aebd09a36fdacefb955212`, tree `2c3956b95d4bae5fbe0726a2803a7c359737910b`, normally adopts canonical privacy `f8145c1c` and corrected idle `0ae8a9d1`.
+- #528 and #541 whole legitimate donor ancestry retained; current disclosure, frozen arguments, authoritative transaction journal and retained-hash behavior preserved. All current browser suite lines retained.
+- Initial broad check: 314 passes, 14 fixture failures; reviewed privacy compatibility repair994be97 adopted. Final selected policy/journal follow-up: 26 passes, 128 unrelated cases unselected. Default-manager regression failed before correction and passed afterward.
+- Final full web typecheck, changed-file typed lint, full/lean production builds and 20/18-file postbuild scans passed. Unchanged reachability gate4/4; two browser cases collected only. Secret and whitespace checks passed.
+- Source and composition independently approved. Final evidence handoff: `docs/handoffs/POLICY_JOURNAL_COMPLETION_20261125_8812.md`; narrow final evidence review and fresh hosted full/lean/Pages qualification remain required before cooperative-lock integration. No release, deployment or live transaction.
+
+
+## Policy dependency qualification follow-up — 2026-11-26
+
+Worker `/root`, branch `finish/policy-journal-lock-20261125-8812`, canonical base
+`c6f15cfeddaa508c9df646d336ae1b071b3f5b69`. Own additive ledger/handoff updates
+and normal adoption of corrected canonical privacy #691
+`6b4bbe17b436344b05d2942ccb0633de43e43fa0`. Preserve every approved policy runtime
+and unit-test blob and the complete appended #541 browser case while adopting
+all six reviewed privacy fixtures. Require independent exact-composition review
+and fresh hosted gates before cooperative-lock integration. No new runtime,
+dependency, contract, workflow, timeout or gate change.
+
+
+## Account privacy / idle combined qualification — coordinator, 2026-11-26
+
+- Worker: `/root`, session `8812`; branch `fix/account-privacy-qualification-20261126-8812`.
+- Base: canonical #691 `f8145c1cb8d806f1d8b134c159eb00f595e6769a`, which already contains #689 `0ae8a9d1` and main `1bea3df3`.
+- Owned paths: additive coordinator ledger and `docs/handoffs/ACCOUNT_PRIVACY_BROWSER_QUALIFICATION_20261126.md`; compose only independently reviewed TagArchive and owner-history browser fixture commits on their existing owners' source pins.
+- Acceptance: preserve the recovery-only idle model, owner/chain history concealment, real wallet disclosure, original duplicate/no-extra-send/recovery assertions and the Pages monotonic clock correction. No runtime, dependency, workflow, timeout or release gate change is authorized by this composition claim.
+- Qualification: review exact combined blobs and donor ancestry, use the workers' bounded test/lint/type results, then publish a nonforce #691 follow-up and require fresh actual-composition hosted checks. #689 is integrated only through a green combined #691, never claimed independently green. Root owns publication and cooperative-lock integration; original mixed source refs remain unchanged.
+
+## Tag archive idle suspension fixture correction — 2026-11-26 (8812)
+
+- Worker: `/root/branch_triage`; isolated branch `fix/tag-archive-idle-fixture-20261126`.
+- Base: canonical privacy #691 `f8145c1cb8d806f1d8b134c159eb00f595e6769a`.
+- Root handed off hosted #689 web job `139653073679`: C-R11 expects the tag archive
+  form after idle, while the current session is correctly suspended for backup-only
+  recovery. Own only `apps/web/src/components/TagArchive.test.tsx`, this additive
+  claim/result and `docs/handoffs/TAG_ARCHIVE_IDLE_FIXTURE_20261126.md`.
+- Preserve every existing passphrase value/attribute assertion, sole-copy retention,
+  backup-only restrictions and current active-session controls. Add explicit normal
+  restoration before assertions that require the active archive form; no runtime,
+  dependency, workflow, contract, timeout or security-assertion weakening.
+- Qualification: exact hosted-log/source inspection, independent locked install,
+  bounded ordinary fixture plus web typecheck/typed lint. No browser, fuzz, mutation
+  or exploitation campaign. Root independently reviews and integrates the pin with
+  its separate #691 browser-fixture correction; no publication by this worker.
+
+TagArchive local result: fixture source `d012ac99f2b6e94ca6ff1a3ec46ac4b5c30fb497`
+retains every original assertion and all other cases, with no runtime changes.
+The whole ordinary fixture passed 9/9; exact-file typed lint and full web TypeScript
+both exited 0. The existing one-minute idle and 61-second advance are unchanged.
+Root independently approved the exact fixture source with no finding. See
+`docs/handoffs/TAG_ARCHIVE_IDLE_FIXTURE_20261126.md`. Root owns combined #691
+qualification and integration; no remote mutation occurred here.
+
+## Account-scoped history browser fixtures — 2026-11-26
+
+- Worker: `/root/help_review`; branch: `fix/account-history-browser-fixtures-20261126-8812`.
+- Base: canonical PR #691 head `f8145c1cb8d806f1d8b134c159eb00f595e6769a`.
+  Root explicitly delegates the two existing history/reconnect browser cases;
+  root's additive #541 policy case remains on the separate #692 branch.
+- Owns: the two affected cases and narrowly required fixture helpers in
+  `apps/web/e2e/flows.spec.ts`, this additive claim/results entry and
+  `docs/handoffs/ACCOUNT_HISTORY_BROWSER_QUALIFICATION_20261126.md`.
+- Evidence: source inspection found history assertions after account/session
+  replacement or reload without the newly required matching account/network
+  recovery, plus an invoice continuation after the private capability was cleared.
+  Original #691 hosted run `45743729535` remains in progress at claim time;
+  no hosted failure or corrected browser pass is asserted before logs are available.
+- Acceptance: assert concealed history before explicit matching-owner recovery
+  through current wallet disclosures, explicitly reopen the saved invoice for a
+  retry, and retain durable hashes, receipt binding, cross-account duplicate
+  refusal, confirmed clear, and every no-extra-send assertion and timeout.
+  No production, dependency, workflow, contract, chain or excluded-product change.
+- Qualification: exact-file typed lint, web typecheck, browser-case collection,
+  original-assertion preservation and secret/whitespace checks. No browser install
+  or launch locally; fresh hosted qualification and independent root review are
+  required. This worker will not publish or merge.
+
+### Owner-scoped devnet fixture extension — 2026-11-26
+
+Root additionally delegates the same source-proven post-reload history assumptions
+in `apps/web/e2e/devnet-journey.spec.ts` (submitted and pending reload cases) and
+`apps/web/e2e/pages-devnet.spec.ts` (native payment reload case). Extend ownership
+only to those existing cases and their narrow local recovery helpers. Conceal
+history until real matching-owner/network recovery; preserve all nonce, balance,
+hash, receipt, duplicate-refusal and no-extra-send assertions, the exact #689
+four-line clock-origin correction, and all fourteen idle cases. These additional
+fixture paths have no production changes. Qualify their typed lint/typecheck and
+case collection; actual browser execution remains a fresh hosted gate.
+
+### Silent wallet-recheck browser notice — 2026-11-26
+
+Root additionally delegates the existing devnet wrong-chain/final-send case after
+actual job `139654655573` failed its old network-only message assertion. Source
+inspection confirms `recheckWallet` revokes the wallet before throwing, and Pay
+retains the intentional public account/network/provider-change cause notice while
+dropping stale operation state. Both existing plain-invoice silent network/account
+component regressions passed (2 selected, 26 unselected) before any fixture edit.
+Own only that case's obsolete notice assertion and added revocation assertions;
+retain its chain change, no-send, empty-journal, nonce checks and all timeouts.
+No production correction is needed or authorized by this finding.
+
+### Account-history browser fixture local result — 2026-11-26
+
+Fixture source `36917b8920cd6ac478b2efaf15fd4195fc91a6f7`, tree
+`5a9a89efc8f6bf56424921c166c974d466054788`, changes three e2e files only.
+The independently reviewed history correction `0305cd2c` is retained; the only
+additional assertion replacement follows the proven silent-recheck cause notice.
+All original no-send, durable-outcome, receipt, nonce, balance and timeout checks
+remain, with stronger concealment/revocation assertions and real wallet disclosure.
+Web typecheck, affected-file typed lint, secret/whitespace checks and collection
+completed with zero exits: full flows12 + idle14, lean flows11, devnet3, Pages17.
+Two existing silent-mismatch component cases passed; 26 others were unselected.
+No browser bodies ran locally. Actual original #691 hosted failures and the
+combined #689/#691 dependency plan are recorded in
+`docs/handoffs/ACCOUNT_HISTORY_BROWSER_QUALIFICATION_20261126.md`. Root owns final
+independent review, the separate TagArchive composition, fresh hosted qualification
+and integration. No runtime, dependency, workflow, contract or chain change.
+
+## Wallet disclosure/discovery qualification fixtures — 2026-11-26
+
+- Worker: `/root/help_review`, delegated by root on coordinator branch
+  `fix/account-privacy-qualification-20261126-8812`; composed base
+  `ea9ddeecc2e4ab1dca56a4bf467747c67235b0e7`.
+- Owns: `apps/web/src/lib/walletDisclosure.callsites.test.ts`,
+  `apps/web/src/lib/walletDiscovery.hardening.test.ts`, additive results here and
+  the already-claimed coordinator handoff. Runtime stays unchanged.
+- Actual #691 web job `139655022034` reported 4 failures, 4,053 passes, 2 expected
+  failures and 1 skip. The composed TagArchive donor covers one failure. The other
+  three are the old three-file connection inventory, its literal-only disclosure
+  spelling check, and the exact discovery object missing `requireLifecycleEvents`.
+- Source confirms the fourth call in WalletAttempts passes its actual disclosure
+  hook by shorthand; EIP-6963 metadata deliberately requires lifecycle events.
+  Preserve exhaustive four-file enumeration and require a real hook-backed final
+  disclosure option, including the reviewed shorthand. Preserve exact metadata
+  equality and all oversized-input limits; add only the required lifecycle field.
+- Qualification: bounded source-gate and named metadata cases, affected-file typed
+  lint, web typecheck and final composition review. No browser, generated/mutation
+  campaign, production change, remote mutation or integration by this worker.
+
+### Combined account privacy / idle qualification result — 2026-11-26
+
+Root delegated coordinator review and the newly observed wallet-test reconciliation
+to `/root/help_review`. Source `ed5ea96e17333f5ec71380882ce56abb753362a3`, tree
+`3be592cc3f82a713aa3c93d10041c57a9162b3cc`, preserves both normal donor ancestries,
+all four exact prior fixture blobs, both handoffs and the complete ownership history.
+Independent TagArchive review found no issue; all 53 original assertion/idle/timeout
+lines remain. Runtime/configuration, every idle case and the Pages clock case are exact.
+The two additional wallet tests preserve exhaustive four-file consent inventory,
+hook-backed options, exact metadata equality and bounds. The local baseline failed
+3 selected cases; the corrected selection passed 8, with 30 unselected. Typed lint
+and full web TypeScript completed exit 0. Root independently approved that exact
+follow-on. Actual hosted failures, donor results, no-local-browser limits and fresh
+combined #691 requirements are recorded in
+`docs/handoffs/ACCOUNT_PRIVACY_BROWSER_QUALIFICATION_20261126.md`. No production,
+dependency, workflow, contract or chain change, remote mutation or integration occurred.
+
+Policy dependency adoption result: normal source composition `0cfe4e3c` keeps
+the approved runtime/unit blobs and complete policy browser case, while adopting
+all corrected #691 fixtures. Only additive ownership text required reconciliation.
+Fresh exact-composition hosted qualification and the integration lock remain
+required; no new local test run or browser execution is claimed.
+
+## Integration coordinator: #691 then #692 onto current main — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`, sole integration coordinator for #691 and #692 under the owner's integration instruction.
+- Branches: `claude/integrate-691-20261126` = #691 head `6b4bbe17b436344b05d2942ccb0633de43e43fa0` (contains corrected #689 `0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff` and #690) merged with main `a9d2a033` (#693 `0afab048`, #694); `claude/integrate-692-20261126` = #692 head `c7b9badcfaff027e9847f65d10f021111809c48e` merged with the #691 integration head. Source refs of #689/#691/#692 and all donor refs stay unchanged; the older #689 intermediate is not merged separately.
+- Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
+- Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
+- Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.

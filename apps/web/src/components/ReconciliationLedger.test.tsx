@@ -196,7 +196,7 @@ describe('encrypted reconciliation UI', () => {
     await waitFor(() => expect(activateButton.disabled).toBe(false));
     await user.click(activateButton);
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
-    expect(await screen.findByText(/No linked observation/)).toBeTruthy();
+    expect(await screen.findByText(/Unverified observation/)).toBeTruthy();
     expect(screen.queryByText(/Linked to a verified observation/)).toBeNull();
   });
   it('activates only a previewed encrypted backup as imported untrusted history', async () => {

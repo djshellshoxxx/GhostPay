@@ -3,6 +3,7 @@
  * @security Presets never enable hops, never pick experimental, test-only, stub or watch values, never change the Bitcoin mode.
  */
 import { OPTION_CATALOGUE } from './catalogue.js';
+import { deepFreeze } from './freeze.js';
 import { OPTION_IDS } from './types.js';
 import type { OptionId, PresetDef, PresetId } from './types.js';
 
@@ -90,14 +91,31 @@ const CONFIDENTIAL: Prefs = {
   'pay.amountBlur': ['delay', 'off'],
 };
 
-/** The four presets. */
-export const PRESETS: Readonly<Record<PresetId, PresetDef>> = {
+/**
+ * Shielded (issue 284, F18): the pool track only. Same pool preferences as `maximum` for the exit, amount plan and pool
+ * payment source, with buffer-funded exit gas and none of its network hardening, payer sponsors or amount splitting.
+ * Rules R-11 and R-13 keep confidential amounts in their separate track. Selected policy D04/D05 is recorded in
+ * docs/handoffs/PR644_CONFIGURATION_DECISIONS_20261124.md. Advanced gas values remain explicit, validated edits;
+ * buffer funding does not remove a pool submitter's consent requirements or establish privacy qualification.
+ */
+const SHIELDED: Prefs = {
+  ...BASE,
+  'sweep.exit': ['privacy-pools', 'railgun', 'shielded-pool', 'plain'],
+  'sweep.exitGas': ['buffer'],
+  'sweep.poolAmountPlan': ['denominations'],
+  'pay.source': ['shielded-pool', 'wallet'],
+  'pay.amountBlur': ['delay', 'off'],
+};
+
+/** The five presets, in display order. Deeply frozen: a preset cannot be edited at run time. */
+export const PRESETS: Readonly<Record<PresetId, PresetDef>> = deepFreeze({
   standard: mk('standard', OPTION_IDS, BASE),
   enhanced: mk('enhanced', OPTION_IDS, ENHANCED),
+  shielded: mk('shielded', ['sweep.exit', 'sweep.exitGas', 'pay.source', 'pay.amountBlur', ...OPTION_IDS], SHIELDED),
   maximum: mk(
     'maximum',
     ['sweep.exit', 'sweep.exitGas', 'pay.source', 'pay.payerMode', 'pay.amountBlur', 'net.rpcProfile', 'net.relayerProfile', 'net.rpcMode', 'net.endpointSeparation', 'net.scanMode', ...OPTION_IDS],
     MAXIMUM,
   ),
   'confidential-amount': mk('confidential-amount', ['pay.amountVisibility', ...OPTION_IDS], CONFIDENTIAL),
-};
+});

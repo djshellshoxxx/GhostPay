@@ -5,6 +5,8 @@ export type TronErrorCode =
   | 'INVALID_PREFIX'
   | 'INVALID_LENGTH'
   | 'INVALID_PUBLIC_KEY'
+  | 'INVALID_META_ADDRESS'
+  | 'LEGACY_META_ADDRESS'
   | 'INVALID_AMOUNT'
   | 'INVALID_FEE_LIMIT'
   | 'INVALID_CALL_VALUE'
@@ -17,6 +19,9 @@ const MESSAGES: Readonly<Record<TronErrorCode, string>> = {
   INVALID_PREFIX: 'invalid Tron address prefix (expected 0x41)',
   INVALID_LENGTH: 'invalid Tron address length',
   INVALID_PUBLIC_KEY: 'invalid secp256k1 public key',
+  INVALID_META_ADDRESS: 'invalid TRON stealth meta-address (expected st:trx:0x...)',
+  LEGACY_META_ADDRESS:
+    'st:eth:0x is an EVM meta-address and is not accepted for TRON; ask the recipient for an st:trx:0x meta-address (ADR-0019)',
   INVALID_AMOUNT: 'invalid amount (must be in [1, 2^256-1])',
   INVALID_FEE_LIMIT: 'invalid fee_limit (sun out of bounds)',
   INVALID_CALL_VALUE: 'invalid call_value (sun out of bounds)',

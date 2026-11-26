@@ -191,6 +191,24 @@ describe('L1-06: generated passphrases', () => {
     } finally { random.mockRestore(); }
   });
 
+  it('redraws an accepted passphrase that the estimator rates below strong', () => {
+    // "acorn-adobe-acorn-adobe-acorn-adobe" passes the policy but rates "fair"; the generator must not offer it.
+    const fair = [0, 2, 0, 2, 0, 2];
+    expect(passphraseProblem(fair.map((i) => PASSPHRASE_WORDS[i]).join('-'))).toBeUndefined();
+    expect(passphraseStrength(fair.map((i) => PASSPHRASE_WORDS[i]).join('-')).label).not.toBe('strong');
+    const strong = [0, 1, 1023, 2, 0x234, 1023];
+    const bytes = (indices: readonly number[]): Uint8Array => Uint8Array.from(indices.flatMap((i) => [i >> 8, i & 0xff]));
+    const draws = [bytes(fair), bytes(strong)];
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(<T extends ArrayBufferView | null>(array: T): T => {
+      (array as unknown as Uint8Array).set(draws.shift() ?? bytes(strong));
+      return array;
+    });
+    try {
+      expect(generatePassphrase()).toBe(strong.map((i) => PASSPHRASE_WORDS[i]).join('-'));
+      expect(random).toHaveBeenCalledTimes(2);
+    } finally { random.mockRestore(); }
+  });
+
   it('maps each 16-bit draw to a word without bias and redraws a passphrase the estimator would refuse', () => {
     const draws = [new Uint8Array(12), Uint8Array.from([0x00, 0x00, 0x04, 0x01, 0xff, 0xff, 0x80, 0x02, 0x12, 0x34, 0x03, 0xff])];
     const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(<T extends ArrayBufferView | null>(array: T): T => {

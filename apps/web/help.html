@@ -304,7 +304,7 @@
 
       <section aria-labelledby="merchants">
         <h2 id="merchants">12. Merchant guidance</h2>
-        <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Plan your bookkeeping outside the app until the features below are available.</p>
+        <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Keep aggregate bookkeeping outside the app. GhostPay's beta and v1.0 focus on private payments and recovery; excluded products have no scheduled restart.</p>
         <div class="table-wrap" tabindex="0" role="region" aria-labelledby="merchant-table-caption">
           <table>
             <caption id="merchant-table-caption">Merchant capabilities and their status</caption>
@@ -314,11 +314,11 @@
               <tr><th scope="row">Merchant profile: load a published profile by URL</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Loads only when you press Load</td></tr>
               <tr><th scope="row">Merchant profile: issue an invoice template</th><td><span class="status status-implemented">Implemented</span> Full build</td><td>Needs the session key to match the profile's signer</td></tr>
               <tr><th scope="row">Publish a merchant profile</th><td><span class="status status-planned">Planned</span></td><td>No reachable publish path in the app</td></tr>
-              <tr><th scope="row">Aggregate merchant dashboard (totals and records)</th><td><span class="status status-planned">Planned</span></td><td>Not in the current interface</td></tr>
-              <tr><th scope="row">Subscriptions and installments</th><td><span class="status status-planned">Planned</span> for the app</td><td>Available in the command-line tools only</td></tr>
+              <tr><th scope="row">Aggregate merchant dashboard (totals and records)</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Archived indefinitely; ordinary invoice status and reconciliation remain available</td></tr>
+              <tr><th scope="row">Subscriptions and installments</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Outside the browser payment and recovery scope</td></tr>
               <tr><th scope="row">Webhooks</th><td><span class="status status-planned">Planned</span> delivery</td><td>Command-line tools can sign and verify payloads. The app does not deliver them</td></tr>
               <tr><th scope="row">Refund execution</th><td><span class="status status-unsupported">Unsupported</span></td><td>Refund records can be inspected. GhostPay refuses to execute a refund</td></tr>
-              <tr><th scope="row">Point-of-sale terminal and NFC</th><td><span class="status status-planned">Planned</span></td><td>Library code only. No screen in the app</td></tr>
+              <tr><th scope="row">Point-of-sale terminal and NFC</th><td><span class="status status-unsupported">Unsupported</span> beta and v1.0</td><td>Terminal product archived; ordinary invoice QR exchange remains available</td></tr>
             </tbody>
           </table>
         </div>
@@ -420,6 +420,7 @@
               <tr><th scope="row">Providers disagree</th><td>Check each endpoint and wait for a later check. Removing the secondary provider stops the comparison, so you lose that protection. Do not approve a payment while the disagreement remains.</td></tr>
               <tr><th scope="row">Unknown outcome after sending</th><td>Look up the transaction in your wallet and on the chain before retrying. A second payment can duplicate the first.</td></tr>
               <tr><th scope="row">Storage is unavailable</th><td>Check this browser's site-storage permissions and retry. Export backups before you clear site data.</td></tr>
+              <tr><th scope="row">Browser self-checks show Failed or Unavailable</th><td>Open <em>Browser self-checks</em> at the bottom of the app. <em>Unavailable</em> means this browser does not offer a capability or refuses access to it. <em>Failed</em> means the capability gave a wrong result. Follow the explanation under each result and use a current browser on the app's https:// address. Passed checks do not verify the app's code, your wallet, the RPC provider or any payment.</td></tr>
               <tr><th scope="row">The backup will not unlock</th><td>Use the matching file, the correct passphrase and the right key scope. Public configuration and receipt files cannot restore secret keys.</td></tr>
               <tr><th scope="row">A tooltip or disclosure is hidden</th><td>Use the keyboard or pointer to open it again. Press Escape to close it.</td></tr>
             </tbody>

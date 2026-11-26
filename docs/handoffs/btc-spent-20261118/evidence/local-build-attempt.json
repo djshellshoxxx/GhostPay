@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+  "node": "v22.23.5",
+  "command": "NODE_OPTIONS=--max-old-space-size=1024 npm run build:libs",
+  "exitCode": 130,
+  "result": "Stopped redundant local rebuild after exact-tree hosted clean library build and Pages build/typecheck/verification passed. Not counted as a local build pass.",
+  "log": "integration-build-libs.log",
+  "supersedingEvidence": {
+    "runId": 44472294261,
+    "jobId": 135384438424,
+    "testedMergeCommit": "278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+    "tree": "0074dde6081e45188c45feb39503c64243ef99b8",
+    "conclusion": "success"
+  }
+}
