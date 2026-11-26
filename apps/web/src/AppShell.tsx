@@ -6,6 +6,7 @@ import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -20,6 +21,7 @@ import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { BrowserChecks } from './components/BrowserChecks';
+import { CopiedBackupNotice } from './components/SecretBackup';
 import { notifyAppLock } from './lib/appLock';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
@@ -148,7 +150,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       locked = true;
       services.vault.lock();
       // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
-      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
+      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard if unchanged (G2-02).
       notifyAppLock('idle');
       if (!hasSession()) {
         setLive({ key: 'app.idle.tagsLocked' });
@@ -260,6 +262,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       setView,
       settings,
       updateSettings: (s) => {
+        if (s.invoiceLinkClipboardDelaySec !== settings.invoiceLinkClipboardDelaySec) cancelClipboardCleanup();
         setSettings(s);
         return saveSettings(s);
       },
@@ -322,6 +325,7 @@ export function AppShell(props: AppShellProps): ReactNode {
             <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
+        <CopiedBackupNotice />
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>

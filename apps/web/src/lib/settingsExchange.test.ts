@@ -148,6 +148,7 @@ describe('settings exchange: preview and apply', () => {
   it('is all-or-nothing: a stale basis, forged selection or tampered preview throws without a partial result', () => {
     const preview = all(source).preview(target);
     expect(() => applySettingsExchange({ ...target, theme: 'light' }, preview, { preferences: true })).toThrow(/Nothing was changed/);
+    expect(() => applySettingsExchange({ ...target, invoiceLinkClipboardDelaySec: 30 }, preview, { preferences: true })).toThrow(/Nothing was changed/);
     expect(() => applySettingsExchange(target, preview, { addSigners: [PIN_B] })).toThrow(/Nothing was changed/);
     expect(() => applySettingsExchange(target, preview, { addSigners: [PIN_A, PIN_A] })).toThrow(/Nothing was changed/);
     const tampered = { ...preview, incoming: { ...preview.incoming, rpcUrls: { '84532': 'http://evil.example/' } } };
