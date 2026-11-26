@@ -150,3 +150,13 @@ documented requirement; RS:25 says depth is not independent finality verificatio
 - SA4 Docs disagree on whether a cutoff-invalidated record can become valid again (RS:38 vs ADR:199).
 - SA5 `docs/user/reconciliation-and-receipts.md` still describes observation-time matching (UR:14-27); the ADR's
   canonical block time is used (ADR:57-63).
+- SA6 Between a chain change (reorg, drop) and the seller's next completed scan, the app cannot know of the change, so a
+  still-displayed link is stale knowledge, not a false claim. It is recorded as SA6 with the step; right after a
+  completed scan in that tab the same display is judged strictly (SI1/SI4).
+- SA7 A link withdrawn by a reorg should carry a visible invalidation notice (requirements S29); a withdrawn link
+  without one is recorded, not scored, because the notice wording is not fixed by an accepted requirement.
+
+Harness rules specific to M2 (each was a harness defect first, see HANDOFF H8–H10): decisions are taken in place on
+the live Scan view, because proposals exist only for live scan results (S3); a named-scenario step marked `must`
+that does not take effect is a harness error, so a vacuous scenario cannot pass; the positive control P2 (a single
+RPC that keeps serving the pre-reorg fork, outside the trust boundary per RS:25) must make SI4 fire.
