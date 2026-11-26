@@ -8,23 +8,49 @@
 <title>GhostPay POS example</title>
 <link rel="stylesheet" href="pos.css">
 </head>
-<body>
-<h1>GhostPay POS terminal (example)</h1>
+<body data-mode="operator">
+<main class="terminal">
+<h1 id="terminal-title">GhostPay POS terminal (example)</h1>
+<section id="operator" aria-label="Operator controls">
 <p>Paste a payment link created by your backend, enter the amount, start the sale. The link disappears when the sale ends.</p>
-<label for="amount">Amount due</label><input id="amount" inputmode="decimal" autocomplete="off" placeholder="12.50">
-<label for="currency">Currency</label><input id="currency" value="USD" maxlength="3" autocomplete="off">
-<label for="link">Payment link (https://...#gpi=v1....)</label><input id="link" autocomplete="off" spellcheck="false">
-<button id="start" type="button">Start sale</button>
+<label for="amount">Amount due</label><input id="amount" inputmode="decimal" autocomplete="off" placeholder="12.50" aria-describedby="error">
+<div id="keypad" class="keypad" role="group" aria-label="Amount keypad">
+<button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
+<button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
+<button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
+<button type="button" data-key=".">.</button><button type="button" data-key="0">0</button><button type="button" data-key="back" aria-label="Delete last digit">⌫</button>
+<button type="button" data-key="clear" class="wide">Clear amount</button>
+</div>
+<label for="currency">Currency</label><input id="currency" value="USD" maxlength="3" autocomplete="off" aria-describedby="error">
+<label for="invoice">Invoice reference (optional)</label><input id="invoice" autocomplete="off" spellcheck="false" maxlength="128" aria-describedby="error">
+<label for="link">Payment link (https://...#gpi=v1....)</label><input id="link" autocomplete="off" spellcheck="false" aria-describedby="error">
+<div class="actions">
+<button id="start" type="button" class="primary">Start sale</button>
+<button id="present" type="button" hidden>Show payment QR</button>
+<button id="cancel" type="button" disabled>Cancel sale</button>
+<button id="show-customer" type="button">Show customer screen</button>
+</div>
 <div id="error" role="alert"></div>
+<div id="notice" role="status"></div>
 <div id="status" data-status="idle">IDLE</div>
 <div id="amounts"></div><div id="countdown"></div>
-<div id="qr"></div>
-<div id="linkText"></div>
+<p id="verification"></p>
 <hr>
 <p>Demo only: record a payment by hand. A real terminal gets payment events from your server.</p>
 <label for="received-amount">Received amount</label><input id="received-amount" inputmode="decimal" autocomplete="off">
 <button id="received" type="button" disabled>Payment received</button>
-<button id="cancel" type="button" disabled>Cancel sale</button>
+</section>
+<section id="customer" aria-labelledby="customer-title" data-status="idle">
+<h2 id="customer-title" tabindex="-1">Welcome</h2>
+<p id="customer-due" class="due"></p>
+<p id="customer-remaining"></p>
+<p id="customer-countdown" class="countdown"></p>
+<div id="qr"></div>
+<div id="linkText"></div>
+<button id="show-operator" type="button">Back to operator</button>
+</section>
+<div id="announce" class="visually-hidden" aria-live="polite"></div>
+</main>
 <script src="vendor/qrcode.js"></script>
 <script type="module" src="pos.js"></script>
 </body>

@@ -2,6 +2,7 @@
 import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stoppedProductForModule } from './stoppedProducts.mjs';
 
 export const PROFILE_ENV = 'GHOSTPAY_LOCAL_BUILD_PROFILE';
 export const REPORT_ENV = 'GHOSTPAY_LOCAL_MODULE_REPORT';
@@ -121,6 +122,10 @@ function collectLeanChunks(bundle, webRoot) {
         const embedProtocol = /\/src\/lib\/embedProtocol\.ts$/.test(path);
         const deferredPackage = /\/(?:packages|node_modules\/@ghostpay)\/(?:btc-silent-payments|btc-family|btc-payjoin|chain-solana|chain-tron|chain-evm-extra|solana-stealth|tron-adapter|policy-scheme|pool-[^/]+|external-pools(?:-[^/]+)?|pir-[^/]+)(?:\/|$)/.test(path);
         if (feature || entry || archive || embedProtocol || deferredPackage) throw new Error(`lean build rendered excluded module: ${id}`);
+        // Owner stop-work containment (AGENTS.md 2026-11-25): stopped and deferred products never ship in the lean site.
+        // Matched on the web-root-relative id, the same form the emitted report and its verifier use.
+        const stopped = stoppedProductForModule(isAbsolute(id) ? relative(webRoot, id).replaceAll('\\', '/') : id);
+        if (stopped !== undefined) throw new Error(`lean build rendered excluded stopped-product module (${stopped.id} ${stopped.name}): ${id}`);
         if (/\/src\/lib\/embedHost\.ts$/.test(path) && exports.some((name) => name !== 'notifyEmbedDone')) {
           throw new Error('lean build rendered embedding startup/profile exports');
         }

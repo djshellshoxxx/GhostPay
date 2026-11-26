@@ -1,15 +1,20 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { WalletAttempts } from './WalletAttempts';
 import { ATTEMPT_JOURNAL_KEY, attemptTxDigest, beginAttempt, finishAttempt, readAttempts } from '../lib/duplicateAttemptJournal';
 import { mockRpc } from '../test/mockRpc';
+import { MockWallet } from '../test/mockWallet';
+import type { WalletSession } from '../lib/wallet';
+
+const owner: WalletSession = { account: `0x${'1'.repeat(40)}`, chainId: 1, wallet: { id: 'fixture', name: 'Fixture', kind: 'injected', provider: new MockWallet({ account: `0x${'1'.repeat(40)}`, chainId: 1 }) } };
+
 
 beforeEach(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
-afterEach(() => { vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 it('keeps unknown outcomes until the user explicitly confirms clearing', async () => {
   beginAttempt({ key: `0x${'a'.repeat(64)}`, chainId: 1, account: `0x${'1'.repeat(40)}`, kind: 'payment' }, window.localStorage);
-  render(<WalletAttempts />);
+  render(<WalletAttempts wallet={owner} />);
   expect(screen.getByText(/outcome unknown/i)).toBeTruthy();
   const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
   fireEvent.click(screen.getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
@@ -37,7 +42,7 @@ it('refreshes after a cross-tab write and resolves only after a user asks the re
     }
   });
   const getRpc = vi.fn(() => Promise.resolve(rpc));
-  render(<WalletAttempts getRpc={getRpc} />);
+  render(<WalletAttempts wallet={owner} getRpc={getRpc} />);
   // Update the store without the in-tab event, then deliver the StorageEvent another tab would get.
   const records: string[] = [];
   const otherTab = {

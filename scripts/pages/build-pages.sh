@@ -175,6 +175,9 @@ for (const name of readdirSync(dir)) {
 process.stdout.write(createHash('sha256').update(JSON.stringify(out)).digest('hex'));
 NODE
 )"
+# Owner stop-work containment (AGENTS.md 2026-11-25): no stopped or deferred product module or file may be emitted.
+# Runs on the final site, after the last site mutation (mirror stylesheet and banner) and before checksums/evidence.
+node scripts/release/verify-release-exclusions.mjs "$evidence/ghostpay-lean-build.json" "$site" || die "release-exclusion check failed"
 node --input-type=module - "$site" "$evidence" "$commit" "$manifests_sha" "$ROOT" "$deployments" "$origin" "$shared" "$dev" <<'NODE'
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';

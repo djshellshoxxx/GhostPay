@@ -32,10 +32,10 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 - **Not covered:** a different browser, profile or device; a private window; the opt-in embedded-iframe checkout
   (`VITE_EMBED_IFRAME`), whose storage and locks are partitioned from a top-level tab; site data cleared by the user; a
   payment made outside GhostPay. These are documented in the privacy docs and the user guide.
-- **Status:** implementation complete on branch. Full web gates and anvil browser suite: see REGRESSION_RESULTS.
-  Merge pending exact-head hosted CI.
+- **Status:** merged into `main` as `c8e131c1` on 2026-11-24 (see the status update below). Full web gates and anvil
+  browser suite: see REGRESSION_RESULTS.
 
-## M3 — P1-LATE seller late-payment and reorg-safe invoice status (next)
+## M3 — P1-LATE seller late-payment and reorg-safe invoice status (merged via #635)
 
 - Scope and gaps pinned in [ESSENTIAL_FEATURE_MATRIX.md](ESSENTIAL_FEATURE_MATRIX.md) §P1-LATE. It starts after #500
   merges, because both touch `apps/web/locales/*`.
@@ -44,3 +44,38 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 
 - M2 P0-KEYS (branch `claude/nifty-bohr-5ra2ap`) and M4-DORM371 (`claude/nifty-bohr-5ra2ap-dormant-371`). Evidence goes in
   `docs/engineering/milestones/` on those branches.
+
+## M1 status update (2026-11-24)
+
+- **Merged** into `main` as `c8e131c1` (PR #500, head `9a67daf2`), including #545 (REV-L2). See FEATURE_INTEGRATION_LOG.
+- **M3 (P1-LATE) reassigned:** the open stack #533 (`90e3fff0`) → #546 (`711168f1`) → #575 (`5a225f6c`), by another agent,
+  already implements seller late-payment and reorg invoice-credit handling in `ReconciliationLedger`/`reconciliationMatch`.
+  Per the no-rewrite rule, this session reviews and qualifies that stack instead of implementing M3 again. No M3 code was written here.
+
+## M3 status update (2026-11-26)
+
+- **Merged** into `main` as `aaa71a11` on 2026-11-25 through PR #635 (`claude/p1-late-reconciliation`, head `205f8fd7`),
+  a consolidation by another session of #533 → #546 → #575 → #599 → #625 plus #590's receipt-binding commit. The
+  `claude/keen-volta-8ctx9x` session did not write or merge it. Post-merge push CI run 45595034543 on `aaa71a11`
+  succeeded. Details:
+  [`docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`](../handoffs/P1_LATE_CONSOLIDATION_20261124.md).
+- Stack PRs on 2026-11-26: #533 shows merged; #575, #590, #599 and #625 are closed as superseded and #546 as already
+  integrated.
+
+## Session handoff — `claude-keen-volta-8ctx9x` (2026-11-26)
+
+- **Merged by this session:** #452 (with #449, #450) → `8ddb3449`; #500 (P0-JRNL, with #427→#443 and #545) → `c8e131c1`;
+  #624 (trackers) → `e7e98109`. Lock generations used: 12, 20 and 45, each acquired and released with a non-force push.
+- **Open from this session:** #716 on `claude/keen-volta-8ctx9x` fixes LATE-LM1 (a quarantined linked payment
+  released its invoice). Base `e7e98109`, head `8ec9c7e0`. Next steps: wait for hosted CI on the exact head, then acquire
+  the lock, merge, and release.
+- **Open follow-ups (not started):** LATE-M1 (scan checkpoint blocked when the reconciliation vault can't open),
+  LATE-L1 (no retry for unlinked quarantined candidates), REV-I5/REV-I6 and QA-I1 (journal edge cases), RCPT-L1/L2,
+  GP-PAGES-01 (owner decision: custom domain). Details: SECURITY_FINDINGS.md.
+- **Environment notes for a successor:** Foundry 1.8.5 tarball SHA-256 `6c66ffcc…b226` (from
+  `infra/integration/Dockerfile.runner`). The proxy blocks `binaries.soliditylang.org`; solc 0.8.28 came from the GitHub
+  release `solc-static-linux`, whose version prints commit `7893614a`, installed at `~/.svm/0.8.28/solc-0.8.28`. Anvil-backed
+  web tests need `forge build --offline` in `packages/contracts` first. Then run
+  `ANVIL_BIN=$HOME/.foundry/bin/anvil SOLC_BIN=$HOME/.svm/0.8.28/solc-0.8.28 REQUIRE_ANVIL=1 npm test -w @ghostpay/web`
+  and `npm run e2e:devnet -w @ghostpay/web`.
+

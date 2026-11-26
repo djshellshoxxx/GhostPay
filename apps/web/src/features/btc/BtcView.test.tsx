@@ -65,7 +65,9 @@ describe('BtcView', () => {
   it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    // GhostPay empties the clipboard only while it still holds the backup, so the stub reads back the last write.
+    const readText = (): Promise<string> => Promise.resolve(writeText.mock.lastCall?.[0] ?? '');
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
@@ -75,15 +77,21 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
     expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
+    await vi.waitFor(() => { expect(writeText).toHaveBeenLastCalledWith(''); });
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
   it('empties the clipboard at the next click when the app lock could not (no user activation)', async () => {
     const { user } = await setup();
     let refuse = false;
-    const writeText = vi.fn((text: string) => (refuse && text === '' ? Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError')) : Promise.resolve()));
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    let clipboardText = '';
+    const writeText = vi.fn((text: string) => {
+      if (refuse && text === '') return Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError'));
+      clipboardText = text;
+      return Promise.resolve();
+    });
+    const readText = (): Promise<string> => Promise.resolve(clipboardText);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
@@ -94,12 +102,12 @@ describe('BtcView', () => {
       notifyAppLock('idle');
       await Promise.resolve();
     });
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await vi.waitFor(() => { expect(writeText).toHaveBeenCalledTimes(2); });
     expect(writeText).toHaveBeenLastCalledWith('');
     refuse = false;
     // Back at the page: the first click empties it.
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
+    await vi.waitFor(() => { expect(writeText).toHaveBeenCalledTimes(3); });
     expect(writeText).toHaveBeenLastCalledWith('');
     // Emptied once: Lock leaves the clipboard alone.
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
@@ -127,6 +135,22 @@ describe('BtcView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
   });
 
+  it('recognises spent outputs locally by default and asks the server per outpoint only when the box is ticked', async () => {
+    const { chain, user } = await setup();
+    await importSeed(user);
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Also ask the server whether each found output is unspent/ });
+    expect(box.checked).toBe(false);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    expect(screen.getByText(/Spent status: derived on this device from the blocks scanned through height/).textContent).toMatch(/No outpoint of this wallet was sent to the server/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
+    await user.click(box);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/Spent status: the configured Esplora server was asked about candidate outputs/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
+  });
+
   it('scans, reviews, requires approval, signs and broadcasts', async () => {
     const { chain, user } = await setup();
     await importSeed(user);
@@ -136,7 +160,7 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
     expect(screen.getByText('0.0005 BTC')).toBeTruthy();
-    expect(screen.getByText(/Output and spent status were checked with the configured Esplora provider/).textContent)
+    expect(screen.getByText(/Outputs were read from the configured Esplora provider/).textContent)
       .toMatch(/single-provider check, not independent verification/i);
     expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
     expect(screen.getByText('Unique in this scan')).toBeTruthy();

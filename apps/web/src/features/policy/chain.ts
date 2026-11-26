@@ -48,7 +48,7 @@ async function read(client: RpcClient, abi: Abi, to: Address, functionName: stri
   try {
     return decodeFunctionResult({ abi, functionName, data: out });
   } catch {
-    throw new UserFacingError(`The contract at ${to} did not answer ${functionName}() as expected.`);
+    throw new UserFacingError(`The contract did not answer ${functionName}() as expected.`);
   }
 }
 

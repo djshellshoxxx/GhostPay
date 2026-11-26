@@ -51,6 +51,12 @@ export interface AppState {
 
 export const AppContext = createContext<AppState | undefined>(undefined);
 
+// The stored field name also supports preferences saved by the first invoice-link implementation.
+export function useClipboardDelayMs(): number {
+  const app = useContext(AppContext);
+  return (app?.settings?.invoiceLinkClipboardDelaySec ?? 0) * 1_000;
+}
+
 export function useApp(): AppState {
   const s = useContext(AppContext);
   if (s === undefined) throw new Error('AppContext missing');

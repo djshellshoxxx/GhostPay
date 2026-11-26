@@ -235,6 +235,17 @@ describe('L1-02: the vault step-up belongs to the session', () => {
     expect(await store.get()).toBeUndefined();
   });
 
+  it('preserves a vault when the loaded seller has the same payment keys but a different invoice signer', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const record = (await store.get())!;
+    const otherSigner = importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW });
+    await expect(deleteEncryptedVault(record, store, PASS)).rejects.toThrow(/does not match/);
+    expect(await store.get()).toBe(record);
+    expect(getSessionPublic()).toEqual(otherSigner);
+  });
+
   it('requires the vault passphrase to export keys tied to a vault, including a saved vault for the same meta-address', async () => {
     const store = new MemoryKeyVaultStore();
     importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });

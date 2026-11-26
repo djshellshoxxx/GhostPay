@@ -12,9 +12,11 @@ import {
   createIndexerScanClient,
   createWindowedScanClient,
   describeScanDisclosure,
+  describeScanDisclosureMessages,
   loadScanPrivacy,
   planScan,
   saveScanPrivacy,
+  UNREADABLE_SCAN_PRIVACY,
   type ScanPrivacySettings,
 } from './scanPrivacy';
 
@@ -356,6 +358,11 @@ describe('scan privacy settings', () => {
     expect(loadScanPrivacy(s)).toEqual(next);
     s.setItem('ghostpay.scanPrivacy.v1', JSON.stringify({ transport: 'socks', endpoints: { '84532': 'http://evil.example/' }, windowBlocks: -5, jitterMinMs: 9, jitterMaxMs: 1, openLaneBudget: 1e12, indexerUrls: { x: 'https://a.example' } }));
     const l = loadScanPrivacy(s);
+    // W3: hostile or corrupted saved settings are unreadable. Fields are still sanitised for review, but the private
+    // path is required and the scan is blocked: they never fall back to an unrequired Direct scan.
+    expect(l.unreadable).toBe(true);
+    expect(l.requireProxy).toBe(true);
+    expect(planScan(l, chain).kind).toBe('blocked');
     expect(l.transport).toBe('direct');
     expect(l.endpoints).toEqual({});
     expect(l.windowBlocks).toBe(DEFAULT_SCAN_PRIVACY.windowBlocks);
@@ -363,7 +370,7 @@ describe('scan privacy settings', () => {
     expect(l.openLaneBudget).toBe(20_000);
     expect(l.indexerUrls).toEqual({});
     s.setItem('ghostpay.scanPrivacy.v1', '{not json');
-    expect(loadScanPrivacy(s)).toEqual(DEFAULT_SCAN_PRIVACY);
+    expect(loadScanPrivacy(s)).toBe(UNREADABLE_SCAN_PRIVACY);
     expect(saveScanPrivacy({ getItem: () => null, setItem: () => { throw new Error('quota'); } }, next)).toBe(false);
   });
 
@@ -446,12 +453,16 @@ describe('describeScanDisclosure', () => {
         expect(sweep, JSON.stringify(s)).toHaveLength(1);
         expect(sweep[0]!.learns).toMatch(/one-time address/);
         expect(sweep[0]!.learns).toMatch(/not through the scan path/);
+        expect(sweep[0]!.learns).toContain('only when you press "Read balance from the Settings RPC"');
+        expect(sweep[0]!.learns).not.toContain('as soon as you open');
+        expect(describeScanDisclosureMessages(s, { hasSecondary }).find((row) => row.party.key === 'scanPrivacy.disclosure.sweepParty')?.learns.key)
+          .toBe('scanPrivacy.disclosure.sweepOnRequest');
         expect(rows.at(-1)!.party).toBe('Everyone');
       }
     }
     const learns = (s: ScanPrivacySettings): string => describeScanDisclosure(s, { hasSecondary: false }).find((r) => r.party === 'Settings RPC (Sweep)')!.learns;
-    expect(learns(base())).toMatch(/^your IP address;.*reads its balance as soon as you open it/);
-    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*as soon as you open it/);
+    expect(learns(base())).toMatch(/^your IP address;.*only when you press/);
+    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press/);
     expect(learns({ ...proxy, requireProxy: true })).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press "Read balance from the Settings RPC"/);
   });
   function base(): ScanPrivacySettings { return { ...DEFAULT_SCAN_PRIVACY }; }

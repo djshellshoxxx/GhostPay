@@ -164,3 +164,21 @@ describe('one-EVM AppLean boundary', () => {
     expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
   });
 });
+
+describe('shared browser self-check footer', () => {
+  it.each([
+    ['lean', <AppLean key="lean" />],
+    ['full', <App key="full" />],
+  ] as const)('shows the same self-check region in the %s build footer on every view', async (_profile, app) => {
+    const user = userEvent.setup();
+    renderWith(app);
+    const footer = screen.getByRole('contentinfo');
+    const region = within(footer).getByRole('region', { name: 'Browser self-checks' });
+    await waitFor(() => { expect(region.textContent).not.toContain('Checking local browser capabilities'); });
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    for (const view of ['Pay', 'Settings', 'Home']) {
+      await user.click(within(nav).getByRole('button', { name: view }));
+      expect(within(screen.getByRole('contentinfo')).getByRole('region', { name: 'Browser self-checks' })).toBe(region);
+    }
+  });
+});

@@ -1,0 +1,1615 @@
+{
+  "observed_at_utc": "2026-11-25T09:16:58.042279+00:00",
+  "main_sha": "595a184b381980a440165832f51a83e8dfd3e8a8",
+  "read_only_inventory": false,
+  "archive_semantics": "Original source refs are preserved. Frozen archive/owner-stop-20261125/ branch snapshots pin all 31 feature/adjacent refs and three mixed compositions. Archived features are not completed and require a new explicit owner instruction to restart.",
+  "archive_branches": [
+    {
+      "branch": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "features": [
+        "F01"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "features": [
+        "F02"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        322
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "features": [
+        "F08"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "features": [
+        "F09"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "features": [
+        "F11"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "features": [
+        "F12"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "features": [
+        "F13"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "features": [
+        "F14"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "features": [
+        "P07"
+      ],
+      "prs": [],
+      "disposition": "archive_preserve_ref",
+      "source": "local fetched branch ref"
+    },
+    {
+      "branch": "feature/f02-ghoststore-catalog-cart",
+      "sha": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35",
+      "features": [
+        "F02"
+      ],
+      "prs": [
+        550
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "qualification/f02-merchant-catalog-auth-provider",
+      "sha": "08faa16e1a03fe8c87f97f02257363750b52c920",
+      "features": [
+        "F02"
+      ],
+      "prs": [
+        556
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feat/f04-deliberate-local-export-20261121",
+      "sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        397
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feat/f04-evidence-analytics-20261122",
+      "sha": "ff60e1e45cac1348d554f94ea24717285ecc5608",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        460
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feat/f04-pages-dashboard-20261123",
+      "sha": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        535
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "fix/f04-dashboard-refresh-focus",
+      "sha": "3085c87a57147afeb7dac7bc563af62f2c9784e5",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        543
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "ui/merchant-dashboard-records",
+      "sha": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        564
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feat/f04-dashboard-totals-qualification",
+      "sha": "6366767fb632ab3a01603497b49f12714ab796bb",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        579
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "sha": "e564360afa37714db4ea7cb63e12cde44db62dee",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        618
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "nodata/brave-meitner-974y9e",
+      "sha": "57505cb294cf1780036ff004d60e3fcb7b75917a",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        636
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "sha": "482d36ad436f4b27b2d86ff9a2c22daf150000ad",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        411
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "automation/20261125/bug/pos-session-record-bound",
+      "sha": "a095a62da8d246f0fbb4862ede8c0a1e7656affb",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        646
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feature/f11-ghostteams-invitation-review",
+      "sha": "10d995fa3290b51e0c35804a681ae0b30c4785b3",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        552
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feature/f11-ghostteams-membership",
+      "sha": "9229a14c303944380523d2a65b783a25541f8403",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        554
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feature/f11-ghostteams-membership-commit",
+      "sha": "8ade47153d0d08de4a7cc45fb60672a2b6afd658",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        562
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feature/f13-offline-quote-terms",
+      "sha": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a",
+      "features": [
+        "F13"
+      ],
+      "prs": [
+        566
+      ],
+      "disposition": "archive_preserve_ref",
+      "source": "live GitHub PR metadata",
+      "pr_state": "open",
+      "safe_to_close": true,
+      "pr_state_after": "closed"
+    },
+    {
+      "branch": "feature/f08-offline-merchant-profile-review",
+      "sha": "923e1edfb9ac34f8b6855d8ac8516cd835070afd",
+      "features": [
+        "F08"
+      ],
+      "prs": [
+        563
+      ],
+      "pr_state": "closed",
+      "merged": true,
+      "disposition": "archive_preserve_ref_and_integrated_code",
+      "source": "live GitHub PR metadata",
+      "safe_to_close": false,
+      "note": "Already merged; do not revert or delete. Preserve dormant code."
+    },
+    {
+      "branch": "nodata/gracious-meitner-0yy6do",
+      "sha": "cefdbd9d6b05c4bcca81f8e11119469ac654480a",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        638
+      ],
+      "pr_state": "closed",
+      "merged": true,
+      "disposition": "archive_preserve_ref_and_integrated_code",
+      "source": "live GitHub PR metadata",
+      "safe_to_close": false,
+      "note": "Already merged; do not revert or delete. Preserve dormant code."
+    },
+    {
+      "branch": "fix/pos-terminal-reliability-20261124",
+      "sha": "4ae333d3ffa85eb14c074a543bdc084370dd1e49",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        576
+      ],
+      "pr_state": "closed",
+      "merged": true,
+      "disposition": "archive_preserve_ref_and_integrated_code",
+      "source": "live GitHub PR metadata",
+      "safe_to_close": false,
+      "note": "Already merged; do not revert or delete. Preserve dormant code."
+    },
+    {
+      "branch": "automation/20261121/bug/pos-runtime-guard-r14",
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        406
+      ],
+      "pr_state": "closed",
+      "merged": true,
+      "disposition": "archive_preserve_ref_and_integrated_code",
+      "source": "live GitHub PR metadata",
+      "safe_to_close": false,
+      "note": "Already merged; do not revert or delete. Preserve dormant code."
+    },
+    {
+      "branch": "codex/spec-03-fiat-price-feeds",
+      "sha": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+      "features": [
+        "fiat-reference-pricing"
+      ],
+      "prs": [
+        592
+      ],
+      "pr_state": "open",
+      "disposition": "hold_non_beta_reference_pricing",
+      "source": "live GitHub PR metadata",
+      "note": "Feed-priced checkout/relayer qualification, not F13 provider/off-ramp conversion. Explicitly held as non-beta reference pricing; preserve shared amount parsing and exact arithmetic.",
+      "pr_state_after": "open"
+    }
+  ],
+  "safe_to_close_prs": [
+    322,
+    397,
+    411,
+    460,
+    535,
+    543,
+    550,
+    552,
+    554,
+    556,
+    562,
+    564,
+    566,
+    579,
+    618,
+    636,
+    646
+  ],
+  "pricing_hold_prs": [
+    592
+  ],
+  "mixed_prs": [
+    {
+      "number": 371,
+      "branch": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "features": [
+        "F04",
+        "F05",
+        "F10"
+      ],
+      "state": "open",
+      "disposition": "preserve_mixed_exclude_stopped_feature_slices",
+      "safe_to_close_as_entire_feature": false,
+      "note": "Dormant consolidation: exclude F04 from candidate; preserve F05/F10 and CI fixes for separate triage."
+    },
+    {
+      "number": 621,
+      "branch": "claude/nifty-bohr-5ra2ap-dormant-371",
+      "sha": "98065511df4b5315db665366ee941bfbf4578d06",
+      "features": [
+        "F04",
+        "F05",
+        "F10"
+      ],
+      "state": "open",
+      "disposition": "preserve_mixed_exclude_stopped_feature_slices",
+      "safe_to_close_as_entire_feature": false,
+      "note": "Current-main composition of #371: do not merge as-is; preserve unrelated work."
+    },
+    {
+      "number": 614,
+      "branch": "integration/near-finished-20261124",
+      "sha": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "features": [
+        "F09",
+        "fiat-arithmetic",
+        "QR",
+        "countdown"
+      ],
+      "state": "open",
+      "disposition": "preserve_mixed_exclude_stopped_feature_slices",
+      "safe_to_close_as_entire_feature": false,
+      "note": "Contains stopped POS donor plus pure fiat arithmetic, QR and countdown repairs. Preserve core repairs; do not merge the composite as an activation/completion vehicle for POS."
+    }
+  ],
+  "retain_core_pr_examples": [
+    384,
+    633,
+    634
+  ],
+  "excluded_false_positive_branches": [
+    {
+      "branch": "docs/f11-minimal-merchant-checkout-spec-20261120",
+      "sha": "c8d917a6c88114825a65dc46b7b3d21adebbe834",
+      "reason": "Historical F11 naming is merchant checkout SDK, not GhostTeams. Do not archive as GhostTeams by name alone."
+    }
+  ],
+  "scope_boundaries": [
+    "F12 stops GhostPay integration only, not standalone P2P-Offramp.",
+    "F04 stops merchant dashboard/aggregate analytics, not required invoice status, reconciliation ledger or payment receipts.",
+    "F13 stops provider conversion/handoff and non-beta live fiat-priced checkout work, not pure amount parsing, exact arithmetic or invoice reference currency fields.",
+    "P07 stops automatic encrypted multi-device synchronization, not manual backup/import, key recovery or local cross-tab safety.",
+    "F14 prior stop persists; do not remove established EVM chain selection or chain binding as routing."
+  ],
+  "additional_census_branches": [
+    {
+      "branch": "automation/ghostpay-integration-lock",
+      "sha": "d9a456539db16351f09effe21dbfb1c7acfc05c1",
+      "subject": "coordination: acquire generation-23 lock for claude-local-p1-late-reconciliation to merge PR #635",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 16,
+      "total_changed": 3902,
+      "hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ],
+      "disposition": "preserve_coordination_infrastructure_do_not_archive",
+      "prs": []
+    },
+    {
+      "branch": "docs/f05-receipt-assurance-coverage-20261122",
+      "sha": "300c9d215b01f30c0eee53f58bcb6aba85ebbd5b",
+      "subject": "docs(f05): source-pinned receipt assurance completion coverage and gates",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 18,
+      "total_changed": 79,
+      "hits": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts",
+        "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+        "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+        "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": [
+        457
+      ]
+    },
+    {
+      "branch": "docs/f11-minimal-merchant-checkout-spec-20261120",
+      "sha": "c8d917a6c88114825a65dc46b7b3d21adebbe834",
+      "subject": "docs(future): specify minimal F11 merchant checkout SDK",
+      "status": "only-doc-evidence-differences",
+      "hit_count": 1,
+      "total_changed": 1,
+      "hits": [
+        "docs/future/merchant-checkout-sdk/F11-SPEC.md"
+      ],
+      "disposition": "preserve_false_positive_old_F11_checkout_SDK",
+      "prs": []
+    },
+    {
+      "branch": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "subject": "docs: index future-only privacy feature catalog",
+      "status": "only-doc-evidence-differences",
+      "hit_count": 8,
+      "total_changed": 20,
+      "hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ],
+      "disposition": "preserve_mixed_catalog_supersede_stopped_product_plans",
+      "prs": []
+    },
+    {
+      "branch": "docs/ghostpay-future-module-specs-20261119",
+      "sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52",
+      "subject": "docs(future): collect 40 modular specs and verified publication evidence",
+      "status": "only-doc-evidence-differences",
+      "hit_count": 10,
+      "total_changed": 48,
+      "hits": [
+        "docs/future/modules/F01-ghosttips/SPEC.md",
+        "docs/future/modules/F02-ghoststore/SPEC.md",
+        "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+        "docs/future/modules/F08-ghostid/SPEC.md",
+        "docs/future/modules/F09-ghostpos/SPEC.md",
+        "docs/future/modules/F11-ghostteams/SPEC.md",
+        "docs/future/modules/F12-ghostbridge/SPEC.md",
+        "docs/future/modules/F13-fiat-conversion/SPEC.md"
+      ],
+      "disposition": "preserve_mixed_catalog_supersede_stopped_product_plans",
+      "prs": []
+    },
+    {
+      "branch": "feature/f10-durable-cas-m4-20261122",
+      "sha": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627",
+      "subject": "docs(f10): accurately inventory 21 M4 regression cases",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 18,
+      "total_changed": 90,
+      "hits": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts",
+        "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+        "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+        "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": [
+        456
+      ]
+    },
+    {
+      "branch": "feature/f10-lifecycle-m2-20261121",
+      "sha": "20a353d28e1aac89216ba2e8980000477307bf03",
+      "subject": "test(f10): exercise wallet boundary and serial stale-writer refusal",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 18,
+      "total_changed": 81,
+      "hits": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts",
+        "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+        "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+        "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": [
+        391
+      ]
+    },
+    {
+      "branch": "feature/f10-reviewed-preparation-m3-20261121",
+      "sha": "7079eedfc67180c9a0012c7154758e41fe6208c9",
+      "subject": "docs(f10): record reviewed preparation scope and durable coordination blockers",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 18,
+      "total_changed": 84,
+      "hits": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts",
+        "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+        "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+        "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": [
+        396
+      ]
+    },
+    {
+      "branch": "finish/recurring-m4-qualification-20261124",
+      "sha": "8d8fe2f0986bc5796dae2081ef34602c6a9db703",
+      "subject": "Finish native qualification of recurring-state M4",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 18,
+      "total_changed": 91,
+      "hits": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts",
+        "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+        "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+        "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": [
+        602
+      ]
+    },
+    {
+      "branch": "qualification/pr504-main-package-rollup-20261124",
+      "sha": "c09d15a3ee2b887f320a130197fb3acba1b4566e",
+      "subject": "qualification: reconcile C1 and merged package rollup",
+      "status": "implementation-differences-needing-disposition",
+      "hit_count": 3,
+      "total_changed": 358,
+      "hits": [
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ],
+      "disposition": "preserve_mixed_or_inherited_exclude_stopped_slices",
+      "prs": []
+    }
+  ],
+  "ancestral_recent_path_matches": [
+    {
+      "branch": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+      "subject": "docs(consolidation): pin Pages ancestry and safe integration gates",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "subject": "fix(ci): retain beta logs from their hidden state directory",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "subject": "feat(invoice-schema): restore opt-in pinned signer validation",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "subject": "fix(web): bind scan checkpoints to private v4 seller slots",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "subject": "fix(web): enforce idle lock across wall-clock rollback",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "subject": "docs: define ChatGPT-only zero-Codex continuation lane",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "subject": "docs(handoff): cooperative completion, audit and security-closure execution prompt",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "claude/backup-recovery",
+      "sha": "f30d9d547faef2ec5ac8e99c42c54d69116f9c5c",
+      "subject": "Merge origin/main (PR #640 help guide and privacy matrix) into claude/backup-recovery",
+      "recent_hits": [
+        "apps/web/e2e/pos-terminal.spec.ts",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/index.html",
+        "examples/pos-terminal/pos-session.js",
+        "examples/pos-terminal/pos.css",
+        "examples/pos-terminal/pos.js",
+        "examples/pos-terminal/session.test.mjs"
+      ]
+    },
+    {
+      "branch": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "subject": "docs: add screenshots, refresh README package map and in-repo wiki",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "subject": "docs(handoff): ultracode prompt for consolidation and hard lanes",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-browser-isolation-20261118",
+      "sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "subject": "fix(privacy): satisfy typed lint and refresh isolation evidence",
+      "recent_hits": [
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "subject": "Backport bounded release-asset streaming and cancellation to the ops monitor",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "subject": "Recover six historical CLI, merchant, transport and UX changes",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed",
+      "subject": "docs(consolidation): add PR inventory and Haiku workstream ledger",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    },
+    {
+      "branch": "integration/all-branch-followups-20261124",
+      "sha": "23b307d5b3e413e1b14989ba4bf75c0943a12184",
+      "subject": "docs: preserve every-branch comparison and qualification evidence",
+      "recent_hits": [
+        "apps/web/e2e/future-ghostid.spec.ts",
+        "apps/web/src/features/future/ghostid/OfflineProfileReview.test.tsx",
+        "apps/web/src/features/future/ghostid/OfflineProfileReview.tsx",
+        "apps/web/e2e/pos-terminal.spec.ts",
+        "docs/remote/usability/specs/pos-terminal.md",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js"
+      ]
+    },
+    {
+      "branch": "integration/all-branch-review-20261124",
+      "sha": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+      "subject": "Record complete branch accounting and combined qualification evidence",
+      "recent_hits": [
+        "apps/web/e2e/pos-terminal.spec.ts",
+        "docs/remote/usability/specs/pos-terminal.md",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+      "subject": "Exercise storage and UI failure paths and scope required integration fixtures",
+      "recent_hits": [
+        "docs/remote/usability/specs/pos-terminal.md",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/index.html",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.css",
+        "examples/pos-terminal/pos.js"
+      ]
+    },
+    {
+      "branch": "integration/ghostpay-branch-comparison-20261124-68c82b9",
+      "sha": "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+      "subject": "Integrate reviewed GhostPay branch work with complete provenance",
+      "recent_hits": [
+        "apps/web/e2e/pos-terminal.spec.ts",
+        "docs/remote/usability/specs/pos-terminal.md",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "examples/pos-terminal/pos.js",
+        "packages/merchant-hooks/src/pos.ts"
+      ]
+    },
+    {
+      "branch": "nodata/amazing-dijkstra-rgkp6o",
+      "sha": "1ca401122f48add886e970f473be62a86f2c69cb",
+      "subject": "style(pages): declare forced-colours scheme before print and state its effect",
+      "recent_hits": [
+        "apps/web/e2e/pos-terminal.spec.ts",
+        "examples/pos-terminal/README.md",
+        "examples/pos-terminal/index.html",
+        "examples/pos-terminal/pos-session.js",
+        "examples/pos-terminal/pos.css",
+        "examples/pos-terminal/pos.js",
+        "examples/pos-terminal/session.test.mjs"
+      ]
+    },
+    {
+      "branch": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+      "subject": "docs(privacy): add source-grounded network/query/authenticity/completeness evidence matrix",
+      "recent_hits": [
+        "docs/future/privacy-first/01-ghosttips.md",
+        "docs/future/privacy-first/02-ghoststore.md",
+        "docs/future/privacy-first/04-merchant-dashboard.md",
+        "docs/future/privacy-first/08-ghostid.md",
+        "docs/future/privacy-first/09-ghostpos.md",
+        "docs/future/privacy-first/11-ghostteams.md",
+        "docs/future/privacy-first/12-ghostbridge.md",
+        "docs/future/privacy-first/13-fiat-conversion.md"
+      ]
+    }
+  ],
+  "census_coverage_note": "All 734 census refs reviewed via names/subjects and changed paths where available; already-ancestral branches additionally scanned for stopped paths in four recent first-parent commits. Inherited feature files do not make unrelated or broad integration branches feature-only. This is fetched snapshot coverage, not unpublished local work.",
+  "owner_context_date": "2026-11-25",
+  "live_remote_branch_count_before_archives": 738,
+  "archive_snapshot_results": [
+    {
+      "source_branch": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "archive_branch": "archive/owner-stop-20261125/future/f01-ghosttips",
+      "features": [
+        "F01"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "archive_branch": "archive/owner-stop-20261125/future/f02-ghoststore",
+      "features": [
+        "F02"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "archive_branch": "archive/owner-stop-20261125/future/f04-merchant-dashboard",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        322
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "archive_branch": "archive/owner-stop-20261125/future/f08-ghostid",
+      "features": [
+        "F08"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "archive_branch": "archive/owner-stop-20261125/future/f09-ghostpos",
+      "features": [
+        "F09"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "archive_branch": "archive/owner-stop-20261125/future/f11-ghostteams",
+      "features": [
+        "F11"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "archive_branch": "archive/owner-stop-20261125/future/f12-ghostbridge",
+      "features": [
+        "F12"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "archive_branch": "archive/owner-stop-20261125/future/f13-fiat-conversion",
+      "features": [
+        "F13"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "archive_branch": "archive/owner-stop-20261125/future/f14-multichain-routing",
+      "features": [
+        "F14"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "archive_branch": "archive/owner-stop-20261125/future/p07-encrypted-device-sync",
+      "features": [
+        "P07"
+      ],
+      "prs": [],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f02-ghoststore-catalog-cart",
+      "sha": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35",
+      "archive_branch": "archive/owner-stop-20261125/feature/f02-ghoststore-catalog-cart",
+      "features": [
+        "F02"
+      ],
+      "prs": [
+        550
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "qualification/f02-merchant-catalog-auth-provider",
+      "sha": "08faa16e1a03fe8c87f97f02257363750b52c920",
+      "archive_branch": "archive/owner-stop-20261125/qualification/f02-merchant-catalog-auth-provider",
+      "features": [
+        "F02"
+      ],
+      "prs": [
+        556
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feat/f04-deliberate-local-export-20261121",
+      "sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+      "archive_branch": "archive/owner-stop-20261125/feat/f04-deliberate-local-export-20261121",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        397
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feat/f04-evidence-analytics-20261122",
+      "sha": "ff60e1e45cac1348d554f94ea24717285ecc5608",
+      "archive_branch": "archive/owner-stop-20261125/feat/f04-evidence-analytics-20261122",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        460
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feat/f04-pages-dashboard-20261123",
+      "sha": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890",
+      "archive_branch": "archive/owner-stop-20261125/feat/f04-pages-dashboard-20261123",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        535
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "fix/f04-dashboard-refresh-focus",
+      "sha": "3085c87a57147afeb7dac7bc563af62f2c9784e5",
+      "archive_branch": "archive/owner-stop-20261125/fix/f04-dashboard-refresh-focus",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        543
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "ui/merchant-dashboard-records",
+      "sha": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1",
+      "archive_branch": "archive/owner-stop-20261125/ui/merchant-dashboard-records",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        564
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feat/f04-dashboard-totals-qualification",
+      "sha": "6366767fb632ab3a01603497b49f12714ab796bb",
+      "archive_branch": "archive/owner-stop-20261125/feat/f04-dashboard-totals-qualification",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        579
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "sha": "e564360afa37714db4ea7cb63e12cde44db62dee",
+      "archive_branch": "archive/owner-stop-20261125/automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        618
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "nodata/brave-meitner-974y9e",
+      "sha": "57505cb294cf1780036ff004d60e3fcb7b75917a",
+      "archive_branch": "archive/owner-stop-20261125/nodata/brave-meitner-974y9e",
+      "features": [
+        "F04"
+      ],
+      "prs": [
+        636
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "sha": "482d36ad436f4b27b2d86ff9a2c22daf150000ad",
+      "archive_branch": "archive/owner-stop-20261125/fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        411
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "automation/20261125/bug/pos-session-record-bound",
+      "sha": "a095a62da8d246f0fbb4862ede8c0a1e7656affb",
+      "archive_branch": "archive/owner-stop-20261125/automation/20261125/bug/pos-session-record-bound",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        646
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f11-ghostteams-invitation-review",
+      "sha": "10d995fa3290b51e0c35804a681ae0b30c4785b3",
+      "archive_branch": "archive/owner-stop-20261125/feature/f11-ghostteams-invitation-review",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        552
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f11-ghostteams-membership",
+      "sha": "9229a14c303944380523d2a65b783a25541f8403",
+      "archive_branch": "archive/owner-stop-20261125/feature/f11-ghostteams-membership",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        554
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f11-ghostteams-membership-commit",
+      "sha": "8ade47153d0d08de4a7cc45fb60672a2b6afd658",
+      "archive_branch": "archive/owner-stop-20261125/feature/f11-ghostteams-membership-commit",
+      "features": [
+        "F11"
+      ],
+      "prs": [
+        562
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f13-offline-quote-terms",
+      "sha": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a",
+      "archive_branch": "archive/owner-stop-20261125/feature/f13-offline-quote-terms",
+      "features": [
+        "F13"
+      ],
+      "prs": [
+        566
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "feature/f08-offline-merchant-profile-review",
+      "sha": "923e1edfb9ac34f8b6855d8ac8516cd835070afd",
+      "archive_branch": "archive/owner-stop-20261125/feature/f08-offline-merchant-profile-review",
+      "features": [
+        "F08"
+      ],
+      "prs": [
+        563
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "nodata/gracious-meitner-0yy6do",
+      "sha": "cefdbd9d6b05c4bcca81f8e11119469ac654480a",
+      "archive_branch": "archive/owner-stop-20261125/nodata/gracious-meitner-0yy6do",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        638
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "fix/pos-terminal-reliability-20261124",
+      "sha": "4ae333d3ffa85eb14c074a543bdc084370dd1e49",
+      "archive_branch": "archive/owner-stop-20261125/fix/pos-terminal-reliability-20261124",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        576
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "automation/20261121/bug/pos-runtime-guard-r14",
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b",
+      "archive_branch": "archive/owner-stop-20261125/automation/20261121/bug/pos-runtime-guard-r14",
+      "features": [
+        "F09"
+      ],
+      "prs": [
+        406
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "codex/spec-03-fiat-price-feeds",
+      "sha": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+      "archive_branch": "archive/owner-stop-20261125/codex/spec-03-fiat-price-feeds",
+      "features": [
+        "fiat-reference-pricing"
+      ],
+      "prs": [
+        592
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "archive_branch": "archive/owner-stop-20261125/consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "features": [
+        "F04",
+        "F05",
+        "F10"
+      ],
+      "prs": [
+        371
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "claude/nifty-bohr-5ra2ap-dormant-371",
+      "sha": "98065511df4b5315db665366ee941bfbf4578d06",
+      "archive_branch": "archive/owner-stop-20261125/claude/nifty-bohr-5ra2ap-dormant-371",
+      "features": [
+        "F04",
+        "F05",
+        "F10"
+      ],
+      "prs": [
+        621
+      ],
+      "isError": false
+    },
+    {
+      "source_branch": "integration/near-finished-20261124",
+      "sha": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "archive_branch": "archive/owner-stop-20261125/integration/near-finished-20261124",
+      "features": [
+        "F09",
+        "fiat-arithmetic",
+        "QR",
+        "countdown"
+      ],
+      "prs": [
+        614
+      ],
+      "isError": false
+    }
+  ],
+  "pr_actions": [
+    {
+      "number": 322,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] feat(f04): add evidence-qualified local merchant projections"
+    },
+    {
+      "number": 397,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] feat(f04): add explicit private merchant CSV/JSON export approvals"
+    },
+    {
+      "number": 411,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] test(pos): correct 60-second parity expiry boundary blocking #406 CI"
+    },
+    {
+      "number": 460,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] feat(f04): add evidence-qualified local merchant analytics and completion tracker"
+    },
+    {
+      "number": 535,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Add an encrypted merchant dashboard preview to Pages"
+    },
+    {
+      "number": 543,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Preserve the Network picker\u2019s focus during automatic dashboard refresh"
+    },
+    {
+      "number": 550,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Add offline GhostStore catalog and cart review (F02)"
+    },
+    {
+      "number": 552,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Review GhostTeams invitations offline (F11)"
+    },
+    {
+      "number": 554,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Prepare GhostTeams invitation acceptance and member revocation (F11)"
+    },
+    {
+      "number": 556,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Qualify the offline GhostStore merchant proof provider contract"
+    },
+    {
+      "number": 562,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Commit offline GhostTeams membership changes against the owner-reviewed revision"
+    },
+    {
+      "number": 564,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Improve merchant dashboard record browsing on mobile and desktop"
+    },
+    {
+      "number": 566,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Validate offline fiat quote terms (F13)"
+    },
+    {
+      "number": 579,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Qualify exact invoice and historical scan totals in the merchant dashboard"
+    },
+    {
+      "number": 618,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] test(dashboard): fix IndexedDB fixture rejection lint"
+    },
+    {
+      "number": 636,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] Complete the merchant dashboard: exact reporting, asset filter and payment history export"
+    },
+    {
+      "number": 646,
+      "isError": false,
+      "state": "closed",
+      "head_unchanged": true,
+      "title": "[ARCHIVED] fix(pos): preserve full valid report window across session reload"
+    },
+    {
+      "number": 592,
+      "isError": false,
+      "state": "open",
+      "head_unchanged": true,
+      "title": "[HOLD] Complete spec 03 fiat quote validation and enforce feed qualification"
+    },
+    {
+      "number": 371,
+      "isError": false,
+      "state": "open",
+      "head_unchanged": true,
+      "title": "[HOLD] Consolidate dormant F04/F05/F10 modules and repair CI gates"
+    },
+    {
+      "number": 621,
+      "isError": false,
+      "state": "open",
+      "head_unchanged": true,
+      "title": "[HOLD] Land #371 dormant F04/F05/F10 module base on main"
+    },
+    {
+      "number": 614,
+      "isError": false,
+      "state": "open",
+      "head_unchanged": true,
+      "title": "[HOLD] Complete near-finished fiat, countdown, POS and QR branches"
+    }
+  ],
+  "automation_actions": [
+    {
+      "id": "6b017f1d95dc8191ad5472faabd5ec6c",
+      "title": "GhostPay Bug Repair Rounds",
+      "success": true,
+      "contains_new_scope": true,
+      "schedule_unchanged": true
+    },
+    {
+      "id": "Automation_7c0e282827248191a382cb3a4333f2fb",
+      "title": "Merge GhostPay clipboard cleanup",
+      "success": true,
+      "contains_new_scope": true,
+      "schedule_unchanged": true
+    },
+    {
+      "id": "Automation_a176f7848f248191a3a456b7fe746912",
+      "title": "GhostPay development and consolidation",
+      "success": true,
+      "contains_new_scope": true,
+      "schedule_unchanged": true
+    },
+    {
+      "id": "Automation_f3f88c2da858819182f9c350039c2b8c",
+      "title": "Refresh GhostPay completion tracker",
+      "success": true,
+      "contains_new_scope": true,
+      "schedule_unchanged": true
+    },
+    {
+      "id": "6b007d2d3bec819195051b70b39ff7d1",
+      "title": "GhostPay full branch consolidation",
+      "success": true,
+      "contains_new_scope": true,
+      "schedule_unchanged": true
+    }
+  ],
+  "tracker_action": {
+    "url": "https://chatgpt.com/space/page_d3d451a9e2b48191a759601e7b3e538f",
+    "sequence": 32,
+    "archived_launch_prompts": 23,
+    "checkbox_state_changes": 0,
+    "unrelated_block_changes": 0
+  },
+  "limitations": [
+    "Source and metadata inspection; no new runtime, artifact, browser or privacy-audit qualification claimed.",
+    "Saved automation instructions were updated; already running external sessions cannot be forcibly interrupted through these operations.",
+    "Census coverage is a snapshot; unpublished local branches and later remote changes require fresh inspection."
+  ],
+  "archive_verification": {
+    "snapshots_matching_recorded_sha": 34,
+    "original_refs_unchanged": 34,
+    "main_sha": "595a184b381980a440165832f51a83e8dfd3e8a8"
+  },
+  "independent_documentation_review": {
+    "reviewer": "/root/scope_tracker",
+    "result": "approved; no material issues",
+    "verified": [
+      "ten-feature scope and shared-core boundaries",
+      "proposal versus authorization separation",
+      "relative links",
+      "34 snapshot pins and local commit objects",
+      "17 closed plus four held PR records",
+      "five automation schedule-preservation records",
+      "no application/runtime change or unrun qualification claims"
+    ]
+  }
+}
