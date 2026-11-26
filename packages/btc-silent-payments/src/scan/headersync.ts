@@ -1,7 +1,7 @@
 import { fail, SilentPaymentError, type SilentPaymentErrorCode } from '../errors.js';
 import { parseHeader } from '../header.js';
 import type { ConnectResult, HeaderChain } from '../headerchain.js';
-import type { BlockOutputs, BlockTweaks, TweakSource } from './types.js';
+import type { BlockOutputs, BlockSpends, BlockTweaks, TweakSource } from './types.js';
 
 /**
  * Where raw block headers come from (own node, Esplora, Electrum). Untrusted: everything it returns is
@@ -275,6 +275,8 @@ export async function syncHeaderChainFromSources(
  */
 export class HeaderAnchoredTweakSource implements TweakSource {
   private readonly minConf: number;
+  /** Present only when `inner` implements `getSpends`, so the scanner's optional-method check still reflects the inner source. */
+  public readonly getSpends?: (height: number, signal?: AbortSignal) => Promise<BlockSpends>;
 
   public constructor(
     private readonly inner: TweakSource,
@@ -283,6 +285,15 @@ export class HeaderAnchoredTweakSource implements TweakSource {
   ) {
     this.minConf = o.minConfirmations ?? 1;
     if (!Number.isSafeInteger(this.minConf) || this.minConf < 1) fail('INVALID_INPUT');
+    const innerSpends = inner.getSpends?.bind(inner);
+    if (innerSpends !== undefined) {
+      this.getSpends = async (height: number, signal?: AbortSignal): Promise<BlockSpends> => {
+        if (this.chain.hashAt(height) === undefined) return fail('INVALID_INPUT');
+        const r = await innerSpends(height, signal);
+        this.expect(height, r.blockHash);
+        return r;
+      };
+    }
   }
 
   public async getTipHeight(signal?: AbortSignal): Promise<number> {
