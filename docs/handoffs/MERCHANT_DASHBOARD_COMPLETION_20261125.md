@@ -50,3 +50,14 @@ The chain #535 → #543 → #564 → #579 → #618 was linear and 541 commits be
 ## Verification
 
 See the PR body for exact commands and outcomes on the final head. Hosted CI is the qualification gate.
+
+## 2026-11-26 update: dormant merge
+
+- Owner decision (AGENTS.md, docs/ai/STOP_WORK_20261125.md): merge F04 dormant. It is wired only into the full-profile
+  `src/App.tsx` behind `VITE_MERCHANT_DASHBOARD=1`; `AppShell`/`AppLean` match main and the lean guard still rejects F04.
+- Reconciled with main `9d92472a`: one verified live observation per transaction (#716), neutral download names (#286),
+  pending/unverified evidence statuses (excluded from totals; see the review below).
+- Fuzz, stress, browser QA and the AI-assisted security/bug review with dispositions:
+  `docs/audits/F04_MERCHANT_DASHBOARD_REVIEW_20261126.md`.
+- Integration hold: a consolidation coordinator asked on #636 to reconcile the owner decision before merge, and holds
+  integration lock generation 48. Do not merge over that hold or without the lock.

@@ -46,7 +46,7 @@ const buildInfo = {
 
 // Static, CSP-friendly build: no inline scripts or styles, no source maps, no data: URI inlining,
 // no modulepreload polyfill (it injects inline code). Everything is emitted as same-origin files.
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   resolve: { alias: {
     '@ghostpay/ux-vault/portable': resolve(webRoot, '../../packages/ux-vault/src/portable.ts'),
     '@ghostpay/invoice-schema': resolve(webRoot, '../../packages/invoice-schema/src/index.ts'),
@@ -57,8 +57,10 @@ export default defineConfig({
     __GHOSTPAY_MANIFESTS__: JSON.stringify(manifests),
     // Unit tests must not inherit the shell's e2e profile; profile-specific tests pass it explicitly.
     __GHOSTPAY_PROFILE__: JSON.stringify(process.env['VITEST'] === undefined ? buildProfile : 'full'),
-    // F04 is excluded from beta/v1.0: off unless a build sets VITE_MERCHANT_DASHBOARD=1. Unit tests keep it covered.
-    __GHOSTPAY_MERCHANT_DASHBOARD__: JSON.stringify(process.env['VITEST'] !== undefined || process.env['VITE_MERCHANT_DASHBOARD'] === '1'),
+    // F04 is excluded from beta/v1.0: off unless a build sets VITE_MERCHANT_DASHBOARD=1. Vitest (never `vite build`,
+    // whatever VITEST holds) keeps it covered by unit tests.
+    __GHOSTPAY_MERCHANT_DASHBOARD__: JSON.stringify(
+      process.env['VITE_MERCHANT_DASHBOARD'] === '1' || (command === 'serve' && process.env['VITEST'] !== undefined)),
   },
   plugins: [
     react(),
@@ -129,4 +131,4 @@ export default defineConfig({
       thresholds: { statements: 90, branches: 85, functions: 90, lines: 90 },
     },
   },
-});
+}));

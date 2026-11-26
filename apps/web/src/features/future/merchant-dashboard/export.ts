@@ -108,9 +108,9 @@ function cell(row: DashboardRow, column: DashboardExportColumn): string | number
   return value;
 }
 
-/** Neutralize spreadsheet formulas even after leading spaces/invisible formatting chars. */
+/** Neutralize spreadsheet formulas even after leading spaces, invisible formatting or bidirectional controls. */
 export function csvCell(value: string): string {
-  const formula = /^[\s\u00a0\u2000-\u200f\u2028\u2029\u2060\ufeff]*[=+\-@]/u.test(value);
+  const formula = /^[\s\u00a0\u00ad\u061c\u2000-\u200f\u2028-\u202e\u2060-\u2069\ufeff]*[=+\-@]/u.test(value);
   const safe = formula ? "'" + value : value;
   return /[",\r\n]/u.test(safe) ? '"' + safe.replaceAll('"', '""') + '"' : safe;
 }

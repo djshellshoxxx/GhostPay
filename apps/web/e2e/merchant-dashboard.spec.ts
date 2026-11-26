@@ -113,7 +113,7 @@ test('opens encrypted merchant records on mobile and only exports the approved i
   const pending = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Agree and download' }).click();
   const file = await pending;
-  // Main neutralizes download names (#286): no product or value reaches the browser's download history.
+  // Neutral names only (lib/downloadNames.ts, #286): nothing identifying reaches download history.
   expect(file.suggestedFilename()).toBe('export.json');
   const text = readFileSync(await file.path(), 'utf8');
   expect(JSON.parse(text)).toMatchObject({ coverage: 'not-evaluated', rows: [{ chainId: 'eip155:84532', assetId: 'native', expectedAtomic: expect.stringMatching(/^[0-9]+$/) }] });

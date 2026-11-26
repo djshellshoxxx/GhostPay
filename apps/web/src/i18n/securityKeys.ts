@@ -54,6 +54,8 @@ export const SECURITY_KEY_GROUPS = {
     'dashboard.paymentPreviewCount',
     'dashboard.paymentExportError',
     'dashboard.exportChanged',
+    'dashboard.exportWarning',
+    'dashboard.state.unverified',
   ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [

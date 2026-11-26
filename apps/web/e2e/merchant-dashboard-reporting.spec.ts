@@ -49,7 +49,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 320, height: 720 
     const report = page.getByRole('region', { name: 'Report for this view' });
     await expect(report).toContainText('Verified-at-scan payments: 2 · ' + (maximum + 5n).toString() + ' atomic units');
     await expect(report).toContainText('Verified-at-scan payments: 1 · 23 atomic units');
-    await expect(report).toContainText('Excluded from payment totals: 0 imported');
+    await expect(report).toContainText('Excluded from payment totals: 0 pending');
 
     // Keyboard-only asset filtering keeps focus on the control the merchant is using.
     const asset = page.getByLabel('Asset', { exact: true });

@@ -11,7 +11,9 @@ import type { ReconciliationState } from '../lib/reconciliationVault';
 type Translate = (key: MessageKey, values?: Record<string, string | number>) => string;
 
 const INVOICE_STATES: readonly InvoiceState[] = ['open', 'expired', 'late', 'ambiguous', 'reorged'];
-const PAYMENT_STATES: readonly ObservationState[] = ['historical', 'imported', 'ambiguous', 'reorged'];
+/** The neutral name downloadText would choose anyway (lib/downloadNames.ts). */
+const PAYMENT_EXPORT_NAME = 'export.csv';
+const PAYMENT_STATES: readonly ObservationState[] = ['historical', 'unverified', 'imported', 'ambiguous', 'reorged'];
 
 /** Status counts and exact per-asset totals for the records the current filters select. */
 export function DashboardReportSection({ invoices, payments, registered, status }: {
@@ -106,7 +108,7 @@ export function PaymentHistoryExport({ payments, chain, fingerprint, ledgerFinge
           try {
             const file = buildPaymentHistoryCsv(selected, chain);
             const released = await releaseIfLedgerUnchanged(openLedger, fingerprint, ledgerFingerprint, () => {
-              downloadText('ghostpay-payments.csv', file.content, file.mimeType);
+              downloadText(PAYMENT_EXPORT_NAME, file.content, file.mimeType);
             }, current);
             if (!released && current()) onStale();
           } catch {

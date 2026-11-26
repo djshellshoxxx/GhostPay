@@ -17,14 +17,15 @@ const ctx: DashboardContext = {
 };
 const MAX = (1n << 256n) - 1n;
 // Escapes kept in a string: literal U+2028/U+2029 would end the line inside a regex literal.
-const LIVE_FORMULA = new RegExp('^[\\s\\u00a0\\u2000-\\u200f\\u2028\\u2029\\u2060\\ufeff]*[=+\\-@]', 'u');
+const LIVE_FORMULA = new RegExp('^[\\s\\u00a0\\u00ad\\u061c\\u2000-\\u200f\\u2028-\\u202e\\u2060-\\u2069\\ufeff]*[=+\\-@]', 'u');
 
 const recordArb = fc.record({
   tx: fc.integer({ min: 0, max: 12 }),
   logIndex: fc.integer({ min: 0, max: 2 }),
   asset: fc.constantFrom('native', token),
   amount: fc.oneof(fc.bigInt({ min: 0n, max: MAX }), fc.constantFrom(0n, 1n, MAX)),
-  status: fc.constantFrom('verified-at-scan' as const, 'invalidated-after-reorg' as const),
+  status: fc.constantFrom('verified-at-scan' as const, 'invalidated-after-reorg' as const, 'pending-at-scan' as const, 'unverified-at-scan' as const),
+  candidate: fc.boolean(),
   provenance: fc.constantFrom('live-scan' as const, 'imported-history' as const),
   invoice: fc.option(fc.constantFrom(...refs), { nil: undefined }),
   time: fc.option(fc.integer({ min: 1, max: 4_000_000_000 }), { nil: undefined }),
@@ -36,7 +37,8 @@ const recordArb = fc.record({
     sellerKeyId: seller, transactionHash: '0x' + r.tx.toString(16).padStart(64, '0'),
     stealthAddress: '0x' + 'd'.repeat(40), blockHash: '0x' + 'f'.repeat(64), asset: r.asset, blockNumber: '7',
     logIndex: r.logIndex, amountMinorUnits: r.amount.toString(), recordedAt: 1000,
-    evidenceSource: 'verified-router-scan', evidenceStatus: r.status, viewTagMatched: true, provenance: r.provenance,
+    evidenceSource: r.status === 'pending-at-scan' || (r.status === 'unverified-at-scan' && r.candidate) ? 'router-scan-candidate' : 'verified-router-scan',
+    evidenceStatus: r.status, viewTagMatched: true, provenance: r.provenance,
   };
   const timed = r.time === undefined ? base : { ...base, blockTimestamp: String(r.time) };
   return r.invoice === undefined ? timed : { ...timed, invoiceDigest: r.invoice };
@@ -56,7 +58,8 @@ function oracle(records: readonly VaultRecord[]): { totals: Map<string, bigint>;
     groups.set(key, [...(groups.get(key) ?? []), record]);
   }
   const kind = (r: VaultRecord): string => r.evidenceStatus === 'invalidated-after-reorg' ? 'reorged'
-    : r.provenance === 'imported-history' ? 'imported' : 'historical';
+    : r.provenance === 'imported-history' ? 'imported'
+    : r.evidenceStatus === 'verified-at-scan' && r.evidenceSource === 'verified-router-scan' ? 'historical' : 'unverified';
   const same = (a: VaultRecord, b: VaultRecord): boolean => a.id === b.id && a.amountMinorUnits === b.amountMinorUnits &&
     a.asset === b.asset && a.blockNumber === b.blockNumber && a.blockTimestamp === b.blockTimestamp &&
     a.invoiceDigest === b.invoiceDigest && kind(a) === kind(b);

@@ -17,7 +17,7 @@ export interface DashboardAssetReport {
 
 export interface DashboardReport {
   readonly assets: readonly DashboardAssetReport[];
-  /** Imported, reorg-invalidated and conflicting observations: never part of any total. */
+  /** Pending, unverified, imported, reorg-invalidated and conflicting observations: never part of any total. */
   readonly excludedPayments: number;
   readonly invoiceStates: Readonly<Record<InvoiceState, number>>;
   readonly paymentStates: Readonly<Record<ObservationState, number>>;
@@ -48,7 +48,7 @@ export function buildDashboardReport(
   registered: readonly DashboardRow[] = invoices.map(({ row }) => row),
 ): DashboardReport {
   const invoiceStates: Record<InvoiceState, number> = { open: 0, expired: 0, late: 0, ambiguous: 0, reorged: 0 };
-  const paymentStates: Record<ObservationState, number> = { historical: 0, imported: 0, reorged: 0, ambiguous: 0 };
+  const paymentStates: Record<ObservationState, number> = { historical: 0, unverified: 0, imported: 0, reorged: 0, ambiguous: 0 };
   const groups = new Map<string, { invoiceCount: number; expected: bigint; verifiedPayments: number; verified: bigint; linked: bigint }>();
   const group = (id: string) => {
     let entry = groups.get(id);

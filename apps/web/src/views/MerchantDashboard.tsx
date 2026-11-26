@@ -20,11 +20,13 @@ import { useApp } from '../state';
 import { DashboardReportSection, PaymentHistoryExport } from './MerchantDashboardReport';
 
 const PAGE_SIZE = 25;
+/** The neutral names downloadText would choose anyway (lib/downloadNames.ts): nothing identifying reaches download history. */
+const INVOICE_EXPORT_NAMES = { csv: 'export.csv', json: 'export.json' } as const satisfies Record<DashboardExportFormat, string>;
 const EXPORT_COLUMNS = ['chainId', 'assetId', 'expiresAt', 'expectedAtomic'] as const;
 const STATUS: Record<InvoiceState | ObservationState, MessageKey> = {
   open: 'dashboard.state.open', expired: 'dashboard.state.expired', late: 'dashboard.state.late',
   ambiguous: 'dashboard.state.ambiguous', reorged: 'dashboard.state.reorged',
-  historical: 'dashboard.state.historical', imported: 'dashboard.state.imported',
+  historical: 'dashboard.state.historical', unverified: 'dashboard.state.unverified', imported: 'dashboard.state.imported',
 };
 type LoadedDashboard = Awaited<ReturnType<typeof readMerchantDashboard>> & {
   readonly context: DashboardContext;
@@ -268,7 +270,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
 
   const now = Math.floor(clock / 1000);
   const statuses: readonly (InvoiceState | ObservationState)[] = kind === 'invoices'
-    ? ['open', 'expired', 'late', 'ambiguous', 'reorged'] : ['historical', 'imported', 'ambiguous', 'reorged'];
+    ? ['open', 'expired', 'late', 'ambiguous', 'reorged'] : ['historical', 'unverified', 'imported', 'ambiguous', 'reorged'];
   const range = utcRange(from, through);
   const dateDescription = range === undefined ? 'dashboard-date-hint dashboard-date-error' : 'dashboard-date-hint';
   const inRange = (seconds: number | undefined): boolean => range !== undefined &&
@@ -423,6 +425,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
       }}>{t('dashboard.preview')}</button>
       {preview !== undefined && <div ref={previewControls} className="dashboard-actions">
         <p role="status">{t('dashboard.previewCount', { count: preview.preview.count, format: preview.preview.format.toUpperCase() })}</p>
+        <p>{t('dashboard.exportWarning')}</p>
         <ul>{[...preview.totals].map(([asset, total]) => <li key={asset}>
           <bdi>{asset}</bdi>{' '}{t('dashboard.expectedTotal', { amount: total.toString() })}
         </li>)}</ul>
@@ -445,7 +448,7 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
                 let released = false;
                 await releaseIfLedgerUnchanged(() => createCurrentReconciliationVault(chain, seller), data.fingerprint, ledgerFingerprint, () => {
                   if (expiryChanged(data, status, preview.selectedAt, Date.now())) return;
-                  downloadText('ghostpay-invoices.' + preview.preview.format, file.content, file.mimeType);
+                  downloadText(INVOICE_EXPORT_NAMES[preview.preview.format], file.content, file.mimeType);
                   released = true;
                 }, current);
                 if (!released && current()) {
@@ -473,4 +476,4 @@ function DashboardScope({ chain, session }: { readonly chain: number; readonly s
   </div>;
 }
 
-// i18n-use: dashboard.loading dashboard.stale dashboard.error dashboard.locked dashboard.retry dashboard.open dashboard.state.open dashboard.state.expired dashboard.state.late dashboard.state.ambiguous dashboard.state.reorged dashboard.state.historical dashboard.state.imported dashboard.byExpiry dashboard.byInclusion dashboard.expectedAmount dashboard.observedAmount dashboard.expires dashboard.included
+// i18n-use: dashboard.loading dashboard.stale dashboard.error dashboard.locked dashboard.retry dashboard.open dashboard.state.open dashboard.state.expired dashboard.state.late dashboard.state.ambiguous dashboard.state.reorged dashboard.state.historical dashboard.state.unverified dashboard.state.imported dashboard.byExpiry dashboard.byInclusion dashboard.expectedAmount dashboard.observedAmount dashboard.expires dashboard.included

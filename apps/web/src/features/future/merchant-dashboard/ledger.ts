@@ -4,7 +4,8 @@ import { DASHBOARD_MAX_DATE_SECONDS, type DashboardContext, type DashboardObserv
 
 export const assetId = (asset: string): string => asset === 'native' ? asset : 'erc20:' + asset;
 
-export type ObservationState = 'historical' | 'imported' | 'reorged' | 'ambiguous';
+/** `historical`: router-verified live observation. `unverified`: a pending candidate or an unverified claim. */
+export type ObservationState = 'historical' | 'unverified' | 'imported' | 'reorged' | 'ambiguous';
 export type InvoiceState = 'open' | 'expired' | 'ambiguous' | 'late' | 'reorged';
 export interface LedgerObservation {
   readonly record: VaultRecord;
@@ -41,8 +42,12 @@ export async function readMerchantDashboard(
     const existing = observations.get(identity);
     const invoiceRefs = new Set(existing?.invoiceRefs);
     if (record.invoiceDigest !== undefined) invoiceRefs.add(record.invoiceDigest);
+    // Fail closed: only a router-verified live observation is a verified payment. Pending candidates and unverified
+    // claims (announcements anyone can make) and any status added later stay out of every total.
     const kind: ObservationState = record.evidenceStatus === 'invalidated-after-reorg' ? 'reorged'
-      : record.provenance === 'imported-history' ? 'imported' : 'historical';
+      : record.provenance === 'imported-history' ? 'imported'
+      : record.evidenceStatus === 'verified-at-scan' && record.evidenceSource === 'verified-router-scan' ? 'historical'
+      : 'unverified';
     if (existing === undefined) {
       observations.set(identity, { record, state: kind, invoiceRefs: [...invoiceRefs] });
     } else if (existing.record.id !== record.id || existing.record.amountMinorUnits !== record.amountMinorUnits ||
@@ -90,7 +95,7 @@ export function invoiceState(row: DashboardRow, observations: readonly LedgerObs
   if (observations.some((entry) => entry.state === 'ambiguous' || assetId(entry.record.asset) !== row.assetId)) return 'ambiguous';
   const historical = observations.filter((entry) => entry.state === 'historical');
   if (historical.some(({ record }) => (observationTime(record) ?? -1) >= row.expiresAt)) return 'late';
-  if (historical.length > 0 || observations.some((entry) => entry.state === 'imported')) return 'ambiguous';
+  if (historical.length > 0 || observations.some((entry) => entry.state === 'imported' || entry.state === 'unverified')) return 'ambiguous';
   if (observations.some((entry) => entry.state === 'reorged')) return 'reorged';
   return now >= row.expiresAt ? 'expired' : 'open';
 }

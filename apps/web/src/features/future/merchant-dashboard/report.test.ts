@@ -56,14 +56,14 @@ describe('merchant report totals over verified-at-scan payment records', () => {
   it('counts excluded observations and every invoice and payment status', () => {
     expect(report.excludedPayments).toBe(3);
     expect(report.invoiceStates).toEqual({ open: 1, expired: 1, late: 1, ambiguous: 0, reorged: 0 });
-    expect(report.paymentStates).toEqual({ historical: 4, imported: 1, reorged: 1, ambiguous: 1 });
+    expect(report.paymentStates).toEqual({ historical: 4, unverified: 0, imported: 1, reorged: 1, ambiguous: 1 });
   });
 
   it('reports an empty selection as zero counts with no asset groups', () => {
     expect(buildDashboardReport([], [])).toEqual({
       assets: [], excludedPayments: 0,
       invoiceStates: { open: 0, expired: 0, late: 0, ambiguous: 0, reorged: 0 },
-      paymentStates: { historical: 0, imported: 0, reorged: 0, ambiguous: 0 },
+      paymentStates: { historical: 0, unverified: 0, imported: 0, reorged: 0, ambiguous: 0 },
     });
   });
 
@@ -106,5 +106,14 @@ describe('payment history CSV', () => {
 
   it('produces a header-only file for an empty selection', () => {
     expect(buildPaymentHistoryCsv([], 1).content).toBe(PAYMENT_HISTORY_COLUMNS.join(',') + '\r\n');
+  });
+});
+
+describe('CSV formula guard (security audit, info)', () => {
+  it('neutralizes formulas hidden behind bidirectional, soft-hyphen and isolate controls', () => {
+    for (const lead of ['‮', '‪', '⁦', '⁩', '؜', '­', '‏']) {
+      const csv = buildPaymentHistoryCsv([observation('historical', {}, [lead + '=1+1'])], 1);
+      expect(csv.content.split('\r\n')[1]!.endsWith(",'" + lead + '=1+1')).toBe(true);
+    }
   });
 });

@@ -279,7 +279,7 @@ it('filters by asset, reports exact verified-at-scan totals and exports consente
   // The duplicate copy of p1 counts once; the imported observation never counts.
   expect(report.getByText(`Verified-at-scan payments: 2 · ${(2n ** 256n + 2n).toString()} atomic units`)).toBeTruthy();
   expect(report.getByText(`Of which locally associated with a registered invoice of this asset: ${huge} atomic units`)).toBeTruthy();
-  expect(report.getByText('Excluded from payment totals: 1 imported, reorganized or review-required observations.')).toBeTruthy();
+  expect(report.getByText('Excluded from payment totals: 1 pending, unverified, imported, reorganized or review-required observations.')).toBeTruthy();
 
   const filters = within(screen.getByRole('group', { name: 'Browse records' }));
   await user.selectOptions(filters.getByLabelText('Asset'), 'erc20:' + usdc);
@@ -295,7 +295,7 @@ it('filters by asset, reports exact verified-at-scan totals and exports consente
   await user.click(screen.getByRole('button', { name: 'Agree and download' }));
   await waitFor(() => { expect(downloaded).toHaveBeenCalledOnce(); });
   const [name, content, mime] = downloaded.mock.calls[0]!;
-  expect(name).toBe('ghostpay-payments.csv');
+  expect(name).toBe('export.csv');
   expect(mime).toBe('text/csv;charset=utf-8');
   expect(content).toContain(`eip155:84532,erc20:${usdc},historical,2050-01-01T00:00:00.000Z,9,4,0x${'4'.repeat(64)},3,`);
   expect(content).not.toContain('0x' + '2'.repeat(40));

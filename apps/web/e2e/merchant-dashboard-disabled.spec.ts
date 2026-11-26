@@ -18,7 +18,7 @@ test('the merchant dashboard is absent from the default build', async ({ page })
   expect(scripts.length).toBeGreaterThan(0);
   for (const name of scripts) {
     const source = readFileSync(assets + name, 'utf8');
-    for (const marker of ['ghostpay-payments.csv', 'ghostpay-invoices.', 'ghostpay.dashboard-input/1']) {
+    for (const marker of ['ghostpay.dashboard-input/1', 'ghostpay.dashboard-analytics/1']) {
       expect(source.includes(marker), `${name} contains ${marker}`).toBe(false);
     }
   }

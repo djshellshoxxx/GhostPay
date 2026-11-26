@@ -22,6 +22,13 @@
 # Network access is needed for `npm ci` unless GP_SKIP_INSTALL=1.
 set -euo pipefail
 
+# F04 merchant dashboard is excluded from beta/v1.0 (AGENTS.md): a release must never opt in to it or build with Vitest's
+# environment, which would turn it on. The postbuild bundle scan also fails a default build that contains it.
+if [ -n "${VITE_MERCHANT_DASHBOARD:-}" ] || [ -n "${VITEST:-}" ]; then
+  echo "release-build: unset VITE_MERCHANT_DASHBOARD and VITEST; F04 is excluded from releases" >&2
+  exit 1
+fi
+
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib-common.sh
 . "$here/lib-common.sh"
