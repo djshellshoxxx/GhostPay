@@ -43,6 +43,7 @@ export interface MerchantTemplateInvoiceRequest {
   /** Separate, explicitly chosen fixed crypto amount. No fiat conversion is inferred. */
   readonly tokenAmount: string;
   readonly feePolicy: 'payer_pays' | 'seller_pays';
+  readonly minimalMetadata?: boolean;
   readonly baseUrl: string;
   readonly nowSeconds: () => number;
   readonly isCurrent?: () => boolean;
@@ -51,7 +52,7 @@ export interface MerchantTemplateInvoiceRequest {
 /** Issues a new signed invoice locally. This neither edits an existing invoice nor sends secrets to another origin. */
 export async function buildMerchantTemplateInvoice(input: MerchantTemplateInvoiceRequest): Promise<CreatedInvoice> {
   const invalid = (): never => { throw new UserFacingError({ key: 'merchantProfile.issue.invalid' }); };
-  const { templateId, requestedAmount, chainId, token, tokenAmount, feePolicy, baseUrl, nowSeconds, isCurrent } = input;
+  const { templateId, requestedAmount, chainId, token, tokenAmount, feePolicy, baseUrl, nowSeconds, isCurrent, minimalMetadata = false } = input;
   // Own a verified snapshot so an external object cannot change across custody/encoding awaits.
   const verified = verifyMerchantProfile(JSON.stringify(input.profile), nowSeconds());
   if (!verified.ok) return invalid();
@@ -78,7 +79,7 @@ export async function buildMerchantTemplateInvoice(input: MerchantTemplateInvoic
     lineItems: [{ description: profile.name, quantity: '1', unitPrice: formatUnits(BigInt(amount), fiatDecimals(template.currency)) }],
     taxRatePercent: '0', feePolicy: feePolicy, amountMode: 'fixed_token', tokenAmount: tokenAmount,
     expiryHours: 1, expirySeconds: template.expires, quoteTtlMinutes: Math.min(15, Math.floor(template.expires / 60)),
-    maxSlippageBps: 0, memo: '', encrypt: false,
+    maxSlippageBps: 0, memo: '', encrypt: false, minimalMetadata,
   }, baseUrl, nowSeconds());
   const finalRecoverable = await loadedKeysRecoverable();
   current();
