@@ -109,9 +109,12 @@ export function BtcView(
    * unsweepable until a later complete local scan no longer lists them, a reorganization cuts the scan, or the
    * session is locked or its wallet replaced. Memory only; the ref is what retained handlers read.
    */
-  const pendingSpendsRef = useRef<ReadonlyMap<string, number>>(new Map());
-  const [pendingSpends, setPendingSpendsState] = useState<ReadonlyMap<string, number>>(new Map());
-  const setPendingSpends = (next: ReadonlyMap<string, number>): void => {
+  // Session pending-spend marks: input id -> txid of the signed transaction handed to the server for it. Kept only in
+  // memory and released only on lock or wallet change (FC-05b review M1/L1): the transaction stays valid across reorgs
+  // and rescans that cannot see the mempool.
+  const pendingSpendsRef = useRef<ReadonlyMap<string, string>>(new Map());
+  const [pendingSpends, setPendingSpendsState] = useState<ReadonlyMap<string, string>>(new Map());
+  const setPendingSpends = (next: ReadonlyMap<string, string>): void => {
     pendingSpendsRef.current = next;
     setPendingSpendsState(next);
   };
@@ -249,7 +252,7 @@ export function BtcView(
    * A retained handler may use only outputs and spend coverage from the current scan, the live header chain and the
    * live pending-spend set, never the render it was created in. Recovered-from: ba588c82 (PR #254).
    */
-  const inputsChecked = (r: SweepReview | undefined): boolean => {
+  const inputsChecked = (r: SweepReview | undefined, ownTxid?: string): boolean => {
     // The live chain too: a running check updates it in place before React state catches up.
     const live = chainRef.current?.netId === net.id ? chainRef.current.chain : undefined;
     const current = scanRef.current;
@@ -261,12 +264,13 @@ export function BtcView(
       (current.spentStatus !== 'local' || current.toHeight >= live.tipHeight) &&
       r.inputs.every((i) => {
         const f = current.found.find((x) => x.txid === i.txid && x.vout === i.vout);
-        return f !== undefined && f.height <= live.tipHeight && live.hashAt(f.height) === f.blockHash && !pendingSpendsRef.current.has(`${i.txid}:${String(i.vout)}`);
+        const mark = pendingSpendsRef.current.get(`${i.txid}:${String(i.vout)}`);
+        return f !== undefined && f.height <= live.tipHeight && live.hashAt(f.height) === f.blockHash && (mark === undefined || mark === ownTxid);
       })
     );
   };
   /** For the click handlers: also refuse while any check or scan runs (the buttons render from `scanning`). */
-  const reviewChecked = (r: SweepReview | undefined): boolean => !scanningRef.current && inputsChecked(r);
+  const reviewChecked = (r: SweepReview | undefined, ownTxid?: string): boolean => !scanningRef.current && inputsChecked(r, ownTxid);
 
   /** Forgets the review, approval, signature and broadcast state, and every selection that cannot be swept now. */
   const clearSweepFlow = (): void => {
@@ -279,7 +283,7 @@ export function BtcView(
 
   // Whenever the checked tip drops below a reviewed input (or headers are gone), the sweep must be reviewed again.
   useEffect(() => {
-    if (review !== undefined && !inputsChecked(review)) clearSweepFlow();
+    if (review !== undefined && !inputsChecked(review, signed?.txid)) clearSweepFlow();
   }, [checkedTip, scan, review]);
 
   /** Drops scan results from blocks that left the checked chain; wipes their spend tweaks. */
@@ -293,8 +297,7 @@ export function BtcView(
     scanRef.current = next;
     setScan(next);
     clearFlowState();
-    // A reorganization that cut the scan invalidates the session's pending-spend marks; an advance of the tip does not.
-    if (next === undefined || next.toHeight < current.toHeight) setPendingSpends(new Map());
+    // Pending-spend marks survive: the transaction that spends those inputs remains valid on any branch (FC-05b M1).
     return [
       next === undefined
         ? { kind: 'warn', text: { key: 'btc.headers.scanDiscarded' } }
@@ -490,12 +493,7 @@ export function BtcView(
         }
         scanRef.current = res;
         setScan(res);
-        // A complete local scan that covers a pending output's block and no longer lists it has seen the spend confirmed.
-        if (res.spentStatus === 'local' && pendingSpendsRef.current.size > 0) {
-          const listed = new Set(res.found.map((f) => `${f.txid}:${String(f.vout)}`));
-          const remaining = new Map([...pendingSpendsRef.current].filter(([id, height]) => listed.has(id) || height < res.fromHeight || height > res.toHeight));
-          if (remaining.size !== pendingSpendsRef.current.size) setPendingSpends(remaining);
-        }
+        // A spent output simply stops being listed; its pending-spend mark is released only on lock or wallet change.
         setScanNote({ key: 'btc.scan.scanned', values: { from: String(res.fromHeight), to: String(res.toHeight) } });
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
@@ -548,7 +546,11 @@ export function BtcView(
     const { live } = begin();
     void (async () => {
       try {
-        const out = await signSweep(wallet, selected, review);
+        // From the live scan, in review order, never the render this handler was created in (FC-05b review nit).
+        const current = scanRef.current?.found ?? [];
+        const inputs = review.inputs.map((i) => current.find((f) => f.txid === i.txid && f.vout === i.vout)).filter((f): f is FoundPayment => f !== undefined);
+        if (inputs.length !== review.inputs.length) return;
+        const out = await signSweep(wallet, inputs, review);
         if (live()) setSigned(out);
       } catch (e) {
         if (live()) setError(captureBtcErrorMessage(e));
@@ -557,7 +559,7 @@ export function BtcView(
   };
 
   const doBroadcast = (): void => {
-    if (signed === undefined || !approved || !reviewChecked(review) || currentBroadcast?.phase === 'broadcast-attempted' || currentBroadcast?.phase === 'pending-confirmation') return;
+    if (signed === undefined || !approved || !reviewChecked(review, signed.txid) || currentBroadcast?.phase === 'broadcast-attempted' || currentBroadcast?.phase === 'pending-confirmation') return;
     setError(undefined);
     const { live } = begin();
     void (async () => {
@@ -566,12 +568,8 @@ export function BtcView(
         const c = client();
         requested = true;
         // From the moment the request may reach the server, these inputs may be spent: whatever the outcome.
-        const heights = new Map<string, number>(scanRef.current?.found.map((f) => [`${f.txid}:${String(f.vout)}`, f.height] as const));
         const next = new Map(pendingSpendsRef.current);
-        for (const i of review?.inputs ?? []) {
-          const id = `${i.txid}:${String(i.vout)}`;
-          next.set(id, heights.get(id) ?? 0);
-        }
+        for (const i of review?.inputs ?? []) next.set(`${i.txid}:${String(i.vout)}`, signed.txid);
         setPendingSpends(next);
         setBroadcastOutcome(referencedBroadcastOutcome('broadcast-attempted', signed.txid));
         const id = await c.broadcast(signed.rawHex);
@@ -982,7 +980,7 @@ export function BtcView(
               <p>{t('btc.signed.txid')} <Mono>{signed.txid}</Mono></p>
               {currentBroadcast === undefined && <p>{t('btc.signed.notSent')}</p>}
               <CopyButton text={signed.rawHex} label={t('btc.signed.copyRaw')} />{' '}
-              <button type="button" className="btn btn-primary" disabled={scanning || (currentBroadcast?.phase === 'pending-confirmation' || currentBroadcast?.phase === 'broadcast-attempted') || !inputsChecked(review)} onClick={doBroadcast}>
+              <button type="button" className="btn btn-primary" disabled={scanning || (currentBroadcast?.phase === 'pending-confirmation' || currentBroadcast?.phase === 'broadcast-attempted') || !inputsChecked(review, signed?.txid)} onClick={doBroadcast}>
                 {t('btc.broadcast.action', { network: net.label })}
               </button>
 
