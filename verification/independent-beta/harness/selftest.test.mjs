@@ -403,3 +403,43 @@ test('G5: a record satisfied only by a hash-less unknown row is counted as unqua
   assert.equal(o.i3UnqualifiedMatches, 1);
   assert.ok(o.notes.some((n) => /unqualified: presence, not proof of identity/.test(n.note)));
 });
+
+// ---- Milestone 2: log emission (contract model hook) and eth_getLogs.
+
+test('logs: canonical-only, removed by reorg, re-emitted on re-mine, receipt logs equal getLogs, filters hold (200 seeds)', () => {
+  const TOPIC = '0x' + '7a'.repeat(32);
+  for (let seed = 1; seed <= 200; seed += 1) {
+    const rng = new Rng(seed);
+    const chain = new SyntheticChain();
+    const emitter = '0x' + '55'.repeat(20);
+    chain.executor = (p) => (p.to === emitter ? [{ address: emitter, topics: [TOPIC, '0x' + String(p.data).slice(2).padStart(64, '0')], data: '0x' }] : []);
+    const hashes = [];
+    for (let step = 0; step < 20; step += 1) {
+      const r = rng.next();
+      if (r < 0.35) {
+        const h = rng.hash32();
+        hashes.push(h);
+        chain.submit(h, { from: '0xaa'.padEnd(42, '0'), to: rng.next() < 0.7 ? emitter : '0x' + '66'.repeat(20), data: '0x' + rng.int(1, 9) });
+      } else if (r < 0.7) chain.mine(hashes.filter(() => rng.next() < 0.8), { success: rng.next() < 0.85 });
+      else if (r < 0.85) chain.reorg(rng.int(1, 3));
+      else chain.advance(1);
+      const all = chain.getLogs({ fromBlock: '0x0', toBlock: 'latest' });
+      for (const l of all) {
+        const t = chain.truth(l.transactionHash);
+        assert.equal(t.state, 'mined', `seed ${seed}: log of a non-canonical tx`);
+        assert.ok(t.success, `seed ${seed}: log of a reverted tx`);
+        assert.equal(l.blockHash, chain.hashOf(parseInt(l.blockNumber, 16)), `seed ${seed}: stale blockHash`);
+      }
+      for (const h of hashes) {
+        const rc = chain.receiptObject(h);
+        if (rc === null) continue;
+        const viaGetLogs = all.filter((l) => l.transactionHash === h);
+        assert.deepEqual(rc.logs, viaGetLogs, `seed ${seed}: receipt logs differ from eth_getLogs`);
+      }
+      assert.deepEqual(chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', address: '0x' + '66'.repeat(20) }), [], `seed ${seed}: address filter`);
+      const withTopic = chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: [TOPIC] });
+      assert.equal(withTopic.length, all.length, `seed ${seed}: topic filter`);
+      assert.deepEqual(chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: ['0x' + '00'.repeat(32)] }), [], `seed ${seed}: non-matching topic`);
+    }
+  }
+});

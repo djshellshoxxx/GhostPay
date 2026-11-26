@@ -27,6 +27,9 @@ export class SyntheticChain {
     this.txs = new Map();
     this.nonces = new Map(); // from(lowercase) -> next nonce assigned at submission
     this.log = []; // ordered chain events for the run record
+    // Contract model: (tx, { blockNumber, index }) => [{ address, topics, data }] for a SUCCESSFUL transaction.
+    // Set by the harness from the contract specification; the chain itself knows no contract semantics.
+    this.executor = null;
   }
 
   /** Called by the mock wallet when it broadcasts: the transaction enters the mempool. */
@@ -59,7 +62,19 @@ export class SyntheticChain {
       tx.success = success;
       included.push(h.toLowerCase());
     }
-    this.blocks.set(this.head, { fork: this.fork, txs: included });
+    // Logs are emitted per canonical inclusion and are discarded with the block on a reorg (re-emitted if re-mined).
+    const logs = [];
+    included.forEach((h, index) => {
+      const tx = this.txs.get(h);
+      tx.logs = [];
+      if (!tx.success || this.executor === null) return;
+      for (const l of this.executor(tx.params, { blockNumber: this.head, index, hash: h }) ?? []) {
+        const entry = { ...l, address: String(l.address).toLowerCase(), txHash: h, txIndex: index, logIndex: logs.length };
+        logs.push(entry);
+        tx.logs.push(entry);
+      }
+    });
+    this.blocks.set(this.head, { fork: this.fork, txs: included, logs });
     this.log.push({ op: 'mine', block: this.head, included, success });
     return this.head;
   }
@@ -156,8 +171,49 @@ export class SyntheticChain {
       accessList: [],
       blockNumber: mined ? hex(tx.block) : null,
       blockHash: mined ? this.hashOf(tx.block) : null,
-      transactionIndex: mined ? '0x0' : null,
+      transactionIndex: mined ? hex(this.blocks.get(tx.block)?.txs.indexOf(String(hash).toLowerCase()) ?? 0) : null,
     };
+  }
+
+  /** RPC-shaped log object for a stored canonical log entry in block `number`. */
+  rpcLog(number, l) {
+    return {
+      address: l.address,
+      topics: l.topics.map((t) => String(t).toLowerCase()),
+      data: l.data ?? '0x',
+      blockNumber: hex(number),
+      blockHash: this.hashOf(number),
+      transactionHash: l.txHash,
+      transactionIndex: hex(l.txIndex),
+      logIndex: hex(l.logIndex),
+      removed: false,
+    };
+  }
+
+  /** eth_getLogs over canonical blocks only; address and topic filters per the JSON-RPC spec. */
+  getLogs({ fromBlock = 'latest', toBlock = 'latest', address, topics = [], blockHash } = {}) {
+    const num = (b) => (b === 'latest' || b === 'pending' || b === 'safe' || b === 'finalized' ? this.head : b === 'earliest' ? 0 : parseInt(b, 16));
+    let from = num(fromBlock);
+    let to = num(toBlock);
+    if (blockHash !== undefined) {
+      const want = String(blockHash).toLowerCase();
+      from = to = -1;
+      for (let n = GENESIS + 1; n <= this.head; n += 1) if (this.hashOf(n) === want) from = to = n;
+    }
+    const addrs = address === undefined || address === null ? null : (Array.isArray(address) ? address : [address]).map((a) => String(a).toLowerCase());
+    const out = [];
+    for (let n = Math.max(from, GENESIS + 1); n <= Math.min(to, this.head); n += 1) {
+      for (const l of this.blocks.get(n)?.logs ?? []) {
+        if (addrs !== null && !addrs.includes(l.address)) continue;
+        const ok = topics.every((want, i) => {
+          if (want === null || want === undefined) return true;
+          const t = String(l.topics[i] ?? '').toLowerCase();
+          return (Array.isArray(want) ? want : [want]).some((w) => String(w).toLowerCase() === t);
+        });
+        if (ok) out.push(this.rpcLog(n, l));
+      }
+    }
+    return out;
   }
 
   receiptObject(hash) {
@@ -176,7 +232,7 @@ export class SyntheticChain {
       cumulativeGasUsed: hex(21_000),
       effectiveGasPrice: hex(1_000_000_000),
       contractAddress: null,
-      logs: [],
+      logs: (tx.logs ?? []).map((l) => this.rpcLog(tx.block, l)),
       logsBloom: `0x${'0'.repeat(512)}`,
       type: '0x2',
     };

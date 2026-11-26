@@ -75,7 +75,7 @@ export class MockRpc {
       case 'eth_feeHistory':
         return { oldestBlock: hex(c.head), baseFeePerGas: [hex(1_000_000), hex(1_000_000)], gasUsedRatio: [0.5], reward: [[hex(1_000_000)]] };
       case 'eth_getLogs':
-        return []; // milestone 1 is payer-side; no announcements are staged
+        return c.getLogs(params[0] ?? {});
       case 'eth_call': {
         const call = params[0] ?? {};
         const to = String(call.to ?? '').toLowerCase();
