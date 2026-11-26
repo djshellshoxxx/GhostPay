@@ -4889,3 +4889,10 @@ required; no new local test run or browser execution is claimed.
 - Owns only `apps/web/src/lib/scanCursorSlot.ts`, `apps/web/src/lib/scanCursorSlot.test.ts` and this entry. No other path, dependency, workflow, contract or chain change. Donor refs are untouched.
 - Not claimed: #689/#691/#692 idle and account-privacy scopes (merged), #718 stack, #609, #707, the integration lock (held by `claude-newghostpay-7d`, generation 48); no merge is attempted until that lock is free.
 - Acceptance: the four regression tests recovered from `bbdc9a944` fail on main `601f2095` and pass with the fix; web typecheck, lint and tests for the affected workspace pass; hosted CI green on the exact head; the lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: QR assembler idle deadline ignores rejected chunks — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `cdddda0bf7beea89ed46c180050a3387336621c8` (feature 1 merged as #725; integration lock generation 52 acquired and released).
+- Feature 2 (one at a time): recover the unmerged donor commits `118ae827a` and `3f135bc46` (also `6b683651e`), carried by dormant `evidence/*` and `automation/*` donor refs. On main, `Assembler.add` in `packages/qr-exchange/src/assembler.ts` refreshes `#lastActivity` before it checks for `CHUNK_CONFLICT`, so a repeated CRC-valid conflicting chunk keeps an incomplete multi-part QR assembly alive indefinitely. The refresh now follows the conflict check; rejected chunks leave the idle deadline unchanged.
+- Owns only `packages/qr-exchange/src/assembler.ts`, `packages/qr-exchange/src/assembler.test.ts` (donor tests plus one seeded model test) and this entry. No dependency, workflow, contract or chain change. Donor refs are untouched.
+- Acceptance: the donor conflict test and the seeded model test fail on main `cdddda0b` and pass with the fix; qr-exchange package tests (14 files) and affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
