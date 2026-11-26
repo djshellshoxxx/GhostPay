@@ -3955,6 +3955,73 @@ CI and actual full/lean browser acceptance remain mandatory before parent integr
 Handoff: `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. No remote mutation,
 activation of an excluded product, dependency/workflow change or live transaction was performed by this worker.
 
+## Core idle suspension and sole-signer recovery continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/branch_triage`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/idle-recovery-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427` (tree
+  `529af494cdd8713b2dd0478f3f528260291bd830`).
+- Authorized core donors: #365 `45ece45defd2a26cfb7f471ea4654ba4d1d2266e`,
+  #544 `4b077d2b13f956cfcf9bce1726f929cca40c7394`, and #577
+  `2363943571de84bfd5da0b3f167699f34eb53ce7`. Preserve their original refs.
+  Port only independently required session suspension and encrypted recovery; do not
+  merge mixed #372 history, restore excluded products, or call a mixed branch completed.
+- Owned paths: `apps/web/src/lib/session.ts`, `apps/web/src/lib/keyVault.ts`,
+  `apps/web/src/AppShell.tsx` idle clock/suspension routing and navigation hunks,
+  `apps/web/src/views/SellerKeys.tsx` suspension visibility hunks, focused session/vault,
+  AppShell/App and SellerKeys regression tests, additive idle/recovery catalog keys in
+  `apps/web/locales/{en,ar,es,ja}.json` and `apps/web/src/i18n/securityKeys{,.test}.ts`,
+  directly affected idle-policy user documentation, this record and a source-pinned handoff.
+- Shared-path agreement: `/root/artifact_review` owns account/privacy presentation
+  revocation and only AppShell's boundary import/provider mounting. It will not change
+  this worker's session/vault APIs, idle effect or suspended routing. Final composition
+  receives independent `/root/help_review` review before root publication.
+- Acceptance: revoke active key authority synchronously at expiry; retain a sole signer
+  or unconfirmed backup in boxed memory for encrypted save/export/verification only;
+  resume ordinary authority only through normal import/unlock; keep stale async results
+  invalid, clock and replacement generations isolated, and current beforeunload protection.
+  Preserve `verifyCredentialForCurrentSession`, raw export credential checks, full vault
+  identity checks, current backup operation ownership, wallet disclosure, clipboard,
+  payment, retention and privacy guards. Retain existing regression coverage and the
+  earlier credential-specific idle cases as well as newer recovery tests.
+- Qualification: bounded ordinary synthetic lifecycle and regression cases, affected
+  library builds, web typecheck/lint and catalog checks. No fuzz/mutation/exploitation
+  campaign, deployed target, real funds, dependency/workflow/contract change or remote
+  publication. Parent owns fresh hosted gates, integration lock and remote merge.
+
+### Idle recovery acceptance and tag-vault boundary addendum — 2026-11-26 UTC
+
+The same worker owns `apps/web/e2e/idle-session.spec.ts` and the sole-signer idle
+case in `apps/web/e2e/pages-devnet.spec.ts`, preserving ordinary deterministic
+browser acceptance from the pinned donors without merging their older infrastructure.
+Collection/typecheck is local evidence only; browser execution remains a parent gate.
+The continuation also owns `apps/web/src/lib/tags.ts` and a focused
+`apps/web/src/lib/tags.idleSession.test.ts`: the supplied viewing-key buffer must be
+wiped even if the new synchronous expiry check rejects before a storage read, and
+tag unlock must use empty-session-capable active authority rather than a recovery-only
+revision guard. Preserve existing tag formats, stores, retention and tests.
+
+### Idle recovery local handoff — 2026-11-26 UTC
+
+Scoped source `14aa1742a7c4f60fbbb851b55581e532e8961e57`, tree
+`0ad292f2b8eeda5b7d2ca3c3df7a343d843742de`, passed 241 selected ordinary unit
+cases, a focused rerun of the restored signer-only banner assertions, web TypeScript,
+catalog validation (0 errors; 853 draft/fallback warnings) and secret/whitespace
+checks. Initial typed lint required the correction recorded immediately below. Fourteen browser cases were collected only. `/root/help_review`
+approved this exact implementation/tree. Full/lean browser execution, devnet acceptance,
+combined privacy-interface review, fresh hosted checks and integration remain with root.
+See `docs/handoffs/IDLE_RECOVERY_CORE_20261126.md`. Original mixed donor refs remain
+preserved; no whole-backlog or excluded-feature completion is asserted.
+
+Final qualification follow-on: `2936c8e3f91c99b4d86c29f5071f4d0566c938aa`, tree
+`90ca16eb10eb520dfdaafde6d3648b4bc789090c`. Strict lint exposed two unsafe-return
+errors in the donor test's untyped signer spy; the one-line `vi.fn<() => void>()`
+correction then passed the exact sole-signer case, web TypeScript and typed ESLint
+over all changed TS/TSX files with completed zero-exit processes. Runtime source
+remains identical to `0e301a14`; `/root/help_review` extended approval to this exact
+final source/tree after checking that no assertions or production code changed.
+
+
 ## Coordinator request-file hosted browser qualification — 2026-11-25 (8812)
 
 - Worker: /root coordinator; branch: fix/request-file-browser-qualification-20261125-8812.

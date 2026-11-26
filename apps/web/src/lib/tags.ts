@@ -3,7 +3,7 @@ export type { TagPayload, TagSnapshotEntry } from '@ghostpay/ux-vault/portable';
 export const { validatePayload } = createTagArchiveApi(UserFacingError);
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
-import { captureSessionVersionGuard } from './session';
+import { captureActiveSessionVersionGuard } from './session';
 
 export interface EncryptedTagRecord {
   readonly schemaVersion: 1 | 2;
@@ -169,9 +169,9 @@ export class TagVault {
   public async unlock(viewingKey: Uint8Array): Promise<void> {
     this.lock();
     const revision = this.revision;
-    const sessionUnchanged = captureSessionVersionGuard();
-    const guard = (): void => { this.assertRevision(revision); sessionUnchanged(); };
     try {
+      const sessionUnchanged = captureActiveSessionVersionGuard();
+      const guard = (): void => { this.assertRevision(revision); sessionUnchanged(); };
       const snapshot = await this.store.getSnapshot();
       guard();
       const meta = snapshot.meta;

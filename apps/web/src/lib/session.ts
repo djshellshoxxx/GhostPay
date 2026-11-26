@@ -68,7 +68,7 @@ interface Custody {
 
 /** React-facing summary of the custody state; it holds no ciphertext. */
 export interface SessionBackup {
-  /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock wipes them only if `signerOnly` (L1-01). */
+  /** A copy of the loaded keys exists outside this tab's memory. Unconfirmed copies stay retained, with authority suspended, at idle. */
   readonly backedUp: boolean;
   /**
    * That copy is proven: imported keys, a vault record whose passphrase the user chose or proved, or a downloaded keystore
@@ -77,8 +77,8 @@ export interface SessionBackup {
    */
   readonly verified: boolean;
   /**
-   * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy: payments stay sweepable with
-   * the typed hex, so the idle lock may wipe the keys; nothing can be signed with that signing key afterwards (C-R10).
+   * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy. Payments stay sweepable with
+   * the typed hex; idle retains the sole signer for encrypted recovery while ordinary key use stays suspended.
    */
   readonly signerOnly: boolean;
   /** The seller typed the waiver: invoicing and sharing are allowed, the keys are still not backed up. */
@@ -92,12 +92,23 @@ let custody: Custody | undefined;
 let backupSummary: SessionBackup | undefined;
 // Changes even across empty -> populated -> empty transitions, so an async decrypt cannot install stale keys.
 let sessionRevision = 0;
+let suspended = false;
+const asyncSecretCopies = new Set<readonly Uint8Array[]>();
+const expiryChecks = new Set<() => void>();
+let checkingExpiry = false;
 const listeners = new Set<() => void>();
 const backupListeners = new Set<() => void>();
 
+function notifyObservers(observers: ReadonlySet<() => void>): void {
+  // One view must not prevent the remaining observers from receiving a revocation.
+  for (const listener of [...observers]) {
+    try { listener(); } catch { /* Continue notifying the remaining consumers. */ }
+  }
+}
+
 function emit(): void {
-  for (const l of listeners) l();
-  for (const l of backupListeners) l();
+  notifyObservers(listeners);
+  notifyObservers(backupListeners);
 }
 
 /** Subscribes to session changes (used by `useSyncExternalStore`). */
@@ -110,6 +121,40 @@ export function subscribeSession(listener: () => void): () => void {
 export function subscribeSessionBackup(listener: () => void): () => void {
   backupListeners.add(listener);
   return () => backupListeners.delete(listener);
+}
+
+/** Registers a synchronous deadline check at private-key and async-result boundaries. */
+export function subscribeSessionExpiryCheck(check: () => void): () => void {
+  expiryChecks.add(check);
+  return () => expiryChecks.delete(check);
+}
+
+function checkSessionExpiry(): void {
+  if (checkingExpiry) return;
+  checkingExpiry = true;
+  try {
+    for (const check of [...expiryChecks]) check();
+  } finally {
+    checkingExpiry = false;
+  }
+}
+
+function wipeAsyncCopies(): void {
+  for (const copies of asyncSecretCopies) wipe(...copies);
+  asyncSecretCopies.clear();
+}
+
+/** True while a retained copy is available only for encrypted backup and normal restoration. */
+export function isSessionSuspended(): boolean {
+  return suspended;
+}
+
+/** Revokes active authority immediately without destroying a potentially sole recoverable copy. */
+export function suspendSession(): void {
+  sessionRevision++;
+  suspended = current !== undefined;
+  wipeAsyncCopies();
+  emit();
 }
 
 /** Snapshot for `useSyncExternalStore`; undefined without keys, stable identity between changes. */
@@ -125,7 +170,7 @@ function setCustody(next: Custody | undefined, notify: boolean): void {
   const same = summary?.backedUp === backupSummary?.backedUp && summary?.verified === backupSummary?.verified && summary?.signerOnly === backupSummary?.signerOnly && summary?.waived === backupSummary?.waived && summary?.vaultStepUp === backupSummary?.vaultStepUp;
   if (same && (summary === undefined) === (backupSummary === undefined)) return;
   backupSummary = summary;
-  if (notify) for (const l of backupListeners) l();
+  if (notify) notifyObservers(backupListeners);
 }
 
 function updateCustody(guard: () => void, change: (c: Custody) => Custody): void {
@@ -303,6 +348,13 @@ export function importSession(input: ImportedHex): SessionPublic {
   }
 }
 
+function activeSession(): Stored {
+  checkSessionExpiry();
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
+  if (suspended) throw new UserFacingError({ key: 'error.session.lockedBackupOnly' });
+  return current;
+}
+
 /**
  * Runs `fn` with temporary scalars derived from the boxed keys and wipes them afterwards, also when `fn` throws.
  *
@@ -310,8 +362,7 @@ export function importSession(input: ImportedHex): SessionPublic {
  * @throws {UserFacingError} when no keys are loaded.
  */
 export function withSessionSecrets<T>(fn: (s: SessionSecrets) => T): T {
-  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
-  const opened = open(current);
+  const opened = open(activeSession());
   try {
     return fn(opened);
   } finally {
@@ -321,39 +372,69 @@ export function withSessionSecrets<T>(fn: (s: SessionSecrets) => T): T {
 
 /** Async variant of {@link withSessionSecrets}: the temporaries are wiped when the promise settles. */
 export async function withSessionSecretsAsync<T>(fn: (s: SessionSecrets) => Promise<T>): Promise<T> {
-  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
-  const opened = open(current);
+  const holder = activeSession();
+  const guard = keyHolderGuard(holder, sessionRevision);
+  const opened = open(holder);
+  const copies = [opened.keys.spendingSecret, opened.keys.viewingSecret, opened.signingKey];
+  asyncSecretCopies.add(copies);
   try {
-    return await fn(opened);
+    const result = await fn(opened);
+    guard();
+    return result;
   } finally {
+    asyncSecretCopies.delete(copies);
     wipeOpened(opened);
   }
 }
 
 /** A fresh plain copy of the viewing key for the scanner worker; the receiver must wipe it (runScan does). */
 export function revealViewingKey(): Uint8Array {
-  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
-  return current.viewing.use((b) => b.slice());
+  return activeSession().viewing.use((b) => b.slice());
 }
 
 export function hasSession(): boolean {
   return current !== undefined;
 }
 
-/** Captures session identity even when empty, for async operations that begin before reading a saved vault. */
+/**
+ * Tracks session revision even when empty or suspended, including recovery reads before a saved vault is known.
+ * This is a stale-result guard, not permission for ordinary private-key or wallet operations.
+ */
 export function captureSessionVersionGuard(): () => void {
+  checkSessionExpiry();
   const revision = sessionRevision;
   return () => {
+    checkSessionExpiry();
     if (sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedDuringThisActionTryAgain' });
   };
 }
 
+/** Active authority for payer operations that do not require loaded seller keys. */
+export function captureActiveSessionVersionGuard(): () => void {
+  const guard = captureSessionVersionGuard();
+  if (suspended) throw new UserFacingError({ key: 'error.session.lockedBackupOnly' });
+  return guard;
+}
+
 /** Captures the loaded key holder and rejects use if it is cleared or replaced during an async operation. */
 export function captureSessionGuard(): () => void {
-  const expected = current;
-  const revision = sessionRevision;
-  if (expected === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
+  const holder = activeSession();
+  return keyHolderGuard(holder, sessionRevision);
+}
+
+/**
+ * A retained copy may be encrypted and verified without authorizing payment, scanning, signing or raw-key disclosure.
+ * A second idle boundary still invalidates this guard and any in-flight recovery operation.
+ */
+export function captureSessionBackupGuard(): () => void {
+  checkSessionExpiry();
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
+  return keyHolderGuard(current, sessionRevision);
+}
+
+function keyHolderGuard(expected: Stored, revision: number): () => void {
   return () => {
+    checkSessionExpiry();
     if (current !== expected || sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedDuringThisActionTryAgain' });
   };
 }
@@ -363,8 +444,8 @@ export function captureSessionGuard(): () => void {
  * and the spending and viewing public keys. Loads and replaces nothing. The decrypted key bytes and temporary scalars are
  * wiped before this promise settles, also when `assertOpen` throws. Resolves to a guard for the same keys.
  */
-async function matchLoadedSession(ciphertext: string, passphrase: string, assertOpen: () => void, mismatch: UserFacingError): Promise<() => void> {
-  const guard = captureSessionGuard();
+async function matchLoadedSession(ciphertext: string, passphrase: string, assertOpen: () => void, mismatch: UserFacingError, captureGuard: () => () => void = captureSessionGuard): Promise<() => void> {
+  const guard = captureGuard();
   const expected = publicSummary;
   if (expected === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   assertOpen();
@@ -425,7 +506,7 @@ export async function verifyCredentialForCurrentSession(text: string, passphrase
  */
 export async function verifyDownloadedBackup(text: string, passphrase: string, signal?: AbortSignal): Promise<void> {
   const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theBackupVerificationWasClosed' }); };
-  const guard = await matchLoadedSession(text, passphrase, assertOpen, new UserFacingError({ key: 'error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys' }));
+  const guard = await matchLoadedSession(text, passphrase, assertOpen, new UserFacingError({ key: 'error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys' }), captureSessionBackupGuard);
   assertOpen();
   updateCustody(guard, (c) => ({ ...c, external: 'verified' }));
 }
@@ -433,6 +514,8 @@ export async function verifyDownloadedBackup(text: string, passphrase: string, s
 /** Best-effort wipe and forget. */
 export function clearSession(notify = true): void {
   sessionRevision++;
+  suspended = false;
+  wipeAsyncCopies();
   if (current !== undefined) {
     current.spending.dispose();
     current.viewing.dispose();
@@ -446,15 +529,21 @@ export function clearSession(notify = true): void {
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */
 export async function exportKeystore(passphrase: string, options: KeystoreOptions = {}): Promise<string> {
+  const guard = captureSessionBackupGuard();
   if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   const { spending, viewing, signing } = current;
   const pub = publicSummary as SessionPublic;
   const spendingKey = spending.use((b) => b.slice());
   const viewingKey = viewing.use((b) => b.slice());
   const signingKey = signing.use((b) => b.slice());
+  const copies = [spendingKey, viewingKey, signingKey];
+  asyncSecretCopies.add(copies);
   try {
-    return await encryptKeystore({ spendingKey, viewingKey, signingKey }, { metaAddress: pub.metaAddress, signer: pub.signerPublicKey }, passphrase, options);
+    const encrypted = await encryptKeystore({ spendingKey, viewingKey, signingKey }, { metaAddress: pub.metaAddress, signer: pub.signerPublicKey }, passphrase, options);
+    guard();
+    return encrypted;
   } finally {
+    asyncSecretCopies.delete(copies);
     wipe(spendingKey, viewingKey, signingKey);
   }
 }
@@ -466,6 +555,7 @@ export async function exportKeystore(passphrase: string, options: KeystoreOption
 export async function importKeystore(text: string, passphrase: string, signal?: AbortSignal, from: 'file' | 'vault' = 'file'): Promise<SessionPublic> {
   const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theKeystoreImportWasClosed' }); };
   assertOpen();
+  checkSessionExpiry();
   const revision = sessionRevision;
   const secrets = await decryptKeystore(text, passphrase);
   let spending: SecretScalar | undefined;
@@ -473,6 +563,7 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
   let signing: SecretScalar | undefined;
   try {
     assertOpen();
+    checkSessionExpiry();
     if (sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain' });
     spending = secretScalarFromBytes(secrets.spendingKey);
     viewing = secretScalarFromBytes(secrets.viewingKey);
@@ -504,3 +595,5 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
 // i18n-use: error.session.signingInvalid
 
 // i18n-use: error.session.theSecretExportWasCancelled
+
+// i18n-use: error.session.lockedBackupOnly
