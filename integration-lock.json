@@ -4,9 +4,9 @@
   "owner": "claude-newghostpay-7d",
   "token": "ede3f145-8932-4a05-84ce-b155a529b6e4",
   "generation": 48,
-  "base_sha": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+  "base_sha": "601f20955b435eede448c6d82d8315705d7e381d",
   "acquired_at": "2026-11-26T11:55:40.000Z",
-  "heartbeat_at": "2026-11-26T13:15:01.000Z",
-  "expires_at": "2026-11-26T14:00:02.000Z",
+  "heartbeat_at": "2026-11-26T13:43:47.000Z",
+  "expires_at": "2026-11-26T14:28:47.000Z",
   "transport": "git-push-nonforce"
 }
