@@ -138,6 +138,15 @@ describe('session pending-spend guard', () => {
     await user.click(again);
     await waitFor(() => expect(chain.broadcasts).toHaveLength(1));
     await waitFor(() => expect(document.querySelector('[data-transaction-phase="pending-confirmation"]')).not.toBeNull());
+    // The disabled Sign above only reflects the existing signature. Withdrawing and giving the approval again keeps the
+    // review but drops the signature: only the pending-spend mark now keeps a new signature over that input refused.
+    const approval = screen.getByRole<HTMLInputElement>('checkbox', { name: /I checked the destination/ });
+    await user.click(approval);
+    await user.click(approval);
+    expect(approval.checked).toBe(true);
+    expect(screen.queryByText('Signed transaction')).toBeNull();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).disabled).toBe(true);
   });
 
   // FC-05b review M2: the notice says the protection lives only in this page's memory.
