@@ -1,4 +1,6 @@
-# @ghostpay/contracts
+# packages/contracts (Foundry project)
+
+Not an npm workspace: there is no `package.json` and no `@ghostpay/contracts` package. Contracts are not deployed.
 
 Solidity 0.8.28 (EVM `cancun`, optimizer 200 runs), Foundry, OpenZeppelin Contracts 5.6.1 (vendored). Normative spec:
 `docs/CONTRACTS_SPEC.md` sections 1, 2, 3, 5. Deviations and spec findings: [`DEVIATIONS.md`](./DEVIATIONS.md).
@@ -17,7 +19,7 @@ No owner, proxy, pause, rescue, fee setter, `delegatecall` or arbitrary call exi
 ## Layout
 
 ```
-src/                 production contracts + interfaces
+src/                 contracts + interfaces (not deployed; not audited)
 test/                unit, fuzz, invariant, deploy-script tests
 test/mocks/          standard / no-return / returns-false / fee-on-transfer / reentrant / permit / blacklist tokens, native receivers
 test/utils/          CC0 reference ERC5564Announcer (test only)

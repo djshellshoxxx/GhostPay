@@ -15,4 +15,4 @@ const report = await session.importBackup(blob, backupPassword, { mode: 'merge' 
 - Envelope: `GPVT | ver | purpose | iterations | profileId | salt | nonce | ciphertext+tag`; everything before the nonce is AAD.
 - `kdf.minIterations` below the default is for tests only.
 
-Specs: `docs/remote/usability/specs/vault.md`; wiring: `docs/remote/usability/wiring/ux-vault.md`; audit: `docs/remote/usability/audit-ux-vault.md`.
+Specs: `docs/remote/usability/specs/vault.md`; wiring: `docs/remote/usability/wiring/ux-vault.md`.

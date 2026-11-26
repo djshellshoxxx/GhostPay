@@ -1,6 +1,6 @@
 # @ghostpay/i18n
 
-Pure-logic localisation: catalogs, ICU-lite (`{name}`, `{n, plural, ...}`), locale negotiation with fallback chain, BCP47 validation, RTL flag, missing-key detector, catalog completeness check. No network, no `eval`, no HTML parsing. Spec: `docs/remote/usability/specs/localisation.md`. Audit: `docs/remote/usability/audit-i18n.md`.
+Pure-logic localisation: catalogs, ICU-lite (`{name}`, `{n, plural, ...}`), locale negotiation with fallback chain, BCP47 validation, RTL flag, missing-key detector, catalog completeness check. No network, no `eval`, no HTML parsing. Spec: `docs/remote/usability/specs/localisation.md`.
 
 ```ts
 import { createI18n, sampleCatalogs, checkCatalogs, parseAcceptLanguage } from '@ghostpay/i18n';

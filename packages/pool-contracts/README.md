@@ -58,7 +58,7 @@ Fixture regeneration (both deterministic):
 ```bash
 node scripts/gen-vectors.mjs <dir with circomlibjs@0.1.7 + @zk-kit/lean-imt@2.2.5> > test/fixtures/poseidon-vectors.json
 node scripts/gen-proof-fixtures.mjs 0xA4AD4f68d0b91CFD19687c881e50f3A00242828c 0x1d1499e622D69689cdf9004d05Ec547d650Ff211 \
-  > test/fixtures/proofs/pool-e2e.json      # needs packages/pool-circuits/build (npm run build:circuits)
+  > test/fixtures/proofs/pool-e2e.json      # needs packages/pool-circuits/build (npm run build:circuits -w @ghostpay/pool-circuits)
 ```
 
 Echidna (local only, see `echidna.yaml` header): the pool is constructed on a local anvil by

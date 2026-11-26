@@ -132,9 +132,9 @@ Captured from the Vite dev server (`npm run dev --workspace @ghostpay/web`) on a
 - Privacy options (testnet PoC): `amount-blur`, `hops`, `hygiene`, `metadata-hardening`, `payer-sponsor`, `payer-hiding-contracts`, `privacy-pipeline`, `privacy-profiles`, `confidential-amounts`, `confidential-contracts`, `external-pools*`, `pool-*` (shielded pool; the circuits use an INSECURE DEV CEREMONY; `pool-prover` and `pool-circuits` are GPL-3.0 toolchain packages, licence is an open owner decision), `net-transport`, `net-harness`, `pir-two-server`, `scan-source`.
 - Usability logic (pure, no UI): the `ux-*` packages.
 
-Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages named below.
+Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages listed in the next paragraph.
 
-Workspace wiring is checked by `@ghostpay/*` imports. The web app uses `chain-adapters`, `core-crypto`, `invoice-schema`, `btc-silent-payments`, `secret-box`, `tx-review`, and `address-safety`; the relayer uses `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
+Workspace wiring is visible in each app's `package.json` `dependencies` and its `@ghostpay/*` imports. `apps/web` depends on `address-safety`, `btc-silent-payments`, `chain-adapters`, `core-crypto`, `invoice-schema`, `net-transport`, `payment-uri`, `policy-scheme`, `qr-exchange`, `scan-source`, `secret-box`, `solana-stealth`, `tron-adapter`, `tx-review` and `ux-vault`; `apps/relayer` depends on `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
 
 Each package has its own README and a `DEVIATIONS.md` listing where the code differs from the specs. Where a README and the code disagree, the code wins and the discrepancy is a bug in the README.
 
@@ -148,7 +148,7 @@ npm run build:libs           # REQUIRED before typecheck/test/build: workspaces 
 npm run typecheck
 npm run lint
 npm test                     # vitest with coverage thresholds in every workspace that has a test script
-npm run build --workspace @ghostpay/web    # also runs the bundle scan (scripts/scan-bundle.mjs)
+npm run build --workspace @ghostpay/web    # also runs the bundle scan (apps/web/scripts/scan-bundle.mjs, postbuild)
 npm run test:e2e --workspace @ghostpay/web # Playwright; needs a Chromium build (not run by `npm test`)
 npm run ci:scan-secrets      # scripts/scan-secrets.sh
 npm run ci:check-actions     # scripts/check-actions-pinned.sh
@@ -175,7 +175,7 @@ Re-checked 2026-11-11 (Node 22.22.0, sandbox without Foundry or internet): `npm 
 
 Full `npm test` on integration SHA `1ca74abb`, 2026-11-14: 11532 passed, 1 failed, 80 skipped across the workspace totals in that run. `@ghostpay/confidential-contracts` (hardhat) printed no totals there (compiler download blocked). The one failure (`apps/web` `Settings.test.tsx`) was fixed in `1f57b167`. Per-workspace counts: [`docs/remote/STATUS.md`](docs/remote/STATUS.md).
 
-Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
+Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer. `apps/relayer/src/e2e.anvil.test.ts` reads it (and `CI=true`) and fails instead of skipping when anvil or the contract artifacts are missing; `packages/policy-scheme/src/anvil.test.ts` reads it too.
 
 Contracts (from `packages/contracts`):
 

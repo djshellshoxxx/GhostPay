@@ -8,7 +8,7 @@ Pure logic (no DOM, no network, no timers; clock and ids are injected) for three
 - `hex.ts` shared strict validators and `Result`.
 
 Specs: `docs/remote/usability/specs/{smart-wallet-compat,hw-signer,wallet-connect}.md`.
-Wiring: `docs/remote/usability/wiring/ux-connect.md`. Audit: `docs/remote/usability/audit-ux-connect.md`.
+Wiring: `docs/remote/usability/wiring/ux-connect.md`.
 
 UNVERIFIED: no real wallet, device, relay or SDK was used. Hardware status words, WalletConnect codes and the pairing grammar are from memory. Not wired into apps/web.
 

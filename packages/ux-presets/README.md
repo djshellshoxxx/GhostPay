@@ -12,4 +12,4 @@ No DOM, network, analytics or timers; clock, address validation, fee quotes and 
   `base64url(0x01 || iv12 || ciphertext || tag16)`, AAD `ghostpay/ux-presets|v1|<slot>`.
   All open failures return the identical `decrypt-failed` error.
 
-See docs/remote/usability/specs/pay-again-presets.md, wiring/ux-presets.md and audit-ux-presets.md.
+See docs/remote/usability/specs/pay-again-presets.md and wiring/ux-presets.md.
