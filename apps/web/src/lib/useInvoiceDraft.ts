@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { blankDraft, draftForForm, draftSlot, leanCanShow, openDraft, sealDraft, type InvoiceDraft } from './invoiceDraft';
+import { blankDraft, draftForForm, draftSlot, formCanShow, openDraft, sealDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
 import { tokenChoices } from './invoiceCreate';
 import type { SessionPublic } from './session';
 
@@ -14,20 +14,21 @@ const offered = (draft: InvoiceDraft, chainIds: readonly number[]): boolean =>
 
 /**
  * The Create invoice form values, optionally kept as an encrypted draft in this tab's session storage. Nothing is
- * written until the seller opts in; every later edit replaces the record. `supportedOnly` (lean) and the
- * minimal-metadata choice limit what is saved ({@link draftForForm}). A draft this form cannot show unchanged (a chain
- * or token the build does not offer, or in lean fiat pricing or a buffer policy) is refused and kept, never converted.
+ * written until the seller opts in; every later edit replaces the record. What `form` shows and the minimal-metadata
+ * choice limit what is saved ({@link draftForForm}). A draft the form cannot show unchanged (a chain or token the build
+ * does not offer, a fiat quote without a price feed, or a fiat or buffer choice it hides) is refused and kept, never
+ * converted.
  */
 export function useInvoiceDraft(
-  session: SessionPublic | undefined, initialChain: number, supportedOnly: boolean, offeredChains: readonly number[],
+  session: SessionPublic | undefined, initialChain: number, offeredChains: readonly number[], form: DraftForm,
 ) {
   const slot = session === undefined ? undefined : draftSlot(session);
   const [draft, setDraft] = useState(() => blankDraft(initialChain));
   const [status, setStatus] = useState<InvoiceDraftStatus>('off');
   const enabled = useRef(false);
   const current = useRef(draft);
-  const lean = useRef(supportedOnly);
-  lean.current = supportedOnly;
+  const shows = useRef(form);
+  shows.current = form;
   const mounted = useRef(false);
   useEffect(() => {
     mounted.current = true;
@@ -54,7 +55,7 @@ export function useInvoiceDraft(
     if (slot === undefined) return;
     enabled.current = true;
     setStatus('saving');
-    const pending: Promise<void> = sealDraft(slot, draftForForm(value, lean.current)).then((raw) => {
+    const pending: Promise<void> = sealDraft(slot, draftForForm(value, shows.current)).then((raw) => {
       if (latestWrite.get(slot) !== pending) return;
       sessionStorage.setItem(slot, raw);
       if (mounted.current) setStatus('saved');
@@ -70,8 +71,8 @@ export function useInvoiceDraft(
       let raw: string | null;
       try { raw = sessionStorage.getItem(slot); } catch { raw = null; }
       const saved = await openDraft(slot, raw ?? '');
-      if (!offered(saved, offeredChains) || (lean.current && !leanCanShow(saved))) throw new Error('Draft terms are not offered');
-      const restored = draftForForm(saved, lean.current);
+      if (!offered(saved, offeredChains) || !formCanShow(saved, shows.current)) throw new Error('Draft terms are not offered');
+      const restored = draftForForm(saved, shows.current);
       if (!mounted.current) return;
       current.current = restored;
       setDraft(restored);

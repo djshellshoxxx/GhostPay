@@ -50,24 +50,40 @@ export function blankDraft(chainId: number): InvoiceDraft {
   };
 }
 
-/**
- * Whether a lean form can show a draft's money terms unchanged. A lean build only issues fixed-token v1 invoices, so a
- * draft with fiat pricing or a gas-buffer policy is refused there rather than converted.
- */
-export const leanCanShow = (draft: InvoiceDraft): boolean => draft.amountMode === 'fixed_token' && draft.bufferMode === 'off';
+/** What the Create invoice form can present for a set of values. */
+export interface DraftForm {
+  /** The lean build: fixed-token v1 invoices only, without a gas-buffer policy. */
+  readonly supportedOnly: boolean;
+  /** Whether a fiat price quote exists for these values' chain, token and currency. */
+  readonly quoteAvailable: (draft: InvoiceDraft) => boolean;
+}
+
+/** The pricing and gas-buffer choices the form shows and submits for these values. */
+export function shownTerms(draft: InvoiceDraft, form: DraftForm): Pick<InvoiceDraft, 'amountMode' | 'bufferMode'> {
+  return {
+    amountMode: !form.supportedOnly && form.quoteAvailable(draft) ? draft.amountMode : 'fixed_token',
+    // Payers never offer a gas buffer on the native coin (ADR-0024), so it always means no policy.
+    bufferMode: !form.supportedOnly && draft.token !== 'native' ? draft.bufferMode : 'off',
+  };
+}
+
+/** Whether the form would show a saved draft's money terms unchanged. Otherwise it is refused, never converted. */
+export function formCanShow(draft: InvoiceDraft, form: DraftForm): boolean {
+  const shown = shownTerms(draft, form);
+  return shown.amountMode === draft.amountMode && shown.bufferMode === draft.bufferMode;
+}
 
 /**
- * What a draft may carry for the form it is saved from or restored into. A lean form never writes fiat pricing or the
- * v2 buffer policy. A minimal-metadata draft never keeps a memo or line descriptions, even when the form still holds
- * them from before the switch.
+ * The copy of the form values that is saved: the money terms the form shows (a fiat or buffer choice it hides is not
+ * kept). A minimal-metadata draft never keeps a memo or line descriptions, even when the form still holds them from
+ * before the switch.
  */
-export function draftForForm(draft: InvoiceDraft, supportedOnly: boolean): InvoiceDraft {
-  const blank = blankDraft(draft.chainId);
+export function draftForForm(draft: InvoiceDraft, form: DraftForm): InvoiceDraft {
+  const shown = shownTerms(draft, form);
   return {
     ...draft,
-    ...(supportedOnly ? {
-      amountMode: blank.amountMode, bufferMode: blank.bufferMode, bufferMin: blank.bufferMin, bufferMax: blank.bufferMax,
-    } : {}),
+    ...shown,
+    ...(shown.bufferMode === 'range' ? {} : { bufferMin: '', bufferMax: '' }),
     ...(draft.minimalMetadata ? { memo: '', items: draft.items.map((item) => ({ ...item, description: '' })) } : {}),
   };
 }

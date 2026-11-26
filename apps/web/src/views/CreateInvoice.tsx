@@ -21,7 +21,7 @@ import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
 import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
-import { emptyItem, type BufferMode, type FeePolicy } from '../lib/invoiceDraft';
+import { emptyItem, shownTerms, type BufferMode, type DraftForm, type FeePolicy } from '../lib/invoiceDraft';
 import { useInvoiceDraft, type InvoiceDraftStatus } from '../lib/useInvoiceDraft';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -69,11 +69,12 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const services = useServices();
   // Editable form values. They live in this keyed form only, so lock, idle and seller replacement drop them; an opt-in
   // encrypted copy for this tab is kept only while the seller asks for one (useInvoiceDraft).
-  const editor = useInvoiceDraft(app.session, services.chains[0]?.chainId ?? 84532, supportedOnly,
-    services.chains.map((c) => c.chainId));
+  const draftForm: DraftForm = { supportedOnly, quoteAvailable: (d) => fiatQuoteAvailable(d.chainId, d.token, d.currency) };
+  const editor = useInvoiceDraft(app.session, services.chains[0]?.chainId ?? 84532, services.chains.map((c) => c.chainId),
+    draftForm);
   const { draft, change } = editor;
-  const { chainId, token, currency, items, taxRate, feePolicy, amountMode, tokenAmount, expiryHours, quoteMinutes,
-    slippage, minimalMetadata, memo, bufferMode, bufferMin, bufferMax, encrypt, protectWithPassphrase } = draft;
+  const { chainId, token, currency, items, taxRate, feePolicy, tokenAmount, expiryHours, quoteMinutes,
+    slippage, minimalMetadata, memo, bufferMin, bufferMax, encrypt, protectWithPassphrase } = draft;
   // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);
   const [passphrase, setPassphrase] = useState(suggested);
@@ -132,12 +133,10 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
 
   const choices = tokenChoices(chainId);
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
-  // Retained full-profile state or a lost feed must never keep fiat mode in this build.
-  const effectiveAmountMode = !supportedOnly && FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
-  // Payers never offer gas buffers on native-coin invoices, so any policy there (even "declined") would only make the
-  // invoice v2 and unpayable on lean builds for no benefit (ADR-0024). The native coin therefore always means no policy.
+  // The terms shown and submitted, which are also what a saved draft may carry: retained full-profile state or a lost
+  // feed never keeps fiat mode in this build, and the native coin never carries a gas-buffer policy (ADR-0024).
+  const { amountMode: effectiveAmountMode, bufferMode: effectiveBufferMode } = shownTerms(draft, draftForm);
   const bufferChoicesAvailable = token !== 'native';
-  const effectiveBufferMode: BufferMode = bufferChoicesAvailable ? bufferMode : 'off';
   const visibleCreated = created !== undefined && supportsInvoice(created.invoice, supportedOnly) ? created : undefined;
   // A link too long for one QR is offered as GhostPay multi-part codes; otherwise one code that any camera app opens.
   // (Not a hook: this follows an early return. Splitting is local and cheap.)

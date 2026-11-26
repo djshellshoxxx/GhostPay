@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { blankDraft, draftForForm, draftSlot, leanCanShow, openDraft, sealDraft, validDraft, type InvoiceDraft } from './invoiceDraft';
+import { blankDraft, draftForForm, draftSlot, formCanShow, openDraft, sealDraft, validDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
 import { clearSession, importSession } from './session';
 import { generateWaivedSession } from '../test/keys';
 
@@ -84,29 +84,40 @@ describe('invoice draft validation', () => {
   });
 });
 
-describe('draftForForm', () => {
+describe('draftForForm and formCanShow', () => {
+  const full: DraftForm = { supportedOnly: false, quoteAvailable: () => true };
+  const lean: DraftForm = { supportedOnly: true, quoteAvailable: () => true };
+  const noFeed: DraftForm = { supportedOnly: false, quoteAvailable: () => false };
   const fiat: InvoiceDraft = {
-    ...filled, amountMode: 'fiat_quote', quoteMinutes: 90, slippage: 300, bufferMode: 'range', bufferMin: '1', bufferMax: '2',
+    ...filled, token: `0x${'a'.repeat(40)}`, amountMode: 'fiat_quote', quoteMinutes: 90, slippage: 300,
+    bufferMode: 'range', bufferMin: '1', bufferMax: '2',
   };
-  it('keeps full-profile pricing in the full profile', () => {
-    expect(draftForForm(fiat, false)).toEqual(fiat);
+  it('keeps full-profile pricing the form shows', () => {
+    expect(draftForForm(fiat, full)).toEqual(fiat);
+    expect(formCanShow(fiat, full)).toBe(true);
   });
   it('never writes fiat pricing or a buffer policy from lean, and keeps the quote terms lean shows', () => {
-    expect(draftForForm(fiat, true)).toEqual({
+    expect(draftForForm(fiat, lean)).toEqual({
       ...fiat, amountMode: 'fixed_token', bufferMode: 'off', bufferMin: '', bufferMax: '',
     });
   });
-  it('lets lean show only fixed-token drafts without a buffer policy', () => {
-    expect(leanCanShow(filled)).toBe(true);
+  it('writes only the terms the form shows: no quote without a feed, no buffer on the native coin', () => {
+    expect(draftForForm(fiat, noFeed).amountMode).toBe('fixed_token');
+    expect(draftForForm({ ...fiat, token: 'native' }, full)).toMatchObject({ bufferMode: 'off', bufferMin: '', bufferMax: '' });
+  });
+  it('refuses saved terms the form would change', () => {
+    expect(formCanShow(fiat, noFeed)).toBe(false);
+    expect(formCanShow({ ...fiat, token: 'native' }, full)).toBe(false);
+    expect(formCanShow(filled, lean)).toBe(true);
     for (const terms of [{ amountMode: 'fiat_quote' }, { bufferMode: 'declined' }, { bufferMode: 'range' }] as const) {
-      expect(leanCanShow({ ...filled, ...terms })).toBe(false);
+      expect(formCanShow({ ...fiat, amountMode: 'fixed_token', bufferMode: 'off', ...terms }, lean)).toBe(false);
     }
   });
   it('keeps the v2 slot apart from the unmerged v1 format', () => {
     expect(draftSlot(generateWaivedSession())).toMatch(/^ghostpay\.invoice-draft\.v2\.[0-9a-f]{64}$/);
   });
   it('drops the memo and line descriptions of a minimal-metadata draft', () => {
-    const minimal = draftForForm({ ...filled, minimalMetadata: true }, false);
+    const minimal = draftForForm({ ...filled, minimalMetadata: true }, full);
     expect(minimal.memo).toBe('');
     expect(minimal.items).toEqual([{ description: '', quantity: '1', unitPrice: '41.90' }]);
     expect(validDraft(minimal)).toBe(true);
