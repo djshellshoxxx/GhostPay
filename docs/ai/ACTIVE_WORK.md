@@ -15,6 +15,16 @@ checkpoint backward (reorg, replay, user restart); non-persisting stores keep to
 fuzz; web typecheck, lint, tests and build; full hosted CI; independent review; merge only under the integration lock.
 
 ---
+# Browser self-check: IndexedDB availability probe (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `e7e98109` after #703
+merged). Follow-up recorded in `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`. Owned paths: the same
+self-check files as the #703 entry plus `apps/web/src/test/memoryIndexedDb.ts` (additive `deleteDatabase` and
+`databases` for tests only). Acceptance: a fourth local check opens a uniquely named temporary IndexedDB database,
+writes and reads one non-secret record, closes and deletes it; refused or missing IndexedDB reports unavailable, a
+wrong read, failed delete or no response within the deadline reports failed; nothing is left behind; no change to
+any existing IndexedDB store, vault, record format or network behaviour.
+
 # Stack #718: P13 backup test fixture correction (2026-11-26 UTC)
 
 Worker: newghostpay-4e (coordinator); branch `claude/consolidation-stack-20261126`. CI run 45832769192 failed once at
@@ -218,6 +228,7 @@ Not claimed: `classifyAmount` tolerance validation (reported on #220 by the owne
 Acceptance: regression tests fail before / pass after each fix; full hosted CI green on the exact head except the base-wide Mythril gate.
 
 ---
+
 # #701 review upkeep (2026-11-26 UTC)
 
 Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
