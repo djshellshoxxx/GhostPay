@@ -54,3 +54,22 @@ Final source composition `f79117395fe04098d1aebd09a36fdacefb955212`, tree `2c395
 The final committed evidence handoff must receive its narrow independent check before exact-tree publication and fresh hosted CI, including the two-page full/lean browser cases. Merge the qualified idle and privacy dependencies first. Local Chromium is unavailable; no browser execution or fresh browser acceptance is claimed here.
 
 Use the current released cooperative integration lock only after actual-composition hosted checks and renewed ownership checks pass. Do not promote the branch while any required check fails. No live wallet, funds, release or deployment action is part of this task.
+
+
+## Corrected privacy dependency composition — 2026-11-26
+
+Local source `0cfe4e3cf9f44d8cfaa501818f45ce234dd3326d`, tree
+`f08b6b091e54932b0aff2ad685412ac7e7cffd39`, normally adopts canonical policy
+`c6f15cfe` and corrected privacy #691 `6b4bbe17b436344b05d2942ccb0633de43e43fa0`.
+Pre-edit follow-up claim: `0063950f`. Only the additive ownership ledger conflicted;
+its full prior content and complete incoming append-only tail are retained.
+
+Approved policy runtime and unit-test blobs remain canonical c6f exact. The flows
+fixture contains corrected owner-history cases plus the exact existing three
+policy imports and complete 49-line policy action case. The other five corrected
+privacy test files and all three incoming handoffs are canonical #691 exact. No additional
+runtime, dependency, workflow, assertion, skip or timeout edits were made during
+reconciliation; the canonical fixture corrections were adopted unchanged. The earlier local policy results apply to unchanged source; no additional
+local suite execution is inferred. Fresh hosted qualification of this actual
+composition remains mandatory. Independent final composition/documentation review
+is recorded in the published PR after source verification.

@@ -7,6 +7,7 @@ import { verifyReceipt } from '../src/lib/receipts';
 import { generateKeys, openFresh } from './helpers';
 import { ANVIL_ACCOUNTS, Anvil, DevnetNetwork, DevnetWallet, loadDevnet, type DevnetState } from './devnet/chain';
 import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
+import { shownWalletDisclosures } from './walletDisclosure';
 
 /*
  * Real-chain browser journey: the BUILT app (vite build + preview, bundled signed manifest) against a local anvil with
@@ -62,6 +63,16 @@ async function openPayer(open: () => Promise<Profile>, account: Address): Promis
   const wallet = new DevnetWallet(anvil, account);
   await wallet.inject(page);
   return { page, wallet };
+}
+
+async function recoverWalletHistory(page: Page, walletName: string): Promise<void> {
+  const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
+  const shown = await shownWalletDisclosures(page);
+  await attempts.getByLabel('Network for wallet history').selectOption('84532');
+  await expect(attempts.getByLabel('Network for wallet history')).toHaveValue('84532');
+  await attempts.getByRole('button', { name: 'Find wallet for history' }).click();
+  await attempts.getByRole('button', { name: `Connect ${walletName}`, exact: true }).click();
+  await expect.poll(async () => (await shownWalletDisclosures(page)).slice(shown.length)).toEqual(['eth_requestAccounts']);
 }
 
 test.afterAll(() => {
@@ -136,12 +147,19 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.reload();
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
+    const history = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(history).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(history).not.toContainText(payHash);
+    await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash: payHash, account: ANVIL_ACCOUNTS.payer.toLowerCase(), chainId: 84532 }]);
+    await recoverWalletHistory(p, payer.wallet.name);
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await openFresh(p, link);
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(history).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(history).not.toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
@@ -258,6 +276,11 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     // Reload mid-flow: the transaction is still only in the mempool.
     await p.reload();
     await nav(p).getByRole('button', { name: 'Pay' }).click();
+    const history = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(history).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(history).not.toContainText(hash);
+    await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash, account: ANVIL_ACCOUNTS.reloadPayer.toLowerCase(), chainId: 84532 }]);
+    await recoverWalletHistory(p, payer.wallet.name);
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash }]);
     await openFresh(p, link);
@@ -303,7 +326,11 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
     payer.wallet.chainOverride = '0x7a69';
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-    await expect(p.getByText('The wallet network changed. Reconnect and review again.', { exact: false })).toBeVisible();
+    // The explicit identity reread revokes checkout; its public cause notice survives the cleared operation state.
+    await expect(p.getByRole('alert').filter({ hasText: 'The wallet account, network or provider changed. Reconnect and review again.' })).toBeVisible();
+    await expect(p.getByText(new RegExp(ANVIL_ACCOUNTS.wrongChainPayer, 'i'))).toHaveCount(0);
+    await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);
+    await expect(p.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toHaveCount(0);
     expect(payer.wallet.sends).toHaveLength(0);
     expect(await walletJournal(p)).toEqual([]);
