@@ -1,14 +1,28 @@
 # FC-05b onto current main: Bitcoin retained-sweep and session pending-spend guards, superseding #669 (2026-11-26 UTC)
 
 Worker: Claude Code session `ghostpay-42`, continuing the orphaned FC round-1 PRs (entry below). Branch
-`claude/fc05b-main-20261126`, base main `a9d2a033` and then `019d5d18`. Input: #669 exact head `8ea606ff`, merged
+`claude/fc05b-main-20261126` (PR #704), base main `a9d2a033`, main merged in at `019d5d18`, `e1d0eb0f`, `6c3acdd5`. Input: #669 exact head `8ea606ff`, merged
 `--no-ff` as `a86cc353`. Donor branch and PR untouched. #669's CHANGES-REQUIRED review of the pending-spend guard
 (M1/L1/L2/M2) is addressed in `d22db6fa` (red tests), `ebda107d` (fix) and `b39bfd8e` (independent re-review fixes).
 Owned: `apps/web/src/features/btc/BtcView.tsx` and its pendingSpend/retainedSweep tests, the
 `btc.scan.pendingSpend` key in four locales and `securityKeys.ts`, #669's scanner/state/worker test additions, the
-FC-05b consolidation note, this entry. Stop-work check: full profile only, testnet proof of concept, sweep fund safety.
+FC-05b consolidation note, the Bitcoin case of `chainViews.i18n.test.tsx` "keeps an earlier broadcast reference separate", this entry. Stop-work check: full profile only, testnet proof of concept, sweep fund safety.
 No F14 routing or chain-scope change. Acceptance: M1/L2/M2 tests red at `a86cc353` and green at the head; hosted CI
 green at the exact head; merge through the shared lock queue.
+
+# Browser self-check feature completion (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
+existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
+other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
+`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
+`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
+`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
+`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
+Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
+handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
+unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
+payments, network egress or release gates.
 
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
