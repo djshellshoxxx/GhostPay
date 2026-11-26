@@ -4512,3 +4512,11 @@ follow-on. Actual hosted failures, donor results, no-local-browser limits and fr
 combined #691 requirements are recorded in
 `docs/handoffs/ACCOUNT_PRIVACY_BROWSER_QUALIFICATION_20261126.md`. No production,
 dependency, workflow, contract or chain change, remote mutation or integration occurred.
+
+## Integration coordinator: #691 then #692 onto current main — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`, sole integration coordinator for #691 and #692 under the owner's integration instruction.
+- Branches: `claude/integrate-691-20261126` = #691 head `6b4bbe17b436344b05d2942ccb0633de43e43fa0` (contains corrected #689 `0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff` and #690) merged with main `a9d2a033` (#693 `0afab048`, #694); `claude/integrate-692-20261126` = #692 head `c7b9badcfaff027e9847f65d10f021111809c48e` merged with the #691 integration head. Source refs of #689/#691/#692 and all donor refs stay unchanged; the older #689 intermediate is not merged separately.
+- Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
+- Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
+- Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
