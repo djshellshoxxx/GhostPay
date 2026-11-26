@@ -1,3 +1,16 @@
+# #637 completion — template import epoch bound (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `automation/20261125/bug/template-import-epoch-bound` (existing #637 head `02d6a800`) merged with main `194e225c` (no rebase). Owned paths: #637's existing files (`packages/ux-schedule/src/template.ts`, `packages/ux-schedule/src/template.import-epoch.test.ts`, its handoff), the ACTIVE_WORK union resolution and this entry.
+Acceptance: `parseTemplates` rejects `updatedAtMs` above 8.64e15 (the same bound `readClock` enforces), keeps inclusive endpoints and ordinary round trips; `@ghostpay/ux-schedule` tests pass; full hosted CI green at the exact head before the PR is marked ready. No merge, no other branches.
+
+# GP-BUG — Template import accepts nonrepresentable epoch timestamps (2026-11-25 UTC)
+
+Worker: sequential bug-only coordinator; no independent verifier. Branch `automation/20261125/bug/template-import-epoch-bound`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-schedule/src/template.ts`, new `packages/ux-schedule/src/template.import-epoch.test.ts`, additive claim here, and `docs/handoffs/UX_SCHEDULE_TEMPLATE_IMPORT_EPOCH_20261125.md`.
+Discovery: 249 open PRs enumerated and all changed-file lists inspected for these paths; none edits them. Previous template clock rollback PR #565 is merged; preserve its monotone updates. Existing template.test.ts remains untouched. Recheck inventory before any integration.
+Reproduction: exact production blob ffaf6827ff814f40303a5127490caba98ea4c554; parseTemplates accepts 8640000000000001 for both timestamps even though readClock rejects it and JS Date cannot represent it. Minimal acceptance: reject timestamps beyond the same inclusive epoch upper bound as readClock with bad_time; retain valid epoch endpoints, normal imports, monotonic ordering, and atomic list validation. No Pages reachability or funds impact claimed.
+Integration lease generation 20 released, not acquired. GitHub DNS blocked native checkout; use isolated source-hash-matched reproduction and hosted exact-head CI; independent review required before merge. No deployment or shared branch edits.
+
 # #631 completion — negative handled timestamp (2026-11-26 UTC)
 
 Worker: ghostpay-78 worker; branch `automation/20261124T2125Z/bug/schedule-negative-handled` (existing #631 head `bc8fa946`) merged with main `194e225c` (no rebase). Owned paths: #631's existing files (`packages/ux-schedule/src/schedule.ts`, `packages/ux-schedule/src/schedule.negative-handled.test.ts`, its handoff), the ACTIVE_WORK union resolution and this entry.
