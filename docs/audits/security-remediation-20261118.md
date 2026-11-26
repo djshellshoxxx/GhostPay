@@ -80,7 +80,7 @@ and passes after it, on this branch.
 | F-2 | M | `ghostpay-parallel-review.yml` preflight; codex-cloud and research prompts | Fork-PR titles and branch names (attacker free text) were written into a file the agent was told to read: indirect prompt injection | **Fixed** `18b0302` + follow-up (untrusted-data clause in the research prompt) | new test in `ghostpay-parallel-review-workflow.test.mjs`. Residual: prompt clauses are mitigations, not guarantees |
 | F-3 | L | `.github/actions/setup-forge/action.yml` | Restored `~/.svm` solc not integrity-checked; analyzer evidence for release could use a tampered compiler | **Fixed** `18b0302` | step passes on official binary, fails closed on a tampered one (local run) |
 | F-4 | I | all workflows | Floating `ubuntu-latest` runner image | **Fixed** `18b0302` + follow-up (all `runs-on: ubuntu-latest` → `ubuntu-24.04`) | every workflow YAML parses; 185/185 workflow tests pass |
-| C-1 | I/L | `packages/chain-adapters/src/rpc.ts` `fetchTransport` | RPC fetch lacked `credentials:'omit'`, `referrerPolicy:'no-referrer'`, `cache:'no-store'` used by every other egress point | **Fixed** `fbda6b1` | `rpc.test.ts` new case failed, now passes (87/87) |
+| C-1 | I/L | `packages/chain-adapters/src/rpc.ts` `fetchTransport` | RPC fetch lacked `credentials:'omit'`, `referrerPolicy:'no-referrer'`, `cache:'no-store'` used by every other egress point | **Fixed** `fbda6b1`; equivalent fix also on `main` (merge kept `main`'s test) | `rpc.test.ts` new case failed, now passes |
 | D-1 | M (latent) | `packages/ux-flow/src/reconcile.ts` `confirm` | Unsigned payer proof `{nonce, chainId, txHash}`: anyone can claim another payer's public observed tx for their own invoice and lock out the real payer (`DUPLICATE_TX`) | **Open** (design). An ambiguity check (`87d1b31`) was reverted after review G showed it bypassable with partial/over amounts and that a second same-amount invoice blocked every honest confirmation (liveness DoS). `confirm()` now carries an explicit `@security OPEN` warning | review G PoC; no importer in `apps/web` or any shipped bundle. Fix needs payer binding (sender signature or nonce in calldata/metadata): owner/spec decision |
 | B-1 | M | docs (user guide, threat model, spec 06); spec-18 WIP in #213 | Docs said the viewing key cannot spend. In scheme 1, viewing key + the private key of **any one** one-time address recovers the master spending key (BTC silent payments: scan key + one output key → spend key) | **Fixed on main docs** `e800d14`; **open for #213** (export UI text and spec 18 §4/§6 must say this) | `core-crypto/src/viewing-key-boundary.test.ts` recovers the key and spends a second payment |
 | A-3 | I | `GhostPayConfidentialRouter.payConfidential` | ETH buffer forward copied unbounded return data (return-data bomb; 02 L-01 pattern missed here) | **Fixed** `cd54452` | ReturnBombStealth test: +116k gas before, < 20k after; 47/47 hardhat tests |
@@ -128,12 +128,44 @@ integrity (`npm audit --omit=dev`: 0 vulnerabilities).
 
 ## 6. Verification on the final head
 
-_Pending: filled in from the final verification run before merge._
+Refresh 2026-11-26: the branch was merged with `main` `e7e98109` (1482 commits after the starting SHA). `main` had
+meanwhile landed equivalent fixes for **C-1** (same RPC fetch options and test) and **D-2** (ledger), and equivalent
+**B-1** user-guide wording; the conflicts were resolved to `main`'s versions, so those rows are fixed on `main` and this
+PR no longer carries them. `packages/contracts/src`, `lib` and `foundry.toml` are unchanged on `main` since `5467c158`,
+so the Mythril evidence in section 2.1 still applies.
+
+| Check | Result on the refreshed head (local) | Hosted CI |
+|---|---|---|
+| Foundry contracts (build, 490 tests incl. 64 Mythril-disposition tests) | 490/490 pass (pre-refresh; contract tree unchanged) | `contracts-test`, `contracts-coverage`, `contracts-static` green on `16c48521` |
+| Slither 0.11.6 (CI flags) | 0 results | `contracts-slither` green |
+| Echidna 2.2.7 | 13/13 properties pass; 11 canaries falsified as designed; runner rc 0 | `echidna` green |
+| Mythril 0.24.8 | 10/11 records reproduced, no new record (section 2.1) | `mythril` red: exit 1 on the dispositioned records, as on `main` and on every PR's contract-analysis run through 2026-11-26 (base-wide release gate, owner decision) |
+| Confidential contracts (hardhat) | 47/47 | `ts-test (confidential-contracts)` green |
+| Workflow/script tests (`node --test scripts/tests`) | 246/246 | `ts-check` green |
+| Focused vitest: ux-flow 101, core-crypto 76, chain-adapters 571 (+4 skipped), merchant-ledger 36 | pass | ts-test shards green |
+| Workspace typecheck / lint (after `build-workspaces`) | rc 0 / rc 0 (1 pre-existing warning) | `ts-typecheck`, `ts-lint` green |
+| Action pinning, secret scan | 116 `uses:` pinned; no key material | `secrets-and-egress` green |
+| Browser E2E full + lean, Pages build/verify, Pages artifact on anvil, beta acceptance, integration, CodeQL (actions, JS/TS, Python), CLI ubuntu/macos/windows | not run locally | all green on `16c48521`; rerun on the refreshed head is required before merge |
+
+Not run here: mutation testing, differential testing beyond the existing suites, a live browser session, confidential
+Echidna harness, Mythril on the confidential/pool contracts (not in the runner's scope).
 
 ## 7. Files changed
 
-_Pending: filled in from the final verification run before merge._
+Relative to `main` `e7e98109`: agent path policy and runner pins (`.github/workflows/*`, `.github/actions/setup-forge/action.yml`),
+two workflow test files, `packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol` +
+`contracts/mocks/ReturnBombStealth.sol` + `test/router.test.ts`, `packages/core-crypto/src/viewing-key-boundary.test.ts`,
+`packages/ux-flow/src/reconcile.ts` (doc comment only), `packages/contracts/DEVIATIONS.md`, `docs/threat-model/THREAT_MODEL.md`,
+`docs/specs/ideas/06-watch-only-airgapped-signer.md`, `docs/ai/ACTIVE_WORK.md`, this report and `docs/audits/data/mythril-local-20261118/`.
 
 ## 8. Merge report
 
-_Pending: filled in from the final verification run before merge._
+| Item | Value |
+|---|---|
+| Starting `main` | `5467c158069c5bab264b6a653ac56e89e13f3e13`; refreshed onto `e7e981095b07a05c7727bf9fafb0a0fec7e4fc36` |
+| Integration branch | `security/mythril-full-remediation-20261118` |
+| PR | djshellshoxxx/GhostPay#220 |
+| Final commit / merge commit | recorded in the PR once hosted CI on the refreshed head completes |
+| Corrected here | F-1, F-2, F-3, F-4, A-3, B-1 (docs/test); C-1, D-2 and B-1 user-guide wording are on `main` independently |
+| Remaining | D-1 (open design), A-1/A-2, A-4, C-2, D-3, D-4, D-5; Mythril gate policy; `classifyAmount` exact-path tolerance validation (Info, reported on #220 by the owner account, not in this PR) |
+| Merge status | pending hosted CI on the refreshed head; no deployment, release or real-funds authorization in any case |
