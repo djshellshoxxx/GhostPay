@@ -1,3 +1,10 @@
+# Accessibility reflow counts rendered controls only (2026-11-26 UTC)
+
+Continued by worker `newghostpay-7d/small` after the claiming worker was cut off: reviewed the uncommitted one-line predicate change, committed it unchanged and opened the PR. Hosted CI is the gate; no Playwright run on this machine.
+
+Worker: ghostpay-78 worker; branch `claude/a11y-reflow-checkvisibility-20261126` from main `194e225c`. Ports the reflow predicate from open #632/#613 (their other contents untouched; those PRs keep their owners). Owned paths: the `assertReflow` control filter in `apps/web/e2e/accessibility.spec.ts` and this entry.
+Acceptance: the filter uses `element.checkVisibility()` (as main's `responsive-pages.spec.ts` already does) so controls inside a closed `<details>` with stale layout rectangles are not counted; every rendered control is still checked against the same viewport bounds and width rule; no assertion, viewport, tolerance, axe rule or timeout changes; full hosted CI (full/lean e2e, mobile) green at the exact head.
+
 # Multi-part QR note names the renamed import control (2026-11-26 UTC)
 
 Worker: ghostpay-78 worker; branch `claude/multipart-note-copy-20261126` from main `194e225c`. Ports d205fc30 from closed #664 (`claude/fc-integration-20261125`). Owned paths: the `create.qr.multipartNote` value in `apps/web/locales/{en,es,ja,ar}.json` and this entry.
