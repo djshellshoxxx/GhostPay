@@ -1,3 +1,10 @@
+# Cover lookups (#696): integration and review follow-up (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/w-match-cover-20261125`; its main `194e225c` merge `bb03c9a9` verified (only ACTIVE_WORK conflicted; catalogs
+and `securityKeys.ts` complete) and pushed. Owned paths: the ghostpay-78 entry below and this entry.
+Acceptance: independent review (worker "reviewer") addressed, current main merged, hosted CI green at the exact head.
+
 # Cover lookups (#696): third independent review and finish (2026-11-26 UTC)
 
 Worker: ghostpay-78 worker, continuing `newghostpay-77`'s parked branch `claude/w-match-cover-20261125`; base main
