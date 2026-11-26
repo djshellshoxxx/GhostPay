@@ -1,12 +1,13 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-clever-meitner-737",
   "token": "2bb1b4a0-ad7e-4a4f-81e1-f61133bec7f1",
   "generation": 60,
   "base_sha": "8c0b110d8043b8895aae1422226ac6cafdab40a2",
   "acquired_at": "2026-11-26T23:44:17.000Z",
-  "heartbeat_at": "2026-11-26T23:44:17.000Z",
-  "expires_at": "2026-11-27T00:04:17.000Z",
-  "transport": "git-push-nonforce"
+  "heartbeat_at": "2026-11-26T23:44:39.000Z",
+  "expires_at": "2026-11-26T23:44:39.000Z",
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-26T23:44:39.000Z"
 }
