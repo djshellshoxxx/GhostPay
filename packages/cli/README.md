@@ -56,8 +56,14 @@ ghostpay help payment verify
 ghostpay --help --json
 ```
 
-`--json`, `--help`/`-h`, and `--version` are global switches. Command-specific
-options follow the command. Unknown or repeated nonrepeatable options fail;
+`--json`, `--help`/`-h`, and `--version` are global switches. They are
+recognised only where an option can appear: before the command, or after it in
+a flag position. Directly after an option that takes a value they are never
+switches: `--help`, `--version` and `--json` there are a missing value (exit 2),
+like any other `--` token, and `-h` is that option's value. Write
+`--header=--help` to pass such text literally (it is then verified as the header
+and fails normally). Nothing after a `--` terminator is a global switch.
+Command-specific options follow the command. Unknown or repeated nonrepeatable options fail;
 there is no silent option precedence. The command reference at the end includes
 all accepted command-specific options, including optional secret-source variants.
 
