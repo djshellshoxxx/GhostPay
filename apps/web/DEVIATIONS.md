@@ -289,7 +289,11 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
 - No external audit. `README`-level claims of privacy are bounded by `docs/threat-model/THREAT_MODEL.md`.
 
-## Merchant dashboard (F04 Pages preview)
+## Merchant dashboard (F04, merged dormant)
+- **Off by default and absent from Pages.** F04 is excluded from beta/v1.0 (AGENTS.md, docs/ai/STOP_WORK_20261125.md). Only a
+  full-profile build with `VITE_MERCHANT_DASHBOARD=1` wires it into `src/App.tsx` (build define `__GHOSTPAY_MERCHANT_DASHBOARD__`);
+  default builds emit no dashboard chunk and the lean entry never imports it. `e2e/merchant-dashboard-disabled.spec.ts` checks both
+  default profiles; the CI job `merchant-dashboard-flag` runs the dashboard browser suite in an opt-in full build.
 - **Totals are local scan evidence, not settlement.** Payment totals sum only observations the encrypted reconciliation ledger marks
   `verified-at-scan` (live scan, not imported, not invalidated after a reorg, not conflicting). They are "verified at scan time": the
   ledger cannot establish current canonical finality or bind a transfer to an invoice independently (P03 evidence adapter is
@@ -303,6 +307,7 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
 - **Payment history CSV includes transaction hashes** (and local invoice associations) behind an explicit disclosure and approval, so a
   merchant can reconcile. It never writes keys or stealth addresses, but a transaction hash reveals the receiving address on-chain.
 - Amounts are exact atomic units only; no token-decimal or fiat conversion is shown.
-- The module still lives under `src/features/future/merchant-dashboard/` as in #535; draft #621 (dormant #371 base) adds an
-  isolation test that forbids production imports from that path and older copies of `model.ts`/`index.ts`. Whichever lands second
-  must drop `merchant-dashboard` from that test's dormant list and keep main's newer F04 files.
+- The module still lives under `src/features/future/merchant-dashboard/` as in #535; held #621 (dormant #371 base) adds an
+  isolation test that forbids production imports from that path and older copies of `model.ts`/`index.ts`. If #621 lands later it
+  must keep main's newer F04 files and treat `src/views/MerchantDashboard*.tsx` as part of the dormant F04 module (only the opt-in
+  define in `src/App.tsx` reaches it).
