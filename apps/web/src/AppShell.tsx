@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
+import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
@@ -388,6 +389,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   return (
     <AppContext.Provider value={state}>
+      <SessionPresentationBoundary>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
@@ -446,6 +448,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         </ul>
       </footer>
       </WalletDisclosureProvider>
+      </SessionPresentationBoundary>
     </AppContext.Provider>
   );
 }

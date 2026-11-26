@@ -50,6 +50,7 @@ describe('discoverWallets (EIP-6963)', () => {
     expect(list[1]?.icon).toBeUndefined();
     expect(list[2]?.icon).toBeUndefined();
     expect(list.every((x) => x.kind === 'eip6963')).toBe(true);
+    expect(list.every((x) => x.requireLifecycleEvents === true)).toBe(true);
   });
   it('falls back to a labelled injected provider only when nothing announced', async () => {
     const w = new FakeWindow();
@@ -57,6 +58,7 @@ describe('discoverWallets (EIP-6963)', () => {
     const list = await discoverWallets(w, 1);
     expect(list).toHaveLength(1);
     expect(list[0]?.kind).toBe('injected');
+    expect(list[0]?.requireLifecycleEvents).toBe(true);
     expect(list[0]?.name).toMatch(/EIP-1193/);
     const none = new FakeWindow();
     none.ethereum = { notAProvider: true };
@@ -65,6 +67,17 @@ describe('discoverWallets (EIP-6963)', () => {
 });
 
 describe('connectWallet', () => {
+  it.each([false, true])('refuses an unobservable browser wallet before requesting access (partial lifecycle: %s)', async (partial) => {
+    const window = new FakeWindow();
+    const provider = new MockWallet();
+    const request = vi.fn(provider.request.bind(provider));
+    window.ethereum = { request, ...(partial ? { on: () => undefined } : {}) };
+    const [discovered] = await discoverWallets(window, 1);
+    if (discovered === undefined) throw new Error('Expected discovered synthetic browser wallet');
+    expect(discovered.requireLifecycleEvents).toBe(true);
+    await expect(connectWallet(discovered, 84532)).rejects.toThrow();
+    expect(request).not.toHaveBeenCalled();
+  });
   it('connects when everything is consistent', async () => {
     const w = new MockWallet();
     const s = await connectWallet(info(w), 84532);

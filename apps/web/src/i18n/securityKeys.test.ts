@@ -24,6 +24,14 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'walletAttempts.privateWarning',
+      'walletAttempts.connectToReveal',
+      'walletAttempts.noneForWallet',
+      'walletAttempts.unsaved',
+      'walletAttempts.retrySave',
+      'walletAttempts.recoveryChain',
+      'walletAttempts.findWallet',
+
       'policy.pay.committedAssetNotWithdrawable',
       'policy.create.withdrawableAny',
       'policy.create.withdrawableOnly',

@@ -3989,6 +3989,48 @@ activation of an excluded product, dependency/workflow change or live transactio
   campaign, deployed target, real funds, dependency/workflow/contract change or remote
   publication. Parent owns fresh hosted gates, integration lock and remote merge.
 
+## Core account and vault presentation revocation continuation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review`, delegated by the unfinished-branch coordinator.
+  Isolated branch `finish/privacy-revocation-core-20261126`; canonical F03 base
+  `39cece11afac78212d9f7331aeb1ab1a5fe8d427`, with the independently owned idle/recovery
+  checkpoint `9816c7c030bd35ec35ec94ff43382ef324fac800` composed before edits.
+- Source donors: #571 `63f40efac175e5ee49563326dbef930aafb14235`, #612
+  `e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8`, #645
+  `3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7`, #652
+  `724afdcf557178d8b78d841b681f50e99d41935f`, and #655
+  `1dcd5a25130b9db6afc4d224c619cd4dbcf0307c`. Mixed #372
+  `055d33e042c63edf1d5bbbdd7833d3c1ef93733d` is a source reference only; preserve all
+  donor refs and do not merge excluded-product or unreviewed dependency history.
+- Owned implementation: `apps/web/src/components/SessionPresentationBoundary.tsx`,
+  `apps/web/src/lib/useWalletPrivacy.ts`, wallet lifecycle and returned-outcome retention
+  in `lib/wallet.ts` and `lib/duplicateAttemptJournal.ts`, account-scoped
+  `components/WalletAttempts.tsx`, vault access notifications in `lib/tags.ts`, and
+  presentation cleanup in `views/{Pay,CreateInvoice,Scan,Sweep}.tsx`,
+  `components/ReconciliationLedger.tsx`, and `features/registry/RegistryView.tsx`.
+  `features/policy/PolicyPay.tsx` is limited to passing the existing connected wallet to
+  the shared history component; no policy feature behavior or activation is in scope.
+  AppShell ownership is only the boundary import/provider mount; session/keyVault APIs,
+  idle handlers and suspended routing remain `/root/branch_triage`'s work.
+- Supporting scope: focused ordinary regression fixtures adjacent to those paths,
+  additive localized revocation/history text in `apps/web/locales/{en,ar,es,ja}.json`
+  with security classification, this additive ownership log, and source-pinned
+  `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md`.
+- Acceptance: revoke old account/vault/session presentation and async authority before
+  stale results repaint; preserve D1 QR input, existing disclosure and cryptographic
+  checks, #635 payment outcomes, #683 Sweep controls, clipboard and retention behavior.
+  Keep returned hashes recoverable only to the matching connected account/chain and
+  duplicate-blocking until actual durable journal completion. Preserve the current
+  Web Lock/IndexedDB/mirror journal, nonce/replacement union and unknown blockers.
+  Keep encrypted history and durable bytes intact. Adapt donor assertions to current
+  interfaces with all substantive no-send, concealment and recovery checks retained.
+- Dependency closure, workflows, contracts and product activation stay unchanged;
+  in particular no `@ghostpay/ux-core` dependency or reachability allowlist extension.
+  Qualify with bounded synthetic regressions, affected builds, typecheck, lint and
+  retention/release checks. No fuzz/mutation/exploitation campaigns or live transactions.
+  This worker performs no remote mutation; parent owns independent final review, fresh
+  hosted CI, integration lock and publication.
+
 ### Idle recovery acceptance and tag-vault boundary addendum — 2026-11-26 UTC
 
 The same worker owns `apps/web/e2e/idle-session.spec.ts` and the sole-signer idle
@@ -4049,6 +4091,57 @@ Typed lint and full web typecheck passed; Playwright collected 20 cases without 
 execution. Both initial hosted profiles had the same five fixture failures, documented
 in docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md. Independent source
 review and fresh hosted combined/full/lean qualification remain the promotion gates.
+
+
+### Core presentation concealment regression delegation — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review/concealment_tests`, delegated by
+  `/root/artifact_review`; branch `finish/privacy-concealment-tests-20261126`.
+  Source base `6cea65ce4aa7db69ace0733eceef1b3b8b6df28c`, the composed privacy
+  continuation, with existing owned runtime changes preserved.
+- Own only new focused fixtures: `apps/web/src/lib/tags.revocation.test.ts`,
+  `apps/web/src/views/Scan.tags.revocation.test.tsx`,
+  `apps/web/src/components/ReconciliationLedger.revocation.test.tsx`,
+  `apps/web/src/views/CreateInvoice.revocation.test.tsx`, and
+  `apps/web/src/views/Sweep.revocation.test.tsx`, plus this additive record.
+- Acceptance: access/session/app-lock changes conceal decrypted history, tags and
+  drafts; obsolete asynchronous results cannot repaint a later access interval;
+  encrypted durable bytes and already-recorded sweep outcomes remain intact, with
+  no additional transaction or RPC action caused by revocation.
+- Ordinary deterministic synthetic regressions only. No production changes,
+  dependency/workflow change, experimental activation, fuzz/mutation campaign,
+  remote mutation or broad mixed-donor merge. Parent owns implementation review,
+  combined qualification and integration.
+
+### Core presentation concealment regression result — 2026-11-26 UTC
+
+At test source `14ca56a7d548c151b39a66524827d67fed9f600b` / tree
+`23c1c5970390fffdefe2833b66463eb7d0ab67ea`, five new fixtures add 21 ordinary
+synthetic cases without changing production source or existing assertions:
+
+- TagVault (3): access notifications occur after key install/erase, observer errors
+  do not interrupt lock, obsolete unlocks stay revoked, and encrypted bytes survive.
+- ReconciliationLedger (3): manual/idle lock clears decrypted rows, backup drafts
+  and errors; a late vault-open result is locked; encrypted and legacy records remain.
+- CreateInvoice (5): manual/idle lock and session replacement discard draft fields
+  and passphrases; late construction success/failure does not restore the old invoice.
+- Scan (4): locked tags and drafts disappear; old find/list/save completions cannot
+  overwrite a later access interval; saved encrypted tag records remain recoverable.
+- Sweep (6): presentation revocation scrubs the detached credential field, clears
+  selection and destination, cancels a pending balance read, and preserves submitted
+  or uncertain handoff outcomes. Explicit reselection, balance read and destination
+  entry still leave signing blocked by the retained outcome; no second send occurs.
+
+Qualification completed with zero exits on that source: the five fixtures together
+passed 21/21 with coverage disabled, full web TypeScript passed, and typed ESLint
+over those fixtures passed. `git diff --check` passed. Dependencies were installed
+locally with `npm ci --ignore-scripts --no-audit --no-fund`; unchanged package builds
+were copied from the parent worktree based on the same package source. The initial
+five test failures were exact-label selector mistakes, corrected without runtime or
+acceptance changes. No production gap was found within this bounded test scope.
+Browser execution, full-suite/coverage qualification, independent implementation
+review and hosted checks remain with the parent/coordinator. No remote changes or
+additional donor merges were performed by this delegated worker.
 
 ## Coordinator idle invoice-expiry browser qualification — 2026-11-26
 
@@ -4119,6 +4212,42 @@ all completed successfully. No browser execution is claimed locally. See
 `docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md` for the original hosted
 failure evidence, real Settings isolation and remaining independent/hosted gates.
 
+### Returned-outcome fixture compatibility addendum — 2026-11-26 UTC
+
+Root explicitly delegates `apps/web/src/lib/walletJournal.adversarial.test.ts` to
+`/root/artifact_review` on the existing privacy branch, base `28f7b3c0b46f5fa360389a1986f51304302901d2`.
+Own only the ordinary default-browser post-send persistence cases and bounded-return
+fixture isolation. Preserve actual IndexedDB/mirror unknown-state assertions, every
+no-send/duplicate-blocking assertion and all seeded scheduling cases unchanged.
+Drain retained fixture outcomes through actual successful persistence after restoring
+the local synthetic fault; do not reset or weaken production retention. Run named
+ordinary affected cases only, with no new seeded/fuzz/mutation campaign. Root owns the
+separate policy-lock continuation and will adopt this reviewed compatibility patch.
+
+## Account/vault presentation revocation local result — 2026-11-26 UTC
+
+Worker `/root/artifact_review`, branch `finish/privacy-revocation-core-20261126`.
+Runtime `28f7b3c0b46f5fa360389a1986f51304302901d2`, tree
+`f37b883abaa3e447555ccef664accd4d117ef2f8`, retains canonical idle/utility candidate `4af78c8c` and the
+independent 21-case concealment delegation by normal merges. Only additive claims
+conflicted. `/root/help_review` approved exact source, assertions and composition.
+
+Final ordinary qualification passed 1,011/1,011 cases in 61 fixtures, changed-file
+strict lint, dependency builds, full/lean web TypeScript/build/artifact scans, four
+unchanged reachability checks and catalogs (0 errors; 874 fallback warnings). Root
+then identified fourteen journal fixture failures in its policy integration run;
+fixture-only `994be97cfb8fc28237b0f99648ca818758129498` preserves raw durable unknown
+state, distinguishes the returned overlay and finishes actual persistence between
+fixtures. Root independently approved that exact repair; 14/14 named ordinary cases,
+typed lint and final full web TypeScript passed. Its remaining 128 cases were not run.
+
+See `docs/handoffs/ACCOUNT_PRIVACY_CORE_COMPLETION_20261126.md` for source pins,
+initial failures, corrections and remaining gates. Global/manual masking and older
+selected-seller foundations are not included. No dependency/workflow/contract/chain
+expansion, excluded-product activation, live transaction or remote mutation occurred.
+Root owns the reviewed #689 fixture follow-on, fresh combined hosted/coverage/browser
+gates, final evidence review, cooperative lock and integration. #528/#604 stay separate.
+
 ## Pages expiry clock-origin fixture correction — 2026-11-26
 
 - Worker: `/root/help_review`; branch: `fix/pages-expiry-clock-origin-20261126`.
@@ -4156,3 +4285,12 @@ actual-Playwright clock diagnostic confirmed the monotonic-origin mechanism; it
 did not execute the browser. Root independently approved the source. See
 `docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`. Final evidence review
 and fresh corrected-source hosted CI remain required.
+
+### Account privacy final dependency composition — 2026-11-26 UTC
+
+Normal merge `f451c6206f2e0434ec8386b6ca1602a3c82ed969`, tree
+`1f88c12e9247d692ec9d9724892937b1ad0c72b3`, adopts canonical corrected idle #689
+`0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff`. All current ownership text and the 38
+incoming lines are preserved, and both incoming non-log blobs are exact. Approved
+privacy runtime remains unchanged from 28f; only the reviewed four-line Pages fixture
+and its evidence are added. Fresh combined hosted gates remain the coordinator's work.
