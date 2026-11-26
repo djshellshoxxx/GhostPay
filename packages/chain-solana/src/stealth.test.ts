@@ -3,7 +3,7 @@ import { hexToBytes, numberToBytesLE } from '@noble/curves/utils.js';
 import { describe, expect, it } from 'vitest';
 import { decodeAnnouncement } from './announcement.js';
 import { reduceDigest, reduceDigestNonZero } from './hash.js';
-import { encodeMetaAddress, generateStealthKeys, stealthKeysFromSecrets } from './keys.js';
+import { decodeMetaAddress, encodeMetaAddress, generateStealthKeys, stealthKeysFromSecrets } from './keys.js';
 import { decodeAddress, Point } from './point.js';
 import { seededRng } from './rng.testutil.js';
 import { L, scalarFromValue, scalarValue } from './secret.js';
@@ -22,7 +22,7 @@ const rng = seededRng('stealth.test');
 describe('stealth round trip', () => {
   it('sender derives, receiver detects, spend key signs for P', () => {
     const keys = generateStealthKeys(rng);
-    const meta = encodeMetaAddress(keys);
+    const meta = encodeMetaAddress({ ...keys, cluster: 'devnet' });
     const pay = deriveStealthPayment(meta, rng);
     expect(decodeAddress(pay.stealthAddress)).toEqual(pay.stealthPublicKey);
 
@@ -128,16 +128,15 @@ describe('non-detection', () => {
 });
 
 describe('degenerate cases', () => {
-  it('sharedSecretPoint clears the cofactor: a pure torsion point maps to the identity', () => {
+  it('sharedSecretPoint is the plain ADR-0017 product Z = k*Q (no cofactor) and rejects the identity', () => {
+    const Q = Point.BASE.multiply(5n);
+    expect(sharedSecretPoint(Q, 11n).equals(Point.BASE.multiply(55n))).toBe(true);
+    // Unreachable for validated inputs; torsion points never get here (decodePrimeOrderPoint rejects them).
     for (const h of ED25519_TORSION_SUBGROUP) {
-      expect(() => sharedSecretPoint(Point.fromBytes(hexToBytes(h), true), 3n)).toThrow(
+      expect(() => sharedSecretPoint(Point.fromBytes(hexToBytes(h), true), 8n)).toThrow(
         expect.objectContaining({ code: 'IDENTITY_POINT' }),
       );
     }
-    // and removes a torsion component: [8](k(Q+T)) == [8](kQ)
-    const Q = Point.BASE.multiply(5n);
-    const T = Point.fromBytes(hexToBytes(ED25519_TORSION_SUBGROUP[1] as string), true);
-    expect(sharedSecretPoint(Q.add(T), 11n).equals(sharedSecretPoint(Q, 11n))).toBe(true);
   });
 
   it('addTweak rejects the identity (h = -s)', () => {
@@ -180,5 +179,43 @@ describe('degenerate cases', () => {
     expect(() => stealthKeysFromSecrets(scalarFromValue(3n), scalarFromValue(3n))).toThrow(
       expect.objectContaining({ code: 'KEY_REUSE' }),
     );
+  });
+});
+
+describe('deriveStealthPayment is testnet-only for text meta-addresses', () => {
+  it('refuses a mainnet st:sol: meta-address with CHAIN_DISABLED', () => {
+    const keys = generateStealthKeys(rng);
+    const mainnet = encodeMetaAddress({ ...keys, cluster: 'mainnet' });
+    expect(() => deriveStealthPayment(mainnet, rng)).toThrow(expect.objectContaining({ code: 'CHAIN_DISABLED' }));
+  });
+  it('refuses a decoded mainnet SolanaMetaAddress object before drawing any randomness', () => {
+    const keys = generateStealthKeys(rng);
+    const decoded = decodeMetaAddress(encodeMetaAddress({ ...keys, cluster: 'mainnet' }));
+    expect(decoded.cluster).toBe('mainnet');
+    let draws = 0;
+    const countingRng: typeof rng = {
+      getRandomValues: ((array: ArrayBufferView) => {
+        draws += 1;
+        return rng.getRandomValues(array);
+      }) as typeof rng.getRandomValues,
+    };
+    expect(() => deriveStealthPayment(decoded, countingRng)).toThrow(expect.objectContaining({ code: 'CHAIN_DISABLED' }));
+    expect(draws).toBe(0);
+  });
+  it('CHAIN_DISABLED message names every enabled cluster', () => {
+    const keys = generateStealthKeys(rng);
+    try {
+      deriveStealthPayment(encodeMetaAddress({ ...keys, cluster: 'mainnet' }), rng);
+      expect.unreachable();
+    } catch (e) {
+      expect((e as Error).message).toBe('Solana cluster is not enabled (devnet, testnet and localnet only)');
+    }
+  });
+  it('still derives for devnet, testnet and localnet', () => {
+    const keys = generateStealthKeys(rng);
+    for (const cluster of ['devnet', 'testnet', 'localnet'] as const) {
+      const pay = deriveStealthPayment(encodeMetaAddress({ ...keys, cluster }), rng);
+      expect(decodeAddress(pay.stealthAddress)).toEqual(pay.stealthPublicKey);
+    }
   });
 });

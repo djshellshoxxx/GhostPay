@@ -13,7 +13,7 @@ import {
   type SolanaAnnouncement,
 } from './announcement.js';
 import { fail, SolanaStealthError } from './errors.js';
-import { decodeMetaAddress, encodeMetaAddress } from './keys.js';
+import { decodeMetaAddress, encodeMetaAddress, type SolanaCluster } from './keys.js';
 import { getAssociatedTokenAddress } from './pda.js';
 import { decodeAddress } from './point.js';
 import { checkAnnouncement, deriveStealthPayment } from './stealth.js';
@@ -22,6 +22,12 @@ import { checkAnnouncement, deriveStealthPayment } from './stealth.js';
 export const ENABLED_SOLANA_CHAINS = ['sol-devnet', 'sol-testnet'] as const;
 /** An enabled cluster id. */
 export type SolanaChainId = (typeof ENABLED_SOLANA_CHAINS)[number];
+
+/** Meta-address cluster byte each enabled chain id requires (same `sol-<cluster>` naming as solana-stealth). */
+const CHAIN_CLUSTER: Readonly<Record<SolanaChainId, SolanaCluster>> = {
+  'sol-devnet': 'devnet',
+  'sol-testnet': 'testnet',
+};
 
 /**
  * Fee capability: nothing can be enforced until an on-program fee split exists
@@ -55,6 +61,9 @@ function decodePayload(payload: Uint8Array | string): SolanaAnnouncement | null 
  * `build()` returns addresses + announcement bytes, not a transaction. Fees are
  * zero and `not_enforceable` on every line.
  *
+ * Meta-addresses must carry the adapter's cluster (`NETWORK_MISMATCH` otherwise), as in
+ * `@ghostpay/solana-stealth`.
+ *
  * @param deps Enabled cluster id and announcement source.
  * @returns Adapter of family `solana`.
  * @throws {SolanaStealthError} `CHAIN_DISABLED`.
@@ -62,6 +71,7 @@ function decodePayload(payload: Uint8Array | string): SolanaAnnouncement | null 
 export function createSolanaAdapter(deps: SolanaAdapterDeps): SolanaChainAdapter {
   if (!(ENABLED_SOLANA_CHAINS as readonly string[]).includes(deps.chainId)) fail('CHAIN_DISABLED');
   const { chainId, source } = deps;
+  const cluster = CHAIN_CLUSTER[chainId as SolanaChainId];
 
   return {
     family: 'solana',
@@ -69,7 +79,7 @@ export function createSolanaAdapter(deps: SolanaAdapterDeps): SolanaChainAdapter
     fees: SOLANA_FEES,
 
     parseRecipient(input) {
-      const keys = decodeMetaAddress(input);
+      const keys = decodeMetaAddress(input, cluster);
       return {
         family: 'solana',
         canonical: encodeMetaAddress(keys),
@@ -84,7 +94,7 @@ export function createSolanaAdapter(deps: SolanaAdapterDeps): SolanaChainAdapter
       if (amount === undefined || amount <= 0n || amount >= 1n << 64n) fail('INVALID_INVOICE');
       const isNative = inv.asset === 'native';
       if (!isNative) decodeAddress(inv.asset);
-      const meta = decodeMetaAddress(inv.metaAddress);
+      const meta = decodeMetaAddress(inv.metaAddress, cluster);
       return {
         family: 'solana',
         chainId,

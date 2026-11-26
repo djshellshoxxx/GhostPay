@@ -6,6 +6,8 @@ export type SolanaStealthErrorCode =
   | 'INVALID_SCALAR'
   | 'INVALID_POINT'
   | 'INVALID_META_ADDRESS'
+  | 'LEGACY_META_ADDRESS'
+  | 'NETWORK_MISMATCH'
   | 'INVALID_ANNOUNCEMENT'
   | 'INVALID_ADDRESS'
   | 'INVALID_SEEDS'
@@ -25,6 +27,9 @@ const MESSAGES: Readonly<Record<SolanaStealthErrorCode, string>> = {
   INVALID_SCALAR: 'invalid secret scalar (must be 32 little-endian bytes in [1, L-1])',
   INVALID_POINT: 'invalid public key (must be a canonical, prime-order ed25519 point)',
   INVALID_META_ADDRESS: 'invalid Solana stealth meta-address',
+  LEGACY_META_ADDRESS:
+    'retired gpsol: meta-address format is not accepted; ask the recipient for an st:sol: meta-address (ADR-0017)',
+  NETWORK_MISMATCH: 'Solana meta-address is for a different cluster',
   INVALID_ANNOUNCEMENT: 'invalid Solana stealth announcement',
   INVALID_ADDRESS: 'invalid Solana address (must be base58 of 32 bytes)',
   INVALID_SEEDS: 'invalid program-derived-address seeds',
@@ -34,7 +39,7 @@ const MESSAGES: Readonly<Record<SolanaStealthErrorCode, string>> = {
   ZERO_STEALTH_KEY: 'derived stealth key is zero',
   KEY_REUSE: 'spending and viewing keys must be distinct',
   KEY_MISMATCH: 'secret key does not match the expected public key',
-  CHAIN_DISABLED: 'Solana cluster is not enabled (devnet/testnet only)',
+  CHAIN_DISABLED: 'Solana cluster is not enabled (devnet, testnet and localnet only)',
   INVALID_INVOICE: 'invalid Solana invoice',
   ABORTED: 'operation aborted',
   RNG_UNAVAILABLE: 'no secure random source available',
