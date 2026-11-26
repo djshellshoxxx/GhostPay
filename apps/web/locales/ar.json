@@ -36,7 +36,7 @@
     "requestFile.reviewAria": "مراجعة ملف الطلب",
     "requestFile.reviewHeading": "راجع ملف الطلب",
     "requestFile.open": "افتح ملف الطلب",
-    "requestFile.clear": "امسح الفاتورة المستوردة",
+    "requestFile.clear": "إزالة الفاتورة المستوردة",
     "settings.title": "الإعدادات",
     "settings.notice.plaintext": "تُحفظ الإعدادات في هذا المتصفح كنص عادي، بما في ذلك عناوين RPC. لا تضع عنوانًا يحتوي على سرّ لا تحفظه كنص عادي. لا يتم حفظ أي مفتاح أبدًا.",
     "settings.rpc.legend": "نقاط اتصال RPC",
