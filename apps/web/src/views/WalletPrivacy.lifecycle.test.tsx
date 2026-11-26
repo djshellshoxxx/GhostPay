@@ -5,7 +5,7 @@ import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
 import { ATTEMPT_JOURNAL_KEY, readAttempts, readReturnedAttempts, retryReturnedAttempts } from '../lib/duplicateAttemptJournal';
-import { buildInvoiceLink } from '../lib/invoiceCreate';
+import { buildInvoiceLink, type InvoiceForm } from '../lib/invoiceCreate';
 import * as embedHost from '../lib/embedHost';
 import * as payExec from '../lib/payExec';
 import { clearSession, getSessionPublic } from '../lib/session';
@@ -36,15 +36,44 @@ const INVOICE_PASSPHRASE = 'cedar orbit velvet lantern meadow';
 const WALLET_CHANGE_REASON = 'The wallet account, network or provider changed. Reconnect and review again.';
 type PrivateInvoice = 'encrypted' | 'passphrase';
 
+interface Fiber { readonly tag: number; readonly memoizedState: unknown; readonly child: Fiber | null; readonly sibling: Fiber | null }
+interface Hook { readonly memoizedState: unknown; readonly next: Hook | null }
+/**
+ * True when a committed hook (state, ref or memo) of the mounted app still holds `needle`. Functions and DOM nodes are
+ * skipped, so this reports what components keep, not what the closure of an unsettled wallet request captured.
+ */
+function appStateHolds(needle: string): boolean {
+  const roots = [...document.body.children].flatMap((element) => Object.entries(element)
+    .filter(([key]) => key.startsWith('__reactContainer$')).map(([, root]) => (root as { stateNode: { current: Fiber } }).stateNode.current));
+  if (roots.length !== 1) throw new Error('Expected exactly one React root');
+  const seen = new Set<object>();
+  const holds = (value: unknown): boolean => {
+    if (typeof value === 'string') return value.includes(needle);
+    if (typeof value !== 'object' || value === null || value instanceof Node || seen.has(value)) return false;
+    seen.add(value);
+    return (value instanceof Map || value instanceof Set ? [...value] : Object.values(value)).some(holds);
+  };
+  const fibers: Fiber[] = [...roots];
+  for (let fiber = fibers.pop(); fiber !== undefined; fiber = fibers.pop()) {
+    // Function, forwardRef and memo components keep their hooks as a linked list.
+    if (fiber.tag === 0 || fiber.tag === 11 || fiber.tag === 15) {
+      for (let hook = fiber.memoizedState as Hook | null; hook !== null; hook = hook.next) if (holds(hook.memoizedState)) return true;
+    }
+    if (fiber.child !== null) fibers.push(fiber.child);
+    if (fiber.sibling !== null) fibers.push(fiber.sibling);
+  }
+  return false;
+}
+
 beforeEach(() => {
   clearSession(); window.localStorage.clear(); window.sessionStorage.clear(); setHash('');
 });
 afterEach(async () => { vi.restoreAllMocks(); await retryReturnedAttempts(); clearSession(); });
 
-async function open(route: Route, wallet: EventWallet, overrides: Partial<Services> = {}, protection?: PrivateInvoice) {
+async function open(route: Route, wallet: EventWallet, overrides: Partial<Services> = {}, protection?: PrivateInvoice, form: Partial<InvoiceForm> = {}) {
   const user = userEvent.setup();
   if (route === 'Pay') {
-    const invoice = { ...BASE_FORM, token: 'native', tokenAmount: '0.1' };
+    const invoice = { ...BASE_FORM, token: 'native', tokenAmount: '0.1', ...form };
     if (protection !== undefined) generateWaivedSession();
     const { fragment } = protection === undefined
       ? await makeParsed(invoice)
@@ -395,5 +424,153 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     expect(readAttempts()).toMatchObject([{ hash, account: MOCK_ACCOUNT, chainId: 84532, status: 'submitted' }]);
     expect(sends).toBe(1);
   });
+
+  // WEB-APP-02: a payment that may have reached the wallet stays terminal for the same open public invoice, even after
+  // the wallet change revoked its private presentation. Only the journal (behind the owner gate) holds the outcome.
+  it.each(['done', 'pending'] as const)('keeps a %s public payment terminal after a wallet change instead of offering Send again', async (stage) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    const hash = `0x${'7'.repeat(64)}`;
+    const original = wallet.request.bind(wallet);
+    let release!: (value: unknown) => void;
+    const held = new Promise<unknown>((resolve) => { release = resolve; });
+    let sends = 0;
+    wallet.request = (args) => {
+      if (args.method !== 'eth_sendTransaction') return original(args);
+      sends++;
+      return stage === 'pending' ? held : Promise.resolve(hash);
+    };
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await vi.waitFor(() => { expect(sends).toBe(1); });
+    if (stage === 'done') await vi.waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash }]); });
+    act(() => { wallet.emit('accountsChanged'); });
+    if (stage === 'pending') await act(async () => { release(hash); await held; });
+
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy(); // A public invoice stays open.
+    expect(screen.getByText('Payment already requested')).toBeTruthy();
+    expect(screen.getByText(WALLET_CHANGE_REASON, { exact: true })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Connect Lifecycle Wallet/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(document.body.textContent).not.toContain(hash);
+    expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
+    await vi.waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash, account: MOCK_ACCOUNT }]); });
+    expect(sends).toBe(1);
+
+    // Forgetting the invoice is the explicit way out; nothing is sent and the journal still blocks a duplicate.
+    await user.click(screen.getByRole('button', { name: 'Forget this invoice' }));
+    expect(screen.queryByText('Payment already requested')).toBeNull();
+    expect(sends).toBe(1);
+  }, 180_000);
+
+  // An approval is not a payment: an approval that cannot be verified must not close the invoice as already requested.
+  it('does not report an unverified approval as a requested payment after a wallet change', async () => {
+    const wallet = new EventWallet();
+    // The permit domain cannot be read (exact approval path) and the allowance stays zero after the approval.
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      if (method === 'eth_getTransactionByHash') {
+        const sent = wallet.sent;
+        return sent === undefined ? null : { hash: params[0], from: sent['from'], to: sent['to'], input: sent['data'], value: sent['value'], chainId: '0x14a34' };
+      }
+      if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      throw new Error(`unexpected ${method}`);
+    });
+    const user = await open('Pay', wallet, { createRpc: () => Promise.resolve(withManifestChain(rpc)) }, undefined, { token: BASE_FORM.token, tokenAmount: '100' });
+    const approve = async (): Promise<void> => {
+      await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+      await user.click(await screen.findByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
+      await approveWalletDisclosure(user, 'eth_sendTransaction');
+    };
+    const sends = (): number => wallet.calls.filter(({ method }) => method === 'eth_sendTransaction').length;
+    await approve();
+    await screen.findByRole('heading', { name: 'Approval sent, verifying' });
+    const recorded = readAttempts();
+    expect(recorded).toMatchObject([{ status: 'submitted', kind: 'approval', account: MOCK_ACCOUNT }]);
+    act(() => { wallet.emit('accountsChanged'); });
+
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy();
+    expect(screen.getByText(WALLET_CHANGE_REASON, { exact: true })).toBeTruthy();
+    expect(screen.queryByText('Payment already requested')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Approval sent, verifying' })).toBeNull();
+    // Checkout is offered again; the durable journal, not a payment claim, refuses to repeat the approval.
+    await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    await approve();
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists/)).toBeTruthy();
+    expect(sends()).toBe(1);
+    expect(readAttempts()).toEqual(recorded);
+  }, 180_000);
+
+  // The terminal marker is for public checkout only: a revoked or replaced private invoice leaves nothing behind.
+  it.each((['encrypted', 'passphrase'] as const).flatMap((protection) =>
+    (['wallet change', 'replacement'] as const).map((change) => ({ protection, change }))))(
+    'keeps nothing of the $protection invoice after a $change during a pending payment', async ({ protection, change }) => {
+      const wallet = new EventWallet();
+      const user = await open('Pay', wallet, {}, protection);
+      await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+      await screen.findByRole('heading', { name: 'Final check before your wallet' });
+      const original = wallet.request.bind(wallet);
+      let release!: (value: unknown) => void;
+      const held = new Promise<unknown>((resolve) => { release = resolve; });
+      let sends = 0;
+      wallet.request = (args) => {
+        if (args.method === 'eth_sendTransaction') { sends++; return held; }
+        return original(args);
+      };
+      await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await approveWalletDisclosure(user, 'eth_sendTransaction');
+      await vi.waitFor(() => { expect(sends).toBe(1); });
+      expect(appStateHolds(PRIVATE_MEMO)).toBe(true); // Positive control: the open invoice is held.
+      if (change === 'wallet change') {
+        act(() => { wallet.emit('accountsChanged'); });
+        await screen.findByRole('heading', { name: 'Pay an invoice' });
+      } else {
+        const next = await buildInvoiceLink({ ...BASE_FORM, token: 'native', tokenAmount: '0.2', memo: 'replacement invoice' }, 'https://app.test/', NOW);
+        act(() => { setHash(next.fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
+        await screen.findByText('replacement invoice', { exact: true });
+      }
+      await vi.waitFor(() => { expect(appStateHolds(PRIVATE_MEMO)).toBe(false); });
+
+      const hash = `0x${'7'.repeat(64)}`;
+      await act(async () => { release(hash); await held; });
+      await vi.waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash, account: MOCK_ACCOUNT }]); });
+      expect(appStateHolds(PRIVATE_MEMO)).toBe(false);
+      expect(screen.queryByText('Payment already requested')).toBeNull();
+      expect(document.body.textContent).not.toContain(PRIVATE_MEMO);
+      expect(document.body.textContent).not.toContain(hash);
+      expect(sends).toBe(1);
+    }, 180_000);
+
+  // Payer rule: a wallet error code, a 4001 rejection included, never proves nothing was broadcast. The unknown journal
+  // record stays until it is explicitly cleared, so the same open public invoice stays terminal after a wallet change.
+  it('keeps an explicitly rejected payment terminal after a wallet change, with its unknown journal record', async () => {
+    const wallet = new EventWallet({ rejectSend: true });
+    const user = await open('Pay', wallet);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByText('You rejected the request in your wallet.');
+    const recorded = readAttempts();
+    expect(recorded).toMatchObject([{ status: 'unknown', kind: 'payment', account: MOCK_ACCOUNT }]);
+    act(() => { wallet.emit('accountsChanged'); });
+
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy();
+    expect(screen.getByText('Payment already requested')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Connect Lifecycle Wallet/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(document.body.textContent).not.toContain('Nothing was sent');
+    await user.click(screen.getByRole('button', { name: 'Forget this invoice' }));
+    expect(screen.queryByText('Payment already requested')).toBeNull();
+    expect(readAttempts()).toEqual(recorded);
+    expect(wallet.calls.filter(({ method }) => method === 'eth_sendTransaction')).toHaveLength(1);
+  }, 180_000);
 
 });

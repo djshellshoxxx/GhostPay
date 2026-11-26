@@ -7,6 +7,7 @@ import { scanForPayments, wipeFound } from './scan';
 import { scanForPaymentsInWorker, type BtcScanWorker } from './scanWorkerClient';
 import type { BtcScanRequest, BtcScanResponse } from './scanWorkerMessages';
 import { InlineBtcScanWorker } from './scanWorker.testutil';
+import { BtcScanProtocol } from './scanWorkerProtocol';
 
 async function fixture() {
   const wallet = walletA(); const chain = mockChain('regtest', wallet);
@@ -107,6 +108,69 @@ describe('BTC worker stale and untrusted boundary', () => {
     try { expect(f.chain.requests).toHaveLength(0); await expect(settled).resolves.toMatchObject({ code: 'INVALID_RESPONSE' }); }
     finally { abort.abort(); await settled; }
   });
+  // Recovered-from: 4281fce1 (PR #254).
+  it.each([
+    ['hex', false], ['merkle-proof', false], ['hex', true], ['merkle-proof', true],
+  ] as const)('rejects a forged matched %s request in full mode with provider consent %s', async (suffix, consent) => {
+    const f = await fixture(); const ac = new AbortController();
+    const fetchFn = vi.fn<EsploraFetch>(() => Promise.resolve(new Response('untrusted proof')));
+    let fake!: BtcScanWorker; let id = 0; const terminate = vi.fn();
+    const running = scanForPaymentsInWorker({ ...f, signal: ac.signal, providerSpentCheck: consent,
+      oracle: { kind: 'http', url: 'https://oracle.test', mode: 'full' },
+    }, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate, postMessage: (m) => { id = m.id; },
+    }), fetchFn);
+    const settled = running.then((result) => { wipeFound(result.found); }, () => {});
+    try {
+      fake.onmessage?.({ data: { type: 'source', id, requestId: 1, path: `/tx/${'ab'.repeat(32)}/${suffix}` } });
+      expect(fetchFn).not.toHaveBeenCalled();
+      await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+      expect(terminate).toHaveBeenCalledOnce();
+    } finally { ac.abort(); await settled; }
+  });
+
+  it.each([
+    ['hex', false], ['merkle-proof', false], ['hex', true], ['merkle-proof', true],
+  ] as const)('the worker independently refuses matched %s requests in full mode with provider consent %s', async (suffix, consent) => {
+    const f = await fixture(); const sent: BtcScanResponse[] = [];
+    let finish!: () => void; const finished = new Promise<void>((resolve) => { finish = resolve; });
+    const protocol = new BtcScanProtocol((m) => {
+      sent.push(m);
+      if (m.type === 'source') protocol.handle({ type: 'sourceError', id: m.id, requestId: m.requestId, code: 'INVALID_RESPONSE' });
+      if (m.type === 'error') finish();
+    });
+    const tip = vi.spyOn(EsploraClient.prototype, 'tipHeight').mockImplementation(async function (this: EsploraClient, signal) {
+      if (suffix === 'hex') await this.rawTransaction('ab'.repeat(32), signal);
+      else await this.merkleProof('ab'.repeat(32), signal);
+      return 4;
+    });
+    try {
+      protocol.handle({ type: 'start', id: 7, network: f.wallet.net.id, baseUrl: f.client.baseUrl,
+        scanSecret: new Uint8Array(f.wallet.keys.scanSecret), spendPublicKey: new Uint8Array(f.wallet.keys.spendPublicKey),
+        headers: f.headers.toJSON(), fromHeight: f.fromHeight, checkpoints: false, providerSpentCheck: consent,
+        oracle: { kind: 'http', url: 'https://oracle.test', mode: 'full' },
+      });
+      await finished;
+      expect(sent.filter((m) => m.type === 'source')).toEqual([]);
+      expect(sent).toEqual([{ type: 'error', id: 7, code: 'TRANSPORT_FAILURE' }]);
+    } finally { tip.mockRestore(); protocol.dispose(); }
+  });
+
+  it.each(['local', 'unknown'] as const)('rejects a consented light worker claiming %s status and wipes its tweak', async (spentStatus) => {
+    const f = await fixture(); const result = await scanForPayments(f); const fetchFn = vi.fn<EsploraFetch>();
+    let fake!: BtcScanWorker; let id = 0; const terminate = vi.fn();
+    const running = scanForPaymentsInWorker({ ...f, providerSpentCheck: true,
+      oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' },
+    }, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate, postMessage: (m) => { id = m.id; },
+    }), fetchFn);
+    fake.onmessage?.({ data: { type: 'done', id, result: { ...result, spentStatus } } });
+    const outcome: unknown = await running.then((accepted) => { wipeFound(accepted.found); return { resolved: true }; }, (error: unknown) => error);
+    expect(outcome).toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(result.found[0]!.spendTweak.every((b) => b === 0)).toBe(true);
+    expect(fetchFn).not.toHaveBeenCalled(); expect(terminate).toHaveBeenCalledOnce();
+  });
+
   it('rejects a worker outpoint query when the owner did not enable provider checks', async () => {
     const f = await fixture(); let posted!: BtcScanRequest; let fake!: BtcScanWorker;
     const abort = new AbortController();

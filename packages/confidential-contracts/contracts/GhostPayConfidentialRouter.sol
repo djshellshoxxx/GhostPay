@@ -142,8 +142,12 @@ contract GhostPayConfidentialRouter is TestnetOnly, ZamaEthereumConfig, Reentran
 
         if (msg.value != 0) {
             // `stealth` is non-zero (checked in `_validate`); the call target is the payer-chosen stealth address.
-            // slither-disable-next-line low-level-calls,missing-zero-check
-            (bool ok,) = stealth.call{value: msg.value}("");
+            // No return data is copied, so a contract payee cannot inflate the payer's gas with a return-data bomb
+            // (the 02 L-01 pattern of GhostPayRouter._sendNative; audit A-3, 2026-11-18).
+            bool ok;
+            assembly ("memory-safe") {
+                ok := call(gas(), stealth, callvalue(), 0, 0, 0, 0)
+            }
             if (!ok) revert NativeTransferFailed();
         }
 

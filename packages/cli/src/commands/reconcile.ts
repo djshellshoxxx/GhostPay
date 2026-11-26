@@ -102,6 +102,7 @@ async function propose(ctx: Ctx, a: Parsed): Promise<number> {
       const requested = a.values.get('record');
       if (a.values.has('out')) {
         if (requested === undefined || current === undefined) throw usageError('REVIEW_CONTEXT_REQUIRED', 'exporting a confirmable proposal requires --record and fresh --observations with --online.');
+        if (!current.records.some(r => r.id === requested)) throw failError('CURRENT_EVIDENCE_REQUIRED', 'the selected payment was not among the observations freshly verified in this run.');
         const selected = proposals.get(requested);
         if (selected?.kind !== 'exact') throw failError('NO_EXACT_PROPOSAL', 'the selected payment has no unique exact invoice match in the full current context.');
         const now = ctx.io.nowSeconds();
@@ -110,9 +111,11 @@ async function propose(ctx: Ctx, a: Parsed): Promise<number> {
         await ctx.writeOut(a, JSON.stringify(file, null, 2) + '\n');
         ctx.out({ ok: true, proposal: file, confirmed: false, paymentVerifiedAtReview: true, verificationScope: 'operator-pinned-testnet', out: a.values.get('out') }, 'Wrote an unconfirmed proposal bound to the exact encrypted state and raw observations. Review it, then explicitly run reconcile confirm.');
       } else {
-        const visible = [...proposals].filter(([id]) => requested === undefined || id === requested).map(([recordId, proposal]) => ({ recordId, ...proposal }));
+        // Only records among this run's freshly verified observations count as currently verified; stored records merely take part in matching.
+        const fresh = new Set(current?.records.map(r => r.id) ?? []);
+        const visible = [...proposals].filter(([id]) => requested === undefined || id === requested).map(([recordId, proposal]) => ({ recordId, ...proposal, currentChainVerified: fresh.has(recordId) }));
         if (current !== undefined) await freshCanonicalContext(current);
-        ctx.out({ ok: true, confirmed: false, currentChainVerified: current !== undefined, proposals: visible }, `${visible.length} local proposals. No association was confirmed and no state was written.`);
+        ctx.out({ ok: true, confirmed: false, currentChainVerified: current !== undefined && visible.every(p => p.currentChainVerified), proposals: visible }, `${visible.length} local proposals. No association was confirmed and no state was written.`);
       }
       return 0;
     } finally { op.close(); }

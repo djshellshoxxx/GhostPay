@@ -29,6 +29,20 @@ No unique unmerged code remained on those branches. No other open PR or branch t
   self-check inputs, the failed/unavailable explanations at 320 CSS pixels, no horizontal overflow and an axe audit.
 - Help (troubleshooting row) and privacy (local-storage probe disclosure) pages describe the checks truthfully.
 
+## Follow-up: IndexedDB probe (same day)
+
+A fourth check opens a randomly named temporary IndexedDB database (`__ghostpay_capability_<random>`), writes and
+reads one fixed non-secret record, closes it and requests its deletion. A refused or timed-out deletion reports *failed*
+and may leave the probe until site data is cleared. Probe names come only from `randomUUID` or `getRandomValues`, never
+from the clock. Without either, both storage probes report *unavailable* instead of risking a name shared with another
+tab. This follows an independent review of `f939e8d7`. If IndexedDB is missing, null, throws on access, lacks
+`deleteDatabase` or refuses the open, the check reports *unavailable*. A wrong read, a transaction error, a failed
+delete, or no answer within 5 seconds per phase reports *failed*. A connection that arrives after the deadline is
+closed so the pending delete can finish. The vault, tags and reconciliation stores are not opened or changed. The
+privacy page now names the temporary database. The test-only in-memory IndexedDB gains `deleteDatabase` and
+`databases()`. A separate AI-assisted subagent review of `e7e98109...0bc71170` found nothing blocking. As it
+suggested, tests now also cover closing a connection that arrives after the deadline and the delete-phase deadline.
+
 ## Not changed
 
 Release-hash display (`lib/release.ts`, Home), integrity verification, cryptography, signing, wallet authority,
@@ -36,8 +50,6 @@ payment gating, network egress and release gates are unchanged. The checks still
 
 ## Deeper follow-ups (not in scope)
 
-- An IndexedDB availability check: the vault and encrypted records use IndexedDB, which the current probe does not
-  exercise.
 - Native WebKit/Firefox/mobile-device qualification of the footer (Playwright device projects emulate Chromium only).
 - Native-speaker review of the new reviewed-only explanation strings for es/ja/ar.
 

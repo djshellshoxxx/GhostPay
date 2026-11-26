@@ -49,7 +49,7 @@ concurrency:
 jobs:
   site:
     name: Build and verify the Pages site
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -173,7 +173,7 @@ jobs:
   # like GitHub Pages. Test build only: it is never published.
   acceptance:
     name: Pages artifact on anvil (browser)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -210,7 +210,7 @@ jobs:
   release-gates:
     name: Release gates (typecheck, lint, unit, mocked lean browser suite)
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
       contents: read
@@ -255,7 +255,7 @@ jobs:
     name: Deploy to GitHub Pages
     needs: [site, acceptance, release-gates]
     if: needs.site.outputs.publish == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # Job-level group: two publishing runs never overlap and neither is cancelled.
     concurrency:
@@ -276,7 +276,7 @@ jobs:
   smoke:
     name: Post-deployment smoke test
     needs: deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: read
