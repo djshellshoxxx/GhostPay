@@ -1,0 +1,5303 @@
+{
+  "checkpoint": "2026-11-26T16Z",
+  "observedAt": "2026-11-26 approximately 16:07 UTC, sequential non-atomic observations",
+  "priorLedger": "43c859f54b92e01b0754e12ace1d96e884048001",
+  "main": "601f20955b435eede448c6d82d8315705d7e381d",
+  "mainTree": "4245495ae728a0ce3700f7cbe6547110d91d4cb3",
+  "branchCount": 835,
+  "openPRCount": 170,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    35
+  ],
+  "prPageLengths": [
+    100,
+    70
+  ],
+  "snapshotUnique": {
+    "branch": 835,
+    "pr": 170
+  },
+  "delta": {
+    "new": [],
+    "changed": [
+      {
+        "name": "automation/ghostpay-integration-lock",
+        "sha": "6dc0ab5ef5572d8de487203d9757f9cf15b783d5",
+        "previous": "ce7ae6915afae43dd4e677e46cb823a910ca8385"
+      },
+      {
+        "name": "claude/vibrant-cori-scu18b",
+        "sha": "862722f2cac12d9b84f285ecb33089bbc7ffa9d7",
+        "previous": "491721fcce19061ea42f8f41962ce3956f088135"
+      },
+      {
+        "name": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+        "sha": "43c859f54b92e01b0754e12ace1d96e884048001",
+        "previous": "e4bfb2819c11b9b32286dffa69622a8aa2d76b9f"
+      },
+      {
+        "name": "nodata/elegant-tesla-kpeojx",
+        "sha": "db6f3da67737346c28edf2ed9d8bae44e86bce56",
+        "previous": "d94b27239aaae5e19582dce057b08bbd1881d64e"
+      },
+      {
+        "name": "nodata/tender-mccarthy-a61kj6",
+        "sha": "c720d24a98a820842ee6c7f443b56b424dbeae36",
+        "previous": "d04036ed0adcab2137c8b08ecfe5382db570d7f2"
+      }
+    ],
+    "missing": []
+  },
+  "archiveManifestReconciliation": {
+    "archiveMatches": 34,
+    "sourceMatches": 33,
+    "records": [
+      {
+        "archive": "archive/owner-stop-20261125/automation/20261121/bug/pos-runtime-guard-r14",
+        "expected": "506604288e31c195c852fa2e8896e131da34bc3b",
+        "actual": "506604288e31c195c852fa2e8896e131da34bc3b",
+        "source": "automation/20261121/bug/pos-runtime-guard-r14",
+        "sourceActual": "506604288e31c195c852fa2e8896e131da34bc3b"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/automation/20261124T1037Z/bug/dashboard-idb-rejection",
+        "expected": "e564360afa37714db4ea7cb63e12cde44db62dee",
+        "actual": "e564360afa37714db4ea7cb63e12cde44db62dee",
+        "source": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+        "sourceActual": "e564360afa37714db4ea7cb63e12cde44db62dee"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/automation/20261125/bug/pos-session-record-bound",
+        "expected": "a095a62da8d246f0fbb4862ede8c0a1e7656affb",
+        "actual": "a095a62da8d246f0fbb4862ede8c0a1e7656affb",
+        "source": "automation/20261125/bug/pos-session-record-bound",
+        "sourceActual": "a095a62da8d246f0fbb4862ede8c0a1e7656affb"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/claude/nifty-bohr-5ra2ap-dormant-371",
+        "expected": "98065511df4b5315db665366ee941bfbf4578d06",
+        "actual": "98065511df4b5315db665366ee941bfbf4578d06",
+        "source": "claude/nifty-bohr-5ra2ap-dormant-371",
+        "sourceActual": "98065511df4b5315db665366ee941bfbf4578d06"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/codex/spec-03-fiat-price-feeds",
+        "expected": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+        "actual": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+        "source": "codex/spec-03-fiat-price-feeds",
+        "sourceActual": "e9025d72f1408ec48e6d1ca29a5361a55175ec31"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/consolidate/ghostpay-dormant-modules-1f782-20261121",
+        "expected": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+        "actual": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+        "source": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+        "sourceActual": "1de6e0247e0f76afe6f1615b43e55007ece25d9b"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feat/f04-dashboard-totals-qualification",
+        "expected": "6366767fb632ab3a01603497b49f12714ab796bb",
+        "actual": "6366767fb632ab3a01603497b49f12714ab796bb",
+        "source": "feat/f04-dashboard-totals-qualification",
+        "sourceActual": "6366767fb632ab3a01603497b49f12714ab796bb"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feat/f04-deliberate-local-export-20261121",
+        "expected": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+        "actual": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+        "source": "feat/f04-deliberate-local-export-20261121",
+        "sourceActual": "a9f19eb236fb2265f48444a0b4ad7bbffb411897"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feat/f04-evidence-analytics-20261122",
+        "expected": "ff60e1e45cac1348d554f94ea24717285ecc5608",
+        "actual": "ff60e1e45cac1348d554f94ea24717285ecc5608",
+        "source": "feat/f04-evidence-analytics-20261122",
+        "sourceActual": "ff60e1e45cac1348d554f94ea24717285ecc5608"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feat/f04-pages-dashboard-20261123",
+        "expected": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890",
+        "actual": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890",
+        "source": "feat/f04-pages-dashboard-20261123",
+        "sourceActual": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f02-ghoststore-catalog-cart",
+        "expected": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35",
+        "actual": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35",
+        "source": "feature/f02-ghoststore-catalog-cart",
+        "sourceActual": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f08-offline-merchant-profile-review",
+        "expected": "923e1edfb9ac34f8b6855d8ac8516cd835070afd",
+        "actual": "923e1edfb9ac34f8b6855d8ac8516cd835070afd",
+        "source": "feature/f08-offline-merchant-profile-review",
+        "sourceActual": "923e1edfb9ac34f8b6855d8ac8516cd835070afd"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f11-ghostteams-invitation-review",
+        "expected": "10d995fa3290b51e0c35804a681ae0b30c4785b3",
+        "actual": "10d995fa3290b51e0c35804a681ae0b30c4785b3",
+        "source": "feature/f11-ghostteams-invitation-review",
+        "sourceActual": "10d995fa3290b51e0c35804a681ae0b30c4785b3"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f11-ghostteams-membership",
+        "expected": "9229a14c303944380523d2a65b783a25541f8403",
+        "actual": "9229a14c303944380523d2a65b783a25541f8403",
+        "source": "feature/f11-ghostteams-membership",
+        "sourceActual": "9229a14c303944380523d2a65b783a25541f8403"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f11-ghostteams-membership-commit",
+        "expected": "8ade47153d0d08de4a7cc45fb60672a2b6afd658",
+        "actual": "8ade47153d0d08de4a7cc45fb60672a2b6afd658",
+        "source": "feature/f11-ghostteams-membership-commit",
+        "sourceActual": "8ade47153d0d08de4a7cc45fb60672a2b6afd658"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/feature/f13-offline-quote-terms",
+        "expected": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a",
+        "actual": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a",
+        "source": "feature/f13-offline-quote-terms",
+        "sourceActual": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/fix/f04-dashboard-refresh-focus",
+        "expected": "3085c87a57147afeb7dac7bc563af62f2c9784e5",
+        "actual": "3085c87a57147afeb7dac7bc563af62f2c9784e5",
+        "source": "fix/f04-dashboard-refresh-focus",
+        "sourceActual": "3085c87a57147afeb7dac7bc563af62f2c9784e5"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/fix/ghostpay-pos-parity-expiry-r16-20261121",
+        "expected": "482d36ad436f4b27b2d86ff9a2c22daf150000ad",
+        "actual": "482d36ad436f4b27b2d86ff9a2c22daf150000ad",
+        "source": "fix/ghostpay-pos-parity-expiry-r16-20261121",
+        "sourceActual": "482d36ad436f4b27b2d86ff9a2c22daf150000ad"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/fix/pos-terminal-reliability-20261124",
+        "expected": "4ae333d3ffa85eb14c074a543bdc084370dd1e49",
+        "actual": "4ae333d3ffa85eb14c074a543bdc084370dd1e49",
+        "source": "fix/pos-terminal-reliability-20261124",
+        "sourceActual": "4ae333d3ffa85eb14c074a543bdc084370dd1e49"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f01-ghosttips",
+        "expected": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+        "actual": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+        "source": "future/f01-ghosttips",
+        "sourceActual": "12a549e3c03c983b5a19ae6b54b11426284e5e4a"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f02-ghoststore",
+        "expected": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+        "actual": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+        "source": "future/f02-ghoststore",
+        "sourceActual": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f04-merchant-dashboard",
+        "expected": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+        "actual": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+        "source": "future/f04-merchant-dashboard",
+        "sourceActual": "066731b4d6d19d96469dd18fa082b264f3efed5d"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f08-ghostid",
+        "expected": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+        "actual": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+        "source": "future/f08-ghostid",
+        "sourceActual": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f09-ghostpos",
+        "expected": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+        "actual": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+        "source": "future/f09-ghostpos",
+        "sourceActual": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f11-ghostteams",
+        "expected": "22891e01c2abffe0ced2384c7ad429f08805534f",
+        "actual": "22891e01c2abffe0ced2384c7ad429f08805534f",
+        "source": "future/f11-ghostteams",
+        "sourceActual": "22891e01c2abffe0ced2384c7ad429f08805534f"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f12-ghostbridge",
+        "expected": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+        "actual": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+        "source": "future/f12-ghostbridge",
+        "sourceActual": "72a641445124321228edaa241f1bb5ae0dd17f8e"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f13-fiat-conversion",
+        "expected": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+        "actual": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+        "source": "future/f13-fiat-conversion",
+        "sourceActual": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/f14-multichain-routing",
+        "expected": "2c7c48310aa6337b30677299ec04933b37129d46",
+        "actual": "2c7c48310aa6337b30677299ec04933b37129d46",
+        "source": "future/f14-multichain-routing",
+        "sourceActual": "2c7c48310aa6337b30677299ec04933b37129d46"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/future/p07-encrypted-device-sync",
+        "expected": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+        "actual": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+        "source": "future/p07-encrypted-device-sync",
+        "sourceActual": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/integration/near-finished-20261124",
+        "expected": "c03598fe5923ddee8f9276c794b3197c501b2004",
+        "actual": "c03598fe5923ddee8f9276c794b3197c501b2004",
+        "source": "integration/near-finished-20261124",
+        "sourceActual": "c03598fe5923ddee8f9276c794b3197c501b2004"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/nodata/brave-meitner-974y9e",
+        "expected": "57505cb294cf1780036ff004d60e3fcb7b75917a",
+        "actual": "57505cb294cf1780036ff004d60e3fcb7b75917a",
+        "source": "nodata/brave-meitner-974y9e",
+        "sourceActual": "0d548b9acb9236cb09c150e36be21596a01423d6"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/nodata/gracious-meitner-0yy6do",
+        "expected": "cefdbd9d6b05c4bcca81f8e11119469ac654480a",
+        "actual": "cefdbd9d6b05c4bcca81f8e11119469ac654480a",
+        "source": "nodata/gracious-meitner-0yy6do",
+        "sourceActual": "cefdbd9d6b05c4bcca81f8e11119469ac654480a"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/qualification/f02-merchant-catalog-auth-provider",
+        "expected": "08faa16e1a03fe8c87f97f02257363750b52c920",
+        "actual": "08faa16e1a03fe8c87f97f02257363750b52c920",
+        "source": "qualification/f02-merchant-catalog-auth-provider",
+        "sourceActual": "08faa16e1a03fe8c87f97f02257363750b52c920"
+      },
+      {
+        "archive": "archive/owner-stop-20261125/ui/merchant-dashboard-records",
+        "expected": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1",
+        "actual": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1",
+        "source": "ui/merchant-dashboard-records",
+        "sourceActual": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1"
+      }
+    ]
+  },
+  "lease": {
+    "sha": "6dc0ab5ef5572d8de487203d9757f9cf15b783d5",
+    "message": "Observed 6dc0ab5e: renew generation-48 lock for claude-newghostpay-7d; requalifying stack #718 at a2e6dd5e."
+  },
+  "qualification": [
+    {
+      "n": 718,
+      "head": "a2e6dd5e06d72585e56e97774d07e16c6a0418cc",
+      "success": 38,
+      "pending": 2,
+      "skipped": 3,
+      "failure": 1
+    },
+    {
+      "n": 707,
+      "head": "f74126885a1e348d282abc2ed0e0d71bca4bae45",
+      "success": 36,
+      "pending": 2,
+      "skipped": 3
+    },
+    {
+      "n": 715,
+      "head": "ddcaa77f224d663730c82b08bb92c3a4e64facd1",
+      "success": 36,
+      "pending": 0,
+      "skipped": 3
+    },
+    {
+      "n": 717,
+      "head": "367a3b30b1feb5c31c0727fc6fc435162067063c",
+      "success": 14,
+      "pending": 2,
+      "skipped": 3
+    },
+    {
+      "n": 719,
+      "head": "0156af516c924c7c4076d25d01296f7bb8a18cbb",
+      "success": 15,
+      "pending": 22,
+      "skipped": 3
+    },
+    {
+      "n": 723,
+      "head": "c720d24a98a820842ee6c7f443b56b424dbeae36",
+      "success": 13,
+      "pending": 24,
+      "skipped": 3
+    },
+    {
+      "n": 724,
+      "head": "0d083443fedf397765c5fcd712fb495771e351b3",
+      "success": 16,
+      "pending": 21,
+      "skipped": 3
+    },
+    {
+      "n": 725,
+      "head": "98546be7f6a85fe40b6496d77f86c70d78220329",
+      "success": 16,
+      "pending": 21,
+      "skipped": 3
+    }
+  ],
+  "mainChecks": {
+    "head": "601f20955b435eede448c6d82d8315705d7e381d",
+    "success": 6,
+    "pending": 2,
+    "workflowRuns": [
+      {
+        "id": 45838581529,
+        "name": "Integration",
+        "event": "schedule",
+        "conclusion": "success"
+      },
+      {
+        "id": 45831959238,
+        "name": "Hosting kit",
+        "event": "push",
+        "conclusion": "success"
+      },
+      {
+        "id": 45831959216,
+        "name": "CI",
+        "event": "push",
+        "status": "queued"
+      },
+      {
+        "id": 45831958165,
+        "name": "Push on main",
+        "event": "dynamic",
+        "conclusion": "success"
+      }
+    ],
+    "note": "Mythril release blocker not waived."
+  },
+  "sourceReview": [
+    {
+      "pr": 718,
+      "head": "a2e6dd5e06d72585e56e97774d07e16c6a0418cc",
+      "finding": "Hosted rest-0 job 139959532362 failed future/p13/store.test.ts:366; identical blob d5e08e55b553e233be28dcc4380951d54ff5da9b on main. Corruption fixture can be a no-op: penultimate char replacement depends on final char. Exact random input unavailable. Existing gate must remain; only narrow qualification fixture repair, no P13 activation/runtime development.",
+      "comment": "https://github.com/djshellshoxxx/GhostPay/pull/718#issuecomment-7197232073"
+    },
+    {
+      "pr": 723,
+      "head": "c720d24a98a820842ee6c7f443b56b424dbeae36",
+      "finding": "Previous stale-snapshot issue addressed in source. New read-failure path can overwrite existing checkpoint because read exception collapsed into absence; test explicitly expects write despite failed read. Evidence matrix overstates cross-tab closure despite caveat. Source-only review, no browser reproduction.",
+      "comment": "https://github.com/djshellshoxxx/GhostPay/pull/723#issuecomment-7197234849"
+    },
+    {
+      "pr": 725,
+      "head": "98546be7f6a85fe40b6496d77f86c70d78220329",
+      "finding": "Reviewed guard and four regression additions; owner's local results not independently executed. Separate ownership retained."
+    }
+  ],
+  "ownerScope": "Read main AGENTS and STOP_WORK; all ten excluded. #659 merged, #636 mixed held; no activation, no feature development. P14 disclosure remains in scope. P13 future core must remain dormant.",
+  "next": [
+    "Existing #718 coordinator retains integration lease; hold until exact head green and independent review of any fixture change.",
+    "Existing #723 owner to address read-error mutation and truthful residual cross-tab status; coordinate #725/#696.",
+    "Reconcile all unresolved historical branch dispositions and new refs; archive snapshots frozen.",
+    "Retain Mythril and browser/recovery gates; no deployment."
+  ],
+  "limitations": [
+    "No fresh local runtime tests or main merge; no independent approval of candidate heads in this cycle.",
+    "Census is not complete semantic disposition proof; global unresolved count not established.",
+    "Check and ref reads occurred at different times; recheck exact live heads before integration."
+  ],
+  "branchRefs": [
+    {
+      "name": "ai/agent-harness-20261113",
+      "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57"
+    },
+    {
+      "name": "archive/owner-stop-20261125/automation/20261121/bug/pos-runtime-guard-r14",
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b"
+    },
+    {
+      "name": "archive/owner-stop-20261125/automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "sha": "e564360afa37714db4ea7cb63e12cde44db62dee"
+    },
+    {
+      "name": "archive/owner-stop-20261125/automation/20261125/bug/pos-session-record-bound",
+      "sha": "a095a62da8d246f0fbb4862ede8c0a1e7656affb"
+    },
+    {
+      "name": "archive/owner-stop-20261125/claude/nifty-bohr-5ra2ap-dormant-371",
+      "sha": "98065511df4b5315db665366ee941bfbf4578d06"
+    },
+    {
+      "name": "archive/owner-stop-20261125/codex/spec-03-fiat-price-feeds",
+      "sha": "e9025d72f1408ec48e6d1ca29a5361a55175ec31"
+    },
+    {
+      "name": "archive/owner-stop-20261125/consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feat/f04-dashboard-totals-qualification",
+      "sha": "6366767fb632ab3a01603497b49f12714ab796bb"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feat/f04-deliberate-local-export-20261121",
+      "sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feat/f04-evidence-analytics-20261122",
+      "sha": "ff60e1e45cac1348d554f94ea24717285ecc5608"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feat/f04-pages-dashboard-20261123",
+      "sha": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f02-ghoststore-catalog-cart",
+      "sha": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f08-offline-merchant-profile-review",
+      "sha": "923e1edfb9ac34f8b6855d8ac8516cd835070afd"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f11-ghostteams-invitation-review",
+      "sha": "10d995fa3290b51e0c35804a681ae0b30c4785b3"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f11-ghostteams-membership",
+      "sha": "9229a14c303944380523d2a65b783a25541f8403"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f11-ghostteams-membership-commit",
+      "sha": "8ade47153d0d08de4a7cc45fb60672a2b6afd658"
+    },
+    {
+      "name": "archive/owner-stop-20261125/feature/f13-offline-quote-terms",
+      "sha": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a"
+    },
+    {
+      "name": "archive/owner-stop-20261125/fix/f04-dashboard-refresh-focus",
+      "sha": "3085c87a57147afeb7dac7bc563af62f2c9784e5"
+    },
+    {
+      "name": "archive/owner-stop-20261125/fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "sha": "482d36ad436f4b27b2d86ff9a2c22daf150000ad"
+    },
+    {
+      "name": "archive/owner-stop-20261125/fix/pos-terminal-reliability-20261124",
+      "sha": "4ae333d3ffa85eb14c074a543bdc084370dd1e49"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46"
+    },
+    {
+      "name": "archive/owner-stop-20261125/future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90"
+    },
+    {
+      "name": "archive/owner-stop-20261125/integration/near-finished-20261124",
+      "sha": "c03598fe5923ddee8f9276c794b3197c501b2004"
+    },
+    {
+      "name": "archive/owner-stop-20261125/nodata/brave-meitner-974y9e",
+      "sha": "57505cb294cf1780036ff004d60e3fcb7b75917a"
+    },
+    {
+      "name": "archive/owner-stop-20261125/nodata/gracious-meitner-0yy6do",
+      "sha": "cefdbd9d6b05c4bcca81f8e11119469ac654480a"
+    },
+    {
+      "name": "archive/owner-stop-20261125/qualification/f02-merchant-catalog-auth-provider",
+      "sha": "08faa16e1a03fe8c87f97f02257363750b52c920"
+    },
+    {
+      "name": "archive/owner-stop-20261125/ui/merchant-dashboard-records",
+      "sha": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1"
+    },
+    {
+      "name": "audit/bugcheck-core-latest-20261120",
+      "sha": "9cb8f511b0e1bd4a807fc51d569117b4e991e622"
+    },
+    {
+      "name": "audit/ct-c-2-fee-event-forensics-20261121",
+      "sha": "4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b"
+    },
+    {
+      "name": "audit/f03-browser-qualification-20261120",
+      "sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63"
+    },
+    {
+      "name": "audit/ghostpay-blue-team-20261119",
+      "sha": "6dcd163413fc94d5b2db760d5e15db391760a099"
+    },
+    {
+      "name": "audit/ghostpay-census-20261121-r7",
+      "sha": "0d8437c1097fad30d505c343ce4da356350ea4c3"
+    },
+    {
+      "name": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "sha": "c9e53c2c5908cbb64c104d096ce84773cf804ccc"
+    },
+    {
+      "name": "audit/ghostpay-core-latest-security-20261119",
+      "sha": "b6e484c252723fc3293c7106ce2c46069c2668a8"
+    },
+    {
+      "name": "audit/ghostpay-current-census-20261120-r2",
+      "sha": "53a33810a86c47b4eaa6835ddebee237a5f78bf5"
+    },
+    {
+      "name": "audit/ghostpay-fund-recovery-expiry-20261122-p0",
+      "sha": "74b9f85523f75c473b6fc65e5b44e75bac3f1fd9"
+    },
+    {
+      "name": "audit/ghostpay-main-447-census-20261121-r9",
+      "sha": "c493df9e210f6227471864a623ee536cc9483a3a"
+    },
+    {
+      "name": "audit/ghostpay-qa-stress-20261119",
+      "sha": "e9643073be74dac54c2875143501451812763f9c"
+    },
+    {
+      "name": "audit/ghostpay-r12-delta-20261121-0507",
+      "sha": "2eb64d0a19e172ca02abe10a191b7d711962cb52"
+    },
+    {
+      "name": "audit/ghostpay-r13-capped-lineage-20261121",
+      "sha": "bb668e18b1bad2e92811c22ca57cb019b1b4b281"
+    },
+    {
+      "name": "audit/ghostpay-r15-475-delta-20261121",
+      "sha": "4aea5f7ed3dec4b328bd01594bf61cca35c72ab9"
+    },
+    {
+      "name": "audit/ghostpay-r22-privacy-option-guards-20261121",
+      "sha": "e8afa1d2297b792cc00e40df94c2f3406d93d638"
+    },
+    {
+      "name": "audit/ghostpay-r24-494-ci-triage-20261121",
+      "sha": "2e8e2fde366f10915daabc157b55b6772e5da730"
+    },
+    {
+      "name": "audit/ghostpay-r30-504-reconciliation-20261122",
+      "sha": "745004a16dbb712a1085d3e7377d9abe951e9599"
+    },
+    {
+      "name": "audit/ghostpay-r32-census-and-ci-gates-20261122",
+      "sha": "bd1bc845bb855686ca48922baacc057c1c40dee2"
+    },
+    {
+      "name": "audit/ghostpay-r33-514-branch-pr-qualification-20261122",
+      "sha": "8251eaa0813af7d2fc056ed432d43c6e762cf6c0"
+    },
+    {
+      "name": "audit/ghostpay-r38-source-census-20261122",
+      "sha": "4f529cbb152916dfd2f3283b224d321533ec5a2d"
+    },
+    {
+      "name": "audit/ghostpay-r39-uncapped-branch-triage-20261122",
+      "sha": "87eb78767567c9aa58bce10c0c020f282d1491c7"
+    },
+    {
+      "name": "audit/ghostpay-r40-semantic-branch-dispositions-20261122",
+      "sha": "fd3abbc297febe54f6539b801cd752d6f4d9e4f8"
+    },
+    {
+      "name": "audit/ghostpay-r41-semantic-backfill-20261122-1400Z",
+      "sha": "d068ffd41637de364310b2117d737153d4da3fd8"
+    },
+    {
+      "name": "audit/ghostpay-r68-jitter-expiry-qualification-20261123",
+      "sha": "f2b262c2afe5d51c258e466d9be1d22798817135"
+    },
+    {
+      "name": "audit/ghostpay-scheme2-completion-20261122",
+      "sha": "ecfe65666b510d9adfc51902880ee7ac5f419baa"
+    },
+    {
+      "name": "audit/pages-tor-rpc-compat-20261124",
+      "sha": "20733b6a8ebc6a2598d5baff2eed62d58a0a7675"
+    },
+    {
+      "name": "audit/zero-cool-core-20261119",
+      "sha": "bdffcb1d88557b3ca9110c20e03261508011c902"
+    },
+    {
+      "name": "automation/api-funded-ghostpay-cloud-20261103",
+      "sha": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482"
+    },
+    {
+      "name": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "sha": "08d2111a5fd3b71a148fc8648481200e680faf53"
+    },
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "sha": "6dc0ab5ef5572d8de487203d9757f9cf15b783d5"
+    },
+    {
+      "name": "automation/ghostpay-parallel-four-agents-20261103",
+      "sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce"
+    },
+    {
+      "name": "automation/ghostpay-parallel-review-wave-20261103",
+      "sha": "03a3f5701c89e19667f309bb5f01bd36793a5474"
+    },
+    {
+      "name": "automation/ghostpay-recurrent-backlog-20261103",
+      "sha": "5835736c12968231ac7b3152e394077bee453622"
+    },
+    {
+      "name": "automation/20261119-c977/bug/build-profile-failclosed",
+      "sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88"
+    },
+    {
+      "name": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "sha": "0041514a630398c89693498d9b5e44ef562d9c61"
+    },
+    {
+      "name": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64"
+    },
+    {
+      "name": "automation/20261119T073600Z/bug/camera-visibility",
+      "sha": "d073414b718242eefdd22c0debc56901045d5f7a"
+    },
+    {
+      "name": "automation/20261119T073600Z/coordinator/integration-lock",
+      "sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577"
+    },
+    {
+      "name": "automation/20261119T083600Z/audit/merchant-clock",
+      "sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93"
+    },
+    {
+      "name": "automation/20261119T083600Z/bug/json-canonical-array",
+      "sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb"
+    },
+    {
+      "name": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552"
+    },
+    {
+      "name": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce"
+    },
+    {
+      "name": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+    },
+    {
+      "name": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141"
+    },
+    {
+      "name": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "sha": "89942105c48df03b9351f777278b6a992e35a95e"
+    },
+    {
+      "name": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "sha": "a47648872e648fe7848a17080a5ffa1473e98e8b"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "sha": "4493793ad2c438fcc0f45f96851eac8967cb607a"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "sha": "17333ceda784ecdf5734a666ef57ee1d1e599296"
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf"
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e"
+    },
+    {
+      "name": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae"
+    },
+    {
+      "name": "automation/20261120T0243Z/worker/format-units-validation",
+      "sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7"
+    },
+    {
+      "name": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98"
+    },
+    {
+      "name": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544"
+    },
+    {
+      "name": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c"
+    },
+    {
+      "name": "automation/20261120T1241Z/bug/receipt-print-css",
+      "sha": "e0c583be2514b44af7f3b15619fb8160358f1470"
+    },
+    {
+      "name": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462"
+    },
+    {
+      "name": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462"
+    },
+    {
+      "name": "automation/20261120T1635Z/bug/tron-scan-abort",
+      "sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3"
+    },
+    {
+      "name": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "sha": "71632fa389ae93824b2f42d265278a9bd0f6de59"
+    },
+    {
+      "name": "automation/20261120T2036Z/bug/btc-preview-network",
+      "sha": "692cac58b1c345137264936e60bee7b1e2eed8b2"
+    },
+    {
+      "name": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "sha": "78137622011528a646ae94155ee4acf7f72e1e2a"
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4"
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qualification-evidence",
+      "sha": "52122f8b7076b2636d47f59f8bb607b189d3ab39"
+    },
+    {
+      "name": "automation/20261120T004531Z/feature/clipboard-guard",
+      "sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+    },
+    {
+      "name": "automation/20261120/bug/btc-fee-floor-config",
+      "sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1"
+    },
+    {
+      "name": "automation/20261120/bug/policy-review-revocation-r1",
+      "sha": "ccc8c3521511e2a2b9b66ef11f12723d87ce5f44"
+    },
+    {
+      "name": "automation/20261121T0033Z/bug/router-duplicate-warning",
+      "sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+    },
+    {
+      "name": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b"
+    },
+    {
+      "name": "automation/20261121T0440Z/bug/payment-uri-utf16-failclosed",
+      "sha": "2844ec6c22fe179987585679a934e10033ff3384"
+    },
+    {
+      "name": "automation/20261121T0638Z/bug/payment-uri-runtime-types",
+      "sha": "3d57d9881033f60786fecb3a71562af445441a3e"
+    },
+    {
+      "name": "automation/20261121T0842Z/bug/payment-uri-query-boundaries",
+      "sha": "31b943bbc5bc3c3fdd3d1aec0d3fb5fa3d35c8a2"
+    },
+    {
+      "name": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "sha": "df0e715686bc42d270617692a7e310a8b362e840"
+    },
+    {
+      "name": "automation/20261121T1033Z/bug/fiat-minor-units",
+      "sha": "f3e5540777491559e79565cafe0978f5e8e30003"
+    },
+    {
+      "name": "automation/20261121T1238Z/bug/unix-timestamp-runtime-guard",
+      "sha": "11117b9fff062d859c9db123ff62641cc0479192"
+    },
+    {
+      "name": "automation/20261121T1439Z/bug/qr-print-policy-boolean",
+      "sha": "0bd06cbbdfc3b449fd56237b385d0b3d084f317d"
+    },
+    {
+      "name": "automation/20261121T1636Z/bug/countdown-invalid-runtime",
+      "sha": "5d3e21617a8a368c5694739319856d083a6c3881"
+    },
+    {
+      "name": "automation/20261121T1835Z/bug/display-surrogate-cut",
+      "sha": "62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3"
+    },
+    {
+      "name": "automation/20261121T2033Z/integration/display-text-boundaries",
+      "sha": "f846464db3cb2f12c221d0c2f56e3aa3702d4fcb"
+    },
+    {
+      "name": "automation/20261121T2235Z/bug/journal-hash-integrity",
+      "sha": "e9404bad766b3ee7d93f54f2172059b9566fcb57"
+    },
+    {
+      "name": "automation/20261121/bug/cache-control-no-cache-r3",
+      "sha": "8d55b4e39be48a0410c16d4a4c0acaa57da55b9b"
+    },
+    {
+      "name": "automation/20261121/bug/deeplink-explicit-port-r10",
+      "sha": "ea2719992e44909b72c74a9d661bdfa7fa0aab68"
+    },
+    {
+      "name": "automation/20261121/bug/display-text-expansion-bound-r1",
+      "sha": "b655bc273a6704c9c140287b8adcdf4085b91882"
+    },
+    {
+      "name": "automation/20261121/bug/fiat-overlapping-separator-r4",
+      "sha": "de3d45ff59547ab5becee2d90904a76ba74d2ec8"
+    },
+    {
+      "name": "automation/20261121/bug/large-amount-noise-bound-r1",
+      "sha": "699c8db24451a5ff6c034b1f247c48e6cc0bdd45"
+    },
+    {
+      "name": "automation/20261121/bug/netstate-stale-summary-r7",
+      "sha": "93095a796a52ee664279439a5334042b97fe9c9a"
+    },
+    {
+      "name": "automation/20261121/bug/onboarding-review-gate-r1",
+      "sha": "3ec919bace3e497fe58126396787b2b1b93938cc"
+    },
+    {
+      "name": "automation/20261121/bug/payagain-evm-address-case-r6",
+      "sha": "a5d062d3e2ecf281cd616805e94cad11c206e37b"
+    },
+    {
+      "name": "automation/20261121/bug/pos-runtime-guard-r14",
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b"
+    },
+    {
+      "name": "automation/20261121/bug/receipt-evm-truncated-tail-r11",
+      "sha": "61d7fc56c98edaa7f377c7d227492ad7354e24d8"
+    },
+    {
+      "name": "automation/20261121/bug/summary-period-runtime-guard-r5",
+      "sha": "8d3dd35c6d7e3ccfe91f2697312897812a140381"
+    },
+    {
+      "name": "automation/20261121/bug/undo-maxpending-bound-r2",
+      "sha": "24caac5117f7dd19d7cf8b9cacae6c29f84956d0"
+    },
+    {
+      "name": "automation/20261121/bug/ux-connect-pending-kind-r12",
+      "sha": "ffdf6adc34dcd187583b426fec0fade767488d92"
+    },
+    {
+      "name": "automation/20261121/bug/ux-fees-urgency-validation-r9",
+      "sha": "55106dad616d548b9beb174c7f5735d1b5821a22"
+    },
+    {
+      "name": "automation/20261121/bug/ux-links-max-lifetime-guard",
+      "sha": "b2c7e800516030b2910071c93b9afc652550ab8e"
+    },
+    {
+      "name": "automation/20261121/bug/ux-schedule-weekly-maxyear-r8",
+      "sha": "0e6b5491bbb37c699bf22e70edd610ef32152c90"
+    },
+    {
+      "name": "automation/20261122-r4/bug/ux-schedule-invalid-utf16",
+      "sha": "3104e010863a93e2d88911515542f858301f6112"
+    },
+    {
+      "name": "automation/20261122-r5/bug/ux-receipts-invalid-chain-facts",
+      "sha": "ff8c800a495f1cc4d2df704d321b3d22e6f67a78"
+    },
+    {
+      "name": "automation/20261122-r6/bug/ux-guide-detect-exact-settings",
+      "sha": "1f674b9b3432887d3c721cdb8be5370023feef7d"
+    },
+    {
+      "name": "automation/20261122-r7/bug/ux-intake-address-runtime-types",
+      "sha": "2eb885054210d958e41bf559a4c10cc3ea790cd5"
+    },
+    {
+      "name": "automation/20261122-r8/bug/ux-presets-missing-blob",
+      "sha": "0d5fb9c93e9f7b46725c1cf1cab01cb8975b2691"
+    },
+    {
+      "name": "automation/20261122-r11/audit/mythril-evidence-summary",
+      "sha": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a"
+    },
+    {
+      "name": "automation/20261122-r11/bug/hygiene-bufferdust-runtime-types",
+      "sha": "9bc3013e36bd0d245b54cbc5367d225ea4e6668d"
+    },
+    {
+      "name": "automation/20261122-r11/bug/ux-vault-base64url-padbits",
+      "sha": "9aeed83b73916d0b51c192dbea04cfdc601f94a9"
+    },
+    {
+      "name": "automation/20261122-r12/bug/guide-sparse-checklist",
+      "sha": "ffd187c7721d8e2b4aa1de647ef2bc5c07aa81f5"
+    },
+    {
+      "name": "automation/20261122-r12/bug/ux-receipts-canonical-sparse",
+      "sha": "366c912ee6b7b6b017dd1f04b934f9f52ba656fa"
+    },
+    {
+      "name": "automation/20261122-r34/bug/ux-receipts-lookup-boundary",
+      "sha": "5aa0194f1a27ab3d6ba96a28e62fe604d8d8451d"
+    },
+    {
+      "name": "automation/20261122-r36-consolidation/bug/no-cache-response",
+      "sha": "dd8f82d9ed3ae5f2c0c342de833a6b419a0d3a54"
+    },
+    {
+      "name": "automation/20261122-r36/bug/ux-fiat-runtime-separators",
+      "sha": "66545f23707aeabb70e6a41601beb64998fe4d90"
+    },
+    {
+      "name": "automation/20261122-r37/bug/ux-fees-asset-symbol-collision",
+      "sha": "a3ac91c8f38b99c25749ba1a87ba308c9f1f5a2e"
+    },
+    {
+      "name": "automation/20261122T0035Z/bug/settings-exchange-stale-basis",
+      "sha": "11b71fc9b0c66007e1d8c8700a53cfeb226d840d"
+    },
+    {
+      "name": "automation/20261122T0123Z/bug/meta-fingerprint-surrogate",
+      "sha": "37864653893467c3cb28ec6eb653639319cb7ab6"
+    },
+    {
+      "name": "automation/20261122T0218Z/bug/notify-label-surrogate-cut-r11",
+      "sha": "88ab4b971e1492492230dd091c53991254e2cafc"
+    },
+    {
+      "name": "automation/20261122T0239Z/bug/settings-exchange-incoming-snapshot",
+      "sha": "6af1a4bc3cd8b33cd3e3e85a645ba43e7e456eef"
+    },
+    {
+      "name": "automation/20261122T0326Z/bug/ux-privacy-empty-guardians-threshold",
+      "sha": "9e72c9820ed457f18c2635e17da629216eedbbdf"
+    },
+    {
+      "name": "automation/20261122T0438Z/bug/wallet-hash-type-guard",
+      "sha": "2b73dec30338e3c33a52d80d2ec7299879301b72"
+    },
+    {
+      "name": "automation/20261122T0522Z/bug/ux-export-header-once-r3",
+      "sha": "315941d854200b8c59b4ffb5565392a8662f9a3d"
+    },
+    {
+      "name": "automation/20261122T0641Z/bug/qr-classify-surrogate-input",
+      "sha": "17c638125ff66bde25fbd21fb434bc741b649032"
+    },
+    {
+      "name": "automation/20261122T0838Z/bug/receipt-accessor-failclosed",
+      "sha": "d0814403c69e1cc18960a0ce2df75c1c49e96e44"
+    },
+    {
+      "name": "automation/20261122T1036Z/bug/opstack-serialization-boundary",
+      "sha": "149300330d59642e1e97b76231ac1bea3200a973"
+    },
+    {
+      "name": "automation/20261122T1426Z/bug/ux-flow-b64url-runtime-types",
+      "sha": "eca2a97b02860ea0e251d69c719af1455aff8067"
+    },
+    {
+      "name": "automation/20261122T1440Z/bug/qr-svg-matrix-snapshot",
+      "sha": "f05504b5bcd62aa59c715f7c43934ca88107187a"
+    },
+    {
+      "name": "automation/20261122T1640Z/bug/qr-snapshot-lint",
+      "sha": "6aba5e7c2fee75ac2e75b9689414f3e6e2d7280f"
+    },
+    {
+      "name": "automation/20261122T1818Z/bug/amount-blur-crowd-overflow-r11",
+      "sha": "f702d2628673954983eb57814633475b8ae96df5"
+    },
+    {
+      "name": "automation/20261122T1834Z/bug/palette-action-snapshot",
+      "sha": "ebac41d9eaee5439a84e5330c0974d0c59ca13c2"
+    },
+    {
+      "name": "automation/20261122T2038Z/bug/policy-sparse-records",
+      "sha": "e5705abded6761c2b53cde2343210372e2264ef7"
+    },
+    {
+      "name": "automation/20261122T2123Z/bug/export-pre-epoch-date-guard",
+      "sha": "4ebce7eeafd28029ebd0b6a9a3ec295279f8a653"
+    },
+    {
+      "name": "automation/20261122T2232Z/bug/policy-sparse-test-typecheck",
+      "sha": "fe1c59a3d5aa25dbdcdf30db38ec869566fa0f5f"
+    },
+    {
+      "name": "automation/20261122/bug/notify-snapshot-seq-r9",
+      "sha": "a234ea9487805d102bd6e6bb045fea5c95962557"
+    },
+    {
+      "name": "automation/20261122/bug/search-tag-normalization-r1",
+      "sha": "6cce62fe107b76280074e9be161add3ba65b1a28"
+    },
+    {
+      "name": "automation/20261122/bug/store-onlykeys-plain-r1",
+      "sha": "31c0d0aebad7be2d2eb6ffad246e6c1f688ef1df"
+    },
+    {
+      "name": "automation/20261122/bug/ux-export-parse-nonstring-r10",
+      "sha": "860c7f4d09b6a9ef06a17089b2187d8aa7253007"
+    },
+    {
+      "name": "automation/20261122/bug/ux-fiat-parse-rounding-r12",
+      "sha": "3be7dcdc98105f805315954ef6175f428430faf7"
+    },
+    {
+      "name": "automation/20261122/bug/ux-links-book-sparse-entries-r13",
+      "sha": "9a0b976fe5348705cb617bb65b21e59b16614d67"
+    },
+    {
+      "name": "automation/20261122/bug/ux-notify-manifest-purpose-whitespace",
+      "sha": "c7a9f9148ceea15b89090b533f31054a77f17765"
+    },
+    {
+      "name": "automation/20261122/bug/ux-schedule-cancel-single-clock-11",
+      "sha": "782a5bce33a6fa981eb1d6f80f77e90665cad301"
+    },
+    {
+      "name": "automation/20261122/bug/wcsession-request-clock-r11",
+      "sha": "051b722a34d5f0488af65cd486da3b0492ffc6a1"
+    },
+    {
+      "name": "automation/20261122/tor-scan-saved-message-contract-r29",
+      "sha": "cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362"
+    },
+    {
+      "name": "automation/20261123-r11/bug/merchant-button-invalid-label",
+      "sha": "d181a89e67978ef375b08a60bf065506bc913171"
+    },
+    {
+      "name": "automation/20261123-r11/bug/merchant-csv-empty-quoted-eof",
+      "sha": "19e723d31ce184e963a2fcfc346bd1629115f709"
+    },
+    {
+      "name": "automation/20261123-r11/bug/metadata-anchor-attribute-boundaries",
+      "sha": "ee193665d32e223c10e4c9fcbbc15aa53e831390"
+    },
+    {
+      "name": "automation/20261123-r11/bug/reminder-accessor-result",
+      "sha": "c86d5a32e02efbee14d935548c821b27e287f507"
+    },
+    {
+      "name": "automation/20261123-r11/bug/sanitize-marker-mixed-script",
+      "sha": "b215b4d63ac8c13a853f9aa874e0d6a466e90bce"
+    },
+    {
+      "name": "automation/20261123-r11/bug/ux-flow-embed-option-record",
+      "sha": "1e91fc43196c39498f392ef21d59bb80b7b83629"
+    },
+    {
+      "name": "automation/20261123-r12/bug/qr-camera-attach-cleanup",
+      "sha": "93d719f98751852366a74a464f6f0dc39d4dcecc"
+    },
+    {
+      "name": "automation/20261123-r16/bug/ux-fees-neartie-savings",
+      "sha": "e3c98d91d00e8fe8a458859232548fe041a85bfc"
+    },
+    {
+      "name": "automation/20261123T0021Z/bug/hwsigner-bigint-boundary",
+      "sha": "e8dd09862face30c57e6123c01bcda3f6d2eec2c"
+    },
+    {
+      "name": "automation/20261123T0032Z/bug/theme-css-snapshot",
+      "sha": "6d46d500da8171fe560090739c3ef9f1d3af94a7"
+    },
+    {
+      "name": "automation/20261123T0237Z/bug/fiat-rate-quote-snapshot",
+      "sha": "8dd2dee49994f872aa9788206afa5878a2b49258"
+    },
+    {
+      "name": "automation/20261123T0441Z/bug/eip3770-registry-guard",
+      "sha": "920a9ffe366dedc727d5e33b57c455cbcccde6af"
+    },
+    {
+      "name": "automation/20261123T0635Z/bug/eip681-amount-snapshot",
+      "sha": "72c4b7aa0f111bcbdb53ace5424ab9fc544d04f7"
+    },
+    {
+      "name": "automation/20261123T0742Z/bug/ux-links-sparse-tip-presets-r11",
+      "sha": "651d669371379c6a11eb8d56d700b96294da3074"
+    },
+    {
+      "name": "automation/20261123T0840Z/bug/bitcoin-uri-input-snapshot",
+      "sha": "02aba52ad3d38991cc58a7d6869836cd70a0cbb5"
+    },
+    {
+      "name": "automation/20261123T1035Z/bug/i18n-duplicate-language-q-r13",
+      "sha": "141c6556ead107b1f622a1c3d89cdfc6004e1f92"
+    },
+    {
+      "name": "automation/20261123T1041Z/bug/solana-reference-snapshot",
+      "sha": "7e618aef8e9c84055f445b4959a339e7ad470cbf"
+    },
+    {
+      "name": "automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14",
+      "sha": "1cf9ec458bdd193f186499ac30ac3f7b207cfe0c"
+    },
+    {
+      "name": "automation/20261123T1239Z/bug/c1-context-help-focus",
+      "sha": "e205b107b57794fd96a8302d54d2df3cb273e9e9"
+    },
+    {
+      "name": "automation/20261123T1440Z/bug/c1-rpc-input-subgrid",
+      "sha": "ad921a34a81037943e05ee48c39370261da21baa"
+    },
+    {
+      "name": "automation/20261123T1637Z/bug/c1-sweep-simulation-fixture",
+      "sha": "fbd450936b2495026ff88a2eae08bfee02e92db6"
+    },
+    {
+      "name": "automation/20261123T1719Z/bug/nfc-nan-limit-r11",
+      "sha": "26d10a1f1e74d28408ea4c81d627afd227b7a48b"
+    },
+    {
+      "name": "automation/20261123T1840Z/bug/scan-announcement-getters",
+      "sha": "74164baa0c0781955383794d5243f5ed25e46ae4"
+    },
+    {
+      "name": "automation/20261123T1924Z/bug/nl-amount-locale-snapshot",
+      "sha": "cc2166140089967fbfd621d200abf15354d668d2"
+    },
+    {
+      "name": "automation/20261123T2018Z/bug/merchant-ledger-duplicate-invoice-export",
+      "sha": "907838ef75bbd0b08b4e23f3bbea9ac9b08403d4"
+    },
+    {
+      "name": "automation/20261123T2041Z/bug/scan-proxy-test-lint",
+      "sha": "36cf79d0ce4a31f79a5799af2f8f5e30bd244029"
+    },
+    {
+      "name": "automation/20261123T2123Z/bug/ux-export-ragged-parser",
+      "sha": "f1b243199b54f9726e20e8f8375e26530229589d"
+    },
+    {
+      "name": "automation/20261123T2221Z/bug/qr-svg-sparse-matrix",
+      "sha": "5741f0bea3e3b4a510220f193aae8276dda94a00"
+    },
+    {
+      "name": "automation/20261123T2235Z/test/scan-range-record-isolation",
+      "sha": "482d6ab973389083126dd8794f2b21d096a04977"
+    },
+    {
+      "name": "automation/20261123/bug/export-column-holes-r11",
+      "sha": "cf642259db1e9cfe63937dd2728d4d2336fa7bb0"
+    },
+    {
+      "name": "automation/20261123/bug/intake-invoice-default-port-r11",
+      "sha": "a8b10c12db402b6ab2dd2f41bd605327056d287d"
+    },
+    {
+      "name": "automation/20261123/bug/notify-jws-query-cache-r12",
+      "sha": "1fc6f89f171b7c51eb6e84ccbc59800f19a4352e"
+    },
+    {
+      "name": "automation/20261123/bug/ux-fiat-quote-accessor-r12",
+      "sha": "faa2bd8abd6c3e3a805530106a604cba4f4063aa"
+    },
+    {
+      "name": "automation/20261123/bug/ux-flow-origin-port-length-r12",
+      "sha": "f5008152754937d2c78f98b13ff35363f9e4d765"
+    },
+    {
+      "name": "automation/20261123/bug/ux-presets-real-cryptokey-r11",
+      "sha": "59b5bbfc6f6dc3cc83d24c1fccbe87b15cd72d0c"
+    },
+    {
+      "name": "automation/20261124-recovery-573/qa/beforeunload-fixture",
+      "sha": "4b1ed14ccfac12b5574b8817873ce299ecb86ddf"
+    },
+    {
+      "name": "automation/20261124T0018Z/bug/ux-intake-japanese-script-extensions",
+      "sha": "1f3d230be9f5ab67e5314c5084dc1f4b5e141472"
+    },
+    {
+      "name": "automation/20261124T0037Z/coordinator/scan-source-rollup",
+      "sha": "ed9dbdb5ceebc18ab6765382f348ed28d1b7e218"
+    },
+    {
+      "name": "automation/20261124T0524Z/bug/ux-fiat-conversion-output-bound",
+      "sha": "c9ebbdd41368f65cab27c909a146dc7d0960553d"
+    },
+    {
+      "name": "automation/20261124T0637Z/bug/tron-uri-input-snapshot",
+      "sha": "97cb98591a2a2e95c8d9a701d0eb60e4e2bc7a4b"
+    },
+    {
+      "name": "automation/20261124T0837Z/bug/tron-network-absence",
+      "sha": "9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce"
+    },
+    {
+      "name": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "sha": "e564360afa37714db4ea7cb63e12cde44db62dee"
+    },
+    {
+      "name": "automation/20261124T1237Z/bug/deployment-diagnostic-fixture",
+      "sha": "3107b816144b4a6fe43f197fbdc323b5d8d80628"
+    },
+    {
+      "name": "automation/20261124T1437Z/bug/scan-locale-vault-fixture",
+      "sha": "694383f7964afbaf0f7a9f8324db200f4d594af6"
+    },
+    {
+      "name": "automation/20261124T1637Z/bug/hostile-text-fresh-payer",
+      "sha": "662418ed76ac77fd2519e9cad4d82c873d567878"
+    },
+    {
+      "name": "automation/20261124T1821Z/bug/ux-export-leading-bom",
+      "sha": "0fe0f06f1f7cd1dde2c4dc849702f0ab4cd509cd"
+    },
+    {
+      "name": "automation/20261124T2037Z/qa/disclosure-signer-pin-gate",
+      "sha": "c484f833560aef8e8c798a71228d92e10fe5a877"
+    },
+    {
+      "name": "automation/20261124T2125Z/bug/schedule-negative-handled",
+      "sha": "d43205e6905611f7d34fb5bbed3886b7cb9e78d5"
+    },
+    {
+      "name": "automation/20261124T2237Z/qa/disclosure-firefox-reflow",
+      "sha": "0036fe1656579e0e9551bb9ae07cc63d802fb667"
+    },
+    {
+      "name": "automation/20261124/bug/i18n-accessible-name-surrogate-r11",
+      "sha": "005ca59c5b2cbe2c7cce9b3e326f2438dff57f3f"
+    },
+    {
+      "name": "automation/20261124/bug/i18n-adjacent-quoted-literals-r11",
+      "sha": "9e41a4e47a8eb87affc5c7fffb5c089e8f4a31a7"
+    },
+    {
+      "name": "automation/20261124/bug/merchant-decimal-uint256-roundtrip",
+      "sha": "5f280cab9c252cf57a68e2c2d156c07b36d2b018"
+    },
+    {
+      "name": "automation/20261124/bug/nl-amount-locale-prefix-r11",
+      "sha": "4a13cffec3765e41c006659e16e092d0f961c0a5"
+    },
+    {
+      "name": "automation/20261124/bug/template-clock-rollback-r11",
+      "sha": "68a4e9596062b2144ca5d9da3ff817b73644e2e1"
+    },
+    {
+      "name": "automation/20261124/bug/ux-intake-qr-clock-rollback-r11",
+      "sha": "4b6a36a94defa828c510147a3e4786e3bc018a9e"
+    },
+    {
+      "name": "automation/20261124/bug/vault-duplicate-group-kind-r11",
+      "sha": "41ddd0f21986d3ec65d43ead73fafda39a4a2f4d"
+    },
+    {
+      "name": "automation/20261125T0120Z/bug/ux-links-handle-confusable-case",
+      "sha": "898106124f7fc2ae90916a8d62348d0d4dd5e120"
+    },
+    {
+      "name": "automation/20261125T0437Z/qa/registry-history-live-region",
+      "sha": "3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7"
+    },
+    {
+      "name": "automation/20261125T0637Z/qa/account-privacy-signer-pin",
+      "sha": "724afdcf557178d8b78d841b681f50e99d41935f"
+    },
+    {
+      "name": "automation/20261125T0841Z/qa/private-scan-presentation",
+      "sha": "1dcd5a25130b9db6afc4d224c619cd4dbcf0307c"
+    },
+    {
+      "name": "automation/20261125T1241Z/containment/help-scope",
+      "sha": "4f674cdd71706d1c2566f8cb67cc8421fdc89d6a"
+    },
+    {
+      "name": "automation/20261125T1635Z/coordinator/owner-scope-landing",
+      "sha": "f1ec352245d8a9bcb9a201a50db0569b1ec31652"
+    },
+    {
+      "name": "automation/20261125/bug/pos-session-record-bound",
+      "sha": "a095a62da8d246f0fbb4862ede8c0a1e7656affb"
+    },
+    {
+      "name": "automation/20261125/bug/template-import-epoch-bound",
+      "sha": "7c8773c11c18efd677c2498a293223cee1959f50"
+    },
+    {
+      "name": "automation/20261126/bug/i18n-exact-extension-negotiation",
+      "sha": "ce035e2baf6f90248b79e971a6dc58bb1e171492"
+    },
+    {
+      "name": "automation/20261126/bug/i18n-unsupported-locale-fallback",
+      "sha": "a75480ca8a02ba541bf8e113f320c7ee5552ebc9"
+    },
+    {
+      "name": "backup/codex-observed-pr37-915d710-20261028",
+      "sha": "915d71053e2335dfff638b729b160f9df3200c22"
+    },
+    {
+      "name": "backup/individual-stealth-keypair-export-20261123-28bba11c",
+      "sha": "28bba11cdaebc13edc4d100761ee00750c3f396f"
+    },
+    {
+      "name": "backup/p0-keys-independent-recovery-021e4f25",
+      "sha": "021e4f25c82dfea8d343c79df1d7fa99013855df"
+    },
+    {
+      "name": "backup/p0-keys-independent-recovery-da26b87e",
+      "sha": "da26b87e59419b406b65ba1a96914e2bb9641c40"
+    },
+    {
+      "name": "backup/pr30-before-consolidation-20261025",
+      "sha": "356fe5e44d42db1731d6b35794c6474afcc23037"
+    },
+    {
+      "name": "backup/pr31-before-consolidation-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523"
+    },
+    {
+      "name": "chatgpt/btc-spent-private-scan-20261118",
+      "sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f"
+    },
+    {
+      "name": "chatgpt/btc-spent-qualification-20261119",
+      "sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08"
+    },
+    {
+      "name": "chatgpt/btc-spentness-private-scan-20261118",
+      "sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0"
+    },
+    {
+      "name": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-qualification-20261112",
+      "sha": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa"
+    },
+    {
+      "name": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "sha": "eb21d57c8ad1550481d5d674fa6356ac98f146f0"
+    },
+    {
+      "name": "chatgpt/ghostpay-browser-selfchecks-20261121",
+      "sha": "1edc524e69554e4a45017858c7e3e25c46dae419"
+    },
+    {
+      "name": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "sha": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9"
+    },
+    {
+      "name": "chatgpt/ghostpay-csv-leading-whitespace-20261121",
+      "sha": "d283116dfcf3baa2e0ffc6dbf2d5657830849315"
+    },
+    {
+      "name": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a"
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd"
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "sha": "d5fe06e7a7b383da1726c4d38165c824e996b9db"
+    },
+    {
+      "name": "chatgpt/ghostpay-integration-matrix-20261112",
+      "sha": "1a5e815d8446f00a63f98de261081910c9c78ce6"
+    },
+    {
+      "name": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9"
+    },
+    {
+      "name": "chatgpt/ghostpay-ledger-exponent-guard-20261121-0313",
+      "sha": "0d1193014e3a28f529afcba7787fcaea9bdac280"
+    },
+    {
+      "name": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "sha": "bbc7dda4ce275613296609a5001bac36c888229e"
+    },
+    {
+      "name": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57"
+    },
+    {
+      "name": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "sha": "8277879eeaa003c31fd76b4f840b9628f4b02cf7"
+    },
+    {
+      "name": "chatgpt/ghostpay-own-node-guard-20261118",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c"
+    },
+    {
+      "name": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "sha": "276aed60f19671cc6fa551be616b61041cb45b50"
+    },
+    {
+      "name": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050"
+    },
+    {
+      "name": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "sha": "18b367457103fb1731a5b4ef5c51faa37a010e47"
+    },
+    {
+      "name": "chatgpt/ghostpay-recovery-review-20261118",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108"
+    },
+    {
+      "name": "chatgpt/ghostpay-remaining-work-20261119",
+      "sha": "509a800439f2feb6173b20d2543746c3d74e9a42"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-layout-reflow-20261121-r1",
+      "sha": "63d5a0d0d1b08db14cbd52bd720736f4ceb4612e"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a"
+    },
+    {
+      "name": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef"
+    },
+    {
+      "name": "chatgpt/ghostpay-sonar-review-20261118",
+      "sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5"
+    },
+    {
+      "name": "chatgpt/ghostpay-tm-hardening-20261118",
+      "sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6"
+    },
+    {
+      "name": "chatgpt/ghostpay-top-down-audit-20261115",
+      "sha": "775756931be4683f47e8af6b2ecf26f9458897d7"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "sha": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "sha": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b"
+    },
+    {
+      "name": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103"
+    },
+    {
+      "name": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6"
+    },
+    {
+      "name": "chatgpt/pages-release-gate-audit-20261114",
+      "sha": "2221a6117cdcf397527d96c2b20862d05a6b26da"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-completion-20261118",
+      "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sha": "364b01f847391cd02b3aecb74e18ddd047096c97"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3"
+    },
+    {
+      "name": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa"
+    },
+    {
+      "name": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "sha": "362dfa999a96dc615a1d146b4f37f8325268a595"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-wiki-20261110",
+      "sha": "fa375dbc1f2416b27d75e44487e5a382f237b379"
+    },
+    {
+      "name": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "sha": "bb193849a5688bb604e3e32dc83e1647e37fe447"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sha": "7cdc6b32ecafd73636136c852542fddd42213848"
+    },
+    {
+      "name": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a"
+    },
+    {
+      "name": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "sha": "5280569b7eaad9b4d996861410211cd40d005fdb"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "sha": "81fd4c032e29a87ce509236a0398468022c23012"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sha": "9bdc9cbade90995e3207b72535a7818f909c2684"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sha": "83fe9b022d2b5a4068137fd7987467f1803803dc"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sha": "cf5e876ce164e63d535fb6e40319573798b746e1"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "sha": "eece5aff554255ca6c02e53849403f66123b8e40"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891"
+    },
+    {
+      "name": "chatgpt/zero-codex/qualify-98-20261110",
+      "sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c"
+    },
+    {
+      "name": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "sha": "83d17adb4a07ff2120c6674a5128684e4f13776a"
+    },
+    {
+      "name": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "sha": "bbe300b7fb21829350f66677d270a689f3a79ecf"
+    },
+    {
+      "name": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "sha": "0ab175e552485032672c59d9b38c733545c7c50f"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a"
+    },
+    {
+      "name": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205"
+    },
+    {
+      "name": "checkpoint/ghostpay-recovery-20261102",
+      "sha": "1dffa5a366fc88a4428823634f43247913048915"
+    },
+    {
+      "name": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "sha": "243d98d67c7cbcc854b2107da5461e4718cb6272"
+    },
+    {
+      "name": "claude/a11y-reflow-checkvisibility-20261126",
+      "sha": "cb8d9b3052e1905e1542a2d0326dfa3aa1c39bf8"
+    },
+    {
+      "name": "claude/account-privacy-audit-20261126",
+      "sha": "5092b254e3f1c7bc7669fb2f09057073737344ee"
+    },
+    {
+      "name": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733"
+    },
+    {
+      "name": "claude/adoring-wozniak-850ue6",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523"
+    },
+    {
+      "name": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    {
+      "name": "claude/ar-a4-btc-headersync",
+      "sha": "27d1580c5c535cef5ea44491716d0d86712df841"
+    },
+    {
+      "name": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8"
+    },
+    {
+      "name": "claude/ar-a6-combined-backup",
+      "sha": "f5d219851a4715cb947eb224976f97a7bec49380"
+    },
+    {
+      "name": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417"
+    },
+    {
+      "name": "claude/ar-b1-core-journey",
+      "sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104"
+    },
+    {
+      "name": "claude/ar-b2-lean-bound-receipts",
+      "sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0"
+    },
+    {
+      "name": "claude/ar-b3-sweep-permit-states",
+      "sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc"
+    },
+    {
+      "name": "claude/ar-b5-testnet-feeds",
+      "sha": "76199cdac3ee336e2751995d511111467141d943"
+    },
+    {
+      "name": "claude/ar-c1-reconciliation-adr",
+      "sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7"
+    },
+    {
+      "name": "claude/ar-c2-qr-pairing",
+      "sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f"
+    },
+    {
+      "name": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd"
+    },
+    {
+      "name": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1"
+    },
+    {
+      "name": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd"
+    },
+    {
+      "name": "claude/ar-c5-device-matrix",
+      "sha": "92af349a2e877d6cf94e7ed95a6466163a205089"
+    },
+    {
+      "name": "claude/ar-c7-embed-iframe-e2e",
+      "sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c"
+    },
+    {
+      "name": "claude/auto-rescan-rearm-r2-20261126",
+      "sha": "5d86a6a2079813bf472a2a6d8a1708c732049b86"
+    },
+    {
+      "name": "claude/consolidation-2026-11-04",
+      "sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285"
+    },
+    {
+      "name": "claude/consolidation-stack-20261126",
+      "sha": "a2e6dd5e06d72585e56e97774d07e16c6a0418cc"
+    },
+    {
+      "name": "claude/cool-albattani-xopr89",
+      "sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb"
+    },
+    {
+      "name": "claude/cw-c2",
+      "sha": "b9cba0978cade31e15faa4067adae448e4dcbc04"
+    },
+    {
+      "name": "claude/cw-c4",
+      "sha": "511c23bd925504b02d329e1c82bc30593d3ac496"
+    },
+    {
+      "name": "claude/cw-c5",
+      "sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275"
+    },
+    {
+      "name": "claude/cw-w1",
+      "sha": "704e268bfa7df57964175f820f67400834bdce43"
+    },
+    {
+      "name": "claude/cw-w5",
+      "sha": "f030376a331445f5059061f24238acb5cf867b29"
+    },
+    {
+      "name": "claude/cw-w6",
+      "sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf"
+    },
+    {
+      "name": "claude/cw-w7",
+      "sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd"
+    },
+    {
+      "name": "claude/cw-w8",
+      "sha": "f162960457b40eb28eaed25a532a56b0a7bc7785"
+    },
+    {
+      "name": "claude/cw-w9",
+      "sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa"
+    },
+    {
+      "name": "claude/cw-w10",
+      "sha": "391454b2609b97dd9e98f65df470dfb880e16142"
+    },
+    {
+      "name": "claude/cw-w11",
+      "sha": "764020c208c144e165437e244b6a1bc43673dc5f"
+    },
+    {
+      "name": "claude/defer-vault-retention-20261126",
+      "sha": "e964973f2eae4dc4263b3f19f5f40e9a6b02802b"
+    },
+    {
+      "name": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298"
+    },
+    {
+      "name": "claude/docs-snapshot-1",
+      "sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5"
+    },
+    {
+      "name": "claude/docs-snapshot-2",
+      "sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d"
+    },
+    {
+      "name": "claude/exciting-brown-7v69cr",
+      "sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e"
+    },
+    {
+      "name": "claude/fc01-f03-request-file-20261125",
+      "sha": "3851f02b04325d417a52b80cc107290f1f434597"
+    },
+    {
+      "name": "claude/fc02-sweep-consent-20261125",
+      "sha": "790de53e198d075c7c7b7559372014867dfdbaf0"
+    },
+    {
+      "name": "claude/fc03-chain-interop-20261125",
+      "sha": "a13ab24dce06b112d9bc2e50fe73d02a08f08cbc"
+    },
+    {
+      "name": "claude/fc03-t-chain-text-20261125",
+      "sha": "a2b14ca8725372d3da21b1d3fbdea3dfeedb7cd6"
+    },
+    {
+      "name": "claude/fc04-hardening-tests-20261125",
+      "sha": "d05108873af1ab79edee9c22fe01b0a22cf3a213"
+    },
+    {
+      "name": "claude/fc05a-btc-spentness-20261125",
+      "sha": "8e7b191501a4ec1f251735c5f9cd8c85ba0e3acf"
+    },
+    {
+      "name": "claude/fc05a-t-btc-text-20261125",
+      "sha": "22c3cb1d7a5c973f0ebc6b34cd0f36f6ed377ffa"
+    },
+    {
+      "name": "claude/fc05b-btc-hardening-20261125",
+      "sha": "8ea606ff1816cdd072f2d6251f35b44950ea4a19"
+    },
+    {
+      "name": "claude/fc05b-main-20261126",
+      "sha": "69a4d3e17fc46833fb31c41cbab6aafeb0bfad9c"
+    },
+    {
+      "name": "claude/fc-integration-20261125",
+      "sha": "d205fc30257a2da5e05d8b232d744a6f461305a2"
+    },
+    {
+      "name": "claude/fc-round1-rest-20261126",
+      "sha": "a712edd39674dc704cc2df77ebc483e00501b01f"
+    },
+    {
+      "name": "claude/feature-completion-20261125",
+      "sha": "c3ed8ef82d644a89e57d17a755234da59a63e863"
+    },
+    {
+      "name": "claude/fix-keystore-test-flakes",
+      "sha": "d79f4040fa24f7db7a1fdc6ca379d97d95e9a73e"
+    },
+    {
+      "name": "claude/friendly-turing-1ui0on",
+      "sha": "f4e79b078514cdd174a087bd5142ad76bc49f811"
+    },
+    {
+      "name": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-prompt-scpgun",
+      "sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997"
+    },
+    {
+      "name": "claude/ghostpay-completion-audit-ot5jjm",
+      "sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg",
+      "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc"
+    },
+    {
+      "name": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    {
+      "name": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sha": "87b5e4bf92c4b0fa851e0ee56d243a06f7780c6e"
+    },
+    {
+      "name": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78"
+    },
+    {
+      "name": "claude/global-masking-286-20261126",
+      "sha": "03ba9783600a4c6a034d526e641e6229a2a03210"
+    },
+    {
+      "name": "claude/gracious-heisenberg-97ji6q",
+      "sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442"
+    },
+    {
+      "name": "claude/haiku-wave-2-handoff-qepfoe",
+      "sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951"
+    },
+    {
+      "name": "claude/haiku-wave-3-2026-11-24",
+      "sha": "274477472bbfe7acca340bd08bf9237f00ed8aaf"
+    },
+    {
+      "name": "claude/happy-maxwell-onl4x5",
+      "sha": "fd710eb367eff8bbc250024f5a4317875930736b"
+    },
+    {
+      "name": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736"
+    },
+    {
+      "name": "claude/idle-sweep-freeze-tests-20261126",
+      "sha": "fdb85e71a723fc0085851b2c445bbde31c58df02"
+    },
+    {
+      "name": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c"
+    },
+    {
+      "name": "claude/integrate-691-20261126",
+      "sha": "abeeb0cb365b6bd7ea7686b50da693865c4bb09d"
+    },
+    {
+      "name": "claude/integrate-692-20261126",
+      "sha": "f45025b5f2cfa27f938c10c35490b42768b8ae0a"
+    },
+    {
+      "name": "claude/journal-fuzz-20261126",
+      "sha": "935da860c62b5d68b61d9e452b432bb821f6df83"
+    },
+    {
+      "name": "claude/keen-volta-8ctx9x",
+      "sha": "a308b086522d37b0460f57ab87e83f3a8bd2a32e"
+    },
+    {
+      "name": "claude/keystore-recovery-followups-20261126",
+      "sha": "d739ecc4390b7efe013e59340775fc61c688f53d"
+    },
+    {
+      "name": "claude/kind-faraday-8qzf6e",
+      "sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e"
+    },
+    {
+      "name": "claude/laughing-bardeen-4t20ys",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5"
+    },
+    {
+      "name": "claude/lucid-meitner-apalzc",
+      "sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f"
+    },
+    {
+      "name": "claude/mobile-restore",
+      "sha": "ca0d292dc44eb8df1d101f3325489c11bda228c7"
+    },
+    {
+      "name": "claude/multipart-note-copy-20261126",
+      "sha": "122ca29d7e230f31d779b472a8abf97618fe49f2"
+    },
+    {
+      "name": "claude/nice-ritchie-8vivls",
+      "sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23"
+    },
+    {
+      "name": "claude/nifty-bohr-5ra2ap",
+      "sha": "8c7ae937a3ef056cd646c5f2d955f803a5ecb2ce"
+    },
+    {
+      "name": "claude/nifty-bohr-5ra2ap-dormant-371",
+      "sha": "98065511df4b5315db665366ee941bfbf4578d06"
+    },
+    {
+      "name": "claude/offline-drafts-successor-20261126",
+      "sha": "367a3b30b1feb5c31c0727fc6fc435162067063c"
+    },
+    {
+      "name": "claude/p0-keys-independent-recovery",
+      "sha": "6fd126dbb4d3377ff3cf7d97cfcb426a1e22fee3"
+    },
+    {
+      "name": "claude/p0-keys-m2b-successor-20261126",
+      "sha": "f74126885a1e348d282abc2ed0e0d71bca4bae45"
+    },
+    {
+      "name": "claude/p1-late-reconciliation",
+      "sha": "205f8fd7db7d45efb46acd0dce7c9c869691dc06"
+    },
+    {
+      "name": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d"
+    },
+    {
+      "name": "claude/portable-hosting-kit",
+      "sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2"
+    },
+    {
+      "name": "claude/priv-t02-rpc-disclosure",
+      "sha": "9aed3886693270524beb118685e5947469899c43"
+    },
+    {
+      "name": "claude/privacy-minimal-invoices-successor",
+      "sha": "2e36a4b42b55ea7aa6247ecdaa9fb3fada77fe3c"
+    },
+    {
+      "name": "claude/queue-candidate-20261125",
+      "sha": "e2c1163400c1bfe15c93dbd7ce1d33c87cbb2815"
+    },
+    {
+      "name": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed"
+    },
+    {
+      "name": "claude/remote-extensions-2",
+      "sha": "df150cbdb58203789f5afc3050e75d92c655fa49"
+    },
+    {
+      "name": "claude/remote-extensions-3",
+      "sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b"
+    },
+    {
+      "name": "claude/remote-extensions-4",
+      "sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d"
+    },
+    {
+      "name": "claude/remote-extensions-5",
+      "sha": "1337f6c121463aa70107bdd065ea88ed30ec3584"
+    },
+    {
+      "name": "claude/remote-extensions-6",
+      "sha": "7fb7aca6d68b96b89d32959636827fcfb343968d"
+    },
+    {
+      "name": "claude/remote-extensions-7",
+      "sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e"
+    },
+    {
+      "name": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996"
+    },
+    {
+      "name": "claude/remote-extensions-9",
+      "sha": "f09decc278c2052c90dfa209a7098888c8d9877a"
+    },
+    {
+      "name": "claude/remote-extensions-10",
+      "sha": "698404ca488c87347858105bda66be21bf428303"
+    },
+    {
+      "name": "claude/sec1-payer-key-warning",
+      "sha": "92ff633176760a513a37cb12e3ef96b0e0cb9d80"
+    },
+    {
+      "name": "claude/serene-hawking-kjd54q",
+      "sha": "2021b0b4c72ea8a16b6c14bd21a03d27ee82b5df"
+    },
+    {
+      "name": "claude/sharp-bohr-uigfgh",
+      "sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483"
+    },
+    {
+      "name": "claude/small-fix-20261125",
+      "sha": "e3e1385431dec5abbd480e0f20050c4c1966685d"
+    },
+    {
+      "name": "claude/vibrant-cori-scu18b",
+      "sha": "862722f2cac12d9b84f285ecb33089bbc7ffa9d7"
+    },
+    {
+      "name": "claude/vigilant-johnson-yjgq94",
+      "sha": "4403d3703cd1dff893e1984e98505691267f8a20"
+    },
+    {
+      "name": "claude/w1-coordination-20261125",
+      "sha": "be2d70f25304c9ef9aaebb006d999fa3b5afebcc"
+    },
+    {
+      "name": "claude/w1-reconcile-659-20261125",
+      "sha": "67a241c7589fd97b085c83efd4bfca4147a4114d"
+    },
+    {
+      "name": "claude/w3-keystore-canonical-vector",
+      "sha": "af8314d15a00d286df3500636b583e99fa0479f2"
+    },
+    {
+      "name": "claude/w3-provider-privacy-boundary",
+      "sha": "6985ec0091cdd0deed52472575bd6cb86ec58078"
+    },
+    {
+      "name": "claude/w3-sweep-consent-successor",
+      "sha": "4a2258d397c9322554d92e8d76d8f9641a58dbdd"
+    },
+    {
+      "name": "claude/w4-clipboard-286-main-20261125",
+      "sha": "74e0c61dd0edddc7bcbc1a963d7f4e2481cdcda1"
+    },
+    {
+      "name": "claude/w4-minimal-invoice-287-20261125",
+      "sha": "1c4a290332cd26db15276eb8c41a31cdd104f50e"
+    },
+    {
+      "name": "claude/w-export-privacy-286-20261125",
+      "sha": "9680b0131b506f799ae0d07d4c5b1fca977f1f34"
+    },
+    {
+      "name": "claude/w-ghostpay42-closeout-20261125",
+      "sha": "1daa15aeceb398f2a3e46332aee2a401f2082fbb"
+    },
+    {
+      "name": "claude/w-match-cover-20261125",
+      "sha": "1b097132e5f1636d3d770a8612534fbdd34b99ee"
+    },
+    {
+      "name": "claude/w-retention-287-20261125",
+      "sha": "46543280e1e43a04ef52493814d462311a52a990"
+    },
+    {
+      "name": "claude/w-reuse-287-20261125",
+      "sha": "1e7519ac00ea001562d492064956a83e12e91553"
+    },
+    {
+      "name": "claude/w-wallet-disclosure-287-20261125",
+      "sha": "f038ae45d8d119be22317d0a395f15c9b67204cc"
+    },
+    {
+      "name": "claude/w-wallet-disclosure-ui-287-20261125",
+      "sha": "36b8a71bffda10076f25068126f1450bfd6354ae"
+    },
+    {
+      "name": "claude/wizardly-babbage-mfsdrl",
+      "sha": "ade77362de33156de849989e26206126f978bb8f"
+    },
+    {
+      "name": "claude/wonderful-thompson-ir89i9",
+      "sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a"
+    },
+    {
+      "name": "codex/checkout-rev-l2-durable-preflight",
+      "sha": "d1e167f1b5372f74506fc104220b9a03cb6a3e92"
+    },
+    {
+      "name": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "sha": "e36786bce4e752cb79d60bdca4b640e36ad45753"
+    },
+    {
+      "name": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "sha": "3433f7f098b5e61253a102a087dfb7e780dbb730"
+    },
+    {
+      "name": "codex/ghostpay-browser-isolation-20261118",
+      "sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2"
+    },
+    {
+      "name": "codex/ghostpay-canonical-time-20261116",
+      "sha": "27852ba898968a08f7d7c448fac8b19058189281"
+    },
+    {
+      "name": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1"
+    },
+    {
+      "name": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc"
+    },
+    {
+      "name": "codex/ghostpay-cloud-41868394956",
+      "sha": "f34a80f710d191b025538bae43cc9b4c92fd2455"
+    },
+    {
+      "name": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b"
+    },
+    {
+      "name": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-audit-20261104",
+      "sha": "e2ac398c2c8943a244239b9d6ffa2181e13e7782"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-followthrough-20261119",
+      "sha": "73545f63112910d46002718354ab5e99f8652e1f"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-records-20261119",
+      "sha": "042b2ce3c79fefb8cbc729fc167894fbeed2c456"
+    },
+    {
+      "name": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40"
+    },
+    {
+      "name": "codex/ghostpay-export-authorization-20261119",
+      "sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887"
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e"
+    },
+    {
+      "name": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "sha": "57dff1ad7706959bc78861fa4cf9af58952f4643"
+    },
+    {
+      "name": "codex/ghostpay-integrate-product-cli-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf"
+    },
+    {
+      "name": "codex/ghostpay-keystore-verification-20261123",
+      "sha": "88f7d1b496a1452f062d472d78e99b5401c61e35"
+    },
+    {
+      "name": "codex/ghostpay-late-payment-20261123",
+      "sha": "90e3fff019d14d8df4c610daf2080a32140686de"
+    },
+    {
+      "name": "codex/ghostpay-mythril-recovery-20261116",
+      "sha": "ffd957e28f982f5c6d2dc00f51143766b2406773"
+    },
+    {
+      "name": "codex/ghostpay-observability-20261116",
+      "sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09"
+    },
+    {
+      "name": "codex/ghostpay-ops-response-cap-20261116",
+      "sha": "73371b57040c61bdb480e724e8593313d95c6781"
+    },
+    {
+      "name": "codex/ghostpay-pages-manifest-command-20261123",
+      "sha": "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0"
+    },
+    {
+      "name": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac"
+    },
+    {
+      "name": "codex/ghostpay-policy-lock-release-20261123",
+      "sha": "ff274a08de2a84bcbdf0e373fb607666543554a2"
+    },
+    {
+      "name": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "sha": "683f8587b8de45448f14aab0539cb07a5f21bce3"
+    },
+    {
+      "name": "codex/ghostpay-private-scan-lint-20261119",
+      "sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd"
+    },
+    {
+      "name": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2"
+    },
+    {
+      "name": "codex/ghostpay-receipt-print-integration-20261123",
+      "sha": "51c04326ff9258861621b94ce2ab06f44bba8301"
+    },
+    {
+      "name": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "sha": "371d235c3e5926014c00e027196b6aa567ea1b82"
+    },
+    {
+      "name": "codex/ghostpay-registry-recovery-20261116",
+      "sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c"
+    },
+    {
+      "name": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4"
+    },
+    {
+      "name": "codex/ghostpay-research-documentation-ux-41750257638",
+      "sha": "96fc22c42a704d1c590d56d624fff15a945c8231"
+    },
+    {
+      "name": "codex/ghostpay-research-release-qualification-41750257638",
+      "sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4"
+    },
+    {
+      "name": "codex/ghostpay-research-security-review-41750257638",
+      "sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21"
+    },
+    {
+      "name": "codex/ghostpay-resume-20261028",
+      "sha": "75400888c96b9bddb2a406dd8fd6d273521aebb2"
+    },
+    {
+      "name": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546"
+    },
+    {
+      "name": "codex/ghostpay-spec09-matrix-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc"
+    },
+    {
+      "name": "codex/ghostpay-sweep-balance-integration-20261123",
+      "sha": "5c93c3b172cd002f1cdc68232b1a0f3335aadb76"
+    },
+    {
+      "name": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c"
+    },
+    {
+      "name": "codex/gp-pages-02-recovery-proof",
+      "sha": "56fb25aa2ff098737dbc181fa88c0aac06425c8e"
+    },
+    {
+      "name": "codex/gp-pages-02-retain-suspended-signer",
+      "sha": "2363943571de84bfd5da0b3f167699f34eb53ce7"
+    },
+    {
+      "name": "codex/individual-stealth-keypair-export",
+      "sha": "28bba11cdaebc13edc4d100761ee00750c3f396f"
+    },
+    {
+      "name": "codex/invoice-expiry-recovery-devnet",
+      "sha": "e8b0f3081f51f9718c5d1f7a6892292da3f31d23"
+    },
+    {
+      "name": "codex/network-isolation-complete-20261119",
+      "sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4"
+    },
+    {
+      "name": "codex/offline-interrupted-invoice",
+      "sha": "49862e2d3b4832f1f52714f5bc1bc551af2fe54f"
+    },
+    {
+      "name": "codex/pages-follow-browser-language",
+      "sha": "0dd3bcd33f843e89980baf1ea98372fb58521f01"
+    },
+    {
+      "name": "codex/qr-exchange-browser-completion",
+      "sha": "74121278a08eaf4eddd85651a4518ef657aeeb16"
+    },
+    {
+      "name": "codex/qualify-508-invoice-link",
+      "sha": "36a5b4e0007ad3154cd5e36c914fafede30d4140"
+    },
+    {
+      "name": "codex/qualify-mobile-browser-engines",
+      "sha": "46150f4ce0a34da0e23dda36642ba9463ff1e4a1"
+    },
+    {
+      "name": "codex/recover-minimal-invoice-qualification-20261124",
+      "sha": "2d612e37f3f71b785129f447c14731cbef9143c7"
+    },
+    {
+      "name": "codex/recover-wallet-attempt-status-fixture-20261124",
+      "sha": "534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c"
+    },
+    {
+      "name": "codex/recover-wallet-disclosure-qualification-20261124",
+      "sha": "f941ac01fd9464fc881266dcc2d2e1e530d5f15b"
+    },
+    {
+      "name": "codex/recovery-spec02-unqualified-20261116",
+      "sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c"
+    },
+    {
+      "name": "codex/seller-keys-file-switch-browser",
+      "sha": "8daebb0fa4a1cc1f771dbe724dede67f00028298"
+    },
+    {
+      "name": "codex/seller-ledger-receipt-qr",
+      "sha": "bb011134c1bf9cd0e75090fec75d85235d637281"
+    },
+    {
+      "name": "codex/setup-autonomous-agent-20261104",
+      "sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43"
+    },
+    {
+      "name": "codex/spec-03-fiat-price-feeds",
+      "sha": "e9025d72f1408ec48e6d1ca29a5361a55175ec31"
+    },
+    {
+      "name": "codex/stopped-scan-payment-export-acceptance",
+      "sha": "7bbd651def1aa064f31ed91e272d07f629d3b871"
+    },
+    {
+      "name": "codex/verify-encrypted-payment-spend",
+      "sha": "2d79881a52e8f425e19704367c2ac8f91f1d7922"
+    },
+    {
+      "name": "codex/286-private-export-surfaces",
+      "sha": "557815335b8ef94b6c311c0ca4369daf0756ae1d"
+    },
+    {
+      "name": "codex/287-evm-payment-destination-reuse",
+      "sha": "17c5a2ee3828d0132cfdf21e4c966ca7550d07f2"
+    },
+    {
+      "name": "codex/287-local-destination-reuse",
+      "sha": "f024ce3e0eab91df40bfd5a75aee2a56d9158e5a"
+    },
+    {
+      "name": "codex/287-wallet-request-preview",
+      "sha": "697cb7314c323b574bfbb1f102244265046dd93a"
+    },
+    {
+      "name": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b"
+    },
+    {
+      "name": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde"
+    },
+    {
+      "name": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0"
+    },
+    {
+      "name": "dependabot/github_actions/actions-8158e918cd",
+      "sha": "592b99417039b7bba588235c40418f368f09ebb4"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sha": "812bbfba8172a28081eff4f442cc530fd516a9dd"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e",
+      "sha": "fb9c4b6f618f80b2d9f2b2aff3d1f2fa41e06558"
+    },
+    {
+      "name": "docs/f05-receipt-assurance-coverage-20261122",
+      "sha": "300c9d215b01f30c0eee53f58bcb6aba85ebbd5b"
+    },
+    {
+      "name": "docs/f11-minimal-merchant-checkout-spec-20261120",
+      "sha": "c8d917a6c88114825a65dc46b7b3d21adebbe834"
+    },
+    {
+      "name": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7"
+    },
+    {
+      "name": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83"
+    },
+    {
+      "name": "docs/ghostpay-coordination-ledger-20261120",
+      "sha": "5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5"
+    },
+    {
+      "name": "docs/ghostpay-core-readonly-audit-20261119",
+      "sha": "8d03ebe48a9f6184d9905c2a9c93e8dc080f2618"
+    },
+    {
+      "name": "docs/ghostpay-deep-research-20261103",
+      "sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61"
+    },
+    {
+      "name": "docs/ghostpay-future-module-specs-20261119",
+      "sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52"
+    },
+    {
+      "name": "docs/ghostpay-live-census-20261123",
+      "sha": "111c3de7fc586734dd5dddb213242faa9c352f6a"
+    },
+    {
+      "name": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "sha": "e05044d4209de7e9cc242c8a83e5fc2264663174"
+    },
+    {
+      "name": "docs/lean-release-handoff-2026-10-24",
+      "sha": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd"
+    },
+    {
+      "name": "docs/privacy-profile-decisions-20261124",
+      "sha": "be04d1167aeb24025f5a4970833ebb2dbb98af70"
+    },
+    {
+      "name": "docs/readme-and-wiki",
+      "sha": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61"
+    },
+    {
+      "name": "evidence/ghostpay-completion-20261120",
+      "sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874"
+    },
+    {
+      "name": "evidence/ghostpay-continuation-20261121-539818",
+      "sha": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c"
+    },
+    {
+      "name": "evidence/ghostpay-continuation-r2-20261120",
+      "sha": "c2b575e945b71563e30a9bef162cf3fdc92181f0"
+    },
+    {
+      "name": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+      "sha": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a"
+    },
+    {
+      "name": "evidence/ghostpay-idle-session-r2-20261120",
+      "sha": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949"
+    },
+    {
+      "name": "evidence/ghostpay-remediation-20261120",
+      "sha": "6fe35de42587e8da06e2590983b584ffde93d40f"
+    },
+    {
+      "name": "evidence/ghostpay-tron-qualification-r2-20261120",
+      "sha": "437cddb9e012786fe5f6cbcdc1536841aa4ce77a"
+    },
+    {
+      "name": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "sha": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d"
+    },
+    {
+      "name": "evidence/ghostpay-web-qualification-20261120",
+      "sha": "6152dd035822fe6ee97fba712ef1c37434e19035"
+    },
+    {
+      "name": "feat/create-invoice-link-clipboard-286",
+      "sha": "21b1d68c0a31159f528b77872b3a660f0da901f7"
+    },
+    {
+      "name": "feat/f04-dashboard-totals-qualification",
+      "sha": "6366767fb632ab3a01603497b49f12714ab796bb"
+    },
+    {
+      "name": "feat/f04-deliberate-local-export-20261121",
+      "sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897"
+    },
+    {
+      "name": "feat/f04-evidence-analytics-20261122",
+      "sha": "ff60e1e45cac1348d554f94ea24717285ecc5608"
+    },
+    {
+      "name": "feat/f04-pages-dashboard-20261123",
+      "sha": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890"
+    },
+    {
+      "name": "feat/ghostpay-privacy-quick-hide-20261120",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+    },
+    {
+      "name": "feat/ghostpay-tor-completion-20261119",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+    },
+    {
+      "name": "feat/remaining-sensitive-clipboard-286",
+      "sha": "e68d32d7e424daf7264165987868eb6b891048b2"
+    },
+    {
+      "name": "feature/f02-ghoststore-catalog-cart",
+      "sha": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35"
+    },
+    {
+      "name": "feature/f08-offline-merchant-profile-review",
+      "sha": "923e1edfb9ac34f8b6855d8ac8516cd835070afd"
+    },
+    {
+      "name": "feature/f10-durable-cas-m4-20261122",
+      "sha": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627"
+    },
+    {
+      "name": "feature/f10-lifecycle-m2-20261121",
+      "sha": "20a353d28e1aac89216ba2e8980000477307bf03"
+    },
+    {
+      "name": "feature/f10-reviewed-preparation-m3-20261121",
+      "sha": "7079eedfc67180c9a0012c7154758e41fe6208c9"
+    },
+    {
+      "name": "feature/f11-ghostteams-invitation-review",
+      "sha": "10d995fa3290b51e0c35804a681ae0b30c4785b3"
+    },
+    {
+      "name": "feature/f11-ghostteams-membership",
+      "sha": "9229a14c303944380523d2a65b783a25541f8403"
+    },
+    {
+      "name": "feature/f11-ghostteams-membership-commit",
+      "sha": "8ade47153d0d08de4a7cc45fb60672a2b6afd658"
+    },
+    {
+      "name": "feature/f13-offline-quote-terms",
+      "sha": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a"
+    },
+    {
+      "name": "feature/ghostpay-invoice-file-completion-20261120",
+      "sha": "7de737b5c8c5fc02086ba0030d78c181d239590c"
+    },
+    {
+      "name": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "sha": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80"
+    },
+    {
+      "name": "feature/ghostpay-retention-completion-20261120",
+      "sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1"
+    },
+    {
+      "name": "feature/ghostpay-retention-focus-20261120",
+      "sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5"
+    },
+    {
+      "name": "feature/p08-local-history-coverage",
+      "sha": "0419d3609caeba7857fefdd9f19f884adeff5646"
+    },
+    {
+      "name": "feature/287-minimal-invoice-sharing",
+      "sha": "b82be893d3d360064222fafcce8cef2033cd23a5"
+    },
+    {
+      "name": "feature/287-receipt-timestamp-retention",
+      "sha": "19a11f90db0bcf84c94a0b883a310e103ce8878a"
+    },
+    {
+      "name": "finish/account-privacy-core-20261125-8812",
+      "sha": "6b4bbe17b436344b05d2942ccb0633de43e43fa0"
+    },
+    {
+      "name": "finish/clipboard-rpc-20261125-8812",
+      "sha": "82d50755fcbfc5990be6eefd2c18db96b7131e9a"
+    },
+    {
+      "name": "finish/destination-reuse-type-20261124",
+      "sha": "874d38097591624468ea19c77be3181c5a6e5b2c"
+    },
+    {
+      "name": "finish/fee-quote-completion-20261124",
+      "sha": "02d9b7149ad715a7c2c9229f5297f0aa0834c415"
+    },
+    {
+      "name": "finish/idle-recovery-core-20261125-8812",
+      "sha": "0ae8a9d1812c28acdc894b3a3ac12b82ef38aaff"
+    },
+    {
+      "name": "finish/in-scope-branches-20261125-8812",
+      "sha": "04b1a5acf6b48313178af85a3217512e57453dd5"
+    },
+    {
+      "name": "finish/merchant-ledger-completion-20261124",
+      "sha": "78193fca9477c297a62937e4cdd032fdb15772c4"
+    },
+    {
+      "name": "finish/offline-completion-20261124",
+      "sha": "2f2c282e4e88e32fb54648864bb9ed51c8307880"
+    },
+    {
+      "name": "finish/policy-journal-lock-20261125-8812",
+      "sha": "c7b9badcfaff027e9847f65d10f021111809c48e"
+    },
+    {
+      "name": "finish/privacy-preview-resume-20261126-9d8f",
+      "sha": "0d083443fedf397765c5fcd712fb495771e351b3"
+    },
+    {
+      "name": "finish/privacy-profiles-d05-20261125-8812",
+      "sha": "db544fa5e2e28129d6e8e53bb293d72dc08b8c02"
+    },
+    {
+      "name": "finish/qr-browser-qualification-20261124",
+      "sha": "73f521bad57c24e44fe5c69fbdeecd1d2da2fec1"
+    },
+    {
+      "name": "finish/receipt-print-completion-20261124",
+      "sha": "0d3d804b3f53ad8b463117824ca1fd1b3332d798"
+    },
+    {
+      "name": "finish/recurring-m4-qualification-20261124",
+      "sha": "8d8fe2f0986bc5796dae2081ef34602c6a9db703"
+    },
+    {
+      "name": "finish/request-files-20261125-8812",
+      "sha": "521a917da4dabe02d5e0075e750c7b4ec10e7d5f"
+    },
+    {
+      "name": "finish/shared-payment-utilities-20261125-8812",
+      "sha": "62d8ff681b3ce3916d7aa4639c73437856ef8e48"
+    },
+    {
+      "name": "fix/countdown-394-main",
+      "sha": "96d20f778e3f92fa26144c9f97525eae4b3290a1"
+    },
+    {
+      "name": "fix/f04-dashboard-refresh-focus",
+      "sha": "3085c87a57147afeb7dac7bc563af62f2c9784e5"
+    },
+    {
+      "name": "fix/ghostpay-backup-completion-20261120",
+      "sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1"
+    },
+    {
+      "name": "fix/ghostpay-backup-preflight-20261120-r2",
+      "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87"
+    },
+    {
+      "name": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9"
+    },
+    {
+      "name": "fix/ghostpay-browser-selfchecks-lint-r16-20261121",
+      "sha": "087ecf7e17f702d3b09bee4d67fef5e9ca2f6cbb"
+    },
+    {
+      "name": "fix/ghostpay-browser-selfchecks-optionals-r13-20261121",
+      "sha": "3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565"
+    },
+    {
+      "name": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467"
+    },
+    {
+      "name": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "sha": "410353a23631234aa888e46f38df22291c699a26"
+    },
+    {
+      "name": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "sha": "0fb2831a1b89430c69896f6db57306cd5518e55f"
+    },
+    {
+      "name": "fix/ghostpay-embed-popup-legacy-test-20261120-r1",
+      "sha": "0750012546aeb4336b4340fe16751f8d83804acd"
+    },
+    {
+      "name": "fix/ghostpay-format-validation-20261120",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+    },
+    {
+      "name": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4"
+    },
+    {
+      "name": "fix/ghostpay-pages-integrity-gate-20261120",
+      "sha": "936d054ed067d89c773310d42e33939c1129bbfa"
+    },
+    {
+      "name": "fix/ghostpay-pasted-invoice-fragment-boundary-20261121",
+      "sha": "b5045aec476833a5c87f1d733521dcd76e1843d1"
+    },
+    {
+      "name": "fix/ghostpay-policy-pendingedit-lint-20261121-r1",
+      "sha": "23f55bfea1068a5791b8e8e29409e4a13d0b28a3"
+    },
+    {
+      "name": "fix/ghostpay-policy-record-seller-identity-20261121",
+      "sha": "e871eccc1238b7145cd1d0a667afb393c373cf83"
+    },
+    {
+      "name": "fix/ghostpay-policy-recovery-followup-20261121-r1",
+      "sha": "67542c09ba180eec95004fb9b7a6d52d1a8dd809"
+    },
+    {
+      "name": "fix/ghostpay-policy-security-translation-parity-20261121-r1",
+      "sha": "18d0442a156106abe2309f8a6e82358aab37961a"
+    },
+    {
+      "name": "fix/ghostpay-pos-parity-expiry-r16-20261121",
+      "sha": "482d36ad436f4b27b2d86ff9a2c22daf150000ad"
+    },
+    {
+      "name": "fix/ghostpay-qr-capacity-unicode-surrogate-20261121",
+      "sha": "cd1ddb7d6efd7d4ab0004e324c6e902a67704eed"
+    },
+    {
+      "name": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "sha": "172695efb41665a4e50d335029e54184bbb5b328"
+    },
+    {
+      "name": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "sha": "e31a090501b3f5e77afcee812323e6f69e1fd565"
+    },
+    {
+      "name": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "sha": "a864949d9ee48cb48a43710f5dbd382032ab8db9"
+    },
+    {
+      "name": "fix/ghostpay-request-file-async-20261120-r3",
+      "sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+    },
+    {
+      "name": "fix/ghostpay-signer-pin-continue-20261121-r11",
+      "sha": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce"
+    },
+    {
+      "name": "fix/ghostpay-sweep-privacy-ci-expected-note-r23-20261121",
+      "sha": "ec3c7d9bf304fd9e837eaf7da9bbc0cf3fdb3ce3"
+    },
+    {
+      "name": "fix/ghostpay-tor-qualification-20261120",
+      "sha": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "sha": "b86a3e6affe8b71c6f13d16783accad446271ba4"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "sha": "06fd87c3e90000118ffa94048529db36f0a67d41"
+    },
+    {
+      "name": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "sha": "81598d93dd82cc440526c866d42b55be0657895b"
+    },
+    {
+      "name": "fix/ghostpay-webhook-signer-timestamp-width-20261121",
+      "sha": "7b1d10fdd9558ce92a0a7ac9d8d86c73727c5eef"
+    },
+    {
+      "name": "fix/mobile-588-memo-assertion-20261124",
+      "sha": "a929b178a6626a9912f5d081b8a3e8c6847374ae"
+    },
+    {
+      "name": "fix/pages-offline-session",
+      "sha": "f01c69d277c39c76fd3077103c43cc38f7f9c736"
+    },
+    {
+      "name": "fix/pos-terminal-reliability-20261124",
+      "sha": "4ae333d3ffa85eb14c074a543bdc084370dd1e49"
+    },
+    {
+      "name": "fix/remediation-b16c7936-5ce634",
+      "sha": "0b213bd9d43409aaa9671945761e51892aa5d69e"
+    },
+    {
+      "name": "fix/remediation-f95457fd-22ecf9",
+      "sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a"
+    },
+    {
+      "name": "fix/seller-linked-payment-reconciliation",
+      "sha": "5a225f6cdaeeaf9c6dad8d8a11f3f437fff83727"
+    },
+    {
+      "name": "fix/286-account-vault-privacy",
+      "sha": "63f40efac175e5ee49563326dbef930aafb14235"
+    },
+    {
+      "name": "fix/286-global-mask-document",
+      "sha": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401"
+    },
+    {
+      "name": "fix/364-responsive-pages",
+      "sha": "c1980912f87f0293b7a15f2419505a6719c5f3a8"
+    },
+    {
+      "name": "fix/20261124/encrypted-wallet-revocation-notice",
+      "sha": "e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8"
+    },
+    {
+      "name": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a"
+    },
+    {
+      "name": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c"
+    },
+    {
+      "name": "future/f03-private-payment-links",
+      "sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec"
+    },
+    {
+      "name": "future/f03-private-payment-links-spec",
+      "sha": "ae0bad1151625fd3453a9c684927145024fa8634"
+    },
+    {
+      "name": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d"
+    },
+    {
+      "name": "future/f05-ghostproof",
+      "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3"
+    },
+    {
+      "name": "future/f06-encrypted-backups",
+      "sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31"
+    },
+    {
+      "name": "future/f07-ghostpayouts",
+      "sha": "90b86766119d3f72870948ee83d039b989659b5f"
+    },
+    {
+      "name": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15"
+    },
+    {
+      "name": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588"
+    },
+    {
+      "name": "future/f10-private-recurring",
+      "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd"
+    },
+    {
+      "name": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f"
+    },
+    {
+      "name": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e"
+    },
+    {
+      "name": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1"
+    },
+    {
+      "name": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46"
+    },
+    {
+      "name": "future/f15-private-rpc",
+      "sha": "83898237e1b602f94f2e959ef761b5bd63db6590"
+    },
+    {
+      "name": "future/f16-per-client-identities",
+      "sha": "4e2917416cf73eb9ca232606000a130db53dc9b0"
+    },
+    {
+      "name": "future/f17-private-funds",
+      "sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380"
+    },
+    {
+      "name": "future/f18-privacy-modes",
+      "sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a"
+    },
+    {
+      "name": "future/fee01-modular-fee-policy",
+      "sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92"
+    },
+    {
+      "name": "future/p01-tor-onion-hosting",
+      "sha": "25017e720df43d371f956830ba7fd6cb5f81590f"
+    },
+    {
+      "name": "future/p02-rpc-policy",
+      "sha": "a453777b5b66933571294da3d9aa7be6843070a4"
+    },
+    {
+      "name": "future/p03-local-stealth-scanning",
+      "sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464"
+    },
+    {
+      "name": "future/p04-encrypted-offline-invoices",
+      "sha": "3090069a59d14932667acce2aeebe10e3d0f18fd"
+    },
+    {
+      "name": "future/p05-encrypted-local-state",
+      "sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d"
+    },
+    {
+      "name": "future/p06-key-role-separation",
+      "sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738"
+    },
+    {
+      "name": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90"
+    },
+    {
+      "name": "future/p08-linkability-analysis",
+      "sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259"
+    },
+    {
+      "name": "future/p09-noncustodial-gas-services",
+      "sha": "36c5f3579b55f1e71117b8cc6546176392a112c7"
+    },
+    {
+      "name": "future/p10-private-submission",
+      "sha": "8cd3f30f38006668ec6544f88d05084a1d68f369"
+    },
+    {
+      "name": "future/p11-metadata-timing-policy",
+      "sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13"
+    },
+    {
+      "name": "future/p12-selective-disclosure-proofs",
+      "sha": "6131e3c28e05438d8c796af74665cf74f51b7453"
+    },
+    {
+      "name": "future/p13-confidential-amounts",
+      "sha": "8846d5553469753d963258023974ea044467cd6c"
+    },
+    {
+      "name": "future/p14-shielded-payments",
+      "sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449"
+    },
+    {
+      "name": "future/p15-anonymous-withdrawals",
+      "sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339"
+    },
+    {
+      "name": "future/p16-shielded-cross-chain",
+      "sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac"
+    },
+    {
+      "name": "future/p17-private-fee-outputs",
+      "sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee"
+    },
+    {
+      "name": "future/p18-telemetry-release-integrity",
+      "sha": "70862d040066167bc3ba2d311913b92a6b327fc5"
+    },
+    {
+      "name": "future/p19-optional-fee-gateway",
+      "sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7"
+    },
+    {
+      "name": "future/t01-staggered-transfers",
+      "sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e"
+    },
+    {
+      "name": "future/t02-intermediary-routing",
+      "sha": "b618d324df0a730650a8a6de9e0595e9f96382c0"
+    },
+    {
+      "name": "gh-pages",
+      "sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d"
+    },
+    {
+      "name": "ghostpay-cloud-recovery-2026-10-26",
+      "sha": "2ec98b23942838c7177d91c46c66c3768b4ca493"
+    },
+    {
+      "name": "ghostpay-local-lean-boundary-20261027",
+      "sha": "020ba327e1a26f6d989d428eee19fb12f63dec82"
+    },
+    {
+      "name": "ghostpay-offline-deps-2026-10-27",
+      "sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c"
+    },
+    {
+      "name": "ghostpay-sbom-repro-2026-10-27",
+      "sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05"
+    },
+    {
+      "name": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab"
+    },
+    {
+      "name": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04"
+    },
+    {
+      "name": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee"
+    },
+    {
+      "name": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed"
+    },
+    {
+      "name": "haiku/l1-i18n-20261114",
+      "sha": "c6a9033449cd9717d022f1c37913f951b1baaa6e"
+    },
+    {
+      "name": "haiku/l2-pkg-20261114",
+      "sha": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d"
+    },
+    {
+      "name": "haiku/l3-ledger-20261114",
+      "sha": "8c91051b449248bfc822a6578a3815b3c9d83ce3"
+    },
+    {
+      "name": "integrate/ghostpay-export-recovery-acceptance-20261121-539818",
+      "sha": "4ccb3db334de7d7cada305a11243c9e3efddc4f6"
+    },
+    {
+      "name": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "sha": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e"
+    },
+    {
+      "name": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d"
+    },
+    {
+      "name": "integrate/invoice-clipboard-286",
+      "sha": "068fbc36b80311c107dfd3619d631fca794fac58"
+    },
+    {
+      "name": "integration/all-branch-followups-20261124",
+      "sha": "23b307d5b3e413e1b14989ba4bf75c0943a12184"
+    },
+    {
+      "name": "integration/all-branch-review-20261124",
+      "sha": "87bee07895679deaef345c3dd4aaf2e8f8651f1c"
+    },
+    {
+      "name": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833"
+    },
+    {
+      "name": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461"
+    },
+    {
+      "name": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0"
+    },
+    {
+      "name": "integration/ghostpay-adapter-qualification-20261119",
+      "sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814"
+    },
+    {
+      "name": "integration/ghostpay-additional-reviewed-20261124-68c82b9",
+      "sha": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0"
+    },
+    {
+      "name": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+      "sha": "43c859f54b92e01b0754e12ace1d96e884048001"
+    },
+    {
+      "name": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    {
+      "name": "integration/ghostpay-branch-comparison-20261124-68c82b9",
+      "sha": "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95"
+    },
+    {
+      "name": "integration/ghostpay-canonical-array-followup-20261124",
+      "sha": "f0171888c95b48005a6809aedf1e625bf86dfe83"
+    },
+    {
+      "name": "integration/ghostpay-completion-20261120",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+    },
+    {
+      "name": "integration/ghostpay-docs-recovery-20261119",
+      "sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049"
+    },
+    {
+      "name": "integration/ghostpay-followup-fixes-20261124-68c82b9",
+      "sha": "7c4987650faf32322d7ded48ad669130aba7e63b"
+    },
+    {
+      "name": "integration/ghostpay-historical-promotion-20261118",
+      "sha": "22af2074a086d9957a18e310ef8572b28d1facd0"
+    },
+    {
+      "name": "integration/ghostpay-historical-security-promotion-20261119",
+      "sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c"
+    },
+    {
+      "name": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "sha": "50ccf5c8b396247b524e5115ebe51575ca79d318"
+    },
+    {
+      "name": "integration/ghostpay-idle-session-20261120-r2",
+      "sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+    },
+    {
+      "name": "integration/ghostpay-idle-session-completion-20261119",
+      "sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+    },
+    {
+      "name": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+    },
+    {
+      "name": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+    },
+    {
+      "name": "integration/ghostpay-master-consolidation-20261118",
+      "sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a"
+    },
+    {
+      "name": "integration/ghostpay-mythril-security-closure-20261118",
+      "sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab"
+    },
+    {
+      "name": "integration/ghostpay-package-fixes-20261124",
+      "sha": "01d4007d032c8902c144c09094dbbe75c0b086cf"
+    },
+    {
+      "name": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+    },
+    {
+      "name": "integration/ghostpay-qualified-fixes-20261118",
+      "sha": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8"
+    },
+    {
+      "name": "integration/ghostpay-recovery-reconciled-20261119",
+      "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461"
+    },
+    {
+      "name": "integration/ghostpay-sweep-consent-20261120",
+      "sha": "2748c9bfd55bd226c7801c15a7acdd955ab70339"
+    },
+    {
+      "name": "integration/ghostpay-tor-qualified-20261121",
+      "sha": "260caca240f9944c05ce8951a154193709e30a56"
+    },
+    {
+      "name": "integration/ghostpay-tron-range-20261120-r2",
+      "sha": "cff631b5c32a86adfa2d79c342e497e91a8573a5"
+    },
+    {
+      "name": "integration/near-finished-20261124",
+      "sha": "c03598fe5923ddee8f9276c794b3197c501b2004"
+    },
+    {
+      "name": "investigate/privacy-569-firefox-20261124",
+      "sha": "17fa04b0ad4af4d88739bcffd9042d76d27c8237"
+    },
+    {
+      "name": "ledger/consolidation-snapshot-20261124-0418",
+      "sha": "2df4ab83cd3ccac1404e473810808e33708e4607"
+    },
+    {
+      "name": "main",
+      "sha": "601f20955b435eede448c6d82d8315705d7e381d"
+    },
+    {
+      "name": "maintenance/ghostpay-branch-audit-20261119",
+      "sha": "55e7799574d9ab978c24e48addf6792f84e76a56"
+    },
+    {
+      "name": "nodata/amazing-dijkstra-rgkp6o",
+      "sha": "1ca401122f48add886e970f473be62a86f2c69cb"
+    },
+    {
+      "name": "nodata/brave-clarke-nwzz0s",
+      "sha": "8314b49448d22046d09e07ca74570e04098a58fd"
+    },
+    {
+      "name": "nodata/brave-meitner-974y9e",
+      "sha": "0d548b9acb9236cb09c150e36be21596a01423d6"
+    },
+    {
+      "name": "nodata/clever-meitner-6a8eg0",
+      "sha": "98546be7f6a85fe40b6496d77f86c70d78220329"
+    },
+    {
+      "name": "nodata/determined-allen-x5n560",
+      "sha": "1a7447d58c08363209b6b9b67e9a6afad07d87f3"
+    },
+    {
+      "name": "nodata/doc-sweep-20261118",
+      "sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade"
+    },
+    {
+      "name": "nodata/eager-babbage-0w6sf6",
+      "sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc"
+    },
+    {
+      "name": "nodata/elegant-tesla-kpeojx",
+      "sha": "db6f3da67737346c28edf2ed9d8bae44e86bce56"
+    },
+    {
+      "name": "nodata/eloquent-shannon-gfv6t9",
+      "sha": "6dd9732382f782ddb4cd26d47f0893498973d25d"
+    },
+    {
+      "name": "nodata/fervent-mendel-ybw0va",
+      "sha": "0156af516c924c7c4076d25d01296f7bb8a18cbb"
+    },
+    {
+      "name": "nodata/focused-meitner-07a9u7",
+      "sha": "a75ed0b14e26a0035f3922625d3b1ee3b06447da"
+    },
+    {
+      "name": "nodata/gracious-meitner-0yy6do",
+      "sha": "cefdbd9d6b05c4bcca81f8e11119469ac654480a"
+    },
+    {
+      "name": "nodata/gracious-pascal-vdb581",
+      "sha": "c13070f8e0bbfc2f3b49bde3d67313861118246e"
+    },
+    {
+      "name": "nodata/inspiring-shannon-2ehl3u",
+      "sha": "c87fe94a571d528cc5eb7fb25b9717224ad81c3e"
+    },
+    {
+      "name": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910"
+    },
+    {
+      "name": "nodata/magical-volta-z6taog",
+      "sha": "6adf71f7256f05d06284f0d4c7b52fd93391e60c"
+    },
+    {
+      "name": "nodata/optimistic-maxwell-epuo8f",
+      "sha": "ddcaa77f224d663730c82b08bb92c3a4e64facd1"
+    },
+    {
+      "name": "nodata/peaceful-faraday-enxrin",
+      "sha": "94ab256e5285f4009f915be18415bf0146a1242f"
+    },
+    {
+      "name": "nodata/practical-johnson-e0fbpm",
+      "sha": "85cc394451313e24104ef7089379e720b4e70526"
+    },
+    {
+      "name": "nodata/tender-mccarthy-a61kj6",
+      "sha": "c720d24a98a820842ee6c7f443b56b424dbeae36"
+    },
+    {
+      "name": "nodata/wizardly-allen-qwol6u",
+      "sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849"
+    },
+    {
+      "name": "nodata/wonderful-darwin-kd1h22",
+      "sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5"
+    },
+    {
+      "name": "nodata/zealous-hopper-lr0nxe",
+      "sha": "b2604949ae3cfae493bcfb0213d390a213e63037"
+    },
+    {
+      "name": "nodata/zen-dirac-vkl84j",
+      "sha": "8a8d72dee2e8c76dc549da649854e637f081b63c"
+    },
+    {
+      "name": "owner/privacy-beta-scope-20261125",
+      "sha": "ea94ba7cf2dd5865da4199ed04294f9a71496798"
+    },
+    {
+      "name": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc"
+    },
+    {
+      "name": "qa/286-export-notification-verification",
+      "sha": "64411f2ccda72167dd5498b5d362298909afb7fd"
+    },
+    {
+      "name": "qa/286-integrated-mask-verification",
+      "sha": "d362c72e3af34d556c307de8d2292bb496a50ae5"
+    },
+    {
+      "name": "qualification/f02-merchant-catalog-auth-provider",
+      "sha": "08faa16e1a03fe8c87f97f02257363750b52c920"
+    },
+    {
+      "name": "qualification/merchant-ledger-522-current-main",
+      "sha": "3ae56a5e0b3df9ce57e9bbf2a44c82b56e432033"
+    },
+    {
+      "name": "qualification/near-finished-20261124",
+      "sha": "fc92ba5386c36d0ec45aeb2066c698aab276628f"
+    },
+    {
+      "name": "qualification/p06-existing-role-inventory-20261123",
+      "sha": "d242926030fea856e7a368639c059e472e9e9c6b"
+    },
+    {
+      "name": "qualification/pr504-main-package-rollup-20261124",
+      "sha": "c09d15a3ee2b887f320a130197fb3acba1b4566e"
+    },
+    {
+      "name": "qualification/pr525-main-package-rollup-20261124",
+      "sha": "dc2bcf2858aaa71ab08da81f4a2c3411bae6e209"
+    },
+    {
+      "name": "qualification/pr531-main-fee-merge-20261124",
+      "sha": "f8621b33f951662cd92609947235c8e9708fbc26"
+    },
+    {
+      "name": "qualification/pr531-main-package-rollup-20261124",
+      "sha": "3349757903d9e44070b2531e129776beca72284e"
+    },
+    {
+      "name": "qualification/20261124/pages-599",
+      "sha": "8e0bbe97b84817472b1322a95bbc58cf77d7cd57"
+    },
+    {
+      "name": "qualification/20261124/resume-packages-565-568",
+      "sha": "9977a3b7c37efa6160d90aa07265c8bbd684d359"
+    },
+    {
+      "name": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "sha": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7"
+    },
+    {
+      "name": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "sha": "b660b2d8f3f84ddf72f684d13913f643f33f2eee"
+    },
+    {
+      "name": "recover/ghostpay-canonical-json-descriptors-20261121-r10",
+      "sha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27"
+    },
+    {
+      "name": "recover/ghostpay-chain-interop-20261121-5ceb",
+      "sha": "f717157271fe494eb8094e504e9fec8276d51fcc"
+    },
+    {
+      "name": "recover/ghostpay-policy-asset-coverage-20261121-5ceb",
+      "sha": "821700d172dc638e1c06f35a03ca5f0c215fd46d"
+    },
+    {
+      "name": "recover/ghostpay-policy-validation-20261121-5ceb",
+      "sha": "2e0aff8490086a54fadd52c2fa4d802605b7920e"
+    },
+    {
+      "name": "release/ghostpay-beta-qualification-20261119",
+      "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    },
+    {
+      "name": "repair/ghostpay-270-policy-fixture-20261119",
+      "sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c"
+    },
+    {
+      "name": "repair/ghostpay-276-artifact-races-20261119",
+      "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+    },
+    {
+      "name": "repair/ghostpay-analyzer-recovered-20261119",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137"
+    },
+    {
+      "name": "repair/ghostpay-btc-lifecycle-20261121-5ceb",
+      "sha": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf"
+    },
+    {
+      "name": "repair/ghostpay-cookie-dependency-20261121-5ceb",
+      "sha": "d3c2228c53cbda4ee650ec91776af8bb1c02674d"
+    },
+    {
+      "name": "repair/ghostpay-final-lint-20261119",
+      "sha": "73d7ccda4fd448dec1682082d633c90de9fa0d7a"
+    },
+    {
+      "name": "repair/ghostpay-history-pool-values-20261118",
+      "sha": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8"
+    },
+    {
+      "name": "repair/ghostpay-history-scanner-20261118",
+      "sha": "6c11242abca5a3f20d933266c723d71b2e75d39b"
+    },
+    {
+      "name": "repair/ghostpay-native-fee-recovered-20261119",
+      "sha": "cbc96840c3dc4fede90afff55b4dfd94f66784da"
+    },
+    {
+      "name": "repair/ghostpay-pr-87-20261119",
+      "sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043"
+    },
+    {
+      "name": "repair/ghostpay-pr-231-20261118",
+      "sha": "4085622463411d3ba27f4efb7b73a70575170535"
+    },
+    {
+      "name": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "sha": "8ce7f1db452167311876bd0707778c2e9c64f3df"
+    },
+    {
+      "name": "repair/ghostpay-qr-surrogates-20261119",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c"
+    },
+    {
+      "name": "repair/ghostpay-r31-journal-readback-test-typecheck-20261122",
+      "sha": "4e1fa09571f9b04fb1e96d01bdd9d516188def73"
+    },
+    {
+      "name": "repair/ghostpay-settings-import-expectations-20261121-539818",
+      "sha": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284"
+    },
+    {
+      "name": "repair/ghostpay-tron-main-20261121-5ceb",
+      "sha": "500ece7a7c99b566ecaad5a8dd0d54fd0022395a"
+    },
+    {
+      "name": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e"
+    },
+    {
+      "name": "resume/account-privacy-20261124",
+      "sha": "86450d8d459ccf4a6925742d082e1c7ad0905e75"
+    },
+    {
+      "name": "resume/ghostpay-i18n-completeness-20261124",
+      "sha": "7d6d48eff443b604f384835c207adcfbe014b624"
+    },
+    {
+      "name": "resume/privacy-minimal-typecheck-20261124",
+      "sha": "c8f892f2aaa4423450689a4d7f91dff24230ed8b"
+    },
+    {
+      "name": "resume/receipt-retention-tor-fixture-20261124",
+      "sha": "00078ed6a2561e948fae50593ab9eb36d5f47be9"
+    },
+    {
+      "name": "resume/recovery-native-20261124",
+      "sha": "f637214e6f3825181dcffbd79f746a21bcc84bba"
+    },
+    {
+      "name": "resume/seller-reconciliation-20261124",
+      "sha": "0c7f680d0791668a68c3a92d7d4ba44087dcf2b8"
+    },
+    {
+      "name": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff"
+    },
+    {
+      "name": "review/427-440-wallet-journal-readback-regression",
+      "sha": "3c21b02194c97c41e6efaffead5520b10697f229"
+    },
+    {
+      "name": "security/mythril-full-remediation-20261118",
+      "sha": "c060d3dff922ee7bef403b97a936357d46d23c81"
+    },
+    {
+      "name": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b"
+    },
+    {
+      "name": "test/ghostpay-first-sign-after-sleep",
+      "sha": "4b077d2b13f956cfcf9bce1726f929cca40c7394"
+    },
+    {
+      "name": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "sha": "95e60ce4948b7430865dafbd1ad01434310a75f7"
+    },
+    {
+      "name": "test/ghostpay-policy-review-races-20261121-r1",
+      "sha": "d981b19ff34c400251c2c398643a337a4205b06c"
+    },
+    {
+      "name": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c"
+    },
+    {
+      "name": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d"
+    },
+    {
+      "name": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94"
+    },
+    {
+      "name": "test/gp-pages-04-frozen-page-sweep-resume",
+      "sha": "9303aecc53c170c09537782f445a3b6bc71be465"
+    },
+    {
+      "name": "test/receipt-print-action-532",
+      "sha": "cb977e4b31047e65ccbe8835c8e45e1cff3cfc84"
+    },
+    {
+      "name": "test/seller-accepted-late-reorg",
+      "sha": "711168f18e5d808df4e3153da8898cd86fae5266"
+    },
+    {
+      "name": "ui/merchant-dashboard-records",
+      "sha": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1"
+    },
+    {
+      "name": "verify/policy-prompt-two-tabs-20261124",
+      "sha": "f5bc0d6c71260e11fc89b28c42c65446e31d335f"
+    },
+    {
+      "name": "work/future-feature-coordination-20261120",
+      "sha": "c6f73ebb177fc76aa74172b86e3f173263c64195"
+    },
+    {
+      "name": "work/ghostpay-consolidation-review-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523"
+    },
+    {
+      "name": "work/ghostpay-pr26-qa-2026-10-24",
+      "sha": "77e7d7b6dd21da1995259c8950141db0d34bcb6e"
+    },
+    {
+      "name": "work/ghostpay-required-v1-candidate-20261120",
+      "sha": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6"
+    },
+    {
+      "name": "work/ghostpay-required-v11-candidate-20261120",
+      "sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9"
+    },
+    {
+      "name": "work/local-reconstruction-2026-10-24",
+      "sha": "bd320d530c725c0edc820b496ea298d741c7ba9e"
+    }
+  ],
+  "openPRs": [
+    {
+      "number": 725,
+      "head": "98546be7f6a85fe40b6496d77f86c70d78220329",
+      "headRef": "nodata/clever-meitner-6a8eg0",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "fix(web): refuse scan checkpoint access while the sole-copy session is idle-suspended",
+      "draft": true
+    },
+    {
+      "number": 724,
+      "head": "0d083443fedf397765c5fcd712fb495771e351b3",
+      "headRef": "finish/privacy-preview-resume-20261126-9d8f",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "fix(privacy): finish preview retention on page return",
+      "draft": true
+    },
+    {
+      "number": 723,
+      "head": "c720d24a98a820842ee6c7f443b56b424dbeae36",
+      "headRef": "nodata/tender-mccarthy-a61kj6",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "fix(scan): a stale or concurrent scan cannot overwrite a newer checkpoint (P14 finding F1)",
+      "draft": true
+    },
+    {
+      "number": 722,
+      "head": "c87fe94a571d528cc5eb7fb25b9717224ad81c3e",
+      "headRef": "nodata/inspiring-shannon-2ehl3u",
+      "base": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "baseRef": "main",
+      "title": "docs(user): beta exclusion notice and locale-completion claim",
+      "draft": true
+    },
+    {
+      "number": 721,
+      "head": "a308b086522d37b0460f57ab87e83f3a8bd2a32e",
+      "headRef": "claude/keen-volta-8ctx9x",
+      "base": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "baseRef": "main",
+      "title": "docs(engineering): log PR #716 merge (LATE-LM1)",
+      "draft": true
+    },
+    {
+      "number": 720,
+      "head": "862722f2cac12d9b84f285ecb33089bbc7ffa9d7",
+      "headRef": "claude/vibrant-cori-scu18b",
+      "base": "5880576a131b8457f128a21e8973d6658d16a838",
+      "baseRef": "main",
+      "title": "Router: payERC20WithPermitAndBuffer entry point (spec 13 section 2, ADR-0030)",
+      "draft": true
+    },
+    {
+      "number": 719,
+      "head": "0156af516c924c7c4076d25d01296f7bb8a18cbb",
+      "headRef": "nodata/fervent-mendel-ybw0va",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "feat(web): add IndexedDB availability to the browser self-checks",
+      "draft": true
+    },
+    {
+      "number": 718,
+      "head": "a2e6dd5e06d72585e56e97774d07e16c6a0418cc",
+      "headRef": "claude/consolidation-stack-20261126",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "Consolidation stack: train #704 plus #631 #637 #701 #706 #707 #711 #712 #714",
+      "draft": true
+    },
+    {
+      "number": 717,
+      "head": "367a3b30b1feb5c31c0727fc6fc435162067063c",
+      "headRef": "claude/offline-drafts-successor-20261126",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "Offline-aware checkout and opt-in encrypted invoice drafts (successor of #604/#591)",
+      "draft": true
+    },
+    {
+      "number": 715,
+      "head": "ddcaa77f224d663730c82b08bb92c3a4e64facd1",
+      "headRef": "nodata/optimistic-maxwell-epuo8f",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "Keep workspace future-only cores out of the lean site; record applied owner decisions",
+      "draft": true
+    },
+    {
+      "number": 714,
+      "head": "cb8d9b3052e1905e1542a2d0326dfa3aa1c39bf8",
+      "headRef": "claude/a11y-reflow-checkvisibility-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "test(a11y): count only rendered controls in the 320px reflow check",
+      "draft": true
+    },
+    {
+      "number": 713,
+      "head": "ce035e2baf6f90248b79e971a6dc58bb1e171492",
+      "headRef": "automation/20261126/bug/i18n-exact-extension-negotiation",
+      "base": "5880576a131b8457f128a21e8973d6658d16a838",
+      "baseRef": "main",
+      "title": "fix(i18n): prefer exact supported locale extension tags",
+      "draft": true
+    },
+    {
+      "number": 712,
+      "head": "122ca29d7e230f31d779b472a8abf97618fe49f2",
+      "headRef": "claude/multipart-note-copy-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(web): name the renamed QR import control in the multi-part QR note",
+      "draft": true
+    },
+    {
+      "number": 711,
+      "head": "fdb85e71a723fc0085851b2c445bbde31c58df02",
+      "headRef": "claude/idle-sweep-freeze-tests-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "test(idle): qualify Sweep signing at the idle deadline and real page freeze (successor of #582)",
+      "draft": true
+    },
+    {
+      "number": 710,
+      "head": "5092b254e3f1c7bc7669fb2f09057073737344ee",
+      "headRef": "claude/account-privacy-audit-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(web): keep unsaved returned hashes visible and paid public invoices terminal (post-#691/#692 audit)",
+      "draft": false
+    },
+    {
+      "number": 709,
+      "head": "5d86a6a2079813bf472a2a6d8a1708c732049b86",
+      "headRef": "claude/auto-rescan-rearm-r2-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(scan): re-arm automatic re-checks when a scan settles within one render",
+      "draft": false
+    },
+    {
+      "number": 708,
+      "head": "03ba9783600a4c6a034d526e641e6229a2a03210",
+      "headRef": "claude/global-masking-286-20261126",
+      "base": "e7e981095b07a05c7727bf9fafb0a0fec7e4fc36",
+      "baseRef": "main",
+      "title": "feat(web): global sensitive-data masking with 30-second reveal (#286 item 1)",
+      "draft": false
+    },
+    {
+      "number": 707,
+      "head": "f74126885a1e348d282abc2ed0e0d71bca4bae45",
+      "headRef": "claude/p0-keys-m2b-successor-20261126",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "P0-KEYS M2b successor (#622): archive export, master backup and in-app Spec 18 recovery on current main",
+      "draft": false
+    },
+    {
+      "number": 706,
+      "head": "935da860c62b5d68b61d9e452b432bb821f6df83",
+      "headRef": "claude/journal-fuzz-20261126",
+      "base": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "baseRef": "main",
+      "title": "fix(journal): refuse clearing an unsaved returned hash; seeded journal fuzzing",
+      "draft": false
+    },
+    {
+      "number": 705,
+      "head": "d739ecc4390b7efe013e59340775fc61c688f53d",
+      "headRef": "claude/keystore-recovery-followups-20261126",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(recovery): seller-keystore restore audit follow-ups (prompt backspace, mobile restore check, WebKit trigger)",
+      "draft": true
+    },
+    {
+      "number": 704,
+      "head": "69a4d3e17fc46833fb31c41cbab6aafeb0bfad9c",
+      "headRef": "claude/fc05b-main-20261126",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "Merge train: #709 #710 #708 #700 #705 and FC-05b (supersedes #669)",
+      "draft": true
+    },
+    {
+      "number": 700,
+      "head": "a75480ca8a02ba541bf8e113f320c7ee5552ebc9",
+      "headRef": "automation/20261126/bug/i18n-unsupported-locale-fallback",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(i18n): use English fallback for unsupported formatter locales",
+      "draft": true
+    },
+    {
+      "number": 696,
+      "head": "1b097132e5f1636d3d770a8612534fbdd34b99ee",
+      "headRef": "claude/w-match-cover-20261125",
+      "base": "5880576a131b8457f128a21e8973d6658d16a838",
+      "baseRef": "main",
+      "title": "feat(web): opt-in cover lookups hide which announcements matched from the RPC",
+      "draft": true
+    },
+    {
+      "number": 678,
+      "head": "6dd9732382f782ddb4cd26d47f0893498973d25d",
+      "headRef": "nodata/eloquent-shannon-gfv6t9",
+      "base": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "baseRef": "main",
+      "title": "P13 confidential amounts: fuzz, stress, QA, security audit and bug-search fixes",
+      "draft": true
+    },
+    {
+      "number": 669,
+      "head": "8ea606ff1816cdd072f2d6251f35b44950ea4a19",
+      "headRef": "claude/fc05b-btc-hardening-20261125",
+      "base": "22c3cb1d7a5c973f0ebc6b34cd0f36f6ed377ffa",
+      "baseRef": "claude/fc05a-t-btc-text-20261125",
+      "title": "FC-05b: Bitcoin retained-sweep current-scan guard and session pending-spend guard (#254 recovery)",
+      "draft": true
+    },
+    {
+      "number": 665,
+      "head": "db6f3da67737346c28edf2ed9d8bae44e86bce56",
+      "headRef": "nodata/elegant-tesla-kpeojx",
+      "base": "601f20955b435eede448c6d82d8315705d7e381d",
+      "baseRef": "main",
+      "title": "W5: independent black-box payment-state verifier (interrupted payment, reload, reconciliation)",
+      "draft": false
+    },
+    {
+      "number": 653,
+      "head": "2021b0b4c72ea8a16b6c14bd21a03d27ee82b5df",
+      "headRef": "claude/serene-hawking-kjd54q",
+      "base": "8aca5a06a9435dd30e40378ba606da3c68f94863",
+      "baseRef": "main",
+      "title": "feat(light-indexer): optional reference service for the public /v1/logs announcement API",
+      "draft": true
+    },
+    {
+      "number": 643,
+      "head": "c13070f8e0bbfc2f3b49bde3d67313861118246e",
+      "headRef": "nodata/gracious-pascal-vdb581",
+      "base": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+      "baseRef": "main",
+      "title": "metadata-hardening: complete and harden the standalone package",
+      "draft": true
+    },
+    {
+      "number": 639,
+      "head": "6adf71f7256f05d06284f0d4c7b52fd93391e60c",
+      "headRef": "nodata/magical-volta-z6taog",
+      "base": "e7e981095b07a05c7727bf9fafb0a0fec7e4fc36",
+      "baseRef": "main",
+      "title": "docs: repository housekeeping, README repairs and maintenance reports",
+      "draft": true
+    },
+    {
+      "number": 637,
+      "head": "7c8773c11c18efd677c2498a293223cee1959f50",
+      "headRef": "automation/20261125/bug/template-import-epoch-bound",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(ux-schedule): reject imported timestamps outside clock range",
+      "draft": true
+    },
+    {
+      "number": 636,
+      "head": "0d548b9acb9236cb09c150e36be21596a01423d6",
+      "headRef": "nodata/brave-meitner-974y9e",
+      "base": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "baseRef": "main",
+      "title": "Merge the merchant dashboard disabled (off by default, excluded from beta/v1.0)",
+      "draft": true
+    },
+    {
+      "number": 632,
+      "head": "0036fe1656579e0e9551bb9ae07cc63d802fb667",
+      "headRef": "automation/20261124T2237Z/qa/disclosure-firefox-reflow",
+      "base": "c484f833560aef8e8c798a71228d92e10fe5a877",
+      "baseRef": "automation/20261124T2037Z/qa/disclosure-signer-pin-gate",
+      "title": "test(wallet): recover reviewed Firefox reflow fixture from #613",
+      "draft": true
+    },
+    {
+      "number": 631,
+      "head": "d43205e6905611f7d34fb5bbed3886b7cb9e78d5",
+      "headRef": "automation/20261124T2125Z/bug/schedule-negative-handled",
+      "base": "194e225cc115f894650b2e9ef3390854241e4143",
+      "baseRef": "main",
+      "title": "fix(schedule): reject negative handled occurrence timestamps",
+      "draft": true
+    },
+    {
+      "number": 622,
+      "head": "8c7ae937a3ef056cd646c5f2d955f803a5ecb2ce",
+      "headRef": "claude/nifty-bohr-5ra2ap",
+      "base": "03695a7bbb2ad178a729da612bc578ed9a42c4d7",
+      "baseRef": "main",
+      "title": "P0-KEYS (M2b): archive export, master backup and in-app recovery of stealth key exports",
+      "draft": true
+    },
+    {
+      "number": 621,
+      "head": "98065511df4b5315db665366ee941bfbf4578d06",
+      "headRef": "claude/nifty-bohr-5ra2ap-dormant-371",
+      "base": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+      "baseRef": "main",
+      "title": "[HOLD] Land #371 dormant F04/F05/F10 module base on main",
+      "draft": true
+    },
+    {
+      "number": 614,
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "headRef": "integration/near-finished-20261124",
+      "base": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+      "baseRef": "main",
+      "title": "[HOLD] Complete near-finished fiat, countdown, POS and QR branches",
+      "draft": false
+    },
+    {
+      "number": 613,
+      "head": "17fa04b0ad4af4d88739bcffd9042d76d27c8237",
+      "headRef": "investigate/privacy-569-firefox-20261124",
+      "base": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401",
+      "baseRef": "fix/286-global-mask-document",
+      "title": "test(privacy): complete native Firefox reflow repair",
+      "draft": true
+    },
+    {
+      "number": 609,
+      "head": "00078ed6a2561e948fae50593ab9eb36d5f47be9",
+      "headRef": "resume/receipt-retention-tor-fixture-20261124",
+      "base": "19a11f90db0bcf84c94a0b883a310e103ce8878a",
+      "baseRef": "feature/287-receipt-timestamp-retention",
+      "title": "test(hosting): finish timestamp-retention browser qualification",
+      "draft": false
+    },
+    {
+      "number": 604,
+      "head": "2f2c282e4e88e32fb54648864bb9ed51c8307880",
+      "headRef": "finish/offline-completion-20261124",
+      "base": "706188000c38b3dde5a3a362370a530870aa7587",
+      "baseRef": "main",
+      "title": "Finish interrupted-payment and encrypted offline draft branches",
+      "draft": true
+    },
+    {
+      "number": 602,
+      "head": "8d8fe2f0986bc5796dae2081ef34602c6a9db703",
+      "headRef": "finish/recurring-m4-qualification-20261124",
+      "base": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627",
+      "baseRef": "feature/f10-durable-cas-m4-20261122",
+      "title": "Finish recurring-state M4 native qualification",
+      "draft": true
+    },
+    {
+      "number": 592,
+      "head": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+      "headRef": "codex/spec-03-fiat-price-feeds",
+      "base": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+      "baseRef": "main",
+      "title": "[HOLD] Complete spec 03 fiat quote validation and enforce feed qualification",
+      "draft": true
+    },
+    {
+      "number": 591,
+      "head": "49862e2d3b4832f1f52714f5bc1bc551af2fe54f",
+      "headRef": "codex/offline-interrupted-invoice",
+      "base": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+      "baseRef": "main",
+      "title": "Recover encrypted invoice drafts and handle interrupted Pages payments",
+      "draft": true
+    },
+    {
+      "number": 587,
+      "head": "19a11f90db0bcf84c94a0b883a310e103ce8878a",
+      "headRef": "feature/287-receipt-timestamp-retention",
+      "base": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "baseRef": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "title": "Complete local invoice and payment receipt timestamp retention",
+      "draft": true
+    },
+    {
+      "number": 582,
+      "head": "9303aecc53c170c09537782f445a3b6bc71be465",
+      "headRef": "test/gp-pages-04-frozen-page-sweep-resume",
+      "base": "4b077d2b13f956cfcf9bce1726f929cca40c7394",
+      "baseRef": "test/ghostpay-first-sign-after-sleep",
+      "title": "Qualify native Chromium freeze and pending Sweep signatures under GP-PAGES-04",
+      "draft": true
+    },
+    {
+      "number": 569,
+      "head": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401",
+      "headRef": "fix/286-global-mask-document",
+      "base": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "baseRef": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "title": "Close hidden-DOM disclosure in global Pages privacy masking (#286)",
+      "draft": true
+    },
+    {
+      "number": 559,
+      "head": "0419d3609caeba7857fefdd9f19f884adeff5646",
+      "headRef": "feature/p08-local-history-coverage",
+      "base": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "baseRef": "future/p08-linkability-analysis",
+      "title": "Distinguish missing local history from complete empty history (P08-A04)",
+      "draft": true
+    },
+    {
+      "number": 558,
+      "head": "d242926030fea856e7a368639c059e472e9e9c6b",
+      "headRef": "qualification/p06-existing-role-inventory-20261123",
+      "base": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "baseRef": "future/p06-key-role-separation",
+      "title": "Map existing key operations to P06 roles for offline review",
+      "draft": true
+    },
+    {
+      "number": 544,
+      "head": "4b077d2b13f956cfcf9bce1726f929cca40c7394",
+      "headRef": "test/ghostpay-first-sign-after-sleep",
+      "base": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "baseRef": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "title": "test(web): verify the first invoice signature after sleep",
+      "draft": false
+    },
+    {
+      "number": 526,
+      "head": "111c3de7fc586734dd5dddb213242faa9c352f6a",
+      "headRef": "docs/ghostpay-live-census-20261123",
+      "base": "8ddb344973e80b8e1eda6821e970ee6a2b808b29",
+      "baseRef": "main",
+      "title": "docs: refresh GhostPay branch and PR census",
+      "draft": true
+    },
+    {
+      "number": 493,
+      "head": "fb9c4b6f618f80b2d9f2b2aff3d1f2fa41e06558",
+      "headRef": "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e",
+      "base": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "baseRef": "main",
+      "title": "deps: bump the npm-minor-patch group across 1 directory with 11 updates",
+      "draft": false
+    },
+    {
+      "number": 492,
+      "head": "592b99417039b7bba588235c40418f368f09ebb4",
+      "headRef": "dependabot/github_actions/actions-8158e918cd",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "ci: bump the actions group across 1 directory with 3 updates",
+      "draft": false
+    },
+    {
+      "number": 471,
+      "head": "d068ffd41637de364310b2117d737153d4da3fd8",
+      "headRef": "audit/ghostpay-r41-semantic-backfill-20261122-1400Z",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "fix(consolidation): R41–R55 source-pinned histories, ledger transition and retired-ref safety",
+      "draft": true
+    },
+    {
+      "number": 469,
+      "head": "fd3abbc297febe54f6539b801cd752d6f4d9e4f8",
+      "headRef": "audit/ghostpay-r40-semantic-branch-dispositions-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R40 verify 44 donor dispositions, record scanner race",
+      "draft": true
+    },
+    {
+      "number": 468,
+      "head": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "headRef": "automation/20261122-r11/audit/mythril-evidence-summary",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "feat(audit): source-pinned, fail-closed Mythril artifact evidence summary",
+      "draft": true
+    },
+    {
+      "number": 466,
+      "head": "87eb78767567c9aa58bce10c0c020f282d1491c7",
+      "headRef": "audit/ghostpay-r39-uncapped-branch-triage-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "feat(audit): uncapped Git-tree branch provenance scanner and R39 recovery ledger",
+      "draft": true
+    },
+    {
+      "number": 464,
+      "head": "4f529cbb152916dfd2f3283b224d321533ec5a2d",
+      "headRef": "audit/ghostpay-r38-source-census-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(audit): R38 exhaustive branch and PR SHA census plus beta handoff",
+      "draft": true
+    },
+    {
+      "number": 459,
+      "head": "ecfe65666b510d9adfc51902880ee7ac5f419baa",
+      "headRef": "audit/ghostpay-scheme2-completion-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(policy): source-pinned Scheme-2 completion and recovery-authority matrix",
+      "draft": true
+    },
+    {
+      "number": 457,
+      "head": "300c9d215b01f30c0eee53f58bcb6aba85ebbd5b",
+      "headRef": "docs/f05-receipt-assurance-coverage-20261122",
+      "base": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "baseRef": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "title": "docs(f05): pin receipt-assurance coverage and completion gates",
+      "draft": true
+    },
+    {
+      "number": 456,
+      "head": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627",
+      "headRef": "feature/f10-durable-cas-m4-20261122",
+      "base": "7079eedfc67180c9a0012c7154758e41fe6208c9",
+      "baseRef": "feature/f10-reviewed-preparation-m3-20261121",
+      "title": "feat(f10): encrypted recurring snapshot CAS and safe reviewed reservation (M4, stacked draft)",
+      "draft": true
+    },
+    {
+      "number": 455,
+      "head": "74b9f85523f75c473b6fc65e5b44e75bac3f1fd9",
+      "headRef": "audit/ghostpay-fund-recovery-expiry-20261122-p0",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(audit): source-pin P0 fund recovery, expiry and refund safety gaps",
+      "draft": true
+    },
+    {
+      "number": 448,
+      "head": "8251eaa0813af7d2fc056ed432d43c6e762cf6c0",
+      "headRef": "audit/ghostpay-r33-514-branch-pr-qualification-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R33 515-branch SHA audit, 206-PR inventory and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 445,
+      "head": "bd1bc845bb855686ca48922baacc057c1c40dee2",
+      "headRef": "audit/ghostpay-r32-census-and-ci-gates-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R32 branch-head ledger, qualified wallet test and donor ancestry",
+      "draft": true
+    },
+    {
+      "number": 442,
+      "head": "4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b",
+      "headRef": "audit/ct-c-2-fee-event-forensics-20261121",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "test(confidential): diagnose CT-C-2 fee-byte log collision",
+      "draft": true
+    },
+    {
+      "number": 438,
+      "head": "745004a16dbb712a1085d3e7377d9abe951e9599",
+      "headRef": "audit/ghostpay-r30-504-reconciliation-20261122",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R30 504-branch/196-PR SHA census and security gate triage",
+      "draft": true
+    },
+    {
+      "number": 436,
+      "head": "cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362",
+      "headRef": "automation/20261122/tor-scan-saved-message-contract-r29",
+      "base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "baseRef": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "title": "test(tor): assert the actual localized scan-privacy save confirmation",
+      "draft": false
+    },
+    {
+      "number": 428,
+      "head": "2e8e2fde366f10915daabc157b55b6772e5da730",
+      "headRef": "audit/ghostpay-r24-494-ci-triage-20261121",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R24 495-branch census, qualified PR reviews and donor triage",
+      "draft": true
+    },
+    {
+      "number": 410,
+      "head": "0bd06cbbdfc3b449fd56237b385d0b3d084f317d",
+      "headRef": "automation/20261121T1439Z/bug/qr-print-policy-boolean",
+      "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "fix(web): preserve bearer QR warning for malformed protection flags",
+      "draft": true
+    },
+    {
+      "number": 408,
+      "head": "4aea5f7ed3dec4b328bd01594bf61cca35c72ab9",
+      "headRef": "audit/ghostpay-r15-475-delta-20261121",
+      "base": "bb668e18b1bad2e92811c22ca57cb019b1b4b281",
+      "baseRef": "audit/ghostpay-r13-capped-lineage-20261121",
+      "title": "docs(consolidation): R15 475-branch delta, security-donor overlap and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 403,
+      "head": "bb668e18b1bad2e92811c22ca57cb019b1b4b281",
+      "headRef": "audit/ghostpay-r13-capped-lineage-20261121",
+      "base": "2eb64d0a19e172ca02abe10a191b7d711962cb52",
+      "baseRef": "audit/ghostpay-r12-delta-20261121-0507",
+      "title": "docs(consolidation): classify capped branch ancestry and resume 470-head R13 census",
+      "draft": true
+    },
+    {
+      "number": 401,
+      "head": "2eb64d0a19e172ca02abe10a191b7d711962cb52",
+      "headRef": "audit/ghostpay-r12-delta-20261121-0507",
+      "base": "80dd9eb9669fba0171a037b0b690d17a7e2b655e",
+      "baseRef": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+      "title": "docs(consolidation): R12 468-branch source-pinned delta and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 396,
+      "head": "7079eedfc67180c9a0012c7154758e41fe6208c9",
+      "headRef": "feature/f10-reviewed-preparation-m3-20261121",
+      "base": "20a353d28e1aac89216ba2e8980000477307bf03",
+      "baseRef": "feature/f10-lifecycle-m2-20261121",
+      "title": "feat(f10): stage single-use reviewed invoice references (M3)",
+      "draft": true
+    },
+    {
+      "number": 391,
+      "head": "20a353d28e1aac89216ba2e8980000477307bf03",
+      "headRef": "feature/f10-lifecycle-m2-20261121",
+      "base": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "baseRef": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "title": "feat(f10): guarded recurring-plan lifecycle (M2, stacked draft)",
+      "draft": true
+    },
+    {
+      "number": 386,
+      "head": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "headRef": "fix/ghostpay-signer-pin-continue-20261121-r11",
+      "base": "df0e715686bc42d270617692a7e310a8b362e840",
+      "baseRef": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "title": "test(web): require no actionable Continue after revoked signer pin",
+      "draft": true
+    },
+    {
+      "number": 383,
+      "head": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "headRef": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "baseRef": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "title": "Add explicit invoice registration-time cleanup without deleting records",
+      "draft": true
+    },
+    {
+      "number": 382,
+      "head": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+      "headRef": "repair/ghostpay-btc-lifecycle-20261121-5ceb",
+      "base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "baseRef": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "title": "Recover Bitcoin lifecycle consent and checked worker results",
+      "draft": true
+    },
+    {
+      "number": 381,
+      "head": "df0e715686bc42d270617692a7e310a8b362e840",
+      "headRef": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "base": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "baseRef": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "title": "test(a11y): exclude closed disclosure geometry while preserving visible reflow checks",
+      "draft": true
+    },
+    {
+      "number": 380,
+      "head": "43c859f54b92e01b0754e12ace1d96e884048001",
+      "headRef": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "Continue the authoritative consolidation ledger with verified source and CI evidence",
+      "draft": true
+    },
+    {
+      "number": 378,
+      "head": "c493df9e210f6227471864a623ee536cc9483a3a",
+      "headRef": "audit/ghostpay-main-447-census-20261121-r9",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "docs(consolidation): R9 exhaustive 447-branch exact-current-main census and semantic handoff",
+      "draft": true
+    },
+    {
+      "number": 373,
+      "head": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "headRef": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "baseRef": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "title": "ci: qualify recovery privacy flows in Firefox and WebKit",
+      "draft": true
+    },
+    {
+      "number": 372,
+      "head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "headRef": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "baseRef": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "title": "fix: compose independent key recovery with privacy and custody guards",
+      "draft": true
+    },
+    {
+      "number": 371,
+      "head": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "headRef": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "baseRef": "main",
+      "title": "[HOLD] Consolidate dormant F04/F05/F10 modules and repair CI gates",
+      "draft": true
+    },
+    {
+      "number": 367,
+      "head": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "headRef": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "Compose idle recovery, current-main fixes, scan deduplication and wallet regressions",
+      "draft": true
+    },
+    {
+      "number": 365,
+      "head": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "headRef": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "merge(web): consolidate idle backup and receipt work with main and Scan fixes",
+      "draft": true
+    },
+    {
+      "number": 363,
+      "head": "260caca240f9944c05ce8951a154193709e30a56",
+      "headRef": "integration/ghostpay-tor-qualified-20261121",
+      "base": "aec179910c39081d820396409ff3139ff2264132",
+      "baseRef": "main",
+      "title": "Qualify static Tor hosting with pinned identities and recovery checks",
+      "draft": true
+    },
+    {
+      "number": 361,
+      "head": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "headRef": "integrate/ghostpay-export-recovery-acceptance-20261121-539818",
+      "base": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "baseRef": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "title": "test(recovery): recover application export interoperability coverage",
+      "draft": true
+    },
+    {
+      "number": 358,
+      "head": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "headRef": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "base": "aec179910c39081d820396409ff3139ff2264132",
+      "baseRef": "main",
+      "title": "feat(coordination): reconcile captured GhostPay branches and claims",
+      "draft": true
+    },
+    {
+      "number": 356,
+      "head": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+      "headRef": "repair/ghostpay-settings-import-expectations-20261121-539818",
+      "base": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "baseRef": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "title": "test(settings): correct partial-import relayer URL expectations",
+      "draft": true
+    },
+    {
+      "number": 355,
+      "head": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "headRef": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "base": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "baseRef": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "title": "test(web): preserve quick-hide focus regressions above privacy repair",
+      "draft": true
+    },
+    {
+      "number": 354,
+      "head": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "headRef": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "base": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "baseRef": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "title": "fix(web): restore privacy-safe focus after wallet disclosure",
+      "draft": true
+    },
+    {
+      "number": 353,
+      "head": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "headRef": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "test(web): preserve unsaved settings drafts across partial imports (GP-BUG-04)",
+      "draft": true
+    },
+    {
+      "number": 352,
+      "head": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "headRef": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "base": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "baseRef": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "title": "test(devnet): enforce wallet journal concealment until renewed consent",
+      "draft": true
+    },
+    {
+      "number": 349,
+      "head": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+      "headRef": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "fix(web): validate saved Sweep journals with strict JSON",
+      "draft": true
+    },
+    {
+      "number": 348,
+      "head": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "headRef": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "base": "410353a23631234aa888e46f38df22291c699a26",
+      "baseRef": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "title": "test(privacy): align wallet context and reviewed RPC inventory",
+      "draft": true
+    },
+    {
+      "number": 346,
+      "head": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "headRef": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "base": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "baseRef": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "title": "test(web): verify payment exports with standalone recovery",
+      "draft": true
+    },
+    {
+      "number": 344,
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "headRef": "fix/ghostpay-request-file-async-20261120-r3",
+      "base": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "baseRef": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "title": "Synchronize request-file passphrase test with real decryption completion",
+      "draft": true
+    },
+    {
+      "number": 343,
+      "head": "5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5",
+      "headRef": "docs/ghostpay-coordination-ledger-20261120",
+      "base": "bfebea0acf213a113d2740366fd592042661ca67",
+      "baseRef": "main",
+      "title": "docs(coordination): reconcile 423 branches and 123 PR claims",
+      "draft": true
+    },
+    {
+      "number": 341,
+      "head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "headRef": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "baseRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "title": "fix(privacy): retain sweep reuse warnings on all seven enabled EVM testnets (GP-BUG-06)",
+      "draft": true
+    },
+    {
+      "number": 336,
+      "head": "410353a23631234aa888e46f38df22291c699a26",
+      "headRef": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "baseRef": "feature/ghostpay-retention-focus-20261120",
+      "title": "Fix wallet disclosure steps in devnet acceptance journeys",
+      "draft": true
+    },
+    {
+      "number": 335,
+      "head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "headRef": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "baseRef": "fix/ghostpay-backup-preflight-20261120-r2",
+      "title": "fix(web): bind archive completion to the signed receipt",
+      "draft": true
+    },
+    {
+      "number": 333,
+      "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "headRef": "fix/ghostpay-backup-preflight-20261120-r2",
+      "base": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "baseRef": "integration/ghostpay-idle-session-20261120-r2",
+      "title": "fix(web): finish backup preflight and durable-write ownership",
+      "draft": true
+    },
+    {
+      "number": 327,
+      "head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "headRef": "feature/ghostpay-retention-focus-20261120",
+      "base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "baseRef": "feature/ghostpay-retention-completion-20261120",
+      "title": "Reconcile retention preferences when returning to a tab",
+      "draft": true
+    },
+    {
+      "number": 326,
+      "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "headRef": "feature/ghostpay-retention-completion-20261120",
+      "base": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "baseRef": "work/ghostpay-required-v11-candidate-20261120",
+      "title": "Add opt-in payment proof preview cleanup",
+      "draft": true
+    },
+    {
+      "number": 324,
+      "head": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "headRef": "future/f10-private-recurring",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "baseRef": "main",
+      "title": "feat(f10): add bounded recurring-invoice previews",
+      "draft": true
+    },
+    {
+      "number": 323,
+      "head": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "headRef": "future/f05-ghostproof",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "baseRef": "main",
+      "title": "feat(f05): add offline receipt assurance review",
+      "draft": true
+    },
+    {
+      "number": 320,
+      "head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "headRef": "fix/ghostpay-tor-qualification-20261120",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "baseRef": "main",
+      "title": "Complete static Tor qualification inputs and exact origin assertions",
+      "draft": true
+    },
+    {
+      "number": 312,
+      "head": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+      "headRef": "audit/bugcheck-core-latest-20261120",
+      "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "baseRef": "main",
+      "title": "docs: record core and latest-feature bugcheck audit",
+      "draft": true
+    },
+    {
+      "number": 309,
+      "head": "e9643073be74dac54c2875143501451812763f9c",
+      "headRef": "audit/ghostpay-qa-stress-20261119",
+      "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "baseRef": "main",
+      "title": "docs(qa): read-only GhostPay QA, stress findings and repair handoff",
+      "draft": true
+    },
+    {
+      "number": 308,
+      "head": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "headRef": "feat/ghostpay-tor-completion-20261119",
+      "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "baseRef": "main",
+      "title": "Complete static Tor hosting preparation and qualification gates",
+      "draft": true
+    },
+    {
+      "number": 307,
+      "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "headRef": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base": "bfebea0acf213a113d2740366fd592042661ca67",
+      "baseRef": "main",
+      "title": "Consolidate reviewed fixes and complete invoice, backup, print and Tor features",
+      "draft": true
+    },
+    {
+      "number": 304,
+      "head": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "headRef": "evidence/ghostpay-completion-20261120",
+      "base": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "baseRef": "integration/ghostpay-completion-20261120",
+      "title": "docs: preserve verified recovery, artifacts and final worker handoffs",
+      "draft": true
+    },
+    {
+      "number": 303,
+      "head": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "headRef": "fix/ghostpay-format-validation-20261120",
+      "base": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "baseRef": "integration/ghostpay-completion-20261120",
+      "title": "fix(web): qualify amount-parser runtime guards on consolidated source",
+      "draft": true
+    },
+    {
+      "number": 302,
+      "head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "headRef": "integration/ghostpay-completion-20261120",
+      "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "baseRef": "release/ghostpay-beta-qualification-20261119",
+      "title": "fix: consolidate QR, receipt and Pages validation repairs",
+      "draft": true
+    },
+    {
+      "number": 300,
+      "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "headRef": "feat/ghostpay-privacy-quick-hide-20261120",
+      "base": "d6819796a9542acc488b896786faffe83b913d9b",
+      "baseRef": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "title": "feat(web): add one-way privacy quick-hide shortcut and button",
+      "draft": true
+    },
+    {
+      "number": 299,
+      "head": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "headRef": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "base": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "baseRef": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "title": "docs: checkpoint receipt repair, clipboard qualification and security gates",
+      "draft": true
+    },
+    {
+      "number": 298,
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "headRef": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "baseRef": "release/ghostpay-beta-qualification-20261119",
+      "title": "fix(web): bind RPC receipts to the submitted transaction hash",
+      "draft": true
+    },
+    {
+      "number": 296,
+      "head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "headRef": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "base": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "baseRef": "automation/20261119T073600Z/coordinator/integration-lock",
+      "title": "docs: preserve verified engineering cycle and consolidation evidence",
+      "draft": true
+    },
+    {
+      "number": 295,
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "headRef": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "base": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "baseRef": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "title": "test(web): complete unverified QR and flag-combination coverage",
+      "draft": true
+    },
+    {
+      "number": 294,
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "headRef": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "baseRef": "release/ghostpay-beta-qualification-20261119",
+      "title": "fix(qr-exchange): preserve idle deadline after rejected conflicts",
+      "draft": true
+    },
+    {
+      "number": 292,
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "headRef": "fix/ghostpay-pages-integrity-gate-20261120",
+      "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "baseRef": "release/ghostpay-beta-qualification-20261119",
+      "title": "Gate Pages artifact promotion and qualify adversarial security fixtures",
+      "draft": true
+    },
+    {
+      "number": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "headRef": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "baseRef": "release/ghostpay-beta-qualification-20261119",
+      "title": "fix(web): reject non-string QR classification keys before coercion",
+      "draft": true
+    },
+    {
+      "number": 278,
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "headRef": "release/ghostpay-beta-qualification-20261119",
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "baseRef": "main",
+      "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+      "draft": true
+    },
+    {
+      "number": 275,
+      "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "headRef": "repair/ghostpay-270-policy-fixture-20261119",
+      "base": "73545f63112910d46002718354ab5e99f8652e1f",
+      "baseRef": "codex/ghostpay-consolidation-followthrough-20261119",
+      "title": "test(policy-scheme): repair mismatched-leaf Anvil fixture",
+      "draft": true
+    },
+    {
+      "number": 273,
+      "head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "headRef": "codex/ghostpay-consolidation-records-20261119",
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "baseRef": "main",
+      "title": "Preserve complete consolidation records and recovered documentation history",
+      "draft": true
+    },
+    {
+      "number": 270,
+      "head": "73545f63112910d46002718354ab5e99f8652e1f",
+      "headRef": "codex/ghostpay-consolidation-followthrough-20261119",
+      "base": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "baseRef": "codex/ghostpay-feature-consolidation-20261119",
+      "title": "Harden canonical arrays and skip unsupported scanner schemes",
+      "draft": true
+    },
+    {
+      "number": 269,
+      "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "headRef": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "base": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "baseRef": "codex/ghostpay-feature-consolidation-20261119",
+      "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+      "draft": true
+    },
+    {
+      "number": 264,
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "headRef": "integration/ghostpay-master-consolidation-20261118",
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "baseRef": "main",
+      "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+      "draft": true
+    },
+    {
+      "number": 263,
+      "head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "headRef": "maintenance/ghostpay-branch-audit-20261119",
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "baseRef": "main",
+      "title": "Record current branch audit, recovery evidence and consolidation checkpoint",
+      "draft": true
+    },
+    {
+      "number": 262,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "headRef": "codex/ghostpay-feature-consolidation-20261119",
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "baseRef": "main",
+      "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+      "draft": true
+    },
+    {
+      "number": 261,
+      "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "headRef": "automation/20261119T073600Z/coordinator/integration-lock",
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "baseRef": "main",
+      "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+      "draft": true
+    },
+    {
+      "number": 260,
+      "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "headRef": "integration/ghostpay-recovery-reconciled-20261119",
+      "base": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "baseRef": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+      "draft": true
+    },
+    {
+      "number": 259,
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "headRef": "integration/ghostpay-docs-recovery-20261119",
+      "base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "baseRef": "main",
+      "title": "Recover historical documentation and reconcile current Pages guidance",
+      "draft": true
+    },
+    {
+      "number": 256,
+      "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "headRef": "integration/ghostpay-idle-session-completion-20261119",
+      "base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "baseRef": "main",
+      "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+      "draft": true
+    },
+    {
+      "number": 255,
+      "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "headRef": "integration/ghostpay-mythril-security-closure-20261118",
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "baseRef": "main",
+      "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+      "draft": true
+    },
+    {
+      "number": 254,
+      "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "headRef": "chatgpt/btc-spentness-private-scan-20261118",
+      "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "baseRef": "main",
+      "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+      "draft": true
+    },
+    {
+      "number": 253,
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "headRef": "repair/ghostpay-pr-87-20261119",
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "baseRef": "main",
+      "title": "fix(net-harness): reject decoded SOCKS chunks in major dependency candidate",
+      "draft": true
+    },
+    {
+      "number": 251,
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "headRef": "codex/network-isolation-complete-20261119",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "feat(privacy): enforce browser network authorization and cancellation",
+      "draft": true
+    },
+    {
+      "number": 249,
+      "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "headRef": "chatgpt/ghostpay-tm-hardening-20261118",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+      "draft": true
+    },
+    {
+      "number": 248,
+      "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "headRef": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "baseRef": "main",
+      "title": "Complete private seller scan checkpoints and durable discovery",
+      "draft": true
+    },
+    {
+      "number": 246,
+      "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "headRef": "chatgpt/ghostpay-remaining-work-20261119",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "Complete remaining GhostPay fixes and reviewed completion ledger",
+      "draft": true
+    },
+    {
+      "number": 243,
+      "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "headRef": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "feat(web): complete selected invoice signer pin validation",
+      "draft": true
+    },
+    {
+      "number": 240,
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "headRef": "chatgpt/spec18-recovery-completion-20261118",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "draft": true
+    },
+    {
+      "number": 239,
+      "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "headRef": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "baseRef": "integration/ghostpay-pages-completion-20261118",
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "draft": true
+    },
+    {
+      "number": 238,
+      "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "headRef": "integration/ghostpay-pages-completion-20261118",
+      "base": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "baseRef": "main",
+      "title": "Consolidate Pages beta security, privacy, and recovery",
+      "draft": true
+    },
+    {
+      "number": 233,
+      "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "headRef": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "base": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "baseRef": "privacy/hardening-recommendations",
+      "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+      "draft": true
+    },
+    {
+      "number": 232,
+      "head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "headRef": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "base": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "baseRef": "main",
+      "title": "docs: preserve beta execution results, source pins and remaining gates",
+      "draft": true
+    },
+    {
+      "number": 230,
+      "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "headRef": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "base": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "baseRef": "privacy/hardening-recommendations",
+      "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+      "draft": true
+    },
+    {
+      "number": 229,
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "headRef": "chatgpt/ghostpay-recovery-review-20261118",
+      "base": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "baseRef": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+      "draft": true
+    },
+    {
+      "number": 228,
+      "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "headRef": "chatgpt/ghostpay-own-node-guard-20261118",
+      "base": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "baseRef": "privacy/hardening-recommendations",
+      "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+      "draft": true
+    },
+    {
+      "number": 226,
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "headRef": "chatgpt/ghostpay-sonar-review-20261118",
+      "base": "1054daabc5cabe958466ec144582d76137b54910",
+      "baseRef": "nodata/jolly-rubin-u4zd45",
+      "title": "fix(audit): contain static helper symlinks and malformed requests",
+      "draft": true
+    },
+    {
+      "number": 225,
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "headRef": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "base": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "baseRef": "claude/ghostpay-consolidation-9xhtxg-security",
+      "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+      "draft": true
+    },
+    {
+      "number": 224,
+      "head": "1054daabc5cabe958466ec144582d76137b54910",
+      "headRef": "nodata/jolly-rubin-u4zd45",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+      "draft": true
+    },
+    {
+      "number": 223,
+      "head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "headRef": "nodata/doc-sweep-20261118",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "docs: sync docs with current code (2026-11-18)",
+      "draft": true
+    },
+    {
+      "number": 222,
+      "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "headRef": "privacy/hardening-recommendations",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "privacy: implement threat-model recommendations TM1-TM15",
+      "draft": true
+    },
+    {
+      "number": 221,
+      "head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "headRef": "nodata/wizardly-allen-qwol6u",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+      "draft": true
+    },
+    {
+      "number": 218,
+      "head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "headRef": "claude/exciting-brown-7v69cr",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+      "draft": true
+    },
+    {
+      "number": 217,
+      "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "headRef": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+      "draft": true
+    },
+    {
+      "number": 215,
+      "head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "headRef": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+      "draft": true
+    },
+    {
+      "number": 213,
+      "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "headRef": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+      "draft": true
+    },
+    {
+      "number": 212,
+      "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "headRef": "claude/ghostpay-consolidation-9xhtxg-security",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+      "draft": true
+    },
+    {
+      "number": 211,
+      "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "headRef": "nodata/wonderful-darwin-kd1h22",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+      "draft": true
+    },
+    {
+      "number": 209,
+      "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "headRef": "claude/ghostpay-completion-audit-ot5jjm",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "Completion run 2026-11-18: claims + integration",
+      "draft": true
+    },
+    {
+      "number": 205,
+      "head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "headRef": "nodata/zealous-hopper-lr0nxe",
+      "base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "baseRef": "main",
+      "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+      "draft": true
+    },
+    {
+      "number": 160,
+      "head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "headRef": "chatgpt/pages-release-gate-audit-20261114",
+      "base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "baseRef": "integration/consolidated-2026-11-14",
+      "title": "docs(pages): source-pinned integration and release-gate inventory",
+      "draft": true
+    },
+    {
+      "number": 153,
+      "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "headRef": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "base": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "baseRef": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+      "draft": true
+    },
+    {
+      "number": 140,
+      "head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "headRef": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "base": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "baseRef": "claude/ghostpay-github-pages-up6cj6",
+      "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+      "draft": true
+    },
+    {
+      "number": 139,
+      "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "headRef": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "base": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "baseRef": "claude/ghostpay-github-pages-up6cj6",
+      "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+      "draft": true
+    },
+    {
+      "number": 87,
+      "head": "812bbfba8172a28081eff4f442cc530fd516a9dd",
+      "headRef": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "base": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "baseRef": "main",
+      "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+      "draft": false
+    },
+    {
+      "number": 82,
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "headRef": "codex/setup-autonomous-agent-20261104",
+      "base": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "baseRef": "main",
+      "title": "Configure OpenAI autonomous development workflow and prompts",
+      "draft": true
+    },
+    {
+      "number": 52,
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "headRef": "automation/ghostpay-parallel-four-agents-20261103",
+      "base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "baseRef": "main",
+      "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+      "draft": true
+    },
+    {
+      "number": 51,
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "headRef": "automation/ghostpay-recurrent-backlog-20261103",
+      "base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "baseRef": "main",
+      "title": "ci: continue GhostPay API-funded backlog development twice daily",
+      "draft": false
+    }
+  ]
+}
