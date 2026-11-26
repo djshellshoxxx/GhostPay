@@ -31,8 +31,11 @@ No unique unmerged code remained on those branches. No other open PR or branch t
 
 ## Follow-up: IndexedDB probe (same day)
 
-A fourth check opens a uniquely named temporary IndexedDB database (`__ghostpay_capability_<random>`), writes and
-reads one fixed non-secret record, closes it and deletes it. If IndexedDB is missing, null, throws on access, lacks
+A fourth check opens a randomly named temporary IndexedDB database (`__ghostpay_capability_<random>`), writes and
+reads one fixed non-secret record, closes it and requests its deletion. A refused or timed-out deletion reports *failed*
+and may leave the probe until site data is cleared. Probe names come only from `randomUUID` or `getRandomValues`, never
+from the clock. Without either, both storage probes report *unavailable* instead of risking a name shared with another
+tab. This follows an independent review of `f939e8d7`. If IndexedDB is missing, null, throws on access, lacks
 `deleteDatabase` or refuses the open, the check reports *unavailable*. A wrong read, a transaction error, a failed
 delete, or no answer within 5 seconds per phase reports *failed*. A connection that arrives after the deadline is
 closed so the pending delete can finish. The vault, tags and reconciliation stores are not opened or changed. The

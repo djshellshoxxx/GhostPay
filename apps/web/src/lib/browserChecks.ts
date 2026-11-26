@@ -23,8 +23,11 @@ export interface BrowserCheckEnvironment {
   readonly storage?: ProbeStorage;
   /** Omitted when IndexedDB is absent, null, throws on access or cannot delete databases. */
   readonly indexedDb?: ProbeIndexedDb;
-  /** Also names the temporary IndexedDB database. */
-  readonly probeKey: string;
+  /**
+   * Random name of the temporary localStorage key and IndexedDB database. Omitted when the browser offers no
+   * cryptographic randomness: both storage probes then report unavailable rather than use a name another tab could share.
+   */
+  readonly probeKey?: string;
 }
 
 const EXPECTED_ABC_SHA256 = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
@@ -33,13 +36,30 @@ const IDB_STORE = 'probe';
 const IDB_RECORD = 'probe';
 /** Upper bound for each of the open/round-trip and delete phases; a browser database that never answers fails. */
 const IDB_TIMEOUT_MS = 5_000;
-let nextProbe = 0;
+const PROBE_PREFIX = '__ghostpay_capability_';
+
+/**
+ * A probe name must not be shared with another tab of the same origin, which uses the same storage. A clock and a
+ * per-tab counter can collide across tabs, so only cryptographic randomness is used. The ID names a transient, non-secret
+ * probe; it is never a key or security token.
+ */
+function randomProbeId(browserCrypto: Crypto | undefined): string | undefined {
+  try {
+    if (typeof browserCrypto?.randomUUID === 'function') return browserCrypto.randomUUID().replaceAll('-', '');
+  } catch { /* randomUUID needs a secure context; try getRandomValues. */ }
+  try {
+    if (typeof browserCrypto?.getRandomValues === 'function') {
+      const bytes = browserCrypto.getRandomValues(new Uint8Array(16));
+      return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+    }
+  } catch { /* No randomness: the storage probes report unavailable. */ }
+  return undefined;
+}
 
 export function browserCheckEnvironment(): BrowserCheckEnvironment {
   let digest: BrowserCheckEnvironment['digest'];
   let storage: ProbeStorage | undefined;
   let indexedDb: ProbeIndexedDb | undefined;
-  let randomId: string | undefined;
   let browserCrypto: Crypto | undefined;
   try { browserCrypto = window.crypto; } catch { /* The check will report unavailable cryptography. */ }
   try {
@@ -48,9 +68,7 @@ export function browserCheckEnvironment(): BrowserCheckEnvironment {
       digest = (data) => subtle.digest('SHA-256', data);
     }
   } catch { /* A throwing getter means WebCrypto is unavailable. */ }
-  try {
-    if (typeof browserCrypto?.randomUUID === 'function') randomId = browserCrypto.randomUUID();
-  } catch { /* Fall back to a non-secret local probe name. */ }
+  const randomId = randomProbeId(browserCrypto);
   try {
     // Some browsers return null instead of throwing when site storage is disabled.
     const local = window.localStorage as Storage | null | undefined;
@@ -65,14 +83,12 @@ export function browserCheckEnvironment(): BrowserCheckEnvironment {
   } catch { /* IndexedDB access can be denied. */ }
   const secureContext: unknown = window.isSecureContext;
 
-  // This ID is only for a transient, non-secret storage probe; never a key or security token.
-  const probeKey = `__ghostpay_capability_${randomId ?? `${Date.now()}_${++nextProbe}`}`;
   return {
     ...(typeof secureContext === 'boolean' ? { secureContext } : {}),
     ...(digest !== undefined ? { digest } : {}),
     ...(storage !== undefined ? { storage } : {}),
     ...(indexedDb !== undefined ? { indexedDb } : {}),
-    probeKey,
+    ...(randomId !== undefined ? { probeKey: `${PROBE_PREFIX}${randomId}` } : {}),
   };
 }
 
@@ -189,8 +205,9 @@ async function checkIndexedDb(factory: ProbeIndexedDb | undefined, name: string)
 export async function runBrowserChecks(env: BrowserCheckEnvironment): Promise<readonly BrowserCheck[]> {
   const secure: BrowserCheckStatus = env.secureContext === undefined ? 'unavailable' : env.secureContext ? 'pass' : 'fail';
   const digest = await checkDigest(env.digest);
-  const storage = checkStorage(env.storage, env.probeKey);
-  const indexedDb = await checkIndexedDb(env.indexedDb, env.probeKey);
+  // Without a random probe name, writing could collide with another tab's probe, so neither storage probe runs.
+  const storage = env.probeKey === undefined ? 'unavailable' : checkStorage(env.storage, env.probeKey);
+  const indexedDb = env.probeKey === undefined ? 'unavailable' : await checkIndexedDb(env.indexedDb, env.probeKey);
   return [
     { id: 'secure', status: secure },
     { id: 'digest', status: digest },

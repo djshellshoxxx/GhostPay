@@ -112,12 +112,16 @@ describe('local-only browser capability checks', () => {
     const { storage } = temporaryStorage();
     await withWindow({
       isSecureContext: true,
-      crypto: { subtle: { digest: (_name: string, data: ArrayBuffer) => validDigest(data) }, randomUUID() { throw new Error('denied'); } },
+      crypto: {
+        subtle: { digest: (_name: string, data: ArrayBuffer) => validDigest(data) },
+        randomUUID() { throw new Error('denied'); },
+        getRandomValues: <T extends ArrayBufferView>(array: T): T => crypto.getRandomValues(array as unknown as Uint8Array) as unknown as T,
+      },
       localStorage: storage,
       indexedDB: memoryIndexedDb(),
     }, async () => {
       const env = browserCheckEnvironment();
-      expect(env.probeKey).toMatch(/^__ghostpay_capability_/);
+      expect(env.probeKey).toMatch(/^__ghostpay_capability_[0-9a-f]{32}$/);
       expect((await runBrowserChecks(env)).map((check) => check.status)).toEqual(['pass', 'pass', 'pass', 'pass']);
     });
     await withWindow({ isSecureContext: true, get crypto() { throw new Error('blocked'); } }, async () => {
@@ -285,5 +289,57 @@ describe('local-only browser capability checks', () => {
     expect(fake.closed()).toBe(1);
     await vi.advanceTimersByTimeAsync(5_000);
     expect(statusOf(await pending, 'indexeddb')).toBe('fail');
+  });
+
+  it('names probes from cryptographic randomness, so tabs with equal clocks do not share a probe name', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(1_700_000_000_000);
+    try {
+      const names: (string | undefined)[] = [];
+      // Two independent contexts without randomUUID (for example an insecure context) and the same clock reading.
+      for (let tab = 0; tab < 2; tab += 1) {
+        await withWindow({ crypto: { getRandomValues: <T extends ArrayBufferView>(array: T): T => crypto.getRandomValues(array as unknown as Uint8Array) as unknown as T } }, () => {
+          names.push(browserCheckEnvironment().probeKey);
+          return Promise.resolve();
+        });
+      }
+      expect(names[0]).toMatch(/^__ghostpay_capability_[0-9a-f]{32}$/);
+      expect(names[1]).toMatch(/^__ghostpay_capability_[0-9a-f]{32}$/);
+      expect(names[0]).not.toBe(names[1]);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('reports both storage probes unavailable, without touching storage, when no cryptographic randomness exists', async () => {
+    const { store, storage } = temporaryStorage();
+    const indexedDb = memoryIndexedDb();
+    const open = vi.spyOn(indexedDb, 'open');
+    for (const crypto of [{}, { randomUUID() { throw new Error('denied'); }, getRandomValues() { throw new Error('denied'); } }]) {
+      await withWindow({ isSecureContext: true, crypto, localStorage: storage, indexedDB: indexedDb }, async () => {
+        const env = browserCheckEnvironment();
+        expect(Object.hasOwn(env, 'probeKey')).toBe(false);
+        const checks = await runBrowserChecks(env);
+        expect(statusOf(checks, 'storage')).toBe('unavailable');
+        expect(statusOf(checks, 'indexeddb')).toBe('unavailable');
+      });
+    }
+    expect(store.size).toBe(0);
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it('leaves unrelated databases intact and lets concurrent probes with distinct names both pass', async () => {
+    const indexedDb = memoryIndexedDb();
+    await new Promise<void>((resolve) => {
+      const request = indexedDb.open('ghostpay-tags', 2);
+      request.onupgradeneeded = () => { request.result.createObjectStore('records'); };
+      request.onsuccess = () => { resolve(); };
+    });
+    const [first, second] = await Promise.all([
+      runBrowserChecks({ secureContext: true, indexedDb, probeKey: '__ghostpay_capability_a' }),
+      runBrowserChecks({ secureContext: true, indexedDb, probeKey: '__ghostpay_capability_b' }),
+    ]);
+    expect(statusOf(first, 'indexeddb')).toBe('pass');
+    expect(statusOf(second, 'indexeddb')).toBe('pass');
+    expect(await indexedDb.databases()).toEqual([{ name: 'ghostpay-tags', version: 2 }]);
   });
 });
