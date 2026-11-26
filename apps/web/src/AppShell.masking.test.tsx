@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useEffect, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -93,6 +93,22 @@ describe('global sensitive-data masking in the shell (#286 item 1)', () => {
     await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
     expect(screen.queryByLabelText(MEMO_LABEL)).toBeNull();
     expect(localStorage.getItem(PRIVACY_MODE_KEY)).toBe('1'); // Quick hide never changes the preference.
+  });
+
+  // With Option+Shift held, a US Mac layout reports the typed symbol as the key; only the code still names H.
+  it('hides with Option+Shift+H where the layout reports a symbol as the key', async () => {
+    localStorage.setItem(PRIVACY_MODE_KEY, '1');
+    generateWaivedSession();
+    renderApp();
+    const user = userEvent.setup();
+    await user.click(nav().getByRole('button', { name: 'Create invoice' }));
+    await user.click(screen.getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    expect(await screen.findByLabelText(MEMO_LABEL)).toBeTruthy();
+    // Control: another physical key with the same modifiers leaves the reveal alone.
+    fireEvent.keyDown(document.body, { altKey: true, shiftKey: true, key: 'Ô', code: 'KeyJ' });
+    expect(screen.queryByLabelText(MEMO_LABEL)).toBeTruthy();
+    fireEvent.keyDown(document.body, { altKey: true, shiftKey: true, key: 'Ó', code: 'KeyH' });
+    expect(screen.queryByLabelText(MEMO_LABEL)).toBeNull();
   });
 });
 

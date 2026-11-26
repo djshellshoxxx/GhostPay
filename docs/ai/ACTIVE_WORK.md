@@ -1,3 +1,16 @@
+# #710 independent review follow-up and merge train #704 (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/train2`, continuing the uncommitted work of `newghostpay-7d/train` after a host crash.
+Branches `claude/account-privacy-audit-20261126` (from head `f53e82f1`), `claude/global-masking-286-20261126` (from
+`5996aa49`) and `claude/fc05b-main-20261126` (train, from `bfbf6200`). Owned paths for the follow-up: the
+terminal-marker lines of `apps/web/src/views/Pay.tsx`, `apps/web/src/views/WalletPrivacy.lifecycle.test.tsx`,
+`apps/web/src/components/PrivacyControls.tsx`, `apps/web/src/components/QrFrame.tsx` and their tests,
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`, this file's registry rebuild and this entry.
+`duplicateAttemptJournal.ts` is not changed.
+Acceptance: the review findings reproduce in failing tests and pass after the fixes, the existing pending/done
+no-extra-send cases and durable journal evidence are kept, `ACTIVE_WORK.md` differs from main by additions only,
+full hosted CI passes on the exact train head. No deployment, contracts, live wallets or funds.
+
 # FC-05b onto current main: Bitcoin retained-sweep and session pending-spend guards, superseding #669 (2026-11-26 UTC)
 
 Worker: Claude Code session `ghostpay-42`, continuing the orphaned FC round-1 PRs (entry below). Branch
@@ -10,19 +23,41 @@ FC-05b consolidation note, the Bitcoin case of `chainViews.i18n.test.tsx` "keeps
 No F14 routing or chain-scope change. Acceptance: M1/L2/M2 tests red at `a86cc353` and green at the head; hosted CI
 green at the exact head; merge through the shared lock queue.
 
-# Browser self-check feature completion (2026-11-26 UTC)
+# #286 item 1: global sensitive-data masking onto current main (2026-11-26 UTC)
 
-Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
-existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
-other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
-`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
-`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
-`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
-`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
-Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
-handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
-unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
-payments, network egress or release gates.
+Worker: Claude Code session `ghostpay-68`. Branch `claude/global-masking-286-20261126`, base main
+`e1d0eb0f7c8688ae280f774f36e01e08d2435deb`. Main has no masking module; the donor line (#569 `c30283d2` over #373,
+diverged 2026-11-20 by 319 files) is a mixed historical composition and is not merged. Narrow hand port of its masking
+mechanism (`privacyMode.tsx`, `SensitiveContent.tsx`, `PrivacyControls.tsx`, `PrivacyQuickHide.tsx`; spec
+`docs/privacy-release/v1-01-masking.md` on that line) with `Recovered-from:` trailers; donor refs untouched.
+Owned paths: new `apps/web/src/lib/privacyMode.tsx`, `apps/web/src/components/{SensitiveContent,PrivacyControls,PrivacyQuickHide}.tsx`
+and their tests; the provider/boundary hunks in `apps/web/src/AppShell.tsx`; the masked body of the wallet request
+review in `apps/web/src/components/WalletDisclosure.tsx`; one reveal-revocation line in `apps/web/src/lib/useWalletPrivacy.ts`;
+additive `privacyUx.*` catalog keys and a security-key group; user doc `docs/user/privacy-masking.md`; this entry and a handoff.
+Not owned: Settings model/`settings.ts` (the preference is a separate store so toggling never invalidates in-flight
+payment or Sweep consent bound to saved settings), clipboard (#687), account/vault revocation (#691), private history
+gate (#691), exports (#675), BTC/Solana/TRON PoC views, Pay/Sweep/Scan internals.
+Acceptance: default off; when on, masked routes, the live region and the wallet request review are absent from the
+live document (text, attributes, form values, accessibility tree), not merely blurred; reveal is deliberate, expires
+within 30 s on both clocks, fails closed on clock rollback and is revoked by navigation, lock, session change, hidden
+tab, page exit and wallet invalidation; drafts and sole-copy keys survive masking; unreadable or invalid saved
+preference fails closed to masked; light fuzz of the reveal clock model; web typecheck/lint/tests; hosted CI incl.
+full/lean browser on the exact head. No dependency, workflow, contract, network or deployment change.
+
+# Account/vault/session privacy: light fuzz, stress, QA and bug/security audit (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-68`, on the owner's instruction after reviewing #697/#698 (APPROVE sent to the
+integration coordinator `ghostpay-backup-60`). Branch `claude/account-privacy-audit-20261126`, base #698 head
+`f45025b5f2cfa27f938c10c35490b42768b8ae0a` (= #692 `c7b9badc` + #691 `6b4bbe17` + main `019d5d18`); rebased onto main
+after #697/#698 land. Does not push to or move the #697/#698 integration branches or any donor ref.
+Owned paths: new fuzz/stress test files beside `apps/web/src/lib/duplicateAttemptJournal.ts`,
+`apps/web/src/lib/useWalletPrivacy.ts` and `apps/web/src/components/SessionPresentationBoundary.tsx`; a narrow fix in a
+#691/#692 runtime file only for a defect confirmed by a failing test (reported to the coordinator first); this entry and
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`.
+Acceptance: bounded fast-check properties (existing pinned dev dependency, no new packages) and stress cases pass; any
+confirmed defect gets a failing-then-passing regression; assertions, coverage thresholds, timeouts and release gates
+unchanged; affected web typecheck/lint/tests pass locally and full hosted CI passes on the exact head. No deployment,
+contracts, live wallets or funds.
 
 # Seller keystore recovery: audit follow-ups after the #693 close-out (2026-11-26 UTC)
 
@@ -37,6 +72,48 @@ Owned paths: `scripts/recovery/stealth-export-recover.mjs` (terminal passphrase 
 dependency change.
 Acceptance: the prompt fix has a regression test that fails without it; the WebKit phone/tablet workflow, with the
 changed restore spec, runs on the exact head; hosted CI green.
+
+# Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
+
+Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
+`docs/engineering/ESSENTIAL_FEATURE_MATRIX.md`, `ESSENTIAL_FEATURE_PROGRESS.md`, `FEATURE_INTEGRATION_LOG.md`,
+`REMAINING_WORK.md` and this entry. The cut-off worker's uncommitted matrix edit was a file of NUL bytes only (no text
+to recover), so it was rewritten from the last commit. Docs only; facts checked against git history and GitHub PR and
+run records.
+
+# W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
+
+Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.
+Why: the previous W4 (feature-completion-06's subagent) exited before continuing #585/#600; ghostpay-42 and newghostpay-ae confirmed no driver.
+Owned paths: #585/#600's files and the merge resolution in `apps/web/src/views/CreateInvoice.tsx` link row (main's auto-clearing Copy, #585's exact-link .txt download and #688's request-file download, all three kept), this entry.
+Acceptance: minimal mode omits memo and item breakdown after totals are computed; payment and verification fields, canonical serialization, signatures and envelopes unchanged; downloads carry the exact signed link; full hosted CI on the exact head.
+
+# PR #585 native typecheck resumption — 2026-11-24 UTC
+
+Worker: `/root/recover_local_workers`, coordinated by `/root`. Isolated successor branch `resume/privacy-minimal-typecheck-20261124`; exact saved parent #585 `b82be893d3d360064222fafcce8cef2033cd23a5`, main observed `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own only the invalid role-query option in `apps/web/src/views/CreateInvoice.ordering.test.tsx`, this additive claim, and `docs/handoffs/PR585_NATIVE_TYPECHECK_20261124.md`.
+
+Acceptance: reproduce TS2769 from the unsupported `exact` option, remove only that option after verifying the string accessible-name matcher remains exact, retain every privacy-minimal and stale-result assertion, and run focused native tests plus full web typecheck and scoped typed lint. Preserve all production code, dependencies, schemas and signing/payment behavior. #586, #571, Pay paths and original owner branches remain outside this assignment. Root owns independent review and publication. No merge, deployment or real-funds operation.
+
+---
+
+# Issue 287 invoice metadata minimization
+
+Worker Codex, branch `feature/287-minimal-invoice-sharing`, base `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the metadata choice in the Pages invoice builder, Create Invoice and merchant template issuer, their disclosure copy and tests, plus the v1.1 release matrix entry. Keep #553’s clipboard action and #570’s existing export surfaces with their owners. Acceptance covers normal and minimal signed links, local file export and import, absent descriptive fields, preserved payment terms, stale-result invalidation, and tamper rejection in the existing verifier.
+
+---
+# Browser self-check feature completion (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va`, base main `019d5d18`. Consolidates the
+existing self-check footer: #395 (`1edc524e`), #402 (`3c9b96d0`) and #412 (`087ecf7e`) are all ancestors of main; no
+other open PR or branch touches these paths. Owned paths: `apps/web/src/lib/browserChecks{,.test}.ts`,
+`apps/web/src/components/BrowserChecks{,.test}.tsx`, the `.browser-checks` rules in `apps/web/src/styles/app.css`,
+`app.checks.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`, an additive footer test in
+`apps/web/src/AppLean.test.tsx`, new `apps/web/e2e/browser-checks.spec.ts`, the self-check rows in
+`apps/web/help.html` and `apps/web/privacy.html`, `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry.
+Acceptance: distinct passed/failed/unavailable states, per-check explanations for unsupported capabilities, safe
+handling of absent or throwing browser APIs, same footer in full and lean shells, truthful help/privacy text; web
+unit tests, typecheck, lint and build pass. No change to integrity verification, cryptography, signing, wallets,
+payments, network egress or release gates.
 
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
@@ -4627,7 +4704,6 @@ required; no new local test run or browser execution is claimed.
 - Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
 - Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
 - Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
-
 
 # BUG — deterministic unsupported-locale formatter fallback (2026-11-25 local / 2026-11-26 UTC)
 

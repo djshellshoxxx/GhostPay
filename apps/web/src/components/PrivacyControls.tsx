@@ -18,8 +18,9 @@ export function PrivacyControls(): ReactNode {
   useEffect(() => {
     if (!enabled) return;
     const onKeyDown = (event: KeyboardEvent): void => {
+      // macOS Option layers report a symbol as `key` ('Ó' for H), so the physical H key counts as well.
       if (event.defaultPrevented || event.isComposing || event.repeat || !event.altKey || !event.shiftKey
-        || event.ctrlKey || event.metaKey || event.key.toLowerCase() !== 'h') return;
+        || event.ctrlKey || event.metaKey || (event.key.toLowerCase() !== 'h' && event.code !== 'KeyH')) return;
       event.preventDefault();
       hide();
     };

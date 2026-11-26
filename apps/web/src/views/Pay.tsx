@@ -149,6 +149,11 @@ function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boole
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
 }
 
+/** A private checkout is erased when its view is revoked or replaced: nothing of that invoice may be kept after it. */
+function privateCheckout(parsed: ParsedInvoice): boolean {
+  return parsed.encrypted || parsed.passphraseProtected;
+}
+
 export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -226,7 +231,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // A public reconnect reason can outlive a cleared private invoice without retaining its contents or an outcome claim.
   const [showWalletChangeNotice, setShowWalletChangeNotice] = useState(false);
   // WEB-APP-02: once a payment request may have reached a wallet, revoking the view must not reopen Prepare/Send for the
-  // same open invoice. Only the invoice identity is kept here; its hash, account and outcome stay behind the journal.
+  // same open public invoice. Both holders keep only that invoice (never a private one, which revocation erases); its
+  // hash, account and outcome stay behind the journal.
   const [requestedInvoice, setRequestedInvoice] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const walletRequestedFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
   const [tick, setTick] = useState(0);
@@ -339,6 +345,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
+    // A replaced invoice takes its request marker with it.
+    walletRequestedFor.current = undefined;
+    setRequestedInvoice(undefined);
     // The gas buffer is an opt-in for one invoice; its quote is for that invoice's policy and clock.
     setUseBuffer(false);
     setBufferQuote(undefined);
@@ -416,8 +425,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     app.setFragment(undefined);
   }, [app.setFragment]);
   const walletPrivacy = useWalletPrivacy(wallet, (cause) => {
-    const terminal = phase === 'done' || phase === 'submitted' || paymentMayHaveBeenSent || (parsed !== undefined && walletRequestedFor.current === parsed.invoice);
-    if (terminal && parsed !== undefined) setRequestedInvoice(parsed.invoice);
+    // Only the payment counts. An unverified approval alone leaves the invoice payable (the journal refuses its repeat).
+    if (parsed !== undefined && !privateCheckout(parsed) && (phase === 'done' || (phase === 'submitted' && broadcastKind === 'payment') ||
+        paymentMayHaveBeenSent || walletRequestedFor.current === parsed.invoice)) {
+      setRequestedInvoice(parsed.invoice);
+    }
     flowRevision.current++;
     scheduler.current?.cancel();
     setWallet(undefined);
@@ -968,8 +980,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
           requestedThisAttempt = true;
-          // Synchronous: a wallet event in the same tick must still see that this invoice reached the wallet.
-          walletRequestedFor.current = invoice;
+          // Synchronous: a wallet event in the same tick must still see that this public invoice reached the wallet.
+          if (!privateCheckout(parsed)) walletRequestedFor.current = invoice;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
         if (!isCurrent()) return;
