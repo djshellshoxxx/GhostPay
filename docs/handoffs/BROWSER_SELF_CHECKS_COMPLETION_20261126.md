@@ -29,6 +29,16 @@ No unique unmerged code remained on those branches. No other open PR or branch t
   self-check inputs, the failed/unavailable explanations at 320 CSS pixels, no horizontal overflow and an axe audit.
 - Help (troubleshooting row) and privacy (local-storage probe disclosure) pages describe the checks truthfully.
 
+## Follow-up: IndexedDB probe (same day)
+
+A fourth check opens a uniquely named temporary IndexedDB database (`__ghostpay_capability_<random>`), writes and
+reads one fixed non-secret record, closes it and deletes it. If IndexedDB is missing, null, throws on access, lacks
+`deleteDatabase` or refuses the open, the check reports *unavailable*. A wrong read, a transaction error, a failed
+delete, or no answer within 5 seconds per phase reports *failed*. A connection that arrives after the deadline is
+closed so the pending delete can finish. The vault, tags and reconciliation stores are not opened or changed. The
+privacy page now names the temporary database. The test-only in-memory IndexedDB gains `deleteDatabase` and
+`databases()`.
+
 ## Not changed
 
 Release-hash display (`lib/release.ts`, Home), integrity verification, cryptography, signing, wallet authority,
@@ -36,8 +46,6 @@ payment gating, network egress and release gates are unchanged. The checks still
 
 ## Deeper follow-ups (not in scope)
 
-- An IndexedDB availability check: the vault and encrypted records use IndexedDB, which the current probe does not
-  exercise.
 - Native WebKit/Firefox/mobile-device qualification of the footer (Playwright device projects emulate Chromium only).
 - Native-speaker review of the new reviewed-only explanation strings for es/ja/ar.
 

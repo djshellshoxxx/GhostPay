@@ -1,3 +1,13 @@
+# Browser self-check: IndexedDB availability probe (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `e7e98109` after #703
+merged). Follow-up recorded in `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`. Owned paths: the same
+self-check files as the #703 entry plus `apps/web/src/test/memoryIndexedDb.ts` (additive `deleteDatabase` and
+`databases` for tests only). Acceptance: a fourth local check opens a uniquely named temporary IndexedDB database,
+writes and reads one non-secret record, closes and deletes it; refused or missing IndexedDB reports unavailable, a
+wrong read, failed delete or no response within the deadline reports failed; nothing is left behind; no change to
+any existing IndexedDB store, vault, record format or network behaviour.
+
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
 Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
