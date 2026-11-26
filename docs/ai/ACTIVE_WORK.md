@@ -1,3 +1,10 @@
+# W3 follow-up to #647: one canonical v1 seller keystore vector (2026-11-26 UTC)
+
+Worker: W3 (`ghostpay-backup-60`); branch `claude/w3-keystore-canonical-vector`; base main `1bea3df3` (#647 merged via #684).
+Owned paths: `packages/ux-vault/src/keystore-portable.vectors.testutil.ts` and `keystore-portable.vectors.test.ts` (test-only), this entry.
+Change: the ux-vault known-answer, fuzz and mobile-restore e2e tests read #647's canonical `test-vectors/seller-keystore-v1.json` instead of a second hard-coded v1 file (agreed with #647's author). No production, vector or format change.
+Acceptance: affected unit tests and the device-restore e2e pass in hosted CI on the exact head.
+
 # SEC-1 follow-up — in-app payment-key warnings name the payer (2026-11-25 UTC)
 
 Worker: Claude Code session `ghostpay-15` (the PR #647 session). Branch `claude/sec1-payer-key-warning`, base main
