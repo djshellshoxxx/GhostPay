@@ -44,10 +44,12 @@ export class SyntheticChain {
   }
 
   /** Called by the mock wallet when it broadcasts: the transaction enters the mempool. */
-  submit(hash, params) {
+  submit(hash, params, { nonce: forced } = {}) {
     const from = String(params.from ?? '').toLowerCase();
-    const nonce = this.nonces.get(from) ?? 0;
-    this.nonces.set(from, nonce + 1);
+    const next = this.nonces.get(from) ?? 0;
+    // `forced`: a replacement (speed-up/cancel) reuses the original's nonce.
+    const nonce = forced ?? next;
+    this.nonces.set(from, Math.max(next, nonce + 1));
     this.txs.set(hash.toLowerCase(), { params, state: 'mempool', success: true, nonce });
     this.log.push({ op: 'submit', hash, nonce });
   }

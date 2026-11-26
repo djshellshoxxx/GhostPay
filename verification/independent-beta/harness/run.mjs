@@ -13,7 +13,7 @@ import { SyntheticChain } from './chain.mjs';
 import { Rng } from './prng.mjs';
 import { MockRpc } from './rpc.mjs';
 import { ACCOUNT_A, BROWSER_SHIM, WalletController } from './wallet.mjs';
-import { DISCLOSURE_SHIM, checkRow, clearRow, clickSend, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
+import { DISCLOSURE_SHIM, checkRow, clearRow, clickSend, linkReplacementRow, observe, openAndPrepare, sellerSetup, settingsInitScript, settle } from './app.mjs';
 import { Oracle } from './oracle.mjs';
 import { CONTROLS, NAMED, SUFFIX, generated } from './scenarios.mjs';
 import { serveDist } from './serve.mjs';
@@ -77,6 +77,7 @@ async function runScenario(launcher, origin, scenario, { withSuffix = true } = {
     docEndedAt: new Map(), // `${pageId}:${doc}` -> ms
     deliveredToOpenPage: new Set(),
     reorged: new Set(),
+    linked: { X: new Set(), C: new Set() }, // replacement hashes the user linked to the intent's record
     dialogs: [],
   };
   const wallet = new WalletController({
@@ -341,6 +342,36 @@ async function execStep(world, wallet, oracle, newTab, step, i) {
       const r = await checkRow(page, { hash });
       oracle.checkStatusResult(i, step.intent, hash, r);
       return { ...r, hash };
+    }
+    case 'speedUp': {
+      // The payer's wallet replaces the intent's last broadcast transaction (same account, same nonce, same call),
+      // outside GhostPay: the original disappears from the mempool and the replacement is mined.
+      const h = [...wallet.handoffs].reverse().find((x) => x.intent === step.intent && x.hash !== undefined);
+      const orig = h === undefined ? undefined : world.chain.txs.get(h.hash.toLowerCase());
+      if (orig === undefined || orig.state !== 'mempool') return { skipped: 'no pending original' };
+      world.chain.drop(h.hash);
+      const r = wallet.rng.hash32();
+      world.chain.submit(r, { ...orig.params }, { nonce: orig.nonce });
+      if (step.mine !== false) world.chain.mine([r]);
+      world.linkTarget = { intent: step.intent, original: h.hash, replacement: r, nonce: orig.nonce };
+      return { original: h.hash, replacement: r, nonce: orig.nonce, truth: world.chain.truth(r) };
+    }
+    case 'linkReplacement': {
+      const t = world.linkTarget;
+      if (t === undefined) return { skipped: 'no replacement' };
+      const r = await linkReplacementRow(page, { hash: t.original }, t.replacement);
+      // The app may save the link while it cannot yet show its status (e.g. receipt withheld), so the submitted
+      // replacement always counts as the record's possible evidence; the oracle uses it only for rows that say
+      // "Linked replacement", and judges it against its own canonical truth.
+      world.linked[t.intent].add(t.replacement);
+      return { ...r, original: t.original, replacement: t.replacement };
+    }
+    case 'withholdReceipt': {
+      const t = world.linkTarget;
+      if (t === undefined) return { skipped: 'no replacement' };
+      if (step.on === false) world.rpc.withheldReceipts.delete(t.replacement.toLowerCase());
+      else world.rpc.withheldReceipts.add(t.replacement.toLowerCase());
+      return { withheld: [...world.rpc.withheldReceipts] };
     }
     case 'restart':
     case 'freshProfile':

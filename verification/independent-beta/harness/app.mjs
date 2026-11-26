@@ -218,6 +218,32 @@ export async function checkRow(page, sel) {
   return { checked: true, text: result, cls: classify(result), changed: text !== before, sawBusy };
 }
 
+/**
+ * Deliberate user action: link a replacement (speed-up/cancel) to the row of the recorded hash, by visible text
+ * ("Link a replacement transaction" → "Replacement transaction hash" → "Verify and link"). Returns the row text after.
+ */
+export async function linkReplacementRow(page, sel, replacementHash) {
+  const row = rowLocator(page, sel).first();
+  if ((await row.count()) === 0) return { linked: false, reason: 'no-row' };
+  // The control is a <details> disclosure whose <summary> carries the visible text.
+  const open = row.locator('summary', { hasText: 'Link a replacement transaction' });
+  if (await visible(open, 2_000)) await open.first().click();
+  const input = row.getByLabel('Replacement transaction hash');
+  if (!(await visible(input, 3_000))) return { linked: false, reason: 'no-replacement-field' };
+  await input.fill(replacementHash);
+  const go = row.getByRole('button', { name: 'Verify and link' });
+  if (!(await visible(go, 2_000))) return { linked: false, reason: 'no-link-button' };
+  await go.click();
+  let text = '';
+  for (let i = 0; i < 40; i += 1) {
+    await page.waitForTimeout(250);
+    text = await row.innerText().catch(() => text);
+    if (i >= 4 && (await go.isEnabled().catch(() => true))) break;
+  }
+  const alerts = await page.locator('[role="alert"]').allInnerTexts().catch(() => []);
+  return { linked: /Linked replacement/.test(text), text: text.replace(/\s+/g, ' ').slice(0, 600), alerts };
+}
+
 /** Everything a user (or a forensic look at site data) can see in one tab. */
 export async function observe(page) {
   if (page.isClosed()) return { closed: true };

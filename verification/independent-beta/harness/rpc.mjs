@@ -39,6 +39,7 @@ export class MockRpc {
     this.failAfter = null; // when a number: answer that many more requests, then go down (mid-scan fault)
     this.calls = []; // { method, at, mode }
     this.unknownMethods = new Set();
+    this.withheldReceipts = new Set(); // fault: hashes whose receipt the provider withholds although it reports inclusion
     this.blockedOrigins = []; // every off-origin request the guard refused
   }
 
@@ -67,6 +68,7 @@ export class MockRpc {
       case 'eth_getTransactionByHash':
         return c.txObject(params[0]);
       case 'eth_getTransactionReceipt':
+        if (this.withheldReceipts.has(String(params[0]).toLowerCase())) return null;
         return c.receiptObject(params[0]);
       case 'eth_getTransactionCount':
         return hex(c.nonceOf(params[0], params[1]));

@@ -381,6 +381,27 @@ test('#691: the record of the connected account itself must still be shown (stri
   assert.equal(ok.violations.length, 0);
 });
 
+// ---- Linked replacement (probe N14/N15): a "Linked replacement … included" claim is judged against the replacement.
+test('linked replacement: inclusion claim holds only if the linked replacement is canonical', () => {
+  for (const mined of [true, false]) {
+    const w = fakeWorld();
+    w.intentOfTab = { A: 'X', B: null };
+    w.linked = { X: new Set(), C: new Set() };
+    const R = '0x' + 'ab'.repeat(32);
+    w.wallet.handoffs.push(handoff(1, 'X', { hash: HX, repliedAt: Date.now() - 10_000, pageId: 1, doc: 1 }));
+    w.deliveredToOpenPage.add(HX);
+    w.hashes.X.add(HX);
+    w.chain.submit(HX, { from: '0x5555' });
+    w.chain.drop(HX);
+    w.chain.submit(R, { from: '0x5555' }, { nonce: 0 });
+    if (mined) w.chain.mine([R]);
+    w.linked.X.add(R);
+    const o = new Oracle(w);
+    o.checkStatusResult(0, 'X', HX, { checked: true, text: `Linked replacement transaction. Included in a canonical block. Replacement transaction hash: ${R}`, cls: ['success'] });
+    assert.equal(o.violations.length, mined ? 0 : 1, `mined=${mined}`);
+  }
+});
+
 // ---- Follow-up review gaps G3–G5 (PR #665, 2026-11-26 00:02 UTC, head bb30044c).
 
 test('G3: an explicitly displayed unrelated hash fails I1 even when the known X hash is canonical at that block', () => {

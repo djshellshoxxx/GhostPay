@@ -181,6 +181,42 @@ export const NAMED = [
       { op: 'send', tab: 'A', behaviour: 'ok' },
     ],
   },
+  {
+    name: 'N14-linked-replacement-receipt-withheld',
+    why: 'R14/R3/R12: the wallet replaces X (same account, nonce, call); the payer links the replacement; the provider then reports it included but withholds its receipt. Uncertainty must stay uncertainty (no success, no retry); the status should say verification is incomplete rather than that an unidentified transaction used the nonce (#665 comment 7196313386)',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+      { op: 'speedUp', intent: 'X' },
+      { op: 'mine' },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'check', tab: 'A', intent: 'X' }, // control: original gone, nonce used, nothing linked yet
+      { op: 'linkReplacement', tab: 'A', intent: 'X' },
+      { op: 'check', tab: 'A', intent: 'X' }, // control: linked, receipt available
+      { op: 'withholdReceipt', on: true },
+      { op: 'check', tab: 'A', intent: 'X' }, // case under test
+      { op: 'reload', tab: 'A' },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'check', tab: 'A', intent: 'X' }, // case under test after reload
+      { op: 'withholdReceipt', on: false },
+      { op: 'check', tab: 'A', intent: 'X' }, // control: receipt back
+    ],
+  },
+  {
+    name: 'N15-link-replacement-while-receipt-withheld',
+    why: 'control for N14: a replacement whose receipt the provider withholds at link time must not be linked as verified',
+    steps: [
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'send', tab: 'A', behaviour: 'ok' },
+      { op: 'speedUp', intent: 'X' },
+      { op: 'mine' },
+      { op: 'withholdReceipt', on: true },
+      { op: 'open', tab: 'A', intent: 'X' },
+      { op: 'linkReplacement', tab: 'A', intent: 'X' },
+      { op: 'check', tab: 'A', intent: 'X' },
+      { op: 'withholdReceipt', on: false },
+    ],
+  },
 ];
 
 /**

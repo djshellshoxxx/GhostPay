@@ -99,7 +99,14 @@ export class Oracle {
     if (result.cls.length === 0) this.notes.push({ step: stepIndex, note: 'status check produced no classifiable text (harness note, audit finding 1)', intent, hash, text: result.text });
     const truth = this.w.chain.truth(hash);
     const success = result.cls.includes('success');
-    if (success && !(truth.state === 'mined' && truth.success)) {
+    // A replacement the user linked to this record (speed-up/cancel, same account and nonce) is the record's evidence
+    // too: a success claim that names it is judged against its truth.
+    const linked = [...(this.w.linked?.[intent] ?? [])].filter((r) => /Linked replacement/.test(result.text));
+    const linkedHolds = linked.some((r) => {
+      const t = this.w.chain.truth(r);
+      return t.state === 'mined' && t.success;
+    });
+    if (success && !(truth.state === 'mined' && truth.success) && !linkedHolds) {
       this.violation(truth.state === 'mempool' && this.w.reorged.has(hash) ? 'I8' : 'I1', stepIndex, { intent, hash, shown: result.text, truth });
     }
     if (result.cls.includes('reverted') && !(truth.state === 'mined' && !truth.success)) {
@@ -177,9 +184,10 @@ export class Oracle {
       // Strict right after an explicit check in this tab or a fresh render of it; otherwise a stale row is A1.
       for (const row of o.journal) {
         if (!classify(row).includes('success')) continue;
-        const known = [...this.w.hashes.X, ...this.w.hashes.C];
+        const linked = /Linked replacement/.test(row) ? [...(this.w.linked?.X ?? []), ...(this.w.linked?.C ?? [])] : [];
+        const known = [...this.w.hashes.X, ...this.w.hashes.C, ...linked];
         const ref = referencedHashes(row, known);
-        const shown = [...ref.full, ...ref.masked];
+        const shown = [...new Set([...ref.full, ...ref.masked, ...linked])];
         const holds = shown.length > 0 && shown.some((h) => {
           const t = this.w.chain.truth(h);
           return t.state === 'mined' && t.success;
