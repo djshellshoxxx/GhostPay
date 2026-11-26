@@ -37,7 +37,8 @@ reads one fixed non-secret record, closes it and deletes it. If IndexedDB is mis
 delete, or no answer within 5 seconds per phase reports *failed*. A connection that arrives after the deadline is
 closed so the pending delete can finish. The vault, tags and reconciliation stores are not opened or changed. The
 privacy page now names the temporary database. The test-only in-memory IndexedDB gains `deleteDatabase` and
-`databases()`.
+`databases()`. A separate AI-assisted subagent review of `e7e98109...0bc71170` found nothing blocking. As it
+suggested, tests now also cover closing a connection that arrives after the deadline and the delete-phase deadline.
 
 ## Not changed
 

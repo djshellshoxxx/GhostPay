@@ -117,6 +117,8 @@ function withDeadline<T>(work: Promise<T>, fallback: T): Promise<T> {
   return Promise.race([work, deadline]).finally(() => { clearTimeout(timer); });
 }
 
+// onblocked is not handled: the probe closes its only connection to a uniquely named database before deleting it, so a
+// blocked delete cannot occur; if it ever did, the delete deadline reports the check as failed.
 function settled(request: IDBRequest): Promise<boolean> {
   return new Promise((resolve) => {
     request.onsuccess = () => { resolve(true); };

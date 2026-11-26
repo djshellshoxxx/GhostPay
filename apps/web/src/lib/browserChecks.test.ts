@@ -20,7 +20,7 @@ type Handler = (() => void) | null;
 interface FakeRequest { result?: unknown; error?: unknown; onsuccess?: Handler; onerror?: Handler; onupgradeneeded?: Handler; onblocked?: Handler }
 
 /** Scripted IndexedDB for failure modes the in-memory test database cannot produce. */
-function scriptedIndexedDb(mode: { open?: 'throws' | 'errors' | 'hangs'; corruptRead?: boolean; deleteFails?: boolean } = {}) {
+function scriptedIndexedDb(mode: { open?: 'throws' | 'errors' | 'hangs' | 'late'; corruptRead?: boolean; deleteFails?: boolean; deleteHangs?: boolean } = {}) {
   const later = (run: () => void): void => { setTimeout(run, 0); };
   const deleted: string[] = [];
   let closed = 0;
@@ -29,7 +29,9 @@ function scriptedIndexedDb(mode: { open?: 'throws' | 'errors' | 'hangs'; corrupt
       if (mode.open === 'throws') throw new DOMException('Synthetic refusal', 'SecurityError');
       const request: FakeRequest = {};
       if (mode.open === 'hangs') return request;
-      later(() => {
+      // 'late' answers only after the probe's 5 s deadline has passed.
+      const answer = mode.open === 'late' ? (run: () => void): void => { setTimeout(run, 6_000); } : later;
+      answer(() => {
         if (mode.open === 'errors') { request.error = new DOMException('Synthetic', 'InvalidStateError'); request.onerror?.(); return; }
         let stored: unknown;
         request.result = {
@@ -56,6 +58,7 @@ function scriptedIndexedDb(mode: { open?: 'throws' | 'errors' | 'hangs'; corrupt
     deleteDatabase(name: string): FakeRequest {
       deleted.push(name);
       const request: FakeRequest = {};
+      if (mode.deleteHangs === true) return request;
       later(() => { if (mode.deleteFails === true) request.onerror?.(); else request.onsuccess?.(); });
       return request;
     },
@@ -259,5 +262,28 @@ describe('local-only browser capability checks', () => {
     await vi.advanceTimersByTimeAsync(5_100);
     expect(statusOf(await pending, 'indexeddb')).toBe('fail');
     expect(fake.deleted).toEqual(['probe']);
+  });
+
+  it('closes a connection that arrives after the deadline so the queued delete can finish', async () => {
+    vi.useFakeTimers();
+    const fake = scriptedIndexedDb({ open: 'late' });
+    const pending = runBrowserChecks({ secureContext: true, indexedDb: fake.indexedDb, probeKey: 'probe' });
+    await vi.advanceTimersByTimeAsync(5_100);
+    expect(statusOf(await pending, 'indexeddb')).toBe('fail');
+    expect(fake.deleted).toEqual(['probe']);
+    expect(fake.closed()).toBe(0);
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(fake.closed()).toBe(1);
+  });
+
+  it('fails IndexedDB when deleting the temporary database never answers, after a bounded wait', async () => {
+    vi.useFakeTimers();
+    const fake = scriptedIndexedDb({ deleteHangs: true });
+    const pending = runBrowserChecks({ secureContext: true, indexedDb: fake.indexedDb, probeKey: 'probe' });
+    await vi.advanceTimersByTimeAsync(100);
+    expect(fake.deleted).toEqual(['probe']);
+    expect(fake.closed()).toBe(1);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(statusOf(await pending, 'indexeddb')).toBe('fail');
   });
 });
