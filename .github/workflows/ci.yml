@@ -19,7 +19,7 @@ jobs:
   # Docs-only pull requests (every changed file under docs/ or a *.md) skip the heavy jobs. Anything else, and every
   # non-PR run, runs everything. `secrets-and-egress` never depends on this job.
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -61,7 +61,7 @@ jobs:
   ts-typecheck:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -75,7 +75,7 @@ jobs:
   ts-lint:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -89,7 +89,7 @@ jobs:
   ts-check:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -118,7 +118,7 @@ jobs:
   ts-test:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: ${{ matrix.group == 'confidential-contracts' && 60 || 30 }}
     permissions:
       contents: read
@@ -199,7 +199,7 @@ jobs:
   ts-test-relayer:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -227,7 +227,7 @@ jobs:
   typescript:
     if: always()
     needs: [changes, ts-typecheck, ts-lint, ts-check, ts-test, ts-test-relayer]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
     steps:
@@ -243,7 +243,7 @@ jobs:
   e2e:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -345,7 +345,7 @@ jobs:
   ghostid-native:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
@@ -427,7 +427,7 @@ jobs:
   lean-candidate:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -452,7 +452,7 @@ jobs:
   contracts-test:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -475,7 +475,7 @@ jobs:
   contracts-coverage:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -501,7 +501,7 @@ jobs:
   contracts-static:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -522,7 +522,7 @@ jobs:
   contracts-slither:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -556,7 +556,7 @@ jobs:
   contracts-extra:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
@@ -609,7 +609,7 @@ jobs:
   contracts:
     if: always()
     needs: [changes, contracts-test, contracts-coverage, contracts-static, contracts-slither, contracts-extra]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
     steps:
@@ -623,7 +623,7 @@ jobs:
           done
 
   secrets-and-egress:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
