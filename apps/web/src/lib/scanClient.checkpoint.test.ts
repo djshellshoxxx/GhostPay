@@ -863,7 +863,8 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     let release!: () => void;
     const gate = new Promise<void>((resolve) => { release = resolve; });
     const slow = hooked(chainWith(HEAD, f.logs), { getLogs: async (q) => { if (q.fromBlock === 0n && !entered) { entered = true; await gate; } } });
-    const a = attempt(f, { client: slow, checkpoints: store.store });
+    const pages: bigint[] = [];
+    const a = attempt(f, { client: slow, checkpoints: store.store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
     await vi.waitFor(() => expect(entered).toBe(true));
     // Another scan writes an older position meanwhile (for example after it rolled back over a reorg).
     const foreign = cursorAt(100);
@@ -871,10 +872,28 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     release();
     const out = await a;
     expect(out.error).toBeUndefined();
-    // The run still scanned everything and reported every payment; it only stopped writing the slot.
+    // The run still scanned everything, reported every payment and handed every page to onPageMatches (the durable
+    // invoice record); it only stopped writing the checkpoint slot.
     expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
     expect(savedCalls(store)).toEqual([foreign]);
     expect(store.current).toEqual(foreign);
+  });
+
+  it('a run yields to another scan\'s clear: the slot stays empty and every page still reaches onPageMatches', async () => {
+    const f = fixture();
+    const store = spyStore();
+    let cleared = false;
+    // Another tab clears the slot (Start over, or its own reorg reset) while this run fetches page 2.
+    const client = hooked(chainWith(HEAD, f.logs), { getLogs: (q) => { if (q.fromBlock === 5000n && !cleared) { cleared = true; store.store.clear(CHAIN_ID, KEY); } } });
+    const pages: bigint[] = [];
+    const out = await attempt(f, { client, checkpoints: store.store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
+    expect(out.error).toBeUndefined();
+    expect(cleared).toBe(true);
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
+    expect(savedCalls(store)).toEqual([P1]);
+    expect(store.current).toBeUndefined();
   });
 
   it('an owning run keeps saving page after page when no other scan writes (each save expects its previous one)', async () => {

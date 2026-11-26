@@ -89,7 +89,8 @@ export interface CheckpointStore {
    * Stores the resume cursor. Without `expected` the write is forward-only: a cursor older than the stored one is refused.
    * With `expected` (the cursor the writer last read or wrote, `null` for none) it is a compare-and-swap: the write happens
    * only while the slot still holds exactly that cursor. The slot's owner can therefore move it backward (reorg rollback,
-   * claim replay, a deliberate restart), while a scan that lost the slot to another scan cannot overwrite it.
+   * claim replay, a deliberate restart), while a scan that lost the slot to another scan cannot overwrite it. A wrapper must
+   * forward `expected`: dropping it turns runScan's rewinds into forward-only saves, which this store refuses.
    */
   save(chainId: number, keyId: string, cursor: ScanCursor, expected?: ScanCursor | null): void;
   clear(chainId: number, keyId: string): void;
@@ -238,10 +239,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let batchId = 0;
   let canSaveCheckpoint = true;
   // PRIV-06 F1: the checkpoint this run last read or wrote. Another scan of the same keys (a second tab, or an older run
-  // that outlives a newer one) may write the slot meanwhile. This run then yields the slot for the rest of the run instead
-  // of overwriting it: the other writer's cursor stands whether it is ahead (a newer scan) or behind (its own rollback).
-  // Read synchronously here, before the first await, so a scan started later cannot be mistaken for this run's own write.
+  // that outlives a newer one) may write or clear the slot meanwhile. This run then yields the slot for the rest of the run
+  // instead of overwriting it: the other writer's cursor (or its clear) stands whether it is ahead (a newer scan) or behind
+  // (its own rollback). Yielding stops only the checkpoint write; the run still corroborates anchors, hands every page to
+  // onPageMatches and reports every match. Read synchronously here, before the first await, so a scan started later cannot
+  // be mistaken for this run's own write.
   let ownedCheckpoint = p.checkpoints === undefined ? undefined : loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+  let checkpointYielded = false;
   let retryHeight: bigint | undefined;
   const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
   const uncertainFrom = (from: bigint, head: bigint): bigint => {
@@ -561,16 +565,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }
-        if (saved !== undefined) {
-          // Re-read and write in one synchronous step. A store that does not round-trip (reads undefined) keeps saving.
+        if (saved !== undefined && !checkpointYielded) {
+          // Re-read, compare and write in one synchronous step. A store that does not round-trip reads undefined both here
+          // and after its own writes, so it keeps saving.
           const stored = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
-          if (stored !== undefined && !sameCursor(stored, ownedCheckpoint)) {
-            canSaveCheckpoint = false;
+          if (!sameCursor(stored, ownedCheckpoint)) {
+            checkpointYielded = true;
           } else {
             p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor, stored ?? null);
-            // Own what the slot holds now, not what was asked: a write lost to a full or failing storage leaves the old
-            // cursor, which this run may then retry at its next page instead of mistaking it for a foreign write.
-            ownedCheckpoint = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+            // Own what the slot holds now: the saved cursor, or the unchanged one when the write was lost to a full or
+            // failing storage (retried at the next page). Anything else is another writer's, so yield to it.
+            const after = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+            if (sameCursor(after, saved as ScanCursor) || sameCursor(after, stored)) ownedCheckpoint = after;
+            else checkpointYielded = true;
           }
         }
       }
