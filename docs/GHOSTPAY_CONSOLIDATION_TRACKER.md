@@ -91,6 +91,33 @@ Method: fetch every open head; files changed since its merge-base whose blob dif
 main or their only unique code is already on main in an equivalent or stricter form; #616/#617 additionally carry an
 owner HOLD whose shared-core code is already on main (`seal.ts`, `qrKinds.ts` strict `=== true`).
 
+## 4a. Re-classification at main `e7e98109` (2026-11-26 11:30 UTC, 176 open PRs)
+
+[OPEN_PR_CLASSIFICATION.tsv](consolidation/cloud-lead-20261125/OPEN_PR_CLASSIFICATION.tsv) now holds this snapshot. The
+`32ae3977` snapshot remains in git history at `78e99aae`. For each PR the scan computed:
+
+- **ancestry** (`git merge-base --is-ancestor`);
+- **patch-equivalence** of its non-merge commits (`git cherry`);
+- **files differing from main**, and how many of those code files main also changed since the merge base (drift).
+
+Explicit rules were applied before the mechanical ones. They cover the owner's 2026-11-26 decisions (section 8b), the stop-work scope, owner holds, named successor PRs and the semantic triage of 2026-11-25.
+
+| Class | Count | PRs |
+|---|---|---|
+| E Already on main | 6 | #250 #384 #405 #409 #416 #419. The residual code is on main in an equivalent or stricter form (semantic triage); none is a plain ancestor |
+| D Superseded / records | 51 | Named successors: #549→#668/#687, #569→#708, #582→#711, #591/#604→#717, #622→#707, #669→#704, #254→#704, #271/#272→FC merges, #300/#355→#708, #293/#297→#687, #372→#677/#679/#708. The rest are documentation/census records or history retained in descendants (see TSV) |
+| C Unreviewed unique source | 60 | 59 are historical compositions more than 500 commits behind main (2026-11-18..21), e.g. #238 #262 #264 #278 #307. One recent: #643 metadata-hardening (idle since 11-25 07:25) |
+| F Useful individual change | 1 | #442 (diagnostic confidential-contracts test) |
+| G Out of beta scope / declined | 28 | F10/F05 future-only, Tor hosting, dependency trains, CI agents, audit tooling, owner-declined #587/#383/#609/#544/#558/#559 |
+| H Owner HOLD | 4 | #371 #592 #614 #621 |
+| J Active (updated since 11-25 11:00 UTC) | 26 | #718 train (includes #631/#637), #704–#717, #708 masking, #665 W5, #678 P13, #653, #639, #380, #220 |
+
+Recommendations, none of which this worker has executed:
+
+1. Close the 6 E PRs with an equivalence note. Unlike the 32 closed earlier, these are not plain ancestors, so owner OK first.
+2. Close the D PRs that name a successor once that successor merges: #549, #569, #582, #591, #604, #622, #669 and #254.
+3. Treat the 59 historical C compositions as archival. Their content reached main in other forms through later consolidations (#611, #620, #635, #684). Any residual should be recovered only on a concrete gap, never by merging a composition.
+
 ## 5. Feature inventory (in-scope, beta)
 
 | Feature | Source PRs/branches | Implementation | Integration | Verification | Est. % | Remaining | Ready |
