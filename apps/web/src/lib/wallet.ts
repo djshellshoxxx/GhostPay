@@ -580,7 +580,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       ...(attemptOptions?.lockManager === undefined ? {} : { lockManager: attemptOptions.lockManager }),
       ...(attemptOptions?.journalLockHeld === true ? { lockHeld: true } : {}),
     };
-    const box: { started?: StartedRequest; abandoned?: boolean; unsent?: WalletAttempt } = {};
+    const box: { started?: StartedRequest; abandoned?: boolean; begun?: WalletAttempt } = {};
     const refuseIfAbandoned = (): void => {
       // A lock manager that settles before running its callback must never start a request this call already refused (QA-1).
       if (box.abandoned === true) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
@@ -593,20 +593,24 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
           refuseIfAbandoned();
           check();
           attemptOptions?.beforeAttemptStart?.(input.key, store);
-          return beginAttempt(input, store);
+          // Kept before the commit: if the commit lands but the mirror write after it, or the authority check in invoke(),
+          // then fails, this record was never sent (REV-I5, QA-5). A refused duplicate throws first and is never kept.
+          box.begun = beginAttempt(input, store);
+          return box.begun;
         }, access, (attempt) => {
           refuseIfAbandoned();
           // invoke() throws only from its authority check, before the provider is called: the committed record is unsent.
-          try { box.started = invoke(attempt); } catch (e) { box.unsent = attempt; throw e; }
+          box.started = invoke(attempt);
         });
       } catch (e) {
         if (box.started !== undefined) { /* The provider was invoked: a failing lock wrapper cannot erase the request. */ }
         else {
           box.abandoned = true;
-          const unsent = box.unsent;
+          const unsent = box.begun;
           if (unsent !== undefined) {
-            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5). If removal
-            // fails the record stays: refusing a retry is the safe direction.
+            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5, REV-I5). The
+            // removal matches this record's id, `unknown` status and action, so a commit that never landed, or another
+            // tab's record for the same key, is left alone. If removal fails the record stays: refusing a retry is safe.
             try { await withAttemptJournal((store) => { removeUnsentAttempt(unsent, store); }, access); } catch { /* kept */ }
           }
           throw e;
