@@ -70,24 +70,44 @@ export class SyntheticChain {
     }
     // Logs are emitted per canonical inclusion and are discarded with the block on a reorg (re-emitted if re-mined).
     const logs = [];
+    const timestamp = this.clock + 2;
     included.forEach((h, index) => {
       const tx = this.txs.get(h);
       tx.logs = [];
+      delete tx.revertReason;
       if (!tx.success || this.executor === null) return;
-      for (const l of this.executor(tx.params, { blockNumber: this.head, index, hash: h }) ?? []) {
+      const out = this.executor(tx.params, { blockNumber: this.head, index, hash: h, timestamp });
+      if (out !== null && !Array.isArray(out) && out.revert !== undefined) {
+        // The contract model reverted: the transaction is mined with status 0x0 and emits nothing.
+        tx.success = false;
+        tx.revertReason = out.revert;
+        return;
+      }
+      for (const l of out ?? []) {
         const entry = { ...l, address: String(l.address).toLowerCase(), txHash: h, txIndex: index, logIndex: logs.length };
         logs.push(entry);
         tx.logs.push(entry);
       }
     });
-    this.clock += 2;
-    this.blocks.set(this.head, { fork: this.fork, txs: included, logs, timestamp: this.clock });
+    this.clock = timestamp;
+    this.blocks.set(this.head, { fork: this.fork, txs: included, logs, timestamp });
     this.log.push({ op: 'mine', block: this.head, included, success });
     return this.head;
   }
 
   advance(n) {
     for (let i = 0; i < n; i += 1) this.mine([]);
+  }
+
+  /** Independent deep copy (used to give a stale or lying RPC a frozen view of an older fork). */
+  clone() {
+    const c = new SyntheticChain({ startTime: this.startTime });
+    Object.assign(c, { clock: this.clock, fork: this.fork, head: this.head, executor: this.executor });
+    c.nonces = new Map(this.nonces);
+    c.blocks = new Map([...this.blocks].map(([n, b]) => [n, { ...b, txs: [...b.txs], logs: b.logs.map((l) => ({ ...l, topics: [...l.topics] })) }]));
+    c.txs = new Map([...this.txs].map(([h, t]) => [h, { ...t, logs: (t.logs ?? []).map((l) => ({ ...l, topics: [...l.topics] })) }]));
+    c.log = [];
+    return c;
   }
 
   /** Move chain time forward (the next block is at least `seconds` later). Bounded to one day per call. */
@@ -135,7 +155,7 @@ export class SyntheticChain {
     const tx = this.txs.get(String(hash).toLowerCase());
     if (tx === undefined) return { state: 'unknown' };
     if (tx.state !== 'mined') return { state: tx.state };
-    return { state: 'mined', success: tx.success, block: tx.block, confirmations: this.head - tx.block + 1 };
+    return { state: 'mined', success: tx.success, block: tx.block, confirmations: this.head - tx.block + 1, timestamp: this.timestampOf(tx.block), revertReason: tx.revertReason };
   }
 
   blockObject(number) {

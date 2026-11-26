@@ -32,6 +32,7 @@ export class MockRpc {
   constructor(chain) {
     this.chain = chain;
     this.mode = 'up'; // 'up' | 'down'
+    this.failAfter = null; // when a number: answer that many more requests, then go down (mid-scan fault)
     this.calls = []; // { method, at, mode }
     this.unknownMethods = new Set();
     this.blockedOrigins = []; // every off-origin request the guard refused
@@ -115,6 +116,12 @@ export class MockRpc {
     await context.route(`${RPC_URL}/**`, async (route) => {
       const req = route.request();
       if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+      if (this.failAfter !== null) {
+        if (this.failAfter <= 0) {
+          this.mode = 'down';
+          this.failAfter = null;
+        } else this.failAfter -= 1;
+      }
       if (this.mode === 'down') {
         this.calls.push({ method: '(refused: rpc down)', at: Date.now(), mode: 'down' });
         return route.abort('connectionreset');

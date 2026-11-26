@@ -466,3 +466,74 @@ test('chain time: monotonic canonical timestamps, warp moves time forward, reorg
   c.mine([]);
   assert.ok(parseInt(c.blockObject(c.head).timestamp, 16) >= t1 + 3600);
 });
+
+// ---- Milestone 2: router contract model (docs/CONTRACTS_SPEC.md §1).
+import { ANNOUNCEMENT_TOPIC, ANNOUNCER, FEE_COLLECTED_TOPIC, decodePayNative, routerExecutor, withDeadline } from './router-model.mjs';
+import { encodeFunctionData as encFn } from 'viem';
+
+const STEALTH = '0x' + '9a'.repeat(20);
+const EPH = '0x02' + '11'.repeat(32);
+const metaFor = (net) => '0x07eeeeeeee' + 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' + net.toString(16).padStart(64, '0');
+const GROSS = 500_000_000_000_000_000n;
+const NET = GROSS - (GROSS * 25n) / 10_000n;
+const payData = (deadline, net = NET) => encFn({
+  abi: [{ type: 'function', name: 'payNative', stateMutability: 'payable', inputs: [{ type: 'address' }, { type: 'uint256' }, { type: 'uint256' }, { type: 'bytes' }, { type: 'bytes' }], outputs: [] }],
+  functionName: 'payNative', args: [STEALTH, net, BigInt(deadline), EPH, metaFor(net)],
+});
+
+test('router model: valid payNative emits FeeCollected then Announcement(1, stealth, router) with eph/meta', () => {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  chain.executor = routerExecutor;
+  const h = '0x' + 'ab'.repeat(32);
+  chain.submit(h, { from: '0x' + '77'.repeat(20), to: '0x1111111111111111111111111111111111111111', value: '0x' + GROSS.toString(16), data: payData(1_900_000_000) });
+  chain.mine([h]);
+  const rc = chain.receiptObject(h);
+  assert.equal(rc.status, '0x1');
+  assert.equal(rc.logs.length, 2);
+  assert.equal(rc.logs[0].topics[0], FEE_COLLECTED_TOPIC);
+  assert.equal(BigInt(rc.logs[0].data), GROSS - NET);
+  assert.equal(rc.logs[1].address, ANNOUNCER);
+  assert.deepEqual(rc.logs[1].topics, [ANNOUNCEMENT_TOPIC, '0x' + '1'.padStart(64, '0'), '0x' + STEALTH.slice(2).padStart(64, '0'), '0x' + '11'.repeat(20).padStart(64, '0')]);
+  assert.equal(chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', address: ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC] }).length, 1);
+});
+
+test('router model: expired deadline, wrong net and bad metadata revert with no logs', () => {
+  for (const [data, reason] of [
+    [payData(1_700_000_000), 'Expired'],
+    [payData(1_900_000_000, NET + 1n), 'SlippageExceeded'],
+  ]) {
+    const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+    chain.executor = routerExecutor;
+    const h = '0x' + 'cd'.repeat(32);
+    chain.submit(h, { from: '0x' + '77'.repeat(20), to: '0x1111111111111111111111111111111111111111', value: '0x' + GROSS.toString(16), data });
+    chain.mine([h]);
+    assert.equal(chain.receiptObject(h).status, '0x0', reason);
+    assert.equal(chain.truth(h).revertReason, reason);
+    assert.equal(chain.receiptObject(h).logs.length, 0);
+  }
+});
+
+test('router model: withDeadline keeps every field but the deadline', () => {
+  const late = withDeadline(payData(1_800_000_100), 1_999_999_999);
+  const a = decodePayNative(payData(1_800_000_100));
+  const b = decodePayNative(late);
+  assert.equal(b.deadline, 1_999_999_999n);
+  assert.deepEqual({ ...b, deadline: 0n }, { ...a, deadline: 0n });
+});
+
+test('chain clone is independent: reorging the original leaves the frozen view (stale-RPC control) unchanged', () => {
+  const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+  chain.executor = routerExecutor;
+  const h = '0x' + 'ef'.repeat(32);
+  chain.submit(h, { from: '0x' + '77'.repeat(20), to: '0x1111111111111111111111111111111111111111', value: '0x' + GROSS.toString(16), data: payData(1_900_000_000) });
+  chain.mine([h]);
+  chain.advance(5);
+  const frozen = chain.clone();
+  chain.reorg(8);
+  chain.drop(h);
+  assert.equal(chain.truth(h).state, 'dropped');
+  assert.equal(frozen.truth(h).state, 'mined');
+  assert.equal(frozen.receiptObject(h).logs.length, 2);
+  assert.equal(frozen.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: [ANNOUNCEMENT_TOPIC] }).length, 1);
+  assert.equal(chain.getLogs({ fromBlock: '0x0', toBlock: 'latest', topics: [ANNOUNCEMENT_TOPIC] }).length, 0);
+});
