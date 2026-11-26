@@ -30,6 +30,7 @@ Sources read: SECURITY.md, docs/user/privacy-limits.md, docs/adr/ADR-LOG.md, doc
 - All router entry points nonReentrant; deadline checked (block.timestamp <= deadline); ephemeral key 33 bytes, prefix 02/03; metadata exactly 57 bytes with fixed selector/marker/asset/net layout. docs/CONTRACTS_SPEC.md s1
 - ERC-20 path: SafeERC20 + exact balance-delta checks on stealth and fee recipient (rejects fee-on-transfer/rebasing); router holds zero tokens (invariant test). docs/CONTRACTS_SPEC.md s1, s5
 - Native path: both calls must succeed; assembly call copies no return data (L-01 fixed); gas buffer carries no fee. docs/CONTRACTS_SPEC.md s1; packages/contracts/README.md (Audit follow-ups)
+- `payERC20WithPermitAndBuffer` (ADR-0030, not deployed): buffer bounds (`BufferRequired`, `BufferTooLarge`) checked before the permit so a refused call consumes no nonce; then the `payERC20WithPermit` and `payERC20WithBuffer` rules unchanged; signature as a `PermitSig` struct. docs/CONTRACTS_SPEC.md s1; docs/adr/ADR-0030-router-permit-and-buffer.md
 - Router announces SCHEME_ID=1 only; policy router announces 0x47500002. No invoice id on-chain; events carry no payer/stealth/invoice fields. docs/CONTRACTS_SPEC.md; ADR-0003
 - Standard ERC-5564 announcer (0x55649E01...4564) and ERC-6538 registry used as deployed, never re-implemented. docs/CONTRACTS_SPEC.md
 - Sweep relayer: EIP-712 domain {GhostPaySweepRelayer, "1", chainId, verifyingContract}; typehash over token, owner, destination, feeTo, amount, fee, deadline, nonce. docs/CONTRACTS_SPEC.md s2
