@@ -202,6 +202,28 @@ const returnedAttempts = new WeakMap<AttemptStorage, Map<string, ReturnedAttempt
 function notifyAttempts(): void {
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
 }
+// Closing the tab loses an unsaved returned hash. Ask before unload on every route, without revealing which account
+// or transaction it belongs to: the browser shows only its generic leave-page prompt.
+let unloadGuarded = false;
+function guardUnload(event: BeforeUnloadEvent): void {
+  event.preventDefault();
+  event.returnValue = true;
+}
+function syncUnloadGuard(): void {
+  if (typeof window === 'undefined') return;
+  let pending: boolean;
+  try {
+    const store = browserAttemptStorage();
+    pending = store !== undefined && (returnedAttempts.get(store)?.size ?? 0) > 0;
+  } catch { pending = false; } // Without browser storage no browser-store outcome can be retained.
+  if (pending === unloadGuarded) return;
+  // Best effort: an embedding without event targets loses only the prompt, never the retained hash or its write.
+  try {
+    if (pending) window.addEventListener('beforeunload', guardUnload);
+    else window.removeEventListener('beforeunload', guardUnload);
+    unloadGuarded = pending;
+  } catch { /* The in-page unsaved notice still states the open-tab limitation. */ }
+}
 /** Hashes awaiting a complete durable write; usable for owner-scoped recovery even when the durable read fails. */
 export function readReturnedAttempts(storage?: AttemptStorage): readonly WalletAttempt[] {
   const store = storage ?? browserAttemptStorage();
@@ -215,6 +237,7 @@ function persistReturnedAttempt(storage: AttemptStorage, key: string, entry: Ret
     await withAttemptJournal((store) => { finishAttempt(entry.record, entry.record.hash!, store); }, { ...access, unboundedWait: true }, () => { committed = true; });
     if (!committed) return fail();
     if (returnedAttempts.get(storage)?.get(key) === entry) returnedAttempts.get(storage)?.delete(key);
+    syncUnloadGuard();
     notifyAttempts();
   }).finally(() => { entry.inFlight = undefined; });
   entry.inFlight = pending;
@@ -241,6 +264,7 @@ export function finishReturnedAttempt(
     inFlight: undefined,
   };
   entries.set(key, entry);
+  syncUnloadGuard();
   const pending = persistReturnedAttempt(storage, key, entry, access);
   notifyAttempts();
   return pending;
@@ -249,8 +273,11 @@ export function finishReturnedAttempt(
 export async function retryReturnedAttempts(storage?: AttemptStorage): Promise<void> {
   const store = storage ?? browserAttemptStorage();
   if (store === undefined) return;
-  await Promise.all([...(returnedAttempts.get(store)?.entries() ?? [])].map(([key, entry]) =>
+  // Settle every write before reporting: an early rejection would end the caller's retry while others still run.
+  const results = await Promise.allSettled([...(returnedAttempts.get(store)?.entries() ?? [])].map(([key, entry]) =>
     persistReturnedAttempt(store, key, entry, entry.retryAccess)));
+  const failed = results.find((result) => result.status === 'rejected');
+  if (failed !== undefined) throw failed.reason;
 }
 
 /**

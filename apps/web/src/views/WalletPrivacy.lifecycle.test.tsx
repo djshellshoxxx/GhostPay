@@ -396,4 +396,45 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     expect(sends).toBe(1);
   });
 
+  // WEB-APP-02: a payment that may have reached the wallet stays terminal for the same open public invoice, even after
+  // the wallet change revoked its private presentation. Only the journal (behind the owner gate) holds the outcome.
+  it.each(['done', 'pending'] as const)('keeps a %s public payment terminal after a wallet change instead of offering Send again', async (stage) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    const hash = `0x${'7'.repeat(64)}`;
+    const original = wallet.request.bind(wallet);
+    let release!: (value: unknown) => void;
+    const held = new Promise<unknown>((resolve) => { release = resolve; });
+    let sends = 0;
+    wallet.request = (args) => {
+      if (args.method !== 'eth_sendTransaction') return original(args);
+      sends++;
+      return stage === 'pending' ? held : Promise.resolve(hash);
+    };
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await vi.waitFor(() => { expect(sends).toBe(1); });
+    if (stage === 'done') await vi.waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash }]); });
+    act(() => { wallet.emit('accountsChanged'); });
+    if (stage === 'pending') await act(async () => { release(hash); await held; });
+
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy(); // A public invoice stays open.
+    expect(screen.getByText('Payment already requested')).toBeTruthy();
+    expect(screen.getByText(WALLET_CHANGE_REASON, { exact: true })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Connect Lifecycle Wallet/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(document.body.textContent).not.toContain(hash);
+    expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
+    await vi.waitFor(() => { expect(readAttempts()).toMatchObject([{ status: 'submitted', hash, account: MOCK_ACCOUNT }]); });
+    expect(sends).toBe(1);
+
+    // Forgetting the invoice is the explicit way out; nothing is sent and the journal still blocks a duplicate.
+    await user.click(screen.getByRole('button', { name: 'Forget this invoice' }));
+    expect(screen.queryByText('Payment already requested')).toBeNull();
+    expect(sends).toBe(1);
+  }, 180_000);
+
 });

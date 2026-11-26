@@ -4,6 +4,16 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  // #286 item 1: global sensitive-data masking controls and their limits.
+  privacyMasking: [
+    'privacyUx.modeLabel',
+    'privacyUx.modeHint',
+    'privacyUx.hidden',
+    'privacyUx.revealed',
+    'privacyUx.reveal',
+    'privacyUx.hide',
+    'privacyUx.notSaved',
+  ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
     'wallet.disclosure.title',
@@ -1584,6 +1594,8 @@ export const SECURITY_KEY_GROUPS = {
   payReviewAndOutcomes: [
     'pay.previous.title',
     'pay.previous.body',
+    'pay.alreadyRequested.title',
+    'pay.alreadyRequested.body',
     'pay.rejected.title',
     'pay.rejected.controlsUnavailable',
     'pay.rejected.nothingSent',
@@ -1793,6 +1805,14 @@ export const SECURITY_KEY_GROUPS = {
     'create.expiryHours',
     'create.quoteMinutes',
     'create.slippage',
+    'create.metadata.minimal',
+    'create.metadata.itemized',
+    'create.metadata.omitted',
+    'create.metadata.required',
+    'create.metadata.bearer',
+    'create.metadata.bearerHint',
+    'create.metadata.download',
+    'create.metadata.downloadFailed',
     'create.encrypt',
     'create.encrypt.hint',
     'create.passphrase.protect',
@@ -1857,6 +1877,7 @@ export const SECURITY_KEY_GROUPS = {
     'walletAttempts.noneForWallet',
     'walletAttempts.unsaved',
     'walletAttempts.retrySave',
+    'walletAttempts.unsavedOther',
     'walletAttempts.recoveryChain',
     'walletAttempts.findWallet',
     'walletAttempts.aria',
