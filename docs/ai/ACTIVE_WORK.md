@@ -44,6 +44,19 @@ Acceptance: encrypted all-discovered archive and master backup behind re-authent
 ghostpay-stealth-* file in a fresh session; tampered/wrong-passphrase/oversize/wrong-chain/unknown-format refused; secrets
 wiped; lock/session/chain cancellation; full web, ux-vault and recovery gates; no new endpoint or fallback client.
 
+# #701 review upkeep (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
+this record's "Remaining items" correction, one wording correction in the earlier ghostpay-71 entry below, the
+ACTIVE_WORK union and this entry. Docs only.
+
+# ghostpay-78 worker: #701 account-privacy verification record refresh (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `nodata/zen-dirac-vkl84j` (#701), base main `194e225c`. Owned paths:
+`docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`, this entry. Acceptance: re-verified that
+`e1d0eb0f^{tree}` equals `f45025b5^{tree}` (`3dc2d133`), that #697 and #698 are merged and that the recorded push CI runs
+concluded success; main merged in without rebase; docs-only; full hosted CI green on the exact head.
+
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
 Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:
@@ -4675,3 +4688,11 @@ required; no new local test run or browser execution is claimed.
 - Owns: these two integration branches and this additive entry. No runtime, test, threshold, workflow, dependency or contract edits unless a real combination conflict needs one.
 - Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
 - Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
+
+## Independent account-privacy composition verification — 2026-11-26 (ghostpay-71)
+
+- Worker: Claude Code session `ghostpay-71`, branch `nodata/zen-dirac-vkl84j`, base main `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
+- Owns only this additive entry and `docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`. Docs only.
+- Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
+- Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
+- Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
