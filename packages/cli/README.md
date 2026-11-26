@@ -87,7 +87,11 @@ where defined. Do not infer fields that a command does not return.
 | 5 | Unsupported operation, version or chain | Disabled live chain, unsupported exchange version, real refund execution |
 | 6 | Configuration or trust failure | Wrong RPC chain, deployment mismatch, missing/incorrect manifest trust pin |
 
-Stable `error.code` values identify the specific failure. An invalid request to
+Stable `error.code` values identify the specific failure. `READ_FAILED` and
+`WRITE_FAILED` name at most the base name of a plain local path; a value that
+looks like a link, carries a `#` fragment or `?` query, contains control
+characters or is longer than 64 characters is not echoed. Human output escapes
+untrusted text such as catalog keys. An invalid request to
 an unsupported operation can still be a usage error. `diagnostics rpc` exits 1
 when reachable providers disagree; `payment verify` and `payment status` exit 1
 for validly processed evidence that does not establish a final payment.
