@@ -1,4 +1,5 @@
 import { ManifestBanner } from '../components/ManifestBanner';
+import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
@@ -49,6 +50,15 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 }
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const presentation = usePresentationGeneration();
+  const { session } = useApp();
+  const [owner, setOwner] = useState({ session, generation: 0 });
+  // Invoice drafts and retention choices belong to one loaded seller and presentation interval.
+  if (owner.session !== session) setOwner({ session, generation: owner.generation + 1 });
+  return <InvoiceForm key={`${owner.generation}:${presentation}`} supportedOnly={supportedOnly} />;
+}
+
+function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;

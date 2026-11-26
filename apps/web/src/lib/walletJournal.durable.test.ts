@@ -6,6 +6,8 @@ import {
   attemptTxDigest,
   migrateBrowserAttempts,
   readAttempts,
+  readReturnedAttempts,
+  retryReturnedAttempts,
   type AttemptLockManager,
   type AttemptStorage,
 } from './duplicateAttemptJournal';
@@ -175,11 +177,20 @@ describe('sendViaWallet on the durable cross-tab journal', () => {
       });
     }
     const locks = createTestLocks();
-    const lockManager: AttemptLockManager = { request: (name, cb) => sent && failure === 'locks' ? Promise.reject(new Error('lock lost')) : locks.request(name, cb) };
+    let failing = true;
+    const lockManager: AttemptLockManager = { request: (name, cb) => failing && sent && failure === 'locks' ? Promise.reject(new Error('lock lost')) : locks.request(name, cb) };
     const error = await sendViaWallet(s, tx, undefined, { ...invoice('a'), lockManager }).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(WalletBroadcastError);
     expect(error).toMatchObject({ hash: `0x${'9'.repeat(64)}` });
-    expect(readAttempts()).toMatchObject([{ status: 'unknown' }]);
+    // The actual durable record remains unknown; the returned hash is additional in-tab evidence, not a commit claim.
+    expect(JSON.parse(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ status: 'unknown' }]);
+    expect(readAttempts()).toMatchObject([{ status: 'submitted', hash: `0x${'9'.repeat(64)}` }]);
+    expect(readReturnedAttempts()).toMatchObject([{ hash: `0x${'9'.repeat(64)}` }]);
+    failing = false;
+    vi.restoreAllMocks();
+    await retryReturnedAttempts();
+    expect(readReturnedAttempts()).toEqual([]);
+    expect(JSON.parse(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ status: 'submitted', hash: `0x${'9'.repeat(64)}` }]);
   });
 
   it('migrates this tab\'s legacy sessionStorage record first, so it still blocks the same invoice', async () => {

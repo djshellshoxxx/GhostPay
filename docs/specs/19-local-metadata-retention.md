@@ -38,9 +38,13 @@ Source: [issue #287](https://github.com/djshellshoxxx/GhostPay/issues/287) item 
 
 ## Not implemented here
 
-- **Persistent timestamp cleanup** (invoice registration time and receipt archive time in the encrypted reconciliation
-  vault; donors #383, #587, #609). It changes the vault document format (older versions cannot open a cleaned vault)
-  and needs its own review against current main's reconciliation code.
+- **Persistent timestamp cleanup: deferred by the owner on 2026-11-26 until after the v1.0 beta.** This would remove
+  the invoice registration time and the receipt archive time from the encrypted reconciliation vault (donors #383,
+  #587, #609, kept open and untouched). It bumps the vault document from v3 to v4/v5, so older app builds and the CLI
+  (which reads the same vault through `packages/ux-vault`) could not open a cleaned vault. It also needs a hand-merge
+  with main's newer reconciliation code. The timestamps already sit inside an encrypted vault. Do not implement or
+  claim it without new owner approval. When it is resumed, it needs its own review of the vault code, CLI
+  compatibility, and checks that backups taken before and after cleanup both restore.
 - **Merchant template issuer adapter.** That screen is full-profile only, beside deferred merchant features, and is
   excluded from the beta.
 - The tab-scoped address-reuse history (`ghostpay.destination-review.v1`, #674) is advisory data. It is cleared when

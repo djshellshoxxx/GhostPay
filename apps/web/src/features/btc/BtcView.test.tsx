@@ -135,6 +135,22 @@ describe('BtcView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
   });
 
+  it('recognises spent outputs locally by default and asks the server per outpoint only when the box is ticked', async () => {
+    const { chain, user } = await setup();
+    await importSeed(user);
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Also ask the server whether each found output is unspent/ });
+    expect(box.checked).toBe(false);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    expect(screen.getByText(/Spent status: derived on this device from the blocks scanned through height/).textContent).toMatch(/No outpoint of this wallet was sent to the server/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
+    await user.click(box);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/Spent status: the configured Esplora server was asked about candidate outputs/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
+  });
+
   it('scans, reviews, requires approval, signs and broadcasts', async () => {
     const { chain, user } = await setup();
     await importSeed(user);
@@ -144,7 +160,7 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
     expect(screen.getByText('0.0005 BTC')).toBeTruthy();
-    expect(screen.getByText(/Output and spent status were checked with the configured Esplora provider/).textContent)
+    expect(screen.getByText(/Outputs were read from the configured Esplora provider/).textContent)
       .toMatch(/single-provider check, not independent verification/i);
     expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
     expect(screen.getByText('Unique in this scan')).toBeTruthy();

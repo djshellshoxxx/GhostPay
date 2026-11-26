@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+  "benchmarkFileSha256": "f03b0e453906d947b512c85fc6eb79593dec2f3cc26dc8d829cd496da20f239c",
+  "node": "v22.23.5",
+  "fixture": "scanner input validation and local watch filtering; no network or block cryptography",
+  "blocks": 500,
+  "inputsPerBlock": 1000,
+  "inputRecords": 500000,
+  "watchedOutpoints": 10000,
+  "completedBlocks": 500,
+  "spentEvents": 500,
+  "matchedOutputs": 0,
+  "sourceCalls": 1500,
+  "outpointNetworkQueries": 0,
+  "elapsedMs": 5031.958,
+  "retainedHeapDeltaBytesAfterGC": -1412560,
+  "sampledHeapAtBlockBoundaries": {
+    "samples": 500,
+    "baselineBytes": 15910448,
+    "maxBytes": 33586968,
+    "maxDeltaBytesFromBaseline": 17676520,
+    "isTruePeak": false
+  },
+  "cancellation": {
+    "completedBlocks": 10,
+    "sourceCalls": 30,
+    "elapsedMsIncludingTenBlocks": 126.196,
+    "abortToCompletionMs": 0.563,
+    "callsAfterAbort": 0
+  }
+}
