@@ -89,7 +89,7 @@ Test command (from `apps/web`): `npx vitest run src/test/rpcDisclosure.test.ts s
 ### Fixed findings
 
 - **F1, checkpoint last-writer-wins: fixed 2026-11-26** (`apps/web/src/lib/scanClient.ts`). Concurrent scans could overwrite a newer checkpoint with an older one; the effect was a wasted rescan (more RPC reads of already-scanned ranges), never a skipped block. Now:
-  - `runScan` re-reads the slot before each save. Once another scan has written there, the run stops writing for the rest of the run and leaves the other cursor in place, whether it is ahead (a newer scan) or behind (that scan's rollback). The run still scans and reports every payment.
+  - `runScan` re-reads the slot before each save. Once another scan has written or cleared it, the run stops writing the checkpoint for the rest of the run and leaves the other cursor (or the empty slot) in place, whether it is ahead (a newer scan) or behind (that scan's rollback). Only the write stops: the run still scans, records every page through `onPageMatches` and reports every payment.
   - `localCheckpointStore.save` is forward-only for a plain save, and a compare-and-swap when the caller passes the cursor it expects. `runScan` always passes it, so a scan that owns the slot can still move it backward (reorg rollback, claim replay, restart). An unparsable stored value counts as empty.
   - Limit: Web Storage has no cross-tab lock. Each read-compare-write runs in one synchronous step, so two tabs cannot interleave inside it in practice, but no browser guarantees this.
   - Evidence (T): the two former `test.fails` cases pass as plain tests; `scanClient.checkpointOwnership.test.ts` covers the store rules, malformed storage and a seeded multi-writer fuzz.
