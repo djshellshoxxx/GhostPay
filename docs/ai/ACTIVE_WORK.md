@@ -3982,3 +3982,34 @@ Typed lint and full web typecheck passed; Playwright collected 20 cases without 
 execution. Both initial hosted profiles had the same five fixture failures, documented
 in docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md. Independent source
 review and fresh hosted combined/full/lean qualification remain the promotion gates.
+
+
+## Shared payment utility completion — 2026-11-25 Pacific (8812)
+
+Worker: `chatgpt-8812-branch-completion` (root). Dedicated branch: `finish/shared-payment-utilities-20261125-8812`. Exact base: canonical request-file candidate `521a917da4dabe02d5e0075e750c7b4ec10e7d5f`; current main observed `edcca81906c304499c436083dec3b598680de188`.
+
+Owned scope: ordinary payment-history CSV text in `packages/ux-export/src/text.ts` and its new leading-BOM regression; local payment-handle diagnostics in `packages/ux-links/src/handle.ts` and its new confusable-case regression; payment receipt evidence snapshot and bounded regression in `packages/ux-receipts/src/verify.ts` and `verify.accessor-boundary.test.ts`; the existing exact-amount boundary regression in `packages/chain-adapters/src/quote.test.ts`; additive source-pinned handoff and donor documentation reconciliation. Donors: #628 `0fe0f06f1f7cd1dde2c4dc849702f0ab4cd509cd`, #634 `898106124f7fc2ae90916a8d62348d0d4dd5e120`, #663 `d05108873af1ab79edee9c22fe01b0a22cf3a213`.
+
+These are independently useful shared payment text, identity-warning and selective-disclosure utilities. This task does not change tip/donation, storefront, dashboard analytics, GhostID profiles, or any stopped-product path. Existing packages remain unmounted; no new dependency, product activation, workflow, protocol, contract or release change. Preserve every current assertion, all source refs, all other ownership claims and the current dependency-closure gate.
+
+Ownership reads: all three exact PR heads remain draft with completed original-worker handoffs; current comments and reviews contain no live edit claim or separate human gate. The current session idle/privacy workers own unrelated app/session paths. Acceptance: independently review the exact composition, execute the bounded existing regression and compatibility suites and affected typecheck/lint/build, confirm no app/package manifest or excluded-product change, then fresh actual-composition hosted CI and legitimate cooperative lock before ordinary integration. Original generated/property campaigns are preserved, not run locally.
+
+---
+
+# GP-BUG — CSV leading BOM data preservation (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY repair coordinator. Branch `automation/20261124T1821Z/bug/ux-export-leading-bom`; exact main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Owned paths: `packages/ux-export/src/text.ts`, new `packages/ux-export/src/text.leading-bom.test.ts`, this additive branch-local claim and `docs/handoffs/UX_EXPORT_LEADING_BOM_20261124.md`. All 240 open PR changed-file lists inspected; no `packages/ux-export/src/text.*` overlap. #616/#617 own encoder paths and #220 owns reconcile.ts; do not touch those paths or branches. Generation 20 lease released at `4fe0656517a03cb7a39d4e248187c76ffaa3238a`, not acquired. Source-matched parser/quoteField probes show initial U+FEFF is dropped from valid custom header when optional file BOM is disabled. Acceptance: preserve leading U+FEFF by quoting the field; keep ordinary, embedded BOM, delimiter/quote handling and explicit file BOM behavior; failing regression before fix, exact-head hosted CI and independent review before integration. No deployment, feature changes or fund/contract interactions.
+
+---
+
+# GP-BUG — uppercase confusable local handle diagnostic (2026-11-25 UTC)
+
+Worker: sequential BUG-ONLY coordinator, isolated branch `automation/20261125T0120Z/bug/ux-links-handle-confusable-case`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. Owned paths: `packages/ux-links/src/handle.ts`, new `packages/ux-links/src/handle.confusable-case.test.ts`, append-only ownership entry here, and new `docs/handoffs/UX_LINKS_HANDLE_CONFUSABLE_CASE_20261125.md`.
+
+Evidence: baseline source Git blob `c325f1ee544da5f9f75ac7bc400b961deee63033`, recomputed from exact fetched UTF-8 bytes. Capital Cyrillic A and Greek Omicron/Rho are rejected with NON_ASCII instead of the documented CONFUSABLE_NON_ASCII diagnostic, while lower-case counterparts receive the specific reason. All remain rejected; no spoof acceptance, payment impact, or direct Pages reachability asserted. Acceptance: regression first, minimum case-aware lookup in the existing confusable map, preserve ASCII acceptance, reserved checks and ordinary Unicode rejection. Existing handle.test.ts belongs to #224/#238/#262/#264/#278/#372 and is untouched. All 246 discovered open PR changed-file lists checked; no owner of the production or new regression path; active registry checked. Recheck before integration. Integration lease generation 20 released, not acquired. Local checkout DNS blocked; exact source harness only, native CI and separate independent review required. No protocol, feature, dependency, fund or deployment changes.
+
+
+# FC-04 hardening regression tests and receipt follow-ups (2026-11-25)
+
+- Worker: fc02 (Claude Code), branch `claude/fc04-hardening-tests-20261125`, base `origin/main` `595a184b381980a440165832f51a83e8dfd3e8a8`. Owned paths: `packages/chain-adapters/src/quote.test.ts`, `packages/ux-receipts/src/verify.ts`, `packages/ux-receipts/src/verify.accessor-boundary.test.ts`, `docs/consolidation/feature-completion-20261125/FC-04-hardening-tests.md`, this entry.
+- Acceptance: recover the missing #271 quote decimals regression test; close RCPT-L1 and RCPT-L2 test-first; keep coverage thresholds; local only until the coordinator approves a push.
