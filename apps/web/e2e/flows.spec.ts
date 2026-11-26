@@ -19,7 +19,7 @@ test.afterEach(async ({ page }, info) => {
 
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 import { CORS, RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
-import { approveWalletDisclosures } from './walletDisclosure';
+import { approveWalletDisclosures, shownWalletDisclosures } from './walletDisclosure';
 
 interface WalletControls {
   holdSend: boolean;
@@ -27,6 +27,7 @@ interface WalletControls {
   changeAccountOnRecheck: boolean;
   releaseSend(): void;
   changeAccount(): void;
+  restoreAccount(): void;
   replaceProvider(): void;
 }
 
@@ -51,6 +52,10 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
       releaseSend: () => { resolveSend?.(); },
       changeAccount: () => {
         account = '0x6666666666666666666666666666666666666666';
+        for (const listener of listeners.get('accountsChanged') ?? []) listener();
+      },
+      restoreAccount: () => {
+        account = '0x5555555555555555555555555555555555555555';
         for (const listener of listeners.get('accountsChanged') ?? []) listener();
       },
       replaceProvider: () => {
@@ -111,6 +116,16 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
 
 function readJournalMirror(page: Page): Promise<unknown[]> {
   return page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as unknown[]);
+}
+
+async function recoverWalletHistory(page: Page): Promise<void> {
+  const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
+  const shown = await shownWalletDisclosures(page);
+  await attempts.getByLabel('Network for wallet history').selectOption('84532');
+  await expect(attempts.getByLabel('Network for wallet history')).toHaveValue('84532');
+  await attempts.getByRole('button', { name: 'Find wallet for history' }).click();
+  await attempts.getByRole('button', { name: 'Connect E2E Wallet', exact: true }).click();
+  await expect.poll(async () => (await shownWalletDisclosures(page)).slice(shown.length)).toEqual(['eth_requestAccounts']);
 }
 
 async function connectCheckout(page: Page, url: string): Promise<void> {
@@ -376,18 +391,33 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect.poll(journal).toMatchObject([{ status: 'submitted', hash, account: `0x${'5'.repeat(40)}` }]);
     await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
     const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
-    await expect(attempts).toContainText(hash);
-    await expect(attempts).toContainText('cannot cancel an in-flight wallet request or roll back a transaction');
+    await expect(attempts).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(attempts).not.toContainText(hash);
+    await expect(attempts).not.toContainText(`0x${'5'.repeat(40)}`);
+    await expect(attempts.getByRole('button', { name: 'Clear this attempt after checking my wallet' })).toHaveCount(0);
     await expect(page.getByText(/Nothing was sent|request (?:was |has been )?cancelled|transaction (?:was |has been )?rolled back/i)).toHaveCount(0);
 
+    // Session replacement cleared the invoice capability. Reopen it explicitly and retry as the other account.
+    await openFresh(page, link);
+    await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount());
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+    await expect(attempts).toContainText('No recorded attempts for this connected account and chain.');
+    await expect(attempts).not.toContainText(hash);
     await page.getByRole('button', { name: 'Prepare payment' }).click();
     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(page.getByRole('alert')).toContainText('previous wallet attempt');
     expect(state.sendCalls).toBe(1);
     await expect.poll(journal).toHaveLength(1);
 
+    // Only an explicit connection to the original account and chain can reveal or clear its retained outcome.
+    await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.restoreAccount());
+    await expect(attempts).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(attempts).not.toContainText(hash);
+    await expect.poll(journal).toMatchObject([{ status: 'submitted', hash, account: `0x${'5'.repeat(40)}`, chainId: 84532 }]);
+    await recoverWalletHistory(page);
+    await expect(attempts).toContainText(hash);
+    await expect(attempts).toContainText('cannot cancel an in-flight wallet request or roll back a transaction');
     const clear = attempts.getByRole('button', { name: 'Clear this attempt after checking my wallet' });
     page.once('dialog', (dialog) => { void dialog.dismiss(); });
     await clear.click();
@@ -446,6 +476,10 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
     await page.reload();
     await page.getByRole('navigation').getByRole('button', { name: 'Pay', exact: true }).click();
+    await expect(journal).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(journal).not.toContainText(submittedHash);
+    await expect.poll(() => readJournalMirror(page)).toMatchObject([{ status: 'submitted', hash: submittedHash, account: `0x${'5'.repeat(40)}`, chainId: 84532 }]);
+    await recoverWalletHistory(page);
     await expect(journal).toContainText(submittedHash);
     await expect(journal).not.toContainText(wrongHash);
     expect(state.sendCalls).toBe(1);

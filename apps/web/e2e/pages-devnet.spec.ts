@@ -17,6 +17,7 @@ import {
   PAGES_BASE, PagesNetwork, PagesWallet, checkKeystore, configureRpc, createPagesInvoice, flipFileBytes, gitHead, openSite,
   readSellerVault, storedSettings, tamperCiphertext, type PagesNetworkOptions,
 } from './devnet/pages';
+import { shownWalletDisclosures } from './walletDisclosure';
 
 /*
  * The ACTUAL GitHub Pages artifact (scripts/pages/build-pages.sh: lean profile, relative base, this run's signed 84532
@@ -69,6 +70,16 @@ async function openPayer(context: BrowserContext, account: Address): Promise<{ p
   const wallet = new PagesWallet(anvil, account);
   await wallet.inject(page);
   return { page, wallet };
+}
+
+async function recoverWalletHistory(page: Page, walletName: string): Promise<void> {
+  const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
+  const shown = await shownWalletDisclosures(page);
+  await attempts.getByLabel('Network for wallet history').selectOption('84532');
+  await expect(attempts.getByLabel('Network for wallet history')).toHaveValue('84532');
+  await attempts.getByRole('button', { name: 'Find wallet for history' }).click();
+  await attempts.getByRole('button', { name: `Connect ${walletName}`, exact: true }).click();
+  await expect.poll(async () => (await shownWalletDisclosures(page)).slice(shown.length)).toEqual(['eth_requestAccounts']);
 }
 
 /** Generates keys and types the backup waiver (helpers.generateKeys) for the negative cases that need only an invoice. */
@@ -469,11 +480,19 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(new URL(p.url()).pathname).toBe(PAGES_BASE);
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
+    const history = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(history).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(history).not.toContainText(payHash);
+    await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash: payHash, account: ACCOUNTS.payer.toLowerCase(), chainId: 84532 }]);
+    await recoverWalletHistory(p, payer.wallet.name);
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await openFresh(p, link);
+    await expect(history).toContainText('Connect the relevant wallet account and chain to reveal its attempts.');
+    await expect(history).not.toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await expect(history).toContainText(payHash);
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
