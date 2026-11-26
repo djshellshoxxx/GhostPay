@@ -4,9 +4,9 @@ import { isScanSourcePath, MAX_SOURCE_BYTES, type BtcScanRequest } from './scanW
 import type { EsploraFetch } from './esplora';
 
 const request = (requestId = 1, path = '/blocks/tip/height') => ({ type: 'source' as const, id: 7, requestId, path });
-function bridge(fetchFn: EsploraFetch) {
+function bridge(fetchFn: EsploraFetch, providerSpentCheck = false) {
   const send = vi.fn<(message: BtcScanRequest) => void>(); const fail = vi.fn<(error: Error) => void>();
-  const source = new BtcScanSourceBridge('https://chosen.test/api', fetchFn, send, fail);
+  const source = new BtcScanSourceBridge('https://chosen.test/api', fetchFn, send, fail, { providerSpentCheck, matchedOutputProofs: false });
   return { source, send, fail };
 }
 
@@ -38,6 +38,19 @@ describe('BTC main-thread source bridge', () => {
     expect(fetchFn).not.toHaveBeenCalled();
     expect(b.fail).toHaveBeenCalledWith(expect.objectContaining({ code: 'INVALID_RESPONSE' }));
     b.source.dispose();
+  });
+
+  // Recovered-from: 4281fce1 (PR #254).
+  it.each([
+    ['hex', false], ['merkle-proof', false], ['hex', true], ['merkle-proof', true],
+  ] as const)('refuses matched %s requests in full mode with provider consent %s before network access', (suffix, consent) => {
+    const fetchFn = vi.fn<EsploraFetch>(() => Promise.resolve(new Response('untrusted proof')));
+    const b = bridge(fetchFn, consent);
+    try {
+      b.source.handle(request(1, `/tx/${'ab'.repeat(32)}/${suffix}`));
+      expect(fetchFn).not.toHaveBeenCalled();
+      expect(b.fail).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ code: 'INVALID_RESPONSE' }));
+    } finally { b.source.dispose(); }
   });
 
   it('caps simultaneous requests and refuses duplicate request IDs', async () => {
