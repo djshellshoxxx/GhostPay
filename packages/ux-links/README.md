@@ -14,4 +14,4 @@ Link format: `ghostpay:<st:eth:0x...>[?amount=&asset=&chain=&exp=&memo=][#k=<bas
 
 Errors are `LinkError` with a fixed `code`; messages never contain input. Meta-addresses are shape-checked only (curve validity is `@ghostpay/core-crypto`'s job).
 
-Specs and plans: `docs/remote/usability/` (`specs/ux-links-*.md`, `wiring/ux-links.md`, `audit-ux-links.md`).
+Specs and plans: `docs/remote/usability/` (`specs/ux-links-*.md`, `wiring/ux-links.md`).

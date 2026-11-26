@@ -1,6 +1,6 @@
 # @ghostpay/ux-fees
 
-Pure, UI-free, network-free fee logic for the GhostPay client. Specs: `docs/remote/usability/specs/{cheapest-chain,sweep-timing,fee-privacy-preview}.md`. Wiring: `docs/remote/usability/wiring/ux-fees.md`. Audit: `docs/remote/usability/audit-ux-fees.md` (file not present in this tree).
+Pure, UI-free, network-free fee logic for the GhostPay client. Specs: `docs/remote/usability/specs/{cheapest-chain,sweep-timing,fee-privacy-preview}.md`. Wiring: `docs/remote/usability/wiring/ux-fees.md`.
 
 | Export | Purpose |
 |---|---|

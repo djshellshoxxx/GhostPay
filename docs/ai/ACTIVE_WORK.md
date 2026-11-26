@@ -1,3 +1,12 @@
+# ghostpay-78 worker: #639 README repairs finish (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `nodata/magical-volta-z6taog` (#639), base main `194e225c`. Owned paths: root
+`README.md` package-map/build paragraphs, `packages/{contracts,pool-contracts,i18n,ux-connect,ux-core,ux-export,ux-fees,ux-guide,ux-intake,ux-links,ux-notify,ux-presets,ux-receipts,ux-vault}/README.md`,
+removal of the three `docs/maintenance/*_20261125.md` snapshot reports this branch added, this entry. Acceptance:
+each README correction re-verified against main `194e225c` (bundle scan path, `apps/web` dependency list, Foundry
+project naming, `REQUIRE_ANVIL`, `build:circuits` workspace); pointers to `docs/remote/usability/audit-*.md` (not kept
+by the `84c2c185` consolidation merge, so absent from main) removed; docs-only; full hosted CI green on the exact head.
+
 # W4 — #287 privacy-minimal invoice links and exports, successor of #585/#600 on main (2026-11-26 UTC)
 
 Worker: W4 (`ghostpay-backup-60`); branch `claude/privacy-minimal-invoices-successor` from #600 `c8f892f2` (contains #585 `b82be893`; ancestry kept, originals untouched) merged with main `0afab048`.

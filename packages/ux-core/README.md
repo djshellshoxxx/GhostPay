@@ -10,6 +10,6 @@ Pure, UI-free usability logic for GhostPay (no DOM, no network, no timers, no an
 | `palette.ts` | `COMMANDS`, `createRegistry`, `detectConflicts`, `rank`, `parseChord`, `isTypingTarget`, `paletteView`, `a11yLabel` | Shortcut registry, fuzzy ranking, chord parsing, a11y labels |
 | `theme.ts` | `THEMES`, `validateTheme`, `contrastRatio`, `cssFor`, `themeAttr`, `parseThemeJson` | Theme tokens, WCAG contrast, injection-proof CSS variables |
 
-Security notes: every module treats its input as untrusted; no function echoes caller strings into user-visible text; store key names cannot carry secrets; theme CSS is generated only from regex-validated tokens. See `docs/remote/usability/audit-ux-core.md` (file not present in this tree).
+Security notes: every module treats its input as untrusted; no function echoes caller strings into user-visible text; store key names cannot carry secrets; theme CSS is generated only from regex-validated tokens.
 
 Dev: `npm run typecheck && npm run lint && npm test` (coverage thresholds 95/90/95/95).

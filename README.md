@@ -132,7 +132,7 @@ Captured from the Vite dev server (`npm run dev --workspace @ghostpay/web`) on a
 - Privacy options (testnet PoC): `amount-blur`, `hops`, `hygiene`, `metadata-hardening`, `payer-sponsor`, `payer-hiding-contracts`, `privacy-pipeline`, `privacy-profiles`, `confidential-amounts`, `confidential-contracts`, `external-pools*`, `pool-*` (shielded pool; the circuits use an INSECURE DEV CEREMONY; `pool-prover` and `pool-circuits` are GPL-3.0 toolchain packages, licence is an open owner decision), `net-transport`, `net-harness`, `pir-two-server`, `scan-source`.
 - Usability logic (pure, no UI): the `ux-*` packages.
 
-Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages listed in the wiring sentence above.
+Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages listed in the next paragraph.
 
 Workspace wiring is visible in each app's `package.json` `dependencies` and its `@ghostpay/*` imports. `apps/web` depends on `address-safety`, `btc-silent-payments`, `chain-adapters`, `core-crypto`, `invoice-schema`, `net-transport`, `payment-uri`, `policy-scheme`, `qr-exchange`, `scan-source`, `secret-box`, `solana-stealth`, `tron-adapter`, `tx-review` and `ux-vault`; `apps/relayer` depends on `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
 

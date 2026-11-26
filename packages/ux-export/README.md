@@ -19,4 +19,4 @@ const report = summaryToCsv(lines);
 - Limits: `maxRows`, `maxBytes`, `chunkChars` on export; `maxBytes`, `maxRows`, `maxFields`, `maxFieldChars` on parse.
 - Control characters / lone surrogates are rejected (or replaced with `invalidText: 'replace'`).
 
-Docs: docs/remote/usability/specs/export.md, wiring/ux-export.md, audit-ux-export.md.
+Docs: docs/remote/usability/specs/export.md, wiring/ux-export.md.
