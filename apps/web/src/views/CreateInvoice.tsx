@@ -1,3 +1,4 @@
+import { InvoiceMetadataChoice, DownloadInvoiceLink } from '../components/InvoiceSharing';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
@@ -74,6 +75,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const [expiryHours, setExpiryHours] = useState(24);
   const [quoteMinutes, setQuoteMinutes] = useState(15);
   const [slippage, setSlippage] = useState(50);
+  const [minimalMetadata, setMinimalMetadata] = useState(false);
   const [memo, setMemo] = useState('');
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
@@ -192,6 +194,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
       quoteTtlMinutes: quoteMinutes,
       maxSlippageBps: slippage,
       memo,
+      minimalMetadata,
       encrypt,
       ...(protectWithPassphrase ? { passphrase } : {}),
       ...(bufferPolicy === undefined ? {} : { bufferPolicy }),
@@ -303,9 +306,17 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
 
         <fieldset>
           <legend>{t('create.items.legend')}</legend>
+          <InvoiceMetadataChoice minimal={minimalMetadata} onChange={(minimal) => {
+            submissionRun.current++;
+            registrationRun.current++;
+            setCreated(undefined);
+            setRegistration(undefined);
+            setError(undefined);
+            setMinimalMetadata(minimal);
+          }} />
           {items.map((it, i) => (
             <div className="row" key={i}>
-              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
+              {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>}
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
@@ -347,12 +358,12 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>}
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
-            <label htmlFor="enc">{t('create.encrypt')}</label>
+            <label htmlFor="enc">{minimalMetadata ? t('create.metadata.bearer') : t('create.encrypt')}</label>
           </div>
-          <p className="hint">{t('create.encrypt.hint')}</p>
+          <p className="hint">{minimalMetadata ? t('create.metadata.bearerHint') : t('create.encrypt.hint')}</p>
           <div className="check">
             <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
             <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
@@ -401,6 +412,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} autoClearAfterMs={app.settings.invoiceLinkClipboardDelaySec * 1_000} /></p>
+          <DownloadInvoiceLink link={visibleCreated.link} />
           <PaymentRequestDownload fragment={visibleCreated.fragment} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
