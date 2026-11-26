@@ -360,6 +360,12 @@ test('#691: every record may be concealed while the panel asks to connect, behin
   assert.deepEqual(o.i3Concealed, { 'not-connected': 1 });
 });
 
+test('#691: a "connect to reveal" notice on a connected checkout (send button shown) does not excuse the own record', () => {
+  const o = new Oracle(privacyWorld('0x5555'));
+  o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: PRIVATE + REVEAL, sendButton: 'enabled', storedHashes: [HX] }) });
+  assert.equal(o.violations.find((x) => x.inv === 'I3')?.detail.missingIntent, 'X');
+});
+
 test('#691: concealment without the evidence notice fails I3', () => {
   const o = new Oracle(privacyWorld('0x6666'));
   o.checkObservations(0, { op: 'open' }, { A: obsOf({ journal: [], journalNotice: 'Wallet attempts in this browser' + REVEAL, storedHashes: [HX] }) });

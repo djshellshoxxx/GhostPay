@@ -241,7 +241,9 @@ export class Oracle {
     if (all.length === 0) return;
     const notice = o.journalNotice ?? '';
     const evidenceNotice = /A previous wallet request may already have been submitted/.test(notice);
-    const notRevealed = /Connect the relevant wallet account and chain to reveal its attempts/.test(notice);
+    // "Connect … to reveal" excuses concealment only while this tab has no connected checkout: with the send button
+    // on screen the tab IS connected, so its own account's records must be shown (self-audit of the #691 scoping).
+    const notRevealed = /Connect the relevant wallet account and chain to reveal its attempts/.test(notice) && (o.sendButton ?? 'absent') === 'absent';
     const wAccount = this.w.wallet.account === undefined ? undefined : String(this.w.wallet.account).toLowerCase();
     const wChain = this.w.wallet.chainId;
     const owned = (h) =>

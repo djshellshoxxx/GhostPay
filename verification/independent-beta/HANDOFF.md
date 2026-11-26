@@ -204,7 +204,13 @@ Found by the first post-audit stress run (stopped, not committed as evidence) an
   so every later checkout built its deadline hours behind the chain and the (audit-13) router dry run reverted. M10's
   control payment of C never reached the wallet; the audit-6 whitelist made that a harness error, and generated runs
   lost every checkout after `latePay` silently. Fix: payer profiles' clocks move with each warp (Playwright clock,
-  real time keeps flowing); the seller's clock is untouched because lateness is judged by block time.
+  real time keeps flowing); the seller's clock is untouched because lateness is judged by block time. Limitation:
+  after a warp the seller sees block timestamps ahead of its own clock; shifting the seller clock as well would also
+  trip the idle lock (#689) in the middle of a scenario, which these scenarios do not model.
+- Self-audit of the H14 change: "Connect … to reveal" now excuses concealment only while the tab shows no send button
+  (no connected checkout); with a connected checkout the own account's records must be shown (new fixture). In the
+  stress record that notice never appeared together with a send button (0 of 201 observations), so the stress verdicts
+  below are unchanged by this tightening.
 
 ### Independent harness audit (22 findings, all harness-side, all fixed in `ce569d8c`)
 
@@ -222,7 +228,7 @@ Low: dialog errors caught, server 404s for missing assets and the build record, 
 minimization, malformed request guard (18–21); model wording (22). 9 of the 10 new self-test fixtures fail on the
 pre-audit harness (the tenth is a control).
 
-Self-test: 52 pass, 0 fail, at the default scale and at `W5_PROPERTY_SCALE=10` (3000 random chain sequences,
+Self-test: 53 pass, 0 fail, at the default scale and at `W5_PROPERTY_SCALE=10` (3000 random chain sequences,
 500 generator seeds checked for determinism and bounds).
 
 ### Runs
