@@ -112,7 +112,22 @@ Explicit rules were applied before the mechanical ones. They cover the owner's 2
 | H Owner HOLD | 4 | #371 #592 #614 #621 |
 | J Active (updated since 11-25 11:00 UTC) | 26 | #718 train (includes #631/#637), #704–#717, #708 masking, #665 W5, #678 P13, #653, #639, #380, #220 |
 
-Recommendations, none of which this worker has executed:
+**Applied 2026-11-26 11:45 UTC (owner approved):**
+
+- **Rec 1, done:** the 6 E PRs (#250 #384 #405 #409 #416 #419) were closed with evidence notes. Main `5880576a` still holds each equivalent fix, re-checked at the cited line.
+- **Rec 2, partly done:** 5 D PRs whose successor is in main were closed:
+  - #549, #293, #297 → #668/#687
+  - #271 → #663
+  - #272 → #683
+- **Rec 2, still waiting** for the successor to merge:
+  - #569, #300, #355, #372 → #708
+  - #582 → #711
+  - #591, #604 → #717
+  - #622 → #707
+  - #669, #254 → #704
+- **Rec 3, adopted:** the 59 historical C compositions are archival. Recover from them only on a concrete gap. They stay open for the owner to close in bulk if wanted.
+
+Recommendations as originally proposed:
 
 1. Close the 6 E PRs with an equivalence note. Unlike the 32 closed earlier, these are not plain ancestors, so owner OK first.
 2. Close the D PRs that name a successor once that successor merges: #549, #569, #582, #591, #604, #622, #669 and #254.
