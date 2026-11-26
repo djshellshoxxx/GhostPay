@@ -1,5 +1,9 @@
 # Essential feature completion matrix
 
+**Status update 2026-11-26 UTC, against `main` `194e225c`:** the Class column of the priority table below is current as of
+that commit. Percentages were **not** re-estimated unless a row says otherwise. "Detail" and the rest of this file are the
+2026-11-23 snapshot, kept as history; do not read them as the current state of `main`.
+
 Snapshot: 2026-11-23 UTC. `main` = `eb59d93cffed7848c4aac37d0e9650b87239c6da` (no merges since 2026-11-21T06:16Z).
 Percentages are **estimates** by the session coordinator from source inspection, not measured coverage.
 All other-branch facts come from local `git` comparison of the exact heads below. Where a test count is quoted from a branch
@@ -10,13 +14,12 @@ Canonical trackers this file links to instead of duplicating: the P0 audit
 the consolidation ledger [`docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md`](../handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md),
 and the branch-disposition ledger on PR #471 (`docs/consolidation/20261123-r57/SEMANTIC_DISPOSITIONS.json` at `5afb4367`).
 
-## Integration lock (governs every "merge readiness" cell)
+## Integration lock
 
-`automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`: status `held`, generation 11, owner
-`994a0d214fb9-root-r3`, `expires_at` 2026-11-21T00:16:57Z. The lock protocol forbids acquiring an expired held lock
-without stop evidence from the prior owner. One earlier expiry-only takeover (generation 12, coordinator `5ceb`) was
-reverted. The R57 ledger records `takeoverPermitted=false`, `mainMergeAuthorized=false`. **A merge into `main` needs the
-repository owner to release or reassign the lock.** This session does not take it over.
+Merges into `main` go one at a time under `integration-lock.json` on branch `automation/ghostpay-integration-lock`; read
+that file for the current state. The lock protocol forbids acquiring an expired held lock without stop evidence from the
+prior owner. The 2026-11-23 snapshot recorded generation 11 as held and expired, which blocked merges at that time. The
+lock has been released and reused since (generation 20 for #500, generation 24 for #635).
 
 ## Priority ranking
 
@@ -26,16 +29,16 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 |---|---|---|---|---|---|
 | 1 | P0-JRNL | Payment attempt durability, cross-tab duplicate prevention, outcome recovery | COMPLETE (merged `c8e131c1`, PR #500) | 95 (open: REV-I5/I6, QA-I1, GP-PAGES-01) | Double payment of one invoice from a 2nd tab or after a crash; lost tracking after reload |
 | 2 | P0-HASH | Wallet-attempt first-hash integrity (#427→#443) | COMPLETE (merged via #500, `c8e131c1`) | 100 | Replacement hash could overwrite the first submitted hash |
-| 3 | P0-KEYS | Independent payment-key export/restore (#240/#269/#361 → #372) | BLOCKED | 75 | Funds unrecoverable without the original browser session |
-| 4 | P0-RCPT | Receipt envelope fail-closed fixes (#449→#450→#452) | COMPLETE (merged `8ddb3449`) | 100 (follow-ups RCPT-L1/L2) | Malformed RPC envelope accepted as settlement evidence |
-| 5 | P1-LATE | Late payment (broadcast before expiry, confirmed after) shown as paid/late, not lost | PARTIAL; candidate stack #533→#546→#575 (other agent) | 40 → pending review | Seller treats a paid invoice as unpaid; payer pays twice |
+| 3 | P0-KEYS | Independent payment-key export/restore (#240/#269/#361 → #372) | PARTIAL: single-payment export, standalone decoder, seller-keystore verify/restore and independent keystore reader merged (#539, #641, #657, #647); archive/master export and in-app recovery open (#707, successor of #622) | 75 (2026-11-23) | Funds unrecoverable without the original browser session |
+| 4 | P0-RCPT | Receipt envelope fail-closed fixes (#449→#450→#452) | COMPLETE (merged `8ddb3449`); RCPT-L1/L2 fix `752828f6` merged via #690 | 100 | Malformed RPC envelope accepted as settlement evidence |
+| 5 | P1-LATE | Late payment (broadcast before expiry, confirmed after) shown as paid/late, not lost | MERGED (`aaa71a11`, PR #635) | 40 (2026-11-23) | Seller treats a paid invoice as unpaid; payer pays twice |
 | 6 | P1-REFUND | Refund authority/execution | MISSING by design (see below) | n/a | — |
-| 7 | F04 | Merchant dashboard | PARTIAL | 20 | Indirect (accounting) |
+| 7 | F04 | Merchant dashboard | STOPPED by owner directive 2026-11-25 ([STOP_WORK](../ai/STOP_WORK_20261125.md)) | 20 (2026-11-23) | Indirect (accounting) |
 | 8 | F05 | Receipt assurance | PARTIAL | 25 | Indirect (dispute evidence) |
 | 9 | F10 | Recurring invoices | PARTIAL | 35 | Duplicate issuance |
 | — | P1-POLICY | Policy-account lost-owner recovery | DEFERRED (unaccepted ADR-0028, contract change) | n/a | Needs owner + contract design decision |
 
-## Detail
+## Detail (2026-11-23 snapshot of `eb59d93`; historical)
 
 ### P0-JRNL — payment attempt durability and outcome recovery
 
