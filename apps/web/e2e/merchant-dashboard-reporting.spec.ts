@@ -2,6 +2,9 @@ import { readFile } from 'node:fs/promises';
 import type { ReconciliationRecord } from '@ghostpay/ux-vault/portable';
 import { expect, test } from '@playwright/test';
 import { copyEncryptedLedger, loadSellerAndOpenDashboard, syntheticLedger } from './dashboardLedger';
+import { MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP } from './merchantDashboardBuild';
+
+test.skip(!MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP);
 
 for (const viewport of [{ width: 1280, height: 900 }, { width: 320, height: 720 }]) {
   test(`reports exact verified totals, filters by asset and exports payment history at ${viewport.width}px`, async ({ page }) => {
@@ -29,8 +32,9 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 320, height: 720 
         evidenceStatus: 'verified-at-scan', evidenceSource: 'verified-router-scan',
       };
     };
+    // One verified live observation per transaction: the vault refuses a second log of an already matched transfer.
     await vault.save(observation(0, 'native', maximum, 'b'));
-    await vault.save(observation(1, 'native', 5n, 'b'));
+    await vault.save(observation(1, 'native', 5n, '7'));
     await vault.save(observation(2, token, 23n, 'e'));
     vault.lock();
 
@@ -62,7 +66,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 320, height: 720 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Agree and download' }).click();
     const file = await download;
-    expect(file.suggestedFilename()).toBe('ghostpay-payments.csv');
+    expect(file.suggestedFilename()).toBe('export.csv');
     const path = await file.path();
     const csv = await readFile(path, 'utf8');
     expect(csv).toBe([

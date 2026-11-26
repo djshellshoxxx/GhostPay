@@ -57,6 +57,8 @@ export default defineConfig({
     __GHOSTPAY_MANIFESTS__: JSON.stringify(manifests),
     // Unit tests must not inherit the shell's e2e profile; profile-specific tests pass it explicitly.
     __GHOSTPAY_PROFILE__: JSON.stringify(process.env['VITEST'] === undefined ? buildProfile : 'full'),
+    // F04 is excluded from beta/v1.0: off unless a build sets VITE_MERCHANT_DASHBOARD=1. Unit tests keep it covered.
+    __GHOSTPAY_MERCHANT_DASHBOARD__: JSON.stringify(process.env['VITEST'] !== undefined || process.env['VITE_MERCHANT_DASHBOARD'] === '1'),
   },
   plugins: [
     react(),

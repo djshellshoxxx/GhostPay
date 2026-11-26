@@ -4,7 +4,6 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
-  browserCapabilityLimits: ['app.checks.limits'],
   merchantDashboard: [
     'dashboard.keys',
     'dashboard.locked',
@@ -54,6 +53,7 @@ export const SECURITY_KEY_GROUPS = {
     'dashboard.paymentPreview',
     'dashboard.paymentPreviewCount',
     'dashboard.paymentExportError',
+  ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
     'wallet.disclosure.title',

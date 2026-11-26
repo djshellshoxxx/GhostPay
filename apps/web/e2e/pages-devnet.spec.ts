@@ -43,7 +43,7 @@ const FINALITY = 100; // Base Sepolia finalityDepth in chain-adapters' chain tab
 const KEYSTORE_PASS = 'harbor lantern quiet meadow falcon';
 const VAULT_PASS = 'copper violet river starlight maple';
 const WRONG_PASS = 'completely wrong passphrase here';
-const LEAN_NAV = ['Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Merchant dashboard', 'Sweep', 'Public registry', 'Settings', 'About and privacy'];
+const LEAN_NAV = ['Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Sweep', 'Public registry', 'Settings', 'About and privacy'];
 /** Public anvil default accounts (mnemonic "test test ... junk"), distinct from the ones devnet-journey uses. LOCAL ONLY. */
 const ACCOUNTS = {
   payer: getAddress('0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc'), // index 5

@@ -29,7 +29,7 @@ describe('one-EVM AppLean boundary', () => {
     renderWith(<AppLean />);
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(within(nav).getAllByRole('button').map((button) => button.textContent)).toEqual([
-      'Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Merchant dashboard', 'Sweep', 'Public registry', 'Settings', 'About and privacy',
+      'Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Sweep', 'Public registry', 'Settings', 'About and privacy',
     ]);
     for (const label of [/Bitcoin/, /Solana/, /TRON/, /Policy/]) expect(within(nav).queryByRole('button', { name: label })).toBeNull();
   });

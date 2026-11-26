@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
 import type { RpcClient } from '@ghostpay/chain-adapters';
@@ -61,9 +61,7 @@ export interface AppShellProps {
   readonly profile?: 'full' | 'lean';
 }
 
-const MerchantDashboard = lazy(() => import('./views/MerchantDashboard'));
-
-export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'dashboard', 'sweep', 'registry', 'settings', 'about']);
+export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
 
 function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
@@ -80,8 +78,6 @@ function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraVi
       return <Pay supportedOnly={props.profile === 'lean'} />;
     case 'scan':
       return <Scan />;
-    case 'dashboard':
-      return <Suspense fallback={<p role="status">{t('dashboard.loading')}</p>}><MerchantDashboard /></Suspense>;
     case 'sweep':
       return <Sweep />;
     case 'registry':

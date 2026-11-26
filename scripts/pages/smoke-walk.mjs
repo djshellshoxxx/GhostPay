@@ -5,8 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 /** English navigation labels of the lean views, in CORE_ORDER (apps/web/src/AppShell.tsx); pinned by smoke-walk.test.mjs. */
 export const LEAN_VIEW_LABELS = Object.freeze([
-  'Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Merchant dashboard', 'Sweep', 'Public registry', 'Settings',
-  'About and privacy',
+  'Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Sweep', 'Public registry', 'Settings', 'About and privacy',
 ]);
 
 const FIXTURE = fileURLToPath(new URL('./fixtures/smoke-invoice.txt', import.meta.url));

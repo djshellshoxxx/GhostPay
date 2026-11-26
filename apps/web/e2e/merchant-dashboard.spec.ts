@@ -2,6 +2,9 @@ import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 import { generateKeys } from './helpers';
+import { MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP } from './merchantDashboardBuild';
+
+test.skip(!MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP);
 
 const passphrase = 'river copper maple starlight';
 
@@ -110,7 +113,8 @@ test('opens encrypted merchant records on mobile and only exports the approved i
   const pending = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Agree and download' }).click();
   const file = await pending;
-  expect(file.suggestedFilename()).toBe('ghostpay-invoices.json');
+  // Main neutralizes download names (#286): no product or value reaches the browser's download history.
+  expect(file.suggestedFilename()).toBe('export.json');
   const text = readFileSync(await file.path(), 'utf8');
   expect(JSON.parse(text)).toMatchObject({ coverage: 'not-evaluated', rows: [{ chainId: 'eip155:84532', assetId: 'native', expectedAtomic: expect.stringMatching(/^[0-9]+$/) }] });
   for (const value of [reference, privateText, passphrase]) {

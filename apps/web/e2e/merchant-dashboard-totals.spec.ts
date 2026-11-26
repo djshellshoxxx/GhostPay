@@ -3,6 +3,9 @@ import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { expect, test } from '@playwright/test';
 import { copyEncryptedLedger } from './dashboardLedger';
+import { MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP } from './merchantDashboardBuild';
+
+test.skip(!MERCHANT_DASHBOARD_BUILD, MERCHANT_DASHBOARD_SKIP);
 
 test('keeps encrypted network totals exact across filtering, refresh and a recorded reorg', async ({ page }) => {
   const spending = new Uint8Array(32).fill(3);

@@ -2,14 +2,22 @@
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fc from 'fast-check';
+import type { ReactNode } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { AppLean } from '../AppLean';
+import { AppShell, CORE_ORDER } from '../AppShell';
 import * as downloads from '../components/Common';
 import { notifyAppLock } from '../lib/appLock';
 import { RECONCILIATION_VAULT_CHANGE_EVENT } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { renderWith } from '../test/render';
+import MerchantDashboard from './MerchantDashboard';
+
+// The dashboard is never part of the lean Pages app; it renders only as an opt-in full-profile view (see App.tsx).
+const ORDER = [...CORE_ORDER.slice(0, CORE_ORDER.indexOf('scan') + 1), 'dashboard' as const, ...CORE_ORDER.slice(CORE_ORDER.indexOf('scan') + 1)];
+function DashboardApp(): ReactNode {
+  return <AppShell profile="full" order={ORDER} extraViews={{ dashboard: <MerchantDashboard /> }} />;
+}
 
 const openVault = vi.hoisted(() => vi.fn());
 vi.mock('../lib/reconciliationVault', async (importOriginal) => ({
@@ -31,7 +39,7 @@ it('opens the real Pages route and handles loading, empty, stale, error, retry a
   const readState = vi.fn(() => new Promise((resolve) => { finishRead = () => { resolve(empty); }; }));
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
   const user = userEvent.setup();
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   const nav = screen.getByRole('navigation', { name: 'Main' });
   const route = within(nav).getByRole('button', { name: 'Merchant dashboard' });
   await user.click(route);
@@ -62,7 +70,7 @@ it('revokes an export when encrypted storage changes without delivering an inval
   };
   const readState = vi.fn<() => Promise<typeof initial>>().mockResolvedValue(initial);
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
   const network = await screen.findByLabelText('Network');
@@ -86,7 +94,7 @@ it('clears record filters, returns to page one and revokes the filtered export p
   }));
   openVault.mockResolvedValue({ lock: vi.fn(), readState: () => Promise.resolve({ invoices, records: [], receipts: [], readOnly: false }) });
   const user = userEvent.setup();
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
   const network = await screen.findByLabelText('Network');
   await user.selectOptions(network, '84532');
@@ -137,7 +145,7 @@ it('requires a fresh preview if an expiry changes the selected status before app
     invoices: [{ invoiceDigest: '0x' + 'b'.repeat(64), chainId: 84532, asset: 'native', expectedNetMinorUnits: '100', expiresAt: Math.floor(start / 1000) + 10 }],
   });
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
   await user.selectOptions(await screen.findByLabelText('Network'), '84532');
@@ -172,7 +180,7 @@ it.each(['opening', 'ready', 'refreshing', 'error'] as const)(
         }),
       });
 
-      renderWith(<AppLean />);
+      renderWith(<DashboardApp />);
       try {
         const nav = screen.getByRole('button', { name: 'Merchant dashboard' });
         fireEvent.click(nav);
@@ -260,7 +268,7 @@ it('filters by asset, reports exact verified-at-scan totals and exports consente
   };
   const readState = vi.fn().mockResolvedValue(ledger);
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
   await user.selectOptions(await screen.findByLabelText('Network'), '84532');
@@ -301,7 +309,7 @@ it('withholds the payment history file when the encrypted ledger changed after p
   const ledger = { receipts: [], readOnly: false, invoices: [], records: [scopedRecord({})] };
   const readState = vi.fn().mockResolvedValue(ledger);
   openVault.mockResolvedValue({ readState, lock: vi.fn() });
-  renderWith(<AppLean />);
+  renderWith(<DashboardApp />);
   const user = userEvent.setup();
   await user.click(screen.getByRole('button', { name: 'Merchant dashboard' }));
   await user.selectOptions(await screen.findByLabelText('Network'), '84532');
