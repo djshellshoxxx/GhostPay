@@ -8,6 +8,7 @@ Status: milestones 1–3 delivered (payer and seller models, harness, independen
 | Item | Value |
 |---|---|
 | Current candidate | main `9d92472a46a4e37f847472276d77e3b4ce158e80` (Merge PR #716, LATE-LM1; includes #691 account privacy), tested unmodified in `results/m3-a13a2bb9`, `results/stress-payer-43d737e4`, `results/stress-seller-43d737e4` |
+| Latest main checked | `601f20955b435eede448c6d82d8315705d7e381d` (Merge PR #220). Its unmodified lean bundle, rebuilt by `build.mjs` from `e3a7037e` (production paths equal to `601f2095`), is byte-identical to the `9d92472a` bundle (`ab9bc5b0…`, 18 files), so every `9d92472a` record above applies to it unchanged. #220's production changes (`chain-adapters`, `ux-flow`, `core-crypto` tests, contracts) do not reach the lean web build. |
 | Earlier candidate | main `8aca5a06a9435dd30e40378ba606da3c68f94863` (Merge PR #683; #287 item 3 wallet disclosure gate), tested unmodified in `results/m1c-32e141ee`, `results/m1d-1bb92a77` |
 | Historical pin | main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61` (Merge PR #635, P1-LATE), tested in `results/m1-d3edbdb` and `results/m1b-9e7f7c4` |
 | Candidate under test | main (unmodified). No W1-approved candidate and no W1 coordination handoff were found in PRs, issues or branches at start (2026-11-25 ~10:40 UTC). #664 head `d4bdd0224aec5b35b41483830b65006f146de7cd` was observed only, not tested. |
