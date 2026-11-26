@@ -174,6 +174,7 @@ contract RouterHandler is Test {
 
     /// @dev Permit + buffer in one call: a real permit for the ERC-2612 token (its max allowance is
     /// replaced by the permit value and consumed), a dummy one, swallowed by try/catch, for the others.
+    /// Split into helpers so that no frame exceeds the EVM stack (the flat form was stack too deep).
     function payPermitBuffer(
         uint256 tokenSeed,
         uint256 payerSeed,
@@ -183,35 +184,48 @@ contract RouterHandler is Test {
     ) external {
         address t = tokens[tokenSeed % tokens.length];
         uint256 pi = payerSeed % payers.length;
-        address payer = payers[pi];
-        address st = stealths[stealthSeed % stealths.length];
         gross = bound(gross, 1, 1e30);
         buffer = bound(buffer, 1, 10 ether);
-        uint256 fee = gross * 25 / 10_000;
-        uint256 net = gross - fee;
-        uint8 v = 27;
-        bytes32 r;
-        bytes32 s;
-        if (t == PERMIT_TOKEN) (v, r, s) = _permitSig(payerKeys[pi], payer, gross);
-        vm.prank(payer);
-        try ROUTER.payERC20WithPermitAndBuffer{value: buffer}(
-            IERC20(t),
-            st,
-            gross,
-            net,
-            block.timestamp,
-            buffer,
-            _eph(),
-            _meta(t, net, false),
-            IGhostPayRouter.PermitSig({v: v, r: r, s: s})
-        ) {
+        address st = stealths[stealthSeed % stealths.length];
+        IGhostPayRouter.PermitSig memory sig = _sigFor(t, pi, gross);
+        if (_tryPermitBuffer(t, payers[pi], st, gross, buffer, sig)) {
             successes++;
             sumGross[t] += gross;
-            sumFee[t] += fee;
-            sumNet[t] += net;
+            sumFee[t] += gross * 25 / 10_000;
+            sumNet[t] += gross - gross * 25 / 10_000;
             bufferTotal += buffer;
-        } catch {
+        } else {
             rejections++;
+        }
+    }
+
+    /// @dev A real signature for the ERC-2612 token, a dummy `v = 27` one for every other token.
+    function _sigFor(address t, uint256 pi, uint256 gross)
+        internal
+        view
+        returns (IGhostPayRouter.PermitSig memory sig)
+    {
+        sig.v = 27;
+        if (t == PERMIT_TOKEN) (sig.v, sig.r, sig.s) = _permitSig(payerKeys[pi], payers[pi], gross);
+    }
+
+    function _tryPermitBuffer(
+        address t,
+        address payer,
+        address st,
+        uint256 gross,
+        uint256 buffer,
+        IGhostPayRouter.PermitSig memory sig
+    ) internal returns (bool ok) {
+        uint256 net = gross - gross * 25 / 10_000;
+        bytes memory meta = _meta(t, net, false);
+        vm.prank(payer);
+        try ROUTER.payERC20WithPermitAndBuffer{value: buffer}(
+            IERC20(t), st, gross, net, block.timestamp, buffer, _eph(), meta, sig
+        ) {
+            ok = true;
+        } catch {
+            ok = false;
         }
     }
 
