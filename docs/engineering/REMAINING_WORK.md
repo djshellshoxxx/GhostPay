@@ -8,11 +8,12 @@ Pages beta release. "Future" = not a current release requirement.
 1. ~~Merge PR #500 (M1)~~ Done: `c8e131c1` (2026-11-24).
 2. ~~P1-LATE (stack #533→#546→#575)~~ Done: merged via #635 as `aaa71a11` (2026-11-25), consolidating #533→#546→#575→#599→#625.
    Handoff: [`P1_LATE_CONSOLIDATION_20261124.md`](../handoffs/P1_LATE_CONSOLIDATION_20261124.md).
-3. **P0-KEYS (partly done):** on `main` are the Spec 18 codec, standalone decoder and single-payment export (#539),
-   seller-keystore backup verification and restore (#641, #657) and the GhostPay-independent keystore reader (#647).
-   Open on 2026-11-26: archive export, master backup and in-app Spec 18 recovery (#707, successor of #622). #372 stays
-   open; its red Mythril (10 findings) and Tor browser gates (KEYS-B1) must be dispositioned for anything further taken
-   from it.
+3. ~~P0-KEYS~~ Done on `main` `c7c6349c` (2026-11-26): Spec 18 codec, standalone decoder and single-payment export (#539),
+   seller-keystore backup verification and restore (#641, #657), the GhostPay-independent keystore reader (#647), and
+   archive export, master backup and in-app recovery (#707, successor of #622, merged by #718). Verified on `c7c6349c`:
+   [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md). Still open: Firefox/WebKit/mobile and third-party wallet
+   import acceptance. #372 stays open; its red Mythril (10 findings) and Tor browser gates (KEYS-B1) must be
+   dispositioned for anything further taken from it.
 4. **GP-PAGES-01 (owner decision):** the shared `*.github.io` origin lets sibling pages read, forge or block the
    wallet-attempt journal and lock (now persistent). A custom domain removes it.
 5. ~~Close or retarget #450~~ Done: closed as already integrated (2026-11-26). Its commits are in `main` via `8ddb3449`.
