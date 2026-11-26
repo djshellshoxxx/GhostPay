@@ -126,8 +126,9 @@ no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts` (d
 It addresses a provider that records requests. The checkpoint replay after a pending or failed check (item 6 above)
 follows the block and receipt state of cover checks too, so it does not single out the matched payments; a failed
 claim that sends no request no longer moves it while cover is on. Remaining exposure: a provider that alters,
-withholds or fails its answers; block reads of payments recorded against saved invoices (after a reorg report or a
-ledger retry); repeated on-chain copies, which get independent cover decisions; the token named by the optional
+withholds or fails its answers; the block reads made only for the seller's payments (after a reorg report, those found
+in the scan and the saved ledger records; on a ledger retry, saved invoice records), which therefore point at them;
+repeated on-chain copies, which get independent cover decisions; the token named by the optional
 similar-transfer estimate; the single-payment re-check from the result list; balance reads, key export and sweeps
 through the same RPC; cover that fails verification sends fewer follow-up requests and never reaches the second
 provider.

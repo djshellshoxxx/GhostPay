@@ -240,7 +240,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const claimLedger = new Map<string, number>();
   const evidenceLedger = new Map<string, bigint>();
   // Blocks of cover payments seen as pending in this run: the replay rule treats them like pending matches.
-  const coverPending: bigint[] = [];
+  let coverPending: bigint[] = [];
   const discrepancies: ProviderDiscrepancy[] = [];
   // Pending results from this run are in memory only. On a reorg the safe persistence floor
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
@@ -334,6 +334,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         claimLedger.clear();
         keep.forEach((match, index) => { const pair = claimPairKey(match); if (!claimLedger.has(pair)) claimLedger.set(pair, index); });
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
+        coverPending = coverPending.filter((block) => block < res.reorg!.rolledBackTo);
         for (const block of routerOnlyBlocks) if (block >= res.reorg.rolledBackTo) routerOnlyBlocks.delete(block);
         // The replacement page re-reads these blocks: drop their router announcements so the privacy set counts each once.
         const keptRouterBlocks = routerBlocks.filter((block) => block < res.reorg!.rolledBackTo);

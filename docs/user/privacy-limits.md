@@ -110,8 +110,9 @@ and [seller privacy](seller-privacy.md).
   cannot tell your payments from the cover. Limits:
   - a provider that alters, withholds or fails its answers can still find out which payment matched; the cover is not
     designed against it;
-  - the block reads that re-check payments recorded against your saved invoices (after a reorg, or when the ledger asks
-    for a check again) are made only for your own payments, so they point at them;
+  - after a reorg report, the blocks of your payments found in this scan and of your saved ledger records are read
+    again, and a ledger retry reads saved invoice records; these reads are made only for your payments, so they point at
+    them;
   - a copy of an announcement sent again on chain gets its own cover decision, while router copies of your payments are
     all checked;
   - with the similar-transfer estimate also on, its token log query names the token of your latest payment;

@@ -19,9 +19,10 @@ import { utf8ToBytes } from '@noble/hashes/utils.js';
  * independent decision. The key stays in memory and cannot be computed from public data.
  *
  * What it does not hide: when the scan ran and the IP address; anything a provider finds out by altering or failing its
- * answers; the block reads that re-check payments recorded against saved invoices; a balance read, key export or sweep
- * through the same RPC; a single payment's re-check from the result list; and anything sent to a wallet or relayer. Few
- * router payments give little or no cover.
+ * answers; the block reads made only for the seller's payments (after a reorg report, those found in the scan and saved
+ * ledger records; on a ledger retry, saved invoice records); a balance read, key export or sweep through the same RPC;
+ * a single payment's re-check from the result list; and anything sent to a wallet or relayer. Few router payments give
+ * little or no cover.
  */
 
 /** Share of the other router payments that are looked up as cover: 1 in 2. */

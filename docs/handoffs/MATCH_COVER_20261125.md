@@ -42,8 +42,8 @@ changed between scans, order leaks and silent decoys.)
 ## Limits (Settings, Scan disclosure and docs/user/privacy-limits.md)
 
 Aimed at a provider that records requests. Not covered: a provider that alters, withholds or fails its answers; block
-reads of payments recorded against saved invoices (after a reorg report or a ledger retry); repeated on-chain copies
-(independent decisions); the token named by the similar-transfer estimate; the single-payment re-check from the result
+reads made only for the seller's payments (after a reorg report, those found in the scan and the saved ledger records;
+on a ledger retry, saved invoice records), which point at them; repeated on-chain copies (independent decisions); the token named by the similar-transfer estimate; the single-payment re-check from the result
 list; balance reads, key export and sweeps through the same RPC; time and IP address. A decoy that fails verification
 (such as a smart-wallet payment) gets fewer requests and no second-provider lookup. Only supported-token router
 payments serve as cover. Cost: about half of all router payments read, each scan. Not anonymity.
