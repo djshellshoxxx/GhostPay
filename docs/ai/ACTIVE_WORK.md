@@ -1,3 +1,16 @@
+# Seller keystore recovery: audit follow-ups after the #693 close-out (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`; branch `claude/keystore-recovery-followups-20261126`, base main `e1d0eb0f`.
+Why: #693 verified complete (no regression). Its audit found gaps around the same restore path.
+Owned paths: `scripts/recovery/stealth-export-recover.mjs` (terminal passphrase prompt only), its tests in
+`scripts/recovery/seller-keystore-recover.test.mjs`, the `paths` filter of
+`.github/workflows/mobile-browser-qualification.yml`, the wrong-passphrase step of
+`apps/web/e2e/devices-mobile-restore.spec.ts`, the header comment of test-only
+`packages/ux-vault/src/keystore-portable.vectors.testutil.ts`, this entry. No application, codec, format, vector or
+dependency change.
+Acceptance: a regression test fails before and passes after each behavior fix; the WebKit phone/tablet workflow runs on
+the exact head; hosted CI green.
+
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
 Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the

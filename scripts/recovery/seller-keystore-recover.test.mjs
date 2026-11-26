@@ -19,6 +19,7 @@ import {
   detectFormat,
   inspectSellerKeystore,
   LIMITS,
+  main,
   wipe,
 } from './stealth-export-recover.mjs';
 
@@ -399,6 +400,38 @@ test('CLI: one leading UTF-8 byte-order mark is dropped for a keystore, as the a
   const spec18 = cli([single], S.passphrase);
   assert.equal(spec18.status, 1);
   assert.match(spec18.stderr, /^error: invalidFile:/);
+});
+
+/** A terminal stand-in for the no-echo prompt: delivers each chunk after the prompt starts listening. */
+function terminal(chunks) {
+  const modes = [];
+  return {
+    modes,
+    isTTY: true,
+    setRawMode: (raw) => modes.push(raw),
+    resume() {},
+    pause() {},
+    setEncoding() {},
+    off() {},
+    on(event, listener) {
+      if (event === 'data') queueMicrotask(() => { for (const chunk of chunks) listener(chunk); });
+    },
+  };
+}
+
+test('CLI prompt: backspace removes one whole character, including one outside the Basic Multilingual Plane', async () => {
+  const path = fileOf('tty-keystore.json', VALID);
+  // U+1F512 is two UTF-16 units; one backspace (DEL on Unix terminals, BS on Windows) must remove both.
+  for (const erase of ['\u007f', '\b']) {
+    const output = [];
+    const errors = [];
+    const stdin = terminal([PASS, '\u{1F512}', erase, 'x', erase, '\r']);
+    const code = await main([path], { stdin, stdout: { write: (t) => output.push(t) }, stderr: { write: (t) => errors.push(t) } });
+    assert.equal(code, 0, errors.join(''));
+    assert.equal(JSON.parse(output.join('')).metaAddress, K.seller.metaAddress);
+    assert.deepEqual(stdin.modes, [true, false], 'raw mode was not restored');
+    assert.ok(!leaks(`${output.join('')}${errors.join('')}`) && !errors.join('').includes(PASS), 'prompt echoed secrets');
+  }
 });
 
 test('offline recovery of a seller keystore in a fresh directory with no GhostPay packages or repository access', () => {
