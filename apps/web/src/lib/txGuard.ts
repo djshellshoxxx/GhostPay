@@ -174,8 +174,8 @@ export interface ReviewablePayment {
  * Reviews the router payment about to be sent: the calldata bytes are decoded and compared with the preview the user
  * saw, then checked against the manifest router, the token allowlist, the fee cap and the deadline window.
  *
- * @remarks `payERC20WithBuffer` is not decodable by tx-review (deliberately, haiku L-04), so buffer payments keep only
- * the existing preview/calldata comparison of `assertReadyToSend`.
+ * @remarks `payERC20WithBuffer` and `payERC20WithPermitAndBuffer` are not decodable by tx-review (deliberately, haiku
+ * L-04), so buffer payments keep only the existing preview/calldata comparison of `assertReadyToSend`.
  *
  * @returns `'reviewed'`, or `'skipped-buffer'` for a buffer payment.
  */
@@ -185,7 +185,7 @@ export function guardRouterPayment(
   manifest: DeploymentManifest,
   now: number,
 ): 'reviewed' | 'skipped-buffer' {
-  if (preview.method === 'payERC20WithBuffer') return 'skipped-buffer';
+  if (preview.method === 'payERC20WithBuffer' || preview.method === 'payERC20WithPermitAndBuffer') return 'skipped-buffer';
   guardTx(
     { chainId: preview.chainId, to: tx.to, data: tx.data, value: tx.value },
     {

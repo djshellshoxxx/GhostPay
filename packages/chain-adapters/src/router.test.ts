@@ -28,7 +28,8 @@ const erc20 = () => buildPaymentTx(input());
 const permit = () => buildPaymentTx(input({ permitSignature: SIG }));
 const buffer = () => buildPaymentTx(input({ buffer: { bufferWei: 5n, maxBufferWei: 10n } }));
 const native = () => buildPaymentTx(input({ grossAmount: 10n ** 18n }, { token: 'native' }));
-const all = { payERC20: erc20, payERC20WithPermit: permit, payERC20WithBuffer: buffer, payNative: native } as const;
+const permitBuffer = () => buildPaymentTx(input({ permitSignature: SIG, buffer: { bufferWei: 5n, maxBufferWei: 10n } }));
+const all = { payERC20: erc20, payERC20WithPermit: permit, payERC20WithBuffer: buffer, payNative: native, payERC20WithPermitAndBuffer: permitBuffer } as const;
 
 const looseEncode = encodeFunctionData as unknown as (p: { abi: typeof ghostPayRouterAbi; functionName: string; args: readonly unknown[] }) => Hex;
 function withArg(tx: PaymentTx, index: number, value: unknown): PaymentTx {
@@ -72,6 +73,19 @@ describe('buildPaymentTx happy paths', () => {
     expect(decodePaymentCalldata(b.tx, 11155111)).toEqual(b.preview);
     assertPreviewMatchesCalldata(b.preview, b.tx);
     expect(buildPaymentTx(input({ buffer: { bufferWei: 7n } })).preview.maxBufferWei).toBe(7n);
+  });
+  it('payERC20WithPermitAndBuffer carries v/r/s, msg.value and the cap in one call (spec 13 section 2)', () => {
+    const b = permitBuffer();
+    expect(b.preview.method).toBe('payERC20WithPermitAndBuffer');
+    expect(b.tx.value).toBe(5n);
+    expect(b.preview.maxBufferWei).toBe(10n);
+    expect(b.preview.permit).toEqual({ v: 27, r: `0x${'11'.repeat(32)}`, s: `0x${'22'.repeat(32)}` });
+    expect(b.preview.fee).toBe(routerFee(GROSS));
+    expect(decodePaymentCalldata(b.tx, 11155111)).toEqual(b.preview);
+    assertPreviewMatchesCalldata(b.preview, b.tx);
+    // The same bounds as the buffer-only path apply.
+    expect(() => buildPaymentTx(input({ permitSignature: SIG, buffer: { bufferWei: 0n } }))).toThrow(ChainAdapterError);
+    expect(() => buildPaymentTx(input({ permitSignature: SIG, buffer: { bufferWei: 5n, maxBufferWei: 4n } }))).toThrow(ChainAdapterError);
   });
   it('payNative: gross is msg.value, native metadata', () => {
     const b = native();
@@ -123,8 +137,7 @@ describe('buildPaymentTx negatives (fail closed)', () => {
     bad({ minNet: 0n });
     bad({ minNet: 997_500_001n });
   });
-  it('permit + buffer exclusive; permit/buffer rejected for native', () => {
-    bad({ permitSignature: SIG, buffer: { bufferWei: 1n } }, {}, /exclusive/);
+  it('permit/buffer rejected for native (permit + buffer together is its own method)', () => {
     bad({ permitSignature: SIG, grossAmount: 10n ** 18n }, { token: 'native' }, /ERC-20/);
     bad({ buffer: { bufferWei: 1n }, grossAmount: 10n ** 18n }, { token: 'native' }, /ERC-20/);
   });
@@ -195,6 +208,18 @@ describe('assertPreviewMatchesCalldata: mutate every calldata argument', () => {
       { index: 1, value: 1n },
       { index: 2, value: DEADLINE + 1n },
       { index: 4, value: '0x00' },
+    ],
+    payERC20WithPermitAndBuffer: [
+      { index: 0, value: '0x00000000000000000000000000000000000000ff' },
+      { index: 1, value: '0x00000000000000000000000000000000000000ee' },
+      { index: 2, value: GROSS + 1n },
+      { index: 3, value: 1n },
+      { index: 4, value: DEADLINE + 1n },
+      { index: 5, value: 11n },
+      { index: 7, value: '0x00' },
+      { index: 8, value: { v: 28, r: `0x${'11'.repeat(32)}`, s: `0x${'22'.repeat(32)}` } },
+      { index: 8, value: { v: 27, r: `0x${'33'.repeat(32)}`, s: `0x${'22'.repeat(32)}` } },
+      { index: 8, value: { v: 27, r: `0x${'11'.repeat(32)}`, s: `0x${'33'.repeat(32)}` } },
     ],
   };
   for (const [name, f] of Object.entries(all)) {

@@ -44,7 +44,7 @@ const SELECTORS: ReadonlyMap<string, { family: Family; name: string }> = (() => 
     if (item === undefined) throw new Error(`ABI lacks ${name}`);
     m.set(toFunctionSelector(item), { family, name });
   };
-  for (const n of ['payERC20', 'payERC20WithPermit', 'payNative', 'payERC20WithBuffer']) add('router', n);
+  for (const n of ['payERC20', 'payERC20WithPermit', 'payNative', 'payERC20WithBuffer', 'payERC20WithPermitAndBuffer']) add('router', n);
   for (const n of ['transfer', 'approve']) add('erc20', n);
   return m;
 })();
@@ -88,7 +88,8 @@ function decodeStrict(abi: Abi, data: Hex): Strict {
  * `approve` and `transfer`, and empty-calldata native transfers decode; everything else is
  * `{ kind: 'unknown' }` with the reason (`setApprovalForAll`, `increaseAllowance`, Permit2 and every
  * other selector are `UNKNOWN_SELECTOR`; a transaction carrying an EIP-7702 `authorizationList` is
- * `UNSUPPORTED_TX_FEATURE`). `payERC20WithBuffer` is rejected outright (haiku L-04).
+ * `UNSUPPORTED_TX_FEATURE`). `payERC20WithBuffer` and `payERC20WithPermitAndBuffer` are rejected outright
+ * (haiku L-04: buffer payments are not reviewable here).
  * Calldata must re-encode byte for byte, so truncated data, trailing bytes and dirty padding fail.
  * A non-zero `value` on a call that does not take ETH fails. Native vs ERC-20 is decided from the
  * calldata shape only, never from announcement metadata (S3-09a); allowlisting happens in `review`.
@@ -111,7 +112,7 @@ export function decodeTx(tx: TxInput): Intent | UnknownIntent {
   if (data.length < 10) return unknown('MALFORMED_CALLDATA');
   const entry = SELECTORS.get(data.slice(0, 10));
   if (entry === undefined) return unknown('UNKNOWN_SELECTOR');
-  if (entry.name === 'payERC20WithBuffer') return unknown('BUFFER_PAYMENT_UNSUPPORTED');
+  if (entry.name === 'payERC20WithBuffer' || entry.name === 'payERC20WithPermitAndBuffer') return unknown('BUFFER_PAYMENT_UNSUPPORTED');
   const strict = decodeStrict(FAMILY_ABI[entry.family], data);
   if (typeof strict === 'string') return unknown(strict);
   if (entry.family === 'router') return routerPayment(tx, to, data, strict.name);

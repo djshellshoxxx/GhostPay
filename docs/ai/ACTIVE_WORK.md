@@ -1,3 +1,20 @@
+# Spec 13 section 2: router `payERC20WithPermitAndBuffer` (2026-11-26 UTC)
+
+Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b`, base main `e7e98109`. Owner-instructed
+contract change (ADR-0014 order kept: CONTRACTS_SPEC first). Owned paths: `docs/CONTRACTS_SPEC.md` section 1,
+`docs/adr/ADR-0030-router-permit-and-buffer.md` and its ADR-LOG entry, `docs/specs/13-gas-buffer-v2.md` status,
+`docs/developer/contracts-reference.md` router rows, `packages/contracts/src/GhostPayRouter.sol`,
+`src/interfaces/IGhostPayRouter.sol`, `test/Base.t.sol` (shared `_permitSig`), `test/GhostPayRouter.{t,fuzz.t,invariant.t}.sol`,
+`test/echidna/EchidnaRouter.sol`, `.gas-snapshot` entries for the new unit tests, `packages/chain-adapters/src/{abi/router,router}.ts`
+and their tests, `packages/tx-review/src/{decode,types}.ts` and tests, `apps/web/src/lib/txGuard.ts` and test, the three
+DEVIATIONS files, this entry. Not touched: `Pay.tsx`/`payExec.ts` wiring, deployments, manifests, workflows.
+Acceptance: CONTRACTS_SPEC describes the entry point before the code; `forge build/test/fmt/snapshot/natspec` and Slither
+green in CI (no local Foundry); unit tests for happy path, front-run permit, invalid permit, buffer required/too large
+before the permit, expired, zero token, stealth rejecting ETH, token without permit; fuzz and invariant coverage that the
+router holds nothing and the buffer is never charged; client build/decode round trip; tx-review and the web guard treat
+the method like `payERC20WithBuffer`. Overlap check: open PRs #220 (Mythril remediation) and #678 touch other contracts
+only.
+
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
 Worker: `newghostpay-7d/small`, continuing the cut-off docs worker on branch `claude/keen-volta-8ctx9x`. Owned paths:

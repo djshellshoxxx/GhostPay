@@ -207,3 +207,12 @@ argument on `GhostPayRouter` (the audit's other option) so the audited scheme-1 
   optional `EXPECTED_POLICY_FACTORY_CODEHASH`), the `Deploy` announcer rules duplicated (`ANNOUNCER`, `ALLOW_CUSTOM_ANNOUNCER=1`, `EXPECTED_ANNOUNCER_CODEHASH`) because they live in
   `Deploy` rather than `DeployBase`, chain allowlist, and read-back of every immutable plus `SCHEME_ID`. The `deployments/schema.json` manifest has no `policyRouter` field yet (not changed here).
   `.gas-snapshot` gained the new non-fuzz tests only (merged, sorted).
+
+- **`payERC20WithPermitAndBuffer` (2026-11-26, spec 13 section 2, ADR-0030).** New router entry point combining the
+  permit and buffer paths; CONTRACTS_SPEC section 1 was edited first. The permit signature is a `PermitSig` struct
+  because the flat `(v, r, s)` form with the two `bytes` arguments is stack too deep without via-IR. Buffer bounds are
+  checked before the permit so a refused call consumes no nonce. Coverage: unit (`test_permitBuffer_*`), fuzz
+  (`testFuzz_permitAndBufferIsNeverCharged`), the invariant handler (`payPermitBuffer`, with a real ERC-2612 token
+  and signed permits) and the Echidna harness (`payWithPermitBuffer`). **Not** deployed, no manifest, not re-audited;
+  the local gas snapshot entries for the new unit tests come from CI, since the pinned Foundry build could not be
+  installed in the authoring sandbox (the change was syntax- and type-checked with solc 0.8.26 only).

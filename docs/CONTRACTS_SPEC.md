@@ -20,6 +20,10 @@ function payNative(address stealth, uint256 minNet, uint256 deadline,
                   bytes calldata ephemeralPubKey, bytes calldata metadata) external payable;  // gross = msg.value
 function payERC20WithBuffer(IERC20 token, address stealth, uint256 gross, uint256 minNet, uint256 deadline,
                   uint256 maxBufferWei, bytes calldata ephemeralPubKey, bytes calldata metadata) external payable; // buffer = msg.value, no fee on buffer
+struct PermitSig { uint8 v; bytes32 r; bytes32 s; }
+function payERC20WithPermitAndBuffer(IERC20 token, address stealth, uint256 gross, uint256 minNet, uint256 deadline,
+                  uint256 maxBufferWei, bytes calldata ephemeralPubKey, bytes calldata metadata,
+                  PermitSig calldata permit) external payable;   // permit then buffer in one call (ADR-0030); signature as a struct so the 9 parameters fit the EVM stack
 
 event FeeCollected(address indexed token, uint256 amount);   // token = address(0xEeee...) for native. No payer, stealth or invoice fields.
 ```
@@ -29,7 +33,7 @@ Rules (all functions): `nonReentrant`; `block.timestamp <= deadline`; `stealth` 
 - native: `metadata[1:5] == 0xeeeeeeee`, `metadata[5:25] == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`, `metadata[25:57] == net`;
 - `metadata[0]` (view tag) is unconstrained (the router cannot verify it).
 
-ERC-20 transfer path: record balances of `stealth` and `FEE_RECIPIENT`; `safeTransferFrom(msg.sender, FEE_RECIPIENT, fee)` (skipped if `fee == 0`), `safeTransferFrom(msg.sender, stealth, net)`; require the balance deltas equal `fee` and `net` exactly (rejects fee-on-transfer, rebasing-on-transfer tokens). Router must hold zero token balance afterwards (checked by invariant tests, not at runtime). Native path: `call{value: fee}` to `FEE_RECIPIENT`, `call{value: net}` to `stealth`, both must succeed. Then `ANNOUNCER.announce(1, stealth, ephemeralPubKey, metadata)`. `payERC20WithBuffer` additionally requires `msg.value <= maxBufferWei`, `msg.value > 0`, forwards `msg.value` to `stealth` before announcing. `receive()`/`fallback()` revert. No function sweeps stray funds (documented: accidental transfers to the router are unrecoverable).
+ERC-20 transfer path: record balances of `stealth` and `FEE_RECIPIENT`; `safeTransferFrom(msg.sender, FEE_RECIPIENT, fee)` (skipped if `fee == 0`), `safeTransferFrom(msg.sender, stealth, net)`; require the balance deltas equal `fee` and `net` exactly (rejects fee-on-transfer, rebasing-on-transfer tokens). Router must hold zero token balance afterwards (checked by invariant tests, not at runtime). Native path: `call{value: fee}` to `FEE_RECIPIENT`, `call{value: net}` to `stealth`, both must succeed. Then `ANNOUNCER.announce(1, stealth, ephemeralPubKey, metadata)`. `payERC20WithBuffer` additionally requires `msg.value <= maxBufferWei`, `msg.value > 0`, forwards `msg.value` to `stealth` before announcing. `payERC20WithPermitAndBuffer` checks those two buffer rules first (so a refused call consumes no permit nonce), then `token != 0` and the deadline, then `permit(msg.sender, this, gross, deadline, v, r, s)` inside `try/catch` exactly as `payERC20WithPermit`, then the ERC-20 transfer path, the buffer forward and the announcement; no fee on the buffer. `receive()`/`fallback()` revert. No function sweeps stray funds (documented: accidental transfers to the router are unrecoverable).
 
 Custom errors (exact names): `ZeroAddress`, `InvalidStealth`, `Expired`, `ZeroAmount`, `SlippageExceeded`, `InvalidEphemeralKey`, `InvalidMetadata`, `UnexpectedBalanceDelta`, `NativeTransferFailed`, `BufferTooLarge`, `BufferRequired`, `NoDirectETH`.
 

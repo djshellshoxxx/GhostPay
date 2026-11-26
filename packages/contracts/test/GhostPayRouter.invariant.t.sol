@@ -7,10 +7,12 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {GhostPayRouter} from "../src/GhostPayRouter.sol";
 import {IERC5564Announcer} from "../src/interfaces/IERC5564Announcer.sol";
+import {IGhostPayRouter} from "../src/interfaces/IGhostPayRouter.sol";
 import {ERC5564Announcer} from "./utils/ERC5564Announcer.sol";
 import {MockERC20} from "./mocks/MockERC20.sol";
 import {NoReturnToken} from "./mocks/NoReturnToken.sol";
 import {FeeOnTransferToken} from "./mocks/FeeOnTransferToken.sol";
+import {PermitToken} from "./mocks/PermitToken.sol";
 
 /// @notice Drives the router with arbitrary valid and invalid payments and tracks ghost accounting.
 contract RouterHandler is Test {
@@ -18,9 +20,12 @@ contract RouterHandler is Test {
     address public immutable FEE_RECIPIENT;
     address internal constant NATIVE = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    address[] public tokens; // standard 2/6/18 decimals + no-return + fee-on-transfer (always rejected)
+    address[] public tokens; // standard 2/6/18 decimals + no-return + fee-on-transfer (always rejected) + permit
     address[] public stealths;
     address[] public payers;
+    uint256[] public payerKeys;
+    /// @dev The ERC-2612 token in `tokens`: `payPermitBuffer` signs real permits for it.
+    address public immutable PERMIT_TOKEN;
 
     mapping(address => uint256) public sumGross;
     mapping(address => uint256) public sumFee;
@@ -32,14 +37,21 @@ contract RouterHandler is Test {
     uint256 public successes;
     uint256 public rejections;
 
-    constructor(GhostPayRouter router_, address feeRecipient_, address[] memory tokens_) {
+    constructor(
+        GhostPayRouter router_,
+        address feeRecipient_,
+        address[] memory tokens_,
+        address permitToken_
+    ) {
         ROUTER = router_;
         FEE_RECIPIENT = feeRecipient_;
         tokens = tokens_;
+        PERMIT_TOKEN = permitToken_;
         for (uint256 i; i < 4; i++) {
             stealths.push(makeAddr(string.concat("stealth", vm.toString(i))));
-            address p = makeAddr(string.concat("payer", vm.toString(i)));
+            (address p, uint256 pk) = makeAddrAndKey(string.concat("payer", vm.toString(i)));
             payers.push(p);
+            payerKeys.push(pk);
             vm.deal(p, 1_000_000 ether);
             for (uint256 j; j < tokens_.length; j++) {
                 _mint(tokens_[j], p, type(uint112).max);
@@ -160,6 +172,72 @@ contract RouterHandler is Test {
         }
     }
 
+    /// @dev Permit + buffer in one call: a real permit for the ERC-2612 token (its max allowance is
+    /// replaced by the permit value and consumed), a dummy one, swallowed by try/catch, for the others.
+    function payPermitBuffer(
+        uint256 tokenSeed,
+        uint256 payerSeed,
+        uint256 stealthSeed,
+        uint256 gross,
+        uint256 buffer
+    ) external {
+        address t = tokens[tokenSeed % tokens.length];
+        uint256 pi = payerSeed % payers.length;
+        address payer = payers[pi];
+        address st = stealths[stealthSeed % stealths.length];
+        gross = bound(gross, 1, 1e30);
+        buffer = bound(buffer, 1, 10 ether);
+        uint256 fee = gross * 25 / 10_000;
+        uint256 net = gross - fee;
+        uint8 v = 27;
+        bytes32 r;
+        bytes32 s;
+        if (t == PERMIT_TOKEN) (v, r, s) = _permitSig(payerKeys[pi], payer, gross);
+        vm.prank(payer);
+        try ROUTER.payERC20WithPermitAndBuffer{value: buffer}(
+            IERC20(t),
+            st,
+            gross,
+            net,
+            block.timestamp,
+            buffer,
+            _eph(),
+            _meta(t, net, false),
+            IGhostPayRouter.PermitSig({v: v, r: r, s: s})
+        ) {
+            successes++;
+            sumGross[t] += gross;
+            sumFee[t] += fee;
+            sumNet[t] += net;
+            bufferTotal += buffer;
+        } catch {
+            rejections++;
+        }
+    }
+
+    function _permitSig(uint256 pk, address owner, uint256 value)
+        internal
+        view
+        returns (uint8 v, bytes32 r, bytes32 s)
+    {
+        PermitToken pt = PermitToken(PERMIT_TOKEN);
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                ),
+                owner,
+                address(ROUTER),
+                value,
+                pt.nonces(owner),
+                block.timestamp
+            )
+        );
+        (v, r, s) = vm.sign(
+            pk, keccak256(abi.encodePacked("\x19\x01", pt.DOMAIN_SEPARATOR(), structHash))
+        );
+    }
+
     /// @dev Attacker donates tokens / forces ETH to the router; the *pay* flows must still not retain.
     function warpTime(uint256 dt) external {
         vm.warp(block.timestamp + bound(dt, 0, 1 days));
@@ -180,14 +258,16 @@ contract GhostPayRouterInvariantTest is StdInvariant, Test {
         tokens.push(address(new MockERC20("C", "C", 18)));
         tokens.push(address(new NoReturnToken()));
         tokens.push(address(new FeeOnTransferToken()));
-        handler = new RouterHandler(router, feeRecipient, tokens);
+        tokens.push(address(new PermitToken(6)));
+        handler = new RouterHandler(router, feeRecipient, tokens, tokens[5]);
         targetContract(address(handler));
-        bytes4[] memory sel = new bytes4[](5);
+        bytes4[] memory sel = new bytes4[](6);
         sel[0] = RouterHandler.payERC20.selector;
         sel[1] = RouterHandler.payNative.selector;
         sel[2] = RouterHandler.payBuffer.selector;
         sel[3] = RouterHandler.payBadMetadata.selector;
         sel[4] = RouterHandler.warpTime.selector;
+        sel[5] = RouterHandler.payPermitBuffer.selector;
         targetSelector(FuzzSelector({addr: address(handler), selectors: sel}));
     }
 

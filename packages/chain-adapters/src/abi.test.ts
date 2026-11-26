@@ -7,8 +7,14 @@ const names = (abi: readonly { type: string; name?: string }[], type: string): s
   abi.filter((x) => x.type === type).map((x) => x.name ?? '').sort();
 
 describe('generated ABIs', () => {
-  it('router exposes the four payment methods, events and errors of CONTRACTS_SPEC', () => {
-    expect(names(ghostPayRouterAbi, 'function')).toEqual(expect.arrayContaining(['payERC20', 'payERC20WithPermit', 'payNative', 'payERC20WithBuffer', 'FEE_BPS', 'FEE_RECIPIENT']));
+  it('router exposes the five payment methods, events and errors of CONTRACTS_SPEC', () => {
+    expect(names(ghostPayRouterAbi, 'function')).toEqual(expect.arrayContaining(['payERC20', 'payERC20WithPermit', 'payNative', 'payERC20WithBuffer', 'payERC20WithPermitAndBuffer', 'FEE_BPS', 'FEE_RECIPIENT']));
+    const pb = ghostPayRouterAbi.find((x) => x.type === 'function' && x.name === 'payERC20WithPermitAndBuffer');
+    expect(pb?.stateMutability).toBe('payable');
+    expect(pb?.inputs.map((i) => i.name)).toEqual(['token', 'stealth', 'gross', 'minNet', 'deadline', 'maxBufferWei', 'ephemeralPubKey', 'metadata', 'permit']);
+    const permit = pb?.inputs[8] as { type: string; components?: readonly { name: string; type: string }[] } | undefined;
+    expect(permit?.type).toBe('tuple');
+    expect(permit?.components?.map((c) => `${c.name}:${c.type}`)).toEqual(['v:uint8', 'r:bytes32', 's:bytes32']);
     expect(names(ghostPayRouterAbi, 'event')).toContain('FeeCollected');
     for (const e of ['ZeroAddress', 'InvalidStealth', 'Expired', 'ZeroAmount', 'SlippageExceeded', 'InvalidEphemeralKey', 'InvalidMetadata', 'UnexpectedBalanceDelta', 'NativeTransferFailed', 'BufferTooLarge', 'BufferRequired', 'NoDirectETH']) {
       expect(names(ghostPayRouterAbi, 'error')).toContain(e);

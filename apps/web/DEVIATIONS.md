@@ -88,7 +88,8 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. On OP Stack chains the quote and the re-check add the
     L1 data and operator fee reserve the direct sweep demands (2 x the GasPriceOracle quote for an ERC-20 transfer at the buffer's gas
     limit, `src/lib/opStackFee.ts`, shared with `directSweep`); an unreadable oracle refuses the quote. It needs the user's RPC. Buffer payments go through
-    approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
+    approval: the router now has `payERC20WithPermitAndBuffer` (ADR-0030, undeployed) and the client builder supports it, but the
+    app is not wired to it until a deployment carries that build. Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
     bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
     has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
     estimate stays hidden while no feed exists for the chain and pair.

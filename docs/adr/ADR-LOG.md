@@ -145,3 +145,10 @@ Consequences: matching can miss payments made by other clients that compute a di
 ## ADR-0026 Local reconciliation and receipt archive (implementation record)
 
 [ADR-0026](ADR-0026-local-reconciliation-and-receipt-archive.md) is the implementation-level description of the ADR-0025 entry above (matching, receipts, privacy and lifecycle). It records no new decision.
+
+## ADR-0030 Router entry point `payERC20WithPermitAndBuffer` (spec 13 section 2)
+
+[ADR-0030](ADR-0030-router-permit-and-buffer.md): one call that submits the ERC-2612 permit and forwards the native gas
+buffer, so a permit payer needs no separate approval transaction. Composition of the two existing router paths with
+buffer bounds checked before the permit (no nonce consumed by a refused call); the signature is a `PermitSig` struct so
+the nine parameters fit the EVM stack without via-IR. Proposed, pre-audit, not deployed and not used by the web app yet.

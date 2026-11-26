@@ -178,6 +178,7 @@ describe('router payment review before the wallet prompt', () => {
     expect(() => guardRouterPayment(built.tx, built.preview, { ...other, router: FAKE_SWEEP_RELAYER }, NOW)).toThrow(/UNKNOWN_TO/);
     expect(guardRouterPayment(built.tx, built.preview, manifest, NOW)).toBe('reviewed');
     expect(guardRouterPayment(built.tx, { ...built.preview, method: 'payERC20WithBuffer' }, manifest, NOW)).toBe('skipped-buffer');
+    expect(guardRouterPayment(built.tx, { ...built.preview, method: 'payERC20WithPermitAndBuffer' }, manifest, NOW)).toBe('skipped-buffer');
     void FAKE_ROUTER;
   });
 });

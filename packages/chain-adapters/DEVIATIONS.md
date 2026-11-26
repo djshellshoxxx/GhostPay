@@ -58,3 +58,10 @@ The contracts' real code wins over spec text. Each item should be confirmed or r
     per-log cost floor of a scan whatever the worker does, so the spec's "1M spam logs under 60 s" target is withdrawn (spec 05 sections 2A/5). No replay memo
     is added in the adapter: its validation is what makes a hostile log unable to halt a scan (item 7) and it must run on every log. The ERC-20 `Transfer`
     topic is not exported (`payments.ts` keeps it private); the web app's same-token estimate carries the constant itself.
+
+19. **`payERC20WithPermitAndBuffer` (2026-11-26, ADR-0030).** `buildPaymentTx` accepts a permit signature and a buffer together and
+    emits the combined method (before: `INVALID_INPUT`, "mutually exclusive"); `decodePaymentCalldata` and the canonical
+    re-encoding cover it, with the permit as a `{v, r, s}` tuple. The `abi/router.ts` entry for the method was added by hand in
+    the generator's layout and checked field by field against the compiler's ABI output because `forge` was unavailable in
+    the authoring environment; run `scripts/gen-abi.sh` when it is. No deployment has the method yet: a client must not select
+    it unless the manifest's router build does.

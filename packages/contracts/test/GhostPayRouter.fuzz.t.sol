@@ -6,6 +6,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Base} from "./Base.t.sol";
 import {IGhostPayRouter} from "../src/interfaces/IGhostPayRouter.sol";
 import {MockERC20} from "./mocks/MockERC20.sol";
+import {PermitToken} from "./mocks/PermitToken.sol";
 
 /// @notice Property tests for fee arithmetic, metadata binding and decimals handling.
 contract GhostPayRouterFuzzTest is Base {
@@ -187,6 +188,35 @@ contract GhostPayRouterFuzzTest is Base {
         );
         assertEq(stealth.balance, buffer);
         assertEq(feeRecipient.balance, 0);
+    }
+
+    function testFuzz_permitAndBufferIsNeverCharged(uint256 gross, uint256 buffer) public {
+        gross = bound(gross, 1, 1e24);
+        buffer = bound(buffer, 1, 100 ether);
+        (address payer, uint256 pk) = makeAddrAndKey("permitBufferPayer");
+        PermitToken t = new PermitToken(6);
+        t.mint(payer, gross);
+        vm.deal(payer, buffer);
+        uint256 net = gross - gross * 25 / 10_000;
+        (uint8 v, bytes32 r, bytes32 s) = _permitSig(t, pk, payer, gross, deadline);
+        vm.prank(payer);
+        router.payERC20WithPermitAndBuffer{value: buffer}(
+            IERC20(address(t)),
+            stealth,
+            gross,
+            net,
+            deadline,
+            buffer,
+            _eph(),
+            _erc20Meta(address(t), net),
+            IGhostPayRouter.PermitSig({v: v, r: r, s: s})
+        );
+        assertEq(stealth.balance, buffer);
+        assertEq(feeRecipient.balance, 0);
+        assertEq(address(router).balance, 0);
+        assertEq(t.balanceOf(stealth), net);
+        assertEq(t.balanceOf(feeRecipient), gross - net);
+        assertEq(t.allowance(payer, address(router)), 0);
     }
 
     event Announcement(

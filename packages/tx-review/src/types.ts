@@ -2,7 +2,7 @@ import type { Address, Hex } from '@ghostpay/chain-adapters';
 
 export type { Address, Hex };
 
-/** Router entry points that may be reviewed (`payERC20WithBuffer` is deliberately absent, haiku L-04). */
+/** Router entry points that may be reviewed (the buffer methods `payERC20WithBuffer` and `payERC20WithPermitAndBuffer` are deliberately absent, haiku L-04). */
 export type RouterPaymentMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative';
 
 /** `GhostPayRouter` payment call. */

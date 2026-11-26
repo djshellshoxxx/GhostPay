@@ -8,6 +8,7 @@ import {GhostPayRouter} from "../src/GhostPayRouter.sol";
 import {IERC5564Announcer} from "../src/interfaces/IERC5564Announcer.sol";
 import {ERC5564Announcer} from "./utils/ERC5564Announcer.sol";
 import {MockERC20} from "./mocks/MockERC20.sol";
+import {PermitToken} from "./mocks/PermitToken.sol";
 
 /// @notice Shared fixture: canonical reference announcer, router, a standard token and helpers.
 abstract contract Base is Test {
@@ -52,5 +53,28 @@ abstract contract Base is Test {
 
     function _nativeMeta(uint256 net) internal pure returns (bytes memory) {
         return _meta(0xeeeeeeee, NATIVE, net);
+    }
+
+    /// @dev ERC-2612 permit signature of `owner` (key `pk`) for the router as spender, at the token's
+    /// current nonce.
+    function _permitSig(PermitToken t, uint256 pk, address owner, uint256 value, uint256 dl)
+        internal
+        view
+        returns (uint8 v, bytes32 r, bytes32 s)
+    {
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                ),
+                owner,
+                address(router),
+                value,
+                t.nonces(owner),
+                dl
+            )
+        );
+        (v, r, s) =
+            vm.sign(pk, keccak256(abi.encodePacked("\x19\x01", t.DOMAIN_SEPARATOR(), structHash)));
     }
 }
