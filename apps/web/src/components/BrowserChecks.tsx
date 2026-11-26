@@ -7,6 +7,7 @@ const LABELS: Readonly<Record<BrowserCheckId, MessageKey>> = {
   secure: 'app.checks.secure',
   digest: 'app.checks.digest',
   storage: 'app.checks.storage',
+  indexeddb: 'app.checks.indexeddb',
 };
 
 const RESULTS: Readonly<Record<BrowserCheckStatus, MessageKey>> = {
@@ -20,6 +21,7 @@ const EXPLANATIONS: Readonly<Record<BrowserCheckId, Readonly<Record<Exclude<Brow
   secure: { fail: 'app.checks.secure.fail', unavailable: 'app.checks.secure.unavailable' },
   digest: { fail: 'app.checks.digest.fail', unavailable: 'app.checks.digest.unavailable' },
   storage: { fail: 'app.checks.storage.fail', unavailable: 'app.checks.storage.unavailable' },
+  indexeddb: { fail: 'app.checks.indexeddb.fail', unavailable: 'app.checks.indexeddb.unavailable' },
 };
 
 /** Local startup/resume diagnostics shared by every view, never a code authenticity or funds-safety claim. */
