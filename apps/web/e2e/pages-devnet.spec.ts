@@ -1101,6 +1101,8 @@ test.describe('GitHub Pages artifact: refusals', () => {
     const c = await newContext(browser, baseURL, net, { presetRpc: false });
     const extra: BrowserContext[] = [];
     try {
+      // Install before either page mounts so changing wall time cannot reset an existing idle lease's monotonic clock.
+      await c.clock.install({ time: new Date() });
       const s = await quickSeller(c);
       await configureRpc(s, APP_RPC);
       // This context shares its clock: keep both seller and payer inside the idle window while the invoice expires.
@@ -1121,7 +1123,9 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       expect(await storedSettings(p)).toMatchObject({ lockTimeoutMin: 240 });
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
+      const monotonicBeforeExpiry = await p.evaluate(() => performance.now());
       await p.clock.setSystemTime(past);
+      expect(await p.evaluate(() => performance.now())).toBeGreaterThanOrEqual(monotonicBeforeExpiry);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(p.getByText('This invoice has expired. Nothing was sent.', { exact: false }).first()).toBeVisible({ timeout: 30_000 });
       expect(payer.wallet.requests.filter((m) => m === 'eth_sendTransaction')).toHaveLength(0);

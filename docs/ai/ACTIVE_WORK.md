@@ -4118,3 +4118,41 @@ no-send, clock and timeout assertion. Web TypeScript, both changed-file typed li
 all completed successfully. No browser execution is claimed locally. See
 `docs/handoffs/IDLE_EXPIRY_BROWSER_QUALIFICATION_20261126.md` for the original hosted
 failure evidence, real Settings isolation and remaining independent/hosted gates.
+
+## Pages expiry clock-origin fixture correction — 2026-11-26
+
+- Worker: `/root/help_review`; branch: `fix/pages-expiry-clock-origin-20261126`.
+- Base: canonical PR #689 head `4af78c8cd3eafe12b20170ccfd3a0313bf0c9fc5`.
+  Root explicitly handed off this remaining hosted Pages failure; the prior idle
+  fixture worker is assisting read-only and the privacy worker owns separate paths.
+- Owns: `apps/web/e2e/pages-devnet.spec.ts`, this additive claim/results entry and
+  `docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`.
+- Evidence: Pages run `45741328280`, job `139646779828`, tested merge
+  `11fd6dcb3fa6f041d7eccccdcc1a153f4b58fc03` (this head into main `84b80260`).
+  Sixteen cases passed; expiry stopped at the Send click after the clock jump,
+  with pointer interception followed by a detached button. The final expiry
+  assertion was not reached. Both mocked browser profiles now pass the expiry
+  case and all fourteen idle cases (full 182 passed / 2 skipped; lean 170 / 4).
+- Acceptance: diagnose from actual hosted logs and exact source; correct only the
+  expiry fixture's clock setup, preserve every current assertion, clock jump,
+  timeout, wallet disclosure and idle case, and add a clock-origin assertion if
+  needed to distinguish wall-clock expiry from a fixture-created monotonic rollback.
+  No runtime, dependency, workflow, manifest, contract or excluded-product change.
+- Qualification: bounded local clock diagnostics, exact-file typed lint, web
+  typecheck, browser-case collection, source preservation and secret/whitespace
+  checks. The local browser is unavailable; do not reinstall or probe it. Actual
+  corrected-source browser qualification requires fresh hosted CI. Root owns
+  independent review and publication; this worker will not publish or merge.
+
+### Pages clock-origin fixture result — 2026-11-26
+
+Reviewed source `cb2e5c5ce81b895817ca8da3b1590f2bf04f46a1` and normal current-main
+composition `97f026a7fe92062e97e86ab5a8ae633377cf0b64` share tree
+`ef5f6462918ca57f50d5b6af4fc492d107565f91`. Only four Pages fixture lines were
+added; every original source line and all other fixtures are retained. Web
+TypeScript, exact-file typed lint, collection of 17 Pages and 14 idle cases,
+preservation, secret and whitespace checks completed with zero exits. A bounded
+actual-Playwright clock diagnostic confirmed the monotonic-origin mechanism; it
+did not execute the browser. Root independently approved the source. See
+`docs/handoffs/PAGES_EXPIRY_CLOCK_QUALIFICATION_20261126.md`. Final evidence review
+and fresh corrected-source hosted CI remain required.
