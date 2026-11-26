@@ -1,3 +1,15 @@
+# FC-05b onto current main: Bitcoin retained-sweep and session pending-spend guards, superseding #669 (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-42`, continuing the orphaned FC round-1 PRs (entry below). Branch
+`claude/fc05b-main-20261126`, base main `a9d2a033` and then `019d5d18`. Input: #669 exact head `8ea606ff`, merged
+`--no-ff` as `a86cc353`. Donor branch and PR untouched. #669's CHANGES-REQUIRED review of the pending-spend guard
+(M1/L1/L2/M2) is addressed in `d22db6fa` (red tests), `ebda107d` (fix) and `b39bfd8e` (independent re-review fixes).
+Owned: `apps/web/src/features/btc/BtcView.tsx` and its pendingSpend/retainedSweep tests, the
+`btc.scan.pendingSpend` key in four locales and `securityKeys.ts`, #669's scanner/state/worker test additions, the
+FC-05b consolidation note, this entry. Stop-work check: full profile only, testnet proof of concept, sweep fund safety.
+No F14 routing or chain-scope change. Acceptance: M1/L2/M2 tests red at `a86cc353` and green at the head; hosted CI
+green at the exact head; merge through the shared lock queue.
+
 # Owner decision: persistent vault timestamp retention deferred (2026-11-26 UTC)
 
 Recorded by Claude Code session `ghostpay-42`. The owner deferred the persistent half of #287 item 4 until after the
