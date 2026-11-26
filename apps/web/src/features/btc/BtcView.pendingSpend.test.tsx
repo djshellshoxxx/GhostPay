@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import type { EsploraFetch } from './esplora';
-import { appendBlocks, blockTime, coinbase, mineHeader, mockChain, SEED_A, spendTx, walletA, type MockChain } from './fixtures.testutil';
+import { appendBlocks, blockTime, coinbase, mineHeader, mockChain, SEED_A, spendTx, walletA, withWitnessCommitment, type MockChain } from './fixtures.testutil';
 import { inlineBtcScanWorker } from './scanWorker.testutil';
 
 // renderWith also exports a full-app helper; these tests exercise only the production Bitcoin view.
@@ -56,7 +56,8 @@ async function broadcastSweep(user: ReturnType<typeof userEvent.setup>): Promise
 function remineThePayingBlock(chain: MockChain): void {
   const paying = chain.blocks[3]!;
   chain.blocks.splice(3);
-  for (const txs of [[coinbase(0x7a0), ...paying.txs.slice(1)], [coinbase(0x7a1)], [coinbase(0x7a2)]]) {
+  // The re-mined payment has a witness, so the new coinbase must carry the BIP-141 witness commitment (as mineChain does).
+  for (const txs of [[coinbase(0x7a0), ...paying.txs.slice(1)], [coinbase(0x7a1)], [coinbase(0x7a2)]].map(withWitnessCommitment)) {
     const height = chain.blocks.length;
     const header = mineHeader(chain.blocks[height - 1]!.hash, txs, 0x207fffff, blockTime(height, 9));
     chain.blocks.push({ hash: parseHeader(header).hash, header, txs });
