@@ -19,8 +19,9 @@ reappear when you reveal. Privacy mode does not lock your vault, wipe keys or ch
 
 **Reveal details for 30 seconds** shows the page until the first of these happens:
 
-- 30 seconds pass, measured on two independent clocks; a clock that moves backwards ends the reveal at once;
-- you choose **Hide sensitive details** or press **Alt+Shift+H**;
+- 30 seconds pass, measured on two independent clocks; a clock that moves backwards also ends the reveal, at the next
+  one-second check or your next input;
+- you choose **Hide sensitive details** or press **Alt+Shift+H** (**Option+Shift+H** on macOS);
 - you open another page or a different invoice;
 - the app locks, idles out or loads different seller keys;
 - your wallet account, network or provider changes;
