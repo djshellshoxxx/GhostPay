@@ -13,6 +13,10 @@ import { serializePolicyRecord } from '@ghostpay/policy-scheme';
 import * as chainModule from './chain';
 import { installPolicyTestLocks } from './withdrawal.testutil';
 import { DEPLOYMENT, LOCAL_POLICY_PROFILE, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, walletMirror } from './fixtures.testutil';
+import { useAutoApprovedWalletDisclosures } from '../../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 const realVerifyDeployment = chainModule.verifyPolicyDeployment;
 const LABEL = 'Policy accounts (experimental)';

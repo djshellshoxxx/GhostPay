@@ -16,7 +16,7 @@
 | `chain-solana` | Dual-key ed25519 stealth address derive/scan/spend for Solana (testnet proof of concept). | - | cli | - |
 | `chain-tron` | Tron address codec, secp256k1 stealth (ERC-5564 scheme 1 maths) and TRC-20 transfer builders (testnet proof of concept). | core-crypto | cli | - |
 | `cli` | GhostPay command line: invoices, webhooks, schedules, splits, batch payouts, exports, sandbox, doctor. Offline by default. | btc-silent-payments, chain-adapters, chain-solana, chain-tron, core-crypto, i18n, invoice-schema, merchant-billing, merchant-hooks, merchant-ledger, merchant-multisig, qr-exchange, sandbox, ux-vault | - | test:compiled |
-| `confidential-amounts` | GhostPay confidential-amount backends: ConfidentialBackend interface, pinned testnet manifest, CT-M cleartext test double, CT-1 Zama fhEVM adapter, metadata codec, decrypt scheduler. Testnet only (31337, 11155111). | - | - | - |
+| `confidential-amounts` | GhostPay confidential-amount backends: ConfidentialBackend interface, pinned testnet manifest, CT-M cleartext test double, CT-1 Zama fhEVM adapter, metadata codec, decrypt scheduler. Testnet only (31337, 11155111). | invoice-schema | - | test:browser |
 | `confidential-contracts` | GhostPay CT-1 proof of concept: confidential checkout router for ERC-7984 tokens on the Zama fhEVM. Testnet only (31337, 11155111). Hardhat + fhEVM mock; not Foundry (see DEVIATIONS.md). | - | - | compile, test:quick, lint:sol, abi |
 | `core-crypto` | ERC-5564 scheme-1 stealth address engine for GhostPay (ADR-0001). | - | apps/web, chain-adapters, chain-tron, cli, hops, hygiene, metadata-hardening, policy-scheme, pool-sdk, qr-exchange, tron-adapter, ux-vault | - |
 | `donation` | Optional, itemised developer donation: rate validation, amount computation, review view-model, post-payment transfer builders. | - | - | - |
@@ -26,7 +26,7 @@
 | `hops` | Delayed multi-hop forwarding HOP-0/HOP-N, labelled Weak (testnet PoC). | chain-adapters, core-crypto | - | - |
 | `hygiene` | Own-leak hygiene options HY-DST/CON/VER/BUF/FUND (testnet PoC). | chain-adapters, core-crypto | - | - |
 | `i18n` | GhostPay localisation framework: message catalogs, ICU-lite plural/placeholder formatting, locale negotiation, RTL, BCP47 validation, completeness checks. | - | cli, ux-i18n | - |
-| `invoice-schema` | GhostPay v1 invoice schema, canonical serialization, signing and fragment envelope (ADR-0002, ADR-0005). | - | apps/web, chain-adapters, cli, merchant-billing, merchant-hooks, merchant-ledger, qr-exchange, sdk, ux-vault | - |
+| `invoice-schema` | GhostPay v1 invoice schema, canonical serialization, signing and fragment envelope (ADR-0002, ADR-0005). | - | apps/web, chain-adapters, cli, confidential-amounts, merchant-billing, merchant-hooks, merchant-ledger, qr-exchange, sdk, ux-vault | - |
 | `merchant-billing` | Pure merchant billing logic for GhostPay: subscriptions (reminder invoices), deposits and installments, private refund plans, split and bulk payouts. | invoice-schema, merchant-hooks | cli | - |
 | `merchant-hooks` | Self-hosted order webhooks, payment buttons, POS/QR and NFC payload builders (pure). | invoice-schema | cli, merchant-billing | - |
 | `merchant-ledger` | Merchant reconciliation and accounting/tax exports (pure, bigint money). | invoice-schema | cli | - |

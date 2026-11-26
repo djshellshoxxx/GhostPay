@@ -31,7 +31,11 @@ export function buildAccessibleName(input: AccessibleNameInput): string {
     throw new I18nError('bad-input', 'accessible name requires a non-empty label');
   }
   const joined = parts.join(', ');
-  return joined.length > MAX_NAME ? `${joined.slice(0, MAX_NAME - 1)}\u2026` : joined;
+  if (joined.length <= MAX_NAME) return joined;
+  let end = MAX_NAME - 1;
+  const last = joined.charCodeAt(end - 1);
+  if (last >= 0xd800 && last <= 0xdbff) end--;
+  return `${joined.slice(0, end)}\u2026`;
 }
 
 /** Live region politeness. */

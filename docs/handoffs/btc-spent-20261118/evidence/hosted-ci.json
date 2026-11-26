@@ -1,0 +1,202 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "pullRequest": 244,
+  "head": "ef08170a83d86d194b8ce4186299e791027e461e",
+  "testedMerge": "278b1d5afcbc5056fd096ea52e34feaaeedfdb4e",
+  "tree": "0074dde6081e45188c45feb39503c64243ef99b8",
+  "runId": 44472294271,
+  "jobs": [
+    {
+      "id": 135386936883,
+      "name": "Whole workspace TypeScript",
+      "command": "npm run typecheck",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294271/job/135386936883",
+      "excerpts": [
+        "2026-11-19T06:46:18.8515350Z node: v22.23.4",
+        "2026-11-19T06:46:18.8515999Z npm: 10.9.9",
+        "2026-11-19T06:46:33.9368230Z ##[group]Run npm run typecheck"
+      ]
+    },
+    {
+      "id": 135386936856,
+      "name": "Whole workspace ESLint",
+      "command": "npm run lint",
+      "conclusion": "failure",
+      "errors": 10,
+      "affectedFile": "apps/web/src/features/btc/scanWorkerClient.ts",
+      "reason": "Array.isArray narrows subsequent callbacks to any; safe callback type annotations required. No rule or assertion is disabled.",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294271/job/135386936856",
+      "excerpts": [
+        "2026-11-19T06:52:54.8364260Z /home/runner/work/GhostPay/GhostPay/apps/web/src/features/btc/scanWorkerClient.ts",
+        "2026-11-19T06:52:54.8398615Z ##[error]  41:30  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8416457Z ##[error]  41:71  error  Unsafe argument of type `any` assigned to a parameter of type `number`  @typescript-eslint/no-unsafe-argument",
+        "2026-11-19T06:52:54.8419235Z ##[error]  41:73  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8422021Z ##[error]  41:87  error  Unsafe member access .hash on an `any` value                            @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8423745Z ##[error]  42:29  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8425337Z ##[error]  42:70  error  Unsafe argument of type `any` assigned to a parameter of type `number`  @typescript-eslint/no-unsafe-argument",
+        "2026-11-19T06:52:54.8426881Z ##[error]  42:72  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8428416Z ##[error]  42:86  error  Unsafe member access .blockHash on an `any` value                       @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8430002Z ##[error]  43:39  error  Unsafe member access .txid on an `any` value                            @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8431940Z ##[error]  43:56  error  Unsafe member access .vout on an `any` value                            @typescript-eslint/no-unsafe-member-access",
+        "2026-11-19T06:52:54.8433656Z ✖ 10 problems (10 errors, 0 warnings)",
+        "2026-11-19T06:52:55.1443152Z ##[error]Process completed with exit code 1."
+      ]
+    },
+    {
+      "id": 135386936908,
+      "name": "Lean Chromium",
+      "command": "GHOSTPAY_LOCAL_BUILD_PROFILE=lean npm run test:e2e --workspace @ghostpay/web",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294271/job/135386936908",
+      "excerpts": [
+        "2026-11-19T06:48:36.4716194Z node: v22.23.4",
+        "2026-11-19T06:48:36.4716431Z npm: 10.9.9",
+        "2026-11-19T06:52:28.4491866Z   -  19 [desktop] › e2e/btc-spent-consent.spec.ts:19:1 › local Bitcoin scans disclose no outpoints; explicit provider checks are revocable during a native-worker scan",
+        "2026-11-19T06:52:28.4894632Z   -  20 [desktop] › e2e/btc-spent-consent.spec.ts:50:1 › legacy encrypted Bitcoin matches remain unknown until explicit provider refresh or a fresh local scan",
+        "2026-11-19T06:52:28.6806454Z   ✓  21 [desktop] › e2e/btc-spent-consent.spec.ts:113:1 › lean profile exposes no Bitcoin controls, worker, or provider requests (183ms)",
+        "2026-11-19T06:52:28.7272670Z   -  22 [desktop] › e2e/btc-worker.spec.ts:6:1 › Bitcoin native worker cancels, resumes encrypted checkpoints, and never selects restored matches",
+        "2026-11-19T06:54:24.2135044Z   5 skipped",
+        "2026-11-19T06:54:24.2136581Z   71 passed (2.6m)",
+        "2026-11-19T06:54:26.2328998Z SHA256 digest of uploaded artifact is 5d1e7bc5be80b1d9cc3d35ba37fa784af7ffdf5999dae1a0f35478047aca09bf",
+        "2026-11-19T06:54:26.7611495Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294271/artifacts/14505827944"
+      ]
+    }
+  ],
+  "observedAtUTC": "2026-11-19 07:02:55 UTC",
+  "observedJobs": [
+    {
+      "id": 135384438542,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135384438923,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936856,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135386936867,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936883,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936906,
+      "name": "ts-check",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936908,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936913,
+      "name": "contracts-coverage",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936931,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936938,
+      "name": "lean-candidate",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936942,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386936944,
+      "name": "contracts-static",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936975,
+      "name": "contracts-test",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936981,
+      "name": "ts-test (rest-1)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936990,
+      "name": "contracts-slither",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386936993,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386937025,
+      "name": "ts-test (web)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386937029,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386937030,
+      "name": "e2e (full)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386937063,
+      "name": "ts-test (core-crypto)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 135386937065,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135386937303,
+      "name": "ts-test (confidential-contracts)",
+      "status": "queued",
+      "conclusion": null
+    }
+  ],
+  "note": "Snapshot of the earlier integration run before corrected-candidate publication; queued jobs are not passes. The ten worker callback typing errors were corrected and verified locally; fresh CI is required for the corrected head."
+}

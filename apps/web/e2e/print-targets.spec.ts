@@ -6,6 +6,8 @@ import { configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkS
 import { generateKeys } from './helpers';
 
 // Exercise the production cascade, including the secret-QR print exclusions.
+// index.html loads appearance.css before the bundle; the fixture must load it too or the dark palette is absent.
+const appearanceCss = readFileSync(new URL('../public/appearance.css', import.meta.url), 'utf8');
 const appCss = readFileSync(new URL('../src/styles/app.css', import.meta.url), 'utf8');
 const printCss = readFileSync(new URL('../src/styles/print.css', import.meta.url), 'utf8');
 const qrCss = readFileSync(new URL('../src/styles/qr.css', import.meta.url), 'utf8');
@@ -96,7 +98,7 @@ async function printFixture(page: Page, order: 'app-first' | 'print-first', opti
   receipts?: 0 | 1 | 2;
   media?: 'print' | 'screen';
 } = {}): Promise<void> {
-  const styles = order === 'app-first' ? [appCss, printCss, qrCss] : [printCss, qrCss, appCss];
+  const styles = order === 'app-first' ? [appearanceCss, appCss, printCss, qrCss] : [appearanceCss, printCss, qrCss, appCss];
   const selected = (target: Target): string => options.target === target ? 'data-print-target=""' : '';
   const receipt = (target: 'receipt-one' | 'receipt-two'): string => `
     <article class="receipt-print" data-testid="${target}" ${selected(target)}>
@@ -154,14 +156,14 @@ test('dark screen colors switch to white paper and legible receipt notes when pr
   await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
   const paper = page.locator('body');
   const note = page.getByTestId('receipt-two').locator('.hint');
-  await expect(paper).toHaveCSS('background-color', 'rgb(15, 18, 24)');
-  await expect(note).toHaveCSS('color', 'rgb(180, 188, 203)');
+  await expect(paper).toHaveCSS('background-color', 'rgb(5, 9, 18)');
+  await expect(note).toHaveCSS('color', 'rgb(168, 195, 218)');
   await page.emulateMedia({ media: 'print' });
   await expect(paper).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(note).toHaveCSS('color', 'rgb(74, 82, 96)');
   await page.emulateMedia({ media: 'screen' });
-  await expect(paper).toHaveCSS('background-color', 'rgb(15, 18, 24)');
-  await expect(note).toHaveCSS('color', 'rgb(180, 188, 203)');
+  await expect(paper).toHaveCSS('background-color', 'rgb(5, 9, 18)');
+  await expect(note).toHaveCSS('color', 'rgb(168, 195, 218)');
 });
 
 async function expectReceiptVisible(page: Page, target: 'receipt-one' | 'receipt-two'): Promise<void> {

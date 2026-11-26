@@ -1,5 +1,10 @@
 # Verification and Release Gates
 
+## Issue #286 clipboard gate
+
+Verify the [clipboard inventory and acceptance cases](../privacy/clipboard-actions.md) on the integrated Pages candidate. Keep the issue open until the other four privacy requirements and independent review also qualify.
+
+
 ## Pages IndexedDB recovery — rotation 139, exact-head GREEN after failed-job retry
 
 - **Source and requirement:** Static Pages-only [draft #177](https://github.com/djshellshoxxx/GhostPay/pull/177) at `17f681915f25441f5c38326ad718b8082495d52a`, stacked on #175. On unexpected `IDBDatabase.close`, the tag store must invalidate only its matching cached database handle and reopen for the next vault snapshot. Regression `apps/web/src/lib/idbStore.test.ts` was verified **RED** at test-only `017e824db6f5fb580f59e611502ad1eef55debfd` in [run #43805802989](https://github.com/djshellshoxxx/GhostPay/actions/runs/43805802989). The current source has the minimal `onclose` guard with unchanged assertions.

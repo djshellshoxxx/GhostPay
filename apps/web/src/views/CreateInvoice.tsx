@@ -1,10 +1,14 @@
+import { InvoiceMetadataChoice, DownloadInvoiceLink } from '../components/InvoiceSharing';
 import { ManifestBanner } from '../components/ManifestBanner';
+import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
+import { PaymentRequestDownload } from '../components/PaymentRequestDownload';
 import { ContextHelp } from '../components/ContextHelp';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
@@ -16,6 +20,7 @@ import { registrationFromInvoice } from '../lib/reconciliationMatch';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
+import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -46,6 +51,15 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 }
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const presentation = usePresentationGeneration();
+  const { session } = useApp();
+  const [owner, setOwner] = useState({ session, generation: 0 });
+  // Invoice drafts and retention choices belong to one loaded seller and presentation interval.
+  if (owner.session !== session) setOwner({ session, generation: owner.generation + 1 });
+  return <InvoiceForm key={`${owner.generation}:${presentation}`} supportedOnly={supportedOnly} />;
+}
+
+function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -61,6 +75,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [expiryHours, setExpiryHours] = useState(24);
   const [quoteMinutes, setQuoteMinutes] = useState(15);
   const [slippage, setSlippage] = useState(50);
+  const [minimalMetadata, setMinimalMetadata] = useState(false);
   const [memo, setMemo] = useState('');
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
@@ -88,6 +103,14 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
     mounted.current = true;
     return () => { mounted.current = false; };
   }, []);
+  // #287 item 4: only the generated result shown here is enrolled. A confirmed cleanup or an opted-in expiry closes it;
+  // links already shared stay valid, and the invoice, its registration and every saved record are untouched.
+  // An expiry happens without user action, so it is announced; a confirmed cleanup reports through its own control.
+  const [previewExpired, setPreviewExpired] = useState(false);
+  useInvoicePreviewRetention(created, (reason) => {
+    setCreated((current) => current === created ? undefined : current);
+    setPreviewExpired(reason === 'expired');
+  });
 
   if (app.session === undefined) {
     return (
@@ -171,6 +194,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       quoteTtlMinutes: quoteMinutes,
       maxSlippageBps: slippage,
       memo,
+      minimalMetadata,
       encrypt,
       ...(protectWithPassphrase ? { passphrase } : {}),
       ...(bufferPolicy === undefined ? {} : { bufferPolicy }),
@@ -282,9 +306,17 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
 
         <fieldset>
           <legend>{t('create.items.legend')}</legend>
+          <InvoiceMetadataChoice minimal={minimalMetadata} onChange={(minimal) => {
+            submissionRun.current++;
+            registrationRun.current++;
+            setCreated(undefined);
+            setRegistration(undefined);
+            setError(undefined);
+            setMinimalMetadata(minimal);
+          }} />
           {items.map((it, i) => (
             <div className="row" key={i}>
-              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
+              {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>}
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
@@ -326,12 +358,12 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>}
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
-            <label htmlFor="enc">{t('create.encrypt')}</label>
+            <label htmlFor="enc">{minimalMetadata ? t('create.metadata.bearer') : t('create.encrypt')}</label>
           </div>
-          <p className="hint">{t('create.encrypt.hint')}</p>
+          <p className="hint">{minimalMetadata ? t('create.metadata.bearerHint') : t('create.encrypt.hint')}</p>
           <div className="check">
             <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
             <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
@@ -362,14 +394,16 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <ContextHelp id="register-matching-help" label={t('help.about', { control: t('create.matching.label') })}>{t('help.merchantRegistration')}</ContextHelp>
         </fieldset>
 
+        <Notice kind="warn">{t('ledger.late.beforeCreate')}</Notice>
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {visibleCreated !== undefined && (
-        <div className="result" aria-live="polite">
+        <div className="result">
           <h3>{t('create.result.title')}</h3>
+          <p>{t('reuse.invoiceMeta')}</p>
           <Notice kind="warn" title={t('create.bearer.title')}>
             {t('create.bearer.lead')} {visibleCreated.passphraseProtected ? t('create.bearer.passphrase') : visibleCreated.encrypted ? t('create.bearer.encrypted') : t('create.bearer.plain')} {t('create.bearer.copies')}
           </Notice>
@@ -377,7 +411,9 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
-          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} autoClearAfterMs={app.settings.invoiceLinkClipboardDelaySec * 1_000} /></p>
+          <DownloadInvoiceLink link={visibleCreated.link} />
+          <PaymentRequestDownload fragment={visibleCreated.fragment} />
           {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
@@ -387,6 +423,11 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           />
         </div>
       )}
+      <div aria-live="polite">
+        {previewExpired && visibleCreated === undefined && <Notice kind="info">{t('retention.expired')}</Notice>}
+      </div>
+      {/* Outside the result, so focus and the outcome message survive the cleanup it performs. */}
+      <MetadataRetentionControls />
     </section>
   );
 }

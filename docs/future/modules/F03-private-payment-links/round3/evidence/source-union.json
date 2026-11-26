@@ -1,0 +1,181 @@
+{
+  "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "feature": "1de98f6c9371010883253450446e6f7294da84fa",
+  "reviewed_local_merge": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "merged_tree": "6c3c65280f693bd6477218f10aff46b2a3d95e1f",
+  "main_changed_paths": [
+    "apps/web/src/lib/buildProfile.test.ts",
+    "apps/web/src/lib/buildProfile.ts",
+    "apps/web/src/lib/merchantIdentity.test.ts",
+    "apps/web/src/lib/merchantIdentity.ts",
+    "apps/web/src/lib/qrKinds.test.ts",
+    "apps/web/src/lib/qrKinds.ts",
+    "apps/web/src/lib/qrMultipart.test.ts",
+    "apps/web/src/lib/qrMultipart.ts",
+    "apps/web/src/lib/scanSpam.partial.test.ts",
+    "apps/web/src/lib/scanSpam.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/consolidation/main-unique-code-20261120/PROVENANCE.json",
+    "docs/consolidation/main-unique-code-20261120/REPORT.md",
+    "docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md",
+    "docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md",
+    "docs/handoffs/PAYMENT_URI_LENGTH_20261120.md",
+    "docs/handoffs/QR_KIND_FAILCLOSED_20261119.md",
+    "docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md",
+    "docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md",
+    "packages/payment-uri/src/bitcoin.ts",
+    "packages/payment-uri/src/builder-length.test.ts",
+    "packages/payment-uri/src/query.ts",
+    "packages/payment-uri/src/solana.ts",
+    "packages/payment-uri/src/tron.ts"
+  ],
+  "feature_changed_path_count": 85,
+  "overlap": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "verified_union_paths_excluding_registry": 4003,
+  "main_paths_preserved_exactly": [
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+      "path": "apps/web/src/lib/buildProfile.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "path": "apps/web/src/lib/buildProfile.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "957027808890f366f337c375e52b5c081206dae7",
+      "path": "apps/web/src/lib/merchantIdentity.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "path": "apps/web/src/lib/merchantIdentity.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "path": "apps/web/src/lib/qrKinds.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "path": "apps/web/src/lib/qrKinds.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45992f537d1f226dd20e57d96a246c6f18419395",
+      "path": "apps/web/src/lib/qrMultipart.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+      "path": "apps/web/src/lib/qrMultipart.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "path": "apps/web/src/lib/scanSpam.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83bbcb401e750c73660bff744a284da0e9acd4d5",
+      "path": "docs/consolidation/main-unique-code-20261120/PROVENANCE.json"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4aab294c9792eb5db24dece0e3b73b5d0ad57d14",
+      "path": "docs/consolidation/main-unique-code-20261120/REPORT.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "250006d79e02bec971dba50c247c077455efd5e8",
+      "path": "docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7f23de46f6c1b747e749f0955dcdce62b54dca4d",
+      "path": "docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "714f1a22ee0561fe6a7cf432c414a9cc0e6766e3",
+      "path": "docs/handoffs/PAYMENT_URI_LENGTH_20261120.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5201c6a3899f4c608cba81fb1d0d089ca06789f0",
+      "path": "docs/handoffs/QR_KIND_FAILCLOSED_20261119.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe3c0da8a695d1cabec0faef7e1742a5a297cf69",
+      "path": "docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07ab7a5be99c0eae79510ab4fea10edd1c6f7a21",
+      "path": "docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64915453404d7943d6c1cfdbcce20d3de936aa66",
+      "path": "packages/payment-uri/src/bitcoin.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a7ae62c2097c5ca032345f81e936b3335e52da8",
+      "path": "packages/payment-uri/src/builder-length.test.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72ea90b057e4fdfcf334380db4d76d19da67db64",
+      "path": "packages/payment-uri/src/query.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e95dbaaca0ed19c7124affbcc3d09f1349812cc2",
+      "path": "packages/payment-uri/src/solana.ts"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "316b71948856d0f1784211fc6eebdec7e5928c31",
+      "path": "packages/payment-uri/src/tron.ts"
+    }
+  ],
+  "registry": "Feature ownership prefix + complete incoming main registry, including appended QA02 entry; common base once.",
+  "preserved_f03_test_blob": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f",
+  "qualification": "Source preservation only; gate results are separate source-pinned records."
+}
