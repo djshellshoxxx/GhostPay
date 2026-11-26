@@ -30,7 +30,7 @@ test('a multi-part invoice QR is assembled from looping parts, previewed locally
   b.on('request', (r) => { if (!r.url().startsWith('http://localhost:4173/')) requests.push(r.url()); });
   await b.goto('/');
   await b.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: /^Pay$/ }).click();
-  await b.getByText('Scan an invoice QR').click();
+  await b.getByText('Scan an invoice QR or open a request file').click();
   const region = b.getByRole('region', { name: 'Invoice QR import' });
   await region.getByRole('button', { name: 'Scan with camera' }).click();
   await expect(region.getByRole('progressbar')).toBeVisible({ timeout: 20_000 });

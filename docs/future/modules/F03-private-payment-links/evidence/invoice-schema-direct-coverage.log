@@ -1,0 +1,54 @@
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/packages/invoice-schema
+      Coverage enabled with v8
+
+ ✓ src/envelope.test.ts > plain fragments > round trips and verifies 24ms
+ ✓ src/envelope.test.ts > plain fragments > round trips a v2 invoice with its bufferPolicy in the signed public part (ADR-0024) 29ms
+ ✓ src/envelope.test.ts > plain fragments > encoding is deterministic 11ms
+ ✓ src/envelope.test.ts > plain fragments > a valid signature is not a trusted seller until the signer is pinned 19ms
+ ✓ src/envelope.test.ts > plain fragments > an invalid signature is reported, never pinned 14ms
+ ✓ src/envelope.test.ts > plain fragments > swapping the signer key (attacker re-signs with own key) is valid but not pinned 11ms
+ ✓ src/envelope.test.ts > plain fragments > tampering with any field of a plain envelope never yields a valid signature on altered data 23ms
+ ✓ src/envelope.test.ts > plain fragments > inert strings: XSS payloads come back as plain data 27ms
+ ✓ src/envelope.test.ts > plain fragments > invalid signature at encode time is refused 16ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > round trips; private part is not visible in the fragment 18ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > works with no memo 18ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > is an independent-implementation-compatible AES-256-GCM with the documented AAD 16ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > key and GCM nonce are unique per encryption (300 encodes) 1455ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > injected RNG makes encryption reproducible 15ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > ciphertext, tag, nonce and key tampering all fail authentication 29ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > AAD mismatch (chainId or signer altered in the public part) fails authentication 12ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > altering other public fields decrypts but fails the signature 17ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > rejects malformed encrypted envelopes 15ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > post-decrypt checks: bad UTF-8, non-canonical, extra keys, private keys in public part 13ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > requires Web Crypto 12ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > exactly 16384 decoded bytes parses; 16385 fails closed 2197ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > rejects absurd encoded lengths before decoding 7ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > refuses to encode an oversize invoice 86ms
+ ✓ src/envelope.test.ts > parser failure classes > format errors 2ms
+ ✓ src/envelope.test.ts > parser failure classes > base64url violations 11ms
+ ✓ src/envelope.test.ts > parser failure classes > invalid UTF-8 and BOM 1ms
+ ✓ src/envelope.test.ts > parser failure classes > JSON violations 13ms
+ ✓ src/envelope.test.ts > parser failure classes > non-canonical but valid JSON is refused 15ms
+ ✓ src/envelope.test.ts > parser failure classes > schema, version and algorithm violations 17ms
+ ✓ src/envelope.test.ts > parser failure classes > errors and their serialization never echo the input 11ms
+ ✓ src/envelope.test.ts > parser failure classes > typed class hierarchy 2ms
+ ✓ src/envelope.test.ts > flipping any character of a fragment never produces a valid altered invoice > plain 187ms
+ ✓ src/envelope.test.ts > flipping any character of a fragment never produces a valid altered invoice > encrypted 92ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > round trips; only alg, chainId, signer and KDF header are in clear 8133ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > matches an independent scrypt + AES-GCM implementation with the documented AAD 4887ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > default cost is 2^17 and round trips 19167ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > salt and nonce are fresh per encode 4595ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > openFragment reports needsPassphrase without KDF work, then opens with it 4793ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > parseFragment without a passphrase throws PassphraseRequiredError 2445ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > wrong passphrase yields one generic typed error 4652ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > tampering any authenticated field gives the same WrongPassphraseError (no oracle) 34504ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > truncated ciphertext fails closed 5336ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > KDF parameters outside the allow-list are refused before any derivation (no DoS) 2617ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > structural problems are typed schema/base64 errors 2628ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > downgrade: re-labelling a PW envelope as A256GCM or none is rejected 2288ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > link substitution: a passphrase supplied for a non-passphrase link is refused 13ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature 9246ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > authentic but malformed plaintext gives typed errors (reachable only with the passphrase) 45336ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > unicode: NFKC-equivalent passphrases open the same link 20707ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > passphrase policy: length in code points, byte cap, lone surrogates, type 2354ms

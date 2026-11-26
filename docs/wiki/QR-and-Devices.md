@@ -11,7 +11,7 @@ A scan is not itself transaction or key-import authorization: the relevant flow 
 
 ## For users
 
-- **Pay from a QR:** Pay → *Scan an invoice QR* → *Review scanned invoice* → *Open scanned invoice* → the normal
+- **Pay from a QR:** Pay → *Scan an invoice QR or open a request file* → *Review scanned invoice* → *Open scanned invoice* → the normal
   payment review. A valid signature does not prove who the seller is.
 - **Long invoices** appear as *Part 1 of N*. Keep GhostPay's scanner on the codes; parts can arrive in any order, and
   a missed part is caught on the next loop. Ordinary camera apps cannot read multi-part codes.

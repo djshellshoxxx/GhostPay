@@ -16,6 +16,7 @@ export const DOWNLOAD_NAMES = Object.freeze([
   'ghostpay-seller-public.json',
   'ghostpay-receipt.json',
   'ghostpay-receipts.json',
+  'ghostpay-request.gpr.json',
   'ghostpay-proof-of-payment.json',
   'ghostpay-reconciliation-encrypted.json',
   'ghostpay-untrusted-legacy-ledger.txt',

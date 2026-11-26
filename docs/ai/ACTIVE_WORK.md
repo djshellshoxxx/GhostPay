@@ -194,6 +194,18 @@ Worker: Codex. Branch `fix/seller-linked-payment-reconciliation` starts at #546 
 Own the linked-payment retry and duplicate-observation handling in the portable reconciliation vault, its invoice regressions, the seller assertions in flows.spec.ts and pages-devnet.spec.ts, and the CLI history test fixture that uses that vault. Extend the scanClient.ts page-finality/checkpoint logic and its local scanClient.test.ts fixtures for a retreating tip. Update the reconciliation ADR. The Scan privacy localization fixture has a separate worker and candidate. Leave both parent branches and its test untouched.
 Acceptance: count only distinct verified linked payments, revisit unresolved linked inclusions, withhold credit through interruptions, preserve seller decisions on invalidation, and prove repeated reconciliation and reload against local fixtures. No hosted blockchain, deployment or shared-branch integration.
 
+## FC-01 independent qualification (2026-11-25)
+
+Worker: Claude Code session `focused-meitner-07a9u7`. Branch `nodata/focused-meitner-07a9u7`, a descendant of the FC-01
+head `5543c2a3670ceffc43fd7751edeab74feac4f3e4` (main `5dc05bd6b73effef3d6fd3443a2e2fdde1103d3a`). The owner `fc01`
+was still pushing when this started, so its branch is not edited and integration stays with that owner. Owned
+paths: this subsection, `docs/consolidation/feature-completion-20261125/FC-01-f03-request-file-QUALIFICATION.md` (the owner keeps
+`FC-01-f03-request-file.md`) and the new
+browser regression `apps/web/e2e/payment-request-file-attempt.spec.ts` (file entry versus the #500 journal). No
+production source change. Acceptance: the affected local gates, the six request-file browser scenarios on fresh full and lean
+builds, union and hunk checks against main and the donor, an independent review, and hosted CI recorded against
+exact SHAs. The handoff is left ready for the owner's integration.
+
 # GP-PAGES-02 seller-keystore backup verification and restoration consolidation (2026-11-24 UTC)
 
 Worker: Claude Code session `ghostpay-backup-60`; branch `claude/backup-recovery`; base main `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
@@ -3744,3 +3756,201 @@ Child branches (isolated worktrees, merged by the lead only): `claude/priv-t01-i
 Owned paths: new `apps/web/src/test/rpcDisclosure*.ts`, new `apps/web/src/lib/scanDisclosure*.test.ts`, new `packages/scan-source/src/*.omission.test.ts` and `*.evidence.test.ts`, new `apps/web/src/lib/scanClient.checkpoint*.test.ts`, `docs/research/privacy-evidence-matrix-2026-11-10.md`, `docs/research/privacy-rpc-call-graph.md`. Additive-only changes to `packages/scan-source/src/{light,types,index}.ts` if a typed evidence representation is justified.
 Not owned: `apps/web/src/lib/scanClient.ts` and `scannerCore.ts` runtime (many open PRs touch scan paths, e.g. #625, #635, #653); any change there is reported with a failing regression test first and coordinated. No production telemetry, no new runtime dependency, no change to payment verification.
 Acceptance: test-only instrumentation over the existing transport boundaries recording classes not values; scenarios A to J; indexer omission and truncation tests that never expect an undetectable omission to be detected; light-client evidence bounded; checkpoint safety regressions; matrix updated only with evidence actually produced; focused tests, typecheck, lint, hosted CI on the exact head.
+
+# Coordinator continuation: request-file completion — 2026-11-26 UTC
+
+- Worker: ChatGPT `/root/artifact_review`, delegated by the unfinished-branch coordinator. Dedicated branch `finish/request-file-completion-20261126`; isolated worktree `/workspace/scratch/8812b4211518/GhostPay-request-files`; base the stable clipboard/P14 candidate `222d0708d4a05fb94e4b7b94f14e0811a1ad9b76`, itself descending from published #685 `db544fa5e2e28129d6e8e53bb293d72dc08b8c02`.
+- Inputs: #650 `3851f02b04325d417a52b80cc107290f1f434597` and #654 `a75ed0b14e26a0035f3922625d3b1ee3b06447da`, both freshly rechecked. Preserve both by normal merges and keep every original branch and ownership record. The coordinator confirmed succession after the feature-completion driver exited; #650 records explicit owner approval for the signed invoice request-file slice. Current main `29d21c1b2d8f8431115d99338db1667dc585ac16` instructions remain binding.
+- Own only additive merge reconciliation in this registry and `apps/web/src/i18n/securityKeys.ts`; the bounded app-lock cancellation follow-up in `apps/web/src/components/CameraImporter.tsx` and directly affected ordinary lifecycle tests; the real-passphrase timing fix in `apps/web/src/views/Pay.requestFile.test.tsx`; and a new `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. Preserve donor request-file behavior, latest 180-second interop timeout, clipboard policy, P14 evidence, existing locale values and current-main payment/recovery checks.
+- Acceptance: app lock aborts pending camera/paste/image work, stops tracks, clears partial transfer state and prevents automatic restart while keeping D1's textarea node and draft text; real scrypt remains exercised with a bounded per-case wait and total timeout; ordinary focused tests, affected typecheck/lint/build, source preservation, whitespace and secret checks pass. No assertion or coverage weakening.
+- Boundaries: approved request-file interchange and shared-core local privacy only; no broader F03 product, excluded/deferred feature activation, wallet/send/journal redesign, KDF weakening, dependency/workflow change, mutation/fuzz/exploit campaign or deployment. Root owns independent review, publication, combined hosted CI and integration. This worker makes local commits only and no remote mutations.
+
+# FC-01 — F03 signed invoice request-file interchange onto current main
+
+Worker `fc01`, branch `claude/fc01-f03-request-file-20261125`, base main
+`f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f`; donor PR #310 head
+`dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec`, merged with `--no-ff`. Owned paths: the F03 request-file
+components, `requestFileInterop.test.ts`, `Pay.requestFile.test.tsx`, `Pay.invoiceQr.test.tsx`, F03 hunks of
+`apps/web/src/views/{Pay,CreateInvoice}.tsx`, F03 keys in `securityKeys.ts` and the four locale catalogs,
+`apps/web/e2e/payment-request-file.spec.ts`, `packages/invoice-schema/{src/requestFile*,src/index.ts,README.md}`, and
+`docs/consolidation/feature-completion-20261125/FC-01-f03-request-file.md`. Journal and attempt code are excluded.
+Acceptance: file selection never connects a wallet or submits payment; opened requests pass the existing
+signature, signer, passphrase, expiry and review flow and the #500 pre-send checks; hosted CI green.
+
+# F03 current-main reconciliation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; fresh integration reviewer: `f03_main_reconciliation_review`.
+Task branch: `continuation/f03-main-reconciliation-20261120`.
+Feature input: `1de98f6c9371010883253450446e6f7294da84fa` (`future/f03-private-payment-links`, PR #310).
+Main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3`; common base:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`. Separate source-pinned audit evidence remains
+at `9a0e268034ee2321c5e333c35a3aa1825b1c8f63` on `audit/f03-browser-qualification-20261120`.
+
+Owned changes: combine the additive ownership registries and add
+`docs/future/modules/F03-private-payment-links/round3/` reconciliation evidence/handoff.
+The reviewer owns only `round3/RECONCILIATION_REVIEW.md`; all source is read-only for it.
+Incoming main source/tests/docs are preserved exactly, as is the adopted F03 memo-test blob
+`085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f`. No unrelated source repair is authorized by this
+claim. Extend ownership before any demonstrated regression requires a fix.
+
+Acceptance: verify actual heads and merge preview, retain every incoming/base ownership entry,
+confirm main ancestry and the exact union of both inputs, inspect the small shared QR/build/profile
+and payment-URI integration surface, run appropriate focused regression gates, and obtain fresh
+independent review. The preview conflicts only in `docs/ai/ACTIVE_WORK.md`. Publish with an
+expected-head lease and retain actual-current-head full/lean browser qualification. Existing
+1de98f6c CI observations remain historical after any integration; no pass transfers automatically.
+No force update, merge to main, live transaction or deployment.
+
+Status: reviewed integration `f0968b9541dbd3234a6b0516023773845c04c4e4`, exact-tree API
+equivalent `7c30385a44d1cac76e9137eea9fc522865ac53f0`. Fresh source/standards/spec checks
+report zero findings. All 15 local commands passed: payment-URI 206 tests/coverage, package
+build/typecheck/lint, shared-web/F03/QR 294 tests, whole-web typecheck, scoped typed lint,
+full/lean static builds and original scans, both six-case collections, and scoped publication
+checks. Command records distinguish raw/normalized console bytes and preserve source pins.
+See `round3/QUALIFICATION.md` under this feature for the executed gates and successor prompt.
+Actual new published-head full/lean browser execution and required CI remain pending.
+
+# PR #310 invoice-file memo browser checks — 2026-11-20
+
+Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.
+Task branch: `fix/pr310-invoice-file-memo`; publication target: existing PR #310
+branch `future/f03-private-payment-links`.
+Base: `976d26ee791836c176431c8a5d0b825486f78caf`; observed main:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/e2e/payment-request-file.spec.ts`, this additive claim,
+and `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+Acceptance: match complete labeled memo text in the payment-review region;
+ensure locked and superseded memo absence checks detect labeled text; pass all
+six invoice-file browser cases in both original full and lean configurations,
+web typecheck and scoped typed lint; retain all existing assertions and gates.
+Evidence: CI run `44692101562`, full job `136181689920` and lean job `136181689927`,
+each failed the same four memo checks. Reinspect the PR head before publication.
+Scope: test assertions only; preserve the F03 implementation and other workers.
+Status: independent source review, full web typecheck, scoped typed lint, original
+full/lean collection (six cases each), secret scan and whitespace check pass.
+Local Chromium is blocked before assertions by socket permissions; hosted full/lean
+browser qualification is required. See `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+
+# F03 payment request interchange — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.
+Branch: `future/f03-private-payment-links`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (fresh origin/main clone).
+Authorization: the owner explicitly requested selection and implementation of one future feature,
+continuation of an existing branch if present, and fresh independent audits after completion.
+Git branch inventory and connector search found no existing F03 branch at discovery.
+Owned paths: new invoice-schema request-file module/tests/exports; new browser request-file
+components/tests; minimal CreateInvoice/Pay integration; additive English catalog entries;
+F03 specification, user guide, audit and handoff documents. No dependency, contract or fee changes.
+Acceptance: the same signed envelope round-trips unchanged through URL, QR and bounded JSON file;
+local explicit import preserves signature, signer, chain, expiry and payment review; stale reads
+cannot replace current intent; affected-package gates, browser checks and fresh audits pass.
+Existing invoice, QR and privacy work is preserved. No main merge or deployment is authorized.
+
+Fresh audit generation: `f03_audit_standards`, `f03_audit_spec`, `f03_audit_privacy`.
+Reviewed implementation: `f472030a1d9a993db1ba7a1a33f9a208c28ebf13`.
+Owned audit paths: respectively `docs/future/modules/F03-private-payment-links/audits/`
+`STANDARDS.md`, `SPEC.md`, and `PRIVACY_SECURITY.md`. Production source is read-only
+for all three auditors. Acceptance: full selected-feature source review, actual evidence limits,
+concrete findings and independent follow-up on coordinator repairs. Root owns serial broad gates.
+Audit repair: `f03_audit_spec` additionally owns focused app-lock regression additions in
+`apps/web/src/views/Pay.requestFile.test.tsx`; root owns the minimal production repair.
+Existing implementation is frozen until the new regression demonstrates the reported omission.
+Catalog qualification repair: `f03_audit_standards` additionally owns additive `requestFile.*`
+entries in `apps/web/locales/{ar,es,ja}.json`, using the existing unreviewed-English fallback
+convention, and its report follow-up. The 45 missing-key failures are recorded before edits.
+No existing translation or reviewed-security digest may change. Root owns final catalog check;
+the separate specification/privacy workers independently review this bounded repair.
+Status: selected implementation and fresh audits complete. The shared medium app-lock finding
+is repaired with four independently RED/GREEN regressions; combined focused suite 114/114 and
+full invoice-schema 813/813 with original coverage thresholds pass. Final product checkpoint
+`e543d25fc7f3b65460518f4b3df4c513d34a1215` is published as exact-tree equivalent
+`bd128598f1b4c5291dad5c003a4775ad47bbb888` in draft PR #310. Catalog, typed lint, typecheck,
+full/lean static builds and original bundle scans pass. Actual Chromium execution remains
+blocked locally and hosted checks remain pending. See the source map, audit reports, evidence
+and successor prompt in `docs/future/modules/F03-private-payment-links/{QUALIFICATION,HANDOFF}.md`.
+
+## Request-file claim reconciliation addendum — 2026-11-26 UTC
+
+The #650 merge also conflicts at the existing CopyButton/download adjacency in `apps/web/src/views/CreateInvoice.tsx` after clipboard integration. This coordinator owns only that conflict resolution: retain the clipboard `autoClearAfterMs` prop and add the donor's request-file download control immediately after it. No other CreateInvoice behavior is reassigned or changed.
+
+## Request-file download-name integration addendum — 2026-11-26 UTC
+
+Worker: ChatGPT `/root/artifact_review`, branch `finish/request-file-completion-20261126`,
+following the bounded claim above and the independent source review of `68753b5898a9407aa85ea4ce27baee8c6acdf687`.
+Additional owned paths: `apps/web/src/lib/downloadNames.ts` and
+`apps/web/src/components/PaymentRequestDownload.test.tsx`, only to retain the documented,
+fixed, value-free `ghostpay-request.gpr.json` name through the real shared download helper.
+Acceptance: an ordinary component-to-anchor regression must fail before the allowlist repair
+and pass afterward; preserve all fallback sanitization and existing download behavior.
+The parent coordinator authorized this integration repair. No other filename or download
+policy is changed. Clipboard/P14 source and its completed `66dc4af9f97c3f8898abee1c063921d08291dad9`
+handoff are preserved by normal merge before these edits.
+
+The filename repair additionally owns `apps/web/src/lib/downloadNames.test.ts` solely to
+reconcile its exact fixed-name/call-site audit with the documented `.gpr.json` name and
+the new request-file call. Existing fallback checks remain intact; the randomized property
+is preserved without being run as part of this bounded qualification.
+
+## Completed coordination handoff adoption — 2026-11-26 UTC
+
+Worker/branch: ChatGPT `/root/artifact_review`, `finish/request-file-completion-20261126`.
+The parent coordinator independently approved docs-only PR #686 at
+`487fb19b046966cd2f89ad0b83c17bcb66feea73` for this candidate. Owned path:
+`docs/GHOSTPAY_CONSOLIDATION_TRACKER.md`, only its normal-merge adoption and the correction
+of #673's hosted-check count from all 42 green to 39 successful checks and three intentional
+skips. Preserve all other donor content and ancestry. No product or integration gate changes.
+
+## Wallet-attempt fixture handoff adoption — 2026-11-26 UTC
+
+Worker/branch: ChatGPT `/root/artifact_review`, `finish/request-file-completion-20261126`.
+Base implementation: `7d7b25d4c4079f680c499736d399cdcf3bd13f73`. The parent coordinator
+accepted the newly explicit #686 handoff of test-only PR #595 at
+`534bb3808d0f37dd2e6c1f4aaca7c529d9b2432c`; its #545 parent is already integrated.
+Owned paths: `apps/web/src/components/WalletAttempts.status.test.tsx`, additive ownership
+and the donor `docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md` for normal-merge
+preservation. Port only the awaited real IndexedDB migration, spy restoration and two
+delayed-settlement-after-unmount cases into the current fixture; preserve current #675
+live-region/hash privacy assertions and retain exactly one cleanup. Acceptance: run the
+whole composed fixture, typed lint and typecheck; obtain independent composition review.
+This explicit handoff supersedes the older ownership note only for this bounded test slice.
+No production wallet, journal, status or transaction behavior is changed.
+
+# Recover PR #545 wallet status fixture qualification — 2026-11-24 UTC
+
+Worker: `/root/resume_payment_safety`, delegated by the missed-worker recovery coordinator.
+Branch: `codex/recover-wallet-attempt-status-fixture-20261124`.
+Exact parent: PR #545 `d1e167f1b5372f74506fc104220b9a03cb6a3e92`; #500 remains the journal owner.
+Owned paths: `apps/web/src/components/WalletAttempts.status.test.tsx`, this additive claim, and `docs/handoffs/WALLET_ATTEMPTS_STATUS_FIXTURE_20261124.md`.
+Scope: repair the test lifecycle that allowed an asynchronous journal migration rejection to update React after the jsdom environment was destroyed. Hosted CI run `45311266153`, job `138198190848` passed all 3,057 tests but failed on that unhandled rejection.
+Acceptance: deterministic migration completion and rejection coverage, explicit component cleanup, unchanged status assertions and production code, focused native Vitest and typed ESLint, source-pinned handoff. Preserve #545/#500/#528/#541 branches and integration ownership. No deployment, shared-branch write, new dependencies, real wallets or real funds.
+
+---
+
+## Request-file completion qualification — 2026-11-26 UTC
+
+Worker: ChatGPT `/root/artifact_review`; branch `finish/request-file-completion-20261126`.
+Completed source: `28c45149da4bc0b6f2fc6e82cfcd09b185dc4ff3`, tree
+`89a3c3604005633b74ddfea98b3e567543bd2ab8`; bounded source repair commit
+`7d7b25d4c4079f680c499736d399cdcf3bd13f73`. Clipboard/P14 `66dc4af9`, #650 `3851f02b`,
+#654 `a75ed0b1`, #686 `487fb19b` and #595 `534bb380` ancestry is retained normally.
+
+App-lock cancellation preserves the same QR textarea/draft, fixed request downloads keep
+the documented value-free name, and real-scrypt acceptance has a bounded 120-second wait
+inside a 180-second case. The original 180-second interop donor remains exact. The #595
+fixture preserves all six status/privacy cases, adds its two delayed migration cases and
+has one cleanup. #686's sole donor correction records 39 successful checks and three skips.
+
+Fresh evidence: 12 new regressions failed before repair and passed afterward; 241 focused
+web + 85 request-file codec/interop + 26 composition tests passed (352 distinct selected
+cases). One existing filename fuzz property was deliberately unrun. Library builds,
+web/invoice-schema typecheck/lint, composed fixture typed lint, catalog validation
+(0 errors, 853 fallback warnings), full build and lean build/postbuild scan passed.
+The full browser command reached the server, but all 13 cases failed before assertions
+because the installed Chromium launcher refers to a missing executable. Lean collected
+the same 13 cases without an execution retry. No browser pass is asserted. Secret scan
+passed. Independent source review approved both repair and composed pins; hosted combined
+CI and actual full/lean browser acceptance remain mandatory before parent integration.
+
+Handoff: `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. No remote mutation,
+activation of an excluded product, dependency/workflow change or live transaction was performed by this worker.
