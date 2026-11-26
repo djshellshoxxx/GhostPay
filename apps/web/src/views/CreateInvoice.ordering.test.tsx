@@ -66,6 +66,19 @@ describe('CreateInvoice asynchronous result ordering (static Pages client)', () 
     expect(screen.getByLabelText<HTMLTextAreaElement>('Link').value).toContain('#gpi=v1.2');
   });
 
+  it('discards pending itemized links after switching to minimal, including a round trip between modes', async () => {
+    await createTwice();
+    const user = userEvent.setup();
+    const choice = screen.getByRole('checkbox', { name: 'Privacy-minimal invoice' });
+    await user.click(choice);
+    expect(screen.getByRole('checkbox', { name: 'Include a decryption key in the link' })).toBeTruthy();
+    expect(screen.getByText(/This key encrypts only the empty item list/)).toBeTruthy();
+    await user.click(choice);
+    await act(async () => { pending[1]!.resolve(result('2')); await Promise.resolve(); });
+    expect(screen.queryByRole('textbox', { name: 'Link' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Download invoice link (.txt)' })).toBeNull();
+  });
+
   it('must not discard a newer invoice link when an older build fails later', async () => {
     await createTwice();
     await act(async () => { pending[1]!.resolve(result('2')); await Promise.resolve(); });
