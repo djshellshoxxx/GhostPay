@@ -419,13 +419,14 @@ function terminal(chunks) {
   };
 }
 
-test('CLI prompt: backspace removes one whole character, including one outside the Basic Multilingual Plane', async () => {
+test('CLI prompt: backspace removes one whole code point, including one outside the Basic Multilingual Plane', async () => {
   const path = fileOf('tty-keystore.json', VALID);
-  // U+1F512 is two UTF-16 units; one backspace (DEL on Unix terminals, BS on Windows) must remove both.
+  // U+1F512 is two UTF-16 units; one backspace (DEL on Unix terminals, BS on Windows) must remove both. A backspace
+  // on an empty entry does nothing, and one after a lone BMP character removes only that character.
   for (const erase of ['\u007f', '\b']) {
     const output = [];
     const errors = [];
-    const stdin = terminal([PASS, '\u{1F512}', erase, 'x', erase, '\r']);
+    const stdin = terminal([erase, '\u{1F512}', erase, PASS, '\u{1F512}', erase, 'é', erase, 'x', erase, '\r']);
     const code = await main([path], { stdin, stdout: { write: (t) => output.push(t) }, stderr: { write: (t) => errors.push(t) } });
     assert.equal(code, 0, errors.join(''));
     assert.equal(JSON.parse(output.join('')).metaAddress, K.seller.metaAddress);

@@ -835,8 +835,9 @@ async function readPassphrase(stdin, stderr) {
             reject(new UsageError('cancelled'));
             return;
           }
-          // Erase a whole code point: slicing one UTF-16 unit would leave half of an emoji in the passphrase.
-          if (ch === '\u007f' || ch === '\b') pass = pass.replace(/.$/su, '');
+          // Erase a whole code point: slicing one UTF-16 unit would leave half of an emoji in the passphrase. No
+          // RegExp here: its legacy static properties would keep the unerased passphrase reachable.
+          if (ch === '\u007f' || ch === '\b') pass = pass.slice(0, (pass.codePointAt(pass.length - 2) ?? 0) > 0xffff ? -2 : -1);
           else pass += ch;
         }
       };

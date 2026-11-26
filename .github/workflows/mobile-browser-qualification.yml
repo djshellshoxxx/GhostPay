@@ -10,11 +10,19 @@ on:
       - 'apps/web/e2e/devices*.spec.ts'
       - 'apps/web/e2e/flows.spec.ts'
       - 'apps/web/e2e/qr-camera.spec.ts'
-      # devices-mobile-restore restores this vector through this helper, codec and view in each engine.
+      # What devices-mobile-restore runs through in each engine: its helpers and vector, the restore view and session,
+      # the camera and QR components, the keystore codec, and the lockfile that pins the browser engines.
+      - 'apps/web/e2e/helpers.ts'
       - 'apps/web/src/views/SellerKeys.tsx'
+      - 'apps/web/src/lib/session.ts'
+      - 'apps/web/src/lib/keystore.ts'
+      - 'apps/web/src/components/CameraImporter.tsx'
+      - 'apps/web/src/components/QrFrame.tsx'
+      - 'packages/ux-vault/src/portable*.ts'
       - 'packages/ux-vault/src/keystore-portable.ts'
       - 'packages/ux-vault/src/keystore-portable.vectors.testutil.ts'
       - 'test-vectors/seller-keystore-v1.json'
+      - 'package-lock.json'
 
 permissions:
   contents: read
