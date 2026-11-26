@@ -61,3 +61,21 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
   [`docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`](../handoffs/P1_LATE_CONSOLIDATION_20261124.md).
 - Stack PRs on 2026-11-26: #533 shows merged; #575, #590, #599 and #625 are closed as superseded and #546 as already
   integrated.
+
+## Session handoff — `claude-keen-volta-8ctx9x` (2026-11-26)
+
+- **Merged by this session:** #452 (with #449, #450) → `8ddb3449`; #500 (P0-JRNL, with #427→#443 and #545) → `c8e131c1`;
+  #624 (trackers) → `e7e98109`. Lock generations used: 12, 20 and 45, each acquired and released with a non-force push.
+- **Open from this session:** #716 on `claude/keen-volta-8ctx9x` fixes LATE-LM1 (a quarantined linked payment
+  released its invoice). Base `e7e98109`, head `8ec9c7e0`. Next steps: wait for hosted CI on the exact head, then acquire
+  the lock, merge, and release.
+- **Open follow-ups (not started):** LATE-M1 (scan checkpoint blocked when the reconciliation vault can't open),
+  LATE-L1 (no retry for unlinked quarantined candidates), REV-I5/REV-I6 and QA-I1 (journal edge cases), RCPT-L1/L2,
+  GP-PAGES-01 (owner decision: custom domain). Details: SECURITY_FINDINGS.md.
+- **Environment notes for a successor:** Foundry 1.8.5 tarball SHA-256 `6c66ffcc…b226` (from
+  `infra/integration/Dockerfile.runner`). The proxy blocks `binaries.soliditylang.org`; solc 0.8.28 came from the GitHub
+  release `solc-static-linux`, whose version prints commit `7893614a`, installed at `~/.svm/0.8.28/solc-0.8.28`. Anvil-backed
+  web tests need `forge build --offline` in `packages/contracts` first. Then run
+  `ANVIL_BIN=$HOME/.foundry/bin/anvil SOLC_BIN=$HOME/.svm/0.8.28/solc-0.8.28 REQUIRE_ANVIL=1 npm test -w @ghostpay/web`
+  and `npm run e2e:devnet -w @ghostpay/web`.
+
