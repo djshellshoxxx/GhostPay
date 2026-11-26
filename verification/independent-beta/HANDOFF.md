@@ -118,10 +118,60 @@ H7 (harness defect): the candidate's disclosure gate stops every wallet request 
 wallet"; the vacuity guard flagged the first smoke run (no wallet request at all). The harness user now approves the
 dialog by its visible text, or cancels it when a scenario asks (N13), and records every dialog shown.
 
+## Milestone 2 — seller-side reconciliation (2026-11-26)
+
+Candidate: main `e7e981095b07a05c7727bf9fafb0a0fec7e4fc36`, unmodified lean bundle `b7c87578…` (18 files).
+Model: `SAFETY_MODEL.md` "Milestone 2" (seller invariants SI1–SI8, ambiguities SA1–SA7; requirements from ADR-0026,
+the P1-LATE handoff, user docs). Runner: `harness/seller-run.mjs`.
+
+Set-up per scenario: a seller profile (tabs S1, S2) with vault-backed keys creates and registers X (0.5 ETH) and an
+unrelated control C (0.3 ETH, distinct amount so matches are not ambiguous by construction); a separate payer profile
+pays through the real checkout. The synthetic chain executes `payNative` with a contract model written from
+`docs/CONTRACTS_SPEC.md` §1 (own ABI fragment, selector checked): it reverts on expired deadline, wrong net or bad
+metadata and otherwise emits `FeeCollected` then `Announcement(1, stealth, router)`. A late payment is the same payment
+sent directly to the router with a later deadline (S37), because the checkout's own deadline precedes expiry.
+
+| Record | Harness SHA | Command | Scenarios | Payments | Violations | Harness errors | Ambiguities |
+|---|---|---|---|---|---|---|---|
+| `results/m2-27656321/` | `27656321` | `seller-run.mjs --named --seeds 1-24 --concurrency 3 --candidate e7e98109` | 31 (P2, M1–M6, SG-1…SG-24) | 37 | **0** (P2 detected SI4 as required) | 0 | 14 scenarios, all SA6 |
+
+Coverage reached (from the trace): 114 completed scans, 24 exact proposals, 20 seller confirmations of X and 2 of C,
+19 pending-before-finality displays, 13 reorgs orphaning a payment and 22 "Reorg invalidated" displays after rescans,
+7 interrupted scans, 1 accepted late payment (M4), 67 two-tab comparisons. Every confirm that found no button was an
+intended refusal (late payment, stale tab, failed scan); none happened while a card said "invoice link pending".
+
+What the candidate did (black-box evidence in the traces):
+
+- S9/S1 pending vs final: below 100 confirmations X showed "Pending transfer evidence"; at depth "Verified on-time
+  transfer — invoice link pending" with an exact proposal; nothing linked without the seller's confirm (M1, M2).
+- S27/S32 distinct counting: after confirm, "Linked total equals … Distinct linked observations: 1", unchanged by
+  resumed and full rescans and by both tabs (M1, M6).
+- S9/S10/S13 late: a late payment showed "Verified late transfer — invoice decision pending"; ordinary confirm was not
+  offered; "Accept late payment for this invoice" linked it (M4).
+- S14/S16/S18 reorg: a reorg removing the linked payment left the link displayed until the next scan (SA6), then
+  showed "Reorg invalidated earlier payment evidence. Verify again before relying on this invoice." in both tabs and
+  after reload; the accepted-late decision time stayed in the ledger (M3, M4).
+- S20/S25/S27 interruption: a scan losing the RPC mid-way ended with "Blocked by a safety check (RPC_FAILURE)." and
+  added nothing; a clean rescan proposed the payment (M5).
+- S39 two tabs: a confirm in S1 updated S2 live; S2's stale confirm had no button; tabs agreed after reload (M6).
+- S31 control: C never showed X's state; C linked only on its own payment and confirm.
+
+Harness defects found and fixed in M2: H8 (registration label also names a context-help button: select the
+checkbox by role), H9 (stored-record cards were read as invoice cards: invoice cards are those with an amount line),
+H10 (decision steps navigated away from Scan first, discarding the live results proposals depend on; 4 of 6 named
+scenarios were vacuous until fixed; named steps that must take effect are now guarded).
+
+Findings: no SI1–SI8 violation (product-defect candidate) on `e7e98109`. Observations routed to W3:
+- O3: a link stays displayed after a reorg until the seller scans again (SA6); this is expected (no scan, no
+  knowledge) but worth a note in the user guide's reconciliation section next to the reorg text.
+- SA5 (docs): `docs/user/reconciliation-and-receipts.md:14-27` still describes observation-time matching; the app
+  and ADR-0026 use canonical block time (late payments in M4 were classified by block time).
+
 ## Not covered yet (next milestones)
 
-1. Seller-side reconciliation (ADR-0026): announcement logs, late-payment acceptance, reorg invalidation with retained
-   decision history. Needs staged announcement + Transfer evidence in the synthetic chain.
+1. Seller-side gaps after M2: two-RPC disagreement (S20, secondary RPC), backup export/import with reorg tombstones
+   (S42/S43), vault saturation (S24), manual links (S13 interplay), more late-payment variants in the generator, and
+   reconciliation across a full browser restart (S49, proposed).
 2. ERC-20 checkout (approval/permit + payment): the per-invoice request count is ambiguous (A3) and needs an owner rule.
 3. Replacement linking ("Link a replacement transaction" / nonce consumed) and wallet rejection 4001 policy (A4).
 4. A W1-approved candidate SHA, if W1 names one other than current main: `build.mjs` then

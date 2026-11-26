@@ -49,6 +49,12 @@ node verification/independent-beta/harness/run.mjs --named --concurrency 3 --can
 node verification/independent-beta/harness/run.mjs --seeds 1-24 --concurrency 3 --minimize
 ```
 
+Milestone 2 (seller-side reconciliation):
+
+```bash
+node verification/independent-beta/harness/seller-run.mjs --named --seeds 1-24 --concurrency 3 --candidate origin/main
+```
+
 `build.mjs` refuses to build when any production path differs from `HEAD`, builds exactly like
 `apps/web/playwright.config.ts` (ephemeral signed fake manifest, public test key, no release commit) and fingerprints
 `apps/web/dist`. `run.mjs` refuses to run if the bundle changed since that fingerprint or if any production path
@@ -69,4 +75,6 @@ product-defect candidates, 1 candidates found, 2 harness error.
 | `harness/oracle.mjs` | invariants I1–I8, ambiguity classification |
 | `harness/scenarios.mjs` | named scenarios N1–N8 and the seeded generator |
 | `harness/run.mjs` | runner, bounded ddmin minimizer, run record |
+| `harness/router-model.mjs` | contract model: `payNative` rules and events from `docs/CONTRACTS_SPEC.md` §1 |
+| `harness/seller.mjs`, `seller-oracle.mjs`, `seller-scenarios.mjs`, `seller-run.mjs` | milestone 2 driver, invariants SI1–SI8, scenarios, runner |
 | `harness/selftest.test.mjs` | harness self-audit: chain/RPC properties, oracle sensitivity to planted violations |
