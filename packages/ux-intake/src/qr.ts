@@ -138,7 +138,7 @@ export function addScan(
   const c = scan.value.chunk;
   let cur = state;
   let restarted = false;
-  if (cur !== null && nowMs - cur.startedAt > ASSEMBLY_TTL_MS) {
+  if (cur !== null && (nowMs < cur.startedAt || nowMs - cur.startedAt > ASSEMBLY_TTL_MS)) {
     cur = null;
     restarted = true;
   }
