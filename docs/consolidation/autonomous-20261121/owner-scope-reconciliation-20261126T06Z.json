@@ -1,0 +1,110 @@
+{
+  "checkpoint": "2026-11-26T06Z",
+  "priorLedger": "47abdd2bda64de35379e9651805a9d90ff72614a",
+  "main": "019d5d18c8992f63fe77740f75ad04d86d3d9b07",
+  "mainTree": "96c55f8feffacee40d04816818b26d4472b7c25d",
+  "branchCount": 816,
+  "openPRCount": 227,
+  "branchPageLengths": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    16
+  ],
+  "prPageLengths": [
+    100,
+    100,
+    27
+  ],
+  "archiveRefsObserved": 34,
+  "archiveManifestReconciliation": "not completed this run",
+  "lease": {
+    "head": "db9a2b9f69b064338fba4fc79e0e239feeee17a0",
+    "generation": 41,
+    "status": "released"
+  },
+  "mainChecks": {
+    "success": 30
+  },
+  "newlyIntegratedObserved": [
+    {
+      "pr": 699,
+      "scope": "docs-only owner deferral of persistent vault timestamp removal #383/#587/#609",
+      "merge": "019d5d18c8992f63fe77740f75ad04d86d3d9b07"
+    }
+  ],
+  "sourceDispositions": [
+    {
+      "pr": 616,
+      "head": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "nonDocPaths": 20,
+      "exactByteAndModeMatches": 18,
+      "remaining": [
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md: main has newer dependency/test entries",
+        "packages/ux-presets/src/seal.ts: exact content after local nativeType to nativeTypeDescriptor rename"
+      ],
+      "docPaths": 41
+    },
+    {
+      "pr": 617,
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "nonDocPaths": 33,
+      "exactByteAndModeMatches": 29,
+      "remaining": [
+        "same package map and seal differences as #616",
+        "apps/web/src/lib/qrKinds.ts: main adds literal-true passphrase guard",
+        "apps/web/src/lib/qrKinds.test.ts: main adds guard regression and updates dark palette"
+      ],
+      "docPaths": 125
+    }
+  ],
+  "disposition": "No outstanding runtime or test behavior identified in #616/#617; original refs preserved, docs/evidence ancestry still needs reconciliation; do not merge stale compositions as-is.",
+  "qualification": [
+    {
+      "pr": 697,
+      "head": "abeeb0cb365b6bd7ea7686b50da693865c4bb09d",
+      "checks": {
+        "queued": 11,
+        "in_progress": 4,
+        "skipped": 1
+      }
+    },
+    {
+      "pr": 698,
+      "head": "f45025b5f2cfa27f938c10c35490b42768b8ae0a",
+      "checks": {
+        "queued": 34,
+        "in_progress": 2,
+        "success": 2,
+        "neutral": 1,
+        "skipped": 1
+      }
+    },
+    {
+      "pr": 696,
+      "head": "789102b724a50ea724c04055188a5f74f1e1573b",
+      "checks": {
+        "queued": 7,
+        "in_progress": 12,
+        "success": 18,
+        "skipped": 1
+      },
+      "draft": true
+    }
+  ],
+  "next": [
+    "Honor #699 and all ten prior exclusions; keep on-screen privacy and recovery.",
+    "Respect #697/#698 coordinator; #701 review cites earlier heads, requalify actual heads; no merge while CI pending.",
+    "#696 remains draft pending independent review; no duplicate work.",
+    "Reconcile historical evidence paths and exact archive pins; full branch dispositions still outstanding."
+  ],
+  "limitations": [
+    "Census is metadata, not full semantic audit. No tests or main writes performed.",
+    "Tool-call ceiling prevented full ref snapshot and exact archive comparison. Previous 04Z ledger is the prior durable evidence."
+  ]
+}
