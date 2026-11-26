@@ -1,3 +1,10 @@
+# Beta locale completion, user-help freeze notice and wiki current status (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/inspiring-shannon-2ehl3u` (no new branches), base main `9d92472a`. Lead integrates; Haiku sub-workers each own exactly one file.
+Owned paths: `apps/web/locales/es.json`, `apps/web/locales/ja.json`, `apps/web/locales/ar.json` (values only, for keys listed as English-seeded; no key added or removed; `_meta` untouched); `docs/user/README.md` (new "Not in this beta or v1.0" section); `docs/wiki/User-Guide.md` and `docs/wiki/Home.md` (current-status block only, no deletions); this entry; a handoff under `docs/handoffs/` if produced.
+Not owned: `en.json`, all source code, the stopped-product PRs and archive refs, other open PRs (#708-#710 touch shared apps/web surfaces; reinspect before integration).
+Acceptance: the three locale files keep 2555-key parity with `en.json`, placeholders match English, JSON parses, and every value not translated is listed as kept English for native review. Locale status remains "machine-drafted: needs native review". Docs only; no runtime change. Checks: `git diff --numstat` shows no deletions in wiki pages; locale parity script run and output recorded.
+
 # #701 review upkeep (2026-11-26 UTC)
 
 Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:

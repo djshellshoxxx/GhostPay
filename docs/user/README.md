@@ -33,4 +33,13 @@
 The [product guide](product-guide.md) describes the current full/lean split. Older chain-specific guides may retain
 earlier integration status; consult the current source and completion evidence before assuming a path is available.
 
+## Not in this beta or v1.0
+
+These products are stopped by the owner and are not available in the beta or v1.0 release. Their screens, controls and routes are not offered to users. Do not treat any guide in this folder as describing them.
+
+- GhostStore, merchant dashboard and aggregate analytics, GhostTeams, GhostID, GhostBridge (the P2P-Offramp integration), multi-chain routing beyond the approved EVM scope, and encrypted device synchronization: stopped, deferred and disabled.
+- GhostTips, GhostPOS and fiat conversion: permanently archived.
+
+Core features stay available: single-invoice status and reconciliation, encrypted local records and receipts, private invoice links and QR codes, stealth destinations, backup and recovery, and the privacy protections listed in [Privacy limits](privacy-limits.md). Fiat-quoted invoices cannot be paid in the lean build; exact crypto amounts still work.
+
 If you only read one thing: **moving funds from your one-time address to a wallet you already use can reveal that the payer paid you.** See [Sweep funds and gas privacy](sweep-and-gas-privacy.md).
