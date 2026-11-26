@@ -6,7 +6,9 @@ Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-
 `apps/web/src/lib/scanClient.checkpoint.test.ts`, the replay-tail recording wrapper in `apps/web/src/lib/scanClient.test.ts`
 (forwards the new `expected` argument), the F1 rows of `docs/research/privacy-evidence-matrix-2026-11-10.md`,
 `apps/web/DEVIATIONS.md` (if needed) and `docs/handoffs/SCAN_CHECKPOINT_OWNERSHIP_20261126.md`. Overlap: #696 edits other
-regions of `scanClient.ts` (cover lookups); rebase/merge whichever lands second. Not claimed: F2-F4, `Scan.tsx`.
+regions of `scanClient.ts` (cover lookups); rebase/merge whichever lands second. Also owned: the `checkpointSeen` argument
+in `apps/web/src/views/Scan.tsx` (one line) and one regression in `apps/web/src/views/Scan.test.tsx`. Not claimed: F2-F4,
+other `Scan.tsx` changes; #725 owns `scanCursorSlot.ts`.
 Acceptance: both PRIV-06 expected-fail regressions pass as plain tests; a scan that owns the slot can still move its own
 checkpoint backward (reorg, replay, user restart); non-persisting stores keep today's behaviour; seeded multi-writer store
 fuzz; web typecheck, lint, tests and build; full hosted CI; independent review; merge only under the integration lock.

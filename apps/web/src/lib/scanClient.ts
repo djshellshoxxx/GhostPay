@@ -109,6 +109,13 @@ export interface ScanParams {
   readonly createWorker: () => ScanWorkerLike;
   readonly signal: AbortSignal;
   readonly checkpoints?: CheckpointStore;
+  /**
+   * The stored checkpoint the caller chose `cursor` against: the snapshot it resumed from or showed when the user picked
+   * another start, `null` for none. The run owns the slot only while it still holds this value, so a write or clear by
+   * another scan between the caller's read and this run (during async setup, say) is a foreign change and the run yields.
+   * Omitted: the run reads the slot at entry, which suits callers that start right after reading it.
+   */
+  readonly checkpointSeen?: ScanCursor | null;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   /** Preserve relevant evidence before a checkpoint can advance past it. */
@@ -243,8 +250,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // instead of overwriting it: the other writer's cursor (or its clear) stands whether it is ahead (a newer scan) or behind
   // (its own rollback). Yielding stops only the checkpoint write; the run still corroborates anchors, hands every page to
   // onPageMatches and reports every match. Read synchronously here, before the first await, so a scan started later cannot
-  // be mistaken for this run's own write.
-  let ownedCheckpoint = p.checkpoints === undefined ? undefined : loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
+  // be mistaken for this run's own write. A caller that read the slot earlier passes that snapshot instead (`checkpointSeen`).
+  let ownedCheckpoint = p.checkpoints === undefined ? undefined
+    : p.checkpointSeen !== undefined ? (p.checkpointSeen ?? undefined) : loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
   let checkpointYielded = false;
   let retryHeight: bigint | undefined;
   const finalizedAt = (head: bigint): bigint => head + 1n - BigInt(Math.max(1, p.chain.finalityDepth));
@@ -834,7 +842,9 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
       try {
         const name = slot(chainId, keyId);
         if (name === undefined) return;
-        // PRIV-06 F1: no last-writer-wins. Read and write happen in one synchronous step (the same in every tab).
+        // PRIV-06 F1: no last-writer-wins within this document, where read, compare and write are one synchronous step.
+        // This is not a cross-document atomic compare-and-swap: another tab's recent write may not be visible here yet,
+        // so a stale write can still land (residual race; its effect is a later rescan, never a skipped block).
         const current = read(name);
         if (expected === undefined ? current !== undefined && cursor.nextBlock < current.nextBlock : !sameCursor(current, expected ?? undefined)) return;
         storage?.setItem(name, encodeCursor(cursor));
