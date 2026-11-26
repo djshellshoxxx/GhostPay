@@ -18,7 +18,13 @@ export function blockHash(fork, number) {
 }
 
 export class SyntheticChain {
-  constructor() {
+  /**
+   * `startTime` (seconds) is the timestamp of block GENESIS. It defaults to the wall clock so invoice windows, which the
+   * app measures from local creation time against canonical block time, line up; `warp()` moves chain time forward.
+   */
+  constructor({ startTime = Math.floor(Date.now() / 1000) - 60 } = {}) {
+    this.startTime = startTime;
+    this.clock = startTime; // timestamp of the newest canonical block
     this.fork = 1;
     this.head = GENESIS;
     /** number -> { fork, txs: string[] } for canonical blocks above GENESIS. */
@@ -74,13 +80,25 @@ export class SyntheticChain {
         tx.logs.push(entry);
       }
     });
-    this.blocks.set(this.head, { fork: this.fork, txs: included, logs });
+    this.clock += 2;
+    this.blocks.set(this.head, { fork: this.fork, txs: included, logs, timestamp: this.clock });
     this.log.push({ op: 'mine', block: this.head, included, success });
     return this.head;
   }
 
   advance(n) {
     for (let i = 0; i < n; i += 1) this.mine([]);
+  }
+
+  /** Move chain time forward (the next block is at least `seconds` later). Bounded to one day per call. */
+  warp(seconds) {
+    this.clock += Math.max(0, Math.min(86_400, Math.floor(seconds)));
+    this.log.push({ op: 'warp', seconds, clock: this.clock });
+  }
+
+  timestampOf(number) {
+    if (number <= GENESIS) return this.startTime - (GENESIS - number) * 2;
+    return this.blocks.get(number)?.timestamp ?? this.startTime + (number - GENESIS) * 2;
   }
 
   /** Remove the newest `depth` blocks; their transactions return to the mempool. New empty blocks replace them. */
@@ -99,6 +117,7 @@ export class SyntheticChain {
       this.blocks.delete(n);
     }
     this.head = floor;
+    this.clock = this.timestampOf(floor);
     // Replacement branch is at least as long as the old one so a naive "highest block wins" client still sees it.
     for (let n = floor + 1; n <= oldHead; n += 1) this.mine([]);
     this.log.push({ op: 'reorg', depth, floor, oldHead, orphaned, fork: this.fork });
@@ -126,7 +145,7 @@ export class SyntheticChain {
       number: hex(number),
       hash: this.hashOf(number),
       parentHash: this.hashOf(number - 1),
-      timestamp: hex(1_760_000_000 + number * 2),
+      timestamp: hex(this.timestampOf(number)),
       transactions: txs,
       gasLimit: hex(30_000_000),
       gasUsed: hex(21_000 * txs.length),

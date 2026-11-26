@@ -88,3 +88,65 @@ Each is listed per run in `results/<run>/SUMMARY.md`; none can turn a missing re
 2. **Ambiguous requirement** — violates only an A-item reading.
 3. **Product defect** — violates I1–I8, minimized, reproduced twice with the same seed against the pinned bundle.
    Routed to W2 (journal/Pay) or W3 (status/reconciliation) via `HANDOFF.md`; never fixed here.
+
+---
+
+# Milestone 2: seller-side reconciliation
+
+Accepted requirements only (cited at main `e7e98109`; `ADR` = `docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md`,
+`HO` = `docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`, `UR` = `docs/user/reconciliation-and-receipts.md`,
+`RS` = `docs/user/receive-and-scan.md`, `AW` = `docs/ai/ACTIVE_WORK.md`). The seller is a separate browser profile with
+two tabs; payments come from the real payer checkout in another profile, and the synthetic chain emits the events
+the contract specification defines. In scope as shared core per `docs/ai/STOP_WORK_20261125.md:30,66`: individual
+invoice status, payment evidence, reconciliation and truthful pending/confirmed/unknown state. Out of scope (stopped):
+merchant dashboard/analytics (F04), device sync (P07), fiat (F13).
+
+## Requirements used
+
+| ID | Requirement (near-verbatim) | Source |
+|---|---|---|
+| S1 | "Matching is local and proposal-only … only a seller confirmation links anything" | ADR:33-35 |
+| S4 | exact window `[createdAt − 5 min, expiresAt)` by canonical block time; a late scan of a pre-expiry block still matches | ADR:48-51,58-59 |
+| S7 | confirm repeats matching at write; otherwise "no longer has a single exact invoice match" | ADR:67-71 |
+| S9 | "Pending and unverified router observations … cannot establish a paid state. A verified late transfer … can be accepted explicitly after a complete scan and an independent recheck" | ADR:229-233 |
+| S10 | a transfer is late when its canonical block timestamp ≥ `expiresAt` | ADR:226-227 |
+| S13 | manual links cannot stand in for the late-acceptance action | ADR:247-248 |
+| S14 | "Confirmed reorgs invalidate the affected inclusion and retain its evidence and decision history"; `lateAcceptedAt` survives | ADR:234-235; HO:39 |
+| S16 | "If any read fails, nothing is written"; only observations whose stored blockHash differs are invalidated | ADR:192-196 |
+| S18 | an invoice linked only to an invalidated observation reopens for matching | ADR:203-204 |
+| S20 | a reorg seen by only one of two RPCs, or a missing checkpoint block, stops the scan; nothing rolled back | RS:35-36 |
+| S23 | a lower agreed tip withholds credit for a payment that lost confirmation depth; a resumed scan restores it once final | ADR:239-240 |
+| S27 | "count only distinct verified linked payments … withhold credit through interruptions, preserve seller decisions on invalidation" | AW (#575 acceptance) |
+| S30 | "never show an unverified or late payment as confirmed" | AW (#635 acceptance) |
+| S31 | proposal state shown only on the invoice it names; unrelated invoices unaffected | HO:44 |
+| S32 | linked totals count distinct transaction logs once; only live, final-at-scan observations | UR:35-41 |
+| S38/S39 | lock, chain, seller-key or session change clears state; each action re-checks scope; writes are compare-and-swap | ADR:129-142 |
+
+Finality for 84532: `finalityDepth: 100` (`packages/chain-adapters/src/config/chains.ts:42`, configuration, not a
+documented requirement; RS:25 says depth is not independent finality verification).
+
+## Seller invariants (black-box)
+
+`X` = invoice paid in the scenario, `C` = unrelated control invoice; "linked/paid" = the invoice card shows
+`Linked to a verified observation.`, `Verified late payment accepted by seller.` or an amount `equals` for it.
+
+| Inv | Statement | From |
+|---|---|---|
+| SI1 no false paid | X shows linked/paid only if its payment is mined, successful, canonical and at least 100 blocks deep at the last scan, or was explicitly accepted late on such evidence. Pending or unverified evidence never shows as linked/paid. | S9, S30, S32 |
+| SI2 proposal only | X becomes linked only after a seller confirm or accept-late action recorded by the harness. | S1, S7 |
+| SI3 late needs acceptance | A payment with block time ≥ X's expiry never links X through ordinary confirm; only "Accept late payment", after a complete scan. | S9, S10, S13 |
+| SI4 reorg | After X's linked inclusion is reorged out and the seller rescans or reloads, X no longer shows linked/paid; an invalidation notice or reopened state is shown; an accepted-late decision time stays visible. | S14, S16, S18 |
+| SI5 interruption | An RPC outage or tab reload during a scan never adds credit from the incomplete pass; a failed canonical read writes nothing. | S16, S20, S27 |
+| SI6 distinct | The same transaction observed by repeated scans or both seller tabs is counted once (no `above` and no double credit). | S27, S32 |
+| SI7 control | C's card never shows X's state or evidence. | S31 |
+| SI8 two seller tabs | A confirm in one seller tab is not silently overwritten by a stale action in the other; after a reload both tabs agree. | S39 |
+
+## Ambiguities recorded (M2)
+
+- SA1 Depth 100 is configuration, not a documented requirement; scenarios use it as the app's own rule.
+- SA2 Whether a recheck failure's "unverified" marking is persisted is unspecified (HO:48 vs ADR:193).
+- SA3 Cross-tab seller refresh (BroadcastChannel) has no documented requirement (requirements report S41); SI8 checks
+  only the compare-and-swap guarantee (S39).
+- SA4 Docs disagree on whether a cutoff-invalidated record can become valid again (RS:38 vs ADR:199).
+- SA5 `docs/user/reconciliation-and-receipts.md` still describes observation-time matching (UR:14-27); the ADR's
+  canonical block time is used (ADR:57-63).

@@ -443,3 +443,26 @@ test('logs: canonical-only, removed by reorg, re-emitted on re-mine, receipt log
     }
   }
 });
+
+test('chain time: monotonic canonical timestamps, warp moves time forward, reorg replays from the fork point', () => {
+  for (let seed = 1; seed <= 100; seed += 1) {
+    const rng = new Rng(seed);
+    const chain = new SyntheticChain({ startTime: 1_800_000_000 });
+    for (let i = 0; i < 25; i += 1) {
+      const r = rng.next();
+      if (r < 0.5) chain.mine([]);
+      else if (r < 0.7) chain.warp(rng.int(1, 4000));
+      else if (r < 0.85) chain.reorg(rng.int(1, 3));
+      else chain.advance(2);
+      for (let n = GENESIS + 1; n <= chain.head; n += 1) {
+        assert.ok(parseInt(chain.blockObject(n).timestamp, 16) > parseInt(chain.blockObject(n - 1).timestamp, 16), `seed ${seed}: timestamps must increase at ${n}`);
+      }
+    }
+  }
+  const c = new SyntheticChain({ startTime: 1_800_000_000 });
+  c.mine([]);
+  const t1 = parseInt(c.blockObject(c.head).timestamp, 16);
+  c.warp(3600);
+  c.mine([]);
+  assert.ok(parseInt(c.blockObject(c.head).timestamp, 16) >= t1 + 3600);
+});
