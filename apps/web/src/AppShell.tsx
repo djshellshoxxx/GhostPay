@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
+import { PrivacyControls } from './components/PrivacyControls';
+import { SensitiveContent } from './components/SensitiveContent';
+import { PrivacyProvider, usePrivacyModePreference } from './lib/privacyMode';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
@@ -386,10 +389,14 @@ export function AppShell(props: AppShellProps): ReactNode {
   const [walletDisclosureScope] = useState(() => ({}));
   // A new view or invoice fragment cancels an open review too: it was requested for what was on screen before.
   const walletDisclosureRevision = useMemo(() => ({ session, settings, view, fragment }), [session, settings, view, fragment]);
+  // #286 item 1: a temporary reveal belongs to what was on screen; navigation, a new invoice or new keys revoke it.
+  const privacyEnabled = usePrivacyModePreference();
+  const privacyScope = useMemo(() => ({ session, view, fragment }), [session, view, fragment]);
 
   return (
     <AppContext.Provider value={state}>
       <SessionPresentationBoundary>
+      <PrivacyProvider enabled={privacyEnabled} scope={privacyScope}>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
@@ -406,9 +413,10 @@ export function AppShell(props: AppShellProps): ReactNode {
             ))}
           </ul>
         </nav>
+        <PrivacyControls />
       </header>
       <main id="main" tabIndex={-1} ref={main}>
-        {!suspended && props.mainPrelude}
+        <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
@@ -433,11 +441,14 @@ export function AppShell(props: AppShellProps): ReactNode {
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
+            {/* Home and About show only the public deployment: fee schedule, contracts and project text. */}
+            <SensitiveContent active={view !== 'home' && view !== 'about'}>
+              <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
+            </SensitiveContent>
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
+      <SensitiveContent><div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div></SensitiveContent>
       <footer className="site-footer">
         <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
@@ -448,6 +459,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         </ul>
       </footer>
       </WalletDisclosureProvider>
+      </PrivacyProvider>
       </SessionPresentationBoundary>
     </AppContext.Provider>
   );

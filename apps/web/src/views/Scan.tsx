@@ -123,7 +123,9 @@ export function Scan(): ReactNode {
       autoTick.current();
     }, randomDelayMs(AUTO_RESCAN_MIN_MS, AUTO_RESCAN_MAX_MS));
     return () => { window.clearTimeout(handle); };
-  }, [autoArmed, autoWake]);
+    // `done` is new after every scan: a re-check that starts and finishes within one render never shows `autoArmed`
+    // as false, and would otherwise leave no timer for the next one.
+  }, [autoArmed, autoWake, done]);
 
   useEffect(
     () => () => {

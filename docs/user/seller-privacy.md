@@ -5,6 +5,16 @@ anyone can write to, and reading it through an RPC provider that sees what you a
 language, what the scanner shows you about that, what it cannot promise, and what you can do on your side. It does not
 claim anonymity or unlinkability: see [Privacy limits](privacy-limits.md) for the observer table.
 
+## Share a privacy-minimal invoice
+
+Select **Privacy-minimal invoice** before issuing a link from Create invoice or a merchant template. GhostPay uses the entered quantities and prices to calculate the fiat total and tax locally. The signed invoice omits the item breakdown and memo, including a template’s merchant name or an order number entered in those fields. A fixed-token invoice can also be issued with just a token amount.
+
+The payer still receives the network, token, amount policy, fiat total and tax, fees, quote and expiry terms, and any selected gas-buffer policy. The invoice reference, seller stealth meta-address and public signing key are required. Reusing the seller’s public keys can link invoices.
+
+Copy the issued link or select **Download invoice link (.txt)** to save the same signed link. Create invoice also offers a QR code. Opening a saved link in Pay verifies the signed invoice and displays its selected detail level in payment review and on the printable bill. A passphrase-protected link still needs its separately shared passphrase.
+
+Changing the choice clears the current result. Issue a new link to use the new format. Anyone with an earlier itemized copy can still read it under its original protection settings.
+
 ## The privacy set banner
 
 After a scan the Receive page shows a notice such as "Privacy set: low (3 GhostPay router announcements in about the

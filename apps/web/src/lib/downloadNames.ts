@@ -17,6 +17,8 @@ export const DOWNLOAD_NAMES = Object.freeze([
   'ghostpay-receipt.json',
   'ghostpay-receipts.json',
   'ghostpay-request.gpr.json',
+  // InvoiceSharing: the exact signed invoice link as text (#287 privacy-minimal invoices). Value-free by design.
+  'ghostpay-invoice.txt',
   'ghostpay-proof-of-payment.json',
   'ghostpay-reconciliation-encrypted.json',
   'ghostpay-untrusted-legacy-ledger.txt',
