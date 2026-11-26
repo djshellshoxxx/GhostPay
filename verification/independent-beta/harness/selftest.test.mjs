@@ -11,6 +11,8 @@ import { MockRpc } from './rpc.mjs';
 import { classify } from './app.mjs';
 
 const QTY = /^0x(0|[1-9a-f][0-9a-f]*)$/; // canonical JSON-RPC quantity
+// Stress knob: W5_PROPERTY_SCALE multiplies the seed counts of the property tests (bounded to 20x).
+const SCALE = Math.min(20, Math.max(1, Number(process.env.W5_PROPERTY_SCALE ?? 1) || 1));
 
 test('PRNG is deterministic per seed and differs across seeds', () => {
   const a = new Rng(7);
@@ -23,7 +25,7 @@ test('PRNG is deterministic per seed and differs across seeds', () => {
 });
 
 test('chain properties hold over 300 seeded random operation sequences', () => {
-  for (let seed = 1; seed <= 300; seed += 1) {
+  for (let seed = 1; seed <= 300 * SCALE; seed += 1) {
     const rng = new Rng(seed);
     const chain = new SyntheticChain();
     const rpc = new MockRpc(chain);
@@ -408,7 +410,7 @@ test('G5: a record satisfied only by a hash-less unknown row is counted as unqua
 
 test('logs: canonical-only, removed by reorg, re-emitted on re-mine, receipt logs equal getLogs, filters hold (200 seeds)', () => {
   const TOPIC = '0x' + '7a'.repeat(32);
-  for (let seed = 1; seed <= 200; seed += 1) {
+  for (let seed = 1; seed <= 200 * SCALE; seed += 1) {
     const rng = new Rng(seed);
     const chain = new SyntheticChain();
     const emitter = '0x' + '55'.repeat(20);
@@ -445,7 +447,7 @@ test('logs: canonical-only, removed by reorg, re-emitted on re-mine, receipt log
 });
 
 test('chain time: monotonic canonical timestamps, warp moves time forward, reorg replays from the fork point', () => {
-  for (let seed = 1; seed <= 100; seed += 1) {
+  for (let seed = 1; seed <= 100 * SCALE; seed += 1) {
     const rng = new Rng(seed);
     const chain = new SyntheticChain({ startTime: 1_800_000_000 });
     for (let i = 0; i < 25; i += 1) {
@@ -718,5 +720,16 @@ test('audit 19: serve answers 404 for a missing asset and never serves the build
   } finally {
     await srv.close();
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('generators are deterministic per seed and bounded (record replay depends on it)', async () => {
+  const { generated } = await import('./scenarios.mjs');
+  const { sellerGenerated } = await import('./seller-scenarios.mjs');
+  for (let seed = 1; seed <= 50 * SCALE; seed += 1) {
+    assert.deepEqual(generated(seed), generated(seed));
+    assert.deepEqual(sellerGenerated(seed), sellerGenerated(seed));
+    assert.ok(generated(seed).steps.length <= 10, 'payer middle bounded (prefix 2 + at most 8)');
+    assert.ok(sellerGenerated(seed).steps.length <= 1 + 2 * 8 + 7, 'seller sequence bounded');
   }
 });
