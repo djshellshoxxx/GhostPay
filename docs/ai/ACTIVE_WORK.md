@@ -1,3 +1,11 @@
+# #707 CI repair — newghostpay-7d/features (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `13bb8ffc`. Owned paths: #707's owned paths below and this entry.
+Change: removed the `exact` role-query option (TS2769, which failed the web build in four hosted checks) from
+`SellerKeys.stealthExport.test.tsx`; a string accessible name already matches exactly, so the assertion is unchanged.
+Acceptance: every hosted check green at the exact head.
+
 # #707 completion — ghostpay-78 worker (2026-11-26 UTC)
 
 Worker: ghostpay-78 worker, finishing PR #707 after its session ended. Branch `claude/p0-keys-m2b-successor-20261126`,

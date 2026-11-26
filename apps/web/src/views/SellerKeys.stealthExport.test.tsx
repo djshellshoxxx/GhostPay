@@ -63,7 +63,8 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     markKeystoreDownloaded(captureSessionGuard());
     await open();
     const panel = screen.getByTestId('stealth-export-open');
-    expect(within(panel).getByRole('button', { name: 'Check export without importing', exact: true })).toBeTruthy();
+    // A string name in a role query already matches the whole accessible name.
+    expect(within(panel).getByRole('button', { name: 'Check export without importing' })).toBeTruthy();
     const verify = screen.getAllByRole('button', { name: /verify backup/i });
     expect(verify).toHaveLength(1);
     expect(verify[0]!.textContent).toBe('Verify backup');
