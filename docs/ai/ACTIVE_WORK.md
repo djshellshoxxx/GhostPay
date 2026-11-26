@@ -1,3 +1,49 @@
+# #707 integration with main `e7e98109` — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor of the workers below after a machine crash. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `9d373b2b` merged with main `e7e98109` (#624, docs only; the sole conflict
+was this file, resolved as a union). Owned paths: #707's owned paths below and this entry.
+Acceptance: every hosted check green at the exact head; independent review.
+
+# #707 CI repair — newghostpay-7d/features (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `13bb8ffc`. Owned paths: #707's owned paths below and this entry.
+Change: removed the `exact` role-query option (TS2769, which failed the web build in four hosted checks) from
+`SellerKeys.stealthExport.test.tsx`; a string accessible name already matches exactly, so the assertion is unchanged.
+Acceptance: every hosted check green at the exact head.
+
+# #707 completion — ghostpay-78 worker (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, finishing PR #707 after its session ended. Branch `claude/p0-keys-m2b-successor-20261126`,
+head `45e4b222` merged with main `194e225c`. Owned paths: #707's owned paths below; the new recovery control's accessible
+name (`stealthExport.open.verify`, and `stealthExport.verify.differentFile` that names it) in the four catalogs and the
+specs/tests that reference it; review fixes in #707's own new source.
+Acceptance: hosted e2e (full/lean), Pages-on-anvil and all other checks green at the exact head; the established
+"Verify backup" keystore control keeps its name and every existing spec passes unchanged.
+
+# M2b P0-KEYS successor — #622 onto current main (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60` (successor; the #622 cloud coordinator `nifty-bohr` is not reachable locally and ghostpay-42 confirmed no driver). Branch `claude/p0-keys-m2b-successor-20261126` = #622 head `8c7ae937a3ef056cd646c5f2d955f803a5ecb2ce` (ancestry kept, original ref untouched) merged with main `e1d0eb0f`.
+Owned paths: #622's owned paths (entry below) and the merge resolution: four catalogs (union of #622's 44 keys and main), `SellerKeys.tsx` (StealthExportRecovery kept visible because recovery is allowed while idle-suspended; the archive stays hidden while suspended, per main), this entry.
+Acceptance: #622's acceptance below, plus #689 idle suspension: no export or master-key load may bypass suspended authority or the sole-copy replacement confirmation; fresh hosted CI on the exact head; independent review.
+
+# M2b P0-KEYS — archive, master backup and in-app recovery on top of main's individual export (2026-11-24 UTC)
+
+Worker: Claude Worker A (core implementation) under coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr).
+Branch: `claude/nifty-bohr-5ra2ap`; exact base main `03695a7b`. Source: PR #372 head `055d33e0` (Spec 18) plus this
+worker's earlier extraction `d7a11357` (kept on `backup/m2-d7a11357`). Extends main's `07722292` individual export; does
+not replace it or its adaptations (`ExportRpc.assertCurrent`, no displayed file names, full credential reset).
+Owned paths: additive parts of `apps/web/src/lib/paymentKeyExport.ts` (archive, master backup, recovered-key holders,
+open/verify) and new tests beside it; `apps/web/src/components/StealthExport{Archive,Master,Recovery}.tsx` and new
+component tests; minimal generalisation of `StealthExportVerification.tsx`; additive mounts in `apps/web/src/views/Scan.tsx`
+(archive) and `SellerKeys.tsx` (master backup, open export; PRs #573/#530 also edit SellerKeys: mounts only); matching
+locale/security keys; a new archive/recovery e2e spec; `docs/engineering/milestones/M2-P0-KEYS.md`.
+Not owned: WalletAttempts*, duplicateAttemptJournal*, reconciliation*, Sweep, relayer, contracts, other docs/engineering files.
+Acceptance: encrypted all-discovered archive and master backup behind re-authentication; recovery of any
+ghostpay-stealth-* file in a fresh session; tampered/wrong-passphrase/oversize/wrong-chain/unknown-format refused; secrets
+wiped; lock/session/chain cancellation; full web, ux-vault and recovery gates; no new endpoint or fallback client.
+
 # Security remediation PR #220 — refresh onto main `e7e98109` (2026-11-26 UTC)
 
 Worker: Claude session 01KtKj8hxPXds2YXGcbiFzEw; branch `security/mythril-full-remediation-20261118` (base `5467c158`, merged

@@ -1,6 +1,7 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
+import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
 import type { ExportRpc } from '../lib/paymentKeyExport';
 import { loadSettings } from '../lib/settings';
@@ -594,6 +595,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
+      <StealthExportArchive matches={matches} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
