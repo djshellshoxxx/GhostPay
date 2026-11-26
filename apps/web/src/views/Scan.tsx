@@ -218,14 +218,19 @@ export function Scan(): ReactNode {
         const scanPrivacySelection = JSON.stringify(privacy);
         const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        // Every request of this scan re-checks the saved route it started with: its privacy settings, the Settings RPC
-        // it uses and its second RPC. A change in this or another tab stops it before anything more is sent.
+        // Unreadable lane settings may hold a cover opt-in: block instead of verifying matches without cover.
+        if (lanes.unreadable === true) throw new UserFacingError({ key: 'scanPrivacy.blocked.settingsUnreadable' });
+        // Every request of this scan re-checks the saved route it started with: its privacy settings, its cover choice,
+        // the Settings RPC it uses and its second RPC. A change in this or another tab stops it before anything more is
+        // sent.
         const savedAtStart = loadSettings();
         const startRpcUrl = savedAtStart.rpcUrls[String(chainId)];
         const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
         const assertScanPath = (): void => {
           const saved = loadSettings();
+          const cover = loadScanLanes(browserStorage());
           if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              cover.unreadable === true || cover.matchCover !== lanes.matchCover ||
               (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
               (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
             throw new UserFacingError(SCAN_ROUTE_CHANGED);
@@ -308,6 +313,7 @@ export function Scan(): ReactNode {
           floodPerBlock: lanes.floodPerBlock,
           spamScoring: lanes.spamScoring,
           privacySetTransfers: lanes.privacySetTransfers,
+          ...(lanes.matchCover ? { matchCover: true } : {}),
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
@@ -456,6 +462,7 @@ export function Scan(): ReactNode {
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {scanLanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
+          {scanLanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover')}</li>}
         </ul>
         <p className="hint">{t('scan.disclosure.hint')}</p>
       </details>

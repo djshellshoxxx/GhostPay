@@ -1,3 +1,42 @@
+# Cover lookups (#696): merge of main `e7e98109` and review follow-up — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/w-match-cover-20261125`, head
+`cb119fa1` merged with main `e7e98109` (#624, docs only; the sole conflict was this file, resolved as a union).
+Owned paths: the #696 entries below and this entry. Acceptance: independent review (worker "reviewer2") addressed,
+hosted CI green at the exact head.
+
+# Cover lookups (#696): integration and review follow-up (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/w-match-cover-20261125`; its main `194e225c` merge `bb03c9a9` verified (only ACTIVE_WORK conflicted; catalogs
+and `securityKeys.ts` complete) and pushed. Owned paths: the ghostpay-78 entry below and this entry.
+Acceptance: independent review (worker "reviewer") addressed, current main merged, hosted CI green at the exact head.
+
+# Cover lookups (#696): third independent review and finish (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, continuing `newghostpay-77`'s parked branch `claude/w-match-cover-20261125`; base main
+`194e225c` merged (ACTIVE_WORK union). Owned paths: the #696 files (`apps/web/src/lib/matchCover.ts`, the cover hunks of
+`scanClient.ts`, `scanSpam.ts`, `Settings.tsx`, `Scan.tsx`, their tests, the three `scanLanes` catalog keys) and this
+entry. Acceptance: independent security/correctness review of cover v3 against the security invariants (opt-in, fail
+closed on unreadable settings, derived-key cleanup, no new egress, honest limits, route guard and #691 revocation, no
+anonymity wording); confirmed defects fixed with failing-then-passing tests; hosted CI green at the exact head.
+
+# Cover lookups (#696): successor work after the second review (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`, continuing `newghostpay-ae`'s parked branch `claude/w-match-cover-20261125`
+(confirmed unclaimed by peers); main `e1d0eb0f` merged. Owned paths: the #696 files below plus `Scan.tsx`'s route guard
+and the unreadable state of the scan-lane store. The second independent review rejected v2; design v3 and its limits:
+`docs/handoffs/MATCH_COVER_20261125.md`. Acceptance: the review's findings fixed or disclosed, regression tests that
+fail without them, a third independent review, hosted CI green on the exact head.
+
+# Cover lookups for matched router payments (owner-approved, opt-in) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-match-cover-20261125`, base main `1bea3df3`. The owner approved this slice in this session (new capability, off by default). W3 (ghostpay-backup-60) confirmed it is outside W3/P14 scope; ghostpay-42 informed.
+Problem: verifying a matched router payment sends receipt and transaction lookups that no non-matching announcement gets, so the RPC (and a second RPC) learn which announcements matched (docs/research/privacy-rpc-call-graph.md items 2-3).
+Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
+Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
+Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+
 # Stack #718: P13 backup test fixture correction (2026-11-26 UTC)
 
 Worker: newghostpay-4e (coordinator); branch `claude/consolidation-stack-20261126`. CI run 45832769192 failed once at

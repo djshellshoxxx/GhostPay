@@ -267,6 +267,9 @@ export const SECURITY_KEY_GROUPS = {
     'scanLanes.disclosure.transfers',
     'settings.scanLanes.floodHint',
     'settings.scanLanes.transfersHint',
+    'settings.scanLanes.matchCover',
+    'settings.scanLanes.matchCoverHint',
+    'scanLanes.disclosure.matchCover',
   ],
   // Spec 12 local spend tracking: what the server learns about this wallet's outputs, and what spent status means.
   bitcoinSpentStatus: [

@@ -27,7 +27,7 @@ GhostPay needs an RPC provider (a server that reads the blockchain for you). You
 
 | Who | What they learn |
 |---|---|
-| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address (and, for a token balance, the token contract) when you press "Read balance from the Settings RPC" in Sweep (opening Sweep alone does not read it), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. |
+| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address (and, for a token balance, the token contract) when you press "Read balance from the Settings RPC" in Sweep (opening Sweep alone does not read it), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. The opt-in cover lookups below add other payments' receipt lookups; they do not cover the balance read, a sweep or any transaction you send. |
 | **A Bitcoin (Esplora) server** | Every block you scan, each output that matched you (it is asked whether it was spent), and what you broadcast. |
 | **A Solana or TRON node** (experimental) | The balance check for each address that matched you. |
 | **The relayer operator**, if you use one | The one-time address, your destination, token, amount, fee, your internet address (stored only as a short-lived hash for rate limiting) and the timing. It can refuse or delay your request. It cannot change the destination or amount you signed. |
@@ -98,6 +98,34 @@ and [seller privacy](seller-privacy.md).
   check it. The wallet and its provider can see your accounts, the chain, each request you approve and, unless you hide
   it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
   hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
+- **Which announcement was yours.** Checking a matched router payment asks your RPC (and the second RPC, if set) for
+  that payment's block, receipt and transaction. By default no other announcement gets these lookups, so the provider
+  can tell which public announcement matched your keys and how many did. The opt-in **Hide which payments matched
+  among other payments' lookups** setting (Settings, scan lanes) makes every scan also check about half of the other
+  router payments in supported tokens that it reads, whether or not any payment matched, the same way and in chain
+  order, and discard their results; your payments are verified exactly as before. Which others are checked is decided
+  by a key derived from your viewing key and by each announcement's content, so a rescan, a resumed scan or a scan
+  after a reorg checks the same ones. A check that fails or is still pending moves the saved scan position the same way
+  for your payments and for cover. This is aimed at a provider that records your requests: from the lookups alone it
+  cannot tell your payments from the cover. Limits:
+  - a provider that alters, withholds or fails its answers can still find out which payment matched; the cover is not
+    designed against it;
+  - after a reorg report, the blocks of your payments found in this scan and of your saved ledger records are read
+    again, and a ledger retry reads saved invoice records; these reads are made only for your payments, so they point at
+    them;
+  - a copy of an announcement sent again on chain gets its own cover decision, while router copies of your payments are
+    all checked;
+  - with the similar-transfer estimate also on, its token log query names the token of your latest payment;
+  - reading a balance in Sweep, exporting a payment key or sweeping through the same RPC sends the matched address or
+    transaction and undoes the cover for that payment, as does re-checking one payment from the result list (for
+    example accepting a late payment);
+  - a decoy that fails its check (for example a smart-wallet payment) is followed by fewer requests than a payment that
+    passes, and is not sent to the second RPC;
+  - cover is drawn only from router payments in supported tokens, so with few of them there is little or none;
+  - the provider still sees when you scanned, how far back and your IP address.
+  It costs many more RPC requests, in proportion to how busy the chain is, and a provider's rate limit can then be
+  reached sooner. A scan stops if this setting changes while it runs, and does not start while the saved scan lane
+  settings cannot be read.
 
 ## Specific limits to remember
 

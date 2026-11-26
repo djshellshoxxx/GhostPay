@@ -79,7 +79,9 @@ describe('native language picker', () => {
     fireEvent(window, new Event('languagechange'));
     expect(select.value).toBe('auto');
     expect(select.getAttribute('aria-busy')).toBe('false');
-    expect(document.documentElement.lang).toBe('es');
+    // The provider applies <html lang/dir> in an effect after the change event: wait for it instead of racing it on a
+    // loaded CI runner (this assertion flaked in CI while passing locally). A real switch to the browser's 'ar' still fails.
+    await waitFor(() => { expect(document.documentElement.lang).toBe('es'); });
     expect(document.documentElement.dir).toBe('ltr');
   });
 
