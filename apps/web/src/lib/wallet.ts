@@ -1,7 +1,7 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import type { Abi } from 'viem';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { attemptTxDigest, beginAttempt, readAttempts, removeUnsentAttempt, browserAttemptStorage, finishAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
+import { attemptTxDigest, beginAttempt, readAttempts, removeUnsentAttempt, browserAttemptStorage, finishReturnedAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, requireApproval, walletRequestParams, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
@@ -25,6 +25,8 @@ export interface WalletInfo {
   readonly rdns?: string;
   /** True when a second announcement reused this uuid with a different name or rdns (impersonation attempt, S3-22). */
   readonly conflict?: boolean;
+  /** Browser-discovered wallets must support account, chain and disconnect revocation. */
+  readonly requireLifecycleEvents?: boolean;
   readonly kind: 'eip6963' | 'injected';
   readonly provider: Eip1193Provider;
 }
@@ -94,6 +96,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
         id: `6963:${uuid}`,
         name,
         kind: 'eip6963',
+        requireLifecycleEvents: true,
         provider,
         ...(typeof icon === 'string' && icon.length <= MAX_ICON && ICON_RE.test(icon) ? { icon } : {}),
         ...(rdns === undefined ? {} : { rdns }),
@@ -117,7 +120,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
   if (list.length === 0) {
     try {
       const injected = win.ethereum;
-      if (isProvider(injected)) list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', provider: injected });
+      if (isProvider(injected)) list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', requireLifecycleEvents: true, provider: injected });
     } catch { /* A hostile injected getter is not an available wallet. */ }
   }
   return list;
@@ -255,15 +258,15 @@ export async function connectWallet(
     }
     approval?.assertCurrent();
   };
-  // Only a disclosed connection observes the wallet while it connects. Without a gate nothing changes.
-  const stop = disclosure === undefined ? (): void => undefined : observeWalletLifecycle(provider, (event) => {
+  // Browser wallets must remain observable; request-only synthetic/non-browser adapters retain explicit opt-in.
+  const stop = disclosure === undefined && wallet.requireLifecycleEvents !== true ? (): void => undefined : observeWalletLifecycle(provider, (event) => {
     if (event === 'disconnect' || !expectingEvents) changed = true;
-  });
+  }, wallet.requireLifecycleEvents);
   try {
     check();
     if (disclosure !== undefined) approval = await reviewWalletRequest(provider, disclosure, prepareWalletConnection(expectedChainId).disclosure, check, signal);
     check();
-    expectingEvents = disclosure !== undefined;
+    expectingEvents = true;
     const requested = firstAccount(await call(provider, 'eth_requestAccounts'));
     // The approval was used by the request it named; an expiry afterwards cannot take back access already granted.
     approval = undefined;
@@ -284,7 +287,7 @@ export async function connectWallet(
       }
       check();
       try {
-        expectingEvents = disclosure !== undefined;
+        expectingEvents = true;
         await call(provider, 'wallet_switchEthereumChain', switchParams);
       } catch (e) {
         if (e instanceof UserFacingError) throw e;
@@ -295,7 +298,7 @@ export async function connectWallet(
       if (chainId !== expectedChainId) {
         throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
       }
-      if (disclosure !== undefined) {
+      if (disclosure !== undefined || wallet.requireLifecycleEvents === true) {
         // A disclosed switch was reviewed for this account: confirm the wallet still reports it afterwards.
         const finalAccount = firstAccount(await call(provider, 'eth_accounts'));
         check();
@@ -313,7 +316,7 @@ export type WalletLifecycleEvent = 'accountsChanged' | 'chainChanged' | 'disconn
  * Bounded, disposable EIP-1193 subscription. Retained callbacks become inert before provider cleanup runs. A provider
  * with neither `on` nor `removeListener` cannot be observed (request-only wallet); one with only half refuses.
  */
-export function observeWalletLifecycle(provider: Eip1193Provider, changed: (event: WalletLifecycleEvent) => void): () => void {
+export function observeWalletLifecycle(provider: Eip1193Provider, changed: (event: WalletLifecycleEvent) => void, required = false): () => void {
   let active = true;
   const bound: { readonly event: WalletLifecycleEvent; readonly listener: () => void }[] = [];
   let remove: Eip1193Provider['removeListener'];
@@ -326,7 +329,7 @@ export function observeWalletLifecycle(provider: Eip1193Provider, changed: (even
   try {
     const add = provider.on;
     remove = provider.removeListener;
-    if (add === undefined && remove === undefined) return dispose;
+    if (!required && add === undefined && remove === undefined) return dispose;
     if (typeof add !== 'function' || typeof remove !== 'function') throw new Error('monitor-unavailable');
     for (const event of ['accountsChanged', 'chainChanged', 'disconnect'] as const) {
       const listener = (): void => { if (active) changed(event); };
@@ -363,18 +366,49 @@ async function reviewWalletRequest(provider: Eip1193Provider, disclose: WalletDi
   }
 }
 
+// Explicit identity rechecks also revoke a view when a provider omits lifecycle events.
+const recheckListeners = new WeakMap<WalletSession, Set<() => void>>();
+export function observeConnectedWallet(session: WalletSession, changed: () => void): () => void {
+  const listeners = recheckListeners.get(session) ?? new Set<() => void>();
+  listeners.add(changed);
+  recheckListeners.set(session, listeners);
+  try {
+    const stop = observeWalletLifecycle(session.wallet.provider, changed, session.wallet.requireLifecycleEvents);
+    return () => { listeners.delete(changed); stop(); };
+  } catch (error) {
+    listeners.delete(changed);
+    throw error;
+  }
+}
+function invalidateWalletIdentity(session: WalletSession): void {
+  for (const listener of [...(recheckListeners.get(session) ?? [])]) {
+    try { listener(); } catch { /* One presentation observer cannot keep another scope live. */ }
+  }
+}
+
 /** Re-reads account and chain immediately before a signature or send. */
 export async function recheckWallet(s: WalletSession, assertCurrent?: () => void): Promise<void> {
   assertCurrent?.();
-  const acct = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
-  assertCurrent?.();
-  if (acct !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  const checkAccount = async (): Promise<void> => {
+    const accounts = await call(s.wallet.provider, 'eth_accounts');
+    assertCurrent?.();
+    try {
+      if (firstAccount(accounts) === s.account) return;
+    } catch (error) {
+      invalidateWalletIdentity(s);
+      throw error;
+    }
+    invalidateWalletIdentity(s);
+    throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  };
+  await checkAccount();
   const chainId = await readChainId(s.wallet.provider, assertCurrent);
   assertCurrent?.();
-  if (chainId !== s.chainId) throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
-  const finalAccount = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
-  assertCurrent?.();
-  if (finalAccount !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+  if (chainId !== s.chainId) {
+    invalidateWalletIdentity(s);
+    throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
+  }
+  await checkAccount();
 }
 
 export interface TxRequest {
@@ -405,6 +439,8 @@ export interface WalletAttemptOptions {
   readonly storage?: AttemptStorage;
   /** Journal lock; defaults to `navigator.locks` (missing locks refuse before any wallet request). */
   readonly lockManager?: AttemptLockManager;
+  /** Synchronous policy guard using the authoritative journal snapshot. */
+  readonly beforeAttemptStart?: (key: string, storage: AttemptStorage) => void;
   /**
    * The caller already holds `ATTEMPT_JOURNAL_LOCK` around this call (Web Locks are not reentrant, so requesting it
    * again would deadlock): journal writes then run in place. Only for a caller that really holds it.
@@ -458,11 +494,11 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
   const operation = new AbortController();
   const onChanged = (): void => { changed = true; operation.abort(); };
   let stop: () => void;
-  if (s.disclosure !== undefined) {
+  if (s.disclosure !== undefined || s.wallet.requireLifecycleEvents === true) {
     // A shown disclosure must be cancellable by any wallet change: a provider with only one of `on`/`removeListener`
     // refuses, and callbacks become inert before untrusted removal can reenter them. A request-only provider (neither)
     // cannot be observed; the wallet recheck after approval still re-reads its account and network.
-    stop = observeWalletLifecycle(provider, onChanged);
+    stop = observeWalletLifecycle(provider, onChanged, s.wallet.requireLifecycleEvents);
   } else {
     const events = ['accountsChanged', 'chainChanged', 'disconnect'];
     stop = (): void => {
@@ -523,7 +559,9 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     await recheckWallet(s, check);
     check();
     const explicitStorage = attemptOptions?.storage;
-    const journaled = explicitStorage !== undefined || browserAttemptStorage() !== undefined;
+    // Keep the real backing-store identity across the wallet prompt; transaction staging stores are ephemeral.
+    const journalStorage = explicitStorage ?? browserAttemptStorage();
+    const journaled = journalStorage !== undefined;
     const input: AttemptInput | undefined = !journaled ? undefined : {
       key: walletAttemptKey(s, captured, attemptOptions), chainId: s.chainId, account: s.account.toLowerCase(), kind: attemptOptions?.kind ?? 'transaction',
       txDigest: attemptTxDigest(s.chainId, s.account, captured.to, captured.data, captured.value),
@@ -554,6 +592,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
         await withAttemptJournal((store) => {
           refuseIfAbandoned();
           check();
+          attemptOptions?.beforeAttemptStart?.(input.key, store);
           return beginAttempt(input, store);
         }, access, (attempt) => {
           refuseIfAbandoned();
@@ -590,10 +629,10 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     const normalized = hash.toLowerCase() as Hex;
     const attempt = started.attempt;
     if (attempt !== undefined) {
-      // The hash is recorded under the lock, which another tab may hold across a wallet prompt (policy actions). Never
+      // The hash is recorded under the lock, which a stale client or another browser context may still hold. Never
       // keep a returned hash from the caller meanwhile: after a bounded wait surface it as a broadcast whose follow-up
       // failed, and let the queued write still record it when the lock frees (JRNL-L1).
-      const finishing = withAttemptJournal((store) => { finishAttempt(attempt, normalized, store); }, { ...access, unboundedWait: true });
+      const finishing = finishReturnedAttempt(attempt, normalized, access, journalStorage);
       finishing.catch(() => undefined);
       let timer: ReturnType<typeof setTimeout> | undefined;
       const waited = new Promise<'timeout'>((resolve) => { timer = setTimeout(() => { resolve('timeout'); }, FINISH_WAIT_MS); });

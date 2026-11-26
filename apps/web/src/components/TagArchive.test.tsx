@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as reconciliation from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
-import { clearSession, generateSession, getSessionPublic, revealViewingKey } from '../lib/session';
+import { captureSessionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, isSessionSuspended, revealViewingKey, verifyDownloadedBackup } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import * as tagArchive from '../lib/tagArchive';
 import { makeServices, renderApp } from '../test/render';
@@ -120,7 +120,8 @@ describe('TagArchive', () => {
 describe('C-R11: the idle lock clears the archive passphrases typed into Seller keys', () => {
   it('forgets the typed archive passphrases and suggests a new one, also while unsaved keys stay loaded', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    generateSession();                                   // no backup: the idle lock keeps these keys, and the archive form with them
+    const seller = generateSession();                   // no backup: idle retains these keys for encrypted recovery only
+    const activeBeforeIdle = captureSessionGuard();
     vi.useFakeTimers();
     try {
       renderApp(makeServices());
@@ -133,6 +134,31 @@ describe('C-R11: the idle lock clears the archive passphrases typed into Seller 
       expect(screen.getByLabelText('Archive passphrase').getAttribute('value')).toBe('the passphrase of an archive');
       await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
       expect(getSessionPublic()).toBeDefined();
+      expect(getSessionPublic()).toEqual(seller);
+      expect(isSessionSuspended()).toBe(true);
+      expect(getSessionBackup()?.verified).toBe(false);
+      expect(captureSessionGuard).toThrow(/session is locked/i);
+      expect(activeBeforeIdle).toThrow();
+      for (const label of ['Archive passphrase (at least 14 characters)', 'Repeat archive passphrase', 'Archive passphrase']) {
+        expect(screen.queryByLabelText(label)).toBeNull();
+      }
+      expect(document.body.innerHTML).not.toContain(own);
+      expect(document.body.innerHTML).not.toContain('the passphrase of an archive');
+
+      // Encrypted backup and verification are available while suspended, but neither restores archive authority.
+      vi.useRealTimers();
+      const backup = await exportKeystore(PASS, { N: 1 << 14 });
+      expect(getSessionBackup()?.verified).toBe(false);
+      await act(async () => { await verifyDownloadedBackup(backup, PASS); });
+      expect(getSessionBackup()?.verified).toBe(true);
+      expect(isSessionSuspended()).toBe(true);
+      expect(captureSessionGuard).toThrow(/session is locked/i);
+      expect(screen.queryByLabelText('Archive passphrase (at least 14 characters)')).toBeNull();
+      // Normal import of the retained seller's encrypted backup starts a fresh active session.
+      await act(async () => { expect(await importKeystore(backup, PASS)).toEqual(seller); });
+      expect(isSessionSuspended()).toBe(false);
+      expect(captureSessionGuard).not.toThrow();
+      expect(activeBeforeIdle).toThrow();
       // react-dom mirrors a controlled input's value into its value attribute, so both must be gone.
       expect(archivePass().value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
       expect(archivePass().getAttribute('value')).toBe(archivePass().value);
