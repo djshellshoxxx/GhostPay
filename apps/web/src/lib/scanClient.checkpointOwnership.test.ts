@@ -4,7 +4,8 @@
  * - A plain save is forward-only: it never replaces a stored cursor with an older one.
  * - A save with `expected` is a compare-and-swap: it writes only while the slot still holds exactly `expected` (`null` for an
  *   empty slot), so the slot's owner can move it backward but a writer that lost the slot cannot.
- * - An unreadable or malformed stored value counts as an empty slot.
+ * - A stored value that was read but is malformed counts as an empty slot.
+ * - A slot whose read throws refuses every write: it may hold a newer cursor.
  *
  * Synthetic cursors and an in-memory Storage only; the seeded multi-writer case models several tabs sharing one localStorage.
  */
@@ -21,8 +22,13 @@ const at = (next: number, salt = 0): ScanCursor => ({ nextBlock: BigInt(next), l
 
 function memory() {
   const map = new Map<string, string>();
-  const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); }, removeItem: (k: string) => { map.delete(k); } };
-  return { map, storage, open: (): CheckpointStore => localCheckpointStore(storage, (_id, use) => use(VIEW)) };
+  const state = { failGet: false };
+  const storage = {
+    getItem: (k: string) => { if (state.failGet) throw new Error('storage read denied'); return map.get(k) ?? null; },
+    setItem: (k: string, v: string) => { map.set(k, v); },
+    removeItem: (k: string) => { map.delete(k); },
+  };
+  return { map, state, storage, open: (): CheckpointStore => localCheckpointStore(storage, (_id, use) => use(VIEW)) };
 }
 
 /** Writes raw text into the slot the store uses for (CHAIN, KEY): found as the only key that a save created. */
@@ -145,21 +151,34 @@ describe('malformed and failing storage', () => {
     expect(s.load(CHAIN, KEY)).toEqual(at(6));
   });
 
-  it('a throwing getItem refuses nothing and a throwing setItem is swallowed', () => {
-    const map = new Map<string, string>();
-    let failGet = true;
-    const storage = {
-      getItem: (k: string) => { if (failGet) throw new Error('denied'); return map.get(k) ?? null; },
-      setItem: (k: string, v: string) => { map.set(k, v); },
-      removeItem: (k: string) => { map.delete(k); },
-    };
-    const s = localCheckpointStore(storage, (_id, use) => use(VIEW));
-    expect(() => s.save(CHAIN, KEY, at(7))).not.toThrow();
-    failGet = false;
-    expect(s.load(CHAIN, KEY)).toEqual(at(7));
-    const full = localCheckpointStore({ ...storage, setItem: () => { throw new Error('quota'); } }, (_id, use) => use(VIEW));
+  it('a transient getItem failure refuses every write: a pre-existing newer cursor survives while setItem works', () => {
+    const m = memory();
+    const s = m.open();
+    s.save(CHAIN, KEY, at(500));
+    const before = [...m.map];
+    m.state.failGet = true;
+    // Unreadable reads as "no checkpoint" (resume falls back to the chosen start), but nothing may replace it.
+    expect(s.load(CHAIN, KEY)).toBeUndefined();
+    expect(() => {
+      s.save(CHAIN, KEY, at(100));
+      s.save(CHAIN, KEY, at(900));
+      s.save(CHAIN, KEY, at(100), null);
+      s.save(CHAIN, KEY, at(100), at(500));
+    }).not.toThrow();
+    expect([...m.map]).toEqual(before);
+    m.state.failGet = false;
+    expect(s.load(CHAIN, KEY)).toEqual(at(500));
+    // Once reads work again the ordinary rules apply.
+    s.save(CHAIN, KEY, at(100), at(500));
+    expect(s.load(CHAIN, KEY)).toEqual(at(100));
+  });
+
+  it('a throwing setItem is swallowed and leaves the stored cursor in place', () => {
+    const m = memory();
+    m.open().save(CHAIN, KEY, at(7));
+    const full = localCheckpointStore({ ...m.storage, setItem: () => { throw new Error('quota'); } }, (_id, use) => use(VIEW));
     expect(() => full.save(CHAIN, KEY, at(9), at(7))).not.toThrow();
-    expect(s.load(CHAIN, KEY)).toEqual(at(7));
+    expect(m.open().load(CHAIN, KEY)).toEqual(at(7));
   });
 
   it('without the seller keys nothing is written, whatever `expected` says', () => {
@@ -199,19 +218,24 @@ describe('seeded multi-writer fuzz (tabs sharing one localStorage)', () => {
       const before = model;
       if (op < 0.2) {
         tab.owned = tab.store.load(CHAIN, KEY);
-      } else if (op < 0.55) {
+      } else if (op < 0.5) {
         // An owner write as runScan makes it: expected is the cursor this tab last read or wrote.
         const cursor = pick();
         tab.store.save(CHAIN, KEY, cursor, tab.owned ?? null);
         if (same(model, tab.owned)) { model = cursor; tab.owned = cursor; }
         else expect(m.open().load(CHAIN, KEY)).toEqual(before);
-      } else if (op < 0.85) {
+      } else if (op < 0.78) {
         const cursor = pick();
         tab.store.save(CHAIN, KEY, cursor);
         if (model === undefined || cursor.nextBlock >= model.nextBlock) model = cursor;
-      } else if (op < 0.95) {
+      } else if (op < 0.88) {
         tab.store.clear(CHAIN, KEY);
         model = undefined;
+      } else if (op < 0.94) {
+        // A transient read failure during a write: refused whatever the writer expected.
+        m.state.failGet = true;
+        if (next() < 0.5) tab.store.save(CHAIN, KEY, pick()); else tab.store.save(CHAIN, KEY, pick(), tab.owned ?? null);
+        m.state.failGet = false;
       } else {
         m.map.set(name, next() < 0.5 ? '{' : '{"nextBlock":"x"}');
         model = undefined;

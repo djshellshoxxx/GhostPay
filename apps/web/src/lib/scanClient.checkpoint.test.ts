@@ -834,7 +834,7 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     expect(store.history.slice(0, 3)).toEqual([P1, P2, P3]);
   });
 
-  // Fixed F1 (was `it.fails`): runScan re-reads the slot before each save and yields it once another scan has written there,
+  // F1 (was `it.fails`), within one document: runScan re-reads the slot before each save and yields it once another scan has written there,
   // so run A, resolving late, no longer overwrites run B's newer checkpoint (11,991) with its own page-1 cursor (5,000).
   it('a late older run does not overwrite the newer checkpoint (final stored cursor is not older than B\'s)', async () => {
     const { store, afterB, aOut } = await overlap();
@@ -845,7 +845,7 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     expect(savedCalls(store)).toEqual([P1, P2, P3]);
   });
 
-  // Fixed F1 (was `it.fails`): a plain save to localCheckpointStore is forward-only.
+  // F1 (was `it.fails`): a plain save to localCheckpointStore is forward-only.
   it('localCheckpointStore.save refuses an older cursor over a newer one for the same chain and key', () => {
     const key = new Uint8Array(32).fill(7);
     const map = new Map<string, string>();
@@ -965,6 +965,31 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
       expect(savedCalls(store)).toEqual([P1, P2, P3]);
       expect(store.save.mock.calls[0]?.[3]).toBeNull();
     });
+  });
+
+  it('a newer stored cursor survives a run during which localStorage reads fail while writes work', async () => {
+    const f = fixture();
+    const key = new Uint8Array(32).fill(6);
+    const map = new Map<string, string>();
+    let failGet = false;
+    let writes = 0;
+    const storage = {
+      getItem: (k: string) => { if (failGet) throw new Error('storage read denied'); return map.get(k) ?? null; },
+      setItem: (k: string, v: string) => { writes++; map.set(k, v); },
+      removeItem: (k: string) => { map.delete(k); },
+    };
+    const store = secretKeyedStore(storage, (_id, use) => use(key));
+    store.save(CHAIN_ID, KEY, P3);
+    writes = 0;
+    failGet = true;
+    const pages: bigint[] = [];
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), checkpoints: store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
+    failGet = false;
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
+    expect(writes).toBe(0);
+    expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
   });
 
   it('two tabs sharing one localStorage: the late older run leaves the newer checkpoint in place', async () => {
