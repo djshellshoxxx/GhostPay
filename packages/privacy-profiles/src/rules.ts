@@ -4,6 +4,7 @@
  * @security Conflicts default to blocking when no spec covers a combination.
  */
 import { POOL_EXIT_VALUES, SPONSORED_PAYER_MODES } from './catalogue.js';
+import { deepFreeze } from './freeze.js';
 import type { ErrorKey, OptionId, Pred, RuleDef, SpecRef, WarningKey } from './types.js';
 
 const is = (opt: OptionId, ...v: string[]): Pred => ({ opt, in: v });
@@ -15,8 +16,8 @@ const ref = (file: string, ...ids: string[]): SpecRef => ({ file, ids });
 const err = (n: string): ErrorKey => `privacy.err.${n}`;
 const warn = (n: string): WarningKey => `privacy.warn.${n}`;
 
-/** All rules, in id order. */
-export const RULES: readonly RuleDef[] = [
+/** All rules, in id order. Deeply frozen: the rule table cannot be edited at run time. */
+export const RULES: readonly RuleDef[] = deepFreeze([
   { id: 'R-01', kind: 'conflict', when: { scan: 'chain' }, code: 'E_WRONG_CHAIN', key: err('wrongChain'), specRef: ref('payer-hiding.md', 'PH-GEN-1') },
   { id: 'R-02', kind: 'conflict', when: { scan: 'maturity-unavailable' }, code: 'E_MATURITY', key: err('notAvailable'), specRef: ref('external-pools.md', 'EP-3', 'EP-4') },
   { id: 'R-03', kind: 'conflict', when: { scan: 'maturity-test-only' }, code: 'E_CAPABILITY', key: err('testModeOnly'), specRef: ref('external-pools.md', 'EP-M') },
@@ -83,4 +84,4 @@ export const RULES: readonly RuleDef[] = [
   { id: 'R-44', kind: 'requires', when: { all: [is('sweep.exit', 'shielded-pool'), is('sweep.poolSubmit', 'relayer')] }, then: { cap: 'pool-relayer' }, code: 'E_CAPABILITY', key: err('requires.cap.pool-relayer'), specRef: ref('shielded-pool.md', 'SP-REL') },
   { id: 'R-45', kind: 'requires', when: { all: [{ env: ['node'] }, { any: [is('net.rpcProfile', 'onion'), is('net.relayerProfile', 'onion')] }] }, then: { cap: 'tor-socks' }, code: 'E_CAPABILITY', key: err('requires.cap.tor-socks'), specRef: ref('network-privacy.md', 'NP-O-1') },
   { id: 'R-46', kind: 'warn', when: { all: [isNot('sweep.hops', '0'), is('sweep.hopRelayers', 'rotate'), { notCap: 'multi-relayer' }] }, key: warn('singleRelayerSeesAllHops'), specRef: ref('hops.md', 'HOP-RLY-1') },
-];
+]);
