@@ -271,7 +271,7 @@ test('keeps rejected QR text out of titles, alerts, logs and navigation', async 
   page.on('pageerror', (error) => diagnostics.push(error.message));
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   const importer = page.getByRole('region', { name: 'Invoice QR import' });
   await importer.getByLabel('Or paste QR text').fill(markers.join(' '));
   await importer.getByRole('button', { name: 'Use pasted text' }).click();

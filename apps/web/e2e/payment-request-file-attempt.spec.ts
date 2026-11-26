@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { PAYMENT_REQUEST_FILE_NAME } from '@ghostpay/invoice-schema';
 import { configureRpc, mockNetwork, type SentTx } from './flowMocks';
 import { createInvoice, generateKeys, openFresh } from './helpers';
+import { approveWalletDisclosures, shownWalletDisclosures } from './walletDisclosure';
 
 // F03 x #500: an invoice opened from its request file is the same signed invoice as its link, so the durable
 // wallet-attempt journal must refuse a second payment request whichever entry path the payer used.
@@ -12,6 +13,8 @@ interface WalletState { sent?: SentTx; sendCalls?: number }
 
 /** Trimmed copy of the EIP-6963 test wallet in flows.spec.ts (a spec file cannot be imported without its tests). */
 async function injectWallet(page: Page, state: WalletState): Promise<void> {
+  // Drive the current real disclosure UI just as the shared payment-flow fixtures do.
+  await approveWalletDisclosures(page);
   await page.exposeFunction('__recordTx', (tx: SentTx) => {
     state.sent = tx;
     state.sendCalls = (state.sendCalls ?? 0) + 1;
@@ -83,6 +86,7 @@ test('a request file cannot re-pay an invoice whose link payment is already reco
   await send(page).click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
   expect(first.sendCalls).toBe(1);
+  expect(await shownWalletDisclosures(page)).toEqual(['eth_requestAccounts', 'eth_sendTransaction']);
 
   // Tab B opens the same invoice from its request file and reaches the final check through the ordinary flow.
   const tab = await context.newPage();
@@ -104,6 +108,7 @@ test('a request file cannot re-pay an invoice whose link payment is already reco
   await expect(tab.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
   await send(tab).click();
   await expect(tab.getByRole('alert').filter({ hasText: 'previous wallet attempt' })).toBeVisible();
+  expect(await shownWalletDisclosures(tab)).toContain('eth_requestAccounts');
   expect(second.sendCalls ?? 0).toBe(0);
   expect(first.sendCalls).toBe(1);
 });

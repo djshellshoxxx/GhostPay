@@ -3954,3 +3954,31 @@ CI and actual full/lean browser acceptance remain mandatory before parent integr
 
 Handoff: `docs/handoffs/REQUEST_FILE_COMPLETION_20261126.md`. No remote mutation,
 activation of an excluded product, dependency/workflow change or live transaction was performed by this worker.
+
+## Coordinator request-file hosted browser qualification — 2026-11-25 (8812)
+
+- Worker: /root coordinator; branch: fix/request-file-browser-qualification-20261125-8812.
+- Base: published request-file candidate 39cece11afac78212d9f7331aeb1ab1a5fe8d427 (PR #688).
+- Owns: apps/web/e2e/app.spec.ts, apps/web/e2e/devices-mobile-workflows.spec.ts,
+  apps/web/e2e/payment-request-file-attempt.spec.ts, this additive record and
+  docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md.
+- Observed gate: hosted lean job 139628238899 failed four cases on the retired QR
+  disclosure label and one case because the request-file wallet fixture had not
+  adopted the current real wallet-disclosure interaction. Full profile is also red.
+- Acceptance: use the current request-file/QR section label, drive the real wallet
+  disclosure controls in both mock-wallet tabs, preserve every existing privacy,
+  camera-denial, invoice-review and duplicate-payment assertion, and require fresh
+  full/lean hosted browser success. Record actual local lint/typecheck/collection.
+- Scope: browser fixtures only; no runtime, policy, dependency, timeout, workflow,
+  deployment, excluded-product activation or donor-ref change. Existing idle and
+  privacy continuation owners keep their separately claimed runtime paths.
+
+### Request-file hosted browser correction result — 8812
+
+At local source 5fa157f509ca2e5bda198bf4b13e427273987bbd, the three claimed browser
+fixtures use the current QR/request summary and the existing real wallet-disclosure
+interaction. Original privacy and duplicate-payment assertions and time limits remain.
+Typed lint and full web typecheck passed; Playwright collected 20 cases without browser
+execution. Both initial hosted profiles had the same five fixture failures, documented
+in docs/handoffs/REQUEST_FILE_BROWSER_QUALIFICATION_20261125.md. Independent source
+review and fresh hosted combined/full/lean qualification remain the promotion gates.
