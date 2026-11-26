@@ -41,6 +41,10 @@ payment gating, network egress and release gates are unchanged. The checks still
 - Native WebKit/Firefox/mobile-device qualification of the footer (Playwright device projects emulate Chromium only).
 - Native-speaker review of the new reviewed-only explanation strings for es/ja/ar.
 
-## Verification
+## Review and verification
 
-Recorded in the pull request with exact commands and outcomes.
+An AI-assisted review by a separate subagent covered `019d5d18...5a0c3833`. It is not a human or professional
+audit. It found nothing blocking. Two wording nits were fixed: the privacy page now says a probe that cannot be
+removed reports *Failed*, and the storage explanation no longer cites private windows. Two nits were left as is:
+`aria-describedby` on `<strong>`, which is harmless, and the cosmetic footer-identity assertion. Exact commands and
+outcomes are recorded in the pull request.

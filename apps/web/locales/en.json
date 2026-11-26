@@ -21,7 +21,7 @@
     "app.checks.digest.fail": "WebCrypto SHA-256 returned a wrong result or an error. Do not rely on this browser for keys, invoices or payments. Update it or use another browser.",
     "app.checks.digest.unavailable": "WebCrypto is not available here. Browsers omit it outside a secure context and in outdated versions. Features that use it, such as encrypted local records and exports, can fail.",
     "app.checks.storage.fail": "Site storage did not return or remove the test value correctly. Settings and local records may be lost or out of date. Export your backups and check this browser's site-storage settings.",
-    "app.checks.storage.unavailable": "This browser refused site storage, for example in a private window or when site data is blocked. Settings and local records may not be kept. Allow site storage, or export your backups before you close the tab.",
+    "app.checks.storage.unavailable": "This browser refused site storage, for example because site data is blocked or storage is full. Settings and local records may not be kept. Allow site storage, or export your backups before you close the tab.",
     "requestFile.download": "Download payment request",
     "requestFile.downloadHint": "This file gives its holder the same access as the invoice link. It adds no encryption. Share any passphrase separately. Downloads, backups and device sync may keep a copy.",
     "requestFile.downloadFailed": "The request file could not be downloaded. Try again or use the original invoice link.",
