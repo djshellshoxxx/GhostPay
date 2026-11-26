@@ -919,6 +919,54 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
   });
 
+  describe('checkpointSeen: ownership starts at the snapshot the caller chose its cursor against', () => {
+    const recordPages = () => {
+      const pages: bigint[] = [];
+      return { pages, onPageMatches: (_m: readonly ScanMatch[], page: { readonly from: bigint }) => { pages.push(page.from); return Promise.resolve(true); } };
+    };
+
+    it('a foreign save between the caller\'s read and the run\'s start is not adopted: no overwrite, every page recorded', async () => {
+      const f = fixture();
+      const store = spyStore(P3); // another tab advanced the slot after the caller read P1
+      const rec = recordPages();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: P1, checkpointSeen: P1, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+      expect(out.error).toBeUndefined();
+      expect(store.save).not.toHaveBeenCalled();
+      expect(store.current).toEqual(P3);
+      expect(rec.pages).toEqual([5000n, 10_000n]);
+      expect(idsOf(out.matches)).toEqual(f.truth.slice(2));
+    });
+
+    it('a foreign clear between the caller\'s read and the run\'s start is not undone', async () => {
+      const f = fixture();
+      const store = spyStore(); // cleared by another tab after the caller read P1
+      const rec = recordPages();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: P1, checkpointSeen: P1, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+      expect(out.error).toBeUndefined();
+      expect(store.save).not.toHaveBeenCalled();
+      expect(store.current).toBeUndefined();
+      expect(rec.pages).toEqual([5000n, 10_000n]);
+    });
+
+    it('a deliberate restart from an earlier block still rewinds the slot the user saw', async () => {
+      const f = fixture();
+      const store = spyStore(P3);
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: { nextBlock: 0n }, checkpointSeen: P3, checkpoints: store.store });
+      expect(out.error).toBeUndefined();
+      expect(savedCalls(store)).toEqual([P1, P2, P3]);
+      expect(store.save.mock.calls.map((c) => c[3])).toEqual([P3, P1, P2]);
+    });
+
+    it('`null` (no checkpoint was shown) owns an empty slot and saves normally', async () => {
+      const f = fixture();
+      const store = spyStore();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), checkpointSeen: null, checkpoints: store.store });
+      expect(out.error).toBeUndefined();
+      expect(savedCalls(store)).toEqual([P1, P2, P3]);
+      expect(store.save.mock.calls[0]?.[3]).toBeNull();
+    });
+  });
+
   it('two tabs sharing one localStorage: the late older run leaves the newer checkpoint in place', async () => {
     const f = fixture();
     const key = new Uint8Array(32).fill(9);
