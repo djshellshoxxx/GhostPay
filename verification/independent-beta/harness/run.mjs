@@ -36,8 +36,12 @@ function parseArgs(argv) {
     else if (k === '--out') a.out = argv[++i];
     else if (k === '--candidate') a.candidate = argv[++i];
     else if (k === '--seeds') {
-      const [lo, hi] = String(argv[++i]).split('-').map(Number);
-      if (!Number.isInteger(lo) || (hi !== undefined && !Number.isInteger(hi)) || lo < 0) throw new Error('--seeds needs N or N-M'); // audit finding 5
+      const spec = String(argv[++i]);
+      if (!/^\d+(-\d+)?$/.test(spec)) throw new Error('--seeds needs N or N-M with N <= M'); // `-3` used to parse as 0-3
+      const parts = spec.split('-').map(Number);
+      const [lo, hi] = parts;
+      // A reversed or malformed range must not fall through to the default (named) set (QA: `5-1` ran the named set).
+      if (parts.length > 2 || !Number.isInteger(lo) || (hi !== undefined && (!Number.isInteger(hi) || hi < lo)) || lo < 0) throw new Error('--seeds needs N or N-M with N <= M'); // audit finding 5
       const top = Math.min(hi ?? lo, lo + 199); // hard bound: at most 200 generated sequences per run
       for (let s = lo; s <= top; s += 1) a.seeds.push(s);
     } else throw new Error(`unknown argument ${k}`);

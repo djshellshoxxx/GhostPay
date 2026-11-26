@@ -44,7 +44,12 @@ function parseArgs(argv) {
     else if (k === '--out') a.out = argv[++i];
     else if (k === '--candidate') a.candidate = argv[++i];
     else if (k === '--seeds') {
-      const [lo, hi] = String(argv[++i]).split('-').map(Number);
+      const spec = String(argv[++i]);
+      if (!/^\d+(-\d+)?$/.test(spec)) throw new Error('--seeds needs N or N-M with N <= M'); // `-3` used to parse as 0-3
+      const parts = spec.split('-').map(Number);
+      const [lo, hi] = parts;
+      // Same validation as run.mjs: a malformed or reversed range must not fall through to the named set (QA).
+      if (parts.length > 2 || !Number.isInteger(lo) || (hi !== undefined && (!Number.isInteger(hi) || hi < lo)) || lo < 0) throw new Error('--seeds needs N or N-M with N <= M');
       for (let s = lo; s <= Math.min(hi ?? lo, lo + 99); s += 1) a.seeds.push(s); // hard bound: 100 sequences
     } else throw new Error(`unknown argument ${k}`);
   }

@@ -7,11 +7,12 @@ Status: milestones 1–3 delivered (payer and seller models, harness, independen
 
 | Item | Value |
 |---|---|
-| Current candidate | main `8aca5a06a9435dd30e40378ba606da3c68f94863` (Merge PR #683; includes the #287 item 3 wallet disclosure gate), tested unmodified in `results/m1c-32e141ee` |
+| Current candidate | main `9d92472a46a4e37f847472276d77e3b4ce158e80` (Merge PR #716, LATE-LM1; includes #691 account privacy), tested unmodified in `results/m3-a13a2bb9`, `results/stress-payer-43d737e4`, `results/stress-seller-43d737e4` |
+| Earlier candidate | main `8aca5a06a9435dd30e40378ba606da3c68f94863` (Merge PR #683; #287 item 3 wallet disclosure gate), tested unmodified in `results/m1c-32e141ee`, `results/m1d-1bb92a77` |
 | Historical pin | main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61` (Merge PR #635, P1-LATE), tested in `results/m1-d3edbdb` and `results/m1b-9e7f7c4` |
 | Candidate under test | main (unmodified). No W1-approved candidate and no W1 coordination handoff were found in PRs, issues or branches at start (2026-11-25 ~10:40 UTC). #664 head `d4bdd0224aec5b35b41483830b65006f146de7cd` was observed only, not tested. |
 | Production diff vs candidate | none; `run.mjs --candidate <sha>` (default `origin/main`) refuses to run if `git diff <candidate> HEAD -- apps packages package.json package-lock.json` is not empty |
-| Bundles | lean (Pages) profile, built by `harness/build.mjs` exactly as `apps/web/playwright.config.ts` does: `b440bed21c63a6c4262e5f8e9020d1bb1d2daf1fbb8bb087bbf72f95ca3e248d` for `8aca5a06`, `cae30f5d6a2c1f389d545adeec84143f993ea20281f6eec4997f86b1227721b4` for `aaa71a11` (18 files each) |
+| Bundles | lean (Pages) profile, built by `harness/build.mjs` exactly as `apps/web/playwright.config.ts` does: `ab9bc5b061acb54a9bf8833fd788e81e343467be348506c697005e15a6d84c62` for `9d92472a`, `b440bed21c63a6c4262e5f8e9020d1bb1d2daf1fbb8bb087bbf72f95ca3e248d` for `8aca5a06`, `cae30f5d6a2c1f389d545adeec84143f993ea20281f6eec4997f86b1227721b4` for `aaa71a11` (18 files each) |
 
 ## Capabilities in this session
 
@@ -179,7 +180,7 @@ New coverage:
 |---|---|---|
 | M7 two-RPC disagreement | S20 | the second provider (frozen on the pre-reorg fork) disagreed: the scan stopped with the disagreement notice and credited nothing; once both providers agreed the link was invalidated (SI9) |
 | M8 / M9 seller browser restart | S28/S49 | a confirmed link and an accepted-late decision survived a full browser restart over the same profile and vault (SI10) |
-| M10 checkout after expiry | S37 | the router dry run reverts on the expired deadline, so the checkout refused before the wallet; no effective payment (SI2) |
+| M10 checkout after expiry | S37 | with the payer's clock past expiry (H15), the checkout refused the expired invoice before the wallet (Continue stayed blocked); the control C paid once; no effective payment (SI2) |
 | M11 quarantined link keeps invoice reserved | LATE-LM1 (#716) | after a reorg quarantined X's link, a second payment of X's amount was not proposed for X (SI11) |
 | M12 old backup cannot revive a reorged link | S42–S44 | importing a backup exported before the reorg marked 1 observation invalid and did not relink (SI12) |
 | M13 / M14 manual links | S13 | a manual link was not offered for a late payment (needs "Accept late payment"); an on-time manual link counted once |
@@ -229,7 +230,25 @@ Self-test: 52 pass, 0 fail, at the default scale and at `W5_PROPERTY_SCALE=10` (
 | Record | Harness SHA | Command | Scenarios | Payments / handoffs | Violations | Harness errors | Ambiguities |
 |---|---|---|---|---|---|---|---|
 | `results/m3-a13a2bb9/` (pre-audit harness) | `a13a2bb9` | `seller-run.mjs --named --seeds 1-24 --concurrency 3 --candidate 9d92472a` | 40 (P2, M1–M15, SG-1…SG-24) | 47 payments | **0** (P2 detected SI4) | 0 | 27× SA6, 1× SA8 (M15) |
-STRESS_ROWS
+| `results/stress-payer-43d737e4/` (bounded stress) | `43d737e4` | `W5_PORT=4176 run.mjs --named --seeds 1-60 --concurrency 2 --minimize --candidate 9d92472a` | 74 (P1, N1–N13, G-1…G-60) | 152 handoffs | **0** (P1 detected I2, I3, I4) | 0 | A1 in N2 and N8 only |
+| `results/stress-seller-43d737e4/` (bounded stress) | `43d737e4` | `W5_PORT=4177 seller-run.mjs --named --seeds 1-40 --concurrency 2 --candidate 9d92472a` | 56 (P2, M1–M15, SG-1…SG-40) | 68 payments | **0** (P2 detected SI4) | 0 | SA6 ×9, SA7 ×2, SA8 ×1 (M15) |
+
+Both stress runs ran side by side on the same 4-CPU container (wall time 37 and 34 minutes), which also loads the
+app's timing paths. Payer coverage: 163 refused send clicks with no wallet request, 12 browser restarts, 35 reorgs;
+records concealed by account privacy were classified, never silent (142 while not connected, 25 for another account).
+F1 still reproduces on 162 of the 163 refused clicks. Seller coverage: 184 finished scans, 26 effective confirms,
+3 accepted late payments, 13 seller browser restarts, 31 reorgs, 2 scans stopped by the two-RPC disagreement,
+8 late payments after a payer-clock shift. The only checkouts that did not reach the wallet were M10's expired X
+(intended) and SG-9's repeat of the already-paid C (the payer's journal refusing a second request, as required).
+
+Flake check: a second named-only pass of both runners side by side (`run.mjs --named --concurrency 2`,
+`seller-run.mjs --named --concurrency 2`, harness `4f703652`, same candidate and bundle; scratch records, not committed)
+gave the same classification for every scenario: payer 14 scenarios, 31 handoffs, 0 violations, P1 detected I2, I3,
+I4, A1 in N2 and N8; seller 16 scenarios, 18 payments, 0 violations, P2 detected SI4, the same SA6/SA7/SA8 set.
+
+QA of the run commands: both runners exit 2 on an unknown argument, a non-positive concurrency or an unknown scenario
+name. QA found that a reversed or malformed seed range (`5-1`, `-3`, `abc`) fell through to the named set (`-3` even
+parsed as `0-3`); seed specs are now checked against `N` or `N-M` with `N <= M` in both runners.
 
 ### Findings (M3)
 
@@ -265,4 +284,8 @@ node --test verification/independent-beta/harness/selftest.test.mjs
 
 ```bash
 node verification/independent-beta/harness/run.mjs --named --seeds 1-50 --concurrency 3 --minimize --candidate origin/main
+```
+
+```bash
+node verification/independent-beta/harness/seller-run.mjs --named --seeds 1-40 --concurrency 3 --candidate origin/main
 ```
