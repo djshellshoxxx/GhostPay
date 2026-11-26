@@ -1,6 +1,6 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -25,6 +25,7 @@ import {
   type VaultRecord,
 } from '../lib/reconciliationVault';
 import { getSessionPublic, subscribeSession } from '../lib/session';
+import { subscribeAppLock } from '../lib/appLock';
 import type { ScanMatch } from '../lib/scanClient';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, userMessage } from '../lib/errors';
@@ -258,9 +259,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setPreview(undefined);
     setBackup('');
     setQuery('');
+    setError(undefined);
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     mounted.current = true;
+    const stopLock = subscribeAppLock(reset);
     const unsubscribe = subscribeSession(() => {
       if (mounted.current) reset();
     });
@@ -270,9 +273,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       vault.current?.lock();
       vault.current = undefined;
       unsubscribe();
+      stopLock();
     };
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     reset();
   }, [props.chainId, props.sellerKeyId]);
   useEffect(() => {
