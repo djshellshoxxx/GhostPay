@@ -1,12 +1,13 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-nifty-bohr-5ra2ap",
   "token": "c36c1357-7678-4147-9f14-afc021fd403f",
   "generation": 51,
   "base_sha": "3603960cfd9f24537e52ecb1e7772a48259b9730",
   "acquired_at": "2026-11-26T19:16:21.000Z",
-  "heartbeat_at": "2026-11-26T19:16:21.000Z",
-  "expires_at": "2026-11-26T19:36:21.000Z",
-  "transport": "git-push-nonforce"
+  "heartbeat_at": "2026-11-26T19:16:45.000Z",
+  "expires_at": "2026-11-26T19:16:45.000Z",
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-26T19:16:45.000Z"
 }
