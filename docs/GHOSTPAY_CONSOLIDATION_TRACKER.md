@@ -125,6 +125,22 @@ Explicit rules were applied before the mechanical ones. They cover the owner's 2
   - #591, #604 → #717
   - #622 → #707
   - #669, #254 → #704
+- **Rec 2, follow-up 2026-11-26 19:50 UTC (main `cdddda0b`):** #718 (`c7c6349c`) landed the #704 train with #707, #708
+  and #711. Before closing, each donor's own commits (PR base..head) were checked for test cases with no test of the same
+  title on main:
+  - Closed (no residual):
+    - #582 → #711;
+    - #669 (head `8ea606ff` is on main through `a86cc353`).
+  - #622 is marked merged by #718. Nothing to close.
+  - **Kept open: successor merged, but donor-only test cases are absent from main.** Each case needs a port-or-drop
+    decision, listed on the PR:
+    - #569: 6 cases against #708's hand port (which keeps Home and About visible by design);
+    - #300: 6 quick-hide cases (main has no `PrivacyQuickHide` component);
+    - #355: 1 focus-restore case;
+    - #254: 14 Bitcoin spentness cases that FC-05b did not port.
+  - **#372 reclassified C (archival composition).** 499 commits on its base. #677/#679/#708 re-cut parts of it; it is not
+    "superseded" as a whole.
+  - Still waiting: #591, #604 → #717 (now in consolidation stack 2, #728).
 - **Rec 3, adopted:** the 59 historical C compositions are archival. Recover from them only on a concrete gap. They stay open for the owner to close in bulk if wanted.
 
 Recommendations as originally proposed:
