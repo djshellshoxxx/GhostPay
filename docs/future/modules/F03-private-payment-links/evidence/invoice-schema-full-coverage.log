@@ -1,0 +1,842 @@
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/packages/invoice-schema
+      Coverage enabled with v8
+
+ ✓ src/envelope.test.ts > plain fragments > round trips and verifies 38ms
+ ✓ src/envelope.test.ts > plain fragments > round trips a v2 invoice with its bufferPolicy in the signed public part (ADR-0024) 37ms
+ ✓ src/envelope.test.ts > plain fragments > encoding is deterministic 12ms
+ ✓ src/envelope.test.ts > plain fragments > a valid signature is not a trusted seller until the signer is pinned 30ms
+ ✓ src/envelope.test.ts > plain fragments > an invalid signature is reported, never pinned 13ms
+ ✓ src/envelope.test.ts > plain fragments > swapping the signer key (attacker re-signs with own key) is valid but not pinned 12ms
+ ✓ src/envelope.test.ts > plain fragments > tampering with any field of a plain envelope never yields a valid signature on altered data 26ms
+ ✓ src/envelope.test.ts > plain fragments > inert strings: XSS payloads come back as plain data 23ms
+ ✓ src/envelope.test.ts > plain fragments > invalid signature at encode time is refused 11ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > round trips; private part is not visible in the fragment 14ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > works with no memo 14ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > is an independent-implementation-compatible AES-256-GCM with the documented AAD 12ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > key and GCM nonce are unique per encryption (300 encodes) 1557ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > injected RNG makes encryption reproducible 16ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > ciphertext, tag, nonce and key tampering all fail authentication 38ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > AAD mismatch (chainId or signer altered in the public part) fails authentication 16ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > altering other public fields decrypts but fails the signature 28ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > rejects malformed encrypted envelopes 29ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > post-decrypt checks: bad UTF-8, non-canonical, extra keys, private keys in public part 22ms
+ ✓ src/envelope.test.ts > encrypted fragments (AES-256-GCM, ADR-0005) > requires Web Crypto 24ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > exactly 16384 decoded bytes parses; 16385 fails closed 2404ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > rejects absurd encoded lengths before decoding 2ms
+ ✓ src/envelope.test.ts > size boundary (16 KiB decoded) > refuses to encode an oversize invoice 61ms
+ ✓ src/envelope.test.ts > parser failure classes > format errors 1ms
+ ✓ src/envelope.test.ts > parser failure classes > base64url violations 8ms
+ ✓ src/envelope.test.ts > parser failure classes > invalid UTF-8 and BOM 0ms
+ ✓ src/envelope.test.ts > parser failure classes > JSON violations 10ms
+ ✓ src/envelope.test.ts > parser failure classes > non-canonical but valid JSON is refused 9ms
+ ✓ src/envelope.test.ts > parser failure classes > schema, version and algorithm violations 12ms
+ ✓ src/envelope.test.ts > parser failure classes > errors and their serialization never echo the input 8ms
+ ✓ src/envelope.test.ts > parser failure classes > typed class hierarchy 1ms
+ ✓ src/envelope.test.ts > flipping any character of a fragment never produces a valid altered invoice > plain 133ms
+ ✓ src/envelope.test.ts > flipping any character of a fragment never produces a valid altered invoice > encrypted 165ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > round trips; only alg, chainId, signer and KDF header are in clear 9609ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > matches an independent scrypt + AES-GCM implementation with the documented AAD 4927ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > default cost is 2^17 and round trips 22413ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > salt and nonce are fresh per encode 5892ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > openFragment reports needsPassphrase without KDF work, then opens with it 5905ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > parseFragment without a passphrase throws PassphraseRequiredError 2498ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > wrong passphrase yields one generic typed error 5058ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > tampering any authenticated field gives the same WrongPassphraseError (no oracle) 33635ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > truncated ciphertext fails closed 4750ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > KDF parameters outside the allow-list are refused before any derivation (no DoS) 2328ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > structural problems are typed schema/base64 errors 2576ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > downgrade: re-labelling a PW envelope as A256GCM or none is rejected 2408ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > link substitution: a passphrase supplied for a non-passphrase link is refused 15ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature 9260ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > authentic but malformed plaintext gives typed errors (reachable only with the passphrase) 45177ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > unicode: NFKC-equivalent passphrases open the same link 19065ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > passphrase policy: length in code points, byte cap, lone surrogates, type 2403ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > encode option conflicts are refused 4920ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > refuses an invalid signature and oversize invoices at encode 2424ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > old v1 links are unaffected and report passphraseProtected=false 30ms
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > missing Web Crypto is UnsupportedError, not a wrong-passphrase error 4867ms
+ ✓ src/passphrase.test.ts > passphrase internals > derivePassphraseKey refuses disallowed parameters and salts (defence in depth) 4668ms
+ ✓ src/passphrase.test.ts > passphrase internals > AAD layout is magic || chainId u64 || signer || N,r,p u32 || salt 2ms
+ ✓ src/passphrase.test.ts > passphrase fuzzing > passphraseToBytes: policy error or NFKC UTF-8 bytes; NFKC-idempotent 1349ms
+ ✓ src/passphrase.test.ts > passphrase fuzzing > structurally mutated PW envelopes fail closed with typed errors 2586ms
+ ✓ src/passphrase.test.ts > passphrase fuzzing > random ciphertext bytes never open and never throw untyped errors 2372ms
+ ✓ src/schema.test.ts > createInvoice > fills v, schemeId and a 128-bit nonce 2ms
+ ✓ src/schema.test.ts > createInvoice > nonces are unique over 2000 draws from the real CSPRNG 609ms
+ ✓ src/schema.test.ts > createInvoice > same seed gives the same nonce, different seeds differ 3ms
+ ✓ src/schema.test.ts > createInvoice > requires a random source 1ms
+ ✓ src/schema.test.ts > createInvoice > omits memo when absent and keeps fixed_token policy 1ms
+ ✓ src/schema.test.ts > createInvoice > validation failures surface from createInvoice 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > unknown top-level key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > missing required key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > undefined required key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > wrong version 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > wrong scheme 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > chainId zero 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > chainId float 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > chainId string 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > chainId unsafe 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > uppercase meta 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > meta wrong prefix 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > meta off-curve key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > meta second key off-curve 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > meta same keys 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > nonce short 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > nonce uppercase 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > currency lowercase 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > currency 4 letters 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > minorUnits number 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > minorUnits leading zero 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > minorUnits negative 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > minorUnits decimal 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > minorUnits 31 digits 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > fiat unknown key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > token checksum case 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > token short 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > token NATIVE 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > amountPolicy mode 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > fiat_quote with amount 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > fixed_token missing amount 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > fixed_token zero 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > fixed_token > 2^256-1 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > quote source uppercase 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > quote timestamp negative 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > quote expires before timestamp 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > slippage > 10000 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > expiresAt float 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > expiresAt 2^53-1 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > expiresAt after year 9999 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > quote timestamp after year 9999 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > quote expiresAt 2^53-1 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > lineItems not array 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > lineItems > 50 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > line item unknown key 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > line item quantity 0 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > line item empty description 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > line item too long 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > line item not object 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > tax rate 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > tax amount 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > feePolicy 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo too long 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo empty 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo not NFC 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo control char 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo C1 control 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo lone high surrogate 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo lone low surrogate 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > memo number 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > signer uncompressed prefix 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > signer off-curve 1ms
+ ✓ src/schema.test.ts > validateInvoice rejects > signer uppercase 0ms
+ ✓ src/schema.test.ts > validateInvoice rejects > non-object roots, arrays, class instances, accessors-free 0ms
+ ✓ src/schema.test.ts > validateInvoice accepts > boundary values 3ms
+ ✓ src/schema.test.ts > validateInvoice accepts > times up to 9999-12-31T23:59:59Z, which every Date consumer can render 1ms
+ ✓ src/schema.test.ts > validateInvoice accepts > empty line items and a null-prototype object 0ms
+ ✓ src/schema.test.ts > validateInvoice accepts > returns a fresh object 1ms
+ ✓ src/schema.test.ts > validateInvoice accepts > XSS and markup strings are accepted as inert text 1ms
+ ✓ src/schema.test.ts > validatePrivatePart > rejects missing line-item slots, including holes among valid items 0ms
+ ✓ src/schema.test.ts > validatePrivatePart > accepts with and without memo, rejects extras 0ms
+ ✓ src/schema.test.ts > metadata sanity > OTHER_META differs 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > createInvoice emits v 2 exactly when a bufferPolicy is given; v1 stays unchanged 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > accepts a declined policy with zero bounds 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects v1 carrying a bufferPolicy 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects v2 without a bufferPolicy 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects v3 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects unknown policy key 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects missing refund 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects refund other than none (no silent refunds) 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects accepted not boolean 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects maxWei not decimal 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects maxWei leading zero 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects maxWei number 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects maxWei above uint256 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects minWei above maxWei 1ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects accepted with zero minimum (dust) 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects declined with non-zero bounds 0ms
+ ✓ src/schema.test.ts > v2 bufferPolicy (spec 13, ADR-0024) > rejects accepted on a native invoice 0ms
+ ✓ src/independent.test.ts > invoice signature vs a curve-independent ECDSA verifier > signer key, canonical bytes and digest are reproduced independently 15ms
+ ✓ src/independent.test.ts > invoice signature vs a curve-independent ECDSA verifier > 20 package signatures verify under the reference (low-s, 64-byte r||s) 822ms
+ ✓ src/independent.test.ts > invoice signature vs a curve-independent ECDSA verifier > cross-chain replay: the signature binds chainId (verification for another chain fails in both) 171ms
+ ✓ src/independent.test.ts > invoice signature vs a curve-independent ECDSA verifier > high-s twin is valid textbook ECDSA but rejected by the package; r/s out of range rejected 37ms
+ ✓ src/independent.test.ts > A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL) > A256GCM: package ciphertext opens with OpenSSL under AAD "GPI1"||u64 chainId||signer 12ms
+ ✓ src/independent.test.ts > A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL) > A256GCM-PW: package output opens with OpenSSL scrypt + AES-GCM 2449ms
+ ✓ src/independent.test.ts > A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL) > A256GCM-PW: an OpenSSL-made envelope parses; every single-byte AAD, tag or ciphertext change fails closed 69713ms
+ ✓ src/independent.test.ts > versioning and KDF bounds from untrusted links > unknown fragment versions and algorithms fail closed before any crypto 11ms
+ ✓ src/independent.test.ts > versioning and KDF bounds from untrusted links > absurd scrypt N/r/p are refused quickly (no KDF run), including max-safe-integer values 2250ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > preserves default review results (encrypt=false) 46ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > preserves default review results (encrypt=true) 37ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > accepts only a valid pinned signer when requested (encrypt=false) 26ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > accepts only a valid pinned signer when requested (encrypt=true) 26ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > rejects a different self-signed payee despite its valid signature 21ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > missing, empty and nonmatching pin sets trust no signer; no 0x prefix is stripped 39ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > untyped option values cannot silently disable the requested guard 54ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > rejects changed payees as invalid before checking pins (encrypt=false) 41ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > rejects changed payees as invalid before checking pins (encrypt=true) 42ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > an impostor cannot claim the pinned signer while retaining its own signature 15ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > preserves earlier format, schema, decryption and unexpected-passphrase errors 26ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > prompts without trusting a passphrase header, then enforces the decrypted signer 13269ms
+ ✓ src/pinnedSigner.test.ts > opt-in trusted-signer parsing (restored from PR #218) > also rejects an invalid invoice signature after successful passphrase decryption 14125ms
+ ✓ src/sign.test.ts > canonical bytes and digest > canonical form is sorted, whitespace-free JSON 4ms
+ ✓ src/sign.test.ts > canonical bytes and digest > is independent of property insertion order 8ms
+ ✓ src/sign.test.ts > canonical bytes and digest > digest is keccak256(domain || canonical) 3ms
+ ✓ src/sign.test.ts > canonical bytes and digest > NFC text is canonicalized as UTF-8 (2-byte é) 1ms
+ ✓ src/sign.test.ts > signing > produces a 64-byte low-s signature that verifies independently 14ms
+ ✓ src/sign.test.ts > signing > is deterministic (RFC 6979) 8ms
+ ✓ src/sign.test.ts > signing > refuses a signing key that does not match invoice.signer 2ms
+ ✓ src/sign.test.ts > signing > refuses invalid keys 2ms
+ ✓ src/sign.test.ts > signing > signature is domain separated (does not verify over the bare canonical bytes) 13ms
+ ✓ src/sign.test.ts > signing > a different key signs differently and cross-verification fails 11ms
+ ✓ src/sign.test.ts > signature rejection > rejects sparse line items instead of accepting the signature of an empty list 4ms
+ ✓ src/sign.test.ts > signature rejection > rejects high-s (malleated) signatures 1ms
+ ✓ src/sign.test.ts > signature rejection > rejects malformed signatures without throwing 4ms
+ ✓ src/sign.test.ts > signature rejection > flipping any single signature bit invalidates it 353ms
+ ✓ src/sign.test.ts > signature rejection > invalid invoices throw SchemaError rather than verifying 0ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > covers every leaf of the sample invoice 0ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip chainId 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip metaAddress 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip nonce 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip fiat.currency 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip fiat.minorUnits 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip token 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip amountPolicy.mode 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip quote.source 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip quote.timestamp 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip quote.expiresAt 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip quote.maxSlippageBps 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip expiresAt 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[0].description 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[0].quantity 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[0].unitMinorUnits 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[1].description 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[1].quantity 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip lineItems[1].unitMinorUnits 4ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip tax.rateBps 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip tax.minorUnits 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip feePolicy 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip memo 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > flip signer 3ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > v and schemeId cannot be flipped (schema rejects) 0ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > structural edits: drop/add memo, reorder, drop and add line items 24ms
+ ✓ src/sign.test.ts > tamper: every field flip invalidates the signature > fixed_token amount flip invalidates 7ms
+ ✓ src/requestFile.test.ts > payment request file transport > exports a stable generic filename and exact wrapper 5ms
+ ✓ src/requestFile.test.ts > payment request file transport > accepts outer JSON whitespace and key order without changing the fragment 0ms
+ ✓ src/requestFile.test.ts > payment request file transport > preserves every byte of an existing signed fragment (encrypt=false) 28ms
+ ✓ src/requestFile.test.ts > payment request file transport > preserves every byte of an existing signed fragment (encrypt=true) 29ms
+ ✓ src/requestFile.test.ts > payment request file transport > preserves a passphrase envelope without asking for or storing the passphrase 2336ms
+ ✓ src/requestFile.test.ts > payment request file transport > keeps transport parsing separate from invoice authentication 2ms
+ ✓ src/requestFile.test.ts > payment request file transport > accepts JSON string escapes without normalizing the encoded fragment value 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 0 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 1 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 2 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 3 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 4 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 5 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 6 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 7 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 8 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 9 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 10 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 11 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 12 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 13 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 14 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 15 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 16 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 17 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 18 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 19 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 20 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 21 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 22 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 23 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 24 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 25 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 26 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 27 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects malformed or non-v1 outer structure 28 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 0 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 1 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 2 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 3 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 4 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string fragments 5 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 0 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 1 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 2 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 3 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 4 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects untyped non-string files 5 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 0 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 1 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 2 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 3 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 4 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 5 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 6 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 7 1ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 8 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 9 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 10 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 11 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 12 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 13 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 14 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 15 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 16 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 17 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 18 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 19 0ms
+ ✓ src/requestFile.test.ts > request-file wrapper rejection > rejects invalid prefixes and noncanonical base64url without repair 20 0ms
+ ✓ src/requestFile.test.ts > request-file resource and diagnostic bounds > accepts exactly the existing decoded-envelope byte limit 7ms
+ ✓ src/requestFile.test.ts > request-file resource and diagnostic bounds > rejects one decoded envelope byte beyond the existing limit 3ms
+ ✓ src/requestFile.test.ts > request-file resource and diagnostic bounds > accepts exactly 24 KiB of file bytes including permitted whitespace 2ms
+ ✓ src/requestFile.test.ts > request-file resource and diagnostic bounds > checks actual UTF-8 bytes before parsing even when character count is within the cap 0ms
+ ✓ src/requestFile.test.ts > request-file resource and diagnostic bounds > reports fixed errors without secret text, cause or parsed payload 1ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > matches the fixed protocol signature vector and retains canonical round trips 76ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 1ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects non-schema public records 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > accepts a schema-only record with a null prototype 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed version with a stable non-secret failure 1ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed invoiceDigest with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed invoiceDigest with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed chainId with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed chainId with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed chainId with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed txHash with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed txHash with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed stealthAddress with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed stealthAddress with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed asset with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed asset with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed amountMinorUnits with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed amountMinorUnits with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed amountMinorUnits with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed issuedAt with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed issuedAt with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed signerPublicKey with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > refuses malformed signerPublicKey with a stable non-secret failure 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > accepts canonical token assets, rejects invalid curve points and never normalizes signed fields 1ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects malformed or invalid signature undefined 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects malformed or invalid signature 1 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects malformed or invalid signature 00 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects malformed or invalid signature 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > rejects malformed or invalid signature 33C27DBE8230BD04CD9F7E8600BEDA1988D90CC5D0835311EAEB7A5861F5E9285AD3990D797A9942C58BE0505A94CD43EA650F4629569CB098FC61C038085A3B 0ms
+ ✓ src/receipts.test.ts > shared seller receipt protocol > detects altered data, unsupported versions, ambiguous JSON and truncated files 8ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > binds the invoice key or a separately supplied trusted key and optional transaction facts 10ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched invoiceDigest 5ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched chainId 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched asset 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched amountMinorUnits 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched txHash 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched stealthAddress 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched trustedSignerPublicKey 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched invoiceSignatureValid 3ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > refuses mismatched invoiceSignerPublicKey 4ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > treats an explicitly supplied trusted key as a requirement and never falls back to the invoice key 13ms
+ ✓ src/receipts.test.ts > receipt field binding is not payment evidence > requires a valid receipt signature before checking any binding 1ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > retains exact bytes, digest, signature and terms for a plain invoice across file and URL 55ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > retains exact bytes, digest, signature and terms for a bearer invoice across file and URL 23ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > retains exact bytes, digest, signature and terms for a passphrase invoice across file and URL 6879ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not turn a valid embedded signature into a trusted seller or infer a pin from the file 26ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > keeps passphrase contents closed and delegates wrong-passphrase refusal to the existing parser 4674ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not authenticate a file whose signed amount was changed 18ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not authenticate a file whose signed chain was changed 15ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not authenticate a file whose signed recipient was changed 16ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not authenticate a file whose signed fees was changed 15ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not authenticate a file whose signed expiry was changed 15ms
+ ✓ src/requestFile.interop.test.ts > payment request file independently preserves signed invoice intent > does not repair a noncanonical signed envelope while transporting it 7ms
+ ✓ src/fuzz.test.ts > parser fuzzing > random bytes behind a valid prefix 33ms
+ ✓ src/fuzz.test.ts > parser fuzzing > random strings (any unicode) as the whole fragment and as the payload 1165ms
+ ✓ src/fuzz.test.ts > parser fuzzing > malformed base64url: alphabet characters mixed with junk 13ms
+ ✓ src/fuzz.test.ts > parser fuzzing > oversize payloads of every shape are rejected without being parsed 143ms
+ ✓ src/fuzz.test.ts > parser fuzzing > arbitrary JSON documents as envelopes 88ms
+ ✓ src/fuzz.test.ts > parser fuzzing > mutated valid envelopes (byte-level splices, truncations, repeats) 237ms
+ ✓ src/fuzz.test.ts > parser fuzzing > nested JSON, duplicate keys, prototype keys, huge numbers are rejected as typed errors 5ms
+ ✓ src/fuzz.test.ts > parser fuzzing > invalid unicode in text fields is rejected by the schema, not silently repaired 154ms
+ ✓ src/fuzz.test.ts > parser fuzzing > arbitrary valid memo text survives plain and encrypted round trips unchanged 1729ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8234 in a line-item description with a typed error 3ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8235 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8236 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8237 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8238 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8294 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8295 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8296 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8297 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8206 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8207 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+1564 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8203 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8204 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8205 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8288 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+65279 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+173 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917504 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917505 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917506 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917507 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917508 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917509 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917510 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917511 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917512 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917513 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917514 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917515 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917516 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917517 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917518 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917519 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917520 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917521 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917522 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917523 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917524 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917525 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917526 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917527 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917528 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917529 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917530 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917531 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917532 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917533 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917534 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917535 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917536 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917537 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917538 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917539 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917540 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917541 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917542 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917543 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917544 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917545 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917546 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917547 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917548 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917549 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917550 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917551 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917552 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917553 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917554 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917555 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917556 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917557 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917558 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917559 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917560 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917561 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917562 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917563 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917564 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917565 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917566 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917567 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917568 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917569 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917570 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917571 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917572 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917573 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917574 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917575 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917576 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917577 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917578 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917579 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917580 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917581 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917582 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917583 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917584 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917585 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917586 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917587 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917588 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917589 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917590 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917591 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917592 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917593 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917594 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917595 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917596 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917597 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917598 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917599 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917600 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917601 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917602 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917603 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917604 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917605 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917606 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917607 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917608 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917609 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917610 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917611 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917612 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917613 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917614 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917615 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917616 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917617 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917618 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917619 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917620 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917621 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917622 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917623 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917624 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917625 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917626 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917627 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917628 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917629 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917630 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917631 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+0 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+1 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+2 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+3 in a line-item description with a typed error 1ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+4 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+5 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+6 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+7 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+9 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+10 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+11 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+12 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+13 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+14 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+15 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+16 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+17 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+18 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+19 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+20 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+21 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+22 in a line-item description with a typed error 1ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+23 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+24 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+25 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+26 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+27 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+28 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+29 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+30 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+31 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+127 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+128 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+129 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+130 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+131 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+132 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+133 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+134 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+135 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+136 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+137 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+138 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+139 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+140 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+141 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+142 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+143 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+144 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+145 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+146 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+147 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+148 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+149 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+150 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+151 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+152 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+153 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+154 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+155 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+156 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+157 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+158 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+159 in a line-item description with a typed error 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8234 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8235 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8236 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8237 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8238 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8294 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8295 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8296 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8297 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8206 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8207 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+1564 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8203 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8204 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8205 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8288 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+65279 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+173 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917504 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917505 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917506 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917507 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917508 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917509 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917510 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917511 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917512 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917513 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917514 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917515 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917516 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917517 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917518 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917519 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917520 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917521 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917522 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917523 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917524 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917525 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917526 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917527 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917528 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917529 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917530 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917531 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917532 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917533 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917534 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917535 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917536 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917537 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917538 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917539 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917540 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917541 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917542 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917543 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917544 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917545 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917546 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917547 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917548 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917549 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917550 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917551 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917552 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917553 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917554 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917555 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917556 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917557 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917558 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917559 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917560 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917561 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917562 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917563 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917564 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917565 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917566 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917567 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917568 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917569 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917570 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917571 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917572 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917573 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917574 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917575 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917576 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917577 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917578 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917579 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917580 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917581 in a memo 6ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917582 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917583 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917584 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917585 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917586 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917587 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917588 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917589 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917590 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917591 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917592 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917593 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917594 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917595 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917596 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917597 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917598 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917599 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917600 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917601 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917602 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917603 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917604 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917605 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917606 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917607 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917608 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917609 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917610 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917611 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917612 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917613 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917614 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917615 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917616 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917617 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917618 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917619 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917620 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917621 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917622 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917623 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917624 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917625 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917626 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917627 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917628 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917629 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917630 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+917631 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+0 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+1 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+2 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+3 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+4 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+5 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+6 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+7 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+8 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+9 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+11 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+12 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+13 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+14 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+15 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+16 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+17 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+18 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+19 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+20 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+21 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+22 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+23 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+24 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+25 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+26 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+27 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+28 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+29 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+30 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+31 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+127 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+128 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+129 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+130 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+131 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+132 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+133 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+134 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+135 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+136 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+137 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+138 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+139 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+140 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+141 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+142 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+143 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+144 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+145 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+146 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+147 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+148 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+149 in a memo 1ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+150 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+151 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+152 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+153 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+154 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+155 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+156 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+157 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+158 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects U+159 in a memo 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > allows a line feed in the memo only 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > rejects them in a full invoice too (strict validateInvoice) 4ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > still accepts ordinary international text, emoji and ZWJ-free scripts 0ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > property: any string containing a forbidden code point is rejected, with the typed code 33ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > property: strings built only from allowed characters never raise FORBIDDEN_CHARACTER 6ms
+ ✓ src/text-hygiene.test.ts > S3-12 forbidden characters in free text > fuzz: arbitrary unicode never throws anything but SchemaError, and accepted text has no forbidden characters 852ms
+ ✓ src/merchantProfile.test.ts > merchant profile > round-trips through JSON text 11ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects changed amount, token, origin and allowAmount (signature) 20ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects bad signatures, wrong signer, wrong merchantId 132ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects expired profiles and oversize input 103ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects unknown keys, bad origins, duplicate template ids, __proto__ and non-objects 18ms
+ ✓ src/merchantProfile.test.ts > merchant profile > refuses to sign with a mismatched key 19ms
+ ✓ src/merchantProfile.test.ts > merchant profile > fuzz: random single-char mutations never throw and never verify to a different profile 380ms
+ ✓ src/json.test.ts > strict JSON parser > parses plain documents 3ms
+ ✓ src/json.test.ts > strict JSON parser > rejects duplicate and prototype keys 1ms
+ ✓ src/json.test.ts > strict JSON parser > rejects floats, exponents, negatives, huge, leading zeros, NaN, Infinity 1ms
+ ✓ src/json.test.ts > strict JSON parser > rejects syntax errors 1ms
+ ✓ src/json.test.ts > strict JSON parser > rejects nesting deeper than 8 without blowing the stack 0ms
+ ✓ src/json.test.ts > strict JSON parser > objects have a null prototype 0ms
+ ✓ src/json.test.ts > canonicalize > sorts keys and strips whitespace 0ms
+ ✓ src/json.test.ts > canonicalize > is stable under key insertion order 0ms
+ ✓ src/json.test.ts > canonicalize > rejects non-integers, negatives, NaN, undefined, bigint, functions, class instances 0ms
+ ✓ src/json.test.ts > canonicalize > accepts null-prototype objects 0ms
+ ✓ src/expiry.test.ts > checkExpiry > valid well before expiry 2ms
+ ✓ src/expiry.test.ts > checkExpiry > invoice expiry is exclusive: valid at expiresAt-1, expired at expiresAt and after 1ms
+ ✓ src/expiry.test.ts > checkExpiry > quote expiry is independent of invoice expiry 0ms
+ ✓ src/expiry.test.ts > checkExpiry > clock at zero and at the largest safe integer 0ms
+ ✓ src/expiry.test.ts > checkExpiry > already-expired-at-creation invoice (expiresAt 0) 1ms
+ ✓ src/expiry.test.ts > checkExpiry > rejects a bad clock (fail closed) 1ms
+ ✓ src/base64url.test.ts > base64url > matches Node base64url for arbitrary bytes and round trips 26ms
+ ✓ src/base64url.test.ts > base64url > rejects padding, std alphabet, whitespace, non-ASCII, impossible lengths 1ms
+ ✓ src/base64url.test.ts > base64url > rejects non-canonical trailing bits 0ms
+ ✓ src/base64url.test.ts > base64url > empty string is empty bytes 0ms
+
+ Test Files  15 passed (15)
+      Tests  813 passed (813)
+   Start at  22:44:18
+   Duration  335.28s (tests 99%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   98.05 |    97.68 |     100 |   99.29 |
+ envelope.ts       |   98.57 |    97.52 |     100 |   99.44 | 545
+ ...hantProfile.ts |   89.36 |    91.66 |     100 |   97.22 | 170,178
+ receipts.ts       |   99.03 |    98.96 |     100 |   98.63 | 96
+ requestFile.ts    |   97.36 |    96.77 |     100 |     100 | 49
+ schema.ts         |   99.37 |    99.21 |     100 |     100 | 361
+ sign.ts           |   94.44 |      100 |     100 |   93.75 | 110
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.05% ( 859/876 )
+Branches     : 97.68% ( 592/606 )
+Functions    : 100% ( 114/114 )
+Lines        : 99.29% ( 703/708 )
+================================================================================

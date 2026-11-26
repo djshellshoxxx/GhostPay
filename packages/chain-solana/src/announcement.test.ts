@@ -1,6 +1,6 @@
 import { ED25519_TORSION_SUBGROUP } from '@noble/curves/ed25519.js';
-import { bytesToHex, hexToBytes } from '@noble/curves/utils.js';
-import { base64urlnopad } from '@scure/base';
+import { bytesToHex, concatBytes, hexToBytes } from '@noble/curves/utils.js';
+import { base58, base64urlnopad } from '@scure/base';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
@@ -114,12 +114,12 @@ describe('binary announcement', () => {
         fc.uint8Array({ maxLength: MAX_ANNOUNCEMENT_METADATA }),
         (k, viewTag, metadata) => {
           const ephemeralPublicKey = Point.BASE.multiply(k).toBytes();
-          const memo = encodeAnnouncementMemo({ ephemeralPublicKey, viewTag, metadata });
-          const dec = decodeAnnouncementMemo(memo);
+          const dec = decodeAnnouncement(encodeAnnouncement({ ephemeralPublicKey, viewTag, metadata }));
           expect(dec.ephemeralPublicKey).toEqual(ephemeralPublicKey);
           expect(dec.viewTag).toBe(viewTag);
           expect(dec.metadata).toEqual(metadata);
-          expect(decodeAnnouncement(encodeAnnouncement(dec))).toEqual(dec);
+          const memo = decodeAnnouncementMemo(encodeAnnouncementMemo({ ephemeralPublicKey, viewTag }));
+          expect(memo).toEqual({ ephemeralPublicKey, viewTag, metadata: new Uint8Array(0) });
         },
       ),
       { numRuns: 200 },
@@ -128,31 +128,45 @@ describe('binary announcement', () => {
 });
 
 describe('memo form', () => {
-  it('is ASCII with the documented prefix', () => {
+  it('is the ADR-0017 text gpst1: + base58(R || view tag), ASCII and at most 52 characters', () => {
     const memo = encodeAnnouncementMemo({ ephemeralPublicKey: R, viewTag: 1 });
-    expect(memo.startsWith(MEMO_PREFIX)).toBe(true);
+    expect(memo).toBe(MEMO_PREFIX + base58.encode(concatBytes(R, Uint8Array.of(1))));
+    expect(memo.startsWith('gpst1:')).toBe(true);
     expect(/^[\x21-\x7e]+$/.test(memo)).toBe(true);
-    expect(memo.length).toBe(MEMO_PREFIX.length + 46);
+    expect(memo.length).toBeLessThanOrEqual(MEMO_PREFIX.length + 46);
   });
 
-  it('rejects malformed memos', () => {
+  it('refuses metadata (the memo form cannot carry it) instead of dropping it', () => {
+    expect(() =>
+      encodeAnnouncementMemo({ ephemeralPublicKey: R, viewTag: 1, metadata: Uint8Array.of(1) }),
+    ).toThrow(code('INVALID_ANNOUNCEMENT'));
+    expect(encodeAnnouncementMemo({ ephemeralPublicKey: R, viewTag: 1, metadata: new Uint8Array(0) })).toBe(
+      encodeAnnouncementMemo({ ephemeralPublicKey: R, viewTag: 1 }),
+    );
+  });
+
+  it('rejects malformed memos, including the retired base64url form', () => {
     const memo = encodeAnnouncementMemo({ ephemeralPublicKey: R, viewTag: 1 });
     const body = memo.slice(MEMO_PREFIX.length);
-    // 34 bytes -> 46 chars; last char carries 4 unused bits. Flip one of them.
-    const last = body.at(-1) as string;
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-    const tweaked = body.slice(0, -1) + (alphabet[alphabet.indexOf(last) ^ 1] as string);
+    const torsion = hexToBytes(ED25519_TORSION_SUBGROUP[3] as string);
+    const legacy = (metadata: Uint8Array): string =>
+      MEMO_PREFIX + base64urlnopad.encode(concatBytes(Uint8Array.of(1), R, Uint8Array.of(1), metadata));
     const bad: unknown[] = [
       'GPST1:' + body,
       body,
+      ' ' + memo,
       memo + '=',
-      memo + '==',
-      MEMO_PREFIX +
-        body.replaceAll('-', '+').replaceAll('_', '/') +
-        (body.includes('-') || body.includes('_') ? '' : '+'),
-      MEMO_PREFIX + tweaked,
-      MEMO_PREFIX + 'A'.repeat(600),
-      MEMO_PREFIX + base64urlnopad.encode(new Uint8Array(10)),
+      memo + '\n',
+      MEMO_PREFIX,
+      legacy(new Uint8Array(0)),
+      legacy(Uint8Array.of(1, 2)),
+      MEMO_PREFIX + base58.encode(R),
+      MEMO_PREFIX + base58.encode(concatBytes(R, Uint8Array.of(1, 2))),
+      MEMO_PREFIX + base58.encode(concatBytes(torsion, Uint8Array.of(1))),
+      MEMO_PREFIX + base58.encode(concatBytes(hexToBytes('ee' + 'ff'.repeat(30) + '7f'), Uint8Array.of(1))),
+      MEMO_PREFIX + body.slice(0, -1) + '0',
+      MEMO_PREFIX + '1'.repeat(33),
+      MEMO_PREFIX + '2'.repeat(120),
       7,
     ];
     for (const b of bad)

@@ -1,0 +1,157 @@
+{
+  "source_local_commit": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "source_equivalent_api_commit": "7c30385a44d1cac76e9137eea9fc522865ac53f0",
+  "source_tree": "6c3c65280f693bd6477218f10aff46b2a3d95e1f",
+  "command_records": [
+    {
+      "record": "browser-collection-full.json",
+      "log": "browser-collection-full.log",
+      "exit_code": 0,
+      "elapsed_seconds": 1.82,
+      "output_sha256": "d59bb7188ece00a729020e2a50b789e6e41ab811e57695da7d17c516a226fcc4",
+      "normalized_log_sha256": "d59bb7188ece00a729020e2a50b789e6e41ab811e57695da7d17c516a226fcc4"
+    },
+    {
+      "record": "browser-collection-lean.json",
+      "log": "browser-collection-lean.log",
+      "exit_code": 0,
+      "elapsed_seconds": 1.166,
+      "output_sha256": "d59bb7188ece00a729020e2a50b789e6e41ab811e57695da7d17c516a226fcc4",
+      "normalized_log_sha256": "d59bb7188ece00a729020e2a50b789e6e41ab811e57695da7d17c516a226fcc4"
+    },
+    {
+      "record": "payment-uri-build.json",
+      "log": "payment-uri-build.log",
+      "exit_code": 0,
+      "elapsed_seconds": 1.846,
+      "output_sha256": "37b5ced94fb719d4a63c5996f78e9b0462b8dd32030d2db601e6c514ea610421",
+      "normalized_log_sha256": "b50b27038320859500109a447882b12ba38a535c25bca72ede54d86d98a4040f"
+    },
+    {
+      "record": "payment-uri-lint.json",
+      "log": "payment-uri-lint.log",
+      "exit_code": 0,
+      "elapsed_seconds": 4.062,
+      "output_sha256": "85d623c6604bff282caafffb4aa16987884a9dedea4373a5d54c11e62f238d3a",
+      "normalized_log_sha256": "7134b5d4e819a6eb93d5593fc2817d8ebe1c81a45dcf437a9646158fe536f107"
+    },
+    {
+      "record": "payment-uri-suite.json",
+      "log": "payment-uri-suite.log",
+      "exit_code": 0,
+      "elapsed_seconds": 2.915,
+      "output_sha256": "d0e081bc5cd17187a3614abbfd63f798709ee992c9a4c9e25fcd2a81e26648e3",
+      "normalized_log_sha256": "9a5d74aa63f06dcf2055ea644194f18b5518126c3d2dc8a6cd73c07b39686460"
+    },
+    {
+      "record": "payment-uri-typecheck.json",
+      "log": "payment-uri-typecheck.log",
+      "exit_code": 0,
+      "elapsed_seconds": 2.391,
+      "output_sha256": "5c36e3d7f1b39fce93797855345366ec233361151ef272d0f2211534c2c742fe",
+      "normalized_log_sha256": "33e9720d07b7447ad94e31d3c65ff81e3a1cb5c2572101bfed05885d58e56c54"
+    },
+    {
+      "record": "repository-secrets.json",
+      "log": "repository-secrets.log",
+      "exit_code": 0,
+      "elapsed_seconds": 0.13,
+      "output_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "normalized_log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    {
+      "record": "shared-web-and-f03.json",
+      "log": "shared-web-and-f03.log",
+      "exit_code": 0,
+      "elapsed_seconds": 46.843,
+      "output_sha256": "3df720023b1d29367f0aae4d65f0e04b1e437cbc2b457a862326b068e031559d",
+      "normalized_log_sha256": "2d0cfee44a30a46aee4ecbb45656a2d17a7fad6783b3e580624e4b533ec5ca99"
+    },
+    {
+      "record": "shared-web-lint.json",
+      "log": "shared-web-lint.log",
+      "exit_code": 0,
+      "elapsed_seconds": 7.925,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "web-bundle-scan-full.json",
+      "log": "web-bundle-scan-full.log",
+      "exit_code": 0,
+      "elapsed_seconds": 1.132,
+      "output_sha256": "9c1b10fbd0ccefe77b23b593f33c5ad80fcb89a28be2941cbbc2ad48497abc1c",
+      "normalized_log_sha256": "9c1b10fbd0ccefe77b23b593f33c5ad80fcb89a28be2941cbbc2ad48497abc1c"
+    },
+    {
+      "record": "web-bundle-scan-lean.json",
+      "log": "web-bundle-scan-lean.log",
+      "exit_code": 0,
+      "elapsed_seconds": 1.384,
+      "output_sha256": "18d2c8b4b1c8423e1518cc65bd3b46c1cb224fed8e6a51d431382eb8b8d73b33",
+      "normalized_log_sha256": "18d2c8b4b1c8423e1518cc65bd3b46c1cb224fed8e6a51d431382eb8b8d73b33"
+    },
+    {
+      "record": "web-typecheck.json",
+      "log": "web-typecheck.log",
+      "exit_code": 0,
+      "elapsed_seconds": 20.448,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "web-vite-full.json",
+      "log": "web-vite-full.log",
+      "exit_code": 0,
+      "elapsed_seconds": 2.0,
+      "output_sha256": "2ac2c689b001b2bcaa599076af71c062d3bfa678c1d1e1c05049cb8b633dd45f",
+      "normalized_log_sha256": "4942f891ae922f6aaa1174290861ec0874e9b38c3c4c7070bee7dcc9e818a109"
+    },
+    {
+      "record": "web-vite-lean.json",
+      "log": "web-vite-lean.log",
+      "exit_code": 0,
+      "elapsed_seconds": 2.026,
+      "output_sha256": "046fe24548bf57b262aa1229b357e4942ed7ec7a17c3c2a60399db9e7ea7b671",
+      "normalized_log_sha256": "bd6976098af3293b43021443fa0a733d9aeb0759fe684bbaf097f7c2da6f5000"
+    },
+    {
+      "record": "whitespace-vs-current-main.json",
+      "log": "whitespace-vs-current-main.log",
+      "exit_code": 0,
+      "elapsed_seconds": 0.046,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "payment_uri": {
+    "files_passed": 4,
+    "tests_passed": 206,
+    "coverage_percent": {
+      "statements": 97.5,
+      "branches": 97.09,
+      "functions": 100,
+      "lines": 99.08
+    },
+    "original_thresholds_unchanged": true
+  },
+  "combined_web": {
+    "files_passed": 24,
+    "tests_passed": 294,
+    "coverage": "Focused run without coverage; not a replacement for unchanged full-web coverage gate.",
+    "includes_real_qr_image_decoder_cases": 3
+  },
+  "browser_collection": {
+    "full": 6,
+    "lean": 6,
+    "executed_native_browser_cases": 0
+  },
+  "environment": {
+    "node": "v24.22.3",
+    "prepared_dependency_source": "Sibling GhostPay-f03-qualification worktree; lockfile bytes unchanged.",
+    "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+    "payment_uri_dist": "Rebuilt at the new source before all web checks."
+  },
+  "remaining": "Actual new published-head full/lean browser jobs and required hosted gates; no old-head pass transfers.",
+  "original_console_archive": "original-console.json"
+}

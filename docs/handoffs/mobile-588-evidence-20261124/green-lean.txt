@@ -1,0 +1,66 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@0.1.0 test:e2e
+> playwright test --config=playwright.mobile.config.ts --grep-invert virtual camera: 
+
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[WebServer] [plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/efb8df2579c9/mobile-588-resume/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+[WebServer] 
+[WebServer] [plugin builtin:vite-reporter] 
+[WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] (node:91) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:99) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] (node:112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 1 worker
+
+(node:148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [android-phone-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (2.0s)
+  ✓   2 [android-phone-chromium] › e2e/devices-mobile-workflows.spec.ts:41:1 › an encrypted backup downloaded by touch can be selected again and verified (2.3s)
+  ✓   3 [android-phone-chromium] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (2.2s)
+  ✓   4 [android-phone-chromium] › e2e/flows.spec.ts:106:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it (1.9s)
+  ✓   5 [android-phone-chromium] › e2e/flows.spec.ts:197:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses a changed wallet account during the final authority recheck before send (1.7s)
+  ✓   6 [android-phone-chromium] › e2e/flows.spec.ts:218:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses when the wallet mutates the transaction (1.9s)
+(node:319) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [android-tablet-chromium] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (1.9s)
+  ✓   8 [android-tablet-chromium] › e2e/devices-mobile-workflows.spec.ts:41:1 › an encrypted backup downloaded by touch can be selected again and verified (2.7s)
+  ✓   9 [android-tablet-chromium] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (2.3s)
+  ✓  10 [android-tablet-chromium] › e2e/flows.spec.ts:106:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it (2.0s)
+  ✓  11 [android-tablet-chromium] › e2e/flows.spec.ts:197:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses a changed wallet account during the final authority recheck before send (1.8s)
+  ✓  12 [android-tablet-chromium] › e2e/flows.spec.ts:218:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses when the wallet mutates the transaction (1.8s)
+(node:498) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+  ✓  13 [iphone-webkit] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (4.0s)
+  ✓  14 [iphone-webkit] › e2e/devices-mobile-workflows.spec.ts:41:1 › an encrypted backup downloaded by touch can be selected again and verified (5.2s)
+  ✓  15 [iphone-webkit] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (2.6s)
+  ✓  16 [iphone-webkit] › e2e/flows.spec.ts:106:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it (2.5s)
+  ✓  17 [iphone-webkit] › e2e/flows.spec.ts:197:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses a changed wallet account during the final authority recheck before send (2.2s)
+  ✓  18 [iphone-webkit] › e2e/flows.spec.ts:218:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses when the wallet mutates the transaction (2.2s)
+(node:937) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+  ✓  19 [ipad-webkit] › e2e/devices-mobile-workflows.spec.ts:5:1 › after a camera denial a touch user can import an invoice QR image and review it before opening payment (2.9s)
+  ✓  20 [ipad-webkit] › e2e/devices-mobile-workflows.spec.ts:41:1 › an encrypted backup downloaded by touch can be selected again and verified (3.6s)
+  ✓  21 [ipad-webkit] › e2e/devices.spec.ts:33:1 › core routes fit the device viewport without horizontal overflow or clipped controls (3.1s)
+  ✓  22 [ipad-webkit] › e2e/flows.spec.ts:106:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it (2.6s)
+  ✓  23 [ipad-webkit] › e2e/flows.spec.ts:197:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses a changed wallet account during the final authority recheck before send (2.5s)
+  ✓  24 [ipad-webkit] › e2e/flows.spec.ts:218:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › refuses when the wallet mutates the transaction (2.4s)
+
+  24 passed (1.6m)

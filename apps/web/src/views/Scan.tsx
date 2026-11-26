@@ -1,5 +1,5 @@
-import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
@@ -13,11 +13,11 @@ import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { placeScanMatch, sharedRouterAddresses } from '../lib/scanMatches';
-import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
+import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, guardScanClient, loadScanPrivacy, openScanClients, planScan, SCAN_ROUTE_CHANGED } from '../lib/scanPrivacy';
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
-import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
+import { recordFromObservedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
@@ -96,6 +96,10 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly exportRpc: ExportRpc; readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [lateReview, setLateReview] = useState<{
+    readonly matches: readonly ScanMatch[];
+    readonly verify: (match: ScanMatch) => Promise<boolean>;
+  }>();
   const [autoRescan, setAutoRescan] = useState(false);
   // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
   const [autoWake, setAutoWake] = useState(0);
@@ -134,6 +138,7 @@ export function Scan(): ReactNode {
     abort.current?.abort();
     app.setMatches([]);
     setScanOwner(undefined);
+    setLateReview(undefined);
     setProgress(undefined);
     setDone(undefined);
   }), [app.setMatches]);
@@ -150,6 +155,7 @@ export function Scan(): ReactNode {
       abort.current?.abort();
       app.setMatches([]);
       setScanOwner(undefined);
+      setLateReview(undefined);
     }
   }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
 
@@ -181,6 +187,7 @@ export function Scan(): ReactNode {
     abort.current = ctl;
     startingScope.current = scope;
     setRunning(true);
+    setLateReview(undefined);
     setError(undefined);
     setDone(undefined);
     setPrivacyNote(undefined);
@@ -209,7 +216,20 @@ export function Scan(): ReactNode {
         const scanPrivacySelection = JSON.stringify(privacy);
         const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
+        // Every request of this scan re-checks the saved route it started with: its privacy settings, the Settings RPC
+        // it uses and its second RPC. A change in this or another tab stops it before anything more is sent.
+        const savedAtStart = loadSettings();
+        const startRpcUrl = savedAtStart.rpcUrls[String(chainId)];
+        const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
+        const assertScanPath = (): void => {
+          const saved = loadSettings();
+          if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
+              (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
+            throw new UserFacingError(SCAN_ROUTE_CHANGED);
+          }
+        };
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath });
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -227,6 +247,7 @@ export function Scan(): ReactNode {
           setError(msg('scan.error.secondRpc'));
           return;
         }
+        if (rpc2 !== undefined) rpc2 = guardScanClient(rpc2, assertScanPath);
         assertScopeCurrent();
         let cursor = resume || append ? checkpoint : undefined;
         if (cursor === undefined) {
@@ -247,22 +268,36 @@ export function Scan(): ReactNode {
         assertScopeCurrent();
         // A stopped scan can still export its matches. Reuse only its verified client.
         // Check the saved route again before sending an address or returning an export.
+        const assertScanRoute = (): void => {
+          guardSession();
+          if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
+            throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+          }
+        };
         const exportRpc: ExportRpc = {
           chainId: rpc.chainId,
           request: (method, params) => rpc.request(method, params),
-          assertCurrent: () => {
-            guardSession();
-            if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
-                (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
-              throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
-            }
-          },
+          assertCurrent: assertScanRoute,
         };
         setScanOwner({ ...scope, exportRpc });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
         const viewingKey = revealViewingKey();
+        const withReconciliation = async (action: (vault: Awaited<ReturnType<typeof createCurrentReconciliationVault>>) => Promise<void>): Promise<void> => {
+          assertScopeCurrent();
+          const vault = await createCurrentReconciliationVault(chainId, keyId);
+          const lockOnAbort = (): void => { vault.lock(); };
+          ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
+          try { assertScopeCurrent(); await action(vault); }
+          finally { ctl.signal.removeEventListener('abort', lockOnAbort); vault.lock(); }
+        };
+        const observations = (matches: readonly ScanMatch[]) => matches
+          .filter((match) => match.viaRouter && match.metadata !== undefined && match.announcement.transactionHash !== undefined)
+          .map((match) => recordFromObservedMatch(match, keyId));
+        let caughtUp = false;
+        let persistenceIssue = false;
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -282,6 +317,7 @@ export function Scan(): ReactNode {
           checkpoints: services.checkpoints,
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
+            caughtUp = nextProgress.caughtUp;
             setProgress(nextProgress);
             // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
             if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyBlocks(nextProgress.routerOnlyBlocks);
@@ -298,21 +334,36 @@ export function Scan(): ReactNode {
           onReorg: async (to, canonicalHash) => {
             if (!scopeIsCurrent()) return;
             // Observations of this run, saved or not; only those whose block was replaced are tombstoned.
-            const observed = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
+            const observed = observations([...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
-              const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
-              const lockOnAbort = (): void => { reconciliation.lock(); };
-              ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
-              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, observed, canonicalHash); }
-              finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
+              await withReconciliation((vault) => vault.invalidateFrom(to, observed, canonicalHash));
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
               const warning = new UserFacingError({ key: 'scan.error.reorg' });
               warning.cause = cause;
               throw warning;
+            }
+          },
+          onUnresolvedEvidence: async (from) => {
+            try {
+              await withReconciliation((vault) => vault.quarantineInvoicePayments(from, assertScopeCurrent));
+            } catch {
+              persistenceIssue = true;
+              if (scopeIsCurrent()) setError(msg('ledger.late.persistence'));
+            }
+          },
+          onPageMatches: async (matches, page) => {
+            try {
+              const evidence = observations(matches);
+              await withReconciliation((vault) => vault.observeInvoicePayments(evidence, assertScopeCurrent, page));
+              return true;
+            } catch {
+              persistenceIssue = true;
+              if (scopeIsCurrent()) setError(msg('ledger.late.persistence'));
+              return false;
             }
           },
           onMatch: (m) => {
@@ -328,7 +379,35 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
         });
-        if (!ctl.signal.aborted) assertScopeCurrent();
+        if (!ctl.signal.aborted) {
+          assertScopeCurrent();
+          if (caughtUp && !persistenceIssue && res.discrepancies.length === 0 &&
+              !res.limitReached && !res.backlog && res.secondaryLag === undefined) {
+            const matches = res.matches.filter((match) => match.receipt === 'verified');
+            setLateReview({
+              matches,
+              verify: async (match) => {
+                // Recheck only through the route this scan used; a changed RPC or privacy selection needs a new scan.
+                assertScanRoute();
+                const { announcement, metadata } = match;
+                if (!matches.includes(match) || metadata === undefined || announcement.blockTimestamp === undefined) return false;
+                const evidence = await verifyClaimedPayment({
+                  chain, client: clients.scan, router: manifest.manifest.router, announcer: manifest.manifest.announcer,
+                  claim: { ...match, metadata },
+                  ...(secondary === undefined ? {} : { secondaryClient: secondary }),
+                });
+                assertScanRoute();
+                if (evidence.status !== 'received' || !evidence.final) return false;
+                const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
+                const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
+                assertScanRoute();
+                return blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
+                  block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
+                  block.timestamp?.toString() === announcement.blockTimestamp);
+              },
+            });
+          }
+        }
         if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
         if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
         setPrivacyNote(res.telemetry?.anonymity);
@@ -442,6 +521,8 @@ export function Scan(): ReactNode {
         sellerKeyId={keyId}
         matches={app.matches}
         scanMatchesCurrentScope={scanMatchesCurrentScope}
+        freshLateMatches={scanMatchesCurrentScope && !running ? lateReview?.matches : undefined}
+        verifyLateEvidence={scanMatchesCurrentScope && !running ? lateReview?.verify : undefined}
         onAnnounce={app.announce}
       />
       <Tags key={chainId} chainId={chainId} sellerKeyId={keyId} />
@@ -472,8 +553,16 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
   const [label, setLabel] = useState<Readonly<Record<string, string>>>({});
   const [err, setErr] = useState<ScanText | undefined>(undefined);
+  const access = useSyncExternalStore(services.vault.subscribeAccess, services.vault.getAccessRevision);
+  const [displayAccess, setDisplayAccess] = useState(access);
   const unlocked = services.vault.unlocked;
   const matches = props.matches;
+  if (displayAccess !== access) {
+    setDisplayAccess(access);
+    setTags({});
+    setLabel({});
+    setErr(undefined);
+  }
 
   useEffect(() => {
     let live = true;
@@ -486,17 +575,18 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
       for (const m of matches) {
         try {
           const tag = await services.vault.find(props.chainId, m.stealthAddress);
+          if (!live || services.vault.getAccessRevision() !== access) return;
           if (tag !== undefined) next[m.announcement.id] = tag.clientLabel;
         } catch {
           /* undecryptable tags are reported in the tag list */
         }
       }
-      if (live) setTags(next);
+      if (live && services.vault.getAccessRevision() === access) setTags(next);
     })();
     return () => {
       live = false;
     };
-  }, [matches, unlocked, services, props.chainId]);
+  }, [matches, unlocked, services, props.chainId, access]);
 
   if (matches.length === 0) return <p className="hint">{t('scan.matches.none')}</p>;
   const shared = sharedRouterAddresses(matches);
@@ -520,7 +610,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
                 {m.receipt === 'pending' && ` - ${t('scan.match.pending')}`}
               </p>
               <p>{t('scan.match.address')} <Mono>{m.stealthAddress}</Mono></p>
-              {tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
+              {unlocked && tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
               {unlocked && (
                 <div className="row">
                   <div className="field">
@@ -541,6 +631,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
                       }
                       services.vault.save(props.chainId, payload).then(
                         () => {
+                          if (services.vault.getAccessRevision() !== access) return;
                           try {
                             sessionGuard();
                           } catch (e) {
@@ -550,10 +641,11 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
                             return;
                           }
                           setErr(undefined);
-                          setTags({ ...tags, [id]: payload.clientLabel.trim() });
+                          setTags((current) => ({ ...current, [id]: payload.clientLabel.trim() }));
                           app.announce(latestT.current('scan.tag.saved'));
                         },
                         (e: unknown) => {
+                          if (services.vault.getAccessRevision() !== access) return;
                           setErr({ error: captureUserMessage(e) });
                         },
                       );
@@ -586,9 +678,11 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
   const app = useApp();
   const services = useServices();
   const [refreshGeneration, force] = useState(0);
-  const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
+  const [loadedList, setList] = useState<{ readonly access: number; readonly rows: readonly TagPayload[] } | undefined>();
   const [err, setErr] = useState<ScanText | undefined>(undefined);
   const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
+  const access = useSyncExternalStore(services.vault.subscribeAccess, services.vault.getAccessRevision);
+  const list = loadedList?.access === access ? loadedList.rows : undefined;
   const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
 
   // Session revisions invalidate tag access even when the replacement has the same public keys.
@@ -615,18 +709,18 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
     }
     void services.vault.list(props.chainId).then(
       (next) => {
-        if (!live) return;
+        if (!live || services.vault.getAccessRevision() !== access) return;
         try { sessionGuard(); } catch { return; }
-        setList(next);
+        setList({ access, rows: next });
       },
       (e: unknown) => {
-        if (!live) return;
+        if (!live || services.vault.getAccessRevision() !== access) return;
         try { sessionGuard(); } catch { return; }
         setErr({ error: captureUserMessage(e) });
       },
     );
     return () => { live = false; };
-  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked]);
+  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked, access]);
 
   return (
     <div>

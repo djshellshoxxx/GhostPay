@@ -89,7 +89,9 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         (h) => { setBroadcast((prev) => [...prev, h]); },
         reviewed.guard,
       );
-      setMsg({ kind: 'ok', text: `${t('policy.pay.submitted', { hash: res.hash })}${res.receipt?.status === 'success' ? ` ${t('policy.pay.confirmed')}` : ''}` });
+      // L2-F3: a receipt counts as confirmation only for a transaction compared with the preview on the user's RPC.
+      const confirmed = res.verification === 'verified' && res.receipt?.status === 'success';
+      setMsg({ kind: 'ok', text: `${t('policy.pay.submitted', { hash: res.hash })}${confirmed ? ` ${t('policy.pay.confirmed')}` : ''}` });
       app.announce(t('policy.pay.announced'));
       setReviewed(undefined);
     } catch (e) {
@@ -98,7 +100,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         setLocked(true);
       }
       if (e instanceof UserFacingError && (e.translation?.key === 'policy.pay.tokenNotWithdrawable' || e.translation?.key === 'policy.pay.committedAssetNotWithdrawable')) invalidateReview();
-      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e, t) });
+      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid') : userMessage(e, t) });
     } finally {
       setBusy(false);
     }
@@ -146,7 +148,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
             </div>
           )}
           {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
-          <WalletAttempts />
+          <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
         </>
       )}
     </section>

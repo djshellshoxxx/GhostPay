@@ -1,6 +1,6 @@
 import type { BrowserContext, Page, Route } from '@playwright/test';
-import { decodeAbiParameters, encodeFunctionData, keccak256, toBytes } from 'viem';
-import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { decodeAbiParameters, encodeFunctionData, encodeFunctionResult, keccak256, toBytes } from 'viem';
+import { eip712DomainSeparator, erc20MetadataAbi, ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { parseMetadata } from '@ghostpay/core-crypto';
 import { makeLog } from '../src/test/announcements';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifestJson } from '../src/test/fakeManifest';
@@ -25,6 +25,7 @@ export function e2eManifestJson(chainId: number): string {
   };
   return JSON.stringify(m);
 }
+export const TEST_USDC = '0x036cbd53842c5426634e7929541ec2318f3dcf7e' as const;
 export const RPC = 'https://rpc.e2e.test';
 export const CORS = {
   'access-control-allow-origin': '*',
@@ -44,6 +45,7 @@ export async function mockNetwork(
   context: BrowserContext,
   state: {
     sent?: SentTx;
+    usdcCheckout?: 'already allowed' | 'permit' | 'approval';
     logs?: unknown[];
     /** Canonical header time in seconds, fixed for the staged payment rather than scan wall-clock time. */
     blockTimestamp?: number;
@@ -132,7 +134,7 @@ export async function mockNetwork(
           return reply(state.evidence.get(String(body.params[0]).toLowerCase())?.receipt ?? null);
         }
         return reply(
-          state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
+          state.sent === undefined ? null : { transactionHash: body.params[0], status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
         );
       case 'eth_gasPrice':
         return reply('0x3b9aca00');
@@ -141,6 +143,14 @@ export async function mockNetwork(
       case 'eth_call': {
         const call = body.params[0] as { to: string; data: string };
         const sel = call.data.slice(0, 10);
+        if (state.usdcCheckout !== undefined && call.to.toLowerCase() === TEST_USDC) {
+          if (sel === SEL('allowance(address,address)')) return reply(word(state.usdcCheckout === 'already allowed' ? 'ffffffff' : '0'));
+          if (state.usdcCheckout === 'permit') {
+            if (sel === SEL('name()')) return reply(encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' }));
+            if (sel === SEL('nonces(address)')) return reply(word('0'));
+            if (sel === SEL('DOMAIN_SEPARATOR()')) return reply(eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: TEST_USDC }));
+          }
+        }
         if (call.to.toLowerCase() === FAKE_ROUTER) {
           if (sel === SEL('FEE_RECIPIENT()')) return reply(word(FAKE_FEE_RECIPIENT));
           if (sel === SEL('ANNOUNCER()')) return reply(word(FAKE_ANNOUNCER));

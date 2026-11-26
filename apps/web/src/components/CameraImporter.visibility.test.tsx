@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
 
 const exchange = vi.hoisted(() => ({
   QrExchangeError: class extends Error {},
@@ -48,6 +49,66 @@ afterEach(() => {
 });
 
 describe('CameraImporter hidden-document authorization', () => {
+  it.each(['idle', 'manual'] as const)('aborts a pending image on %s app lock without replacing the draft', async (reason) => {
+    const pending = deferred<string>();
+    let signal: AbortSignal | undefined;
+    exchange.decodeQrImage.mockImplementationOnce((_file: File, options: { signal: AbortSignal }) => {
+      signal = options.signal;
+      return pending.promise;
+    });
+    const onText = vi.fn<CameraImporterProps['onText']>(() => true);
+    render(<CameraImporter label="Import a QR" onText={onText} />);
+    enterText('unfinished invoice draft');
+    const draft = screen.getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    pickImage();
+    expect(signal?.aborted).toBe(false);
+
+    act(() => { notifyAppLock(reason); });
+    expect(signal?.aborted).toBe(true);
+    await act(async () => { pending.resolve('late private invoice'); await pending.promise; });
+    expect(exchange.decodeQrImage).toHaveBeenCalledOnce();
+    expect(onText).not.toHaveBeenCalled();
+    expect(screen.getByRole('status').textContent).toBe('');
+    expect(screen.getByLabelText('Or paste QR text')).toBe(draft);
+    expect(draft.value).toBe('unfinished invoice draft');
+
+    exchange.decodeQrImage.mockResolvedValueOnce('fresh invoice');
+    pickImage();
+    await waitFor(() => { expect(onText).toHaveBeenCalledOnce(); });
+    expect(onText.mock.calls[0]?.[0]).toBe('fresh invoice');
+  });
+
+  it.each(['idle', 'manual'] as const)('revokes a pending pasted callback on %s app lock while preserving the draft', async (reason) => {
+    const pending = deferred<boolean>();
+    const installed: string[] = [];
+    let signal: AbortSignal | undefined;
+    const onText = vi.fn<CameraImporterProps['onText']>().mockImplementationOnce(async (value, currentSignal) => {
+      signal = currentSignal;
+      await pending.promise;
+      if (!currentSignal.aborted) installed.push(value);
+      return true;
+    }).mockReturnValue(true);
+    render(<CameraImporter label="Import a QR" onText={onText} />);
+    enterText();
+    const draft = screen.getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+    fireEvent.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(onText).toHaveBeenCalledOnce();
+
+    act(() => { notifyAppLock(reason); });
+    expect(signal?.aborted).toBe(true);
+    await act(async () => { pending.resolve(true); await pending.promise; });
+    expect(installed).toEqual([]);
+    expect(onText).toHaveBeenCalledOnce();
+    expect(screen.getByRole('status').textContent).toBe('');
+    expect(screen.getByLabelText('Or paste QR text')).toBe(draft);
+    expect(draft.value).toBe('synthetic invoice');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    await waitFor(() => { expect(screen.getByRole('status').textContent).toBe('QR text accepted.'); });
+    expect(onText).toHaveBeenCalledTimes(2);
+    expect(onText.mock.calls[1]?.[1].aborted).toBe(false);
+  });
+
   it('aborts a pending image import and drops its late result even after the page becomes visible again', async () => {
     const pending = deferred<string>();
     let signal: AbortSignal | undefined;

@@ -35,8 +35,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+// #286 item 5: the suggested name is fixed, so neither the policy hash nor a digest of the meta-address reaches the
+// browser's download history. Each file's contents carry the complete identity, which is what import checks.
 describe('policy record downloads preserve the complete seller identity', () => {
-  it.each(variants)('keeps separate recovery files when only the $name key differs', async ({ record }) => {
+  it.each(variants)('keeps the identity in the contents when only the $name key differs, under a fixed name', async ({ record }) => {
     const blobs = vi.fn<(value: Blob | MediaSource) => string>(() => 'blob:policy-record');
     URL.createObjectURL = blobs;
     URL.revokeObjectURL = vi.fn();
@@ -64,10 +66,8 @@ describe('policy record downloads preserve the complete seller identity', () => 
     await user.click(downloads[1]!);
     await user.click(downloads[0]!);
 
-    expect(filenames).toHaveLength(3);
-    expect(filenames[0]).not.toBe(filenames[1]);
-    expect(filenames[2]).toBe(filenames[0]);
-    for (const filename of filenames) expect(filename).toMatch(/^ghostpay-policy-[0-9a-f-]+\.json$/);
+    expect(filenames).toEqual(['ghostpay-policy-record.json', 'ghostpay-policy-record.json', 'ghostpay-policy-record.json']);
+    for (const filename of filenames) expect(filename).not.toContain(first.policyHash.slice(2, 10));
     expect(blobs).toHaveBeenCalledTimes(3);
     const exported = await Promise.all(blobs.mock.calls.map(([blob]) => (blob as Blob).text()));
     expect(exported).toEqual([serializePolicyRecord(first), serializePolicyRecord(record), serializePolicyRecord(first)]);

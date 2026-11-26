@@ -22,6 +22,8 @@ import { PrintableBill } from './PrintableBill';
 import { SecretBackup, englishBackupText, localizedBackupText } from './SecretBackup';
 import { TagArchive } from './TagArchive';
 import { WalletAttempts } from './WalletAttempts';
+import { MockWallet } from '../test/mockWallet';
+import type { WalletSession } from '../lib/wallet';
 
 // Catalogs load by dynamic import; allow for a slow machine.
 configure({ asyncUtilTimeout: 5000 });
@@ -35,7 +37,7 @@ const draft = (locale: Draft, key: string): string => {
 };
 const english = (key: string): string => (SOURCE_CATALOG.messages as Record<string, string>)[key] ?? `MISSING ${key}`;
 
-beforeEach(() => { window.sessionStorage.clear(); });
+beforeEach(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
 afterEach(() => { cleanup(); });
 
 function inLocale(locale: string, ui: React.ReactNode): React.ReactNode {
@@ -168,8 +170,9 @@ describe('PaymentRequestQr under Arabic', () => {
 
 describe('WalletAttempts', () => {
   it('translates the heading, keeps the unknown-outcome and clear texts English in a draft locale', async () => {
-    beginAttempt({ key: `0x${'ab'.repeat(32)}`, chainId: 1, account: `0x${'cd'.repeat(20)}`, kind: 'payment' });
-    render(inLocale('es', <WalletAttempts />));
+    beginAttempt({ key: `0x${'ab'.repeat(32)}`, chainId: 1, account: `0x${'cd'.repeat(20)}`, kind: 'payment' }, window.localStorage);
+    const owner: WalletSession = { account: `0x${'cd'.repeat(20)}`, chainId: 1, wallet: { id: 'fixture', name: 'Fixture', kind: 'injected', provider: new MockWallet({ account: `0x${'cd'.repeat(20)}`, chainId: 1 }) } };
+    render(inLocale('es', <WalletAttempts wallet={owner} />));
     expect(await screen.findByRole('heading', { name: draft('es', 'walletAttempts.heading') })).toBeTruthy();
     expect(screen.getByText(english('walletAttempts.hint'))).toBeTruthy();
     expect(screen.getByRole('button', { name: english('walletAttempts.clear') })).toBeTruthy();
