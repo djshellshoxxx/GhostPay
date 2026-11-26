@@ -86,6 +86,14 @@ The lead should confirm or reject each.
   `ProposeDestination(address newDestination,uint256 deadline,uint256 nonce)`, `CancelDestination(bytes32 id)`. `id` = the struct hash of the signed
   {Withdraw}/{ProposeDestination}, so it is unique per nonce. Cancel signatures need no nonce (bound to a unique id, effect is idempotent) and a cancel
   signature of one type cannot be used as another.
+  **Limits of P3 (audit A-1/A-2, 2026-11-18; contract unchanged).** Capture happens at *acceptance*, not at signing. A signed
+  `Withdraw` that has not been submitted yet carries no destination, so if a destination change completes before it lands, anyone
+  holding the signature can submit it until its `deadline` and it pays the *new* destination. The `PolicyAccount` NatSpec sentence
+  "an old owner signature cannot follow a new destination" holds only for requests already accepted. Rotating A -> B -> A also
+  revives accepted requests that the first rotation blocked (`executeWithdraw` compares only `destination == r.destination`).
+  Neither grants power beyond the owner key (every destination was approved by it). Client rule until a new implementation binds
+  the destination in `Withdraw` (a breaking typehash change needing a new implementation and factory): keep `Withdraw` deadlines
+  short, never sign a `Withdraw` while a destination proposal is pending, and cancel outstanding requests when rotating.
 - **P4. `requestWithdraw` takes structs: `requestWithdraw(Withdraw w, LimitProof lp, bytes sig) returns (bytes32 id)`** instead of the flat
   `(token, amount, deadline, nonce, sig)`, because the merkle data of P1 has to travel with it. `proposeDestination(newDestination, deadline, nonce, sig)`,
   `executeDestinationChange()`, `cancelDestination(id, sig)`, `executeWithdraw(id)`, `cancel(id, sig)`.
