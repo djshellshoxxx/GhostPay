@@ -10,27 +10,6 @@ Acceptance: the filter uses `element.checkVisibility()` (as main's `responsive-p
 Worker: ghostpay-78 worker; branch `claude/multipart-note-copy-20261126` from main `194e225c`. Ports d205fc30 from closed #664 (`claude/fc-integration-20261125`). Owned paths: the `create.qr.multipartNote` value in `apps/web/locales/{en,es,ja,ar}.json` and this entry.
 Acceptance: the note quotes main's exact `requestFile.summary` label "Scan an invoice QR or open a request file" in all four catalogs; only the quoted label changes; `node scripts/i18n/check.mjs` reports 0 errors; the CreateInvoice multi-part test passes; full hosted CI green at the exact head.
 
-# #701 review upkeep (2026-11-26 UTC)
-
-Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
-this record's "Remaining items" correction, one wording correction in the earlier ghostpay-71 entry below, the
-ACTIVE_WORK union and this entry. Docs only.
-
-# ghostpay-78 worker: #701 account-privacy verification record refresh (2026-11-26 UTC)
-
-Worker: ghostpay-78 worker; branch `nodata/zen-dirac-vkl84j` (#701), base main `194e225c`. Owned paths:
-`docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`, this entry. Acceptance: re-verified that
-`e1d0eb0f^{tree}` equals `f45025b5^{tree}` (`3dc2d133`), that #697 and #698 are merged and that the recorded push CI runs
-concluded success; main merged in without rebase; docs-only; full hosted CI green on the exact head.
-
-## Independent account-privacy composition verification — 2026-11-26 (ghostpay-71)
-
-- Worker: Claude Code session `ghostpay-71`, branch `nodata/zen-dirac-vkl84j`, base main `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
-- Owns only this additive entry and `docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`. Docs only.
-- Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
-- Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
-- Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
-
 # GP-PAGES-04 idle deadline and real page freeze qualification, successor of #582 (2026-11-26 UTC)
 
 Worker: ghostpay-78 worker; branch `claude/idle-sweep-freeze-tests-20261126` from main `194e225c` (#582 `test/gp-pages-04-frozen-page-sweep-resume` stays open and untouched; it was stacked on #544's old base).
@@ -135,6 +114,23 @@ Owned paths: `scripts/recovery/stealth-export-recover.mjs` (terminal passphrase 
 dependency change.
 Acceptance: the prompt fix has a regression test that fails without it; the WebKit phone/tablet workflow, with the
 changed restore spec, runs on the exact head; hosted CI green.
+
+# BUG — deterministic unsupported-locale formatter fallback (2026-11-25 local / 2026-11-26 UTC)
+
+Worker: GhostPay bug-only sequential worker. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`; base `a9d2a033c1055c59765b388a02512c6285764dae`. Owned paths: `packages/i18n/src/ux/format.ts`, new `packages/i18n/src/ux/format.unsupported-locale.test.ts`, this additive claim, new `docs/handoffs/I18N_UNSUPPORTED_LOCALE_FALLBACK_20261126.md`. Scope: existing documented English fallback for unsupported number/date locales; no new feature, amount parsing, fiat integration, network, payment, dependency or release changes. All 223 open PR file inventories from the initial date-partitioned search plus three newly published PRs (#697–699) checked without an overlap in `packages/i18n/src/ux/`; no direct formatter claim in main ACTIVE_WORK. Recheck before integration. Acceptance: test-first deterministic injected non-English default and native source-matched reproduction, preserve supported/invalid locale and RangeError behavior; exact-head CI, independent review and legitimate integration lease required. Baseline isolated Node 22.16.0 with LANG=de_DE.UTF-8: 8/12 probes pass, four fallback failures; four source Git blobs hash-verified. Generation 40 integration lease observed released, not acquired. No other branch writes or merge.
+
+# #701 review upkeep (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
+this record's "Remaining items" correction, one wording correction in the earlier ghostpay-71 entry below, the
+ACTIVE_WORK union and this entry. Docs only.
+
+# ghostpay-78 worker: #701 account-privacy verification record refresh (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `nodata/zen-dirac-vkl84j` (#701), base main `194e225c`. Owned paths:
+`docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`, this entry. Acceptance: re-verified that
+`e1d0eb0f^{tree}` equals `f45025b5^{tree}` (`3dc2d133`), that #697 and #698 are merged and that the recorded push CI runs
+concluded success; main merged in without rebase; docs-only; full hosted CI green on the exact head.
 
 # Docs #624 refresh — engineering trackers against main `194e225c` (2026-11-26 UTC)
 
@@ -4768,6 +4764,10 @@ required; no new local test run or browser execution is claimed.
 - Actual overlap with main: four locale catalogs and `apps/web/src/i18n/securityKeys.ts` (additive BTC spent-status group); git auto-merged, JSON validated. ACTIVE_WORK union.
 - Acceptance: focused idle, account-revocation, journal-persistence and concurrency regressions; fresh exact-head hosted CI (typecheck, lint, unit, full/lean e2e, Pages, beta) on each combined head; independent composition review; integration lock acquired immediately before each merge with main and heads refreshed. No deployment, contracts or live transactions.
 
-# BUG — deterministic unsupported-locale formatter fallback (2026-11-25 local / 2026-11-26 UTC)
+## Independent account-privacy composition verification — 2026-11-26 (ghostpay-71)
 
-Worker: GhostPay bug-only sequential worker. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`; base `a9d2a033c1055c59765b388a02512c6285764dae`. Owned paths: `packages/i18n/src/ux/format.ts`, new `packages/i18n/src/ux/format.unsupported-locale.test.ts`, this additive claim, new `docs/handoffs/I18N_UNSUPPORTED_LOCALE_FALLBACK_20261126.md`. Scope: existing documented English fallback for unsupported number/date locales; no new feature, amount parsing, fiat integration, network, payment, dependency or release changes. All 223 open PR file inventories from the initial date-partitioned search plus three newly published PRs (#697–699) checked without an overlap in `packages/i18n/src/ux/`; no direct formatter claim in main ACTIVE_WORK. Recheck before integration. Acceptance: test-first deterministic injected non-English default and native source-matched reproduction, preserve supported/invalid locale and RangeError behavior; exact-head CI, independent review and legitimate integration lease required. Baseline isolated Node 22.16.0 with LANG=de_DE.UTF-8: 8/12 probes pass, four fallback failures; four source Git blobs hash-verified. Generation 40 integration lease observed released, not acquired. No other branch writes or merge.
+- Worker: Claude Code session `ghostpay-71`, branch `nodata/zen-dirac-vkl84j`, base main `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
+- Owns only this additive entry and `docs/handoffs/ACCOUNT_PRIVACY_INDEPENDENT_VERIFICATION_20261126.md`. Docs only.
+- Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
+- Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
+- Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
