@@ -1,12 +1,13 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "claude-tender-mccarthy-723",
   "token": "b024fc89-1ca7-4644-98f5-d158b0b75c36",
   "generation": 50,
-  "base_sha": "5b65ca3ac4510b46f151a980aca04c4e41ecdc63",
+  "base_sha": "3603960cfd9f24537e52ecb1e7772a48259b9730",
   "acquired_at": "2026-11-26T18:25:50.000Z",
-  "heartbeat_at": "2026-11-26T18:42:18.000Z",
-  "expires_at": "2026-11-26T19:27:18.000Z",
-  "transport": "git-push-nonforce"
+  "heartbeat_at": "2026-11-26T18:44:26.000Z",
+  "expires_at": "2026-11-26T18:44:26.000Z",
+  "transport": "git-push-nonforce",
+  "released_at": "2026-11-26T18:44:26.000Z"
 }
