@@ -65,7 +65,9 @@ describe('BtcView', () => {
   it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    // GhostPay empties the clipboard only while it still holds the backup, so the stub reads back the last write.
+    const readText = (): Promise<string> => Promise.resolve(writeText.mock.lastCall?.[0] ?? '');
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
@@ -75,15 +77,21 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
     expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
+    await vi.waitFor(() => { expect(writeText).toHaveBeenLastCalledWith(''); });
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
   it('empties the clipboard at the next click when the app lock could not (no user activation)', async () => {
     const { user } = await setup();
     let refuse = false;
-    const writeText = vi.fn((text: string) => (refuse && text === '' ? Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError')) : Promise.resolve()));
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    let clipboardText = '';
+    const writeText = vi.fn((text: string) => {
+      if (refuse && text === '') return Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError'));
+      clipboardText = text;
+      return Promise.resolve();
+    });
+    const readText = (): Promise<string> => Promise.resolve(clipboardText);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
@@ -94,12 +102,12 @@ describe('BtcView', () => {
       notifyAppLock('idle');
       await Promise.resolve();
     });
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await vi.waitFor(() => { expect(writeText).toHaveBeenCalledTimes(2); });
     expect(writeText).toHaveBeenLastCalledWith('');
     refuse = false;
     // Back at the page: the first click empties it.
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
+    await vi.waitFor(() => { expect(writeText).toHaveBeenCalledTimes(3); });
     expect(writeText).toHaveBeenLastCalledWith('');
     // Emptied once: Lock leaves the clipboard alone.
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));

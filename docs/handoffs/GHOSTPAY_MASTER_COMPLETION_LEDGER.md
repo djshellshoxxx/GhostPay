@@ -2,6 +2,10 @@
 
 **Issue #286 item 5, exports and notifications.** Integration branch `claude/w-export-privacy-286-20261125` merges donor [PR #570](https://github.com/djshellshoxxx/GhostPay/pull/570) (`55781533`, reviewed at `25966864`) onto main `32ae3977`. Changes beyond the donor: downloads keep a closed list of fixed `ghostpay-*` names, and any other requested name becomes `export.<ext>` (`apps/web/src/lib/downloadNames.ts`). The wallet-attempt replacement hash, the Pay approve/permit/revoke amount and spender, and the uncertain-sweep expected hash leave their live regions and stay visible beside them. Each fix has a red-then-green regression. Status: merged on main `e2c11634` (PR #675, merge `236501fe`) through candidate #681, whose exact head passed hosted CI (42 pass, 0 fail, 3 deploy-only jobs skipped). This is integration evidence for one #286 item, not release qualification.
 
+## Issue #286 clipboard protection
+
+[Pages copy-action inventory](../privacy/clipboard-actions.md). The remaining-action candidate stacks on #553. Combined release-candidate qualification and independent review are pending.
+
 
 ## Current status (2026-11-18 consolidation)
 

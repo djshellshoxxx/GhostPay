@@ -155,6 +155,21 @@ never read from argv or the environment. Recovery runs in an isolated directory 
 packages readable. A browser-downloaded keystore is decoded after its profile is closed. No new dependency,
 primitive, endpoint or contract change.
 
+# W4 — clipboard cleanup (#553 + #580) onto current main — 2026-11-25 UTC
+
+Worker: Claude Code W4 (feature-completion), branch `claude/w4-clipboard-286-main-20261125`. Base: #580 head
+`e68d32d7e424daf7264165987868eb6b891048b2` (contains #553 `068fbc36b80311c107dfd3619d631fca794fac58`) merged with main
+`aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. Donor branches and PRs #553/#580 stay unchanged; superseded only once this merges.
+Owned paths: the merge resolution (`apps/web/src/AppShell.tsx` imports, this file), fixes for defects reproduced on the
+merged head inside the stack's existing paths (`apps/web/src/lib/clipboardPrivacy*`, `apps/web/src/components/{Common,SecretBackup,SensitiveClipboard}*`,
+the clipboard preference in `apps/web/src/{lib/settings*,views/Settings.tsx}`, clipboard locale keys, `apps/web/e2e/{invoice-link,sensitive}-clipboard.spec.ts`,
+`docs/privacy/clipboard-actions.md`), and a new handoff. W4 also coordinates the Create Invoice copy-link row for the
+related #585/#600 privacy-minimal invoice continuation (next task) so both compose with FC-01 #650's request-file download.
+Not owned: #664/#650/#649/#656/#661–#663 branches, Pay/wallet/journal, recovery, provider policy, verification directories.
+Acceptance: opt-in (default Off) cleanup applies to every programmatic copy; newer or different clipboard contents are never
+erased; invoice totals, canonical signatures and verification unchanged; merged head passes focused clipboard suites, web
+typecheck/lint where memory allows (skips recorded), and full hosted CI; handed to W1 for integration (no lock taken, no merge).
+
 ---
 
 # P1-LATE stack consolidation onto main — 2026-11-24 UTC
@@ -2611,6 +2626,41 @@ Owned paths: this additive claim; `packages/ux-fees/src/cheapest.ts`; new `packa
 Finding: existing tie-break allows a preferred or faster chain up to 1% more costly than the minimum; `savingsVsNext = metric(next) - metric(winner)` becomes negative when the next ranked chain is cheaper. This contradicts the nonnegative savings treatment already used for `savingsVsCurrent` and misstates a user-visible quote.
 Acceptance: test first for preference and speed tie-breaks reporting nonnegative zero savings, preserve a positive saving for an actual cheaper winner and unchanged ordering/suggestion logic. Minimal clamp of the existing calculated saving, no new fields or features. Record exact source evidence, hosted CI and all unrun checks; request separate review. Do not change other PR branches or merge/release/deploy/fund-interact.
 Preflight: live main, AGENTS.md/WORKFLOW.md/HANDOFF.md/ACTIVE_WORK.md, #390 exact-head green 5 workflows and 39 checks with zero submitted reviews; #390 mergeable=false; generation-12 metadata lease released at inspected commit `082e754f44944ebb4be283f89176b966bf8f7b4f` (no authority inferred). Prior 267-PR ownership snapshot plus fresh 2026-11-23 open-PR search and changed-file inspections of active broad donors (#238/#246/#262/#264/#278/#504), fee PRs (#421/#423/#425/#462) found no `cheapest.ts` claim. Full fresh 268-PR file-list scan was not completed, so recheck before integration.
+
+## Issue #286 — merge and fuzz the Create Invoice copy action
+
+Worker: Codex on `integrate/invoice-clipboard-286`, from main
+`e0cb4681e453af77bb10be45ba61b4d19579f41b`. Main-targeted integration of
+#293 (6c648770), #297 (04910f65), and #549 (21b1d68c). Own only the clipboard
+helper and its CopyButton integration, invoice-link preference and translations,
+their tests, and this claim. Preserve the owners' existing branch histories.
+Exercise the real button with a mock clipboard, fake time, and seeded copy and
+completion orderings, including an in-flight same-link recopy at the old deadline.
+Verify default-off, unchanged-link clearing, and preservation of newer clipboard text.
+
+## Issue 286 remaining clipboard actions
+
+Worker: Codex, branch `feat/remaining-sensitive-clipboard-286`. Base: PR #553 at `068fbc36b80311c107dfd3619d631fca794fac58`. Main observed at `f76904301cff0b24d65ea4e31cbf37d470db4d95`. Own the shared copy button, confirmed backup copy and associated lock hooks, shared clipboard helper, Settings copy, tests and clipboard documentation on this branch. #553 retains Create Invoice ownership. Reconcile relevant clipboard behavior from broad donor #372 without importing its second preference or other beta features.
+
+Acceptance: every programmatic copy uses #553's saved Off/30/60-second preference and helper. Only matching readable text may be cleared. Cover denied and missing APIs, newer/repeated copies, component unmount, preference revocation and pending native writes with controlled clocks and synthetic clipboards. Preserve backup reveal, auto-hide, confirmation and local recovery. Release qualification requires independent review and testing on an integrated candidate.
+
+## Finish #580 clipboard regression typing — 2026-11-24
+
+Worker: `/root` in the near-finished branch completion task. Isolated branch:
+`finish/clipboard-580-20261124`, based on #580 exact head
+`b634e816a403ac6b07a6685bac575ca683a17cb5`. Main observed at
+`f76904301cff0b24d65ea4e31cbf37d470db4d95`.
+
+Owned paths: the mock return types in `apps/web/src/lib/clipboardPrivacy.test.ts`,
+this additive ownership record, and a dedicated completion handoff. The original
+#580 source remains in history. The #553 branch and all production clipboard code
+are unchanged. Any continuation of #580 requires its observed head to match.
+
+Acceptance: reproduce the two `no-misused-promises` failures from hosted job
+138271835214, retain the actual promise signatures in the mock fixture, pass typed
+lint and the existing five helper/component suites without changing assertions,
+and obtain independent review. Refresh exact heads before publication. Hosted
+qualification remains a separate gate; no release or deployment is included.
 # R37 — Block ambiguous fee-preview asset symbols (2026-11-22)
 
 - Worker: branch consolidation coordinator, isolated from concurrent automation workers.
@@ -3677,3 +3727,20 @@ Independent source review approved #647 `6fd126dbb4d3377ff3cf7d97cfcb426a1e22fee
 - Acceptance: every named open choice has an explicit selected policy, a distinction between existing behavior and follow-up work, and measurable integration criteria. Verify source references, option/rule names, document links, whitespace and secrets. No runtime test result is implied by a documentation check.
 - Ownership: #644's Claude Code worker owns `packages/privacy-profiles/**`; draft #278 separately touches its devDependencies. Preserve those files and branches. The record covers decisions only, with no application integration, provider activation, fee policy, main merge, deployment or release.
 - Status: decision record complete. Source/path/identifier/link checks, staged whitespace check and secret scan passed; final read-only review approved the documentation scope after a terminology correction. Publish as a draft from this isolated branch; no package implementation or integration claim.
+# Coordinator continuation: completed clipboard handoff and P14 evidence — 2026-11-26 UTC
+
+- Worker: ChatGPT coordinator delegate `branch_triage`; branch `finish/clipboard-p14-20261126`; base the published #685 head `db544fa5e2e28129d6e8e53bb293d72dc08b8c02`.
+- Authorization: the owner's instruction to finish unfinished approved-scope GhostPay branches and the lead coordinator's explicit delegation to compose #668 and #658. This is integration of delivered work, not reassignment of W4's next privacy-minimal-invoice task or W5's independent verifier.
+- Inputs: #668 `74e0c61dd0edddc7bcbc1a963d7f4e2481cdcda1` (W4's completed clipboard handoff to W1, preserving #553/#580 ancestry) and #658 `9aed3886693270524beb118685e5947469899c43` (P14 descriptive RPC disclosure evidence, reviewed by W1). Both live heads rechecked before composition. Original branches remain unchanged.
+- Owned paths: merge reconciliation in this additive registry and `docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md`; a new source-pinned integration handoff; only necessary, independently reviewable composition repairs in these inputs' existing clipboard and descriptive-evidence paths. Preserve all current base records, newest locale additions, shared-core scope and both donor histories.
+- Acceptance: normal ancestry-preserving merges; ordinary focused clipboard/backup and descriptive P14 regressions, relevant typecheck/lint and secret/whitespace checks; no new feature behavior, fuzz/mutation or vulnerability-reproduction campaign. Root owns independent final review, publication, fresh hosted CI and the integration lock. No remote mutations by this delegate.
+- Boundaries: preserve #685 privacy-profile choices; leave W4 minimal invoices, W5 `verification/independent-beta/**`, original donor refs, excluded/deferred products, dependencies and workflows untouched. The P14 addition supplies synthetic evidence only and makes no anonymity, audit, deployed or completeness claim.
+- Result: composed source `222d0708d4a05fb94e4b7b94f14e0811a1ad9b76`, tree `1ce5d98a9b977982ea01e31d09eca519db85e320`, retains both donor ancestries. Focused checks passed (170 web tests and 11 deterministic evidence tests; four randomized properties unrun), both affected typechecks and lint passed, and independent AI source review approved. See `docs/handoffs/CLIPBOARD_P14_INTEGRATION_20261126.md` for exact commands, environment prerequisite, reconciliation and remaining hosted gates. Root retains publication and lock ownership.
+
+# PRIV-T02 RPC disclosure instrumentation and scan-privacy qualification (2026-11-25 UTC)
+
+Worker: Claude Code lead (`priv-lead`) with delegated workers; coordinator branch `claude/priv-t02-rpc-disclosure`; base main `60824005b89611aea2b16d3355378eebf072eedb`.
+Child branches (isolated worktrees, merged by the lead only): `claude/priv-t01-indexer-omission` (PRIV-04), `claude/priv-t07-light-evidence` (PRIV-05), `claude/priv-checkpoint-safety` (PRIV-06).
+Owned paths: new `apps/web/src/test/rpcDisclosure*.ts`, new `apps/web/src/lib/scanDisclosure*.test.ts`, new `packages/scan-source/src/*.omission.test.ts` and `*.evidence.test.ts`, new `apps/web/src/lib/scanClient.checkpoint*.test.ts`, `docs/research/privacy-evidence-matrix-2026-11-10.md`, `docs/research/privacy-rpc-call-graph.md`. Additive-only changes to `packages/scan-source/src/{light,types,index}.ts` if a typed evidence representation is justified.
+Not owned: `apps/web/src/lib/scanClient.ts` and `scannerCore.ts` runtime (many open PRs touch scan paths, e.g. #625, #635, #653); any change there is reported with a failing regression test first and coordinated. No production telemetry, no new runtime dependency, no change to payment verification.
+Acceptance: test-only instrumentation over the existing transport boundaries recording classes not values; scenarios A to J; indexer omission and truncation tests that never expect an undetectable omission to be detected; light-client evidence bounded; checkpoint safety regressions; matrix updated only with evidence actually produced; focused tests, typecheck, lint, hosted CI on the exact head.
