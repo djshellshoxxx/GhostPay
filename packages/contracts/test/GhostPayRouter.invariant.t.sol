@@ -233,9 +233,8 @@ contract RouterHandler is Test {
                 block.timestamp
             )
         );
-        (v, r, s) = vm.sign(
-            pk, keccak256(abi.encodePacked("\x19\x01", pt.DOMAIN_SEPARATOR(), structHash))
-        );
+        (v, r, s) =
+            vm.sign(pk, keccak256(abi.encodePacked("\x19\x01", pt.DOMAIN_SEPARATOR(), structHash)));
     }
 
     /// @dev Attacker donates tokens / forces ETH to the router; the *pay* flows must still not retain.
