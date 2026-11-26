@@ -5,6 +5,7 @@
  */
 import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { decodeAbiParameters } from 'viem/utils';
 import { SyntheticChain } from '../test/disclosureChain';
 import { memoryCheckpoints, newSeller, runDisclosureScenario, sellerLog, strangerLog, type ScenarioOutput } from '../test/disclosureHarness';
 import type { MadeLog } from '../test/announcements';
@@ -33,12 +34,10 @@ const block = (m: MadeLog): bigint => BigInt(m.log.blockNumber);
 
 /** What the seller's own key selects: computed independently of the scan, from the same rule. */
 const planner = createMatchCover(true, unsafeRevealSecret(seller.keys.viewingSecret))!;
-const ephemeralOf = (m: MadeLog): string => {
-  // abi.encode(bytes ephemeralKey, bytes metadata): two offset words, then the key's length word, then its 33 bytes.
-  const data = m.log.data.slice(2);
-  return `0x${data.slice(64 * 3, 64 * 3 + 66)}`;
+const asItem = (m: MadeLog): CoverItem => {
+  const [ephemeralPublicKey, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], m.log.data as `0x${string}`);
+  return { announcement: { id: `${m.log.blockHash}:${String(BigInt(m.log.logIndex))}`, blockNumber: block(m), logIndex: Number(BigInt(m.log.logIndex)), transactionHash: hashOf(m), ephemeralPublicKey, stealthAddress: m.stealthAddress, metadata } };
 };
-const asItem = (m: MadeLog): CoverItem => ({ announcement: { id: m.log.blockHash + ':' + String(BigInt(m.log.logIndex)), blockNumber: block(m), logIndex: Number(BigInt(m.log.logIndex)), transactionHash: hashOf(m), ephemeralPublicKey: ephemeralOf(m) } });
 const selected = (ms: readonly MadeLog[]): string[] => ms.filter((m) => planner.selects(asItem(m))).map(hashOf);
 
 const mine = sellerLog(seller, { block: 500, index: 0 });
@@ -47,8 +46,8 @@ const sameWindow = Array.from({ length: 16 }, (_, i) => strangerLog({ block: 100
 const otherWindow = strangerLog({ block: 1500, index: 0 });
 const junk = strangerLog({ block: 520, index: 30, token: UNSUPPORTED_TOKEN });
 const mine2 = sellerLog(seller, { block: 1600, index: 3 });
-// Spam: many cheap router payments in an unsupported token in the same window. Verification would skip them without a
-// request, so as cover they would be silent and could crowd real cover out of the per-page cap.
+// Spam: many cheap router payments in an unsupported token. Verification would skip them without a request, so as cover
+// they would be silent lookups that add nothing.
 const spam = Array.from({ length: 80 }, (_, i) => strangerLog({ block: 600 + i, index: 40 + i, token: UNSUPPORTED_TOKEN }));
 const page = [mine, ...sameWindow, otherWindow, junk];
 
@@ -77,6 +76,8 @@ beforeAll(async () => {
   await scenario('spam', [...page, ...spam], { cover: true });
   await scenario('pair-off', [...page, mine2], { matched: [mine, mine2] });
   await scenario('pair-on', [...page, mine2], { cover: true, matched: [mine, mine2] });
+  // The same chain range without the seller's payment: nothing matches.
+  await scenario('none-on', [...sameWindow, otherWindow, junk], { cover: true, matched: [] });
 });
 
 describe('cover lookups for a matched router payment', () => {
@@ -90,16 +91,23 @@ describe('cover lookups for a matched router payment', () => {
     expect(txSpecific(out['off']!.rec.records)).toHaveLength(2);
   });
 
-  it('on: the payment plus exactly the key-selected router payments of its window, never another window or a silent one', () => {
+  it('on: the payment plus exactly the key-selected router payments of the page, never a silent one', () => {
     const lookups = receipts(asked['on']!);
-    expect([...lookups].sort()).toEqual([hashOf(mine), ...selected(sameWindow)].sort());
-    expect(lookups).not.toContain(hashOf(otherWindow));
+    expect([...lookups].sort()).toEqual([hashOf(mine), ...selected([...sameWindow, otherWindow])].sort());
     // An unsupported-token router payment would be rejected before any request: never used as cover.
     expect(lookups).not.toContain(hashOf(junk));
     const rows = txSpecific(out['on']!.rec.records);
     expect(count(rows, 'eth_getTransactionReceipt')).toBe(lookups.length);
     expect(count(rows, 'eth_getTransactionByHash')).toBe(lookups.length);
     expect(rows.filter((r) => r.relatedToMatchedPayment)).toHaveLength(2);
+  });
+
+  it('on: a range with no payment is looked up exactly like one with a payment, so lookups do not reveal a match', () => {
+    const none = receipts(asked['none-on']!);
+    expect([...none].sort()).toEqual(selected([...sameWindow, otherWindow]).sort());
+    expect(none.length).toBeGreaterThan(0);
+    // The only lookup the payment adds is its own.
+    expect([...receipts(asked['on']!)].sort()).toEqual([...none, hashOf(mine)].sort());
   });
 
   it('on: each cover lookup repeats the real one: the block read, the receipt and the transaction, in chain order', () => {
@@ -121,29 +129,40 @@ describe('cover lookups for a matched router payment', () => {
     expect(view(out['pair-on']!)).toEqual(view(out['pair-off']!));
   });
 
-  it('on: a rescan, and a resume that sees only part of the window, look up the same selection (no intersection)', () => {
+  it('on: a rescan, and a resume that sees only part of the range, look up the same selection (no intersection)', () => {
     expect([...receipts(asked['on-again']!)].sort()).toEqual([...receipts(asked['on']!)].sort());
     const resumed = receipts(asked['resume']!);
-    const expected = [hashOf(mine), ...selected(sameWindow.filter((m) => block(m) >= 300n))];
+    const expected = [hashOf(mine), ...selected([...sameWindow, otherWindow].filter((m) => block(m) >= 300n))];
     expect([...resumed].sort()).toEqual([...expected].sort());
     // Overlap of the two scans: the payment and every selected cover the resume could see, never the payment alone.
     const overlap = resumed.filter((h) => receipts(asked['on']!).includes(h));
     expect(overlap.length).toBe(expected.length);
+    expect(overlap.length).toBeGreaterThan(1);
   });
 
-  it('on, under unsupported-token spam: cover is exactly the same as without it (no silent cover crowds the cap)', () => {
+  it('on, under unsupported-token spam: cover is exactly the same as without it', () => {
     expect([...receipts(asked['spam']!)].sort()).toEqual([...receipts(asked['on']!)].sort());
   });
 
-  it('on, two providers: the second provider gets the same lookups', () => {
+  it('on, two providers: the second provider gets the same lookups, cover included', () => {
+    expect(receipts(asked['two']!).length).toBeGreaterThan(1);
     expect([...receipts(asked['two-secondary']!)].sort()).toEqual([...receipts(asked['two']!)].sort());
   });
 
-  it('on, two payments in different windows: both covered from their own windows, in chain order', () => {
+  it('on, two payments: both looked up among the cover, in chain order', () => {
     const looked = receipts(asked['pair-on']!);
     expect(looked).toContain(hashOf(mine));
     expect(looked).toContain(hashOf(mine2));
+    expect(looked.length).toBeGreaterThan(2);
     const blocks = looked.map((h) => block([...page, mine2].find((m) => hashOf(m) === h)!));
     expect([...blocks].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0))).toEqual(blocks);
+  });
+
+  it('on: the scan wipes its viewing key', async () => {
+    const viewingKey = unsafeRevealSecret(seller.keys.viewingSecret);
+    const w = watched(page);
+    const o = await runDisclosureScenario({ id: 'wipe', seller, chain: w.chain, matched: [mine], matchCover: true, viewingKey });
+    expect(o.error).toBeUndefined();
+    expect(viewingKey.every((byte) => byte === 0)).toBe(true);
   });
 });

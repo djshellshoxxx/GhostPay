@@ -136,9 +136,9 @@ export interface ScanParams {
   /** Independent second provider on the same chain; compared at every checkpoint. */
   readonly secondaryClient?: RpcClient;
   /**
-   * Cover lookups (opt-in, see matchCover.ts): a page with a matched router payment also verifies a fixed, keyed share
-   * of the other router payments in the same block windows, through the same path and in chain order, so the RPC
-   * providers see the payment among other payments' lookups. Decoy results are discarded.
+   * Cover lookups (opt-in, see matchCover.ts): every page also verifies a fixed, keyed share of its other router
+   * payments, matched payment or not, through the same path and in chain order, so the RPC providers see a payment's
+   * lookups among other payments'. Decoy results are discarded.
    */
   readonly matchCover?: boolean;
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
@@ -432,28 +432,26 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageEvidence = new Set(evidenceLedger.keys());
       const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
       // Real claims in chain order (it decides which of two claims sharing a transfer is credited). With cover on, the
-      // keyed share of other router payments in the covered windows is merged in, also in chain order. Cover and
-      // covered claims both pass the checks verification applies before its first request, so every cover lookup
-      // sends the same requests a real one does.
+      // keyed share of this page's other router payments is merged in, whether or not anything matched, and the whole
+      // list runs in chain order. Cover is drawn only from payments that pass the checks verification applies before
+      // its first request, so no cover lookup is silent.
       const steps = cover === undefined
         ? uniqueClaims.items.map((item) => ({ item, decoy: false }))
         : (() => {
-            const routerLookup = (c: { readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }): boolean =>
-              c.viaRouter && c.metadata !== undefined && sendsLookups(p.chain, p.manifest.router, c.announcement, c.metadata);
             const matchedIds = new Set(claims.map((c) => c.announcement.id));
             const candidates = lanes.trusted.flatMap((announcement) => {
               if (matchedIds.has(announcement.id)) return [];
-              let metadata: ParsedMetadata | undefined;
+              let metadata: ParsedMetadata;
               try { metadata = parseMetadata(announcement.metadata); } catch { return []; }
-              const candidate = { stealthAddress: announcement.stealthAddress, announcement, metadata, viaRouter: true };
-              return routerLookup(candidate) ? [candidate] : [];
+              if (!sendsLookups(p.chain, p.manifest.router, announcement, metadata)) return [];
+              return [{ stealthAddress: announcement.stealthAddress, announcement, metadata, viaRouter: true }];
             });
-            return cover.plan(uniqueClaims.items, candidates, (c) => routerLookup(c) && !all.some((x) => x.announcement.id === c.announcement.id));
+            return cover.plan(uniqueClaims.items, candidates);
           })();
       for (const step of steps) {
         if (p.signal.aborted) break;
         if (step.decoy) {
-          // Exactly the request path of a real verification, against a throwaway evidence set; the result is dropped.
+          // The same verification call as a real claim, against a throwaway evidence set; the result is dropped.
           await verifyClaimedPayment({
             chain: p.chain,
             client: p.client,

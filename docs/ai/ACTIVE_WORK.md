@@ -1,3 +1,11 @@
+# Cover lookups (#696): successor work after the second review (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`, continuing `newghostpay-ae`'s parked branch `claude/w-match-cover-20261125`
+(confirmed unclaimed by peers); main `e1d0eb0f` merged. Owned paths: the #696 files below plus `Scan.tsx`'s route guard
+and the unreadable state of the scan-lane store. The second independent review rejected v2; design v3 and its limits:
+`docs/handoffs/MATCH_COVER_20261125.md`. Acceptance: the review's findings fixed or disclosed, regression tests that
+fail without them, a third independent review, hosted CI green on the exact head.
+
 # Cover lookups for matched router payments (owner-approved, opt-in) — 2026-11-25 UTC
 
 Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-match-cover-20261125`, base main `1bea3df3`. The owner approved this slice in this session (new capability, off by default). W3 (ghostpay-backup-60) confirmed it is outside W3/P14 scope; ghostpay-42 informed.

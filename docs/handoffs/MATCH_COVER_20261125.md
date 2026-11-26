@@ -9,36 +9,46 @@ as a new capability, **off by default**. W3 confirmed it is outside W3/P14 scope
 block read, `eth_getTransactionReceipt` and `eth_getTransactionByHash` to the scan RPC and to a configured second RPC.
 No non-matching announcement gets these, so each provider learns which public announcements matched.
 
-## Design (v2, after independent review)
+## Design (v3, after the second independent review, 2026-11-26)
+
+Continued by Claude Code session `newghostpay-77` after `newghostpay-ae` stopped.
 
 - `apps/web/src/lib/matchCover.ts`: `createMatchCover(true, viewingKey)` derives a domain-separated HMAC key from the
   viewing key (memory only, created before the worker zeroizes the key, zeroized by `dispose()` when the scan ends).
-  `selects(item)` is a per-announcement decision: HMAC of the **transaction hash and ephemeral key** (both survive a
-  reorg; block hash and log index do not) under a fixed share (1/2). `plan(ordered, candidates, covered)` keeps every
-  real claim once in its original order and merges, **in chain order**, the selected candidates from the windows of
-  covered claims (at most 32 per page; past the cap the lowest keyed ranks).
-- `scanClient.ts`: optional `matchCover`; cover and covered claims must pass `sendsLookups` (the checks
-  `verifyClaimedPayment` applies before its first request: router caller, positive amount, supported token,
-  well-formed tx hash, block hash and log index). Decoys run through the real `verifyClaimedPayment` (same requests,
-  caching and second provider) with a throwaway evidence set; results are discarded. Off: exactly the old loop.
-- Setting `matchCover` in the scan-lane store (literal `true` only), Settings checkbox and disclosure, Scan passes it.
+  `selects(item)` is a per-announcement decision: HMAC of the transaction hash, ephemeral key, one-time address and
+  metadata under a fixed share (1/2). All four survive a reorg. `plan(real, candidates)` returns every real claim and
+  every selected candidate once, all in chain order. No window, trigger or cap.
+- `scanClient.ts`: every page plans cover from its router announcements that pass `sendsLookups` (the checks
+  `verifyClaimedPayment` applies before its first request), whether or not the page holds a match. Decoys run through
+  the same `verifyClaimedPayment` call with a throwaway evidence set; results are discarded. Off: exactly the old loop.
+- Setting `matchCover` in the scan-lane store (literal `true` only). Saved lane settings that cannot be read exactly are
+  marked `unreadable`: a scan does not start, and Settings says so until they are saved again. A running scan stops
+  when the saved cover choice changes or becomes unreadable.
 
-v1 (random per-payment decoys scored on `blockHash:logIndex` from the current page, shuffled) was rejected by the
-review: decoys changed on resume, reorg and page splits (the payment was often the only common lookup), the shuffle
-leaked order with several payments, and junk-token or malformed candidates sent no requests. v2 fixes all three.
+### Why v2 was replaced
 
-## Limits (disclosed in Settings, Scan and docs/user/privacy-limits.md)
+v2 looked up cover only in a page with a match, from that page, capped at 32. The second review (AI, read-only, with a
+simulation over the real planner) showed that a resumed or automatic re-scan reads a short new range plus the finality
+tail, so intersecting the lookups of successive scans often left the payment alone (about 91% of runs at 5 router
+payments per 1000 blocks, 19% at 100); that a provider could use its own log answers as a match oracle; that the
+global cap could be crowded with supported-token dust; that deduplication could leak order; and that the unreadable
+settings and mid-scan change points raised on the PR were not fixed. (v1 had failed an earlier review for decoys that
+changed between scans, order leaks and silent decoys.)
 
-Visible: that a page had a match and roughly how many; timing; IP address. Little or no cover in a sparse window.
-Not covered: the single-payment re-check from the result list (late acceptance) and the checkpoint replay after a
-failed verification (call-graph item 6). Past 32 selected cover lookups in a page the set may differ between pages.
-Cost grows with how busy the window is. Not anonymity.
+## Limits (Settings, Scan disclosure and docs/user/privacy-limits.md)
+
+Aimed at a provider that records requests. Not covered: a provider that alters, withholds or fails its answers (for
+example by provoking the checkpoint replay after a failed check, call-graph item 6); block reads of matched payments
+after a reorg report; the single-payment re-check from the result list; balance reads, key export and sweeps through
+the same RPC; time and IP address. A decoy that fails verification (such as a smart-wallet payment) gets fewer
+requests and no second-provider lookup. Only supported-token router payments serve as cover. Cost: about half of all
+router payments read, each scan. Not anonymity.
 
 ## Evidence
 
-`matchCover.test.ts` (share, reorg-stable selection, chain-order merge, windows, cap, monotone property, dispose);
-`scanDisclosure.cover.test.ts` (PRIV-T02 instrumentation over the real scanner: off = 1 pair; on = the payment plus
-exactly the key-selected window payments, never another window or an unsupported-token one; each cover lookup repeats
-the block read, receipt and transaction in chain order; identical results with one and two payments; same selection
-on rescan and on a resume that sees part of the window; same lookups on the second provider); Settings and Scan view
-tests. Mutation checks recorded in the PR.
+`matchCover.test.ts` (share, reorg stability, content binding, cover without a match, no cap, chain order, split
+independence, dispose); `scanDisclosure.cover.test.ts` (PRIV-T02 instrumentation over the real scanner: off = one
+pair; on = the payment plus exactly the key-selected payments of the range; a range without a match gets the same cover;
+resume overlap; spam; second provider; two payments; viewing-key wipe); `scanSpam.test.ts`, `Scan.privacy.test.tsx` and
+`Settings.test.tsx` (unreadable settings, mid-scan change, wiring on/off). Mutation check: removing the view wiring or
+restoring "cover only with a match" fails the new tests.

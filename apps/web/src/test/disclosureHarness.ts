@@ -69,6 +69,8 @@ export interface ScenarioInput {
   readonly recorder?: DisclosureRecorder;
   /** Cover lookups for matched router payments (`runScan`'s `matchCover`); absent: off. */
   readonly matchCover?: boolean;
+  /** The viewing-key copy handed to the scan (which wipes it), for tests that check the wipe. */
+  readonly viewingKey?: Uint8Array;
 }
 
 export interface ScenarioOutput {
@@ -129,7 +131,7 @@ export async function runDisclosureScenario(i: ScenarioInput): Promise<ScenarioO
       cursor: i.cursor ?? { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(i.seller.keys.spendingPublicKey),
       keyId: KEY_ID,
-      viewingKey: unsafeRevealSecret(i.seller.keys.viewingSecret),
+      viewingKey: i.viewingKey ?? unsafeRevealSecret(i.seller.keys.viewingSecret),
       createWorker: () => new InlineWorker(),
       signal: i.signal ?? new AbortController().signal,
       ...(i.checkpoints === undefined ? {} : { checkpoints: i.checkpoints }),

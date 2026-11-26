@@ -115,16 +115,18 @@ make match-time or position-bearing requests uniform.
 ## Phase 8: privacy improvement candidates
 
 **Implemented after this analysis (owner-approved, opt-in, off by default): cover lookups for matched router payments.**
-With `matchCover` (Settings: "Hide which payments matched among other payments' lookups"), a page with a matched router
-payment also verifies the other router payments of the same 1000-block window that a keyed rule selects (about half,
-at most 32 per page), through the same `verifyClaimedPayment` path, in chain order, on both providers; their results
-are discarded and the real verification is unchanged. Selection is per announcement (an HMAC, keyed from the viewing
-key, of its transaction hash and ephemeral key against a fixed share), so it does not depend on page boundaries, a
-resume or a reorg: two scans that overlap look up the same cover in the overlap. Cover and covered payments must pass
-the checks verification applies before its first request (router caller, positive amount, supported token,
-well-formed hashes), so no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts`. Remaining
-exposure: that a page had a match and roughly how many; the single-payment re-check from the result list; the
-checkpoint replay after a failed verification (item 6 above).
+With `matchCover` (Settings: "Hide which payments matched among other payments' lookups"), every scan page also
+verifies the other router payments a keyed rule selects (about half), whether or not anything matched, through the same
+`verifyClaimedPayment` call, in chain order, on both providers; their results are discarded and the real verification
+is unchanged. Selection is per announcement (an HMAC, keyed from the viewing key, of its transaction hash, ephemeral
+key, one-time address and metadata against a fixed share), so it does not depend on page boundaries, a resume or a
+reorg, and an altered copy is decided independently. There is no per-page cap. Cover payments must pass the checks
+verification applies before its first request (router caller, positive amount, supported token, well-formed hashes), so
+no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts` (deterministic mock; no live provider).
+It addresses a provider that records requests. Remaining exposure: the checkpoint replay after a failed verification
+(item 6 above), which an active provider can provoke; block reads of matched payments after a reorg report; the
+single-payment re-check from the result list; balance reads, key export and sweeps through the same RPC; cover that
+fails verification sends fewer follow-up requests and never reaches the second provider.
 
 The candidates below remain open.
 

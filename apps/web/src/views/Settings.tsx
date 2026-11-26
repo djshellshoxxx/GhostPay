@@ -1,5 +1,4 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { MAX_COVER_PER_PAGE } from '../lib/matchCover';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import {
@@ -442,6 +441,7 @@ function ScanPrivacySection(): ReactNode {
       // A successful save replaces settings that could not be read: show what is saved now, without the lock.
       setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
       const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
+      if (saved) setLanes(loadScanLanes(browserStorage()));
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
@@ -506,11 +506,12 @@ function ScanPrivacySection(): ReactNode {
           <label htmlFor="scan-privacy-transfers">{t('settings.scanLanes.transfers')}</label>
         </div>
         <p className="hint">{t('settings.scanLanes.transfersHint', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</p>
+        {lanes.unreadable === true && <Notice kind="warn">{t('scanPrivacy.blocked.settingsUnreadable')}</Notice>}
         <div className="check">
           <input id="scan-match-cover" type="checkbox" checked={lanes.matchCover} onChange={(e) => { setLane({ matchCover: e.target.checked }); }} />
           <label htmlFor="scan-match-cover">{t('settings.scanLanes.matchCover')}</label>
         </div>
-        <p className="hint">{t('settings.scanLanes.matchCoverHint', { max: String(MAX_COVER_PER_PAGE) })}</p>
+        <p className="hint">{t('settings.scanLanes.matchCoverHint')}</p>
         <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
         <ul>
           {describeScanDisclosureMessages(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
