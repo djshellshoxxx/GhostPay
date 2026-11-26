@@ -51,17 +51,22 @@ export function blankDraft(chainId: number): InvoiceDraft {
 }
 
 /**
- * What a draft may carry for the form it is saved from or restored into. A lean build only issues fixed-token v1
- * invoices, so fiat pricing, its quote fields and the v2 buffer policy never come back there. A minimal-metadata
- * draft never keeps a memo or line descriptions, even when the form still holds them from before the switch.
+ * Whether a lean form can show a draft's money terms unchanged. A lean build only issues fixed-token v1 invoices, so a
+ * draft with fiat pricing or a gas-buffer policy is refused there rather than converted.
+ */
+export const leanCanShow = (draft: InvoiceDraft): boolean => draft.amountMode === 'fixed_token' && draft.bufferMode === 'off';
+
+/**
+ * What a draft may carry for the form it is saved from or restored into. A lean form never writes fiat pricing or the
+ * v2 buffer policy. A minimal-metadata draft never keeps a memo or line descriptions, even when the form still holds
+ * them from before the switch.
  */
 export function draftForForm(draft: InvoiceDraft, supportedOnly: boolean): InvoiceDraft {
   const blank = blankDraft(draft.chainId);
   return {
     ...draft,
     ...(supportedOnly ? {
-      amountMode: blank.amountMode, quoteMinutes: blank.quoteMinutes, slippage: blank.slippage,
-      bufferMode: blank.bufferMode, bufferMin: blank.bufferMin, bufferMax: blank.bufferMax,
+      amountMode: blank.amountMode, bufferMode: blank.bufferMode, bufferMin: blank.bufferMin, bufferMax: blank.bufferMax,
     } : {}),
     ...(draft.minimalMetadata ? { memo: '', items: draft.items.map((item) => ({ ...item, description: '' })) } : {}),
   };
@@ -118,9 +123,12 @@ export function validDraft(value: unknown): value is InvoiceDraft {
   return Array.isArray(items) && items.length >= 1 && items.length <= MAX_ITEMS && items.every((item) => validItem(item, minimal));
 }
 
-/** The tab storage slot of the loaded seller: bound to the meta-address and the invoice-signing key. */
+/**
+ * The tab storage slot of the loaded seller: bound to the meta-address and the invoice-signing key. Format v2: the v1
+ * label belongs to the unmerged #604 format, whose records this build neither reads nor overwrites.
+ */
 export function draftSlot(session: SessionPublic): string {
-  return 'ghostpay.invoice-draft.v1.' + checkpointKeyId(session.metaAddress, session.signerPublicKey);
+  return 'ghostpay.invoice-draft.v2.' + checkpointKeyId(session.metaAddress, session.signerPublicKey);
 }
 
 const encoder = new TextEncoder();
@@ -132,7 +140,7 @@ async function draftKey(slot: string, salt: Uint8Array): Promise<CryptoKey> {
   try {
     const base = await crypto.subtle.importKey('raw', viewing as BufferSource, 'HKDF', false, ['deriveKey']);
     return await crypto.subtle.deriveKey(
-      { name: 'HKDF', hash: 'SHA-256', salt: salt as BufferSource, info: encoder.encode('GhostPay/web/invoice-draft/v1') },
+      { name: 'HKDF', hash: 'SHA-256', salt: salt as BufferSource, info: encoder.encode('GhostPay/web/invoice-draft/v2') },
       base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'],
     );
   } finally { viewing.fill(0); }

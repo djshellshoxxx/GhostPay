@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { blankDraft, draftForForm, draftSlot, openDraft, sealDraft, validDraft, type InvoiceDraft } from './invoiceDraft';
+import { blankDraft, draftForForm, draftSlot, leanCanShow, openDraft, sealDraft, validDraft, type InvoiceDraft } from './invoiceDraft';
 import { clearSession, importSession } from './session';
 import { generateWaivedSession } from '../test/keys';
 
@@ -91,10 +91,19 @@ describe('draftForForm', () => {
   it('keeps full-profile pricing in the full profile', () => {
     expect(draftForForm(fiat, false)).toEqual(fiat);
   });
-  it('forces fixed-token defaults and no buffer policy in lean', () => {
+  it('never writes fiat pricing or a buffer policy from lean, and keeps the quote terms lean shows', () => {
     expect(draftForForm(fiat, true)).toEqual({
-      ...fiat, amountMode: 'fixed_token', quoteMinutes: 15, slippage: 50, bufferMode: 'off', bufferMin: '', bufferMax: '',
+      ...fiat, amountMode: 'fixed_token', bufferMode: 'off', bufferMin: '', bufferMax: '',
     });
+  });
+  it('lets lean show only fixed-token drafts without a buffer policy', () => {
+    expect(leanCanShow(filled)).toBe(true);
+    for (const terms of [{ amountMode: 'fiat_quote' }, { bufferMode: 'declined' }, { bufferMode: 'range' }] as const) {
+      expect(leanCanShow({ ...filled, ...terms })).toBe(false);
+    }
+  });
+  it('keeps the v2 slot apart from the unmerged v1 format', () => {
+    expect(draftSlot(generateWaivedSession())).toMatch(/^ghostpay\.invoice-draft\.v2\.[0-9a-f]{64}$/);
   });
   it('drops the memo and line descriptions of a minimal-metadata draft', () => {
     const minimal = draftForForm({ ...filled, minimalMetadata: true }, false);

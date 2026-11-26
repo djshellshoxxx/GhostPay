@@ -65,21 +65,35 @@ it('preserves damaged ciphertext until explicitly removed and rejects the wrong 
   await expect(codec.openDraft(slot, raw)).rejects.toThrow();
 });
 
-it('never restores fiat pricing, quote or buffer fields into a lean form', async () => {
+it('refuses to restore fiat pricing or a buffer policy into a lean form, keeping the saved record', async () => {
   const session = generateWaivedSession();
   const slot = codec.draftSlot(session);
-  const full = {
-    ...codec.blankDraft(84532), amountMode: 'fiat_quote', quoteMinutes: 90, slippage: 300, token: USDC,
-    bufferMode: 'range', bufferMin: '10', bufferMax: '20', tokenAmount: '2',
-  } as const;
-  sessionStorage.setItem(slot, await codec.sealDraft(slot, full));
+  for (const terms of [
+    { amountMode: 'fiat_quote' }, { token: USDC, bufferMode: 'range', bufferMin: '10', bufferMax: '20' },
+    { token: USDC, bufferMode: 'declined' },
+  ] as const) {
+    const raw = await codec.sealDraft(slot, { ...codec.blankDraft(84532), tokenAmount: '2', ...terms });
+    sessionStorage.setItem(slot, raw);
+    const { result, unmount } = renderHook(() => useInvoiceDraft(session, 84532, true, CHAINS));
+    await waitFor(() => { expect(result.current.status).toBe('available'); });
+    act(() => { result.current.resume(); });
+    await waitFor(() => { expect(result.current.status).toBe('openFailed'); });
+    expect(result.current.draft).toEqual(codec.blankDraft(84532));
+    expect(sessionStorage.getItem(slot)).toBe(raw);
+    unmount();
+  }
+});
+
+it('restores a fixed-token draft in lean with its visible quote terms and never writes full-only fields', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const fixed = { ...codec.blankDraft(84532), quoteMinutes: 90, slippage: 300, token: USDC, tokenAmount: '2' };
+  sessionStorage.setItem(slot, await codec.sealDraft(slot, fixed));
   const { result } = renderHook(() => useInvoiceDraft(session, 84532, true, CHAINS));
   await waitFor(() => { expect(result.current.status).toBe('available'); });
   act(() => { result.current.resume(); });
   await waitFor(() => { expect(result.current.status).toBe('saved'); });
-  expect(result.current.draft).toMatchObject({
-    amountMode: 'fixed_token', quoteMinutes: 15, slippage: 50, bufferMode: 'off', bufferMin: '', bufferMax: '', tokenAmount: '2',
-  });
+  expect(result.current.draft).toEqual(fixed);
   // A lean form also never writes those fields, even when its in-memory state still holds them.
   act(() => { result.current.change({ amountMode: 'fiat_quote', bufferMode: 'declined' }); });
   await waitFor(() => { expect(result.current.status).toBe('saved'); });

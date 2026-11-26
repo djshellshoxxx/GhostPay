@@ -12,7 +12,7 @@ Continued by newghostpay-4e/features2 after that worker's machine crashed: also 
 `apps/web/e2e/flows.spec.ts`; merged with current main. #710 (separate worker) also edits `Pay.tsx` and is not included.
 Acceptance: offline checkout fails closed and recovers only through an explicit retry; drafts are opt-in, tab-local,
 encrypted under the loaded seller's viewing key, strictly validated, refused for a chain or token the build does not
-offer, never store passphrases, never restore fiat or buffer fields in lean and never resurrect memo or line
+offer (and in lean for fiat or buffer terms, kept rather than converted), never store passphrases and never resurrect memo or line
 descriptions for a minimal-metadata draft; returned wallet hashes and unknown outcomes survive a connection loss; no new
 workspace dependency; hosted CI green at the exact head.
 
