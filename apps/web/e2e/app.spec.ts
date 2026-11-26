@@ -56,7 +56,7 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   const link = await createInvoice(page, { memo: 'Local QR preview only', chainLabel: 'Ethereum Sepolia' });
   const fragment = new URL(link).hash;
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   const importer = page.getByRole('region', { name: 'Invoice QR import' });
   const location = page.url();
   await importer.getByLabel('Or paste QR text').fill(`https://foreign.invalid/${fragment}`);
@@ -71,8 +71,8 @@ test('invoice QR text stays local, rejects foreign links and requires a fresh pr
   await expect(page.getByRole('heading', { name: 'Review payment' })).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
   expect(page.url()).toBe(location);
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open scanned invoice' })).toHaveCount(0);
 
   await importer.getByLabel('Or paste QR text').fill(fragment);
@@ -271,7 +271,7 @@ test('keeps rejected QR text out of titles, alerts, logs and navigation', async 
   page.on('pageerror', (error) => diagnostics.push(error.message));
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
-  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR or open a request file', { exact: true }).click();
   const importer = page.getByRole('region', { name: 'Invoice QR import' });
   await importer.getByLabel('Or paste QR text').fill(markers.join(' '));
   await importer.getByRole('button', { name: 'Use pasted text' }).click();

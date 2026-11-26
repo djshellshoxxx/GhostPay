@@ -424,12 +424,24 @@ export function stringifyMessage(nodes: readonly Node[], inPlural = false): stri
   let s = '';
   const quote = (v: string): string => {
     let o = '';
+    let quoted = false;
     for (const ch of v) {
       if (ch === "'") o += "''";
-      else if (ch === '{' || ch === '}' || (inPlural && ch === '#')) o += `'${ch}'`;
-      else o += ch;
+      else if (ch === '{' || ch === '}' || (inPlural && ch === '#')) {
+        if (!quoted) {
+          o += "'";
+          quoted = true;
+        }
+        o += ch;
+      } else {
+        if (quoted) {
+          o += "'";
+          quoted = false;
+        }
+        o += ch;
+      }
     }
-    return o;
+    return quoted ? `${o}'` : o;
   };
   const branchesToString = (bs: readonly Branch[], plural: boolean): string =>
     bs.map((b) => ` ${b.selector} {${stringifyMessage(b.body, plural || inPlural)}}`).join('');

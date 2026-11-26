@@ -9,7 +9,7 @@ import { OPTION_IDS } from './types.js';
 import type { Capability, Context, Env, PresetId } from './types.js';
 import { FULL, ctx, sel } from './x.testutil.js';
 
-const IDS: PresetId[] = ['standard', 'enhanced', 'maximum', 'confidential-amount'];
+const IDS: PresetId[] = ['standard', 'enhanced', 'shielded', 'maximum', 'confidential-amount'];
 const ENVS: Env[] = ['web', 'web-onion', 'node'];
 const CHAINS = [31337, 11155111, 84532];
 

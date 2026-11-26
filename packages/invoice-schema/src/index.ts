@@ -69,3 +69,13 @@ export {
 } from './merchantProfile.js';
 
 export * from './receipts.js';
+export {
+  PAYMENT_REQUEST_FILE_FORMAT,
+  PAYMENT_REQUEST_FILE_VERSION,
+  MAX_PAYMENT_REQUEST_FILE_BYTES,
+  PAYMENT_REQUEST_FILE_NAME,
+  PaymentRequestFileError,
+  serializePaymentRequestFile,
+  parsePaymentRequestFile,
+  type PaymentRequestFile,
+} from './requestFile.js';

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PAYMENT_REQUEST_FILE_NAME } from '@ghostpay/invoice-schema';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { DOWNLOAD_NAMES, neutralDownloadName } from './downloadNames';
@@ -18,8 +19,14 @@ describe('neutral download names (#286 item 5)', () => {
     for (const name of DOWNLOAD_NAMES) {
       expect(neutralDownloadName(name)).toBe(name);
       // Lower-case words joined by single hyphens: room for a category, none for a value.
-      expect(name).toMatch(/^ghostpay(?:-[a-z]+)+\.(?:json|svg|gpa|txt)$/);
+      if (name === PAYMENT_REQUEST_FILE_NAME) expect(name).toBe('ghostpay-request.gpr.json');
+      else expect(name).toMatch(/^ghostpay(?:-[a-z]+)+\.(?:json|svg|gpa|txt)$/);
     }
+  });
+
+  it('includes the documented fixed request-file name', () => {
+    expect(PAYMENT_REQUEST_FILE_NAME).toBe('ghostpay-request.gpr.json');
+    expect(DOWNLOAD_NAMES).toContain(PAYMENT_REQUEST_FILE_NAME);
   });
 
   it('lists every stealth export name of the formats specification and every QR kind download', () => {
@@ -97,9 +104,11 @@ describe('every download call site requests a fixed name', () => {
       'components/StealthExportPayment.tsx: file.filename',
       // exportArchive returns the fixed ghostpay-tags.gpa (tagArchive.test.ts).
       'components/TagArchive.tsx: out.filename',
+      // Fixed request-file constant, pinned and allowlisted above; the real helper is covered by its component test.
+      'components/PaymentRequestDownload.tsx: PAYMENT_REQUEST_FILE_NAME',
     ]);
     // Exact, so that a new call site, or one the pattern stops matching after a rewrite, has to be looked at here.
-    expect(calls).toHaveLength(13);
+    expect(calls).toHaveLength(14);
     for (const call of calls) {
       const name = literal.exec(call)?.[1];
       if (name !== undefined) expect(DOWNLOAD_NAMES, call).toContain(name);

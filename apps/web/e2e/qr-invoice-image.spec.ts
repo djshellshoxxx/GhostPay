@@ -25,7 +25,7 @@ test('reads the QR rendered by Create invoice and rejects damaged images and uns
   const png = await page.getByRole('img', { name: 'QR code containing the invoice link' }).screenshot();
 
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: /^Pay$/ }).click();
-  await page.getByText('Scan an invoice QR').click();
+  await page.getByText('Scan an invoice QR or open a request file').click();
   const file = page.getByLabel('Read a QR from an image');
   const open = page.getByRole('button', { name: 'Open scanned invoice' });
   const invoice = { name: 'invoice.png', mimeType: 'image/png', buffer: png };

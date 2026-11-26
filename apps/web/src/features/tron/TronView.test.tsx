@@ -74,7 +74,9 @@ describe('TronView', () => {
   it('copies the key backup only after a warning, and Lock empties the clipboard again', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    // GhostPay empties the clipboard only while it still holds the backup, so the stub reads back the last write.
+    const readText = (): Promise<string> => Promise.resolve(writeText.mock.lastCall?.[0] ?? '');
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
     const backup = screen.getByText(/^[0-9a-f]{128}$/).textContent;
@@ -84,7 +86,7 @@ describe('TronView', () => {
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
     expect(writeText).toHaveBeenCalledExactlyOnceWith(backup);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
+    await vi.waitFor(() => { expect(writeText).toHaveBeenLastCalledWith(''); });
     expect(writeText).toHaveBeenCalledTimes(2);
   });
 
