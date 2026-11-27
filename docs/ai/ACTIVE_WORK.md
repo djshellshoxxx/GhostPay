@@ -1,3 +1,39 @@
+# P14 F3: source-bound indexer completion caveat (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-indexer-completion-20261127-d81a`.
+Current main `3c9fc0ab518b8a308716dc87cc860424118718eb` contains #745; its resulting-main checks are
+pending. This branch also retains prerequisite #747 head `1308f18574c78bdfd5602337c1c27a2c87a27d34`.
+Complete qualification and verify each preceding main integration before merging the next queue item.
+Provenance: P14 #658 head `9aed3886693270524beb118685e5947469899c43`, tested evidence source
+`2ab3b243a57bb4e917fb6b9848f78a2a4347d312`, Spec 10 and the evidence matrix's open F3 finding.
+This is an incomplete integrated contract, not newly recovered unmerged donor code.
+
+Ownership refresh includes #728 `298257fd251cf0dd64dc80a92198d296672a6cab` and #724
+`2085ef4483d6387c4301a48c625e9e74c1042c4e`. Neither changes the completion/caveat keys or
+implements F3. Preserve their route/cover guards, checkpoint, auto-rescan and archive hunks, #720's
+manifest work, and all unrelated catalog additions. F1's claim explicitly excludes F2-F4.
+
+Owned paths: `apps/web/src/views/Scan.tsx` completion descriptors, completion announcement and its
+extraction annotation only; additive `scan.done.indexerCaveat` in `apps/web/locales/en.json`,
+`es.json`, `ja.json`, `ar.json` and the existing security-key group; new
+`apps/web/src/views/Scan.indexerCompletion.test.tsx`; new
+`apps/web/e2e/scan-indexer-completion.spec.ts`; F3 evidence-matrix entry,
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`, append-only tracker update and this claim.
+Runtime/catalog worker owns only the runtime/key files; unit worker owns only the new component test;
+browser worker owns only the new E2E test. Each uses a separate worktree; the coordinator alone integrates.
+
+Acceptance: append an honest announcement-omission caveat using the plan captured for that run
+(`plan.indexerUrl`), with the same non-sensitive text in the accessible completion announcement.
+Retain the existing outcome/counts, cancelled/limit/error semantics, evidence status, checkpoints,
+route guards and automatic recheck policy. RPC completion has no indexer-specific caveat; later
+settings/locale changes never relabel the captured source, rescan or write a checkpoint.
+Catalog entries remain machine drafts under the existing security-key English fallback/native-review
+gate. Use real local mocked scan/omission fixtures and bounded Chromium/Firefox/WebKit desktop/mobile
+layout coverage, including RTL. No new provider service, verifier, chain, contract, default-mode change,
+experimental activation, dependency upgrade or stopped-product work is included.
+
+---
+
 # P14 F4: truthful scanner completion for late-payment review (2026-11-27 UTC)
 
 Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-caught-up-20261127-d81a`, base main
