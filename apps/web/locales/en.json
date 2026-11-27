@@ -174,7 +174,7 @@
     "sweep.noManifest": "Payments disabled on this chain: no deployment manifest is loaded.",
     "sweep.tokenNotAllowed": "This token is not on the allowlist. It will not be swept from here.",
     "sweep.payerFollow.title": "The payer can follow this sweep",
-    "sweep.payerFollow.body": "The payer knows the one-time address. When you move its funds, the destination and everything else that address has received or will receive are public and linkable. Use a fresh destination for each sweep, and avoid an address already known to be yours if you do not want to link those funds. A relayer also sees your IP address (hashed), amount and timing. Your stealth key is derived in memory for this action and is never shown or stored.",
+    "sweep.payerFollow.body": "The payer knows the one-time address. When you move its funds, the destination and everything else that address has received or will receive are public and linkable. Use a fresh destination for each sweep, and avoid an address already known to be yours if you do not want to link those funds. A relayer also sees your IP address (hashed by the reference relayer for rate limits, but visible to the operator and any proxy), amount and timing. Your stealth key is derived in memory for this action and is never shown or stored.",
     "sweep.destination.label": "Destination address (your own wallet)",
     "sweep.vaultPass.label": "Vault passphrase (required for each sweep action)",
     "sweep.vaultPass.hint": "Checked against the encrypted vault that holds the seller keys loaded now: the one they were unlocked from, saved to or found in, which stays in memory for this session even if the saved vault is deleted. It is cleared after every action. Do not let your browser save it.",

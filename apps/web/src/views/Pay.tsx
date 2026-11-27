@@ -1620,7 +1620,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               className="btn"
               onClick={() => {
                 if (window.confirm(t('pay.receipt.download.confirm'))) {
-                  downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
+                  downloadText('ghostpay-receipt.json', JSON.stringify(proofReceipt, null, 2), 'application/json');
                 }
               }}
             >

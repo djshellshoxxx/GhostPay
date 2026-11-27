@@ -2,6 +2,7 @@
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as common from '../components/Common';
 import { clearSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
@@ -71,5 +72,12 @@ describe('Pay: payer proof of a completed payment', () => {
 
     expect(screen.queryByRole('dialog', { name: /QR code, large/ })).not.toBeNull();
     expect(text()).toBe(shown);
+
+    // The receipt download hands out the same record, not one stamped at the moment of the click.
+    await user.keyboard('{Escape}');
+    const download = vi.spyOn(common, 'downloadText').mockImplementation(() => undefined);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    await user.click(screen.getByRole('button', { name: 'Download local receipt' }));
+    expect(download).toHaveBeenCalledWith('ghostpay-receipt.json', shown, 'application/json');
   });
 });
