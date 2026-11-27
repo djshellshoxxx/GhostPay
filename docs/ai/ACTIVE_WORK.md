@@ -4,6 +4,12 @@ Coordinator `d81aef3d1ca8`; branch `finish/p14-consolidation-handoff-20261127-d8
 Base: qualified F3 candidate `7a8e88d7083905013d0af310c845ba0c5f352dcb`; F3 integration
 and resulting-main gates remain pending at claim time. This is a documentation-only continuation.
 
+Implementation closure: #745/F2, #747/F4 and #749/F3 are merged, with 41/32/32 successful
+resulting-main checks respectively. Their owned runtime/test paths are released by this
+coordinator; the historical entries below are retained. F1 and every other worker’s ownership
+remain intact. Only the four documentation paths below remain owned until this checkpoint’s
+final verification comment closes them and records the explicit integration-lease release.
+
 Owned paths: this additive coordination entry; append-only updates to
 `docs/GHOSTPAY_CONSOLIDATION_TRACKER.md` and
 `docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`; new

@@ -330,7 +330,7 @@ source `7a8e88d7083905013d0af310c845ba0c5f352dcb`, merge
 merge match the qualified tree `3522dec7b56b44f217b02781b4e7d21fa66d983c`.
 All 39 candidate checks completed (36 success, 3 expected publication-only skips), and
 all five workflow groups succeeded. F2 and F4 resulting-main checks completed with 41 and
-32 successes respectively. **F3 resulting-main checks: pending at this checkpoint.**
+32 successes respectively. **F3 resulting-main checks: all 32 successful on `7d29d39be5240762de6df2aefc7316f4bd460d60`.**
 
 [All 61 residual dispositions](consolidation/branch-completion-20261127/closed-residual-dispositions.json)
 are now recorded against main `6b323a99df1238cb5ebe7248528cc7bce5140e80`, with an

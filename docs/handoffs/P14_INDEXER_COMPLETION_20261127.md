@@ -169,8 +169,8 @@ review in PR comment 7210252083 also found no scoped blocker; it was source revi
 not an external approval.
 
 F2 resulting-main verification remains 41 successful checks; F4 completed 32 successful
-checks. **F3 resulting-main checks: pending at this checkpoint.** The final verification
-comment and later checkpoint update must record their actual outcome before queue closure.
+checks. **F3 resulting-main checks: all 32 successful on `7d29d39be5240762de6df2aefc7316f4bd460d60`.** All applicable push/dynamic workflow runs also completed successfully. The associated PR
+records the final verification; this documentation checkpoint still needs its own gates.
 
 The [61-row disposition record](../consolidation/branch-completion-20261127/closed-residual-dispositions.json)
 contains **42 C, 14 D, 2 E, 3 F; no unowned A/B unit established**. Every row retains its

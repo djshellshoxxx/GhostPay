@@ -1884,6 +1884,11 @@
     ],
     "dispositions_changed": false,
     "basis": "The complete F3 change was reviewed: source-bound completion/announcement, additive security catalog key, dedicated tests and documentation. It does not implement the owned private-scan/signer-pin/token-disclosure qualification units or revive stopped products.",
-    "resulting_main_checks": "pending at this source checkpoint; final outcome recorded in integration handoff and PR"
+    "resulting_main_checks": "All 32 reported checks and all applicable push/dynamic workflow runs completed successfully on 7d29d39be5240762de6df2aefc7316f4bd460d60.",
+    "verification_workflow_urls": [
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944662051",
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944662249",
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944661942"
+    ]
   }
 }
