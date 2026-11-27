@@ -1,3 +1,19 @@
+# LATE-L1 reconciliation retry, then #569 masking-test dispositions — 2026-11-27 UTC
+
+Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
+Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
+(no change to quarantine, matching, records or the vault format), new cases in
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`.
+Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
+ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
+narrow repair only if a ported case shows a real gap. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+REV-I6, QA-I1, LATE-M1, IDLE-M1. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
+checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
+integration lock.
+
+---
+
 # Browser self-check: mobile WebKit qualification (2026-11-26 UTC)
 
 Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `8c0b110d`). The two
