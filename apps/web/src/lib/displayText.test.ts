@@ -19,6 +19,20 @@ describe('safeText (S3-12)', () => {
     expect(safeText('раyраl\nbad\u0007end')).toEqual({ text: '⚠раyраl\nbad⟦U+0007⟧end', flagged: true });
   });
 
+  it.each([
+    ['a control character beside it', 'раyраl \u0007', '⚠раyраl ⟦U+0007⟧'],
+    ['a hidden character inside it', 'ра\u200Byраl now', '⚠ра⟦U+200B⟧yраl now'],
+    // Only the hidden character separates the Latin letters from the Cyrillic ones.
+    ['an invisible character that counts as white space', 'pay\uFEFFра', '⚠pay⟦U+FEFF⟧ра'],
+    ['a bidi control before it', '\u202Eраyраl', '⚠⟦U+202E⟧раyраl'],
+  ])('keeps the mixed-script marker on a refused line with %s', (_name, input, text) => {
+    expect(safeText(input)).toEqual({ text, flagged: true });
+  });
+
+  it('marks no word of a refused line for the letters of its code-point markers alone', () => {
+    expect(safeText('Привет\u202E мир \u200Bαβ')).toEqual({ text: 'Привет⟦U+202E⟧ мир ⟦U+200B⟧αβ', flagged: true });
+  });
+
   it('caps multi-line text without splitting a visible marker', () => {
     const long = safeText(`${'x'.repeat(4000)}\n${'‮'.repeat(20)}`);
     expect(long).toEqual({ text: `${'x'.repeat(4000)}\n${'⟦U+202E⟧'.repeat(11)}`, flagged: true });
