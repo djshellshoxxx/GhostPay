@@ -138,20 +138,16 @@ export async function run(argv: readonly string[], io: Io): Promise<number> {
       // recognised only in a flag position. After a value-taking option, `-h` is that option's value
       // and `--help`/`--version` are a missing value like any other `--` token.
       parsed = parseArgs([...words.slice(found.command.path.length), ...tail], found.command.opts, globals);
-    } else {
-      // No command, hence no value-taking options: every token before `--` is in a flag position.
-      for (const a of tail) {
-        if (a === '--') break;
-        const g = GLOBAL_SWITCHES.get(a);
-        if (g !== undefined) globals.add(g);
-      }
     }
+    // Without a matching command the option spec is unknown, so a token behind another option may be that
+    // option's value: nothing in the tail is a switch. Switches directly behind the words were collected above.
     const help = globals.has('help');
     if (globals.has('version')) {
       ctx.out({ ok: true, version: VERSION }, VERSION);
       return EXIT_OK;
     }
-    if (words.length === 0 && tail.some((a) => !GLOBAL_SWITCHES.has(a)) && !help)
+    // The tail, when there is one, starts with a token that is not a global switch.
+    if (words.length === 0 && tail.length > 0 && !help)
       throw usageError('UNKNOWN_OPTION', 'options must come after a command.', 'Run `ghostpay --help` to list commands.');
     if (words.length === 0 || words[0] === 'help') {
       if (words[0] === 'help' && words.length > 1) {

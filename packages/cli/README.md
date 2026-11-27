@@ -62,7 +62,11 @@ a flag position. Directly after an option that takes a value they are never
 switches: `--help`, `--version` and `--json` there are a missing value (exit 2),
 like any other `--` token, and `-h` is that option's value. Write
 `--header=--help` to pass such text literally (it is then verified as the header
-and fails normally). Nothing after a `--` terminator is a global switch.
+and fails normally). Nothing after a `--` terminator is a global switch. When
+no command matches the leading words, only a switch directly behind those words
+counts; a switch behind any other option is ignored and the unknown command is
+reported. A command line with an error (unknown or repeated option, missing
+value) reports that error even when it also asks for help.
 Command-specific options follow the command. Unknown or repeated nonrepeatable options fail;
 there is no silent option precedence. The command reference at the end includes
 all accepted command-specific options, including optional secret-source variants.
@@ -95,8 +99,11 @@ where defined. Do not infer fields that a command does not return.
 
 Stable `error.code` values identify the specific failure. `READ_FAILED` and
 `WRITE_FAILED` name at most the base name of a plain local path; a value that
-looks like a link, carries a `#` fragment or `?` query, contains control
-characters or is longer than 64 characters is not echoed. Human output escapes
+looks like a link or a network path, carries a `#` fragment, `?` query or
+`key=value` text, contains control characters, is longer than 64 characters or
+is shaped like secret material (a run of 32 or more hex characters, such as a
+bare key pasted where a path belongs, or a long mixed-case base64url token) is
+not echoed. Human output escapes
 untrusted text such as catalog keys. An invalid request to
 an unsupported operation can still be a usage error. `diagnostics rpc` exits 1
 when reachable providers disagree; `payment verify` and `payment status` exit 1
@@ -621,7 +628,8 @@ Review the returned candidates, then set `RECORD_ID` to the public record ID you
 intend to associate. Each listed proposal carries `currentChainVerified`, true
 only for a record among the observations freshly verified in this run; saved
 records take part in matching but are reported as not currently verified, and
-the top-level `currentChainVerified` is true only when every listed proposal is.
+the top-level `currentChainVerified` is true only when at least one proposal is
+listed and every listed proposal is.
 Only a freshly verified record can be exported (otherwise
 `CURRENT_EVIDENCE_REQUIRED`, exit 1). Export a uniquely exact proposal:
 
