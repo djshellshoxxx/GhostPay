@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { digestBody } from './digest.js';
-import { verifyReceipt } from './verify.js';
+import { verifyReceipt, type ChainLookupResult } from './verify.js';
 
 const originalHash = `0x${'11'.repeat(32)}`;
 const replacementHash = `0x${'22'.repeat(32)}`;
@@ -25,11 +25,11 @@ describe('verifyReceipt receipt snapshot', () => {
     const queried: string[] = [];
     const result = verifyReceipt(receipt, {
       verifier: {
-        lookup: async ({ txHash }) => {
+        lookup: ({ txHash }) => {
           queried.push(txHash);
-          return txHash === originalHash
+          return Promise.resolve<ChainLookupResult>(txHash === originalHash
             ? { status: 'not_found' }
-            : { status: 'found', facts: { confirmed: true, amountBase: '100' } };
+            : { status: 'found', facts: { confirmed: true, amountBase: '100' } });
         },
       },
     });
@@ -42,9 +42,9 @@ describe('verifyReceipt receipt snapshot', () => {
     const receipt = await fixture();
     const report = await verifyReceipt(receipt, {
       verifier: {
-        lookup: async () => {
+        lookup: () => {
           receipt.amount = '200';
-          return { status: 'found', facts: { confirmed: true, amountBase: '200' } };
+          return Promise.resolve<ChainLookupResult>({ status: 'found', facts: { confirmed: true, amountBase: '200' } });
         },
       },
     });
@@ -56,9 +56,9 @@ describe('verifyReceipt receipt snapshot', () => {
     const receipt = await fixture();
     const report = await verifyReceipt(receipt, {
       verifier: {
-        lookup: async () => {
+        lookup: () => {
           receipt.asset.symbol = 'USDC';
-          return { status: 'found', facts: { confirmed: true, assetSymbol: 'USDC' } };
+          return Promise.resolve<ChainLookupResult>({ status: 'found', facts: { confirmed: true, assetSymbol: 'USDC' } });
         },
       },
     });
@@ -79,10 +79,21 @@ describe('verifyReceipt receipt snapshot', () => {
     const receipt = await fixture();
     expect((await verifyReceipt(receipt, {
       verifier: {
-        lookup: async () => ({ status: 'found', facts: { confirmed: true, amountBase: '100', assetSymbol: 'ETH' } }),
+        lookup: () => Promise.resolve<ChainLookupResult>({ status: 'found', facts: { confirmed: true, amountBase: '100', assetSymbol: 'ETH' } }),
       },
     })).verdict).toBe('chain_confirmed');
     expect((await verifyReceipt(JSON.stringify(receipt))).verdict).toBe('self_consistent_unverified');
+  });
+
+  it('preserves the distinction between absent and explicitly undefined asset', async () => {
+    const body = {
+      v: 1,
+      type: 'ghostpay.receipt',
+      redacted: ['time', 'chain', 'amount', 'memo', 'txHash', 'sender', 'recipient'],
+    };
+    const receipt = { ...body, digest: { alg: 'SHA-256', hex: await digestBody(body) } };
+    expect((await verifyReceipt(receipt)).verdict).toBe('self_consistent_unverified');
+    await expect(verifyReceipt({ ...receipt, asset: undefined })).rejects.toThrow('unsupported value type');
   });
 
   it('never queries a chain for an invalid digest', async () => {
@@ -90,7 +101,7 @@ describe('verifyReceipt receipt snapshot', () => {
     receipt.amount = '999';
     let called = false;
     const report = await verifyReceipt(receipt, {
-      verifier: { lookup: async () => { called = true; return { status: 'not_found' }; } },
+      verifier: { lookup: () => { called = true; return Promise.resolve<ChainLookupResult>({ status: 'not_found' }); } },
     });
     expect(report.verdict).toBe('invalid');
     expect(called).toBe(false);
