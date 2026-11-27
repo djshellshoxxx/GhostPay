@@ -48,7 +48,7 @@ describe('explicit ENS registry lookup', () => {
     expect(rpc.request).toHaveBeenCalledTimes(2);
   });
 
-  it.each(['', 'plain', 'a..eth', 'alice\u0000.eth', 'a'.repeat(1025), '0x1234', `${WHO}.eth`])('rejects malformed input before network: %s', async (input) => {
+  it.each(['', 'plain', 'a..eth', 'alice\u0000.eth', 'a'.repeat(1025), '0x1234', `${WHO}.eth`, `０${WHO.slice(1)}.eth`])('rejects malformed input before network: %s', async (input) => {
     const rpc = makeClient();
     await expect(resolveRegistryRegistrant(rpc, input)).rejects.toThrow(/INVALID_INPUT/);
     expect(rpc.request).not.toHaveBeenCalled();
