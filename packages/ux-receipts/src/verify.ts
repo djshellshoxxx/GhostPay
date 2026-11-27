@@ -82,7 +82,14 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
       caveats,
     };
   }
-  const r = parsed.receipt;
+  // Keep the digest, date checks and asynchronous lookup on one receipt snapshot.
+  const { asset, digest: originalDigest, redacted, ...fields } = parsed.receipt;
+  const r: Receipt = {
+    ...fields,
+    ...(asset === undefined ? {} : { asset: { ...asset } }),
+    redacted: [...redacted],
+    digest: { ...originalDigest },
+  };
   const issues: ReceiptIssue[] = [];
   const { digest, ...body } = r;
   if ((await digestBody(body)) !== digest.hex) {
