@@ -1,12 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "released",
-  "owner": "ghostpay-bug-repair-752-20261127",
-  "token": "bug-752-20261127T092416Z-1111c62e",
-  "generation": 69,
-  "base_sha": "1b07cd7b0614a342cc2d1b2ea0238a952957eadb",
-  "acquired_at": "2026-11-27T09:24:16.000Z",
-  "heartbeat_at": "2026-11-27T09:24:16.000Z",
-  "expires_at": "2026-11-27T10:24:16.000Z",
-  "released_at": "2026-11-27T09:30:06Z"
+  "status": "active",
+  "owner": "claude-newghostpay-7a",
+  "token": "c0e400e5-9795-43bb-ba6e-dc92eb7d876d",
+  "generation": 70,
+  "base_sha": "c9177f57bc7293fa7a461cfc663c38cc7fe63bf2",
+  "acquired_at": "2026-11-27T10:43:06.000Z",
+  "heartbeat_at": "2026-11-27T10:43:06.000Z",
+  "expires_at": "2026-11-27T11:03:08.000Z",
+  "transport": "github-contents-api"
 }
