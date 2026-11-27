@@ -1,3 +1,25 @@
+# P14 consolidation closure and residual handoff — 2026-11-27 UTC
+
+Coordinator `d81aef3d1ca8`; branch `finish/p14-consolidation-handoff-20261127-d81a`.
+Base: qualified F3 candidate `7a8e88d7083905013d0af310c845ba0c5f352dcb`; F3 integration
+and resulting-main gates remain pending at claim time. This is a documentation-only continuation.
+
+Owned paths: this additive coordination entry; append-only updates to
+`docs/GHOSTPAY_CONSOLIDATION_TRACKER.md` and
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`; new
+`docs/consolidation/branch-completion-20261127/closed-residual-dispositions.json`.
+No runtime or other owner's path is claimed.
+
+Acceptance: retain all 61 source-pinned residual dispositions and their semantic evidence,
+distinguish represented/stopped/owned/dependent work, record actual P14 merge/check results,
+preserve local work and frozen refs, and leave exact resumption/lock-release evidence.
+Validate JSON/source-row consistency, document links, secret and whitespace checks; qualify
+the documentation candidate through normal gates after F3 resulting-main verification.
+Current owners of #744/#748/#728/#724/#632/#248/#243 and other unresolved work retain control.
+This checkpoint does not assert global semantic completion or authorize stopped work.
+
+---
+
 # P14 F3: source-bound indexer completion caveat (2026-11-27 UTC)
 
 Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-indexer-completion-20261127-d81a`.
