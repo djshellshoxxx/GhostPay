@@ -1,7 +1,7 @@
 # Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
 
 Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
-`8a519272` (repair train #724, which holds main `a7f9abf8`), then merged with main `3dba277e` (#728); no new branch.
+`8a519272` (repair train #724, which holds main `a7f9abf8`), then merged with main `3dba277e` (#728) and `1894b4bb` (#754, tests and docs); no new branch.
 Draft PR only: no merge, no integration lock.
 
 Owned paths: `apps/web/src/{AppShell.tsx,state.tsx}`, `lib/{settings,sweep}.ts`, `lib/scanClient.ts` (reorg clears
