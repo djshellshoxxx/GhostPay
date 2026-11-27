@@ -191,6 +191,17 @@ export function parseShareTarget(search: unknown, policy: LinkPolicy): Result<In
         r.value.kind === 'invoice-link' ? r.value.fragment : null,
         r.value.kind === 'payment-uri' ? r.value.label ?? null : null,
       ]);
+      const previous = found.get(key);
+      // A duplicate must not erase an unverified-checksum diagnostic.
+      if (
+        previous !== undefined &&
+        previous.kind !== 'invoice-link' &&
+        r.value.kind !== 'invoice-link' &&
+        previous.address.checksumUnverified &&
+        !r.value.address.checksumUnverified
+      ) {
+        continue;
+      }
       found.set(key, r.value);
     } else firstErr ??= r.code;
   }
