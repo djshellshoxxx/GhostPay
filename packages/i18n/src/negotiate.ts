@@ -47,8 +47,9 @@ export function negotiateLocale(
   for (const r of requested.slice(0, 32)) {
     if (!isValidLocale(r)) continue;
     const want = parseLocale(r);
-    for (const [idx, cand] of truncations(want.tag).entries()) {
-      if (sup.includes(cand)) return { locale: cand, how: idx === 0 ? 'exact' : 'truncated' };
+    if (sup.includes(want.tag)) return { locale: want.tag, how: 'exact' };
+    for (const cand of truncations(want.tag)) {
+      if (sup.includes(cand)) return { locale: cand, how: 'truncated' };
     }
     const sameLang = sup.find((s) => parseLocale(s).language === want.language);
     if (sameLang !== undefined) return { locale: sameLang, how: 'language' };
