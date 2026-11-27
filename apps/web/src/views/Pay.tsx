@@ -523,7 +523,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { scope?.assertCurrent(); } catch { return false; }
     return latest.current.wallet === wallet && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   };
-  // Nothing further is asked of a wallet once other settings were saved; the outcome of what was asked is still shown.
+  // An operation asks the wallet for nothing more once settings were saved while it ran; the outcome of what was asked is
+  // still shown. A later Send of a handed-off checkout reads the contracts back through the saved RPC first.
   const assertSameSettings = (): void => {
     if (latest.current.settings !== app.settings) throw new UserFacingError({ key: 'pay.error.reviewChanged' });
   };
@@ -1105,6 +1106,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
+        // A handed-off checkout keeps its context when other settings are saved. Before the wallet is asked again, the
+        // contracts are read back through the RPC saved now; without one, or on a failed check, nothing is asked.
+        if (reviewedSettings.current !== app.settings) {
+          const checked = manifest === undefined ? undefined : await verifyManifestForFlow(manifest, rt.rpc);
+          if (checked?.status !== 'loaded') throw new UserFacingError(checked?.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
+          preSignGuard();
+        }
         if (approval?.required === true && actualAllowance === undefined) {
           await assertNoPaymentAttempt(invoice);
           preSignGuard();

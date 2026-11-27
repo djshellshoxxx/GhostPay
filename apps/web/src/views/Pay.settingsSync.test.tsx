@@ -257,6 +257,35 @@ describe('Pay: settings saved by another tab', () => {
     await waitFor(() => { expect(document.body.textContent).toMatch(/\(pinned by you\)/); });
   });
 
+  it.each([
+    ['no RPC is saved any more', { rpcUrls: {} }],
+    ['the saved RPC cannot show the contracts', OTHER_RPC],
+  ])('asks for no payment after an approval when %s, and pays once a usable one is saved', async (_name, patch) => {
+    const gate = deferred();
+    let broken = false;
+    const t = await toPreparedToken(async (nth) => { if (nth === 1) await gate.wait; },
+      (method, _params, answer) => (broken && method === 'eth_getCode' ? Promise.reject(new Error('down')) : answer()));
+    await t.user.click(screen.getByRole('button', { name: APPROVE }));
+    await waitFor(() => { expect(t.sends()).toBe(1); });
+    otherTabSaves(patch);
+    gate.release();
+    const send = (): HTMLButtonElement => screen.getByRole<HTMLButtonElement>('button', { name: SEND });
+    await waitFor(() => { expect(send().disabled).toBe(false); });
+
+    broken = true;
+    await t.user.click(send());
+    await settle();
+    expect(t.sends()).toBe(1);
+    expect(send().disabled).toBe(false);
+    expect(document.body.textContent).toMatch(/no payment was sent/i);
+
+    broken = false;
+    otherTabSaves({ rpcUrls: { '84532': 'https://third.test' } });
+    await t.user.click(send());
+    await screen.findByRole('heading', { name: 'Submitted' });
+    expect(t.sends()).toBe(2);
+  });
+
   it('asks the wallet for nothing when the RPC changes while the send is still being checked', async () => {
     let hold = false;
     let release!: () => void;
