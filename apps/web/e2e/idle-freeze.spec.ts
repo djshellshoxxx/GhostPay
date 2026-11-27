@@ -10,6 +10,27 @@ import { generateKeys } from './helpers';
 // any browser other than Chromium. Runs in the desktop project only (the device projects match device specs).
 // Playwright's ordinary page fixture emulates focus even in the background. Connect to the
 // disposable browser's default context without those overrides so Chromium can really freeze it.
+/**
+ * Chromium writes DevToolsActivePort (the debugging port on the first line, the browser path on the second) only once it
+ * has bound `--remote-debugging-port=0`, which can be slightly after `launchServer` resolves, so a single read right
+ * after launch sometimes fails with ENOENT before any page exists (hosted CI, runs 45889530142 and 45913336841).
+ * Wait, bounded, for the file to exist with a numeric port. Any other read error, or no port within the bound, still
+ * fails the fixture; no freeze assertion is changed.
+ */
+async function waitForDevToolsPort(file: string, timeoutMs = 15_000): Promise<string> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    try {
+      const port = (await readFile(file, 'utf8')).split('\n')[0] ?? '';
+      if (/^[1-9][0-9]{0,4}$/.test(port)) return port;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+    if (Date.now() >= deadline) throw new Error(`Chromium did not publish a DevTools port in ${file} within ${String(timeoutMs)} ms`);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+}
+
 const test = base.extend<{ nativePage: Page }>({
   nativePage: async ({ playwright, launchOptions }, use) => {
     const server = await playwright.chromium.launchServer({
@@ -21,8 +42,7 @@ const test = base.extend<{ nativePage: Page }>({
     try {
       const profile = server.process().spawnargs.find((arg) => arg.startsWith('--user-data-dir='));
       if (!profile) throw new Error('Missing temporary Chromium profile');
-      const endpoint = await readFile(join(profile.slice('--user-data-dir='.length), 'DevToolsActivePort'), 'utf8');
-      const [port] = endpoint.split('\n');
+      const port = await waitForDevToolsPort(join(profile.slice('--user-data-dir='.length), 'DevToolsActivePort'));
       const browser = await playwright.chromium.connectOverCDP(`http://127.0.0.1:${port}`, { noDefaults: true });
       try {
         const context = browser.contexts()[0]!;
