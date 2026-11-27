@@ -201,9 +201,10 @@ with unchanged canonical addresses. It remains separately recorded, with browser
 qualification and ownership still belonging to that worker.
 
 The generation-67 lease renewal `88953e3a53493b7aa18a36ca848ce0ed566354c2` records
-expiry `2026-11-27T06:13:45.681Z`; this is historical, not current authority. After
-F3 resulting-main and documentation gates pass, merge the documentation checkpoint normally,
-verify its resulting main, and explicitly release the lease with heartbeat/expiry preserved.
+expiry `2026-11-27T06:13:45.681Z`; this is historical, not current authority.
+F3 resulting-main verification is complete. After the documentation gates pass, merge this
+checkpoint normally, verify its resulting main, and explicitly release the lease with
+heartbeat/expiry preserved.
 Record final publication, check and release SHAs in the associated PR verification comment.
 Keep WebKit CSP, unavailable physical-device/external-wallet/live-Tor checks and all broader
 release gates distinct from these scoped implementation results.

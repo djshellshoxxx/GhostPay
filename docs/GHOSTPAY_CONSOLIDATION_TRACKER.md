@@ -361,7 +361,8 @@ passed 135 package tests and typecheck/lint/build; the pre-existing checksum-war
 remains separately recorded in [the review](https://github.com/djshellshoxxx/GhostPay/pull/748#issuecomment-7210306424).
 The current owner retains its branch, draft status, browser/hosted gates and integration.
 
-Next action: verify F3 resulting main, qualify and integrate this documentation-only record,
-then explicitly release the valid integration lease. The associated PR records final exact
-heads, checks and lock release. Broader WebKit CSP and unexecuted physical-device, external-
+F3 resulting-main verification is complete. Next qualify and integrate this documentation
+checkpoint, verify its resulting main, and explicitly release the valid integration lease.
+The associated PR records final exact heads, checks and lock release. Broader WebKit CSP and
+unexecuted physical-device, external-
 wallet and live-Tor qualification remain open.
