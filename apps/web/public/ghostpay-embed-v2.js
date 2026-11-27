@@ -258,10 +258,10 @@
     });
     timer = window.setTimeout(function () {
       // No valid handshake: this host (or this merchant origin) is not enabled for framing. Use the popup instead.
-      // A dialog the shop page already removed must not open a popup beside its replacement: only a live dialog falls back.
-      var live = overlay.isConnected;
+      // A dialog the merchant page already removed only cleans up: no popup beside whatever replaced it.
+      var shown = overlay.isConnected;
       teardown();
-      if (live) popup(el, url);
+      if (shown) popup(el, url);
     }, HANDSHAKE_MS);
     overlay.appendChild(close);
     // src before insertion: otherwise the initial about:blank document's load event fires first (still our own origin).

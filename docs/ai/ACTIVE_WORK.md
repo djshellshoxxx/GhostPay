@@ -83,6 +83,22 @@ Problem: verifying a matched router payment sends receipt and transaction lookup
 Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
 Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+# Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
+
+Worker: local Claude Code maintenance/audit session on the existing merged branch
+`claude/a11y-reflow-checkvisibility-20261126` (fast-forwarded to main `3c324239`; no new branch). Owned paths:
+`apps/web/src/lib/payExec.ts` (final build time in `preparePayment` only) and its test;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`apps/web/public/ghostpay-embed-v2.js` (`openFrame`) and `apps/web/src/embedV2.test.ts`;
+`packages/chain-adapters/src/{router,logs}.ts` and their tests; one comment in
+`packages/invoice-schema/src/passphrase.ts`; `apps/web/src/lib/scanSpam.ts` (`estimateSimilarTransfers` only) and its
+test; this entry. F9 is the duplicate-record defect recorded in review on #696 and #728. F2, F3 and F7 are the same
+changes already carried by draft #728, which stays open and untouched. Not claimed: refusing the fee recipient inside tx-review (the web check already
+refuses it), F5, F8. Acceptance: each new regression fails without its fix and passes with it; hosted CI green on the
+exact head; merge under the integration lock.
+
+---
+
 # P14 consolidation closure and residual handoff — 2026-11-27 UTC
 
 Coordinator `d81aef3d1ca8`; branch `finish/p14-consolidation-handoff-20261127-d81a`.
@@ -5291,3 +5307,13 @@ Observed: `negotiateLocale` drops extensions before comparing the exact canonica
 - Acceptance: requirement-derived safety model with citations; harness records SHAs, environment, commands, seeds and actual results; failing sequences minimized and classified (product / harness / ambiguous requirement); production findings routed to W2/W3 via `verification/independent-beta/HANDOFF.md`. Ordinary CI does not run this harness.
 - Milestone 2 (started 2026-11-26): black-box seller-side reconciliation against the unmodified lean build: seller profile (two tabs) scans synthetic announcement/payment evidence produced by the real payer checkout in a separate profile; pending vs final, late payment and explicit acceptance, distinct-payment counting, interrupted scans, reorg invalidation with retained evidence/decisions, unrelated invoice unaffected. Same owned paths and limits as milestone 1; stopped products (docs/ai/STOP_WORK_20261125.md) are not exercised.
 - Milestone 3 (2026-11-26): seller feature completion on main `9d92472a` (two-RPC disagreement, seller browser restart, expired checkout, LATE-LM1 reservation, backup tombstones, manual links), independent harness audit (22 harness findings, no product defect), bounded stress (payer named + 60 seeds, seller named + 40 seeds, property scale 10). Still only `verification/independent-beta/**`; findings routed via `verification/independent-beta/HANDOFF.md` (F2/SA8 to W3).
+# BUG — Share-target payment label ambiguity (2026-11-27 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261127T0420Z/bug/share-payment-label-ambiguity`; base `3c9fc0ab518b8a308716dc87cc860424118718eb`. Owned paths: `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-ambiguity.test.ts`, additive claim here and new `docs/handoffs/UX_INTAKE_SHARE_LABEL_AMBIGUITY_20261127.md`.
+All 155 open PR file inventories examined at discovery; none includes either owned source path. #424 is merged; preserve explicit-port rejection. Main unchanged on pre-claim recheck. Observed baseline: five exact Git blobs compiled with strict TypeScript 5.8.3; Node 22.16.0 synthetic probes 13/20 passed, seven label ambiguity failures. Existing display key omits parsed labels; distinct requests overwrite one another. Acceptance: different or absent/present labels yield `ambiguous-share` irrespective of ordering/channel; equal decoded labels still deduplicate; existing address, amount, asset, chain, fragment and warning behavior preserved; labels not added to safe display or logs. No feature, dependency, network or fund changes. Native checkout DNS blocked; hosted exact-head CI and independent review required. Generation 67 held by another worker; no integration lock acquired.
+
+
+# BUG — Preserve checksum diagnostics for duplicate shared payment requests (2026-11-27 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261127T0824Z/bug/share-checksum-warning`; base `1b07cd7b0614a342cc2d1b2ea0238a952957eadb`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-checksum.test.ts`, this additive claim and new `docs/handoffs/UX_INTAKE_SHARE_CHECKSUM_WARNING_20261127.md`. Prior #748 ownership released in comment 7213490605 after merge. All 156 open file inventories inspected before #748 integration; immediately after merge the partitioned 155-open-PR list is exactly the same minus #748, with no competing parser or new test owner. Preserve all other source and claims.
+Observed: existing duplicate map overwrites an unverified-checksum diagnostic when a later equivalent input has no warning. Independent native verification comment 7210306424 reproduced the pre-existing defect; current main parser and address blobs verified locally in bounded extraction (Git SHA-1 recomputed) with 13/19 baseline vs 19/19 proposed map-loop cases. Acceptance: raw and payment URI duplicate warnings preserved regardless of input order, unflagged duplicates stay unflagged, canonical destination, amount/label identity, safe display and fragment warnings unchanged. Regression-first commit, minimal fix, fresh hosted CI and separate review required. Native checkout DNS blocked; no native test claim. Generation 68 released; no merge authorization until all gates pass. No stopped-feature, dependency, network, fund or release changes.
