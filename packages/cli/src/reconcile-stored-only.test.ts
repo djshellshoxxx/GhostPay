@@ -61,3 +61,9 @@ it('offline propose listing never marks a stored proposal as currently verified 
   expect(await run(['reconcile', 'propose', '--in', 'history.json', '--viewing-key-file', 'view.hex', '--json'], w.io)).toBe(0);
   expect(stdoutJson(w.io)).toMatchObject({ currentChainVerified: false, proposals: [expect.objectContaining({ recordId: staleId, kind: 'exact', currentChainVerified: false })] });
 });
+
+it('propose listing with nothing to list does not claim current verification (R11-2)', async () => {
+  const w = await reconciliationWorld();
+  expect(await run(['reconcile', 'propose', '--in', 'history.json', ...RECON_CREDS, ...RECON_LIVE, '--record', 'no-such-record', '--json'], w.io)).toBe(0);
+  expect(stdoutJson(w.io)).toMatchObject({ ok: true, confirmed: false, currentChainVerified: false, proposals: [] });
+});

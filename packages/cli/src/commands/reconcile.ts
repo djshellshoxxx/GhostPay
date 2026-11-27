@@ -115,7 +115,7 @@ async function propose(ctx: Ctx, a: Parsed): Promise<number> {
         const fresh = new Set(current?.records.map(r => r.id) ?? []);
         const visible = [...proposals].filter(([id]) => requested === undefined || id === requested).map(([recordId, proposal]) => ({ recordId, ...proposal, currentChainVerified: fresh.has(recordId) }));
         if (current !== undefined) await freshCanonicalContext(current);
-        ctx.out({ ok: true, confirmed: false, currentChainVerified: current !== undefined && visible.every(p => p.currentChainVerified), proposals: visible }, `${visible.length} local proposals. No association was confirmed and no state was written.`);
+        ctx.out({ ok: true, confirmed: false, currentChainVerified: current !== undefined && visible.length > 0 && visible.every(p => p.currentChainVerified), proposals: visible }, `${visible.length} local proposals. No association was confirmed and no state was written.`);
       }
       return 0;
     } finally { op.close(); }
