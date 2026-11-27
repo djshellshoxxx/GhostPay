@@ -112,11 +112,25 @@ function replaces(attempt: WalletAttempt, nonce: number, hash: string, tx: Obser
     (tx.chainId === undefined || tx.chainId === BigInt(attempt.chainId));
 }
 
+/**
+ * For a hash whose transaction the RPC does not return: a canonical receipt for it cannot be compared with the request,
+ * so the whole answer is unusable. Returns whether a receipt exists in a block that is no longer canonical (reorged).
+ */
+async function receiptWithoutTx(rpc: RpcClient, hash: string): Promise<boolean> {
+  const receipt = await fetchReceipt(rpc, hash);
+  if (receipt === undefined) return false;
+  if (await canonicalOutcome(rpc, receipt) !== undefined) return unusable();
+  return true;
+}
+
 async function resolveReplacements(rpc: RpcClient, attempt: WalletAttempt, nonce: number): Promise<AttemptResolution | undefined> {
   let pending: AttemptResolution | undefined;
   for (const hash of attempt.replacements ?? []) {
     const tx = await fetchTx(rpc, hash);
-    if (tx === undefined) continue;
+    if (tx === undefined) {
+      await receiptWithoutTx(rpc, hash);
+      continue;
+    }
     if (!replaces(attempt, nonce, hash, tx)) return { state: 'mismatch', field: 'replacement' };
     const kind = attempt.txDigest === undefined ? 'unknown-call' : digestOf(tx, attempt.chainId) === attempt.txDigest ? 'same-call' : 'different-call';
     const receipt = await fetchReceipt(rpc, hash, tx);
@@ -150,14 +164,7 @@ async function resolveSubmitted(rpc: RpcClient, attempt: WalletAttempt, hash: st
       reorged = true;
     } else if (tx.inclusion !== undefined) return unusable();
     if (await accountNonce(rpc, attempt.account) <= BigInt(nonce)) return { state: 'pending', reorged, nonce };
-  } else {
-    const receipt = await fetchReceipt(rpc, hash);
-    if (receipt !== undefined) {
-      // A canonical receipt whose transaction the RPC will not return cannot be compared with the request.
-      if (await canonicalOutcome(rpc, receipt) !== undefined) return unusable();
-      reorged = true;
-    }
-  }
+  } else reorged = await receiptWithoutTx(rpc, hash);
   if (nonce === undefined) return { state: 'not-found', reorged };
   const replaced = await resolveReplacements(rpc, attempt, nonce);
   if (replaced !== undefined) return replaced;
