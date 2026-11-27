@@ -1,7 +1,7 @@
 import { ScanSourceError, requireArg } from './errors.js';
 import { assertTestnetChainId } from './guard.js';
 import type { FetchRequest, FetchResult, Head, HeadSource, Hex, HttpTransport, PublicLogSource } from './types.js';
-import { normalizeSet, parseAnnouncement } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, setHash } from './validate.js';
 import { padWindow } from './window.js';
 
 /** Options for {@link createIndexerSource}. */
@@ -54,7 +54,9 @@ function parseHeaders(raw: unknown): Header[] {
  * Indexer source (`scanMode = indexer-tor`, roadmap Feature 5 stage 1). `GET /v1/logs?chainId&from&to&pageSize`
  * returns raw public announcements plus the block headers of the window. The client revalidates every record,
  * checks the parent-hash chain is contiguous and complete, and cross-checks the window's first and last block
- * hash and every announcement block hash against `secondSource` (NP-S-7, AT-NP-15). Any gap or mismatch is an error.
+ * hash and every announcement block hash against `secondSource` (NP-S-7, AT-NP-15). A gap, or a block
+ * hash the second source does not confirm, is an error. A record that fails validation or contradicts its header is
+ * skipped, and also counted in `rejected` when it may belong to the requested range.
  *
  * @security The request carries only chain id, padded window and page size: no key, view tag, address or meta
  * address (NP-S-2). Hides: which announcements are yours (matching is local). Does NOT hide: your IP unless the
@@ -131,10 +133,24 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
 
       const parsed = [];
       let skipped = 0;
+      // Unusable records of this scheme that may belong to the requested, observed range (an unreadable block may).
+      let rejected = 0;
+      const requested = (n: bigint | undefined): boolean => n === undefined || (n >= req.fromBlock && n <= req.toBlock && n <= expectedTo);
+      const contents = new Map<string, string>();
       for (const raw of doc['announcements'] as unknown[]) {
         const a = parseAnnouncement(raw, scheme);
-        if (a === undefined || byNumber.get(a.blockNumber) !== a.blockHash) skipped++;
-        else parsed.push(a);
+        if (a === undefined || byNumber.get(a.blockNumber) !== a.blockHash) {
+          skipped++;
+          const claim = claimedPlace(raw);
+          if ((claim.schemeId === undefined || claim.schemeId === scheme) && requested(claim.blockNumber)) rejected++;
+          continue;
+        }
+        // An exact copy is harmless; a different record for the same log means one of the two is wrong.
+        const content = setHash([a]);
+        const first = contents.get(a.id);
+        if (first === undefined) contents.set(a.id, content);
+        else if (first !== content && requested(a.blockNumber)) rejected++;
+        parsed.push(a);
       }
       const norm = normalizeSet(parsed, padded.from, expectedTo);
 
@@ -151,6 +167,7 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
         head: { number: last.number, hash: last.hash },
         coverage: { fromBlock: padded.from, toBlock: expectedTo },
         skipped: skipped + norm.dropped,
+        ...(rejected === 0 ? {} : { rejected }),
       };
     },
   };

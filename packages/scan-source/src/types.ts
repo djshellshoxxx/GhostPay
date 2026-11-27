@@ -45,6 +45,12 @@ export interface FetchResult {
   readonly coverage: { readonly fromBlock: bigint; readonly toBlock: bigint };
   /** Records dropped for failing validation (never surfaced to UI state). */
   readonly skipped: number;
+  /**
+   * Present when above zero: the skipped records that should have been usable, because they may sit in the requested range
+   * at or below the observed head. Each could be an announcement missing from this result. Only the indexer source
+   * reports it.
+   */
+  readonly rejected?: number;
 }
 
 /** How a source's data is protected against a lying server. */

@@ -66,6 +66,16 @@ export function parseAnnouncement(raw: unknown, schemeId = 1n): ScanAnnouncement
   }
 }
 
+/** The block and scheme an untrusted record claims, each only as far as it can be read. Never throws. */
+export function claimedPlace(raw: unknown): { readonly blockNumber: bigint | undefined; readonly schemeId: bigint | undefined } {
+  try {
+    const r = raw as Record<string, unknown>;
+    return { blockNumber: bigField(r['blockNumber']), schemeId: bigField(r['schemeId']) };
+  } catch {
+    return { blockNumber: undefined, schemeId: undefined };
+  }
+}
+
 /** Sorts by `(blockNumber, logIndex)` and removes duplicate ids and records outside `[from, to]`. Returns the dropped count. */
 export function normalizeSet(
   anns: readonly ScanAnnouncement[],
