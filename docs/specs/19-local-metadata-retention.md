@@ -29,7 +29,13 @@ Source: [issue #287](https://github.com/djshellshoxxx/GhostPay/issues/287) item 
 - Consent for invoice previews never authorizes proof cleanup.
 - Controls sit next to each preview (`MetadataRetentionControls`), with preview, count, confirm and cancel. Settings
   shows the two preferences only (`manual={false}`), because no preview is on screen there. The controls re-read the
-  preference on window focus and drop an open confirmation if the preference changed in another tab.
+  preference on window focus, page-history restoration (`pageshow`), document visibility changes and frozen-page
+  resume. They drop an open confirmation if the preference changed in another tab, including when its storage event
+  was missed while suspended.
+- The same lifecycle events recheck preview age against the current saved preference without waiting for an interval
+  tick. A preview closes only once its own category's opted-in deadline is reached; off, unreadable or revoked
+  preferences do not authorize automatic cleanup. Returning before the deadline does not restart its lifetime.
+  This is cleanup when the page can run again, not background execution while it is suspended.
 - Feedback is accessible: each outcome appears in an always-mounted polite live region; focus returns to the preview
   button after confirm or cancel; an expiry, which happens without user action, is announced next to the closed
   preview (`retention.expired`, `retention.proof.expired`).

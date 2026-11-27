@@ -57,6 +57,10 @@ export function parseInvoiceLink(link: string, opts: InvoiceLinkOptions = {}): I
   if (local && !dev) return fail('INVALID_LINK');
   if (scheme === 'http' && !(dev && local)) return fail('INVALID_LINK');
   if (port !== undefined && Number(port) > 65535) return fail('INVALID_LINK');
+  // ASCII label syntax alone does not guarantee a browser-valid punycode host.
+  try {
+    if (new URL(`${scheme}://${host}`).hostname !== host) return fail('INVALID_LINK');
+  } catch { return fail('INVALID_LINK'); }
   // A browser removes `.` segments and resolves `..` before loading, so the path shown here would not be the path
   // fetched. `includes('..')` also covers `..` segments; the split catches a lone `.` segment (`/./pay`, `/pay/.`).
   if (path.includes('..') || path.split('/').includes('.')) return fail('INVALID_LINK');

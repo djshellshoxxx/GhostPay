@@ -45,8 +45,12 @@ export const STOPPED_PRODUCTS = Object.freeze([
   },
   { id: 'F14', name: 'Multi-chain routing', status: 'deferred', modules: [seg('multi[-_]?chain[-_]?rout'), feature('(?:multi[-_]?chain|cross[-_]?chain)')] },
   { id: 'P07', name: 'Encrypted device synchronization', status: 'deferred', modules: [seg('(?:encrypted[-_]?)?device[-_]?sync')] },
-  // Every catalog proposal under src/features/future is FUTURE ONLY (docs/future/privacy-first/README.md).
-  { id: 'FUTURE', name: 'Future-only feature proposal', status: 'future-only', modules: [/\/src\/features\/future\//] },
+  // Every catalog proposal under src/features/future is FUTURE ONLY (docs/future/privacy-first/README.md). Workspace
+  // packages keep dormant future-only cores under src/future (e.g. P13 confidential amounts) or their built dist/future.
+  {
+    id: 'FUTURE', name: 'Future-only feature proposal', status: 'future-only',
+    modules: [/\/src\/features\/future\//, new RegExp(String.raw`\/${PKG}[^/]+\/(?:src|dist)\/future\/`)],
+  },
 ].map((p) => Object.freeze({ ...p, modules: Object.freeze(p.modules) })));
 
 function normalize(id) {

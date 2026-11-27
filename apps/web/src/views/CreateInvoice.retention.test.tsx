@@ -55,17 +55,18 @@ it('returns focus to the preview control when a cleanup review is cancelled', as
   expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Preview screen-data cleanup' }));
 });
 
-it('closes the preview on opted-in expiry, announces why, and keeps the form and stored records', async () => {
+it.each(['focus', 'pageshow', 'visibilitychange', 'resume'] as const)('closes the preview on opted-in expiry at %s, announces why, and keeps the form and stored records', async (event) => {
   localStorage.setItem(RETENTION_KEY, '{"delay":300000}');
   await createdInvoice();
   const storedBefore = { ...localStorage };
   const now = Date.now();
   // Still inside the window: nothing closes.
   vi.spyOn(Date, 'now').mockReturnValue(now + 290_000);
-  act(() => { window.dispatchEvent(new Event('focus')); });
+  const target = event === 'focus' || event === 'pageshow' ? window : document;
+  act(() => { target.dispatchEvent(new Event(event)); });
   expect(screen.getByLabelText('Link')).toBeTruthy();
   vi.spyOn(Date, 'now').mockReturnValue(now + 301_000);
-  act(() => { window.dispatchEvent(new Event('focus')); });
+  act(() => { target.dispatchEvent(new Event(event)); });
   expect(screen.queryByLabelText('Link')).toBeNull();
   const notice = screen.getByText(EXPIRED);
   expect(notice.closest('[aria-live="polite"]')).not.toBeNull();

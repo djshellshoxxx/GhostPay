@@ -14,7 +14,7 @@ append rows; keep the starting baseline unchanged.
 | | Value |
 |---|---|
 | Starting baseline (2026-11-25 12:50 UTC) | `origin/main` = `32ae3977b6026991ae0591daf385d3c536e2132f` (Merge PR #660) |
-| Current integration baseline | `29d21c1b` (2026-11-26 00:55 UTC, Merge #684). It contains #673 at exact head `e2bd32c5`, merged under lock generation 34 by `chatgpt-8812-branch-completion` |
+| Current integration baseline | `194e225c` (2026-11-26, Merge #695). #673 landed at exact head `e2bd32c5` via #684 (`29d21c1b`, lock generation 34, `chatgpt-8812-branch-completion`) |
 | Integration lock | `automation/ghostpay-integration-lock` `d1e2e037`: **released**, generation 26, last owner `claude-feature-completion-20261125` (candidate #664 `7b47c3dd` failed e2e lean, main unchanged) |
 | Remote heads | 791 (`git ls-remote --heads`), incl. 34 frozen `archive/owner-stop-20261125/*` snapshots |
 | Open PRs | 256 (pages 1–3 of the PR list at 13:40 UTC) |
@@ -90,6 +90,64 @@ Method: fetch every open head; files changed since its merge-base whose blob dif
 **Safe-to-close candidates (owner action; nothing closed by this worker):** the 44 class-E PRs. Their heads are on
 main or their only unique code is already on main in an equivalent or stricter form; #616/#617 additionally carry an
 owner HOLD whose shared-core code is already on main (`seal.ts`, `qrKinds.ts` strict `=== true`).
+
+## 4a. Re-classification at main `e7e98109` (2026-11-26 11:30 UTC, 176 open PRs)
+
+[OPEN_PR_CLASSIFICATION.tsv](consolidation/cloud-lead-20261125/OPEN_PR_CLASSIFICATION.tsv) now holds this snapshot. The
+`32ae3977` snapshot remains in git history at `78e99aae`. For each PR the scan computed:
+
+- **ancestry** (`git merge-base --is-ancestor`);
+- **patch-equivalence** of its non-merge commits (`git cherry`);
+- **files differing from main**, and how many of those code files main also changed since the merge base (drift).
+
+Explicit rules were applied before the mechanical ones. They cover the owner's 2026-11-26 decisions (section 8b), the stop-work scope, owner holds, named successor PRs and the semantic triage of 2026-11-25.
+
+| Class | Count | PRs |
+|---|---|---|
+| E Already on main | 6 | #250 #384 #405 #409 #416 #419. The residual code is on main in an equivalent or stricter form (semantic triage); none is a plain ancestor |
+| D Superseded / records | 51 | Named successors: #549→#668/#687, #569→#708, #582→#711, #591/#604→#717, #622→#707, #669→#704, #254→#704, #271/#272→FC merges, #300/#355→#708, #293/#297→#687, #372→#677/#679/#708. The rest are documentation/census records or history retained in descendants (see TSV) |
+| C Unreviewed unique source | 60 | 59 are historical compositions more than 500 commits behind main (2026-11-18..21), e.g. #238 #262 #264 #278 #307. One recent: #643 metadata-hardening (idle since 11-25 07:25) |
+| F Useful individual change | 1 | #442 (diagnostic confidential-contracts test) |
+| G Out of beta scope / declined | 28 | F10/F05 future-only, Tor hosting, dependency trains, CI agents, audit tooling, owner-declined #587/#383/#609/#544/#558/#559 |
+| H Owner HOLD | 4 | #371 #592 #614 #621 |
+| J Active (updated since 11-25 11:00 UTC) | 26 | #718 train (includes #631/#637), #704–#717, #708 masking, #665 W5, #678 P13, #653, #639, #380, #220 |
+
+**Applied 2026-11-26 11:45 UTC (owner approved):**
+
+- **Rec 1, done:** the 6 E PRs (#250 #384 #405 #409 #416 #419) were closed with evidence notes. Main `5880576a` still holds each equivalent fix, re-checked at the cited line.
+- **Rec 2, partly done:** 5 D PRs whose successor is in main were closed:
+  - #549, #293, #297 → #668/#687
+  - #271 → #663
+  - #272 → #683
+- **Rec 2, still waiting** for the successor to merge:
+  - #569, #300, #355, #372 → #708
+  - #582 → #711
+  - #591, #604 → #717
+  - #622 → #707
+  - #669, #254 → #704
+- **Rec 2, follow-up 2026-11-26 19:50 UTC (main `cdddda0b`):** #718 (`c7c6349c`) landed the #704 train with #707, #708
+  and #711. Before closing, each donor's own commits (PR base..head) were checked for test cases with no test of the same
+  title on main:
+  - Closed (no residual):
+    - #582 → #711;
+    - #669 (head `8ea606ff` is on main through `a86cc353`).
+  - #622 is marked merged by #718. Nothing to close.
+  - **Kept open: successor merged, but donor-only test cases are absent from main.** Each case needs a port-or-drop
+    decision, listed on the PR:
+    - #569: 6 cases against #708's hand port (which keeps Home and About visible by design);
+    - #300: 6 quick-hide cases (main has no `PrivacyQuickHide` component);
+    - #355: 1 focus-restore case;
+    - #254: 14 Bitcoin spentness cases that FC-05b did not port.
+  - **#372 reclassified C (archival composition).** 499 commits on its base. #677/#679/#708 re-cut parts of it; it is not
+    "superseded" as a whole.
+  - Still waiting: #591, #604 → #717 (now in consolidation stack 2, #728).
+- **Rec 3, adopted:** the 59 historical C compositions are archival. Recover from them only on a concrete gap. They stay open for the owner to close in bulk if wanted.
+
+Recommendations as originally proposed:
+
+1. Close the 6 E PRs with an equivalence note. Unlike the 32 closed earlier, these are not plain ancestors, so owner OK first.
+2. Close the D PRs that name a successor once that successor merges: #549, #569, #582, #591, #604, #622, #669 and #254.
+3. Treat the 59 historical C compositions as archival. Their content reached main in other forms through later consolidations (#611, #620, #635, #684). Any residual should be recovered only on a concrete gap, never by merging a composition.
 
 ## 5. Feature inventory (in-scope, beta)
 
@@ -181,6 +239,24 @@ Pages artifact.
 - Source-level dormancy of product code embedded in core modules.
 - Shared-core retention review.
 - Physical-device and real-Tor testing.
+
+## 8b. Owner decisions applied (2026-11-26, main `194e225c`)
+
+The owner approved the cloud lead's recommendations. Outcomes:
+
+| # | Recommendation | Outcome |
+|---|---|---|
+| 1 | Port #577 (sole invoice signer kept under the idle lock) | Already on main: `2a70c041` "Finish core idle suspension and sole-copy signer recovery". No port needed |
+| 2 | Re-cut #372 masking, quick-hide and private history in small PRs (not a #372 merge) | In progress by the home team: #708 (global masking, 30 s reveal). Wallet disclosure already landed (#677/#679) |
+| 3 | Close open PRs whose head is provably in main | 32 closed with a note naming head and main SHA; branches kept: #548 #547 #546 #541 #528 #527 #523 #515 #512 #485 #482 #476 #450 #443 #441 #440 #435 #425 #423 #422 #412 #402 #385 #379 #375 #374 #370 #369 #368 #362 #347 #277 |
+| 4 | #587 vault format v4→v5: not for beta | Declined for beta. Revisit only with old-backup restore tests and #647 recovery-script compatibility |
+| 5 | #544's ~84-commit base stack: do not land | Declined. #577's behaviour reached main separately (row 1) |
+| 6 | #558/#559 dormant future modules: do not merge | Left on their branches; PRs remain open for the owner to close or keep |
+| 7 | F02/F04 wording per #667 | #667 merged by the owner at 00:55 UTC: deferred and disabled through v1.0, restart only by new instruction |
+| 8 | Lean guard also covers `packages/*/(src|dist)/future/**` | Done on this branch (`c1e075dc`): 54/54 tests, red on the old table; real lean artifact on `194e225c` clean (372 rendered modules, 17 files) |
+
+Open PRs after closing: 172 (of 204 at 09:00 UTC). `OPEN_PR_CLASSIFICATION.tsv` is still the `32ae3977` snapshot; a
+full re-classification of the remaining 172 is the next bookkeeping unit.
 
 ## 9. Outstanding owner decisions
 
