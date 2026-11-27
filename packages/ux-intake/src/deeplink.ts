@@ -250,13 +250,6 @@ export function parseDeepLink(raw: unknown, policy: LinkPolicy): Result<Incoming
   const routes = policy.routes ?? DEFAULT_ROUTES;
   const path = url.pathname;
   if (!routes.includes(path)) return err('route-not-allowed');
-  if (url.hash.startsWith('#gpi=')) {
-    const r = classifyPayload(`${url.origin}${path}${url.hash}`, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
-    if (!r.ok) return r;
-    return ok(toIncoming(r.value, []));
-  }
-  if (url.hash !== '') return err('bad-fragment');
-  if (path === '/share-target') return parseShareTarget(url.search, policy);
   let returnTo: string | undefined;
   for (const [k, v] of url.searchParams) {
     if (!REDIRECT_PARAM_NAMES.includes(k.toLowerCase())) continue;
@@ -264,6 +257,13 @@ export function parseDeepLink(raw: unknown, policy: LinkPolicy): Result<Incoming
     if (!t.ok) return t;
     returnTo = t.value;
   }
+  if (url.hash.startsWith('#gpi=')) {
+    const r = classifyPayload(`${url.origin}${path}${url.hash}`, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
+    if (!r.ok) return r;
+    return ok(toIncoming(r.value, []));
+  }
+  if (url.hash !== '') return err('bad-fragment');
+  if (path === '/share-target') return parseShareTarget(url.search, policy);
   return ok({
     kind: 'navigate',
     path,
