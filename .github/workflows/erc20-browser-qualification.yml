@@ -51,10 +51,14 @@ jobs:
     env:
       GHOSTPAY_PAGES_ERC20: ${{ matrix.mode }}
       GHOSTPAY_PAGES_BROWSER: ${{ matrix.browser }}
-      ERC20_RUN_ROOT: ${{ runner.temp }}/ghostpay-erc20-${{ matrix.mode }}-${{ matrix.browser }}
-      ERC20_EVIDENCE: ${{ runner.temp }}/ghostpay-erc20-evidence-${{ matrix.mode }}-${{ matrix.browser }}
       PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
+      # Runner paths are available after allocation; the runner context is not valid in job-level env.
+      - name: Initialize temporary evidence paths
+        run: |
+          printf '%s\n' \
+            "ERC20_RUN_ROOT=$RUNNER_TEMP/ghostpay-erc20-$GHOSTPAY_PAGES_ERC20-$GHOSTPAY_PAGES_BROWSER" \
+            "ERC20_EVIDENCE=$RUNNER_TEMP/ghostpay-erc20-evidence-$GHOSTPAY_PAGES_ERC20-$GHOSTPAY_PAGES_BROWSER" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
