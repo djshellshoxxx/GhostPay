@@ -1,11 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "chatgpt-d81aef3d1ca8-p14-integration",
   "token": "e5ee28d0-eea5-4ed3-8c06-300444205ef2",
   "generation": 67,
   "base_sha": "3f7fcd0a7042eef0f03f1b513bb65f1037998c07",
   "acquired_at": "2026-11-27T03:46:14.074Z",
   "heartbeat_at": "2026-11-27T05:49:26.595Z",
-  "expires_at": "2026-11-27T06:49:26.595Z"
+  "expires_at": "2026-11-27T06:49:26.595Z",
+  "released_at": "2026-11-27T06:08:01.877Z"
 }
