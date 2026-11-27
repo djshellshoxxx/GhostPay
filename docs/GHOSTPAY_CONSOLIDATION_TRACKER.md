@@ -271,3 +271,174 @@ full re-classification of the remaining 172 is the next bookkeeping unit.
 | #372 privacy-mode foundation | Who recovers it, and how: a reviewed re-cut of the seven privacy files onto main (new design surface), or a full recovery of #372? Ten #286/#287 PRs depend on it. Suggested owner: W3 (privacy boundary) with W1 integrating. |
 | #587 vault format v4/v5 | Accept the vault/receipt format bump for timestamp retention (recovery compatibility impact)? |
 | #544 idle/Sweep base stack | Land the ~84-commit idle stack that #577/#582/#596 sit on? |
+
+## 10. Incremental continuation — 2026-11-27 UTC
+
+Worker `d81aef3d1ca8`, main baseline `9ae770203d69d23bdc8735912dfe98af5944d4d6`.
+Historical tables above remain source-pinned observations, not current ownership or merge
+authority. Discovery: 838 remote heads; 154 open PRs; 579 closed PRs, including 244 unmerged.
+The remote listings were complete. Mechanical residuals were checked semantically before
+selection; differing blobs alone were not called missing functionality.
+
+**Implemented, awaiting hosted qualification:** [P14 F2 #745](https://github.com/djshellshoxxx/GhostPay/pull/745)
+finishes the integrated light-source evidence label: capability flags no longer advertise
+unchecked log-inclusion proof. Result/header validation remains intact. Four regression
+assertions failed against the original runtime; corrected package tests 125/125 and app
+evidence tests 69/69 pass, with package typecheck/lint/build, web typecheck/lean build and
+unchanged secret/bundle gates. Independent review found no blocker and repeated package
+qualification. This is an integrated-core follow-up, not recovered unmerged source.
+
+**Represented/superseded:** #319, #528, #595, #704, #151, #664, #603, the pasted-fragment
+boundary and several earlier no-PR fixtures. **Owned/blocked:** #248 durable private scan
+journal and P0 Worker B's refund lifecycle remain unique but lack a released ownership
+and qualified integration path. **Newer explicit deferral:** persistent timestamp cleanup
+#383/#587/#609 is outside v1.0 beta until the owner reverses that decision. All ten stopped
+products and 34 frozen archive refs remain preserved.
+
+[Focused handoff](handoffs/P14_LIGHT_EVIDENCE_COMPLETION_20261127.md): exact source pins,
+test results, local-work preservation, candidate classifications, released generation-65
+metadata repair, and next actions. The PR supplies current hosted qualification and final
+published/merge SHAs. This source checkpoint does not assert a merge or release approval.
+
+## P14 F4 completion candidate — 2026-11-27 UTC
+
+**Implemented; qualified integration pending:** [#747](https://github.com/djshellshoxxx/GhostPay/pull/747),
+`finish/p14-caught-up-20261127-d81a`. This repairs an incomplete already-integrated P14
+contract from #658 (`9aed3886693270524beb118685e5947469899c43`), not recovered unmerged code.
+Initial main `9ae77020`; current incorporated main `3f7fcd0a7`; prerequisite #745 head
+`84d95d627750fc80dd1b496429c3942f49101c6b` is retained by ordinary merge. Merge #745 and
+verify resulting main before integrating #747. Coordination history is preserved in full.
+
+The terminal `caughtUp` flag now requires the cursor to exceed the page's observed primary
+head. A lagging secondary still caps the fetch and saves the same replay tail, but cannot
+qualify late-payment review merely because the bounded page was untruncated. The existing
+terminal break, records, finality/reorg behavior, session/route guards and explicit seller
+verification remain intact. No chain, contract, backend, dependency or feature activation.
+
+Independent authors proved four unit failures and one real mounted seller-journey failure
+on the old runtime. Corrected combined verification: **303 web tests / 10 files**, plus
+**125 scan-source tests / 10 files with existing coverage gates**. Web typecheck, lint,
+lean build/bundle scan and secret/whitespace checks passed. An independent reviewer found
+no blocking findings and separately passed 60 focused regression tests.
+Current-head hosted checks and final main integration remain required; no merge SHA is
+claimed at this source checkpoint. The known baseline WebKit CSP finding remains explicit.
+
+[Focused handoff](handoffs/P14_CAUGHT_UP_COMPLETION_20261127.md) records source commits,
+exact red/green evidence, the newer-main merge, bounded generation-66 release repair,
+generation-67 coordination acquisition, remaining gates and next action. P14 F3's captured-
+source indexer completion caveat is the next unclaimed repair; older unique owned work,
+timestamp deferral and the ten stop-work exclusions retain their previous dispositions.
+
+## P14 integration results and F3 completion candidate — 2026-11-27 UTC
+
+Current incorporated main: `6b323a99df1238cb5ebe7248528cc7bce5140e80`.
+This continuation repairs explicit incomplete findings in integrated P14; it does not
+relabel represented donor branches as newly recovered functionality.
+
+### Completed integrations
+
+| Unit | Qualified source | Actual merge and evidence |
+| --- | --- | --- |
+| F2, truthful light-source evidence | #745, `84d95d627750fc80dd1b496429c3942f49101c6b` | `3c9fc0ab518b8a308716dc87cc860424118718eb`; tested/actual tree `8de4135d12b94f8f36c2f312989a8e13817bc381`; 42 candidate checks complete, 39 success and 3 expected publishing-only skips; all 41 resulting-main checks passed |
+| F4, primary-head catch-up | #747, `1308f18574c78bdfd5602337c1c27a2c87a27d34` | `6b323a99df1238cb5ebe7248528cc7bce5140e80`; tested/actual tree `964bbe42e35ae8cf71a554e09261c01f1acb0dcd`; 42 candidate checks complete, 39 success and 3 expected publishing-only skips; resulting-main checks running at this source checkpoint |
+
+Both ordinary merges preserved source refs and passed fresh ownership/review/lock checks.
+The coordinator waited for the preceding main's checks before advancing. PR verification
+comments record exact live checks and any later status; historical candidate entries above
+remain preserved.
+
+### Implemented, awaiting hosted qualification: F3
+
+Branch `finish/p14-indexer-completion-20261127-d81a`; source #658,
+`9aed3886693270524beb118685e5947469899c43`; original evidence source
+`2ab3b243a57bb4e917fb6b9848f78a2a4347d312`. Local integration before docs:
+`a7dc365eb60d82584da722713453a594be954fc0`.
+
+A source-bound completion caveat now makes indexer omission risk visible even with details
+closed. Counts, evidence, checkpoints, errors, limits and source selection are preserved;
+the accessible completion uses the same non-sensitive caveat and correctly announces
+cancellation. Draft catalog entries retain the existing English security fallback and
+native-review gate. No new service, source default, chain, contract or activation.
+
+Actual local qualification: 14 new component tests pass after 10 failed on the original
+runtime; combined Scan suites pass 48 tests, additional privacy/localization suites 75.
+The new browser cases fail twice on the original runtime and pass all six actual browser/
+layout combinations after the fix. Typecheck, full web lint, lean build/18-file bundle scan,
+catalog/extraction and secret/whitespace gates pass. Independent runtime, new-test and
+existing-query reviews found no blocking findings. Existing cancellation assertions were
+strengthened without removing vault/worker/cleanup controls.
+
+[Focused handoff](handoffs/P14_INDEXER_COMPLETION_20261127.md) records exact commits and
+browser versions: Chromium 151 fallback, locked Firefox 157 and WebKit 27.2, each desktop
+and 320px Arabic RTL. The broader baseline WebKit CSP finding remains open; targeted passes
+do not waive it. Physical devices, external wallets, deployed-site checks and live Tor were
+not exercised. Final published-head gates and F4 resulting-main gates remain required.
+
+### Incremental queue refresh
+
+| Candidate and source | Category | Actual retained behavior or blocker |
+| --- | --- | --- |
+| #604 `2f2c282e4e88e32fb54648864bb9ed51c8307880` -> #717 `367a3b30b1feb5c31c0727fc6fc435162067063c` -> #728 `298257fd251cf0dd64dc80a92198d296672a6cab` | E/F | Offline checkout and opt-in encrypted drafts remain unique, explicitly owned by ghostpay-78/newghostpay-4e/features2; #728 additionally awaits separately owned #744 and combined replay/cover/checkpoint qualification |
+| #442 `4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b` | E/F | Unique diagnostic-only test; forensic coordinator ownership, explicit DO NOT MERGE and pending reproduction/privacy review |
+| #541 `f5bc0d6c71260e11fc89b28c42c65446e31d335f` | C | Two-tab policy-prompt case already integrated; source is an ancestor of main |
+| #616 `7c4987650faf32322d7ded48ad669130aba7e63b` | C for shared core; D for mixed stopped composition | CryptoKey branding behavior and tests retained, only a local variable differs; all ten donor heads are ancestors. Do not revive its archived POS composition |
+| #419 `62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3` | C | Superseded by #422 `f846464db3cb2f12c221d0c2f56e3aa3702d4fcb`; runtime/tests match main, preserving valid surrogate truncation plus the newer rendered-output cap |
+| #127 `cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a` | C | Plain-object questionnaire validation and complete donor tests retained; newer independent detectProfile change explains residual |
+| #126 `d77956901d95c3eeb8c5c1d67ae7d1647bd069aa` | C | Single-sample confirmation clock behavior and tests retained; newer cancellation-clock changes explain residual |
+| #125 `a6e74591e134b31de3e0efc84448eb97cdc3b012` | C | CLI bare-sentinel refusal and all four regressions retained; later optional-global-switch parsing explains residual |
+
+The last three were recovered in `c9787b223a240b8bd5a626325944b3c01a2d4be0` through #189;
+both runtime/test blobs matched their donors at recovery. Their owner closure and unchanged
+heads support C. These checks were source/history reviews, not newly executed test claims.
+
+Prior E/F dispositions for #248's private scan journal and P0 Worker B's refund lifecycle,
+and the explicit beyond-beta timestamp deferral #383/#587/#609, remain. All ten stopped
+streams and all 34 frozen archive refs remain preserved. Existing local work remains intact.
+No further unowned feature was established in this bounded refresh; the 61 mechanical
+residuals are not an exhaustive semantic clearance. Continue only from a proven eligible
+unit after F3 qualification, or leave the precise blocked/owned/deferred checkpoint.
+
+## P14 F3 integration and complete residual record — 2026-11-27 UTC
+
+**Completed and merged:** [F3 #749](https://github.com/djshellshoxxx/GhostPay/pull/749),
+source `7a8e88d7083905013d0af310c845ba0c5f352dcb`, merge
+`7d29d39be5240762de6df2aefc7316f4bd460d60`. The actual merge and current-main synthetic
+merge match the qualified tree `3522dec7b56b44f217b02781b4e7d21fa66d983c`.
+All 39 candidate checks completed (36 success, 3 expected publication-only skips), and
+all five workflow groups succeeded. F2 and F4 resulting-main checks completed with 41 and
+32 successes respectively. **F3 resulting-main checks: all 32 successful on `7d29d39be5240762de6df2aefc7316f4bd460d60`.**
+
+[All 61 residual dispositions](consolidation/branch-completion-20261127/closed-residual-dispositions.json)
+are now recorded against main `6b323a99df1238cb5ebe7248528cc7bce5140e80`, with an
+explicit post-F3 integration revalidation: **42 C, 14 D, 2 E, 3 F; no A/B unit established**.
+Each retains source branch/PR/SHA, merge bases, behavioral evidence and successor/owner pins.
+These were source/history/discussion reviews, not fresh runtime qualification. C for an
+intended PR change does not erase inherited private-scan, signer-pin, offline-draft or
+explicitly deferred timestamp obligations.
+
+| Useful unique residual | Specific blocker and next action |
+| --- | --- |
+| #590 `f01c69d277c39c76fd3077103c43cc38f7f9c736` | Receipt binding is represented; offline/drafts remain with #604 -> #717/#728 |
+| #655 `1dcd5a25130b9db6afc4d224c619cd4dbcf0307c` | Private-checkpoint fixture requires #248's owned persistence/lifecycle, head `18b367457103fb1731a5b4ef5c51faa37a010e47` |
+| #652 `724afdcf557178d8b78d841b681f50e99d41935f` and #630 `c484f833560aef8e8c798a71228d92e10fe5a877` | Duplicate signer-pin fixture corrections require the absent feature owned by #243, head `276aed60f19671cc6fa551be616b61041cb45b50` |
+| #589 `697cb7314c323b574bfbb1f102244265046dd93a` | Runtime is represented; two-case Permit/approval disclosure browser qualification remains with #632 `0036fe1656579e0e9551bb9ae07cc63d802fb667`, test blob `51ce4023c64b008f9bb60f23dcf769791d5cf56c` |
+
+#80's overbroad journal guard is deliberately rejected/superseded; a future journal-version/
+migration decision is required. #616/#617 retain shared-core C dispositions while their
+stopped mixed-product portions remain D. Existing journal/refund/offline ownership,
+timestamp deferral, all ten stopped streams and all 34 frozen refs remain intact.
+
+Fully paginated metadata refresh: 842 remote heads, 156 open PRs, 582 closed PRs including
+244 closed-unmerged. This historical snapshot predates the documentation branch and F3
+merge. It is not a claim that the repository's entire semantic obligation queue is empty.
+
+Independent native review of owned draft #748 at `5b75ee82ecabc1c82434e0030a7417e0454e1b17`
+passed 135 package tests and typecheck/lint/build; the pre-existing checksum-warning loss
+remains separately recorded in [the review](https://github.com/djshellshoxxx/GhostPay/pull/748#issuecomment-7210306424).
+The current owner retains its branch, draft status, browser/hosted gates and integration.
+
+F3 resulting-main verification is complete. Next qualify and integrate this documentation
+checkpoint, verify its resulting main, and explicitly release the valid integration lease.
+The associated PR records final exact heads, checks and lock release. Broader WebKit CSP and
+unexecuted physical-device, external-
+wallet and live-Tor qualification remain open.

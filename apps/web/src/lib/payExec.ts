@@ -310,7 +310,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   if (state === 'already_allowed') {
     reportTransactionStatus(status, { phase: 'signed', message: permitStateDescriptor('already_allowed') });
-    return buildFinal(ctx, { nowSeconds: now });
+    // This build sets a new router deadline, and the prompt and reads above can take minutes: read the clock again.
+    return buildFinal(ctx, { nowSeconds: rt.nowSeconds() });
   }
   if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });

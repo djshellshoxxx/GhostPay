@@ -84,7 +84,7 @@ function shareExceeded(fee: bigint, base: bigint, policy: ReviewPolicy): boolean
 
 function policyReasons(i: Intent, policy: ReviewPolicy, now: number, ctx: ReviewContext): ReasonCode[] {
   const out: ReasonCode[] = [];
-  const { router, sweepRelayer, announcer } = policy.contracts;
+  const { router, sweepRelayer } = policy.contracts;
   const listed = (token: Address | 'native'): boolean => token === 'native' || tokenListed(policy, i.chainId, token);
   switch (i.kind) {
     case 'router_payment':
@@ -101,7 +101,7 @@ function policyReasons(i: Intent, policy: ReviewPolicy, now: number, ctx: Review
       break;
     case 'direct_sweep':
       directSweepReasons(i, policy, listed(i.token), out);
-      if ([router, sweepRelayer, announcer].some((c) => eq(c, i.to))) out.push('DESTINATION_IS_PROTOCOL_CONTRACT');
+      destinationReasons(i.to, i.token, i.chainId, policy, out);
       break;
     case 'relayed_sweep_sig':
       if (!eq(i.verifyingContract, sweepRelayer)) out.push('UNKNOWN_TO');
@@ -109,6 +109,7 @@ function policyReasons(i: Intent, policy: ReviewPolicy, now: number, ctx: Review
       if (!eq(i.feeTo, policy.feeRecipient)) out.push('FEE_RECIPIENT_MISMATCH');
       deadlineReasons(i.deadline, now, policy, out);
       if (shareExceeded(i.fee, i.amount, policy)) out.push('FEE_SHARE_ABOVE_CAP');
+      destinationReasons(i.destination, i.token, i.chainId, policy, out);
       break;
     case 'permit_sig':
       if (!listed(i.token)) out.push('TOKEN_NOT_ALLOWLISTED');
@@ -117,6 +118,13 @@ function policyReasons(i: Intent, policy: ReviewPolicy, now: number, ctx: Review
       break;
   }
   return out;
+}
+
+/** Where swept funds go, for both sweep kinds: GhostPay contracts and token contracts cannot give them back. */
+function destinationReasons(to: Address, token: Address | 'native', chainId: number, policy: ReviewPolicy, out: ReasonCode[]): void {
+  const { router, sweepRelayer, announcer } = policy.contracts;
+  if ([router, sweepRelayer, announcer].some((c) => eq(c, to))) out.push('DESTINATION_IS_PROTOCOL_CONTRACT');
+  if ((token !== 'native' && eq(token, to)) || tokenListed(policy, chainId, to)) out.push('DESTINATION_IS_TOKEN_CONTRACT');
 }
 
 function directSweepReasons(i: DirectSweepIntent, policy: ReviewPolicy, tokenOk: boolean, out: ReasonCode[]): void {

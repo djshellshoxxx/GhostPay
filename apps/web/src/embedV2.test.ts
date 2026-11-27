@@ -261,6 +261,19 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.btn.hasAttribute('title')).toBe(false);
   });
 
+  it('lets a dialog the shop page removed stay gone: its late timeout opens no popup and moves no focus', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove(); // the shop page withdraws the checkout before it answers
+    h.btn.click();
+    const close = doc.querySelector('[role="dialog"] button') as HTMLButtonElement;
+    h.timers[0]!(); // the first checkout's handshake timeout fires late
+    expect(h.opened).toEqual([]);
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    expect(doc.activeElement).toBe(close);
+  });
+
   it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
     const a = await armed();
     expect(a.h.posted).toHaveLength(1);
@@ -343,6 +356,22 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.opened).toEqual([]);
     h.send(done(nonce));
     expect(h.events).toHaveLength(0);
+  });
+
+  it('moves focus into the dialog, never stacks a second checkout, and returns focus on close', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    const doc = h.dom.window.document;
+    h.btn.focus();
+    h.btn.click();
+    const close = doc.querySelector('[role="dialog"] button') as HTMLButtonElement;
+    expect(doc.activeElement).toBe(close);
+    h.btn.click(); // a script or assistive technology can still activate the button behind the dialog
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    close.click();
+    expect(doc.querySelector('[role="dialog"]')).toBeNull();
+    expect(doc.activeElement).toBe(h.btn);
+    h.btn.click(); // closing frees the button for a new checkout
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
   });
 });
 

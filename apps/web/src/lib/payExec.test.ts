@@ -9,7 +9,7 @@ import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
-import { createPayContext, permitPreflightReader, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
+import { DEADLINE_SECONDS, createPayContext, permitPreflightReader, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type ApprovalPlan, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { userMessage } from './errors';
@@ -471,6 +471,45 @@ describe('ERC-20 flows', () => {
     expect(built.preview.method).toBe('payERC20WithPermit');
     expect(built.preview.permit).toBeDefined();
     void OWNER;
+  });
+
+  it('times a payment rebuilt after a front-run permit from when the wallet answered, not from before the prompt', async () => {
+    const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const wallet = new MockWallet({ account: account.address });
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+    let now = NOW;
+    let allowance = 0n;
+    // Longer than the whole router deadline window: a clock read taken before the prompt yields an expired payment.
+    const promptSeconds = 25 * 60;
+    const signing = winfo({
+      request: async (a) => {
+        if (a.method === 'eth_signTypedData_v4') {
+          const td = JSON.parse((a.params as [string, string])[1]) as { domain: never; types: { Permit: never }; message: Record<string, string> };
+          now += promptSeconds;
+          allowance = ctx.request.grossAmount; // someone else submitted the permit meanwhile
+          return account.signTypedData({
+            domain: td.domain,
+            types: { Permit: td.types.Permit },
+            primaryType: 'Permit',
+            message: { owner: td.message['owner'], spender: td.message['spender'], value: BigInt(td.message['value'] as string), nonce: BigInt(td.message['nonce'] as string), deadline: BigInt(td.message['deadline'] as string) },
+          });
+        }
+        return wallet.request(a);
+      },
+    });
+    const session = await connectWallet(signing, 84532);
+    const rpc = mockRpc(84532, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
+      if (data.startsWith('0xdd62ed3e')) return `0x${allowance.toString(16).padStart(64, '0')}`;
+      if (data.startsWith('0xd505accf')) return '0x';
+      return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' });
+    });
+    const built = await preparePayment(session, ctx, { usePermit: true }, { rpc, nowSeconds: () => now }, noStatus);
+    expect(built.preview.method).toBe('payERC20');
+    expect(built.preview.deadline).toBe(BigInt(NOW + promptSeconds + DEADLINE_SECONDS));
   });
 
   describe('classifyPayerPermit (spec 04 pre-flight)', () => {

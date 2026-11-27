@@ -4,7 +4,7 @@ import { PassphrasePolicyError, UnsupportedError } from './errors.js';
 
 /** Envelope `alg` of a passphrase-protected invoice link (ADR-0020). */
 export const PASSPHRASE_ALG = 'A256GCM-PW';
-/** Minimum passphrase length in Unicode code points after NFKC. Same value as the web keystore. */
+/** Minimum passphrase length in Unicode code points after NFKC (ADR-0020). New seller keystores require more (14). */
 export const MIN_PASSPHRASE_CHARS = 10;
 /** Maximum passphrase size in UTF-8 bytes after NFKC. Bounds work done before the KDF. */
 export const MAX_PASSPHRASE_BYTES = 1024;
