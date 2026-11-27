@@ -32,3 +32,26 @@ Local runs on branch `claude/loving-brown-v8dlp6` (Node 22.23.5, Chromium from `
 - `npx vitest run src/views/Pay --coverage=false`: 5 files, 168/168. Web typecheck and lint clean.
 
 Not run here: Firefox, WebKit and real devices; the rest of the e2e suite (hosted CI runs it).
+
+## #355: quick-hide focus after a masked cancellation
+
+Follow-up to the [#355 comments](https://github.com/djshellshoxxx/GhostPay/pull/355#issuecomment-7204906392): its
+three regressions (donor `0fb2831a`, `WalletDisclosure.quickHide.test.tsx`) had no counterpart on `main`, and main has
+no `PrivacyQuickHide.tsx` (the Alt+Shift+H shortcut is in `PrivacyControls.tsx`).
+
+- **Ported** with the same titles to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx`, using the real
+  `PrivacyControls` inside `PrivacyProvider` and `WalletDisclosureProvider` in the shell's order.
+- **Gap on main, fixed.** A quick hide while a wallet review is open masks the page and cancels the review. The opener
+  (inside the masked view) has left the document, so the dialog's cleanup fell back to the page heading, and with no
+  heading to `<body>`: all three cases failed on main with focus on `<body>`. In the real shell that fallback lands on
+  the header `h1`. `DisclosureDialog` now focuses the neutral privacy control in that case, reading the mask state
+  current when the dialog closes through a ref (a mask change alone never reruns the cleanup). Replacement-dialog
+  ownership, valid-opener restoration and the unmasked heading fallback (`WalletDisclosure.test.tsx`, 7 cases) are
+  unchanged.
+- No wallet call, send or focus on hidden or inert content in any case (asserted).
+- Evidence: `npx vitest run src/components/WalletDisclosure src/AppShell.masking.test.tsx
+  src/components/SensitiveContent.test.tsx src/lib/privacyMode.test.tsx --coverage=false` in `apps/web`: 5 files,
+  46/46 with the change; the three ported cases fail without it.
+- Observation, not changed: `focusPageHeading` queries `'main h2, main h1, h2, h1'`, and `querySelector` returns the
+  first match in document order, so in the shell the unmasked fallback also reaches the header `h1` before any route
+  heading in `main`. Kept as is (the reviewer asked to preserve the heading fallback); a possible accessibility follow-up.

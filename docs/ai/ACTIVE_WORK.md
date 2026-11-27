@@ -6,7 +6,9 @@ Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packa
 `apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`.
 Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
 ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
-narrow repair only if a ported case shows a real gap. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
+the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
+masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
 REV-I6, QA-I1, LATE-M1, IDLE-M1. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
 that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
 checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
