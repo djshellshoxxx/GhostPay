@@ -53,6 +53,10 @@ export interface ScanProgress {
   readonly scanned: number;
   readonly matches: number;
   readonly skipped: number;
+  /**
+   * The fetch was not truncated and the cursor is beyond the primary head observed for this page.
+   * This does not prove complete history, log inclusion/completeness, durable storage, or the latest chain tip.
+   */
   readonly caughtUp: boolean;
   /** Pages where a second provider disagreed (checkpoint withheld for those pages). */
   readonly discrepancies?: number;
@@ -646,7 +650,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           }
         }
       }
-      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
+      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated && cursor.nextBlock > res.head, discrepancies: discrepancies.length, ...narrowed() });
       if (!res.truncated) break;
     }
   } catch (e) {

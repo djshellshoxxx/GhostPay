@@ -299,3 +299,32 @@ products and 34 frozen archive refs remain preserved.
 test results, local-work preservation, candidate classifications, released generation-65
 metadata repair, and next actions. The PR supplies current hosted qualification and final
 published/merge SHAs. This source checkpoint does not assert a merge or release approval.
+
+## P14 F4 completion candidate — 2026-11-27 UTC
+
+**Implemented; qualified integration pending:** [#747](https://github.com/djshellshoxxx/GhostPay/pull/747),
+`finish/p14-caught-up-20261127-d81a`. This repairs an incomplete already-integrated P14
+contract from #658 (`9aed3886693270524beb118685e5947469899c43`), not recovered unmerged code.
+Initial main `9ae77020`; current incorporated main `3f7fcd0a7`; prerequisite #745 head
+`84d95d627750fc80dd1b496429c3942f49101c6b` is retained by ordinary merge. Merge #745 and
+verify resulting main before integrating #747. Coordination history is preserved in full.
+
+The terminal `caughtUp` flag now requires the cursor to exceed the page's observed primary
+head. A lagging secondary still caps the fetch and saves the same replay tail, but cannot
+qualify late-payment review merely because the bounded page was untruncated. The existing
+terminal break, records, finality/reorg behavior, session/route guards and explicit seller
+verification remain intact. No chain, contract, backend, dependency or feature activation.
+
+Independent authors proved four unit failures and one real mounted seller-journey failure
+on the old runtime. Corrected combined verification: **303 web tests / 10 files**, plus
+**125 scan-source tests / 10 files with existing coverage gates**. Web typecheck, lint,
+lean build/bundle scan and secret/whitespace checks passed. An independent reviewer found
+no blocking findings and separately passed 60 focused regression tests.
+Current-head hosted checks and final main integration remain required; no merge SHA is
+claimed at this source checkpoint. The known baseline WebKit CSP finding remains explicit.
+
+[Focused handoff](handoffs/P14_CAUGHT_UP_COMPLETION_20261127.md) records source commits,
+exact red/green evidence, the newer-main merge, bounded generation-66 release repair,
+generation-67 coordination acquisition, remaining gates and next action. P14 F3's captured-
+source indexer completion caveat is the next unclaimed repair; older unique owned work,
+timestamp deferral and the ten stop-work exclusions retain their previous dispositions.
