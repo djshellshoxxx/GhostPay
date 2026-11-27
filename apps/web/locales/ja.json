@@ -1215,7 +1215,7 @@
     "disclosure.observer.3.learns": "クライアントの IP、照会したブロック範囲とアドレス、送信したトランザクション。",
     "disclosure.observer.3.not": "閲覧鍵や支出鍵（送信されません）、請求書の内容。",
     "disclosure.observer.4.who": "リレイヤー運営者",
-    "disclosure.observer.4.learns": "IP（ハッシュ化）、ステルスアドレス、宛先、トークン、金額、手数料、タイミング。検閲が可能です。",
+    "disclosure.observer.4.learns": "あなたの IP アドレス（リファレンスリレイヤーはレート制限のためにハッシュ化しますが、運営者やプロキシには見えます）、ステルスアドレス、宛先、トークン、金額、手数料、タイミング。検閲が可能です。",
     "disclosure.observer.4.not": "鍵。",
     "disclosure.observer.5.who": "ウォレットプロバイダー",
     "disclosure.observer.5.learns": "トランザクション要求、チェーン、接続中のアドレス。",

@@ -1215,7 +1215,7 @@
     "disclosure.observer.3.learns": "Client IP, queried block ranges and addresses, submitted transactions.",
     "disclosure.observer.3.not": "Viewing or spending keys (never sent); invoice contents.",
     "disclosure.observer.4.who": "Relayer operator",
-    "disclosure.observer.4.learns": "IP (hashed), the stealth address, destination, token, amount, fee, timing; can censor.",
+    "disclosure.observer.4.learns": "Your IP address (hashed by the reference relayer for rate limits, but visible to the operator and any proxy), the stealth address, destination, token, amount, fee, timing; can censor.",
     "disclosure.observer.4.not": "Keys.",
     "disclosure.observer.5.who": "Wallet provider",
     "disclosure.observer.5.learns": "Transaction requests, chain, connected addresses.",

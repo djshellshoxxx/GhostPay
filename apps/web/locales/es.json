@@ -1215,7 +1215,7 @@
     "disclosure.observer.3.learns": "IP del cliente, rangos de bloques y direcciones consultados, transacciones enviadas.",
     "disclosure.observer.3.not": "Las claves de visualización o de gasto (nunca se envían); el contenido de la factura.",
     "disclosure.observer.4.who": "Operador del relayer",
-    "disclosure.observer.4.learns": "IP (con hash), la dirección sigilosa, el destino, el token, el importe, la comisión, el momento; puede censurar.",
+    "disclosure.observer.4.learns": "Tu dirección IP (el relayer de referencia la convierte en hash para limitar peticiones, pero el operador y cualquier proxy pueden verla), la dirección sigilosa, el destino, el token, el importe, la comisión, el momento; puede censurar.",
     "disclosure.observer.4.not": "Las claves.",
     "disclosure.observer.5.who": "Proveedor de la cartera",
     "disclosure.observer.5.learns": "Solicitudes de transacción, cadena, direcciones conectadas.",
