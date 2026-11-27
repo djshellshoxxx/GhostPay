@@ -2564,6 +2564,7 @@
     "stealthExport.archive.heading": "Export all payment keys (encrypted)",
     "stealthExport.archive.summary": "{count, plural, one {# payment key} other {# payment keys}} found on {chain}, scope: all discovered payments.",
     "stealthExport.archive.hint": "Private keys are encrypted with a new passphrase (ghostpay-stealth-keypair-v1). The authenticated public header stays readable without the passphrase: it exposes the chain, payment count, every included address and public key, and announcement locators, linking all archive entries. Master keys are not included. Keep decrypted payment keys away from anyone who holds your private viewing key: together with a payment’s public announcement, they allow reconstruction of your master spending key. Before export, every address is checked for contract code through the RPC this scan used.",
+    "stealthExport.archive.rpcPrivacy": "Before the download, every address in this archive is checked for contract code through the RPC this scan used. That provider can link all of these addresses to each other, to the request time and to your connecting IP. No private key is sent. Export only if you accept this disclosure.",
     "stealthExport.archive.download": "Download encrypted archive",
     "stealthExport.archive.done": "Encrypted payment key archive generated; download initiated. Keep and verify the saved file.",
     "stealthExport.master.heading": "Master stealth key backup (encrypted)",

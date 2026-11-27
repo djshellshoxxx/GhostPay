@@ -42,6 +42,12 @@ describe('explicit ENS registry lookup', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it('looks up a name that starts like an address', async () => {
+    const rpc = makeClient();
+    await expect(resolveRegistryRegistrant(rpc, '0xabc.eth')).resolves.toEqual({ registrant: WHO, name: normalize('0xabc.eth') });
+    expect(rpc.request).toHaveBeenCalledTimes(2);
+  });
+
   it.each(['', 'plain', 'a..eth', 'alice\u0000.eth', 'a'.repeat(1025), '0x1234'])('rejects malformed input before network: %s', async (input) => {
     const rpc = makeClient();
     await expect(resolveRegistryRegistrant(rpc, input)).rejects.toThrow(/INVALID_INPUT/);

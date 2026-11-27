@@ -34,7 +34,7 @@ export interface RegistryRegistrant {
  * Sources: https://docs.ens.domains/resolvers/universal/ and https://docs.ens.domains/ensip/23/
  */
 export async function resolveRegistryRegistrant(client: Pick<RpcClient, 'chainId' | 'request'>, input: string): Promise<RegistryRegistrant> {
-  if (input.startsWith('0x')) {
+  if (input.startsWith('0x') && !input.includes('.')) {
     return { registrant: buildLookupCall(input).preview.registrant! };
   }
   if (input.length === 0 || input.length > 1024 || !input.includes('.')) {
