@@ -1,3 +1,15 @@
+# Recorded low residuals (web) — 2026-11-27 UTC
+
+Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
+to main `3f79c301` (#757); no new branch. Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/public/ghostpay-embed-v2.js` (dialog containment) and `embedV2.test.ts`;
+`apps/web/src/lib/{relayerClient,displayText,pay,scanPrivacy}.ts` (`trustView` and the indexer cross-check bound only);
+`views/Pay.tsx` (signer notice and offline notice only); their tests; two keys in `locales/*.json` and
+`i18n/securityKeys.ts`; this entry. Overlap: `Pay.tsx` with open #742, separate hunks.
+Acceptance: each fix has a regression test; no payment, journal, privacy or verification guard loosened; no dependency,
+contract, workflow or activation change.
+
 # Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
 
 Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
