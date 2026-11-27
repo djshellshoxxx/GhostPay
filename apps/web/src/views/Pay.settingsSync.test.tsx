@@ -34,19 +34,31 @@ function otherTabSaves(patch: Record<string, unknown>): void {
   act(() => { window.dispatchEvent(new StorageEvent('storage', { key: SETTINGS_KEY })); });
 }
 
-async function toPrepared(wallet: MockWallet): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
-  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(BASE));
+type Around = (method: string, params: readonly unknown[], answer: () => Promise<unknown>) => Promise<unknown>;
+
+/** Opens an invoice up to its review; `around` can hold an RPC answer. */
+async function toReview(wallet: MockWallet, around?: Around): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
+  if (window.localStorage.getItem(SETTINGS_KEY) === null) window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(BASE));
   const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-  const createRpc = vi.fn<Services['createRpc']>(() => Promise.resolve(withManifestChain(mockRpc(84532, (method) => (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt' ? null : '0x')))));
+  const createRpc = vi.fn<Services['createRpc']>(() => {
+    const rpc = withManifestChain(mockRpc(84532, (method) => (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt' ? null : '0x')));
+    return Promise.resolve(around === undefined ? rpc : { ...rpc, request: (method: string, params: readonly unknown[]) => around(method, params, () => rpc.request(method, params)) });
+  });
   const info: WalletInfo = { id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: wallet };
   setHash(fragment);
   renderApp(makeServices({ createRpc, loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532) }), discoverWallets: () => Promise.resolve([info]) }));
   const user = userEvent.setup();
-  await user.click(await screen.findByRole('button', { name: 'Continue' }));
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: /^(?:Continue|Start the delay)$/ }).disabled).toBe(false); });
+  return { user, opened: () => createRpc.mock.calls.map((call) => call[1]) };
+}
+
+async function toPrepared(wallet: MockWallet, around?: Around): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
+  const { user, opened } = await toReview(wallet, around);
+  await user.click(screen.getByRole('button', { name: 'Continue' }));
   await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
   await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
   await screen.findByRole('heading', { name: FINAL });
-  return { user, opened: () => createRpc.mock.calls.map((call) => call[1]) };
+  return { user, opened };
 }
 
 /** A wallet whose send prompt stays open until released. */
@@ -94,6 +106,41 @@ describe('Pay: settings saved by another tab', () => {
       expect(held.asked()).toBe(1);
     },
   );
+
+  it('asks the wallet for nothing when the RPC changes while the send is still being checked', async () => {
+    let hold = false;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    let held = 0;
+    const wallet = new MockWallet();
+    const { user } = await toPrepared(wallet, async (method, params, answer) => {
+      if (hold && method === 'eth_call' && (params[0] as { from?: string }).from === wallet.account) { held++; await gate; }
+      return answer();
+    });
+    hold = true;
+    await user.click(screen.getByRole('button', { name: SEND }));
+    await waitFor(() => { expect(held).toBe(1); });
+    otherTabSaves(OTHER_RPC);
+    await act(async () => { release(); await Promise.resolve(); });
+    expect(await screen.findByText(/Check the details again/)).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
+    expect(wallet.calls.some((call) => call.method === 'eth_sendTransaction')).toBe(false);
+    expect(readAttempts()).toEqual([]);
+  });
+
+  it('cancels a running delay when the RPC changes', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...BASE, delayMinSec: 60, delayMaxSec: 60 }));
+    const wallet = new MockWallet();
+    const { user } = await toReview(wallet);
+    await user.click(screen.getByLabelText(/Wait a random time first/));
+    await user.click(screen.getByRole('button', { name: 'Start the delay' }));
+    await screen.findByText('Scheduled locally. Nothing has been signed or broadcast.');
+    otherTabSaves({ ...OTHER_RPC, delayMinSec: 60, delayMaxSec: 60 });
+    expect(await screen.findByText(/Check the details again/)).toBeTruthy();
+    expect(screen.queryByText('Scheduled locally. Nothing has been signed or broadcast.')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Start the delay' })).toBeTruthy();
+    expect(wallet.calls).toEqual([]);
+  });
 
   it.each([['the RPC', OTHER_RPC], ['the signer pins', PINS]] as const)(
     'keeps a shown outcome when %s changes afterwards',
