@@ -2,8 +2,6 @@ import { createReconciliationApi, type ReconciliationVaultStore, type Reconcilia
 import { UserFacingError, type MessageDescriptor } from './errors';
 import { captureSessionGuard, getSessionPublic, revealViewingKey } from './session';
 import { checkpointKeyId } from './scanClient';
-import { presenceSlot, presenceStorage, trackReconciliationPresence } from './reconciliationPresence';
-import { sessionViewingKey } from './scanCursorSlot';
 export type { ReconciliationScope, VaultRecord, ArchivedReceipt, ReconciliationVaultStore, ReconciliationState, ReconciliationImportPreview } from '@ghostpay/ux-vault/portable';
 export const { MAX_VAULT_BYTES, MAX_ARCHIVED_RECEIPTS, ReconciliationVault } = createReconciliationApi({ Error: UserFacingError, notify: announce });
 export type ReconciliationVault = ReconciliationVaultHandle;
@@ -73,10 +71,7 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
     if (this.dbPromise) return this.dbPromise;
     let settled = false;
     const pending = new Promise<IDBDatabase>((resolve, reject) => {
-      let request: IDBOpenDBRequest;
-      // A missing or refused IndexedDB (no API, a SecurityError) is reported like a failed open, never as a raw error.
-      try { request = indexedDB.open('ghostpay-reconciliation-encrypted', 1); }
-      catch { settled = true; reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsUnavailable' })); return; }
+      const request = indexedDB.open('ghostpay-reconciliation-encrypted', 1);
       request.onupgradeneeded = () => {
         request.result.createObjectStore('vaults');
       };
@@ -218,10 +213,7 @@ export async function createCurrentReconciliationVault(
     checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey) !== sellerKeyId
   )
     fail({ key: 'error.reconciliationVault.theCurrentSellerScopeChanged' });
-  // LATE-M1: every read and write of this scope also records whether a vault may exist (see reconciliationPresence.ts).
-  const slot = sessionViewingKey(sellerKeyId, (viewingKey) => presenceSlot(viewingKey, chainId, sellerKeyId));
-  if (slot === undefined) fail({ key: 'error.reconciliationVault.theCurrentSellerScopeChanged' });
-  const vault = new ReconciliationVault(trackReconciliationPresence(browserStore, presenceStorage(), slot), { chainId, sellerKeyId }, guard);
+  const vault = new ReconciliationVault(browserStore, { chainId, sellerKeyId }, guard);
   try {
     await vault.unlock(revealViewingKey());
     guard();
@@ -229,39 +221,6 @@ export async function createCurrentReconciliationVault(
   } catch (error) {
     vault.lock();
     throw error;
-  }
-}
-/** IndexedDB itself could not be opened (missing, refused, failed or blocked): nothing is known about the stored vault. */
-export function isReconciliationStorageUnavailable(error: unknown): boolean {
-  const key = error instanceof UserFacingError ? error.translation?.key : undefined;
-  return key === 'error.reconciliationVault.encryptedReconciliationStorageIsUnavailable' ||
-    key === 'error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage';
-}
-
-/**
- * LATE-M1: the page checks of {@link ReconciliationVault.observeInvoicePayments} against an empty in-memory vault, for a scope
- * whose recorded presence is `absent`. This is what the stored vault would have done, so a contradictory or malformed page
- * still refuses; nothing is persisted.
- */
-export async function checkPageWithoutVault(
-  chainId: number, sellerKeyId: string, ...[values, actionGuard, page]: Parameters<ReconciliationVault['observeInvoicePayments']>
-): Promise<void> {
-  const discarded = new Map<string, string>();
-  const store: ReconciliationVaultStore = {
-    read: (key) => Promise.resolve(discarded.get(key) ?? null),
-    compareAndSwap: (key, expected, next, guard) => {
-      guard();
-      if ((discarded.get(key) ?? null) !== expected) return Promise.resolve(false);
-      discarded.set(key, next);
-      return Promise.resolve(true);
-    },
-  };
-  const vault = new ReconciliationVault(store, { chainId, sellerKeyId }, captureSessionGuard());
-  try {
-    await vault.unlock(revealViewingKey());
-    await vault.observeInvoicePayments(values, actionGuard, page);
-  } finally {
-    vault.lock();
   }
 }
 // i18n-use: error.reconciliationVault.invalidReconciliationScope error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit error.reconciliationVault.invalidEncryptedReconciliationFormat error.reconciliationVault.encryptedReconciliationDataBelongsToAnotherSellerOrChainScope error.reconciliationVault.invalidEncryptedReconciliationFields error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit error.reconciliationVault.invalidReconciliationReorgCutoff error.reconciliationVault.invalidReconciliationReorgCutoffTime error.reconciliationVault.invalidReconciliationProvenance error.reconciliationVault.reconciliationRecordHasAnotherScope error.reconciliationVault.duplicateReconciliationRecords error.reconciliationVault.invalidReconciliationTombstone error.reconciliationVault.duplicateReconciliationTombstones error.reconciliationVault.registeredInvoiceHasAnotherScope error.reconciliationVault.duplicateRegisteredInvoice error.reconciliationVault.duplicateRegisteredInvoiceNonce error.reconciliationVault.duplicateArchivedReceipt error.reconciliationVault.invalidArchivedReceipt error.reconciliationVault.archivedReceiptHasAnotherScope error.reconciliationVault.invalidArchivedReceiptTimestamp error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation error.reconciliationVault.theReconciliationVaultIsLocked error.reconciliationVault.reconciliationVaultActionBecameStale error.reconciliationVault.invalidReconciliationViewingKey error.reconciliationVault.reconciliationPlaintextExceedsItsSafetyLimit error.reconciliationVault.couldNotDecryptOrValidateTheReconciliationData error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically error.reconciliationVault.onlyACurrentUnlinkedVerifiedScanObservationCanBeMatched error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch error.reconciliationVault.anotherRegisteredInvoiceAlreadyUsesThisNonce error.reconciliationVault.onlyAValidSignedReceiptCanBeArchived error.reconciliationVault.invalidReorgBlock error.reconciliationVault.invalidReorgObservationScope error.reconciliationVault.invalidCanonicalBlockHash error.reconciliationVault.reorgInvalidationWasSavedButItsHistoryReachedTheSafety error.reconciliationVault.createACurrentImportPreviewBeforeActivation error.reconciliationVault.theReconciliationSafetyStateChangedPreviewThisBackupAgainBefore error.reconciliationVault.thisBackupWouldExceedTheInvoiceRegistrationOrReceiptArchive error.reconciliationVault.encryptedReconciliationStorageIsUnavailable error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead error.reconciliationVault.encryptedReconciliationWriteDidNotCommit error.reconciliationVault.encryptedReconciliationStorageIsFull error.reconciliationVault.theCurrentSellerScopeChanged error.reconciliationVault.theReconciliationVaultReachedItsInvalidationCapacityAndIsRead
