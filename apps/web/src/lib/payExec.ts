@@ -216,7 +216,7 @@ export async function planApproval(ctx: PayContext, session: WalletSession, toke
 }
 
 /** Sends only the exact allowance shown in the final preview and reads back what the wallet actually granted. */
-export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<bigint> {
+export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn, onWalletRequest?: () => void): Promise<bigint> {
   if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.approvingATokenNeedsAnRPCForThisChainConfigure' });
   if (!plan.required) return plan.have;
   const tx = buildApproveTx(plan.token, plan.spender, plan.need);
@@ -225,7 +225,11 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.approve', values: { amount: formatUnits(plan.need, ctx.review.token?.decimals ?? 18), symbol: ctx.review.token?.symbol ?? '' } } });
   assertCurrent?.();
   // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, {
+    kind: 'approval',
+    scope: bytesToHex(invoiceDigest(ctx.review.invoice)),
+    ...(onWalletRequest === undefined ? {} : { onWalletRequest }),
+  });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theApprovalWasNotConfirmedNothingWasPaid' });
     // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).

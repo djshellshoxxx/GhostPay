@@ -74,9 +74,19 @@ export interface ScanLaneSettings {
   readonly spamScoring: boolean;
   /** Opt-in: after a scan, count same-token transfers at similar amounts for the privacy set (costs RPC calls). */
   readonly privacySetTransfers: boolean;
+  /**
+   * Opt-in: also verify a keyed share of the other router payments each scan reads, so a provider that only records
+   * requests sees a payment's lookups among others' (many more verification requests; see matchCover.ts for limits).
+   */
+  readonly matchCover: boolean;
+  /**
+   * Set only in memory, never saved: settings were saved in this browser but cannot be read exactly as saved. A cover
+   * opt-in may be among them, so scanning is blocked until the user saves valid settings again.
+   */
+  readonly unreadable?: true;
 }
 
-export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false });
+export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false, matchCover: false });
 export const SCAN_LANES_KEY = 'ghostpay.scanLanes.v1';
 
 interface StorageLike {
@@ -91,16 +101,34 @@ export function sanitizeScanLanes(raw: unknown): ScanLaneSettings {
     floodPerBlock: intIn(o['floodPerBlock'], 1, MAX_FLOOD_PER_BLOCK) ? o['floodPerBlock'] : DEFAULT_SCAN_LANES.floodPerBlock,
     spamScoring: o['spamScoring'] !== false,
     privacySetTransfers: o['privacySetTransfers'] === true,
+    matchCover: o['matchCover'] === true,
   };
 }
 
+/** True when every field present in `raw` survived sanitizing as itself; older saved versions may lack fields. */
+function intactScanLanes(raw: unknown, s: ScanLaneSettings): boolean {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return false;
+  const o = raw as Record<string, unknown>;
+  return (['floodPerBlock', 'spamScoring', 'privacySetTransfers', 'matchCover'] as const)
+    .every((k) => !Object.prototype.hasOwnProperty.call(o, k) || o[k] === s[k]);
+}
+
+/**
+ * Reads the saved settings. Nothing saved (or no storage API at all) gives the defaults. Saved settings that are not
+ * exactly valid, or a read the browser refuses, are marked {@link ScanLaneSettings.unreadable} and keep what could be
+ * read, for review in Settings.
+ */
 export function loadScanLanes(storage: StorageLike | undefined): ScanLaneSettings {
+  let raw: unknown;
   try {
     const text = storage?.getItem(SCAN_LANES_KEY);
-    return text === null || text === undefined ? DEFAULT_SCAN_LANES : sanitizeScanLanes(JSON.parse(text));
+    if (text === null || text === undefined) return DEFAULT_SCAN_LANES;
+    raw = JSON.parse(text);
   } catch {
-    return DEFAULT_SCAN_LANES;
+    return { ...DEFAULT_SCAN_LANES, unreadable: true };
   }
+  const s = sanitizeScanLanes(raw);
+  return intactScanLanes(raw, s) ? s : { ...s, unreadable: true };
 }
 
 export function saveScanLanes(storage: StorageLike | undefined, s: ScanLaneSettings): boolean {
