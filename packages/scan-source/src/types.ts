@@ -94,7 +94,10 @@ export interface LightClient {
   getTransactionCount(address: Hex): Promise<bigint>;
   getCode(address: Hex): Promise<Hex>;
   getStorageAt(address: Hex, slot: Hex): Promise<Hex>;
-  /** True only if the client proves log inclusion (receipts proof). Unverified for Helios in this PoC. */
+  /**
+   * Client-declared log-inclusion capability, retained for compatibility. This interface exposes no
+   * per-result proof operation, so createLightSource never treats the flag as evidence of inclusion.
+   */
   readonly verifiesLogs: boolean;
 }
 
