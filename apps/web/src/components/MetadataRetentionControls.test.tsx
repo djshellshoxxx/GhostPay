@@ -24,6 +24,14 @@ const scopes = [
   { scope: 'proof', key: PROOF_RETENTION_KEY, otherKey: RETENTION_KEY, label: 'Close payment proof previews automatically', preview: 'Preview proof cleanup', confirm: 'Close previewed proofs' },
 ] as const;
 
+const pageReturnEvents = ['focus', 'pageshow', 'visibilitychange', 'resume'] as const;
+const returningScopes = pageReturnEvents.flatMap((event) => scopes.map((scope) => ({ ...scope, event })));
+function returnToPage(event: (typeof pageReturnEvents)[number]): void {
+  if (event === 'pageshow') window.dispatchEvent(new PageTransitionEvent(event, { persisted: true }));
+  else if (event === 'focus') window.dispatchEvent(new Event(event));
+  else document.dispatchEvent(new Event(event));
+}
+
 beforeEach(() => { localStorage.clear(); });
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
@@ -79,7 +87,7 @@ describe('invoice presentation retention controls', () => {
   });
 });
 
-describe.each(scopes)('$scope preference reconciliation on returning focus', ({ scope, key, otherKey, label, preview, confirm }) => {
+describe.each(returningScopes)('$scope preference reconciliation on $event', ({ scope, key, otherKey, label, preview, confirm, event }) => {
   beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(1_000); });
 
   it('reconciles a missed cross-tab change and invalidates manual approval without closing a preview', () => {
@@ -87,7 +95,7 @@ describe.each(scopes)('$scope preference reconciliation on returning focus', ({ 
     fireEvent.click(screen.getByRole('button', { name: preview }));
     expect(screen.getByRole('button', { name: confirm })).toBeTruthy();
     localStorage.setItem(key, '{"delay":900000}');
-    act(() => { window.dispatchEvent(new Event('focus')); });
+    act(() => { returnToPage(event); });
     expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('900000');
     expect(screen.queryByRole('button', { name: confirm })).toBeNull();
     expect(screen.getByText('Disposable generated preview')).toBeTruthy();
@@ -99,7 +107,7 @@ describe.each(scopes)('$scope preference reconciliation on returning focus', ({ 
     render(<ScopedFixture scope={scope} />);
     fireEvent.click(screen.getByRole('button', { name: preview }));
     localStorage.setItem(otherKey, '{"delay":300000}');
-    act(() => { window.dispatchEvent(new Event('focus')); });
+    act(() => { returnToPage(event); });
     expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('900000');
     expect(screen.getByRole('button', { name: confirm })).toBeTruthy();
     expect(screen.getByText('Disposable generated preview')).toBeTruthy();
@@ -116,7 +124,7 @@ describe.each(scopes)('$scope preference reconciliation on returning focus', ({ 
       ? vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('synthetic storage denial'); })
       : undefined;
     if (failure === 'malformed') localStorage.setItem(key, '{"delay":300000,"delay":0}');
-    act(() => { window.dispatchEvent(new Event('focus')); });
+    act(() => { returnToPage(event); });
     expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('0');
     expect(screen.queryByRole('button', { name: confirm })).toBeNull();
     act(() => { vi.advanceTimersByTime(301_000); });
@@ -159,13 +167,14 @@ describe('retention preference control lifetime', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it('withdraws its focus observer when the control unmounts', () => {
-    const add = vi.spyOn(window, 'addEventListener');
-    const remove = vi.spyOn(window, 'removeEventListener');
+  it.each(pageReturnEvents)('withdraws its %s observer when the control unmounts', (event) => {
+    const target = event === 'focus' || event === 'pageshow' ? window : document;
+    const add = vi.spyOn(target, 'addEventListener');
+    const remove = vi.spyOn(target, 'removeEventListener');
     const view = render(<MetadataRetentionControls scope="proof" />);
-    const focus = add.mock.calls.find(([name]) => name === 'focus')?.[1];
-    expect(focus).toBeTypeOf('function');
+    const observer = add.mock.calls.find(([name]) => name === event)?.[1];
+    expect(observer).toBeTypeOf('function');
     view.unmount();
-    expect(remove.mock.calls.some(([name, listener]) => name === 'focus' && listener === focus)).toBe(true);
+    expect(remove.mock.calls.some(([name, listener]) => name === event && listener === observer)).toBe(true);
   });
 });

@@ -187,6 +187,55 @@ describe('resolveAttempt', () => {
     await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R2, R1] }))).resolves.toEqual({ state: 'replaced', hash: R1, kind: 'different-call', outcome: { state: 'pending' } });
   });
 
+  it('reports a mined linked replacement whose receipt is withheld as an unusable answer, not a consumed nonce', async () => {
+    const record = attempt({ nonce: 7, replacements: [R1] });
+    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([record]));
+    const journal = window.localStorage.getItem(ATTEMPT_JOURNAL_KEY);
+    const c = chain();
+    c.latestNonce = 8n;
+    c.txs.set(R1, tx(R1, { blockNumber: '0x5a', blockHash: blockHash(90n) }));
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual({ state: 'rpc-error' });
+    // A later pending replacement does not hide the inconsistent one.
+    c.txs.set(R2, tx(R2));
+    await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R1, R2] }))).resolves.toEqual({ state: 'rpc-error' });
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(journal);
+
+    // Controls: with its receipt it is followed; a reorged or unknown replacement still leaves the nonce consumed.
+    mined(c, R1, 90n);
+    await expect(resolveAttempt(c.rpc, record)).resolves.toMatchObject({ state: 'replaced', hash: R1, outcome: { state: 'confirmed' } });
+    c.receipts.set(R1, receipt(R1, 90n, { status: '0x0' }));
+    await expect(resolveAttempt(c.rpc, record)).resolves.toMatchObject({ state: 'replaced', hash: R1, outcome: { state: 'reverted' } });
+    c.canonical.set(90n, blockHash(91n));
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual({ state: 'nonce-consumed', nonce: 7, accountNonce: 8n });
+    c.txs.delete(R1);
+    c.receipts.delete(R1);
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual({ state: 'nonce-consumed', nonce: 7, accountNonce: 8n });
+  });
+
+  it.each([['gone', false], ['still visible but unmined', true]] as const)('reports a canonical replacement receipt without its transaction as an unusable answer (original %s)', async (_name, visible) => {
+    const record = attempt({ nonce: 7, replacements: [R1] });
+    window.localStorage.setItem(ATTEMPT_JOURNAL_KEY, JSON.stringify([record]));
+    const journal = window.localStorage.getItem(ATTEMPT_JOURNAL_KEY);
+    const c = chain();
+    if (visible) c.txs.set(H, tx(H));
+    c.latestNonce = 8n;
+    // The RPC returns a canonical receipt for the linked hash but not the transaction to compare with the request.
+    mined(c, R1, 90n);
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual({ state: 'rpc-error' });
+    // A pending replacement checked first does not hide the inconsistent one.
+    c.txs.set(R2, tx(R2));
+    await expect(resolveAttempt(c.rpc, attempt({ nonce: 7, replacements: [R2, R1] }))).resolves.toEqual({ state: 'rpc-error' });
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(journal);
+
+    // Controls: a reorged receipt, or neither transaction nor receipt, leaves the account nonce as the evidence.
+    const consumed = { state: 'nonce-consumed', nonce: 7, accountNonce: 8n };
+    c.canonical.set(90n, blockHash(91n));
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual(consumed);
+    c.receipts.delete(R1);
+    await expect(resolveAttempt(c.rpc, record)).resolves.toEqual(consumed);
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(journal);
+  });
+
   it('alarms when a linked replacement no longer matches the sender or nonce', async () => {
     const c = chain();
     c.txs.set(R1, tx(R1, { from: OTHER }));
