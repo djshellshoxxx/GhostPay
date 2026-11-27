@@ -1,3 +1,38 @@
+# ERC-20 Pages browser payment and fresh-profile recovery qualification — 2026-11-27 UTC
+
+Coordinator: ChatGPT `27c1c13e68a7`; branch `test/erc20-pages-recovery-20261127-27c1`.
+Base: main `c9177f57bc7293fa7a461cfc663c38cc7fe63bf2`. The owner requested continuation
+of the browser-journey design after reviewing qualification candidate #751
+`48254ae02edad512ee37ae072fa4215c947fceb8`. This is a separate test/fixture lane;
+it does not merge that composition or claim any other worker's runtime fixes.
+
+Owned paths: new `apps/web/e2e/devnet/erc20.ts`, `apps/web/e2e/devnet/erc20Ui.ts`,
+`apps/web/e2e/erc20-pages-devnet.spec.ts`, `apps/web/e2e/erc20-pages-boundaries.spec.ts`,
+new `.github/workflows/erc20-browser-qualification.yml`, the additive ERC-20 selection
+and engine configuration in `apps/web/playwright.pages-devnet.config.ts`, the new-spec
+exclusion in `apps/web/playwright.config.ts`, this additive claim, and new
+`docs/handoffs/ERC20_BROWSER_QUALIFICATION_20261127.md`.
+
+Ownership refresh inspected all 155 open PR changed-file inventories. These proposed
+new paths and config hunks have no identified competing claim. Preserve the existing
+`scripts/beta/browser-devnet.sh`, `e2e/devnet/{chain,pages,ui}.ts`, native Pages spec,
+manifest helper and Pages workflow byte-for-byte: older open PRs retain their claims.
+Fixture, browser-spec and CI workers use separate worktrees; only the coordinator integrates.
+
+Acceptance: the actual lean Pages build under `/GhostPay/` drives real local-Anvil
+ERC-20 approval/permit payments, confirmation-gated scan evidence, explicit matching,
+invoice-bound receipts and an actual downloaded seller-keystore restore into a fresh
+browser before spending the original token payment. Prove zero-gas refusal followed
+by an explicit local native top-up and one recovered direct sweep, truthful interruption
+states, and no duplicate payment. Plain/permit fixtures reuse existing test contracts
+at allowlisted addresses on disposable loopback Anvil only. No production contract,
+allowlist, chain scope, dependency, custody, deployed service or stopped-product change.
+No essential test skip counts as a pass. Record exact source/artifact identity and actual
+browser results. Run focused checks, independent review and current-head required CI;
+integration requires a fresh ownership/lease check. No integration lock is held by this claim.
+
+---
+
 # Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
 
 Worker: local Claude Code maintenance/audit session on the existing merged branch
