@@ -6,25 +6,29 @@ stay dormant and are not counted as outstanding.
 
 ## Candidate
 
-Branch `nodata/beautiful-heisenberg-25ikdy`, exact head recorded in the PR description. It composes `main` `a7f9abf8`
-(which already contains #745, #747, #749, #750, #744 and #752) with the still-open heads below, plus new qualification work. **It is a qualification
-candidate, not a merge request.** Integration stays with the integration-lock holder; this record does not take the lock.
+Branch `nodata/beautiful-heisenberg-25ikdy` (PR #751, draft), exact head in the PR description. It was first composed from
+`main` `3f7fcd0a` plus the open heads of #724, #728, #742, #744 and #665 and has since absorbed every `main` movement
+(latest merged: `main` `3dba277e`). **It is a qualification candidate, not a merge request.** Integration stays with the
+integration-lock holder; this record does not take the lock.
 
-| Source | Head merged | Notes |
+State at `main` `3dba277e` (2026-11-27 UTC):
+
+| Source | State | Notes |
 |---|---|---|
-| #724 train (#724, #732, #726, #713, #715) | `2085ef44` | CI 39/0 at that head |
-| #728 stack (#696 cover lookups, #717 offline drafts, audit F2/F3/F7) | `298257fd` | CI 40 pass, 2 fail: `ts-test (rest-2)` (see "Hosted CI note") |
-| #745, #747 | `84d95d62`, `1308f185` | now on `main` |
-| #742 (LATE-L1 replay, #569/#355 dispositions) | `28d369cc` | CI 41/0 |
-| #744 (audit fixes) | merged to `main` as `a7f9abf8` | this candidate first carried `214c1287`; it now carries `main`'s copy, including the owner's embed fix |
-| #665 (W5 independent verifier) | `db6f3da6` | `verification/**` only; about 15 MB of generated `run.json` evidence |
-| ~~New: embed handshake fix~~ | dropped | superseded by `60ce3508`, now on `main` through #744 (identical logic; the file equals `main`'s) |
-| New: ERC-20 end-to-end qualification | W1 | 5 anvil vitest files, 1 node:test, handoff |
-| New: Phase A fuzz and stress | W3 | 9 `*.fuzz.test.ts` files, one production fix |
-| New: Phase C repairs | W4 | draft slot privacy, retention wording, label |
-| New: callsite-guard refinement | this branch | see "Defects found" |
+| #745, #747, #749, #750 | on `main` | P14 labels, caught-up gating, closure |
+| #744 (audit fixes), #752 | on `main` | the candidate dropped its own copy of the embed fix in favour of `main`'s (identical logic, `60ce3508`) |
+| #724 train (#724, #732, #726, #713, #715) | on `main` (`13430d25`) | includes the lean-build exclusion of workspace `src/future` and `dist/future` |
+| #728 stack (#696 cover lookups, #717 offline drafts, audit F2/F3/F7) | on `main` | per the coordinator's note it carries this candidate's Phase C repairs, the review fix `298e56f7`, FUZZ-D1, GUARD-1 and the draft, offline, scan and paging fuzz suites; the diff against `main` shows none of them as unique |
+| #742 (LATE-L1 replay, #569/#355 dispositions) | **open**, carried in this candidate at `28d369cc` | CI 41/0 on its own head |
+| #665 (W5 independent verifier) | **open**, carried in this candidate at `db6f3da6` | `verification/**` only; about 15 MB of generated `run.json` evidence |
+| New: ERC-20 end-to-end qualification | **unique to this candidate** | 5 anvil vitest files, 2 test utilities, 1 `node:test`, handoff |
+| New: Phase A fuzz, remaining suites | **unique to this candidate** | reconcile, invoice-link, sweep-destination and vault-replay (the last needs #742) |
 
-Merge conflicts: only `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0). Resolved by keeping both sides.
+Merge conflicts across all merges: only `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0; resolved by keeping both
+sides) and, once, `Pay.offline.fuzz.test.tsx` (took `main`'s newer copy `79312691`).
+
+The coordinator (`newghostpay-e3`) offered to review or port the test-only files with authorship preserved; see the reply on
+PR #751 for the file list and dependencies.
 
 ## Completion ledger
 
@@ -32,20 +36,20 @@ Merge conflicts: only `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0). Re
 |---|---|---|
 | #723 scan checkpoint ownership, #725 idle-suspend guard | **Implemented, merged** (`3603960c`, `cdddda0b`) | Fuzz `scanClient.fuzz.test.ts`: saves monotonic and bound to the slot owner |
 | #745 P14 F2 light-source labels, #747 caught-up requires primary-head coverage | **Merged** (`3c9fc0ab`, `6b323a99`) | Fuzz: `caughtUp` only true past the primary head with no lag, limit or backlog |
-| #696 cover lookups, #717 offline checkout and drafts | **Implemented, unmerged** (#728) | Candidate carries Phase C repairs the #728 branch lacks (below). Rerun #728 CI (timing flake) |
-| #724 train | **Implemented, unmerged**, CI green | `#732` and `#726` show `dirty` on their own branches because #724 carries their content; close them after #724 lands |
+| #696 cover lookups, #717 offline checkout and drafts | **Merged** (#728, with this candidate's Phase C repairs) | `ts-test (rest-2)` passed on every candidate run, supporting the slow-runner reading of #728's earlier red |
+| #724 train (#732, #726, #713, #715) | **Merged** (`13430d25`) | close `#732` and `#726` if still open: #724 carried their content |
 | #742 LATE-L1 replay | **Implemented, unmerged**, CI green | Product decision needed on a bound for the replay pin (D3) |
 | #744 audit fixes | **Merged** (`a7f9abf8`) | F2/F3 hunks duplicate #728 and merged cleanly in this candidate |
 | #665 independent verifier | **Implemented, unmerged**, CI 31/0 | 160 commits behind main; its finding F3 (attemptStatus wording) is unverified on current main |
-| #715 release exclusion | **Implemented in #724, unmerged** | Candidate lean build: 382 modules, zero stopped-product or `FUTURE` modules |
-| ERC-20 payment and recovery | **Qualified on local anvil** (this work) | Gap: browser Playwright ERC-20 journey (no token at the allowlisted address on the devnet script) |
-| P14 disclosure and scan evidence (#658, #696) | **Partially merged**: F1/F2 merged, #696 in #728 | No #658 PR is open. Treat as merged or closed; not re-verified here |
+| #715 release exclusion | **Merged** (in #724) | Candidate lean build: 382 modules, zero stopped-product or `FUTURE` modules |
+| ERC-20 payment and recovery | **Qualified on local anvil** (this work; suites not yet on `main`) | Gap: browser Playwright ERC-20 journey (no token at the allowlisted address on the devnet script) |
+| P14 disclosure and scan evidence (#658, #696) | **Merged**: F1/F2 (#723, #745, #747) and #696 (#728) | No #658 PR is open. Treat as merged or closed; not re-verified here |
 | GP-PAGES-01, IDLE-M1, Mythril disposition | **Owner decisions**, open | Unchanged from `RELEASE_READINESS_20261126.md` |
 | Exact-SHA Pages-on-anvil, beta acceptance, Firefox/WebKit/Safari, devices, native a11y, Tor Browser, third-party wallets | **Not run** | Outstanding manual or hosted acceptance (see "Not run") |
 
-Estimated state: automated core payment, scan, reconciliation and recovery work is complete and qualified on this candidate.
-Remaining effort is integration (about 6 PRs through the lock, about half a day with CI), the owner decisions, and the manual
-passes. Rough completion of the automated scope: 90%; of the full release gate: about 70%, dominated by manual passes.
+Estimated state: the automated core payment, scan, reconciliation and recovery work is merged and qualified. Remaining
+integration is #742 and #665, plus porting the unique test suites. The release gate is dominated by the owner decisions and
+manual passes. Rough completion of the automated scope: 95%; of the full release gate: about 70%.
 
 ## Results on the final candidate
 
@@ -129,6 +133,11 @@ No high-severity finding was open at the end of this review. That is a statement
 The file passes locally on the candidate. Rerun the job; do not skip or raise the test without review. The candidate's own run is evidence that a rerun passes.
 
 ## Hosted CI on the candidate
+
+Latest run, head `5ba3a468` (merge of `main` `3dba277e`): 44 check runs completed, 41 success, 3 skipped (publish-only), 0 failed,
+including `ts-test (web)`, `ts-test (rest-2)`, `e2e (lean)` and `e2e (full)`, `lean-candidate`, `Pages artifact on anvil (browser)`,
+`beta acceptance`, `Build and verify the Pages site`, the CLI matrix on three operating systems and CodeQL. Earlier runs
+(`298e56f7`, `cf2914a5`) gave the same result.
 
 Re-run on the head after the merge of `main` `a7f9abf8` (`cf2914a5`, same result as the earlier `298e56f7` run below): all
 45 check runs completed, 42 success, 3 skipped, 0 failed, including `ts-test (rest-2)` (a second pass).
