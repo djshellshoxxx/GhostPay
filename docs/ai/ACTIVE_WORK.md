@@ -1,18 +1,20 @@
 # Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
 
 Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
-`8a519272` (repair train #724, which holds main `a7f9abf8`); no new branch. Draft PR only: no merge, no integration lock.
+`8a519272` (repair train #724, which holds main `a7f9abf8`), then merged with main `3dba277e` (#728); no new branch.
+Draft PR only: no merge, no integration lock.
 
 Owned paths: `apps/web/src/{AppShell.tsx,state.tsx}`, `lib/{settings,sweep}.ts`, `lib/scanClient.ts` (reorg clears
-only), `lib/scanPrivacy.ts` (indexer adapter only), `views/{Pay,Settings,Sweep}.tsx`, their new or extended tests,
+only), `lib/scanPrivacy.ts` (indexer adapter only), `views/{Pay,Settings,Sweep}.tsx`,
+`features/registry/RegistryView.tsx` (settings changes only), their new or extended tests,
 `i18n/securityKeys.ts`; three new keys in `apps/web/locales/*.json`; `apps/web/public/ghostpay-embed-v2.js` (click
 guard) and `embedV2.test.ts`; `packages/scan-source/src/{indexer,types,validate}.ts`;
 `packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
 `packages/ux-vault/src/tag-archive-portable.ts` (`derive` only) and its new memory test; this entry.
 
-Overlap: draft #728 also changes `AppShell.tsx`, `Pay.tsx`, `Settings.tsx`, `scanClient.ts`, `securityKeys.ts`, the
-locale catalogs and this file; whichever lands second resolves them and keeps both behaviours. The settings-sync shape
-comes from draft #251, which is left untouched; its network-authorization feature is not taken. Not claimed: F5, the
+Overlap: #728 (`AppShell.tsx`, `Pay.tsx`, `Settings.tsx`, `scanClient.ts`, `securityKeys.ts`, locale catalogs, this
+file) is merged into this branch with both behaviours kept. The settings-sync shape comes from draft #251, which is left
+untouched; its network-authorization feature is not taken. Not claimed: F5, the
 embed focus trap. Acceptance: each regression fails without its fix and passes with it; hosted CI green on the exact
 head; independent review before any merge.
 
