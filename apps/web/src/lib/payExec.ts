@@ -308,12 +308,14 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     permitPreflightReader(rt.rpc),
   );
   assertCurrent?.();
+  // The prompt and the reads above can take minutes: time the final build from here, not from before the prompt.
+  const builtAt = rt.nowSeconds();
   if (state === 'already_allowed') {
     reportTransactionStatus(status, { phase: 'signed', message: permitStateDescriptor('already_allowed') });
-    return buildFinal(ctx, { nowSeconds: now });
+    return buildFinal(ctx, { nowSeconds: builtAt });
   }
   if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
-  return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
+  return buildFinal(ctx, { nowSeconds: builtAt, deadlineSeconds: deadline, permitSignature: sig });
 }
 
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
