@@ -78,3 +78,70 @@ describe('error and human output do not echo raw untrusted text (R11-4)', () => 
     expect(escapeDisplay('x\u202ey\u2028z\u0085')).toBe('x\\u202ey\\u2028z\\u0085');
   });
 });
+
+// Synthetic, obviously fake values only: never a real key. A mistakenly pasted 32-byte key is 64 hex characters, which
+// fits the basename length cap and character allowlist, so a basename that looks like secret material is withheld too.
+const HEX64 = 'ab12cd34'.repeat(8);
+const HEX32 = 'ab12cd34'.repeat(4);
+const B64URL43 = 'Qk3_Zm9v-YmFy0123456789ABCDEFghijklmnopqrst';
+
+describe('secret-shaped basenames are not echoed (R11-4 residual: a pasted key used as a path)', () => {
+  const SECRET_PATHS = [
+    HEX64,
+    HEX64.toUpperCase(),
+    HEX32,
+    `0x${HEX64}`,
+    `some/nested/dir/${HEX64}`,
+    `C:\\keys\\${HEX64}`,
+    `${HEX64}.json`,
+    `key-${HEX64}.txt`,
+    B64URL43,
+    `nested/${B64URL43}`,
+  ];
+
+  it('displayPath withholds hex and opaque-token basenames, including nested ones, and keeps ordinary names', () => {
+    expect(B64URL43).toHaveLength(43);
+    for (const p of SECRET_PATHS) expect(displayPath(p), p).toBeUndefined();
+    for (const p of ['a3f9.json', 'key-2026-11-26.json', 'invoice-0001.json', 'backup of the seller keystore.json', `${'ab'.repeat(15)}.txt`, 'nested/dir/signed-invoice.json'])
+      expect(displayPath(p), p).toBeDefined();
+  });
+
+  it('READ_FAILED withholds a secret-shaped path in human and JSON modes and keeps its stable code', async () => {
+    for (const path of SECRET_PATHS) {
+      for (const json of [true, false]) {
+        const io = makeIo();
+        expect(await run(['invoice', 'verify', '--in', path, ...(json ? ['--json'] : [])], io)).toBe(3);
+        const out = allOutput(io);
+        expect(out, `${path} json=${String(json)}`).not.toContain('ab12cd34');
+        expect(out).not.toContain('AB12CD34');
+        expect(out).not.toContain('Qk3_Zm9v');
+        expect(out).toContain(json ? 'READ_FAILED' : 'cannot read');
+      }
+    }
+  });
+
+  it('WRITE_FAILED withholds a secret-shaped --out path in human and JSON modes and keeps its stable code', async () => {
+    for (const path of SECRET_PATHS) {
+      for (const json of [true, false]) {
+        const io = makeIo({ 'spec.json': JSON.stringify(SPEC), 'key.txt': `${KEY_HEX}\n` });
+        io.failWrites = true;
+        expect(await run(['invoice', 'create', '--in', 'spec.json', '--key-file', 'key.txt', '--out', path, ...(json ? ['--json'] : [])], io)).toBe(3);
+        const out = allOutput(io);
+        expect(out, `${path} json=${String(json)}`).not.toContain('ab12cd34');
+        expect(out).not.toContain('AB12CD34');
+        expect(out).not.toContain('Qk3_Zm9v');
+        expect(out).toContain(json ? 'WRITE_FAILED' : 'cannot write');
+      }
+    }
+  });
+
+  it('READ_FAILED and WRITE_FAILED still name an ordinary filename', async () => {
+    const read = makeIo();
+    expect(await run(['invoice', 'verify', '--in', 'data/invoice-0001.json', '--json'], read)).toBe(3);
+    expect(read.err.join('')).toContain('invoice-0001.json');
+    const write = makeIo({ 'spec.json': JSON.stringify(SPEC), 'key.txt': `${KEY_HEX}\n` });
+    write.failWrites = true;
+    expect(await run(['invoice', 'create', '--in', 'spec.json', '--key-file', 'key.txt', '--out', 'out/signed-0001.json', '--json'], write)).toBe(3);
+    expect(write.err.join('')).toContain('signed-0001.json');
+  });
+});

@@ -99,8 +99,11 @@ where defined. Do not infer fields that a command does not return.
 
 Stable `error.code` values identify the specific failure. `READ_FAILED` and
 `WRITE_FAILED` name at most the base name of a plain local path; a value that
-looks like a link, carries a `#` fragment or `?` query, contains control
-characters or is longer than 64 characters is not echoed. Human output escapes
+looks like a link or a network path, carries a `#` fragment, `?` query or
+`key=value` text, contains control characters, is longer than 64 characters or
+is shaped like secret material (a run of 32 or more hex characters, such as a
+bare key pasted where a path belongs, or a long mixed-case base64url token) is
+not echoed. Human output escapes
 untrusted text such as catalog keys. An invalid request to
 an unsupported operation can still be a usage error. `diagnostics rpc` exits 1
 when reachable providers disagree; `payment verify` and `payment status` exit 1
