@@ -184,9 +184,15 @@ export function parseShareTarget(search: unknown, policy: LinkPolicy): Result<In
   let firstErr: PayloadErrorCode | null = null;
   for (const c of candidates) {
     const r = classifyPayload(c, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
-    if (r.ok)
-      found.set(r.value.safeDisplay + (r.value.kind === 'invoice-link' ? r.value.fragment : ''), r.value);
-    else firstErr ??= r.code;
+    if (r.ok) {
+      // Labels are intentionally absent from safeDisplay but still distinguish payment requests.
+      const key = JSON.stringify([
+        r.value.safeDisplay,
+        r.value.kind === 'invoice-link' ? r.value.fragment : null,
+        r.value.kind === 'payment-uri' ? r.value.label ?? null : null,
+      ]);
+      found.set(key, r.value);
+    } else firstErr ??= r.code;
   }
   if (found.size > 1) return err('ambiguous-share');
   const only = [...found.values()][0];
