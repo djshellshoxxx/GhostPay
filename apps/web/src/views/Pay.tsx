@@ -640,18 +640,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     }
     void refreshContext();
   }, [refreshContext, parsed, manifest, reviewKey]);
-  // Newly saved settings: nothing prepared under the old ones stays. While a wallet request is out, or its outcome is
-  // shown, this waits; it runs once an operation ends without one.
+  // Newly saved settings: nothing prepared under the old ones stays, and checkout goes back to the review, which offers
+  // the chain check again should it fail now. While a wallet request is out, or its outcome is shown, this waits; it runs
+  // once an operation ends without one. A requested invoice that is closed to further payment stays as it is.
   useEffect(() => {
     if (reviewedSettings.current === app.settings || keepContext) return;
     reviewedSettings.current = app.settings;
-    if (built !== undefined || phase === 'waiting') {
+    const terminal = parsed !== undefined && terminalFor.current === parsed.invoice;
+    if (!terminal && (phase === 'waiting' || phase === 'ready' || phase === 'prepared')) {
       if (phase === 'waiting') scheduler.current?.cancel();
       setBuilt(undefined);
       setBuiltFor(undefined);
       setBuiltForContext(undefined);
       setApproval(undefined);
-      if (phase === 'prepared') setPhase('ready');
+      setPhase('review');
       setError((current) => current ?? { key: 'pay.error.reviewChanged' });
     }
     if (refreshDeferred.current) {

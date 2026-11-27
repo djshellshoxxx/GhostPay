@@ -13,6 +13,7 @@ import { mockRpc } from '../test/mockRpc';
 import { MockWallet } from '../test/mockWallet';
 import { makeServices, renderApp, setHash } from '../test/render';
 import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
+import en from '../../locales/en.json';
 
 const BASE = { rpcUrls: { '84532': 'https://rpc.test' } };
 const OTHER_RPC = { rpcUrls: { '84532': 'https://other.test' } };
@@ -20,6 +21,8 @@ const PINS = { pinnedSigners: [`02${'11'.repeat(32)}`] };
 const HASH = `0x${'9'.repeat(64)}`;
 const SEND = 'Send payment in my wallet';
 const FINAL = 'Final check before your wallet';
+const RETRY = en.messages['pay.retryCheck'];
+const ALREADY = en.messages['pay.alreadyRequested.title'];
 
 beforeEach(() => {
   clearSession();
@@ -52,6 +55,12 @@ async function toReview(wallet: MockWallet, around?: Around): Promise<{ user: Re
   return { user, opened: () => createRpc.mock.calls.map((call) => call[1]) };
 }
 
+/** From the review back to the wallet step, once the chain check under the current settings has finished. */
+async function toWallet(user: ReturnType<typeof userEvent.setup>): Promise<void> {
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(false); });
+  await user.click(screen.getByRole('button', { name: 'Continue' }));
+}
+
 async function toPrepared(wallet: MockWallet, around?: Around): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
   const { user, opened } = await toReview(wallet, around);
   await user.click(screen.getByRole('button', { name: 'Continue' }));
@@ -59,6 +68,16 @@ async function toPrepared(wallet: MockWallet, around?: Around): Promise<{ user: 
   await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
   await screen.findByRole('heading', { name: FINAL });
   return { user, opened };
+}
+
+/** A wallet that reports account changes. */
+class EventWallet extends MockWallet {
+  private readonly listeners = new Map<string, Set<() => void>>();
+  public on(event: string, listener: () => void): void {
+    this.listeners.set(event, (this.listeners.get(event) ?? new Set<() => void>()).add(listener));
+  }
+  public removeListener(event: string, listener: () => void): void { this.listeners.get(event)?.delete(listener); }
+  public emit(event: string): void { for (const listener of [...(this.listeners.get(event) ?? [])]) listener(); }
 }
 
 /** A wallet whose send prompt stays open until released. */
@@ -82,6 +101,8 @@ describe('Pay: settings saved by another tab', () => {
     await waitFor(() => { expect(screen.queryByRole('heading', { name: FINAL })).toBeNull(); });
     expect(screen.getByText(/Check the details again/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: SEND })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    await toWallet(user);
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: FINAL });
     expect(opened().at(-1)).toBe('https://other.test/');
@@ -107,6 +128,36 @@ describe('Pay: settings saved by another tab', () => {
     },
   );
 
+  it('offers the chain check again when the new RPC fails it', async () => {
+    let failing = false;
+    const wallet = new MockWallet();
+    const { user, opened } = await toPrepared(wallet, (method, _params, answer) => (failing && method === 'eth_getCode' ? Promise.reject(new Error('down')) : answer()));
+    failing = true;
+    otherTabSaves(OTHER_RPC);
+    const retry = await screen.findByRole('button', { name: RETRY });
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    failing = false;
+    await user.click(retry);
+    await toWallet(user);
+    expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
+    expect(opened().at(-1)).toBe('https://other.test/');
+  });
+
+  it('leaves a requested payment closed after a wallet change and then an RPC change', async () => {
+    const wallet = new EventWallet();
+    const { user } = await toPrepared(wallet);
+    await user.click(screen.getByRole('button', { name: SEND }));
+    await screen.findByRole('heading', { name: 'Submitted' });
+    act(() => { wallet.emit('accountsChanged'); });
+    await screen.findByText(ALREADY);
+    otherTabSaves(OTHER_RPC);
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)); });
+    expect(screen.getByText(ALREADY)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
+    expect(screen.queryByRole('button', { name: SEND })).toBeNull();
+    expect(readAttempts().filter((attempt) => attempt.hash === HASH)).toHaveLength(1);
+  });
+
   it('asks the wallet for nothing when the RPC changes while the send is still being checked', async () => {
     let hold = false;
     let release!: () => void;
@@ -123,6 +174,7 @@ describe('Pay: settings saved by another tab', () => {
     otherTabSaves(OTHER_RPC);
     await act(async () => { release(); await Promise.resolve(); });
     expect(await screen.findByText(/Check the details again/)).toBeTruthy();
+    await toWallet(user);
     expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
     expect(wallet.calls.some((call) => call.method === 'eth_sendTransaction')).toBe(false);
     expect(readAttempts()).toEqual([]);
