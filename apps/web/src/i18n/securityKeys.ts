@@ -14,6 +14,23 @@ export const SECURITY_KEY_GROUPS = {
     'privacyUx.hide',
     'privacyUx.notSaved',
   ],
+  // Offline checkout and opt-in encrypted invoice drafts: what still works, what fails closed and what is stored.
+  interruptedSession: [
+    'app.offline',
+    'pay.offlineCheck',
+    'pay.retryCheck',
+    'create.draft.keep',
+    'create.draft.hint',
+    'create.draft.resume',
+    'create.draft.available',
+    'create.draft.opening',
+    'create.draft.saving',
+    'create.draft.saved',
+    'create.draft.remove',
+    'create.draft.saveFailed',
+    'create.draft.openFailed',
+    'create.draft.removeFailed',
+  ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
     'wallet.disclosure.title',
@@ -269,6 +286,9 @@ export const SECURITY_KEY_GROUPS = {
     'scanLanes.disclosure.transfers',
     'settings.scanLanes.floodHint',
     'settings.scanLanes.transfersHint',
+    'settings.scanLanes.matchCover',
+    'settings.scanLanes.matchCoverHint',
+    'scanLanes.disclosure.matchCover',
   ],
   // Spec 12 local spend tracking: what the server learns about this wallet's outputs, and what spent status means.
   bitcoinSpentStatus: [

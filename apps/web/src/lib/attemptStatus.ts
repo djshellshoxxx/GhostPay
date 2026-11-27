@@ -122,7 +122,9 @@ async function resolveReplacements(rpc: RpcClient, attempt: WalletAttempt, nonce
     const receipt = await fetchReceipt(rpc, hash, tx);
     const outcome = receipt === undefined ? undefined : await canonicalOutcome(rpc, receipt, tx);
     if (outcome !== undefined) return { state: 'replaced', hash: hash as Hex, kind, outcome };
-    if (receipt !== undefined || tx.inclusion !== undefined) continue;
+    // Reported as mined but without a receipt: an inconsistent answer, not proof that an unknown transaction took the nonce.
+    if (receipt === undefined && tx.inclusion !== undefined) return unusable();
+    if (receipt !== undefined) continue;
     pending ??= { state: 'replaced', hash: hash as Hex, kind, outcome: { state: 'pending' } };
   }
   return pending;

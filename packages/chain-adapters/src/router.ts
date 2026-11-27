@@ -216,7 +216,7 @@ function parsePermitSignature(sig: Hex): { v: number; r: Hex; s: Hex } {
  * byte for byte, so trailing data or padding tricks fail), invalid ephemeral keys, metadata that
  * does not equal the router's required layout for this call (`token`, `net = gross - routerFee`),
  * `value` inconsistent with the method, and calls that the router itself would revert on for
- * static reasons (zero token, zero gross, `minNet > net`). Native `gross` is `value`.
+ * static reasons (zero token, zero gross, `minNet > net`, buffer above `maxBufferWei`). Native `gross` is `value`.
  *
  * @param tx Target, calldata and value of the transaction as the wallet would send it.
  * @param chainId Chain the preview is for (stored in the preview; not in calldata).
@@ -250,6 +250,7 @@ export function decodePaymentCalldata(tx: PaymentTx, chainId: number): PaymentPr
     }
     case 'payERC20WithBuffer': {
       const [token, stealth, gross, minNet, deadline, maxBufferWei, eph, meta] = decoded.args;
+      if (tx.value > maxBufferWei) return fail('PREVIEW_MISMATCH', 'buffer above its cap');
       preview = {
         ...assemble('payERC20WithBuffer', { router, chainId, token, stealth, gross, minNet, deadline, eph, meta, value: tx.value }),
         maxBufferWei,

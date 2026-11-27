@@ -1014,3 +1014,98 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     expect(tabB.load(CHAIN_ID, KEY)).toEqual(P3);
   });
 });
+
+// Composition of F1 checkpoint ownership with cover lookups (#696): both must hold with cover off and on.
+describe.each([['off', false], ['on', true]] as const)('PRIV-06: checkpoint ownership with match cover %s', (_label, matchCover) => {
+  /** The fixture plus router payments to someone else, so an enabled cover has non-matching announcements to look up. */
+  function covered() {
+    const f = fixture();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const others = Array.from({ length: 24 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 200 + i * 450, index: 0, caller: FAKE_ROUTER }).log);
+    return { ...f, logs: [...f.logs, ...others].sort((a, b) => Number(BigInt(a.blockNumber) - BigInt(b.blockNumber))) };
+  }
+  const recorder = () => {
+    const from: bigint[] = [];
+    return { from, onPageMatches: (_m: readonly ScanMatch[], page: { readonly from: bigint }) => { from.push(page.from); return Promise.resolve(true); } };
+  };
+
+  it.each([['write', 5000n], ['clear', 5000n]] as const)('a foreign %s mid-run stands while every payment is still found and recorded', async (kind, atBlock) => {
+    const f = covered();
+    const store = spyStore();
+    const foreign = cursorAt(100);
+    let done = false;
+    const client = hooked(chainWith(HEAD, f.logs), { getLogs: (q) => {
+      if (q.fromBlock !== atBlock || done) return;
+      done = true;
+      if (kind === 'write') store.store.save(CHAIN_ID, KEY, foreign); else store.store.clear(CHAIN_ID, KEY);
+    } });
+    const rec = recorder();
+    const out = await attempt(f, { client, matchCover, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(rec.from).toEqual([0n, 5000n, 10_000n]);
+    expect(savedCalls(store)).toEqual(kind === 'write' ? [P1, foreign] : [P1]);
+    expect(store.current).toEqual(kind === 'write' ? foreign : undefined);
+  });
+
+  it('an unreadable slot is never replaced while every payment is still found and recorded', async () => {
+    const f = covered();
+    const map = new Map<string, string>();
+    let failGet = false;
+    let writes = 0;
+    const store = secretKeyedStore({
+      getItem: (k) => { if (failGet) throw new Error('storage read denied'); return map.get(k) ?? null; },
+      setItem: (k, v) => { writes++; map.set(k, v); },
+      removeItem: (k) => { map.delete(k); },
+    }, (_id, use) => use(new Uint8Array(32).fill(4)));
+    store.save(CHAIN_ID, KEY, P3);
+    writes = 0;
+    failGet = true;
+    const rec = recorder();
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), matchCover, checkpoints: store, onPageMatches: rec.onPageMatches });
+    failGet = false;
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(rec.from).toEqual([0n, 5000n, 10_000n]);
+    expect(writes).toBe(0);
+    expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
+  });
+
+  it.each([['owns the slot', false], ['lost the slot', true]] as const)('a claim replay on a run that %s', async (_case, lost) => {
+    const f = covered();
+    const failed = f.made.at(-1)!.log.transactionHash!.toLowerCase(); // the payment at block 11,000
+    const inner = chainWith(HEAD, f.logs);
+    // No token transfer in that receipt: the router claim degrades to `claimed` and its block is saved for one replay.
+    const unbacked: MockRpc = { ...inner, request: async (method, params) => {
+      const raw = await inner.request(method, params);
+      if (method !== 'eth_getTransactionReceipt' || String(params[0]).toLowerCase() !== failed) return raw;
+      return { ...(raw as object), logs: (raw as { logs: RpcLog[] }).logs.filter((l) => l.topics[0] !== TRANSFER_TOPIC) };
+    } };
+    const store = spyStore();
+    const foreign = cursorAt(100);
+    let wrote = false;
+    const client = hooked(unbacked, { getLogs: (q) => { if (lost && !wrote && q.fromBlock === 10_000n) { wrote = true; store.store.save(CHAIN_ID, KEY, foreign); } } });
+    const out = await attempt(f, { client, matchCover, checkpoints: store.store });
+    expect(out.error).toBeUndefined();
+    expect(out.matches.at(-1)?.receipt).toBe('claimed');
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(savedCalls(store)).toEqual([P1, P2, lost ? foreign : cursorAt(11_000)]);
+    expect(store.current).toEqual(lost ? foreign : cursorAt(11_000));
+  });
+
+  it.each([['owns the slot', false], ['lost the slot', true]] as const)('a reorg rollback on a run that %s', async (_case, lost) => {
+    const f = covered();
+    const stale = cursorAt(8001);
+    const forked = f.logs.map((l) => ({ ...l, blockHash: forkHash(Number(BigInt(l.blockNumber))) }));
+    const store = spyStore(stale);
+    const foreign = cursorAt(100, forkHash);
+    const out = await attempt(f, {
+      client: chainWith(HEAD, forked, forkHash), matchCover, cursor: stale, checkpoints: store.store,
+      onReorg: () => { if (lost) store.store.save(CHAIN_ID, KEY, foreign); },
+    });
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.made.map((m) => `${forkHash(Number(BigInt(m.log.blockNumber)))}:100`));
+    expect(savedCalls(store)).toEqual(lost ? [foreign] : [cursorAt(5000, forkHash), cursorAt(10_000, forkHash), cursorAt(11_991, forkHash)]);
+    expect(store.current).toEqual(lost ? foreign : cursorAt(11_991, forkHash));
+  });
+});

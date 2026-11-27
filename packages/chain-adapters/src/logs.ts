@@ -90,10 +90,11 @@ const MAX_LOGS_PER_FETCH = 10_000;
 const MAX_CANONICAL_BLOCK_READS = 1_000;
 // JSON-RPC codes providers use for eth_getLogs range or result limits (Alchemy, QuickNode and reth -32602; Infura, Besu
 // and Nethermind -32005; others -32600, -32614 or the generic -32000). Any of them only means "ask for a smaller range".
+// HTTP 413 means the same: some providers (QuickNode among them) refuse a range with that status instead.
 // Not anchored at the end, so a message that adds provider detail after the code still matches.
-const RANGE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005|32600|32614|32000)(?!\d)/;
+const RANGE_LIMIT = /^RPC_FAILURE: (?:json-rpc error -(?:32602|32005|32600|32614|32000)|http status 413)(?!\d)/;
 // The subset that also means "this response is too large", so a single block is retried for the router lane only.
-const SIZE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005)(?!\d)/;
+const SIZE_LIMIT = /^RPC_FAILURE: (?:json-rpc error -(?:32602|32005)|http status 413)(?!\d)/;
 // -32005 ("limit exceeded") is also the rate-limit code of Infura and others: alone it does not prove a block too large.
 const RATE_LIMIT = /^RPC_FAILURE: json-rpc error -32005(?!\d)/;
 

@@ -112,7 +112,28 @@ provider.
 Do not read any of the above as anonymity. Fixed-window scanning bounds what the `eth_getLogs` ranges say; it does not
 make match-time or position-bearing requests uniform.
 
-## Phase 8: privacy improvement candidates (none implemented)
+## Phase 8: privacy improvement candidates
+
+**Implemented after this analysis (owner-approved, opt-in, off by default): cover lookups for matched router payments.**
+With `matchCover` (Settings: "Hide which payments matched among other payments' lookups"), every scan page also
+verifies the other router payments a keyed rule selects (about half), whether or not anything matched, through the same
+`verifyClaimedPayment` call, in chain order, on both providers; their results are discarded and the real verification
+is unchanged. Selection is per announcement (an HMAC, keyed from the viewing key, of its transaction hash, ephemeral
+key, one-time address and metadata against a fixed share), so it does not depend on page boundaries, a resume or a
+reorg, and an altered copy is decided independently. There is no per-page cap. Cover payments must pass the checks
+verification applies before its first request (router caller, positive amount, supported token, well-formed hashes), so
+no cover lookup is silent. Measured in `src/lib/scanDisclosure.cover.test.ts` (deterministic mock; no live provider).
+It addresses a provider that records requests. The checkpoint replay after a pending or failed check (item 6 above)
+follows the block and receipt state of cover checks too, so it does not single out the matched payments; a failed
+claim that sends no request no longer moves it while cover is on. Remaining exposure: a provider that alters,
+withholds or fails its answers; the block reads made only for the seller's payments (after a reorg report, those found
+in the scan and the saved ledger records; on a ledger retry, saved invoice records), which therefore point at them;
+repeated on-chain copies, which get independent cover decisions; the token named by the optional
+similar-transfer estimate; the single-payment re-check from the result list; balance reads, key export and sweeps
+through the same RPC; cover that fails verification sends fewer follow-up requests and never reaches the second
+provider.
+
+The candidates below remain open.
 
 No change was made. The candidates below each touch `scanClient.ts` or `payments.ts`, which have open PRs from other
 workers (#625, #635, #653), and each needs a baseline-versus-change run of these same scenarios before it ships.
