@@ -1,3 +1,16 @@
+# REV-I5: roll back an unsent wallet attempt when the journal mirror write fails after the IndexedDB commit — 2026-11-26 UTC
+
+Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (restarted from main `8c0b110d` after #723
+merged). Owned paths: the attempt bookkeeping in `apps/web/src/lib/wallet.ts` around `beginAttempt` (no change to the lock,
+the journal format or `duplicateAttemptJournal.ts`), one new regression next to the existing mirror-failure case in
+`apps/web/src/lib/walletJournal.adversarial.test.ts`, the REV-I5 row of `docs/engineering/SECURITY_FINDINGS.md`. Reuses the
+existing QA-5 rollback (`removeUnsentAttempt`). Not claimed: REV-I6, QA-I1, LATE-M1 (needs an owner design decision on a
+vault-presence marker), LATE-L1. Acceptance: the regression fails on main and passes with the fix; no wallet request is
+ever started for the rolled-back record; a record whose request reached the provider is never removed; web typecheck,
+lint, full tests; hosted CI; merge under the integration lock.
+
+---
+
 # P14 finding F1: scan checkpoint ownership (mitigates stale-run overwrites of a newer checkpoint) — 2026-11-26 UTC
 
 Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (base main `601f2095`). Owned paths:
