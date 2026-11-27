@@ -229,6 +229,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [receiptConsent, setReceiptConsent] = useState(false);
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
+  // Remounts the uncontrolled receipt file input, so a file picked for one wallet is not kept for the next.
+  const [receiptFileGeneration, setReceiptFileGeneration] = useState(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
   const [approvalHash, setApprovalHash] = useState<string | undefined>(undefined);
   const [paymentMayHaveBeenSent, setPaymentMayHaveBeenSent] = useState(false);
@@ -473,6 +475,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setReceiptTrustedKey('');
     setBoundReceipt(undefined);
     setReceiptError(undefined);
+    // A newly revealed checkout must not inherit the previous wallet's receipt file (#569, account separation).
+    setReceiptFileGeneration((generation) => generation + 1);
     invalidateInvoiceQr(); // Keep the explicitly preserved QR text area; revoke its parsed preview and work.
     setPaste('');
     if (parsed?.encrypted === true || parsed?.passphraseProtected === true) {
@@ -1384,7 +1388,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
             <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
+              {(id, describedBy) => <input key={receiptFileGeneration} aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
             </Field>
             <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
               {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}

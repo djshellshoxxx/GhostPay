@@ -573,4 +573,21 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     expect(wallet.calls.filter(({ method }) => method === 'eth_sendTransaction')).toHaveLength(1);
   }, 180_000);
 
+  // #569 follow-up (`c30283d2` wallet-disclosure e2e): the uncontrolled receipt file input kept the file chosen while
+  // the previous wallet was connected. The same invalidation that clears receipt consent, key and result now drops it.
+  it.each(['accountsChanged', 'chainChanged', 'disconnect'] as const)('drops a receipt file chosen for the previous wallet on %s', async (event) => {
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await screen.findByRole('button', { name: 'Prepare payment' });
+    const input = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File(['{}'], 'private-receipt-account-286.json', { type: 'application/json' });
+    await user.upload(input(), file);
+    expect(input().files?.[0]).toBe(file);
+    act(() => { wallet.emit(event); });
+    await screen.findByText(WALLET_CHANGE_REASON, { exact: true });
+    expect(input().files).toHaveLength(0);
+    expect(input().value).toBe('');
+    expect(wallet.calls.filter(({ method }) => /^(?:eth_send|eth_sign|personal_sign)/.test(method))).toEqual([]);
+  }, 180_000);
+
 });
