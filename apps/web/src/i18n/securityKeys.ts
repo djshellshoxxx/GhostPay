@@ -2142,6 +2142,7 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.archive.heading',
     'stealthExport.archive.hint',
     'stealthExport.archive.open',
+    'stealthExport.archive.rpcPrivacy',
     'stealthExport.archive.summary',
     'stealthExport.master.body',
     'stealthExport.master.done',

@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { claimedPlace, normalizeSet, parseAnnouncement, postedBytesPlace, setHash } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, postedRecord, setHash } from './validate.js';
 import { rawAnn } from './testutil.js';
 
 describe('parseAnnouncement', () => {
@@ -47,8 +47,8 @@ describe('parseAnnouncement', () => {
     const revoked = Proxy.revocable(rawAnn(10, 3), {});
     revoked.revoke();
     expect(claimedPlace(revoked.proxy)).toEqual({ blockNumber: undefined, schemeId: undefined });
-    expect(postedBytesPlace(revoked.proxy, 1n)).toBeUndefined();
-    expect(postedBytesPlace({ ...rawAnn(10, 3), metadata: '0x' }, 1n)).toEqual({ blockNumber: 10n, blockHash: rawAnn(10, 3)['blockHash'] });
+    expect(postedRecord(revoked.proxy, 1n)).toBeUndefined();
+    expect(postedRecord({ ...rawAnn(10, 3), metadata: '0x' }, 1n)).toEqual({ ...parseAnnouncement(rawAnn(10, 3)), metadata: '0x' });
   });
   it('reads a field once and hashes the same validated snapshot', () => {
     const record: Record<string, unknown> = { ...rawAnn(10, 3) };

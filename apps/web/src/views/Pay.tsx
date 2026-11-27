@@ -513,6 +513,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       }
     }
   });
+  // One proof per completed result: rebuilding it on the periodic re-render changed its bytes, which closed the enlarged QR.
+  const proofReceipt = useMemo(() => result === undefined || ctx === undefined || built === undefined
+    ? undefined : buildReceipt(ctx, built, result, new Date(services.nowMs())), [ctx, built, result]);
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
   // payment and scope instead, so an ordinary rerender cannot restart its age.
@@ -1617,14 +1620,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               className="btn"
               onClick={() => {
                 if (window.confirm(t('pay.receipt.download.confirm'))) {
-                  downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
+                  downloadText('ghostpay-receipt.json', JSON.stringify(proofReceipt, null, 2), 'application/json');
                 }
               }}
             >
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
+          {proofReceipt !== undefined && <PaymentProofQr receipt={proofReceipt} sourceIdentity={proofSource} />}
         </div>
       )}
 

@@ -23,6 +23,8 @@ export interface RegistryRegistrant {
   readonly name?: string;
 }
 
+const ADDRESS_LABEL = /^0x[0-9a-f]{40}$/i;
+
 /**
  * Resolve an address or ENS name using only the explicitly selected, verified RPC client.
  *
@@ -34,10 +36,11 @@ export interface RegistryRegistrant {
  * Sources: https://docs.ens.domains/resolvers/universal/ and https://docs.ens.domains/ensip/23/
  */
 export async function resolveRegistryRegistrant(client: Pick<RpcClient, 'chainId' | 'request'>, input: string): Promise<RegistryRegistrant> {
-  if (input.startsWith('0x')) {
+  if (input.startsWith('0x') && !input.includes('.')) {
     return { registrant: buildLookupCall(input).preview.registrant! };
   }
-  if (input.length === 0 || input.length > 1024 || !input.includes('.')) {
+  // A whole address used as a label is more likely a mistyped address than a name, and anyone can register one.
+  if (input.length === 0 || input.length > 1024 || !input.includes('.') || input.split('.').some((label) => ADDRESS_LABEL.test(label))) {
     return fail('INVALID_INPUT', 'enter a wallet address or ENS name');
   }
   let name: string;
@@ -46,6 +49,8 @@ export async function resolveRegistryRegistrant(client: Pick<RpcClient, 'chainId
   } catch {
     return fail('INVALID_INPUT', 'invalid ENS name');
   }
+  // Normalization maps look-alike forms (full-width digits, case) to ASCII, so the address-label rule applies again.
+  if (name.split('.').some((label) => ADDRESS_LABEL.test(label))) return fail('INVALID_INPUT', 'enter a wallet address or ENS name');
   if (new TextEncoder().encode(name).length > 255) return fail('INVALID_INPUT', 'ENS name exceeds the lookup limit');
   if (client.chainId !== 1 && client.chainId !== 11155111) return fail('CHAIN_DISABLED', 'ENS lookup requires the selected Ethereum or Sepolia RPC');
   const code = await client.request('eth_getCode', [UNIVERSAL_RESOLVER, 'latest']);

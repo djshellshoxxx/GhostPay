@@ -87,11 +87,11 @@ export function claimedPlace(raw: unknown): { readonly blockNumber: bigint | und
 }
 
 /**
- * Where a record sits when its only fault is the length of its ephemeral key or metadata: any caller of the announcer
- * can post such bytes. `undefined` for every other record, including one whose bytes are not well-formed hex. Never
- * throws.
+ * The record, with its own bytes, when its only fault is the length of its ephemeral key or metadata: any caller of the
+ * announcer can post such bytes, so it is not a usable announcement. `undefined` for every other record, including one
+ * whose bytes are not well-formed hex. Never throws.
  */
-export function postedBytesPlace(raw: unknown, schemeId: bigint): { readonly blockNumber: bigint; readonly blockHash: Hex } | undefined {
+export function postedRecord(raw: unknown, schemeId: bigint): ScanAnnouncement | undefined {
   try {
     const r = raw as Record<string, unknown>;
     const key = r['ephemeralPublicKey'];
@@ -99,7 +99,7 @@ export function postedBytesPlace(raw: unknown, schemeId: bigint): { readonly blo
     if (typeof key !== 'string' || typeof metadata !== 'string' || !HEX_BYTES.test(key) || !HEX_BYTES.test(metadata)) return undefined;
     // With acceptable bytes in their place, every other field must pass.
     const rest = parseAnnouncement({ ...r, ephemeralPublicKey: `0x${'00'.repeat(33)}`, metadata: '0x00' }, schemeId);
-    return rest === undefined ? undefined : { blockNumber: rest.blockNumber, blockHash: rest.blockHash };
+    return rest === undefined ? undefined : { ...rest, ephemeralPublicKey: key.toLowerCase() as Hex, metadata: metadata.toLowerCase() as Hex };
   } catch {
     return undefined;
   }

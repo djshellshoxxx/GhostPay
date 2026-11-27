@@ -5321,6 +5321,15 @@ Observed: existing duplicate map overwrites an unverified-checksum diagnostic wh
 - Owns only the 12 added test, test-utility and handoff files from `5ba3a468` and this entry. No product, dependency, workflow or config change.
 - Not ported: `reconciliationVault.replay.fuzz.test.ts` (needs #742). Acceptance: hosted CI green on the exact head, including the anvil and recovery jobs.
 
+## Defensive fixes from the second source audit (W4-1..W4-5) — 2026-11-27 UTC (newghostpay-e3 worker W4)
+
+- Branch: existing merged `claude/multipart-note-copy-20261126` (#712) fast-forwarded to main `1894b4bb`; no new branch.
+- Owns only: the payer proof receipt in `apps/web/src/views/Pay.tsx`; non-deep handling of wrong-view-tag records in `packages/ux-vault/src/reconciliation-portable.ts` and the `deep` page flag in `apps/web/src/lib/scanClient.ts`; `apps/web/src/lib/displayText.ts`; observer row 4 (`components/Disclosure.tsx`, four locales, `docs/threat-model/THREAT_MODEL.md`); `key()` in `packages/chain-adapters/src/scanVerify.ts`; their tests; this entry.
+- Shared files, separate hunks: `Pay.tsx`, `scanClient.ts` and locales with `claude/journal-fuzz-20261126` (W2); `Pay.tsx` and `reconciliation-portable.ts` with open #742.
+- Acceptance: each fix has a regression test that fails without it; no tombstone, reorg or depth rule weakened; no dependency, contract, workflow or activation change; draft PR, no merge.
+
+- Coordinator (newghostpay-e3) finished W4 stopped run and added W6-1/W6-2: also owns `StealthExportArchive.tsx` and its test, `securityKeys.ts` (one key), `chain-adapters/src/registryEns.ts` and its test.
+
 
 ## BUG-ONLY: deep-link redirect validation order — 2026-11-27
 

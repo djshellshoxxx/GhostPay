@@ -129,6 +129,8 @@ export interface ScanParams {
   readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
     readonly finalizedThrough: bigint;
     readonly resumed: boolean;
+    /** This page also checked wrong view tags (the opt-in deep scan). */
+    readonly deep: boolean;
     readonly from: bigint;
     readonly through: bigint;
     readonly canonicalHash: (height: bigint) => Promise<Hex>;
@@ -599,7 +601,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const finalizedThrough = finalizedAt(pageHead);
       const resumed = p.cursor.last !== undefined;
       if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
-        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed,
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed, deep: p.deep === true,
         canonicalHash: (height) => canonicalHashAt(p, height),
         retryFrom: (height) => {
           const retry = height > pageHead ? pageHead + 1n : height;
