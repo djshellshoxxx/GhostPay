@@ -9,6 +9,8 @@ on:
       - 'packages/**'
       - 'scripts/pages/**'
       - 'scripts/beta/browser-devnet.sh'
+      - 'scripts/beta/erc20-report-membership.mjs'
+      - 'scripts/tests/erc20-report-membership.test.mjs'
       - 'scripts/testnet/**'
       - 'scripts/build-workspaces.mjs'
       - 'package.json'
@@ -23,6 +25,8 @@ on:
       - 'packages/**'
       - 'scripts/pages/**'
       - 'scripts/beta/browser-devnet.sh'
+      - 'scripts/beta/erc20-report-membership.mjs'
+      - 'scripts/tests/erc20-report-membership.test.mjs'
       - 'scripts/testnet/**'
       - 'scripts/build-workspaces.mjs'
       - 'package.json'
@@ -69,6 +73,8 @@ jobs:
           node-version: '22'
           package-manager-cache: false
       - run: npm ci --ignore-scripts
+      - name: Verify qualification collector completeness
+        run: node --test scripts/tests/erc20-report-membership.test.mjs
       - name: Build workspace libraries from source
         run: |
           rm -rf packages/*/dist
@@ -107,6 +113,7 @@ jobs:
           import { execFileSync, spawnSync } from 'node:child_process';
           import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
           import { basename, dirname, join, resolve } from 'node:path';
+          import { validateErc20ReportMembership } from './scripts/beta/erc20-report-membership.mjs';
           const root = resolve(process.env.ERC20_RUN_ROOT);
           const evidence = resolve(process.env.ERC20_EVIDENCE);
           if (dirname(root) !== resolve(process.env.RUNNER_TEMP) || dirname(evidence) !== resolve(process.env.RUNNER_TEMP)) {
@@ -142,6 +149,10 @@ jobs:
           const compilerDiagnostics = [...(log ?? '').matchAll(/^([A-Za-z0-9_./-]+\.(?:ts|tsx|mts))\((\d+),(\d+)\): error (TS\d+):/gm)]
             .slice(0, 50).map((match) => ({ file: match[1], line: Number(match[2]), column: Number(match[3]), code: match[4] }));
           const report = run === undefined ? undefined : optional(() => JSON.parse(readText(join(run, 'pages-results', 'erc20-report.json'))), 'report-unavailable');
+          const membership = validateErc20ReportMembership(report, {
+            mode: process.env.GHOSTPAY_PAGES_ERC20, browser: process.env.GHOSTPAY_PAGES_BROWSER,
+          });
+          failures.push(...membership.failures);
           const files = new Set(['erc20-pages-devnet.spec.ts', 'erc20-pages-boundaries.spec.ts']);
           const cases = [];
           const publicAttachments = [];
@@ -163,7 +174,9 @@ jobs:
                     })) });
                   for (const result of results) {
                     for (const attachment of result.attachments ?? []) {
-                      if (attachment.name === 'erc20-public-evidence') publicAttachments.push({ file, passed, attachment });
+                      if (attachment.name === 'erc20-public-evidence') {
+                        publicAttachments.push({ file, passed, primary: test === membership.primaryTest, attachment });
+                      }
                     }
                   }
                 }
@@ -171,7 +184,9 @@ jobs:
               collect(suite.suites);
             }
           }
-          optional(() => collect(report?.suites), 'invalid-test-report');
+          if (!membership.failures.includes('invalid-test-report')) {
+            optional(() => collect(report?.suites), 'invalid-test-report');
+          }
           if (report?.errors?.length) failures.push('global-test-error');
           if ([...files].some((file) => !cases.some((entry) => entry.file === file))) failures.push('required-spec-not-executed');
           if (cases.some((entry) => !entry.passed)) failures.push('test-failed-skipped-or-retried');
@@ -182,8 +197,8 @@ jobs:
             const exactFields = (value, fields) => value !== null && typeof value === 'object' && !Array.isArray(value)
               && Object.keys(value).length === fields.length && fields.every((field) => Object.hasOwn(value, field));
             require(publicAttachments.length === 1);
-            const { file, passed, attachment } = publicAttachments[0];
-            require(file === 'erc20-pages-devnet.spec.ts' && passed);
+            const { file, passed, primary, attachment } = publicAttachments[0];
+            require(file === 'erc20-pages-devnet.spec.ts' && passed && primary);
             require(exactFields(attachment, ['name', 'contentType', 'body']) && attachment.contentType === 'application/json'
               && typeof attachment.body === 'string' && attachment.body.length > 0 && attachment.body.length <= 8192);
             const bytes = Buffer.from(attachment.body, 'base64');
