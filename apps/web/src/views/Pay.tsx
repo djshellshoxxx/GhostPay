@@ -28,6 +28,7 @@ import {
   assertInvoiceStillPayable,
   assertPreparedBufferFresh,
   reviewInvoice,
+  trustView,
   type BufferQuote,
   type SweepSimulation,
   type PayContext,
@@ -1310,6 +1311,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }
 
   const inv = parsed.invoice;
+  // Pins only label the signer, never block. An invoice held open (see heldPins) is not opened again for newer pins, so
+  // its label follows the pins saved now.
+  const signer = trustView(parsed, app.settings.pinnedSigners);
   const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const alreadyRequested = requestedInvoice === parsed.invoice;
@@ -1329,8 +1333,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
       {walletChangeNotice}
 
-      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
-        {displayMessage(review.trust.message, t)}
+      <Notice kind={signer.kind === 'invalid-signature' ? 'error' : signer.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
+        {displayMessage(signer.message, t)}
       </Notice>
       {review.blockers.filter((b) => b !== review.trust.text).length > 0 && (
         <Notice kind="error" title={t('pay.cannotProceed')}>
