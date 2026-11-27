@@ -12,8 +12,8 @@ import { Field, Notice } from '../components/Common';
 import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, INVOICE_LINK_CLIPBOARD_DELAYS_SEC, invoiceLinkClipboardDelay, type Settings as SettingsData } from '../lib/settings';
-import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
-import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
+import { SCAN_PRIVACY_KEY, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
+import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, SCAN_LANES_KEY, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
@@ -444,6 +444,12 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
   );
 }
 
+/** The stored text of both scan option records, to notice that another tab saved since this form was filled. */
+function scanOptionsText(): string {
+  const read = (key: string): string | null | undefined => { try { return browserStorage()?.getItem(key); } catch { return undefined; } };
+  return JSON.stringify([read(SCAN_PRIVACY_KEY), read(SCAN_LANES_KEY)]);
+}
+
 /** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
 // i18n-use: settings.scanLanes.errFlood
 function ScanPrivacySection(): ReactNode {
@@ -451,7 +457,12 @@ function ScanPrivacySection(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  // What this form was filled from: saving over a newer save could undo a private path or cover lookups turned on there.
+  const filledFrom = useRef<string | undefined>(undefined);
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => {
+    filledFrom.current = scanOptionsText();
+    return loadScanPrivacy(browserStorage());
+  });
   // Spec 05 lane and privacy-set options: own key, saved by the same button.
   const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
@@ -461,6 +472,13 @@ function ScanPrivacySection(): ReactNode {
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
+    if (scanOptionsText() !== filledFrom.current) {
+      filledFrom.current = scanOptionsText();
+      setCfg(loadScanPrivacy(browserStorage()));
+      setLanes(loadScanLanes(browserStorage()));
+      setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+      return;
+    }
     try {
       const endpoints: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
@@ -477,6 +495,7 @@ function ScanPrivacySection(): ReactNode {
       setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
       const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
       if (saved) setLanes(loadScanLanes(browserStorage()));
+      filledFrom.current = scanOptionsText();
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });

@@ -2,6 +2,8 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppShell, CORE_ORDER } from './AppShell';
+import { DEFAULT_SCAN_PRIVACY, SCAN_PRIVACY_KEY } from './lib/scanPrivacy';
+import { DEFAULT_SCAN_LANES, SCAN_LANES_KEY } from './lib/scanSpam';
 import { clearSession } from './lib/session';
 import type { Services } from './lib/services';
 import { DEFAULT_SETTINGS, SETTINGS_KEY, type Settings } from './lib/settings';
@@ -135,6 +137,29 @@ describe('settings saved by another tab', () => {
     expect(screen.getByText('Settings saved.')).toBeTruthy();
     expect(screen.queryByText(/Settings changed in another tab/)).toBeNull();
     expect(stored()).toMatchObject({ rpcUrls: { [String(CHAIN)]: NEW }, pinnedSigners: [], relayerUrl: 'https://draft.example' });
+  });
+
+  it('are not overwritten by the scan privacy form, which would undo a private path or cover lookups', () => {
+    shell();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const save = (): void => { fireEvent.click(screen.getByRole('button', { name: 'Save scan privacy' })); };
+    const lanes = { ...DEFAULT_SCAN_LANES, matchCover: true };
+    const privacy = { ...DEFAULT_SCAN_PRIVACY, transport: 'tor-browser', requireProxy: true };
+    // Another tab turns both on while this form still shows them off.
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify(lanes));
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify(privacy));
+
+    save();
+
+    expect(screen.getByText(/Settings changed in another tab/)).toBeTruthy();
+    expect(JSON.parse(window.localStorage.getItem(SCAN_LANES_KEY)!)).toEqual(lanes);
+    expect(JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY)!)).toEqual(privacy);
+    expect(screen.getByLabelText<HTMLSelectElement>('Scan transport').value).toBe('tor-browser');
+    // The form now shows what is saved, so saving it again goes through and keeps it.
+    save();
+    expect(screen.queryByText(/Settings changed in another tab/)).toBeNull();
+    expect(JSON.parse(window.localStorage.getItem(SCAN_LANES_KEY)!)).toMatchObject({ matchCover: true });
+    expect(JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY)!)).toMatchObject({ requireProxy: true });
   });
 
   it('refuse the Settings form save that races the notification', () => {
