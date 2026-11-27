@@ -1,3 +1,33 @@
+# P14 F4: truthful scanner completion for late-payment review (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-caught-up-20261127-d81a`, base main
+`9ae770203d69d23bdc8735912dfe98af5944d4d6`. Provenance: P14 #658 / `claude/priv-t02-rpc-disclosure`,
+source `9aed3886693270524beb118685e5947469899c43`; PRIV-06 test source
+`28725635c3c1f2f56a609533515115c6c4ec27b5`. This finishes an already-integrated incomplete
+contract; it is not newly recovered unmerged functionality. The F1 claim explicitly excludes F2-F4.
+The 154-PR inventory plus newly updated #745/#746/#744/#380/#726 were checked for these hunks:
+all eleven open runtime heads retain the misleading terminal calculation; no checkpoint-test or
+new seller-test path conflict was found. Existing #696/#728 cover/replay ownership and #720 manifest
+test ownership remain intact. PR #745 is separately implemented and awaiting its current hosted gates.
+
+Owned paths: only the `ScanProgress.caughtUp` comment and terminal progress expression in
+`apps/web/src/lib/scanClient.ts`; lag/boundary/recovery cases in
+`apps/web/src/lib/scanClient.checkpoint.test.ts`; new `apps/web/src/views/Scan.caughtUp.test.tsx`;
+the F4 evidence-matrix entry, `docs/handoffs/P14_CAUGHT_UP_COMPLETION_20261127.md`, an append-only
+consolidation-tracker entry and this claim. Runtime `Scan.tsx` and existing `Scan.test.tsx` are not owned.
+
+Acceptance: the flag requires an untruncated fetch and a cursor beyond that page's observed primary head.
+Secondary lag of one block, exactly finality depth and more than that depth reports false; no-secondary,
+equal-head and ahead-secondary controls retain true. Existing fetch bounds, records, checkpoint replay
+tails, discrepancy handling, lag diagnostics and terminal loop break remain unchanged. A real mocked
+late-payment journey retains verified evidence but withholds acceptance while the secondary is one block
+behind; an explicit rescan of the payment range after catch-up restores the existing seller-confirmed
+verification/acceptance journey. Use synthetic fixtures and a deterministic clock; preserve all existing
+failure-path assertions and release gates. This flag proves neither log completeness nor durable storage.
+No new chain, contract, service, experimental activation or stopped-product work is authorized by this claim.
+
+---
+
 # P14 F2: truthful light-source evidence label (2026-11-27 UTC)
 
 Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/core-branch-completion-20261127-d81a`, base main
