@@ -160,6 +160,12 @@ describe('review: policy rules', () => {
       expect(reasons(s, s)).toEqual(['DESTINATION_IS_PROTOCOL_CONTRACT']);
     }
   });
+  it('either sweep to the fee recipient is refused, in any case of the address', () => {
+    const lower = FEE_RECIPIENT.toLowerCase() as typeof FEE_RECIPIENT;
+    for (const s of [directSweep({ to: FEE_RECIPIENT }), directSweep({ to: lower }), directSweep({ token: 'native', amount: 10n ** 18n, to: FEE_RECIPIENT }), relayedSweep({ destination: FEE_RECIPIENT })]) {
+      expect(reasons(s, s)).toEqual(['DESTINATION_IS_FEE_RECIPIENT']);
+    }
+  });
   it('either sweep into a token contract, where the funds would be stuck (WALLET-SAFETY-07)', () => {
     const lower = USDC.toLowerCase() as typeof USDC;
     for (const s of [directSweep({ to: USDC }), directSweep({ to: lower }), directSweep({ token: 'native', amount: 10n ** 18n, to: USDC }), relayedSweep({ destination: USDC })]) {

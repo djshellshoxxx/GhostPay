@@ -154,9 +154,6 @@
   }
 
   function openFrame(el, url) {
-    // One dialog at a time: it is modal, and a second one could be paid beside the first.
-    // Asking the element itself keeps the button usable if the merchant page removed the dialog.
-    if (openOverlay !== null && openOverlay.isConnected) return;
     var n = nonce();
     var overlay = document.createElement('div');
     var frame = document.createElement('iframe');
@@ -288,6 +285,9 @@
     var framed = mode === 'iframe' && !new URL(url).searchParams.has('gpmu') && !!window.crypto && typeof window.crypto.getRandomValues === 'function';
     el.addEventListener('click', function (event) {
       event.preventDefault();
+      // No second checkout of either kind while a dialog is open: it is modal, and the second could be paid beside it.
+      // Asking the element itself keeps the buttons usable if the merchant page removed the dialog.
+      if (openOverlay !== null && openOverlay.isConnected) return;
       if (framed) openFrame(el, url);
       else popup(el, url);
     });

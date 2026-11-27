@@ -280,6 +280,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     const first = finalizedAt(head) + 1n;
     return first < 0n ? 0n : first < from ? first : from;
   };
+  // PRIV-06 F1: a rewind removes only the checkpoint this run still owns; another scan's write or clear stands.
+  const clearOwnedCheckpoint = (): void => {
+    if (p.checkpoints === undefined || checkpointYielded) return;
+    if (sameCursor(loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId), ownedCheckpoint)) p.checkpoints.clear(p.chain.chainId, p.keyId);
+    else checkpointYielded = true;
+  };
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -405,7 +411,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
@@ -454,7 +460,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
@@ -584,7 +590,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         await p.onUnresolvedEvidence?.(uncertainFrom(pageFrom, pageHead));
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
@@ -607,7 +613,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         backlog = deferred;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
         break;
@@ -630,7 +636,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);
           p.onDiscrepancy?.(conflicts);
-          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+          if (res.reorg !== undefined) clearOwnedCheckpoint();
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }

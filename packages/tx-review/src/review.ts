@@ -120,10 +120,11 @@ function policyReasons(i: Intent, policy: ReviewPolicy, now: number, ctx: Review
   return out;
 }
 
-/** Where swept funds go, for both sweep kinds: GhostPay contracts and token contracts cannot give them back. */
+/** Where swept funds go, for both sweep kinds: not to GhostPay (contracts or fee recipient), nor into a token contract. */
 function destinationReasons(to: Address, token: Address | 'native', chainId: number, policy: ReviewPolicy, out: ReasonCode[]): void {
   const { router, sweepRelayer, announcer } = policy.contracts;
   if ([router, sweepRelayer, announcer].some((c) => eq(c, to))) out.push('DESTINATION_IS_PROTOCOL_CONTRACT');
+  if (eq(policy.feeRecipient, to)) out.push('DESTINATION_IS_FEE_RECIPIENT');
   if ((token !== 'native' && eq(token, to)) || tokenListed(policy, chainId, to)) out.push('DESTINATION_IS_TOKEN_CONTRACT');
 }
 

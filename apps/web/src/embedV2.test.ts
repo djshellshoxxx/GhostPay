@@ -36,8 +36,8 @@ function realm(dom: JSDOM, v: unknown): unknown {
   return (dom.window as unknown as { JSON: JSON }).JSON.parse(JSON.stringify(v));
 }
 
-async function page(attrs: string): Promise<Harness> {
-  const dom = new JSDOM(`<!doctype html><body><div><button id="b" data-ghostpay ${attrs}></button></div><script src="${APP}/ghostpay-embed-v2.js"></script></body>`, {
+async function page(attrs: string, extra = ''): Promise<Harness> {
+  const dom = new JSDOM(`<!doctype html><body><div><button id="b" data-ghostpay ${attrs}></button></div>${extra}<script src="${APP}/ghostpay-embed-v2.js"></script></body>`, {
     url: 'https://merchant.test/',
     runScripts: 'dangerously',
     resources: loader,
@@ -372,6 +372,31 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(doc.activeElement).toBe(h.btn);
     h.btn.click(); // closing frees the button for a new checkout
     expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+  });
+
+  it.each([
+    ['popup-mode', ''],
+    ['remote-profile', 'data-profile-url="https://merchant.test/profile.json" data-mode="iframe"'],
+  ])('opens no popup from a %s button while a dialog is open', async (_name, attrs) => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, `<button id="p" data-ghostpay data-invoice="${GOOD}" ${attrs}></button>`);
+    const doc = h.dom.window.document;
+    const other = doc.getElementById('p')!;
+    h.btn.click();
+    other.click(); // the page behind the dialog can still be reached with the keyboard
+    expect(h.opened).toEqual([]);
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    (doc.querySelector('[role="dialog"] button') as HTMLButtonElement).click();
+    other.click();
+    expect(h.opened).toHaveLength(1);
+  });
+
+  it('keeps popup buttons usable after the shop page removed the dialog', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, `<button id="p" data-ghostpay data-invoice="${GOOD}"></button>`);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove();
+    doc.getElementById('p')!.click();
+    expect(h.opened).toHaveLength(1);
   });
 });
 
