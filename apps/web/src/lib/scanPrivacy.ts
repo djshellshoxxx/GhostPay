@@ -638,6 +638,10 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
     windowBlocks: w,
     align: w,
     minSpan: w,
+    // Anyone can post announcements into more blocks than the source's default cross-check cap, which failed the whole
+    // scan. The bound here is the widest grid window a scan page (at most getLogsMaxRange blocks) can cover, so every
+    // announcement block of it is still confirmed by the user's RPC, one read each, as an RPC scan reads them.
+    maxCrossChecks: (Math.ceil(o.chain.getLogsMaxRange / w) + 1) * w,
   });
   return {
     chainId: inner.chainId,

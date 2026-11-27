@@ -145,12 +145,32 @@ describe('indexer-only scan: omission and truncation at the web boundary (PRIV-T
     expect(saved).toEqual([]);
   });
 
-  it('too many announcement blocks to cross-check is TRUNCATED and fails closed (more than 200 blocks)', async () => {
+  // Anyone can post announcements into any number of blocks, so a dense window must not stop the scan; every one of
+  // its blocks is still confirmed by the independent RPC.
+  describe('a window with more than 200 announcement blocks', () => {
     const meta = encodeMetaAddress(generateKeySet());
-    const many = Array.from({ length: 201 }, (_, i) => annFrom(makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + i, index: 0, caller: OTHER }).log));
-    const idx = indexerFetch(2500, many);
-    const client = createIndexerScanClient(rpcAt(2500), { chain, announcer: FAKE_ANNOUNCER, baseUrl: 'https://indexer.example.org', fetchImpl: idx.fetchImpl, windowBlocks: 1000 });
-    await expect(client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`], fromBlock: 1000n, toBlock: 1999n })).rejects.toMatchObject({ code: 'RPC_FAILURE', message: expect.stringContaining('indexer TRUNCATED') as unknown });
+    const blocks = Array.from({ length: 201 }, (_, i) => 1000 + 4 * i);
+    const dense = (rpc: ReturnType<typeof rpcAt>, fromBlock: bigint, toBlock: bigint) => {
+      const idx = indexerFetch(2500, blocks.map((block) => annFrom(makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block, index: 0, caller: OTHER }).log)));
+      const client = createIndexerScanClient(rpc, { chain, announcer: FAKE_ANNOUNCER, baseUrl: 'https://indexer.example.org', fetchImpl: idx.fetchImpl, windowBlocks: 1000 });
+      return { idx, logs: client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`], fromBlock, toBlock }) };
+    };
+
+    it.each([
+      ['one grid window', 1000n, 1999n],
+      ['a page that is not on the grid, so two windows are fetched', 999n, 1998n],
+    ])('is read whole in one request, every block checked against the RPC (%s)', async (_name, fromBlock, toBlock) => {
+      const asked = new Set<bigint>();
+      const { idx, logs } = dense(rpcAt(2500, (n) => { asked.add(n); return undefined; }), fromBlock, toBlock);
+      expect((await logs).map((l) => BigInt(l.blockNumber))).toEqual(blocks.map(BigInt));
+      expect(blocks.filter((b) => !asked.has(BigInt(b)))).toEqual([]);
+      expect(idx.urls).toHaveLength(1);
+    });
+
+    it('still fails closed when the RPC does not confirm a block past the 200th', async () => {
+      const { logs } = dense(rpcAt(2500, (n) => (n === 1800n ? `0x${'ee'.repeat(32)}` : undefined)), 1000n, 1999n);
+      await expect(logs).rejects.toMatchObject({ code: 'RPC_FAILURE', message: expect.stringContaining('indexer HEAD_MISMATCH') as unknown });
+    });
   });
 
   it('RPC head below the window start: nothing is scanned, the indexer is never asked and no match appears', async () => {
