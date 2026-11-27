@@ -153,3 +153,58 @@ integration, F13 fiat conversion, P07 encrypted device synchronization, and F14
 multi-chain routing. P14 RPC provider disclosure remains included. Follow the current
 [owner directive](../ai/STOP_WORK_20261125.md) and newer explicit owner decisions;
 this handoff authorizes no stopped-product completion or activation.
+
+## Integration and residual checkpoint — 2026-11-27 UTC
+
+F3 [#749](https://github.com/djshellshoxxx/GhostPay/pull/749) merged normally as
+`7d29d39be5240762de6df2aefc7316f4bd460d60`. Source
+`7a8e88d7083905013d0af310c845ba0c5f352dcb`, current-main synthetic merge
+`77c70cfa6308cff0aa84a14d221d3c6909a39a89`, and actual merge share tree
+`3522dec7b56b44f217b02781b4e7d21fa66d983c`. Actual parents are prior main
+`6b323a99df1238cb5ebe7248528cc7bce5140e80` and the source head. The source ref remains.
+All **39 candidate checks completed: 36 successful and three expected publishing-only
+skips**; all five applicable workflow groups succeeded. Fresh source/ownership/review,
+current-main tree and lock checks preceded integration. The independent consolidation
+review in PR comment 7210252083 also found no scoped blocker; it was source review,
+not an external approval.
+
+F2 resulting-main verification remains 41 successful checks; F4 completed 32 successful
+checks. **F3 resulting-main checks: all 32 successful on `7d29d39be5240762de6df2aefc7316f4bd460d60`.** All applicable push/dynamic workflow runs also completed successfully. The associated PR
+records the final verification; this documentation checkpoint still needs its own gates.
+
+The [61-row disposition record](../consolidation/branch-completion-20261127/closed-residual-dispositions.json)
+contains **42 C, 14 D, 2 E, 3 F; no unowned A/B unit established**. Every row retains its
+source branch/PR/SHA, computed merge bases, semantic evidence and successor/ownership pins,
+with `newly_tested: false`. Large inherited stacks are not classified wholesale. The
+record explicitly preserves private-scan, signer-pin, offline-draft and deferred timestamp
+obligations. This is a bounded residual review, not a global semantic-completion claim.
+
+Unique qualification remains blocked or owned: #655's private-checkpoint fixture depends
+on #248; #652/#630 signer-pin fixtures depend on #243; #589's two-case Permit/approval
+disclosure browser test remains in open owner stack #632. That test requires deliberate
+approval, exact preview/request equality, one request and preserved rejection feedback.
+Its quiet timestamp does not release ownership. #80's broader journal guard was explicitly
+rejected because it blocks unrelated modern scoped payments; reconsideration requires a
+separate journal-version/migration design.
+
+The refreshed historical snapshot observed 842 heads, 156 open PRs (100/56), and 582
+closed PRs (100/100/100/100/100/82, then an empty page), including 244 unmerged. It predates
+this documentation branch and F3 integration. All 34 frozen refs matched the initial SHA
+snapshot. Original clean worktrees at `8c650eba` and `3a9ce554`, and the dirty
+accessibility baseline at `5628bc00`, remain untouched.
+
+Owned draft #748 received [independent native verification](https://github.com/djshellshoxxx/GhostPay/pull/748#issuecomment-7210306424)
+at `5b75ee82ecabc1c82434e0030a7417e0454e1b17`: 135 package tests and existing coverage
+thresholds, typecheck, lint and build passed; 20 focused cases overlap that suite. The
+adjacent duplicate-order checksum-warning loss was reproduced in both base and candidate
+with unchanged canonical addresses. It remains separately recorded, with browser/hosted
+qualification and ownership still belonging to that worker.
+
+The generation-67 lease renewal `88953e3a53493b7aa18a36ca848ce0ed566354c2` records
+expiry `2026-11-27T06:13:45.681Z`; this is historical, not current authority.
+F3 resulting-main verification is complete. After the documentation gates pass, merge this
+checkpoint normally, verify its resulting main, and explicitly release the lease with
+heartbeat/expiry preserved.
+Record final publication, check and release SHAs in the associated PR verification comment.
+Keep WebKit CSP, unavailable physical-device/external-wallet/live-Tor checks and all broader
+release gates distinct from these scoped implementation results.

@@ -321,3 +321,48 @@ streams and all 34 frozen archive refs remain preserved. Existing local work rem
 No further unowned feature was established in this bounded refresh; the 61 mechanical
 residuals are not an exhaustive semantic clearance. Continue only from a proven eligible
 unit after F3 qualification, or leave the precise blocked/owned/deferred checkpoint.
+
+## P14 F3 integration and complete residual record — 2026-11-27 UTC
+
+**Completed and merged:** [F3 #749](https://github.com/djshellshoxxx/GhostPay/pull/749),
+source `7a8e88d7083905013d0af310c845ba0c5f352dcb`, merge
+`7d29d39be5240762de6df2aefc7316f4bd460d60`. The actual merge and current-main synthetic
+merge match the qualified tree `3522dec7b56b44f217b02781b4e7d21fa66d983c`.
+All 39 candidate checks completed (36 success, 3 expected publication-only skips), and
+all five workflow groups succeeded. F2 and F4 resulting-main checks completed with 41 and
+32 successes respectively. **F3 resulting-main checks: all 32 successful on `7d29d39be5240762de6df2aefc7316f4bd460d60`.**
+
+[All 61 residual dispositions](consolidation/branch-completion-20261127/closed-residual-dispositions.json)
+are now recorded against main `6b323a99df1238cb5ebe7248528cc7bce5140e80`, with an
+explicit post-F3 integration revalidation: **42 C, 14 D, 2 E, 3 F; no A/B unit established**.
+Each retains source branch/PR/SHA, merge bases, behavioral evidence and successor/owner pins.
+These were source/history/discussion reviews, not fresh runtime qualification. C for an
+intended PR change does not erase inherited private-scan, signer-pin, offline-draft or
+explicitly deferred timestamp obligations.
+
+| Useful unique residual | Specific blocker and next action |
+| --- | --- |
+| #590 `f01c69d277c39c76fd3077103c43cc38f7f9c736` | Receipt binding is represented; offline/drafts remain with #604 -> #717/#728 |
+| #655 `1dcd5a25130b9db6afc4d224c619cd4dbcf0307c` | Private-checkpoint fixture requires #248's owned persistence/lifecycle, head `18b367457103fb1731a5b4ef5c51faa37a010e47` |
+| #652 `724afdcf557178d8b78d841b681f50e99d41935f` and #630 `c484f833560aef8e8c798a71228d92e10fe5a877` | Duplicate signer-pin fixture corrections require the absent feature owned by #243, head `276aed60f19671cc6fa551be616b61041cb45b50` |
+| #589 `697cb7314c323b574bfbb1f102244265046dd93a` | Runtime is represented; two-case Permit/approval disclosure browser qualification remains with #632 `0036fe1656579e0e9551bb9ae07cc63d802fb667`, test blob `51ce4023c64b008f9bb60f23dcf769791d5cf56c` |
+
+#80's overbroad journal guard is deliberately rejected/superseded; a future journal-version/
+migration decision is required. #616/#617 retain shared-core C dispositions while their
+stopped mixed-product portions remain D. Existing journal/refund/offline ownership,
+timestamp deferral, all ten stopped streams and all 34 frozen refs remain intact.
+
+Fully paginated metadata refresh: 842 remote heads, 156 open PRs, 582 closed PRs including
+244 closed-unmerged. This historical snapshot predates the documentation branch and F3
+merge. It is not a claim that the repository's entire semantic obligation queue is empty.
+
+Independent native review of owned draft #748 at `5b75ee82ecabc1c82434e0030a7417e0454e1b17`
+passed 135 package tests and typecheck/lint/build; the pre-existing checksum-warning loss
+remains separately recorded in [the review](https://github.com/djshellshoxxx/GhostPay/pull/748#issuecomment-7210306424).
+The current owner retains its branch, draft status, browser/hosted gates and integration.
+
+F3 resulting-main verification is complete. Next qualify and integrate this documentation
+checkpoint, verify its resulting main, and explicitly release the valid integration lease.
+The associated PR records final exact heads, checks and lock release. Broader WebKit CSP and
+unexecuted physical-device, external-
+wallet and live-Tor qualification remain open.
