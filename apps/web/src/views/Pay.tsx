@@ -509,6 +509,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
   // payment and scope instead, so an ordinary rerender cannot restart its age.
   const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
+  // One proof per completed result: rebuilding it on the periodic re-render changed its bytes, which closed the enlarged QR.
+  const proofReceipt = useMemo(() => result === undefined || ctx === undefined || built === undefined
+    ? undefined : buildReceipt(ctx, built, result, new Date(services.nowMs())), [ctx, built, result]);
   const authorityMatches = (scope?: WalletPrivacyScope): boolean => {
     if (!mounted.current) return false;
     // Completion is also a protected presentation boundary, including expiry before a timer/restoration event runs.
@@ -1568,7 +1571,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
+          {proofReceipt !== undefined && <PaymentProofQr receipt={proofReceipt} sourceIdentity={proofSource} />}
         </div>
       )}
 
