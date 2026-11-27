@@ -1898,6 +1898,7 @@
     "error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust": "أدخل عنوان وجهة صالحًا (0x…). يجب أن يكون للعناوين ذات الأحرف الكبيرة والصغيرة المختلطة مجموع اختباري صحيح.",
     "error.sweep.theDestinationMustDifferFromTheStealthAddress": "يجب أن تختلف الوجهة عن العنوان الخفي.",
     "error.sweep.theDestinationMustNotBeAGhostPayContractOrThe": "يجب ألا تكون الوجهة عقدًا من عقود GhostPay أو مستلم الرسوم.",
+    "error.sweep.theDestinationMustNotBeATokenContract": "الوجهة هي عقد رمز. ستبقى الأموال المرسلة إليه عالقة.",
     "error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou": "تم الحظر: يبدو هذا العنوان مطابقًا تقريبًا لعنوان تعرفه (تسميم العناوين). تحقق من كل حرف.",
     "error.sweep.yourRPCReturnedAnUnexpectedBalance": "أعاد RPC الخاص بك رصيدًا غير متوقع.",
     "error.sweep.theLocalClockIsInvalidRefusingToSignASweep": "الساعة المحلية غير صالحة. رفض توقيع تحويل الرصيد.",

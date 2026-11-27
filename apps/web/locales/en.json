@@ -1898,6 +1898,7 @@
     "error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust": "Enter a valid destination address (0x…). Mixed-case addresses must have a correct checksum.",
     "error.sweep.theDestinationMustDifferFromTheStealthAddress": "The destination must differ from the stealth address.",
     "error.sweep.theDestinationMustNotBeAGhostPayContractOrThe": "The destination must not be a GhostPay contract or the fee recipient.",
+    "error.sweep.theDestinationMustNotBeATokenContract": "The destination is a token contract. Funds sent there would be stuck.",
     "error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou": "Blocked: this address looks almost identical to an address you know (address poisoning). Check every character.",
     "error.sweep.yourRPCReturnedAnUnexpectedBalance": "Your RPC returned an unexpected balance.",
     "error.sweep.theLocalClockIsInvalidRefusingToSignASweep": "The local clock is invalid. Refusing to sign a sweep.",

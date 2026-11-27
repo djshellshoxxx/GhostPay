@@ -1898,6 +1898,7 @@
     "error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust": "有効な宛先アドレス（0x…）を入力してください。大文字と小文字が混在するアドレスは、チェックサムが正しい必要があります。",
     "error.sweep.theDestinationMustDifferFromTheStealthAddress": "宛先はステルスアドレスと異なる必要があります。",
     "error.sweep.theDestinationMustNotBeAGhostPayContractOrThe": "宛先を GhostPay のコントラクトや手数料の受取人にすることはできません。",
+    "error.sweep.theDestinationMustNotBeATokenContract": "宛先はトークンのコントラクトです。そこへ送った資金は取り出せなくなります。",
     "error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou": "ブロックしました: このアドレスは、あなたが知っているアドレスとほぼ同じに見えます（アドレスポイズニング）。すべての文字を確認してください。",
     "error.sweep.yourRPCReturnedAnUnexpectedBalance": "RPC が予期しない残高を返しました。",
     "error.sweep.theLocalClockIsInvalidRefusingToSignASweep": "ローカルの時計が無効です。スイープへの署名を拒否します。",

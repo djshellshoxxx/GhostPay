@@ -1898,6 +1898,7 @@
     "error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust": "Introduce una dirección de destino válida (0x…). Las direcciones con mayúsculas y minúsculas mezcladas deben tener una suma de verificación correcta.",
     "error.sweep.theDestinationMustDifferFromTheStealthAddress": "El destino debe ser distinto de la dirección sigilosa.",
     "error.sweep.theDestinationMustNotBeAGhostPayContractOrThe": "El destino no debe ser un contrato de GhostPay ni el destinatario de la comisión.",
+    "error.sweep.theDestinationMustNotBeATokenContract": "El destino es un contrato de token. Los fondos enviados allí quedarían bloqueados.",
     "error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou": "Bloqueado: esta dirección es casi idéntica a una dirección que conoces (envenenamiento de direcciones). Comprueba cada carácter.",
     "error.sweep.yourRPCReturnedAnUnexpectedBalance": "Tu RPC devolvió un saldo inesperado.",
     "error.sweep.theLocalClockIsInvalidRefusingToSignASweep": "El reloj local no es válido. Se rechaza firmar un barrido.",

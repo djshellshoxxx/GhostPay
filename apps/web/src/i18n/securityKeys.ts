@@ -568,6 +568,7 @@ export const SECURITY_KEY_GROUPS = {
     'error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust',
     'error.sweep.theDestinationMustDifferFromTheStealthAddress',
     'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe',
+    'error.sweep.theDestinationMustNotBeATokenContract',
     'error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou',
     'error.sweep.yourRPCReturnedAnUnexpectedBalance',
     'error.sweep.theLocalClockIsInvalidRefusingToSignASweep',
