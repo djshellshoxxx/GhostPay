@@ -229,7 +229,7 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
   it('saves the opt-in cover lookups for matched payments and discloses what the provider still learns', async () => {
     const user = await open();
     const section = screen.getByRole('group', { name: 'Scan privacy' });
-    const cover = within(section).getByLabelText(/Hide which payments matched among other payments/);
+    const cover = within(section).getByLabelText(/Blur which payments matched among other lookups/);
     expect(cover).toHaveProperty('checked', false);
     expect(within(section).queryByText(/about half of the other router payments each scan reads are looked up/)).toBeNull();
     expect(section.textContent).toMatch(/costs more RPC calls/);
@@ -261,7 +261,7 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
     const user = await open();
     const section = screen.getByRole('group', { name: 'Scan privacy' });
     expect(within(section).getByText(/could not be read exactly as saved/)).toBeTruthy();
-    await user.click(within(section).getByLabelText(/Hide which payments matched among other payments/));
+    await user.click(within(section).getByLabelText(/Blur which payments matched among other lookups/));
     await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
     expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
     expect(within(section).queryByText(/could not be read exactly as saved/)).toBeNull();
