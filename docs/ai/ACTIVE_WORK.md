@@ -71,6 +71,26 @@ Problem: verifying a matched router payment sends receipt and transaction lookup
 Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
 Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+# P14 F2: truthful light-source evidence label (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/core-branch-completion-20261127-d81a`, base main
+`9ae770203d69d23bdc8735912dfe98af5944d4d6`. This finishes an explicitly unclaimed follow-up of integrated P14
+(#658 / `claude/priv-t02-rpc-disclosure`), not a claim of newly recovered unmerged functionality. The current F1
+ownership entry explicitly leaves F2-F4 unclaimed. All 154 open PR heads were compared with main for the owned
+runtime paths; no source overlap was found. Old inherited README changes are not imported; the light-client row
+does not overlap their PIR/padded-range documentation edits.
+Owned paths: `packages/scan-source/src/light.ts` (evidence label/comment), `types.ts` (LightClient flag documentation),
+`composite.test.ts`, `light.evidence.test.ts`, and the light-client integrity row in `packages/scan-source/README.md`;
+the F2 row in `docs/research/privacy-evidence-matrix-2026-11-10.md`,
+`docs/handoffs/P14_LIGHT_EVIDENCE_COMPLETION_20261127.md`, an append-only consolidation-tracker update and this entry.
+Acceptance: a capability flag never advertises log-inclusion proof; successful header checks preserve every returned
+record and coverage value; invalid/missing/mismatched headers and unsupported chains still fail with the existing
+errors; omission and inclusion remain explicitly unverified; existing complete scan-source tests, typecheck, lint,
+build and affected app evidence checks pass; exact-candidate hosted gates and independent review precede integration.
+No proof verifier, backend, dependency, contract, chain expansion, light-client activation or privacy guarantee.
+Original donor and archive refs are unchanged. No integration lock is held by this worker.
+
+---
 
 # Browser self-check: mobile WebKit qualification (2026-11-26 UTC)
 
