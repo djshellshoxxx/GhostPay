@@ -123,17 +123,31 @@ No high-severity finding was open at the end of this review. That is a statement
 
 ## Hosted CI note (#728)
 
-`ts-test (rest-2)` failed on `298257fd`: `packages/invoice-schema/src/passphrase.test.ts`, two cases timed out at 60 s
+`ts-test (rest-2)` failed on #728's head `298257fd` (it passed on the candidate, see above): `packages/invoice-schema/src/passphrase.test.ts`, two cases timed out at 60 s
 ("tampering any authenticated field..." and "authentic but malformed plaintext..."). The same file's other KDF cases took
 44 s and 9 s on that runner, so the cause is a slow runner against a 2^17-cost KDF, not the diff (the change is a comment, F7).
-The file passes locally on the candidate. Rerun the job; do not skip or raise the test without review.
+The file passes locally on the candidate. Rerun the job; do not skip or raise the test without review. The candidate's own run is evidence that a rerun passes.
+
+## Hosted CI on the candidate (head `298e56f7`)
+
+All 45 check runs completed: 42 success, 3 skipped (`Release gates` and the two publish-only jobs `Deploy to GitHub Pages`,
+`Post-deployment smoke test`), 0 failed. Includes `ts-test (web)` and `ts-test (rest-2)`, `e2e (lean)` and `e2e (full)`,
+`lean-candidate`, the three `ghostid-native` variants, `contracts-*`, `integration (anvil + bitcoind regtest +
+solana-test-validator)`, `Pages artifact on anvil (browser)`, `beta acceptance (lib + cli + browser on anvil)`, `Build and
+verify the Pages site`, `Phone and tablet engines (lean)` and `(full)`, the CLI matrix on three operating systems, CodeQL and
+`secrets-and-egress`. `ts-test (rest-2)` passed here, including the two `invoice-schema` passphrase cases that timed out at
+60 s on #728's runner, which supports the slow-runner reading of that failure. A later docs-only commit sits on top of this
+head; `git diff 298e56f7 HEAD --stat` shows documentation only.
+
+These are candidate-head runs, **not** release-SHA evidence: the Pages-on-anvil and beta-acceptance gates still need to be
+repeated on the final release SHA.
 
 ## Not run (not a pass)
 
 - Firefox, WebKit and Safari engines locally (only Chromium is installed here; hosted `mobile-browser-qualification` covers WebKit).
 - Real phones and tablets, native assistive technology, Tor Browser, third-party wallet extensions and hardware wallets.
 - Public testnet RPC providers; any mainnet or real-funds path (out of scope by policy).
-- Pages-on-anvil (`BROWSER_DEVNET_MODE=pages bash scripts/beta/browser-devnet.sh`) and `scripts/beta/acceptance.sh` on the exact release SHA.
+- Pages-on-anvil (`BROWSER_DEVNET_MODE=pages bash scripts/beta/browser-devnet.sh`) and `scripts/beta/acceptance.sh` on the exact release SHA (both ran green in hosted CI on the candidate head, above, but that is not the release SHA).
 - Browser-level ERC-20 journey; relayed ERC-20 sweep; real L1 data fees (zero-fee oracle stub).
 - Full `apps/web` coverage run: the 4 coverage thresholds were exercised through the affected-workspace test run, which
   passed; they were not run as a separate full-repository job. Hosted CI remains the authority.
