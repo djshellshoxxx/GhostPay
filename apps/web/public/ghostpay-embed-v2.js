@@ -42,6 +42,7 @@
   var PROFILE_RE = /^[A-Za-z0-9_-]+$/;
   var script = document.currentScript;
   var appOrigin = '';
+  var openOverlay = null;
   try {
     appOrigin = script && script.src ? new URL(script.src).origin : '';
   } catch (e) {
@@ -153,6 +154,9 @@
   }
 
   function openFrame(el, url) {
+    // One dialog at a time: it is modal, and a second one could be paid beside the first.
+    // Asking the element itself keeps the button usable if the merchant page removed the dialog.
+    if (openOverlay !== null && openOverlay.isConnected) return;
     var n = nonce();
     var overlay = document.createElement('div');
     var frame = document.createElement('iframe');
@@ -191,7 +195,10 @@
       window.clearInterval(hello);
       window.removeEventListener('message', onMessage);
       document.removeEventListener('keydown', onKey);
+      // Return focus only from a dialog that was still on the page: a removed one must not pull focus from a newer one.
+      var shown = overlay.isConnected;
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      if (shown) el.focus();
     }
     function onKey(e) {
       if (e.key === 'Escape') teardown();
@@ -251,14 +258,18 @@
     });
     timer = window.setTimeout(function () {
       // No valid handshake: this host (or this merchant origin) is not enabled for framing. Use the popup instead.
+      // A dialog the merchant page already removed only cleans up: no popup beside whatever replaced it.
+      var shown = overlay.isConnected;
       teardown();
-      popup(el, url);
+      if (shown) popup(el, url);
     }, HANDSHAKE_MS);
     overlay.appendChild(close);
     // src before insertion: otherwise the initial about:blank document's load event fires first (still our own origin).
     frame.setAttribute('src', url);
     overlay.appendChild(frame);
     document.body.appendChild(overlay);
+    openOverlay = overlay;
+    close.focus();
   }
 
   function setup(el) {

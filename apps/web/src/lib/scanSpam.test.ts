@@ -274,6 +274,18 @@ describe('same-token transfer estimate (spec 05 D3)', () => {
     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });
   });
 
+  it('reports unknown when the provider repeats a log position, so duplicates cannot inflate the estimate', async () => {
+    const head = 50_000n;
+    const ask = (logs: readonly RpcLog[]) => estimateSimilarTransfers({ client: clientWith(logs), chain, token: TOKEN, amount: 1_000_000n, head });
+    const one = transfer(49_990, 1_000_000n, 1);
+    // The same record twice, then two different records claiming one position.
+    expect(await ask([one, one])).toEqual({ status: 'unknown', reason: 'error' });
+    expect(await ask([one, { ...transfer(49_990, 900_000n, 1), blockHash: `0x${'f'.repeat(64)}` }])).toEqual({ status: 'unknown', reason: 'error' });
+    // Distinct positions, in one block or across blocks, still count.
+    expect(await ask([one, transfer(49_990, 1_000_000n, 2), transfer(49_991, 1_000_000n, 1)]))
+      .toEqual({ status: 'estimate', token: TOKEN, count: 3, windowBlocks: PRIVACY_TRANSFER_WINDOW_BLOCKS });
+  });
+
   it('is carried by the privacy set unchanged and described as a labelled estimate without changing the level', () => {
     const head = 10_000_000n;
     const base = anonymitySet({ chain, routerBlocks: [head - 1n], head, scannedFrom: 0n });

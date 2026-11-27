@@ -1780,6 +1780,7 @@ export const SECURITY_KEY_GROUPS = {
     'scan.routerOnly',
     'scan.routerOnly.more',
     'scan.done.finished',
+    'scan.done.indexerCaveat',
     'scan.done.limit',
     'scan.done.cancelled',
     'scan.done.cancelledEarly',

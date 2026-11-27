@@ -916,6 +916,7 @@
     "scan.routerOnly": "{single, select, yes {ブロック {list} には} other {ブロック {list} には}}、1回のRPC応答で返せる数を超えるアナウンスがありました(アナウンススパムの可能性があります)。GhostPayルーター経由の支払いはそこで確認済みですが、GhostPayルーターが投稿していないアナウンスはスキップされたため、{single, select, yes {そのブロック} other {それらのブロック}}での直接の支払いは一覧に表示されません。",
     "scan.routerOnly.more": "{shown} ほか {count} 件",
     "scan.done.finished": "完了しました。{scanned} 件のアナウンスを確認し、{found} 件の支払いが見つかりました。",
+    "scan.done.indexerCaveat": "ブロックのハッシュが一致していても、インデクサーはアナウンスを省略することがあります。この結果には一部の支払いが含まれていない可能性があります。",
     "scan.done.limit": "安全上限で停止しました。{scanned} 件のアナウンスを確認し、{found} 件の支払いが見つかりました。",
     "scan.done.cancelled": "キャンセルしました。{scanned} 件のアナウンスを確認しました。",
     "scan.done.cancelledEarly": "キャンセルしました。スキャンは完了前に停止しました。",

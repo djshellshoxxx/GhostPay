@@ -916,6 +916,7 @@
     "scan.routerOnly": "{single, select, yes {El bloque {list} contenía} other {Los bloques {list} contenían}} más anuncios de los que cabe en una respuesta RPC (probablemente spam de anuncios). Los pagos publicados mediante el router de GhostPay se comprobaron igualmente allí, pero se omitieron los anuncios que no publicó el router de GhostPay, por lo que un pago directo en {single, select, yes {ese bloque} other {esos bloques}} no aparecería en la lista.",
     "scan.routerOnly.more": "{shown} y {count} más",
     "scan.done.finished": "Terminado. {scanned} anuncios comprobados, {found} pagos encontrados.",
+    "scan.done.indexerCaveat": "Un indexador puede omitir anuncios incluso cuando coinciden los hashes de los bloques. Es posible que estos resultados no incluyan todos los pagos.",
     "scan.done.limit": "Detenido en el límite de seguridad. {scanned} anuncios comprobados, {found} pagos encontrados.",
     "scan.done.cancelled": "Cancelado. {scanned} anuncios comprobados.",
     "scan.done.cancelledEarly": "Cancelado. El análisis se detuvo antes de completarse.",
