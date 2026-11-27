@@ -1,3 +1,12 @@
+# Consolidation stack 2: current-main merge and payment lifecycle fixes (2026-11-27 UTC)
+
+Worker: newghostpay-67 worker W1; existing branch `claude/consolidation-stack-20261126` (#728), main `3f7fcd0a` merged.
+Owned paths: the terminal-invoice and connection-loss handling in `apps/web/src/views/Pay.tsx` with new
+`Pay.offlineRevocation.test.tsx`, `resolveReplacements` in `apps/web/src/lib/attemptStatus.ts` with its test, the
+cover/ownership cases appended to `apps/web/src/lib/scanClient.checkpoint.test.ts`, and this entry. Not claimed: #744
+(it carries the `scanSpam.ts` estimate fix; merged after it lands). Acceptance: each fix has a regression test that fails
+without it; all PR checks green at the exact head; no gate, dependency, contract or activation change.
+
 # Consolidation stack 2: #696, #717 and audit fixes F2, F3, F7 (2026-11-26 UTC)
 
 Worker: newghostpay-4e (coordinator); existing branch `claude/consolidation-stack-20261126`, base `c7c6349c` (#718).
