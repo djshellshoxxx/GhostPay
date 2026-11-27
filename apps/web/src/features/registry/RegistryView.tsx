@@ -116,7 +116,8 @@ export function RegistryView(): ReactNode {
     setScanError(undefined);
     app.announce('');
   });
-  const captureAuthority = (): (() => void) => {
+  /** `bindSettings: false` checks only that the view an operation started in is still open, to say how it ended. */
+  const captureAuthority = (bindSettings = true): (() => void) => {
     const expected = latest.current;
     const privacyScope = walletPrivacy.capture();
     const guardSession = captureSessionGuard();
@@ -126,7 +127,7 @@ export function RegistryView(): ReactNode {
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
-          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
+          current.reviewAction !== expected.reviewAction || (bindSettings && current.settings !== expected.settings)) {
         throw new UserFacingError({ key: 'registry.sessionChanged' });
       }
     };
@@ -160,21 +161,24 @@ export function RegistryView(): ReactNode {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     let scope;
     let authority;
-    try { scope = walletPrivacy.begin(); authority = captureAuthority(); } catch { return; }
+    let sameView;
+    try { scope = walletPrivacy.begin(); authority = captureAuthority(); sameView = captureAuthority(false); } catch { return; }
     const guard = (): void => { scope.assertCurrent(); authority(); };
+    // Settings saved meanwhile (here by another tab) end the connection too, and the view says so.
+    const report = (e: unknown): void => {
+      try { scope.assertCurrent(); sameView(); } catch { return; }
+      setPub({ kind: 'error', text: captureUserMessage(e) });
+    };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
     // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
     connectWallet(w, chainId, guard, scope.signal, { disclosure: walletDisclosure }).then(
       (connected) => {
-        try { guard(); } catch { return; }
+        try { guard(); } catch (e) { report(e); return; }
         setWallet(connected);
         setPub(undefined);
         app.announce(tRef.current('registry.walletConnected'));
       },
-      (e: unknown) => {
-        try { guard(); } catch { return; }
-        setPub({ kind: 'error', text: captureUserMessage(e) });
-      },
+      report,
     );
   };
 
@@ -205,6 +209,8 @@ export function RegistryView(): ReactNode {
   const onPublish = (): void => {
     if (wallet === undefined || reviewed === undefined || reviewAction === undefined || chainId === undefined || metaAddress === undefined || !consent || busyRef.current) return;
     const guard = captureAuthority();
+    // A returned hash, or why nothing was asked, is still shown after settings saved meanwhile stop the operation.
+    const sameView = captureAuthority(false);
     busyRef.current = true;
     setBusy(true);
     void (async () => {
@@ -239,12 +245,11 @@ export function RegistryView(): ReactNode {
         app.announce(displayMessage({ key: 'registry.announceSubmitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' } } }, tRef.current));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
-        try { guard(); } catch { return; }
+        try { sameView(); } catch { return; }
         if (returnedHash !== undefined) {
           setPub({ kind: 'warn', text: { key: 'registry.walletReturned' }, reference: returnedHash });
           return;
         }
-        try { guard(); } catch { return; }
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         busyRef.current = false;

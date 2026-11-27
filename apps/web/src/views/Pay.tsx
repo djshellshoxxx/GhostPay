@@ -255,7 +255,18 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const contextLosses = useRef(0);
 
   const fragment = app.fragment;
-  const pinned = app.settings.pinnedSigners;
+  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry or newly saved settings
+  // may stop new preparation, but must not clear what the submitted state, hash, receipt and proof are shown from.
+  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
+  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
+  // The wallet was asked to approve or pay for the open invoice. Opening it again would offer that anew and drop what
+  // the wallet answered, whatever has been cleared since. Holds no invoice contents.
+  const walletAsked = useRef(false);
+  // New pins (saved here or by another tab) open the invoice again, which resets checkout, so they wait while either
+  // holds.
+  const heldPins = useRef(app.settings.pinnedSigners);
+  if (!keepContext && !walletAsked.current) heldPins.current = app.settings.pinnedSigners;
+  const pinned = heldPins.current;
   const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
@@ -361,7 +372,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
-    // A replaced invoice takes its request marker with it.
+    // A replaced invoice takes its request markers with it.
+    walletAsked.current = false;
     walletRequestedFor.current = undefined;
     terminalFor.current = undefined;
     setRequestedInvoice(undefined);
@@ -427,10 +439,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry may stop new
-  // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
-  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
-  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
   const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff });
   latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff };
   // A disconnected route cannot observe the wallet. Drop the private reopening capability when leaving checkout.
@@ -512,11 +520,16 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
   // payment and scope instead, so an ordinary rerender cannot restart its age.
   const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
-  const authorityMatches = (scope?: WalletPrivacyScope): boolean => {
+  const viewMatches = (scope?: WalletPrivacyScope): boolean => {
     if (!mounted.current) return false;
     // Completion is also a protected presentation boundary, including expiry before a timer/restoration event runs.
     try { scope?.assertCurrent(); } catch { return false; }
-    return latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+    return latest.current.wallet === wallet && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  };
+  // An operation asks the wallet for nothing more once settings were saved while it ran; the outcome of what was asked is
+  // still shown. A later Send of a handed-off checkout reads the contracts back through the saved RPC first.
+  const assertSameSettings = (): void => {
+    if (latest.current.settings !== app.settings) throw new UserFacingError({ key: 'pay.error.reviewChanged' });
   };
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
@@ -625,9 +638,38 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
 
+  // The saved settings this checkout was reviewed under. Another tab can save others while this page is open.
+  const reviewedSettings = useRef(app.settings);
+  const refreshDeferred = useRef(false);
   useEffect(() => {
+    // A running or handed-off payment keeps the context it was reviewed with.
+    if (reviewedSettings.current !== app.settings && latest.current.keepContext && latest.current.ctx !== undefined) {
+      refreshDeferred.current = true;
+      return;
+    }
     void refreshContext();
   }, [refreshContext, parsed, manifest, reviewKey]);
+  // Newly saved settings: nothing prepared under the old ones stays, and checkout goes back to the review, which offers
+  // the chain check again should it fail now. While a wallet request is out, or its outcome is shown, this waits; it runs
+  // once an operation ends without one. A requested invoice that is closed to further payment stays as it is.
+  useEffect(() => {
+    if (reviewedSettings.current === app.settings || keepContext) return;
+    reviewedSettings.current = app.settings;
+    const terminal = parsed !== undefined && terminalFor.current === parsed.invoice;
+    if (!terminal && (phase === 'waiting' || phase === 'ready' || phase === 'prepared')) {
+      if (phase === 'waiting') scheduler.current?.cancel();
+      setBuilt(undefined);
+      setBuiltFor(undefined);
+      setBuiltForContext(undefined);
+      setApproval(undefined);
+      setPhase('review');
+      setError((current) => current ?? { key: 'pay.error.reviewChanged' });
+    }
+    if (refreshDeferred.current) {
+      refreshDeferred.current = false;
+      void refreshRef.current();
+    }
+  }, [app.settings, keepContext]);
   // An operation that was in flight at expiry and ended without any wallet request releases the context afterwards.
   const blocked = review !== undefined && review.blockers.length > 0;
   useEffect(() => {
@@ -952,13 +994,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const connection = captureConnection();
     const guard = (): void => {
       connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
-      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
+      assertSameSettings();
+      if (!viewMatches()) throw new Error('The wallet or session changed. Review again before continuing.');
     };
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
@@ -1033,13 +1076,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
     const connection = captureConnection();
     const guard = (): void => {
       connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
-      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
+      assertSameSettings();
+      if (!viewMatches()) throw new Error('The wallet or session changed. Review again before continuing.');
       if (latest.current.built !== built || latest.current.builtFor !== invoice || latest.current.builtForContext !== ctx) throw new Error('The prepared payment changed. Review it again before continuing.');
     };
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
@@ -1065,13 +1109,23 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
+        // A handed-off checkout keeps its context when other settings are saved. Before the wallet is asked again, the
+        // contracts are read back through the RPC saved now; without one, or on a failed check, nothing is asked.
+        if (reviewedSettings.current !== app.settings) {
+          const checked = manifest === undefined ? undefined : await verifyManifestForFlow(manifest, rt.rpc);
+          if (checked?.status !== 'loaded') throw new UserFacingError(checked?.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
+          preSignGuard();
+        }
         if (approval?.required === true && actualAllowance === undefined) {
           await assertNoPaymentAttempt(invoice);
           preSignGuard();
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-          }, () => { approvalRequested = true; });
+          }, () => {
+            approvalRequested = true;
+            walletAsked.current = true;
+          });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
           guard();
@@ -1080,6 +1134,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
           requestedThisAttempt = true;
+          walletAsked.current = true;
           // Synchronous: a wallet event in the same tick must still see that this public invoice reached the wallet.
           if (!privateCheckout(parsed)) walletRequestedFor.current = invoice;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
@@ -1134,7 +1189,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     const connection = captureConnection();
     setError(undefined);
@@ -1147,6 +1202,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
           connection.assert();
           sessionGuard();
+          assertSameSettings();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
         });
         if (!isCurrent()) return;

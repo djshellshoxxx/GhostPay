@@ -142,6 +142,7 @@ export type PolicyCode =
   | 'DEADLINE_EXPIRED'
   | 'FEE_RECIPIENT_MISMATCH'
   | 'DESTINATION_IS_PROTOCOL_CONTRACT'
+  | 'DESTINATION_IS_FEE_RECIPIENT'
   | 'DESTINATION_IS_TOKEN_CONTRACT';
 
 /** Every machine-readable refusal reason. */

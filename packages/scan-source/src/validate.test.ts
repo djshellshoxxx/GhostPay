@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { normalizeSet, parseAnnouncement, setHash } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, postedBytesPlace, setHash } from './validate.js';
 import { rawAnn } from './testutil.js';
 
 describe('parseAnnouncement', () => {
@@ -37,6 +37,18 @@ describe('parseAnnouncement', () => {
     const revoked = Proxy.revocable(rawAnn(10, 3), {});
     revoked.revoke();
     expect(parseAnnouncement(revoked.proxy)).toBeUndefined();
+  });
+  it('reads a claimed scheme as widely as the announcer can emit it, and never throws', () => {
+    const claims: readonly (readonly [unknown, bigint | undefined])[] = [
+      [2n, 2n], [3, 3n], ['4', 4n], [(1n << 256n) - 1n, (1n << 256n) - 1n],
+      [-1, undefined], [1.5, undefined], [-1n, undefined], [1n << 256n, undefined], ['x', undefined], [null, undefined],
+    ];
+    for (const [value, scheme] of claims) expect(claimedPlace({ schemeId: value, blockNumber: '7' })).toEqual({ blockNumber: 7n, schemeId: scheme });
+    const revoked = Proxy.revocable(rawAnn(10, 3), {});
+    revoked.revoke();
+    expect(claimedPlace(revoked.proxy)).toEqual({ blockNumber: undefined, schemeId: undefined });
+    expect(postedBytesPlace(revoked.proxy, 1n)).toBeUndefined();
+    expect(postedBytesPlace({ ...rawAnn(10, 3), metadata: '0x' }, 1n)).toEqual({ blockNumber: 10n, blockHash: rawAnn(10, 3)['blockHash'] });
   });
   it('reads a field once and hashes the same validated snapshot', () => {
     const record: Record<string, unknown> = { ...rawAnn(10, 3) };

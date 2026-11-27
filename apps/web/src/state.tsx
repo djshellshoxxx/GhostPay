@@ -30,7 +30,10 @@ export interface AppState {
   readonly view: ViewId;
   readonly setView: (v: ViewId) => void;
   readonly settings: Settings;
-  /** Persists settings; returns false if browser storage refused (settings still apply for this tab). */
+  /**
+   * Persists settings; returns false if browser storage refused (settings still apply for this tab).
+   * @throws {UserFacingError} when another tab saved since this tab last read them: those are taken over instead.
+   */
   readonly updateSettings: (s: Settings) => boolean;
   readonly session: SessionPublic | undefined;
   /** Invoice fragment read at load or pasted by the user; held in memory only. */

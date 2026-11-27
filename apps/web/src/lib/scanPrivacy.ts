@@ -655,6 +655,8 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
         throw new ChainAdapterError('RPC_FAILURE', `indexer ${e instanceof ScanSourceError ? e.code : 'failure'}`);
       }
       if (res.coverage.fromBlock > f.fromBlock || res.coverage.toBlock < f.toBlock) throw new ChainAdapterError('RPC_FAILURE', 'indexer CONTINUITY window incomplete');
+      // A record that cannot be placed or read may be a payment: fail here, so the scan saves no checkpoint past it.
+      if ((res.rejected ?? 0) > 0) throw new ChainAdapterError('RPC_FAILURE', 'indexer REJECTED_RECORDS in the requested range');
       const caller = f.topics[3];
       return res.announcements
         .filter((a) => a.blockNumber >= f.fromBlock && a.blockNumber <= f.toBlock && (typeof caller !== 'string' || word(a.caller) === caller.toLowerCase()))

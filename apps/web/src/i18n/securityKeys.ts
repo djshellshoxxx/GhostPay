@@ -588,6 +588,7 @@ export const SECURITY_KEY_GROUPS = {
     'error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust',
     'error.sweep.theDestinationMustDifferFromTheStealthAddress',
     'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe',
+    'error.sweep.theDestinationMustNotBeATokenContract',
     'error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou',
     'error.sweep.yourRPCReturnedAnUnexpectedBalance',
     'error.sweep.theLocalClockIsInvalidRefusingToSignASweep',
@@ -1180,6 +1181,7 @@ export const SECURITY_KEY_GROUPS = {
     'settings.lock.keysHint',
     'settings.pins.hint',
     'settings.storageUnavailable',
+    'settings.changedElsewhere',
     'settings.error.pins',
     'settings.exchange.description',
     // My-devices transfer: what leaves the device, what is applied, and every trust-changing consent.
@@ -1292,6 +1294,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.balanceRead.settingsChanged',
     'sweep.balanceNotRead',
     'sweep.reviewChanged',
+    'sweep.routeChanged',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.wipeUnverified.title',
