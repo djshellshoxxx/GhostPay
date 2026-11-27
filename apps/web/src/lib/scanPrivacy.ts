@@ -582,14 +582,21 @@ export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) =
 }
 
 function headSourceFrom(c: RpcClient): HeadSource {
+  // Checked before every read: a stopped scan asks for no further block, and a dense window needs one read per block.
+  const assertRunning = (signal: AbortSignal | undefined): void => {
+    if (signal?.aborted === true) throw new ChainAdapterError('RPC_FAILURE', 'scan stopped');
+  };
   return {
-    async head() {
+    async head(signal) {
+      assertRunning(signal);
       const n = await c.blockNumber();
+      assertRunning(signal);
       const b = await c.getBlock(n);
       if (b === null) throw new ChainAdapterError('RPC_FAILURE', 'chain head block unavailable');
       return { number: n, hash: b.hash };
     },
-    async blockHash(n) {
+    async blockHash(n, signal) {
+      assertRunning(signal);
       const b = await c.getBlock(n);
       if (b === null) throw new ChainAdapterError('RPC_FAILURE', 'block unavailable');
       return b.hash;
@@ -621,6 +628,8 @@ export interface IndexerClientOptions {
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   /** Window grid for the indexer request (the chain's log range when windows are off). */
   readonly windowBlocks: number;
+  /** Stops a running fetch: its indexer request is aborted and no further block is read for the cross-check. */
+  readonly signal?: AbortSignal;
 }
 
 /**
@@ -653,7 +662,7 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
       assertScanFilter(f, o.router);
       let res;
       try {
-        res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock });
+        res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock }, o.signal);
       } catch (e) {
         if (e instanceof ChainAdapterError) throw e;
         throw new ChainAdapterError('RPC_FAILURE', `indexer ${e instanceof ScanSourceError ? e.code : 'failure'}`);
@@ -690,6 +699,8 @@ export interface OpenScanOptions {
    * indexer fetches, and again when each answer arrives.
    */
   readonly assertCurrent?: () => void;
+  /** The run these clients are opened for: stopping it ends the indexer's block reads. `base` stays usable. */
+  readonly signal?: AbortSignal;
 }
 
 /** The scan's privacy settings or RPC changed while it was running; nothing more is sent on the old route. */
@@ -790,7 +801,8 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
   // The app's RPC is cached across views; guard this scan's use of it without changing the cached client.
   if (assertCurrent !== undefined) base = guardScanClient(base, assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
-  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl, windowBlocks: plan.window.windowBlocks });
+  const stop = o.signal === undefined ? {} : { signal: o.signal };
+  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, ...stop, baseUrl: plan.indexerUrl, fetchImpl, windowBlocks: plan.window.windowBlocks });
   const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
   // The outer guard also turns an indexer or window failure that follows a route change into SCAN_ROUTE_CHANGED.
   return { base, scan: assertCurrent === undefined ? scan : guardScanClient(scan, assertCurrent) };
