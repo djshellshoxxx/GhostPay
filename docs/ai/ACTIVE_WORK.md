@@ -1,8 +1,9 @@
 # P14 F3: source-bound indexer completion caveat (2026-11-27 UTC)
 
 Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-indexer-completion-20261127-d81a`.
-Current main `3c9fc0ab518b8a308716dc87cc860424118718eb` contains #745; its resulting-main checks are
-pending. This branch also retains prerequisite #747 head `1308f18574c78bdfd5602337c1c27a2c87a27d34`.
+Current incorporated main `6b323a99df1238cb5ebe7248528cc7bce5140e80` contains #745 and #747.
+#745's 41 resulting-main checks passed; #747's resulting-main checks are running. This branch
+retains prerequisite #747 head `1308f18574c78bdfd5602337c1c27a2c87a27d34` through ordinary ancestry.
 Complete qualification and verify each preceding main integration before merging the next queue item.
 Provenance: P14 #658 head `9aed3886693270524beb118685e5947469899c43`, tested evidence source
 `2ab3b243a57bb4e917fb6b9848f78a2a4347d312`, Spec 10 and the evidence matrix's open F3 finding.

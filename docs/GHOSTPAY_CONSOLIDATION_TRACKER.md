@@ -252,3 +252,72 @@ exact red/green evidence, the newer-main merge, bounded generation-66 release re
 generation-67 coordination acquisition, remaining gates and next action. P14 F3's captured-
 source indexer completion caveat is the next unclaimed repair; older unique owned work,
 timestamp deferral and the ten stop-work exclusions retain their previous dispositions.
+
+## P14 integration results and F3 completion candidate — 2026-11-27 UTC
+
+Current incorporated main: `6b323a99df1238cb5ebe7248528cc7bce5140e80`.
+This continuation repairs explicit incomplete findings in integrated P14; it does not
+relabel represented donor branches as newly recovered functionality.
+
+### Completed integrations
+
+| Unit | Qualified source | Actual merge and evidence |
+| --- | --- | --- |
+| F2, truthful light-source evidence | #745, `84d95d627750fc80dd1b496429c3942f49101c6b` | `3c9fc0ab518b8a308716dc87cc860424118718eb`; tested/actual tree `8de4135d12b94f8f36c2f312989a8e13817bc381`; 42 candidate checks complete, 39 success and 3 expected publishing-only skips; all 41 resulting-main checks passed |
+| F4, primary-head catch-up | #747, `1308f18574c78bdfd5602337c1c27a2c87a27d34` | `6b323a99df1238cb5ebe7248528cc7bce5140e80`; tested/actual tree `964bbe42e35ae8cf71a554e09261c01f1acb0dcd`; 42 candidate checks complete, 39 success and 3 expected publishing-only skips; resulting-main checks running at this source checkpoint |
+
+Both ordinary merges preserved source refs and passed fresh ownership/review/lock checks.
+The coordinator waited for the preceding main's checks before advancing. PR verification
+comments record exact live checks and any later status; historical candidate entries above
+remain preserved.
+
+### Implemented, awaiting hosted qualification: F3
+
+Branch `finish/p14-indexer-completion-20261127-d81a`; source #658,
+`9aed3886693270524beb118685e5947469899c43`; original evidence source
+`2ab3b243a57bb4e917fb6b9848f78a2a4347d312`. Local integration before docs:
+`a7dc365eb60d82584da722713453a594be954fc0`.
+
+A source-bound completion caveat now makes indexer omission risk visible even with details
+closed. Counts, evidence, checkpoints, errors, limits and source selection are preserved;
+the accessible completion uses the same non-sensitive caveat and correctly announces
+cancellation. Draft catalog entries retain the existing English security fallback and
+native-review gate. No new service, source default, chain, contract or activation.
+
+Actual local qualification: 14 new component tests pass after 10 failed on the original
+runtime; combined Scan suites pass 48 tests, additional privacy/localization suites 75.
+The new browser cases fail twice on the original runtime and pass all six actual browser/
+layout combinations after the fix. Typecheck, full web lint, lean build/18-file bundle scan,
+catalog/extraction and secret/whitespace gates pass. Independent runtime, new-test and
+existing-query reviews found no blocking findings. Existing cancellation assertions were
+strengthened without removing vault/worker/cleanup controls.
+
+[Focused handoff](handoffs/P14_INDEXER_COMPLETION_20261127.md) records exact commits and
+browser versions: Chromium 151 fallback, locked Firefox 157 and WebKit 27.2, each desktop
+and 320px Arabic RTL. The broader baseline WebKit CSP finding remains open; targeted passes
+do not waive it. Physical devices, external wallets, deployed-site checks and live Tor were
+not exercised. Final published-head gates and F4 resulting-main gates remain required.
+
+### Incremental queue refresh
+
+| Candidate and source | Category | Actual retained behavior or blocker |
+| --- | --- | --- |
+| #604 `2f2c282e4e88e32fb54648864bb9ed51c8307880` -> #717 `367a3b30b1feb5c31c0727fc6fc435162067063c` -> #728 `298257fd251cf0dd64dc80a92198d296672a6cab` | E/F | Offline checkout and opt-in encrypted drafts remain unique, explicitly owned by ghostpay-78/newghostpay-4e/features2; #728 additionally awaits separately owned #744 and combined replay/cover/checkpoint qualification |
+| #442 `4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b` | E/F | Unique diagnostic-only test; forensic coordinator ownership, explicit DO NOT MERGE and pending reproduction/privacy review |
+| #541 `f5bc0d6c71260e11fc89b28c42c65446e31d335f` | C | Two-tab policy-prompt case already integrated; source is an ancestor of main |
+| #616 `7c4987650faf32322d7ded48ad669130aba7e63b` | C for shared core; D for mixed stopped composition | CryptoKey branding behavior and tests retained, only a local variable differs; all ten donor heads are ancestors. Do not revive its archived POS composition |
+| #419 `62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3` | C | Superseded by #422 `f846464db3cb2f12c221d0c2f56e3aa3702d4fcb`; runtime/tests match main, preserving valid surrogate truncation plus the newer rendered-output cap |
+| #127 `cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a` | C | Plain-object questionnaire validation and complete donor tests retained; newer independent detectProfile change explains residual |
+| #126 `d77956901d95c3eeb8c5c1d67ae7d1647bd069aa` | C | Single-sample confirmation clock behavior and tests retained; newer cancellation-clock changes explain residual |
+| #125 `a6e74591e134b31de3e0efc84448eb97cdc3b012` | C | CLI bare-sentinel refusal and all four regressions retained; later optional-global-switch parsing explains residual |
+
+The last three were recovered in `c9787b223a240b8bd5a626325944b3c01a2d4be0` through #189;
+both runtime/test blobs matched their donors at recovery. Their owner closure and unchanged
+heads support C. These checks were source/history reviews, not newly executed test claims.
+
+Prior E/F dispositions for #248's private scan journal and P0 Worker B's refund lifecycle,
+and the explicit beyond-beta timestamp deferral #383/#587/#609, remain. All ten stopped
+streams and all 34 frozen archive refs remain preserved. Existing local work remains intact.
+No further unowned feature was established in this bounded refresh; the 61 mechanical
+residuals are not an exhaustive semantic clearance. Continue only from a proven eligible
+unit after F3 qualification, or leave the precise blocked/owned/deferred checkpoint.
