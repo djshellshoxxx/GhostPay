@@ -154,6 +154,21 @@ describe('review: policy rules', () => {
       expect(reasons(s, s)).toEqual(['DESTINATION_IS_PROTOCOL_CONTRACT']);
     }
   });
+  it('relayed sweep to a protocol contract (WALLET-SAFETY-07)', () => {
+    for (const c of [ROUTER, RELAYER, ANNOUNCER]) {
+      const s = relayedSweep({ destination: c });
+      expect(reasons(s, s)).toEqual(['DESTINATION_IS_PROTOCOL_CONTRACT']);
+    }
+  });
+  it('either sweep into a token contract, where the funds would be stuck (WALLET-SAFETY-07)', () => {
+    const lower = USDC.toLowerCase() as typeof USDC;
+    for (const s of [directSweep({ to: USDC }), directSweep({ to: lower }), directSweep({ token: 'native', amount: 10n ** 18n, to: USDC }), relayedSweep({ destination: USDC })]) {
+      expect(reasons(s, s)).toEqual(['DESTINATION_IS_TOKEN_CONTRACT']);
+    }
+    // The swept token's own contract is refused even when the allowlist does not name it.
+    const forged = directSweep({ token: EVIL_TOKEN, to: EVIL_TOKEN });
+    expect(reasons(forged, forged)).toEqual(['TOKEN_NOT_ALLOWLISTED', 'DESTINATION_IS_TOKEN_CONTRACT']);
+  });
   it('reasons accumulate and are de-duplicated', () => {
     const bad = routerPayment({ token: EVIL_TOKEN, deadline: BigInt(NOW + 99_999), router: DEST });
     expect(reasons(bad, routerPayment())).toEqual(
