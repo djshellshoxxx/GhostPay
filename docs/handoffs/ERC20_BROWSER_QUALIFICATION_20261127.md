@@ -1,5 +1,46 @@
 # ERC-20 Pages browser payment and recovery qualification
 
+## Collector completion follow-up — 2026-11-27
+
+Coordinator `1b5b61042913` continues the same #753 branch under the owner's renewed
+feature-completion request and original browser-journey continuation. Refreshed
+all 147 open PR heads: only #753 changes its qualification workflow, and neither
+new validator/test path has a competing change. Original source
+`94b6b5f86bd836461c54cd3f5c5783c731687110` and main
+`b890a76603b924829fdbe2b4fb2c5626f0cf4e36` are both retained as merge parents in the
+continued history. The ownership-file conflict retains both sides.
+
+Review 7216547138 was reproduced against the actual inline collector, using
+disposable committed source, valid synthetic build/public evidence, and modified
+Playwright reports: **59 tests, 35 passed, 24 failed, zero skipped** before repair.
+All six complete mode/browser fixtures passed even before the repair; missing,
+duplicate, substituted and wrongly located identities demonstrated the gap.
+
+The implementation at `c689745106ba6b2b625678b260af84f5b1bfe224` requires the eight
+expected file/title/project identities exactly once. It rejects malformed report
+structures and binds the public attachment to the original exact primary test
+object. Existing source, build, status, retry, public-schema and sanitization
+checks remain. Both workflow path filters include the new files, and the actual
+collector regression suite runs before browser setup. No product or browser
+assertion, dependency, contract, native Pages harness or deployment behavior
+changed.
+
+Local evidence: the actual collector regression suite now passes **59/59 with
+zero skips**. Independent source review by `/root/feature_review` found no
+blocking issue and separately accepted one valid control while rejecting 14
+malformed/limit/path/project controls. The pinned Playwright JSON reporter's
+testDir-relative POSIX paths were inspected directly. Libraries, pinned Foundry
+1.8.5 / solc 0.8.28 contracts, and web TypeScript compile successfully.
+
+These synthetic collector checks are not browser execution. Local browser
+installation encountered an unavailable Chromium download and unavailable
+privileged dependency setup. The complete local web lint process was killed
+with exit 137; no lint pass is claimed at this checkpoint. Current-candidate
+managed browser results and the remaining hosted checks must still be read
+before integration. The earlier 48-case managed matrix qualified its earlier
+checkout, not this merged source. No main merge, integration lease or release
+is asserted by this checkpoint.
+
 ## Source and status
 
 This is a separate browser qualification lane prompted by #751's 41 passing ERC-20
