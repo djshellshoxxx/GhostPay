@@ -266,7 +266,14 @@ export function decodePaymentCalldata(tx: PaymentTx, chainId: number): PaymentPr
       return fail('PREVIEW_MISMATCH', 'not a payment method');
   }
   // Canonical-encoding check: rebuild the calldata from the decoded values.
-  if (reencode(preview).toLowerCase() !== tx.data.toLowerCase()) return fail('PREVIEW_MISMATCH', 'non-canonical calldata');
+  // The decoder reads a uint8 word without a range check, so a value it cannot encode back is non-canonical calldata too.
+  let rebuilt: Hex;
+  try {
+    rebuilt = reencode(preview);
+  } catch {
+    return fail('PREVIEW_MISMATCH', 'non-canonical calldata');
+  }
+  if (rebuilt.toLowerCase() !== tx.data.toLowerCase()) return fail('PREVIEW_MISMATCH', 'non-canonical calldata');
   return preview;
 }
 
