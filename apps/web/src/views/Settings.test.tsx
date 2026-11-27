@@ -222,8 +222,27 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
     expect(section.textContent).not.toMatch(/anonym|unlinkab|untraceab/i);
     await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
     expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
-    expect(lanes()).toEqual({ floodPerBlock: 5, spamScoring: false, privacySetTransfers: true });
+    expect(lanes()).toEqual({ floodPerBlock: 5, spamScoring: false, privacySetTransfers: true, matchCover: false });
     expect(JSON.stringify(lanes())).not.toMatch(/secret|private|seed/i);
+  });
+
+  it('saves the opt-in cover lookups for matched payments and discloses what the provider still learns', async () => {
+    const user = await open();
+    const section = screen.getByRole('group', { name: 'Scan privacy' });
+    const cover = within(section).getByLabelText(/Blur which payments matched among other lookups/);
+    expect(cover).toHaveProperty('checked', false);
+    expect(within(section).queryByText(/about half of the other router payments each scan reads are looked up/)).toBeNull();
+    expect(section.textContent).toMatch(/costs more RPC calls/);
+    await user.click(cover);
+    expect(within(section).getByText(/about half of the other router payments each scan reads are looked up/)).toBeTruthy();
+    // Truthful limits, no anonymity claim.
+    expect(section.textContent).toMatch(/does not stop a provider that alters or fails its answers/);
+    expect(section.textContent).toMatch(/does not cover reading a balance, exporting a payment key or sweeping through the same RPC/);
+    expect(section.textContent).toMatch(/can still find out which payment matched if it alters or fails its answers/);
+    expect(section.textContent).not.toMatch(/anonym|unlinkab|untraceab/i);
+    await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
+    expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
+    expect(lanes()).toMatchObject({ matchCover: true });
   });
 
   it('rejects an out-of-range flood threshold and stores nothing', async () => {
@@ -235,5 +254,17 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
     expect(await within(section).findByText(/flood threshold must be from 1 to 10000/)).toBeTruthy();
     expect(lanes()).toBeNull();
     expect(window.localStorage.getItem('ghostpay.scanPrivacy.v1')).toBeNull();
+  });
+
+  it('says when the saved lane settings cannot be read, until they are saved again', async () => {
+    window.localStorage.setItem(SCAN_LANES_KEY, '{broken');
+    const user = await open();
+    const section = screen.getByRole('group', { name: 'Scan privacy' });
+    expect(within(section).getByText(/could not be read exactly as saved/)).toBeTruthy();
+    await user.click(within(section).getByLabelText(/Blur which payments matched among other lookups/));
+    await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
+    expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
+    expect(within(section).queryByText(/could not be read exactly as saved/)).toBeNull();
+    expect(lanes()).toMatchObject({ matchCover: true });
   });
 });

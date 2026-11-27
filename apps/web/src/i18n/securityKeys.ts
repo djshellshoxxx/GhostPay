@@ -14,6 +14,23 @@ export const SECURITY_KEY_GROUPS = {
     'privacyUx.hide',
     'privacyUx.notSaved',
   ],
+  // Offline checkout and opt-in encrypted invoice drafts: what still works, what fails closed and what is stored.
+  interruptedSession: [
+    'app.offline',
+    'pay.offlineCheck',
+    'pay.retryCheck',
+    'create.draft.keep',
+    'create.draft.hint',
+    'create.draft.resume',
+    'create.draft.available',
+    'create.draft.opening',
+    'create.draft.saving',
+    'create.draft.saved',
+    'create.draft.remove',
+    'create.draft.saveFailed',
+    'create.draft.openFailed',
+    'create.draft.removeFailed',
+  ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
     'wallet.disclosure.title',
@@ -269,6 +286,9 @@ export const SECURITY_KEY_GROUPS = {
     'scanLanes.disclosure.transfers',
     'settings.scanLanes.floodHint',
     'settings.scanLanes.transfersHint',
+    'settings.scanLanes.matchCover',
+    'settings.scanLanes.matchCoverHint',
+    'scanLanes.disclosure.matchCover',
   ],
   // Spec 12 local spend tracking: what the server learns about this wallet's outputs, and what spent status means.
   bitcoinSpentStatus: [
@@ -568,6 +588,7 @@ export const SECURITY_KEY_GROUPS = {
     'error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust',
     'error.sweep.theDestinationMustDifferFromTheStealthAddress',
     'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe',
+    'error.sweep.theDestinationMustNotBeATokenContract',
     'error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou',
     'error.sweep.yourRPCReturnedAnUnexpectedBalance',
     'error.sweep.theLocalClockIsInvalidRefusingToSignASweep',
@@ -616,6 +637,8 @@ export const SECURITY_KEY_GROUPS = {
     'error.relayerClient.theRelayerReturnedAnInvalidExpiry',
     'error.relayerClient.theRelayerReturnedAnInvalidQuoteToken',
     'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash',
+    'error.relayerClient.theRelayerRefusedTheRequest',
+    'error.relayerClient.theRelayerRefusedTheRequestWithCode',
     'error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress',
     'error.pay.noRPCIsConfiguredForThisChain',
     'error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview',
@@ -1160,6 +1183,7 @@ export const SECURITY_KEY_GROUPS = {
     'settings.lock.keysHint',
     'settings.pins.hint',
     'settings.storageUnavailable',
+    'settings.changedElsewhere',
     'settings.error.pins',
     'settings.exchange.description',
     // My-devices transfer: what leaves the device, what is applied, and every trust-changing consent.
@@ -1272,6 +1296,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.balanceRead.settingsChanged',
     'sweep.balanceNotRead',
     'sweep.reviewChanged',
+    'sweep.routeChanged',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.wipeUnverified.title',
@@ -2119,6 +2144,7 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.archive.heading',
     'stealthExport.archive.hint',
     'stealthExport.archive.open',
+    'stealthExport.archive.rpcPrivacy',
     'stealthExport.archive.summary',
     'stealthExport.master.body',
     'stealthExport.master.done',

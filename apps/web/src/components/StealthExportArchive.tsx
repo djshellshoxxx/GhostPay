@@ -110,6 +110,7 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
             <>
               <p data-testid="payment-keys-archive-summary"><strong>{t('stealthExport.archive.summary', { count: summary.count, chain: chainLabel(summary.chainId, t) })}</strong></p>
               <p className="hint">{t('stealthExport.archive.hint')}</p>
+              <Notice kind="warn">{t('stealthExport.archive.rpcPrivacy')}</Notice>
               <form onSubmit={onSubmit} className="stack" autoComplete="off">
                 <CredentialFields value={credential} onChange={setCredential} disabled={busy} />
                 <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy} />

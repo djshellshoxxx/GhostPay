@@ -137,11 +137,15 @@ function subtle(): SubtleCrypto {
 
 
 async function derive(pass: string, salt: Uint8Array, N: number, r: number, p: number): Promise<CryptoKey> {
-  const raw = await scryptAsync(utf8ToBytes(pass.normalize('NFKC')), salt, { N, r, p, dkLen: 32, maxmem: 2 ** 29 });
+  const passBytes = utf8ToBytes(pass.normalize('NFKC'));
+  let raw: Uint8Array | undefined;
   try {
+    raw = await scryptAsync(passBytes, salt, { N, r, p, dkLen: 32, maxmem: 2 ** 29 });
     return await subtle().importKey('raw', raw as Uint8Array<ArrayBuffer>, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
   } finally {
-    raw.fill(0);
+    // Only these owned byte buffers can be overwritten; the caller's immutable passphrase string cannot be erased.
+    passBytes.fill(0);
+    raw?.fill(0);
   }
 }
 

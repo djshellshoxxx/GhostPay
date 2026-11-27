@@ -67,8 +67,8 @@ export function toleranceAmount(expected: bigint, t: Tolerance): bigint {
 export function classifyAmount(expected: bigint, paid: bigint, tol: Tolerance = NO_TOLERANCE): AmountClass {
   if (typeof expected !== 'bigint' || expected <= 0n) throw new FlowError('BAD_AMOUNT');
   if (typeof paid !== 'bigint' || paid < 0n) throw new FlowError('BAD_AMOUNT');
-  if (paid === expected) return 'exact';
   const tl = toleranceAmount(expected, tol);
+  if (paid === expected) return 'exact';
   const diff = paid > expected ? paid - expected : expected - paid;
   if (diff <= tl) return 'tolerated';
   return paid < expected ? 'partial' : 'over';

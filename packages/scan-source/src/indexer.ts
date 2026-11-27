@@ -1,7 +1,7 @@
 import { ScanSourceError, requireArg } from './errors.js';
 import { assertTestnetChainId } from './guard.js';
 import type { FetchRequest, FetchResult, Head, HeadSource, Hex, HttpTransport, PublicLogSource } from './types.js';
-import { normalizeSet, parseAnnouncement } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, postedRecord, setHash } from './validate.js';
 import { padWindow } from './window.js';
 
 /** Options for {@link createIndexerSource}. */
@@ -54,7 +54,11 @@ function parseHeaders(raw: unknown): Header[] {
  * Indexer source (`scanMode = indexer-tor`, roadmap Feature 5 stage 1). `GET /v1/logs?chainId&from&to&pageSize`
  * returns raw public announcements plus the block headers of the window. The client revalidates every record,
  * checks the parent-hash chain is contiguous and complete, and cross-checks the window's first and last block
- * hash and every announcement block hash against `secondSource` (NP-S-7, AT-NP-15). Any gap or mismatch is an error.
+ * hash and every announcement block hash against `secondSource` (NP-S-7, AT-NP-15). A gap, or a block
+ * hash the second source does not confirm, is an error. A record that fails validation or contradicts its header is
+ * skipped. It is also counted in `rejected` when it may belong to the requested range, unless it is something anyone can
+ * post to the announcer: another scheme, or (under its header's hash) key or metadata bytes of a length not accepted.
+ * The latter are also returned apart in `posted`, once per log, so a caller's own on-chain check can count them.
  *
  * @security The request carries only chain id, padded window and page size: no key, view tag, address or meta
  * address (NP-S-2). Hides: which announcements are yours (matching is local). Does NOT hide: your IP unless the
@@ -130,13 +134,37 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
       const byNumber = new Map<bigint, Hex>(headers.map((h) => [h.number, h.hash]));
 
       const parsed = [];
+      // Under their header, but with key or metadata bytes of a length not accepted, which anyone can post.
+      const posted = [];
       let skipped = 0;
+      // Records of this scheme that cannot be placed or read and may belong to the requested, observed range.
+      let rejected = 0;
+      const requested = (n: bigint | undefined): boolean => n === undefined || (n >= req.fromBlock && n <= req.toBlock && n <= expectedTo);
+      const contents = new Map<string, string>();
       for (const raw of doc['announcements'] as unknown[]) {
         const a = parseAnnouncement(raw, scheme);
-        if (a === undefined || byNumber.get(a.blockNumber) !== a.blockHash) skipped++;
-        else parsed.push(a);
+        const record = a ?? postedRecord(raw, scheme);
+        if (record === undefined || byNumber.get(record.blockNumber) !== record.blockHash) {
+          skipped++;
+          const claim = claimedPlace(raw);
+          // Anyone can post another scheme's event: it may not hold a scan back.
+          if ((claim.schemeId === undefined || claim.schemeId === scheme) && requested(claim.blockNumber)) rejected++;
+          continue;
+        }
+        // An exact copy is harmless; a different record for the same log means one of the two is wrong.
+        const content = setHash([record]);
+        const first = contents.get(record.id);
+        if (first === undefined) contents.set(record.id, content);
+        else if (first !== content && requested(record.blockNumber)) rejected++;
+        if (a !== undefined) {
+          parsed.push(a);
+        } else {
+          skipped++;
+          posted.push(record);
+        }
       }
       const norm = normalizeSet(parsed, padded.from, expectedTo);
+      const apart = normalizeSet(posted, padded.from, expectedTo).announcements;
 
       // cross-check against the independent source: window ends and every announcement block
       const toCheck = new Set<bigint>([first.number, last.number]);
@@ -151,6 +179,8 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
         head: { number: last.number, hash: last.hash },
         coverage: { fromBlock: padded.from, toBlock: expectedTo },
         skipped: skipped + norm.dropped,
+        ...(rejected === 0 ? {} : { rejected }),
+        ...(apart.length === 0 ? {} : { posted: apart }),
       };
     },
   };

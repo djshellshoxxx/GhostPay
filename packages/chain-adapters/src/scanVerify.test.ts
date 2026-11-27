@@ -85,6 +85,22 @@ describe('compareProviders', () => {
       expect(result.discrepancies).toEqual([{ kind: 'content_differs', ref: `${log.blockHash}:0` }]);
     },
   );
+  it('reports a transaction hash the secondary does not confirm', async () => {
+    const claimed = mkLog(100, 0, { transactionHash: `0x${'1'.repeat(64)}` });
+    const differs = [{ kind: 'content_differs', ref: `${claimed.blockHash}:0` }];
+    expect((await run(secondary([mkLog(100, 0, { transactionHash: `0x${'2'.repeat(64)}` })]), [claimed])).discrepancies).toEqual(differs);
+    expect((await run(secondary([mkLog(100, 0)]), [claimed])).discrepancies).toEqual(differs);
+  });
+  it('agrees on one transaction hash in either case, and requires none the primary did not supply', async () => {
+    const log = mkLog(100, 0, { transactionHash: `0x${'a'.repeat(64)}` });
+    expect((await run(secondary([log]), [log])).discrepancies).toEqual([]);
+    expect((await run(secondary([log]), [mkLog(100, 0)])).discrepancies).toEqual([]);
+    const upper = await compareProviders({
+      chain: SEPOLIA, secondary: secondary([log]), announcer: FAKE.announcer, fromBlock: 0n, toBlock: 300n, primarySkipped: 0,
+      primaryAnnouncements: [{ ...parse(log), transactionHash: `0x${'A'.repeat(64)}` }],
+    });
+    expect(upper.discrepancies).toEqual([]);
+  });
   it('detects a log the primary hid (censoring RPC)', async () => {
     const r = await run(secondary([mkLog(100, 0), mkLog(250, 1)]), [mkLog(100, 0)]);
     expect(r.discrepancies).toEqual([{ kind: 'missing_in_primary', ref: mkLog(250, 1).blockHash + ':1' }]);
