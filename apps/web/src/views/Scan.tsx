@@ -50,7 +50,7 @@ type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | 
 // msg('key') descriptors are not seen by scripts/i18n/extract.mjs; the keys built through msg() in this file:
 // i18n-use: scan.error.noRpc scan.error.secondRpc scan.error.startBlock scan.error.manifestMismatch scan.error.noManifest
 // i18n-use: scan.error.discrepancy scan.error.backlog scan.error.limitReached scan.error.keysChanged scan.lag
-// i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
+// i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly scan.done.indexerCaveat
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
 const show = (m: ScanText, t: T): string => ('error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
 
@@ -427,10 +427,12 @@ export function Scan(): ReactNode {
         if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
         const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: (resume || append) && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
         const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
-        setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note]);
+        // Keep the outcome bound to this run's source even if settings change after it finishes.
+        const indexerCaveat = plan.indexerUrl === undefined ? [] : [msg('scan.done.indexerCaveat')];
+        setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note, ...indexerCaveat]);
         // A cancelled run must not re-arm the automatic re-check.
         if (ctl.signal.aborted) setAutoRescan(false);
-        app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
+        app.announce([latestT.current(ctl.signal.aborted ? 'scan.done.cancelledEarly' : res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'), ...indexerCaveat.map((message) => show(message, latestT.current))].join(' '));
       } catch (e) {
         if (!scopeKeysAreCurrent()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {

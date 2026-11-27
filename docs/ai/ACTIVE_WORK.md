@@ -83,6 +83,76 @@ Problem: verifying a matched router payment sends receipt and transaction lookup
 Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
 Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+# P14 consolidation closure and residual handoff — 2026-11-27 UTC
+
+Coordinator `d81aef3d1ca8`; branch `finish/p14-consolidation-handoff-20261127-d81a`.
+Base: qualified F3 candidate `7a8e88d7083905013d0af310c845ba0c5f352dcb`; F3 integration
+and resulting-main gates remain pending at claim time. This is a documentation-only continuation.
+
+Implementation closure: #745/F2, #747/F4 and #749/F3 are merged, with 41/32/32 successful
+resulting-main checks respectively. Their owned runtime/test paths are released by this
+coordinator; the historical entries below are retained. F1 and every other worker’s ownership
+remain intact. Only the four documentation paths below remain owned until this checkpoint’s
+final verification comment closes them and records the explicit integration-lease release.
+
+Owned paths: this additive coordination entry; append-only updates to
+`docs/GHOSTPAY_CONSOLIDATION_TRACKER.md` and
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`; new
+`docs/consolidation/branch-completion-20261127/closed-residual-dispositions.json`.
+No runtime or other owner's path is claimed.
+
+Acceptance: retain all 61 source-pinned residual dispositions and their semantic evidence,
+distinguish represented/stopped/owned/dependent work, record actual P14 merge/check results,
+preserve local work and frozen refs, and leave exact resumption/lock-release evidence.
+Validate JSON/source-row consistency, document links, secret and whitespace checks; qualify
+the documentation candidate through normal gates after F3 resulting-main verification.
+Current owners of #744/#748/#728/#724/#632/#248/#243 and other unresolved work retain control.
+This checkpoint does not assert global semantic completion or authorize stopped work.
+
+---
+
+# P14 F3: source-bound indexer completion caveat (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-indexer-completion-20261127-d81a`.
+Current incorporated main `6b323a99df1238cb5ebe7248528cc7bce5140e80` contains #745 and #747.
+#745's 41 resulting-main checks passed; #747's resulting-main checks are running. This branch
+retains prerequisite #747 head `1308f18574c78bdfd5602337c1c27a2c87a27d34` through ordinary ancestry.
+Complete qualification and verify each preceding main integration before merging the next queue item.
+Provenance: P14 #658 head `9aed3886693270524beb118685e5947469899c43`, tested evidence source
+`2ab3b243a57bb4e917fb6b9848f78a2a4347d312`, Spec 10 and the evidence matrix's open F3 finding.
+This is an incomplete integrated contract, not newly recovered unmerged donor code.
+
+Ownership refresh includes #728 `298257fd251cf0dd64dc80a92198d296672a6cab` and #724
+`2085ef4483d6387c4301a48c625e9e74c1042c4e`. Neither changes the completion/caveat keys or
+implements F3. Preserve their route/cover guards, checkpoint, auto-rescan and archive hunks, #720's
+manifest work, and all unrelated catalog additions. F1's claim explicitly excludes F2-F4.
+
+Owned paths: `apps/web/src/views/Scan.tsx` completion descriptors, completion announcement and its
+extraction annotation only; additive `scan.done.indexerCaveat` in `apps/web/locales/en.json`,
+`es.json`, `ja.json`, `ar.json` and the existing security-key group; new
+`apps/web/src/views/Scan.indexerCompletion.test.tsx`; new
+`apps/web/e2e/scan-indexer-completion.spec.ts`; F3 evidence-matrix entry,
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`, append-only tracker update and this claim.
+Runtime/catalog worker owns only the runtime/key files; unit worker owns only the new component test;
+browser worker owns only the new E2E test. Each uses a separate worktree; the coordinator alone integrates.
+
+Integration repair: the coordinator also owns only the two existing global Cancelled assertion sites
+in `apps/web/src/views/Scan.test.tsx` (three cases). Fresh #720/#724/#728 source/claim/comment review
+confirms these queries and their safety cases are unclaimed; #720's manifest tests remain untouched.
+Scope them to the visible outcome and correct live announcement, preserving every existing safety check.
+
+Acceptance: append an honest announcement-omission caveat using the plan captured for that run
+(`plan.indexerUrl`), with the same non-sensitive text in the accessible completion announcement.
+Retain the existing outcome/counts, cancelled/limit/error semantics, evidence status, checkpoints,
+route guards and automatic recheck policy. RPC completion has no indexer-specific caveat; later
+settings/locale changes never relabel the captured source, rescan or write a checkpoint.
+Catalog entries remain machine drafts under the existing security-key English fallback/native-review
+gate. Use real local mocked scan/omission fixtures and bounded Chromium/Firefox/WebKit desktop/mobile
+layout coverage, including RTL. No new provider service, verifier, chain, contract, default-mode change,
+experimental activation, dependency upgrade or stopped-product work is included.
+
+---
+
 # P14 F4: truthful scanner completion for late-payment review (2026-11-27 UTC)
 
 Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-caught-up-20261127-d81a`, base main
