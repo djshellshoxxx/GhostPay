@@ -243,6 +243,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // hash, account and outcome stay behind the journal.
   const [requestedInvoice, setRequestedInvoice] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const walletRequestedFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
+  // The terminal invoice again, set with `requestedInvoice`, so events and retained callbacks see it before a render. It
+  // takes no further chain check, review, delay or wallet connection, across connection losses too.
+  const terminalFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
@@ -355,6 +358,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setPermitDeclined(false);
     // A replaced invoice takes its request marker with it.
     walletRequestedFor.current = undefined;
+    terminalFor.current = undefined;
     setRequestedInvoice(undefined);
     // The gas buffer is an opt-in for one invoice; its quote is for that invoice's policy and clock.
     setUseBuffer(false);
@@ -436,6 +440,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     // Only the payment counts. An unverified approval alone leaves the invoice payable (the journal refuses its repeat).
     if (parsed !== undefined && !privateCheckout(parsed) && (phase === 'done' || (phase === 'submitted' && broadcastKind === 'payment') ||
         paymentMayHaveBeenSent || walletRequestedFor.current === parsed.invoice)) {
+      terminalFor.current = parsed.invoice;
       setRequestedInvoice(parsed.invoice);
     }
     flowRevision.current++;
@@ -447,7 +452,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setShowWalletChangeNotice(cause === 'wallet');
     app.announce('');
     setSchedule(undefined);
-    setCtxError(undefined);
     // Outcomes are retained at the wallet/journal boundary even when a hash arrives after this view is revoked.
     setResult(undefined);
     setResultForContext(undefined);
@@ -477,9 +481,18 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setInvoicePassphrase('');
       if (window.location.hash === fragment) clearFragment(window.location, window.history);
       app.setFragment(undefined);
+      setCtxError(undefined);
       setPhase('input');
     } else {
-      setPhase(latest.current.parsed === undefined ? 'input' : 'ready');
+      const open = latest.current.parsed;
+      if (open !== undefined && terminalFor.current !== open.invoice && latest.current.ctx === undefined) {
+        // Nothing to prepare from (the connection dropped first, for example): back to the review, keeping its error and
+        // explicit chain check. Nothing resumes by itself.
+        setPhase('review');
+      } else {
+        setCtxError(undefined);
+        setPhase(open === undefined ? 'input' : 'ready');
+      }
     }
   });
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
@@ -519,6 +532,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setCtx(undefined);
       return undefined;
     }
+    // A terminal invoice gets no further checkout check, from an effect or a retained callback.
+    if (terminalFor.current === p.invoice) return undefined;
     // Fail closed while offline: the invoice stays readable, but no payment context exists without chain evidence.
     if (!browserOnline()) {
       if (!latest.current.keepContext) setCtx(undefined);
@@ -580,7 +595,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const disconnect = (): void => {
       connectionLosses.current++;
       reviewRequest.current++;
-      if (latest.current.keepContext) return;
+      const open = latest.current.parsed;
+      // Neither a handed-off payment nor a terminal invoice is reopened by a connection change.
+      if (latest.current.keepContext || (open !== undefined && terminalFor.current === open.invoice)) return;
       scheduler.current?.cancel();
       setCtxError({ key: 'pay.offlineCheck' });
       setCtx(undefined);
@@ -836,6 +853,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const onContinue = (): void => {
     const revision = flowRevision.current;
     const invoice = parsed?.invoice;
+    if (invoice !== undefined && terminalFor.current === invoice) return;
     setError(undefined);
     if (useDelay) startWaiting();
     else {
@@ -871,7 +889,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [app, chainId, services, walletPrivacy.capture]);
 
   const onConnect = (w: WalletInfo): void => {
-    if (chainId === undefined) return;
+    if (chainId === undefined || (parsed !== undefined && terminalFor.current === parsed.invoice)) return;
     const revision = flowRevision.current;
     let privacyScope;
     try { privacyScope = walletPrivacy.begin(); } catch { return; }
@@ -1138,6 +1156,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setShowWalletChangeNotice(false);
     setRequestedInvoice(undefined);
     walletRequestedFor.current = undefined;
+    terminalFor.current = undefined;
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
     scheduler.current?.cancel();
