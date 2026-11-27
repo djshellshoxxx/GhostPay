@@ -37,9 +37,10 @@ const pick = <T,>(r: Rand, xs: readonly T[]): T => xs[int(r, 0, xs.length - 1)] 
 const CHAINS = [84532];
 const FULL = { supportedOnly: false, quoteAvailable: (): boolean => true };
 const hex = (n: number): string => n.toString(16).padStart(64, '0');
-const realSet = Storage.prototype.setItem;
-const realRemove = Storage.prototype.removeItem;
-const realGet = Storage.prototype.getItem;
+const original = (name: 'setItem' | 'removeItem' | 'getItem'): unknown => (Object.getOwnPropertyDescriptor(Storage.prototype, name) as PropertyDescriptor).value;
+const realSet = original('setItem') as (this: Storage, k: string, v: string) => void;
+const realRemove = original('removeItem') as (this: Storage, k: string) => void;
+const realGet = original('getItem') as (this: Storage, k: string) => string | null;
 
 const faults = { set: false, remove: false, get: false };
 beforeEach(() => {
