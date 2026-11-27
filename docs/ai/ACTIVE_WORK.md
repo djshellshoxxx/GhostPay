@@ -5292,3 +5292,9 @@ Observed: existing duplicate map overwrites an unverified-checksum diagnostic wh
 
 - Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724), successor to the newghostpay-67 W2 claim (no longer running). Merged main `a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053`; only conflict was this file, both sides kept.
 - Owns only the composition, this entry and any repair needed by hosted CI on the exact head. Acceptance: all PR checks green on the exact head, merge under the integration lock, resulting-main checks green.
+
+## Port of ERC-20 anvil and remaining fuzz suites from #751 — 2026-11-27 UTC (newghostpay-e3, coordinator)
+
+- Branch: existing merged `claude/idle-sweep-freeze-tests-20261126` fast-forwarded to main `3dba277e`; no new branch. Asked for by the #751 owner (comment on #751).
+- Owns only the 12 added test, test-utility and handoff files from `5ba3a468` and this entry. No product, dependency, workflow or config change.
+- Not ported: `reconciliationVault.replay.fuzz.test.ts` (needs #742). Acceptance: hosted CI green on the exact head, including the anvil and recovery jobs.
