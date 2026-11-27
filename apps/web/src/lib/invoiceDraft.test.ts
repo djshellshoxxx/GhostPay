@@ -1,6 +1,10 @@
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
+import { checkpointKeyId } from '@ghostpay/ux-vault/portable';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { blankDraft, draftForForm, draftSlot, formCanShow, openDraft, sealDraft, validDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
-import { clearSession, importSession } from './session';
+import { blankDraft, draftForForm, draftSlot, formCanShow, openDraft, readableDraftSlot, sealDraft, validDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
+import type { ViewingKeyLender } from './scanCursorSlot';
+import { clearSession, importSession, suspendSession } from './session';
 import { generateWaivedSession } from '../test/keys';
 
 beforeEach(() => { clearSession(); });
@@ -113,13 +117,71 @@ describe('draftForForm and formCanShow', () => {
       expect(formCanShow({ ...fiat, amountMode: 'fixed_token', bufferMode: 'off', ...terms }, lean)).toBe(false);
     }
   });
-  it('keeps the v2 slot apart from the unmerged v1 format', () => {
-    expect(draftSlot(generateWaivedSession())).toMatch(/^ghostpay\.invoice-draft\.v2\.[0-9a-f]{64}$/);
+  it('keeps the v3 slot apart from the v2 public-key slot and the unmerged v1 format', () => {
+    expect(draftSlot(generateWaivedSession())).toMatch(/^ghostpay\.invoice-draft\.v3\.[0-9a-f]{64}$/);
   });
   it('drops the memo and line descriptions of a minimal-metadata draft', () => {
     const minimal = draftForForm({ ...filled, minimalMetadata: true }, full);
     expect(minimal.memo).toBe('');
     expect(minimal.items).toEqual([{ description: '', quantity: '1', unitPrice: '41.90' }]);
     expect(validDraft(minimal)).toBe(true);
+  });
+});
+
+/** D1: the tab storage slot name of a draft must not tell anyone holding only a seller's public keys that a draft exists. */
+describe('invoice draft slot name', () => {
+  const lenderOf = (key: Uint8Array): ViewingKeyLender =>
+    (<T,>(_keyId: string, use: (viewingKey: Uint8Array) => T): T | undefined => use(key.slice()));
+  const publicNames = (pub: { metaAddress: string; signerPublicKey: string; spendingPublicKey: string; viewingPublicKey: string }): string[] => {
+    const parts = [pub.metaAddress, pub.signerPublicKey, pub.spendingPublicKey, pub.viewingPublicKey].map((p) => p.toLowerCase());
+    const joined = [`${pub.metaAddress}|${pub.signerPublicKey}`, `${pub.spendingPublicKey}|${pub.viewingPublicKey}`, `${pub.metaAddress}${pub.signerPublicKey}`];
+    return [
+      checkpointKeyId(pub.metaAddress, pub.signerPublicKey), checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey),
+      ...parts, ...[...parts, ...joined].map((text) => bytesToHex(sha256(utf8ToBytes(text)))),
+    ];
+  };
+
+  it('is not derivable from the public keys alone', () => {
+    const pub = generateWaivedSession();
+    const slot = draftSlot(pub);
+    expect(slot).not.toBe('ghostpay.invoice-draft.v2.' + checkpointKeyId(pub.metaAddress, pub.signerPublicKey));
+    for (const name of publicNames(pub)) expect(slot.toLowerCase()).not.toContain(name.toLowerCase());
+  });
+
+  it('differs per viewing key for the same public identity and is stable for the same viewing key', () => {
+    const pub = generateWaivedSession();
+    const a = lenderOf(new Uint8Array(32).fill(7));
+    const b = lenderOf(new Uint8Array(32).fill(8));
+    expect(draftSlot(pub, a)).toBe(draftSlot(pub, a));
+    expect(draftSlot(pub, a)).not.toBe(draftSlot(pub, b));
+    // The same keys restored name the same slot again.
+    expect(draftSlot(pub)).toBe(draftSlot(pub));
+  });
+
+  it('keeps the seller identity: another invoice-signing key is another slot', () => {
+    const hex = (n: number): string => n.toString(16).padStart(64, '0');
+    const first = importSession({ spendingKeyHex: hex(1), viewingKeyHex: hex(2), signingKeyHex: hex(3) });
+    const second = importSession({ spendingKeyHex: hex(1), viewingKeyHex: hex(2), signingKeyHex: hex(9) });
+    expect(draftSlot(first)).not.toBe(draftSlot(second));
+  });
+
+  it('is unavailable without the unlocked keys: no slot while suspended, wiped or not the loaded seller', () => {
+    const pub = generateWaivedSession();
+    expect(readableDraftSlot(pub)).toBe(draftSlot(pub));
+    suspendSession();
+    expect(readableDraftSlot(pub)).toBeUndefined();
+    expect(() => draftSlot(pub)).toThrow();
+    clearSession();
+    expect(readableDraftSlot(pub)).toBeUndefined();
+    const other = generateWaivedSession();
+    expect(readableDraftSlot(pub)).toBeUndefined();
+    expect(readableDraftSlot(other)).toBeDefined();
+  });
+
+  it('refuses to open a record under a slot named for another viewing key', async () => {
+    const pub = generateWaivedSession();
+    const raw = await sealDraft(draftSlot(pub), filled);
+    const foreign = draftSlot(pub, lenderOf(new Uint8Array(32).fill(5)));
+    await expect(openDraft(foreign, raw)).rejects.toThrow();
   });
 });

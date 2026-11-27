@@ -1,7 +1,11 @@
 import { base64urlnopad } from '@scure/base';
-import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
+import { hkdf } from '@noble/hashes/hkdf.js';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { checkpointKeyId } from '@ghostpay/ux-vault/portable';
 import type { LineItemInput } from './invoiceCreate';
+import { DRAFT_SLOT_PREFIX } from './invoiceDraftSlots';
+import { sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { captureSessionGuard, getSessionPublic, revealViewingKey, type SessionPublic } from './session';
 
 /**
@@ -11,7 +15,7 @@ import { captureSessionGuard, getSessionPublic, revealViewingKey, type SessionPu
  * and the matching opt-in are never form values here. Records are AES-256-GCM encrypted with a key derived by HKDF
  * from the loaded seller's viewing key and a random per-record salt, with the seller-bound slot name as additional
  * data, using the browser's WebCrypto (as `features/btc/scanStore.ts` does). Without those seller keys a record cannot
- * be opened.
+ * be opened, and neither can its slot be named: the name is itself derived from the viewing key ({@link draftSlot}).
  */
 
 export const emptyItem: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
@@ -139,24 +143,49 @@ export function validDraft(value: unknown): value is InvoiceDraft {
   return Array.isArray(items) && items.length >= 1 && items.length <= MAX_ITEMS && items.every((item) => validItem(item, minimal));
 }
 
+const SLOT_INFO = 'GhostPay/web/invoice-draft/v3/slot';
+const RECORD_INFO = 'GhostPay/web/invoice-draft/v3/record';
+
+/** Public seller identity bound into the slot name, so another invoice-signing key under the same viewing key is another slot. */
+const sellerId = (session: SessionPublic): string => checkpointKeyId(session.metaAddress, session.signerPublicKey);
+
+/** HKDF-SHA256(viewing key, no salt, label|seller id) as hex, as `scanCursorSlot.checkpointSlot` names a scan cursor. */
+function slotName(viewingKey: Uint8Array, seller: string): string {
+  if (viewingKey.length !== 32) throw new Error('invalid viewing key');
+  return `${DRAFT_SLOT_PREFIX}${bytesToHex(hkdf(sha256, viewingKey, undefined, utf8ToBytes(`${SLOT_INFO}|${seller}`), 32))}`;
+}
+
 /**
- * The tab storage slot of the loaded seller: bound to the meta-address and the invoice-signing key. Format v2: the v1
- * label belongs to the unmerged #604 format, whose records this build neither reads nor overwrites.
+ * The tab storage slot of the loaded seller, or `undefined` while those keys are not usable: not loaded, suspended by the
+ * idle lock, or another seller's (`lender` as in {@link sessionViewingKey}). Format v3: the name derives from the viewing
+ * private key and the seller identity, so holding only the public meta-address and signer key cannot confirm that this
+ * tab holds a draft. v2 named it from those public keys; a v2 record is never read or migrated (see `invoiceDraftSlots.ts`),
+ * and the v1 label belongs to the unmerged #604 format.
  */
-export function draftSlot(session: SessionPublic): string {
-  return 'ghostpay.invoice-draft.v2.' + checkpointKeyId(session.metaAddress, session.signerPublicKey);
+export function readableDraftSlot(session: SessionPublic, lender: ViewingKeyLender = sessionViewingKey): string | undefined {
+  const seller = sellerId(session);
+  return lender(checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey), (viewingKey) => slotName(viewingKey, seller));
+}
+
+/** {@link readableDraftSlot}, throwing when the seller keys are not usable. */
+export function draftSlot(session: SessionPublic, lender: ViewingKeyLender = sessionViewingKey): string {
+  const slot = readableDraftSlot(session, lender);
+  if (slot === undefined) throw new Error('Seller keys are not available');
+  return slot;
 }
 
 const encoder = new TextEncoder();
 
 async function draftKey(slot: string, salt: Uint8Array): Promise<CryptoKey> {
   const seller = getSessionPublic();
-  if (seller === undefined || draftSlot(seller) !== slot) throw new Error('Seller changed');
+  if (seller === undefined) throw new Error('Seller changed');
+  // Throws while the session is suspended: an idle lock refuses sealing and opening alike.
   const viewing = revealViewingKey();
   try {
+    if (slotName(viewing, sellerId(seller)) !== slot) throw new Error('Seller changed');
     const base = await crypto.subtle.importKey('raw', viewing as BufferSource, 'HKDF', false, ['deriveKey']);
     return await crypto.subtle.deriveKey(
-      { name: 'HKDF', hash: 'SHA-256', salt: salt as BufferSource, info: encoder.encode('GhostPay/web/invoice-draft/v2') },
+      { name: 'HKDF', hash: 'SHA-256', salt: salt as BufferSource, info: encoder.encode(RECORD_INFO) },
       base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'],
     );
   } finally { viewing.fill(0); }

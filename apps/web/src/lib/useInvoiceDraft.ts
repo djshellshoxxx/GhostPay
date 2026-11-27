@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { blankDraft, draftForForm, draftSlot, formCanShow, openDraft, sealDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { blankDraft, draftForForm, formCanShow, openDraft, readableDraftSlot, sealDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
+import { purgeLegacyInvoiceDrafts } from './invoiceDraftSlots';
 import { tokenChoices } from './invoiceCreate';
 import type { SessionPublic } from './session';
 
@@ -18,11 +19,17 @@ const offered = (draft: InvoiceDraft, chainIds: readonly number[]): boolean =>
  * choice limit what is saved ({@link draftForForm}). A draft the form cannot show unchanged (a chain or token the build
  * does not offer, a fiat quote without a price feed, or a fiat or buffer choice it hides) is refused and kept, never
  * converted.
+ *
+ * A draft has no timer. It ends when the tab closes, on {@link finish} after a creation, on `remove`, or when the seller
+ * keys are cleared (`clearSession()` removes every draft of the tab). While the keys are locked, the slot name cannot be
+ * derived: the view reports no draft and writes nothing.
  */
 export function useInvoiceDraft(
   session: SessionPublic | undefined, initialChain: number, offeredChains: readonly number[], form: DraftForm,
 ) {
-  const slot = session === undefined ? undefined : draftSlot(session);
+  // The slot name derives from the viewing key, so it exists only while those keys are unlocked. Without it nothing here
+  // reads, writes or reports a draft: a locked or foreign session sees "no readable draft", never an error.
+  const slot = useMemo(() => (session === undefined ? undefined : readableDraftSlot(session)), [session]);
   const [draft, setDraft] = useState(() => blankDraft(initialChain));
   const [status, setStatus] = useState<InvoiceDraftStatus>('off');
   const enabled = useRef(false);
@@ -33,8 +40,13 @@ export function useInvoiceDraft(
   useEffect(() => {
     mounted.current = true;
     let active = true;
+    // A legacy v2 record is named from public keys: never read, never offered, deleted.
+    if (session !== undefined) purgeLegacyInvoiceDrafts();
     const inspect = (): void => {
-      if (!active || slot === undefined) return;
+      if (!active || slot === undefined || session === undefined) return;
+      // The keys may have been locked since the name was derived (also while a write was in flight): then the name cannot
+      // be derived again and no draft is readable.
+      if (readableDraftSlot(session) !== slot) { setStatus('off'); return; }
       try { setStatus(sessionStorage.getItem(slot) === null ? 'off' : 'available'); }
       catch { setStatus('off'); }
     };
@@ -42,7 +54,7 @@ export function useInvoiceDraft(
     if (pending === undefined) inspect();
     else { setStatus('opening'); void pending.then(inspect); }
     return () => { active = false; mounted.current = false; };
-  }, [slot]);
+  }, [slot, session]);
 
   useEffect(() => {
     if (status !== 'saving' && status !== 'saveFailed') return;
