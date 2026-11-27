@@ -259,9 +259,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // may stop new preparation, but must not clear what the submitted state, hash, receipt and proof are shown from.
   const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  // New pins (saved here or by another tab) open the invoice again, which resets checkout, so they wait while that holds.
+  // The wallet was asked to approve or pay for the open invoice. Opening it again would offer that anew and drop what
+  // the wallet answered, whatever has been cleared since. Holds no invoice contents.
+  const walletAsked = useRef(false);
+  // New pins (saved here or by another tab) open the invoice again, which resets checkout, so they wait while either
+  // holds.
   const heldPins = useRef(app.settings.pinnedSigners);
-  if (!keepContext) heldPins.current = app.settings.pinnedSigners;
+  if (!keepContext && !walletAsked.current) heldPins.current = app.settings.pinnedSigners;
   const pinned = heldPins.current;
   const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
@@ -368,7 +372,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
-    // A replaced invoice takes its request marker with it.
+    // A replaced invoice takes its request markers with it.
+    walletAsked.current = false;
     walletRequestedFor.current = undefined;
     terminalFor.current = undefined;
     setRequestedInvoice(undefined);
@@ -1106,7 +1111,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-          }, () => { approvalRequested = true; });
+          }, () => {
+            approvalRequested = true;
+            walletAsked.current = true;
+          });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
           guard();
@@ -1115,6 +1123,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
           requestedThisAttempt = true;
+          walletAsked.current = true;
           // Synchronous: a wallet event in the same tick must still see that this public invoice reached the wallet.
           if (!privateCheckout(parsed)) walletRequestedFor.current = invoice;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);

@@ -3,19 +3,24 @@ import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readAttempts } from '../lib/duplicateAttemptJournal';
+import type { InvoiceForm } from '../lib/invoiceCreate';
 import type { Services } from '../lib/services';
 import { clearSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
 import { makeParsed } from '../test/invoiceFixtures';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
-import { mockRpc } from '../test/mockRpc';
+import { mockRpc, type RpcHandler } from '../test/mockRpc';
 import { MockWallet } from '../test/mockWallet';
 import { makeServices, renderApp, setHash } from '../test/render';
 import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
 import en from '../../locales/en.json';
 
 const BASE = { rpcUrls: { '84532': 'https://rpc.test' } };
+const USDC = '0x036cbd53842c5426634e7929541ec2318f3dcf7e';
+const L2_FEE_ORACLE = '0x420000000000000000000000000000000000000F';
+const APPROVE = 'Approve exactly, then send payment in my wallet';
+const UNKNOWN = /unknown outcome and may already have been submitted/;
 const OTHER_RPC = { rpcUrls: { '84532': 'https://other.test' } };
 const PINS = { pinnedSigners: [`02${'11'.repeat(32)}`] };
 const HASH = `0x${'9'.repeat(64)}`;
@@ -39,12 +44,24 @@ function otherTabSaves(patch: Record<string, unknown>): void {
 
 type Around = (method: string, params: readonly unknown[], answer: () => Promise<unknown>) => Promise<unknown>;
 
+const NATIVE: Partial<InvoiceForm> = { token: 'native', tokenAmount: '0.5' };
+/** Chain answers for a native payment: no transaction is found for any hash. */
+const nativeAnswers: RpcHandler = (method) => (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt' ? null : '0x');
+
+const settle = (): Promise<void> => act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
+
+function deferred(): { readonly wait: Promise<void>; readonly release: () => void } {
+  let release!: () => void;
+  const wait = new Promise<void>((resolve) => { release = resolve; });
+  return { wait, release: () => { release(); } };
+}
+
 /** Opens an invoice up to its review; `around` can hold an RPC answer. */
-async function toReview(wallet: MockWallet, around?: Around): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
+async function toReview(wallet: MockWallet, around?: Around, form = NATIVE, answers = nativeAnswers): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
   if (window.localStorage.getItem(SETTINGS_KEY) === null) window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(BASE));
-  const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+  const { fragment } = await makeParsed(form);
   const createRpc = vi.fn<Services['createRpc']>(() => {
-    const rpc = withManifestChain(mockRpc(84532, (method) => (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt' ? null : '0x')));
+    const rpc = withManifestChain(mockRpc(84532, answers));
     return Promise.resolve(around === undefined ? rpc : { ...rpc, request: (method: string, params: readonly unknown[]) => around(method, params, () => rpc.request(method, params)) });
   });
   const info: WalletInfo = { id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: wallet };
@@ -61,13 +78,43 @@ async function toWallet(user: ReturnType<typeof userEvent.setup>): Promise<void>
   await user.click(screen.getByRole('button', { name: 'Continue' }));
 }
 
-async function toPrepared(wallet: MockWallet, around?: Around): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
-  const { user, opened } = await toReview(wallet, around);
+async function toPrepared(wallet: MockWallet, around?: Around, form?: Partial<InvoiceForm>, answers?: RpcHandler): Promise<{ user: ReturnType<typeof userEvent.setup>; opened: () => string[] }> {
+  const { user, opened } = await toReview(wallet, around, form, answers);
   await user.click(screen.getByRole('button', { name: 'Continue' }));
   await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
   await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
   await screen.findByRole('heading', { name: FINAL });
   return { user, opened };
+}
+
+/**
+ * A token checkout at its final check. `before` runs ahead of the nth wallet send and may hold or refuse it; an approval
+ * or revocation that goes through sets the allowance the chain reports.
+ */
+async function toPreparedToken(before: (nth: number) => Promise<void>, around?: Around) {
+  const wallet = new MockWallet();
+  const real = wallet.request.bind(wallet);
+  let allowance = 0n;
+  let sends = 0;
+  vi.spyOn(wallet, 'request').mockImplementation(async (args) => {
+    if (args.method !== 'eth_sendTransaction') return real(args);
+    await before(++sends);
+    const hash = await real(args);
+    const [tx] = args.params as [{ readonly to: string; readonly data: string }];
+    if (tx.to.toLowerCase() === USDC) allowance = BigInt(`0x${tx.data.slice(-64)}`);
+    return hash;
+  });
+  const answers: RpcHandler = (method, params) => {
+    const sent = wallet.sent;
+    if (method === 'eth_getTransactionByHash') return sent === undefined ? null : { hash: params[0], from: sent['from'], to: sent['to'], input: sent['data'], value: sent['value'], chainId: '0x14a34' };
+    if (method === 'eth_getTransactionReceipt') return sent === undefined ? null : { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: sent['to'] };
+    if (method === 'eth_gasPrice') return '0x3b9aca00';
+    // Every other contract read answers one word: the allowance, and zero for the L2 fee oracle.
+    if (method === 'eth_call') return `0x${((params[0] as { to?: string }).to === L2_FEE_ORACLE ? 0n : allowance).toString(16).padStart(64, '0')}`;
+    return '0x';
+  };
+  const { user } = await toPrepared(wallet, around, {}, answers);
+  return { user, wallet, sends: (): number => sends };
 }
 
 /** A wallet that reports account changes. */
@@ -143,19 +190,71 @@ describe('Pay: settings saved by another tab', () => {
     expect(opened().at(-1)).toBe('https://other.test/');
   });
 
-  it('leaves a requested payment closed after a wallet change and then an RPC change', async () => {
+  it.each([
+    ['the RPC changes after', OTHER_RPC, false],
+    ['the signer pins change after', PINS, false],
+    ['the signer pins changed before', PINS, true],
+  ] as const)('leaves a requested payment closed when %s a wallet change', async (_name, patch, before) => {
     const wallet = new EventWallet();
     const { user } = await toPrepared(wallet);
     await user.click(screen.getByRole('button', { name: SEND }));
     await screen.findByRole('heading', { name: 'Submitted' });
+    if (before) otherTabSaves(patch);
     act(() => { wallet.emit('accountsChanged'); });
-    await screen.findByText(ALREADY);
-    otherTabSaves(OTHER_RPC);
-    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)); });
+    await settle();
+    if (!before) otherTabSaves(patch);
+    await settle();
     expect(screen.getByText(ALREADY)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
     expect(screen.queryByRole('button', { name: SEND })).toBeNull();
     expect(readAttempts().filter((attempt) => attempt.hash === HASH)).toHaveLength(1);
+  });
+
+  it('keeps what the wallet answered about an approval when pins were saved while it was asked', async () => {
+    const gate = deferred();
+    const t = await toPreparedToken(async () => { await gate.wait; throw new Error('lost'); });
+    await t.user.click(screen.getByRole('button', { name: APPROVE }));
+    await waitFor(() => { expect(t.sends()).toBe(1); });
+    otherTabSaves(PINS);
+    gate.release();
+    await settle();
+    expect(document.body.textContent).toMatch(UNKNOWN);
+    // Checkout was not opened again, so the wallet is still connected.
+    await toWallet(t.user);
+    expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Connect Mock Wallet/ })).toBeNull();
+  });
+
+  it('does not open the invoice again after a revocation during which pins were saved', async () => {
+    const gate = deferred();
+    const t = await toPreparedToken(async (nth) => {
+      if (nth === 2) throw Object.assign(new Error('user rejected'), { code: 4001 });
+      if (nth === 3) await gate.wait;
+    });
+    await t.user.click(screen.getByRole('button', { name: APPROVE }));
+    const revoke = (): HTMLButtonElement => screen.getByRole<HTMLButtonElement>('button', { name: 'Revoke approval' });
+    await waitFor(() => { expect(t.sends()).toBe(2); expect(revoke().disabled).toBe(false); });
+    await t.user.click(revoke());
+    await waitFor(() => { expect(t.sends()).toBe(3); });
+    otherTabSaves(PINS);
+    gate.release();
+    await settle();
+    await toWallet(t.user);
+    expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Connect Mock Wallet/ })).toBeNull();
+  });
+
+  it('opens the next invoice with the pins saved while the last one kept its own', async () => {
+    const next = await makeParsed({ token: 'native', tokenAmount: '0.4' });
+    const { user } = await toPrepared(new MockWallet());
+    await user.click(screen.getByRole('button', { name: SEND }));
+    await screen.findByRole('heading', { name: 'Submitted' });
+    otherTabSaves({ pinnedSigners: [next.parsed.invoice.signer] });
+    act(() => {
+      setHash(next.fragment);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    await waitFor(() => { expect(document.body.textContent).toMatch(/\(pinned by you\)/); });
   });
 
   it('asks the wallet for nothing when the RPC changes while the send is still being checked', async () => {
