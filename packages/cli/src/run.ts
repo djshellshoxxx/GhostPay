@@ -1,4 +1,4 @@
-import { suggest, parseArgs } from './args.js';
+import { GLOBAL_SWITCHES, parseArgs, suggest, type GlobalSwitch, type Parsed } from './args.js';
 import { batchCommands } from './commands/batch.js';
 import { doctorCommands } from './commands/doctor.js';
 import { exportCommands } from './commands/export.js';
@@ -113,30 +113,41 @@ function describe(e: unknown): CliError {
  * @security Never prints secrets or raw untrusted input; secrets are accepted only from file, stdin or env var NAME.
  */
 export async function run(argv: readonly string[], io: Io): Promise<number> {
-  const args: string[] = [];
-  let json = false;
-  let help = false;
-  let version = false;
-  let rest = false;
-  for (const a of argv) {
-    if (!rest && a === '--') rest = true;
-    if (!rest && a === '--json') json = true;
-    else if (!rest && (a === '--help' || a === '-h')) help = true;
-    else if (!rest && a === '--version') version = true;
-    else args.push(a);
-  }
+  // --json never becomes an option value (parseArgs refuses `--` tokens as values), so it can be
+  // detected up front; this only selects the output format, including for parse errors.
+  const terminator = argv.indexOf('--');
+  const json = (terminator === -1 ? argv : argv.slice(0, terminator)).includes('--json');
   const ctx = new Ctx(io, json);
   try {
-    if (version) {
+    // Leading words name the command; global switches may be mixed in before the first other option.
+    const words: string[] = [];
+    const globals = new Set<GlobalSwitch>();
+    let i = 0;
+    for (; i < argv.length; i++) {
+      const a = argv[i] as string;
+      const g = GLOBAL_SWITCHES.get(a);
+      if (g !== undefined) globals.add(g);
+      else if (a.startsWith('-')) break;
+      else words.push(a);
+    }
+    const tail = argv.slice(i);
+    const found = words.length === 0 || words[0] === 'help' ? undefined : find(words);
+    let parsed: Parsed | undefined;
+    if (found !== undefined) {
+      // The command's own option spec decides which tokens are values, so a global switch is
+      // recognised only in a flag position. After a value-taking option, `-h` is that option's value
+      // and `--help`/`--version` are a missing value like any other `--` token.
+      parsed = parseArgs([...words.slice(found.command.path.length), ...tail], found.command.opts, globals);
+    }
+    // Without a matching command the option spec is unknown, so a token behind another option may be that
+    // option's value: nothing in the tail is a switch. Switches directly behind the words were collected above.
+    const help = globals.has('help');
+    if (globals.has('version')) {
       ctx.out({ ok: true, version: VERSION }, VERSION);
       return EXIT_OK;
     }
-    const words: string[] = [];
-    for (const a of args) {
-      if (a.startsWith('-')) break;
-      words.push(a);
-    }
-    if (words.length === 0 && args.length > 0 && !help)
+    // The tail, when there is one, starts with a token that is not a global switch.
+    if (words.length === 0 && tail.length > 0 && !help)
       throw usageError('UNKNOWN_OPTION', 'options must come after a command.', 'Run `ghostpay --help` to list commands.');
     if (words.length === 0 || words[0] === 'help') {
       if (words[0] === 'help' && words.length > 1) {
@@ -149,8 +160,7 @@ export async function run(argv: readonly string[], io: Io): Promise<number> {
       ctx.out({ ok: true, commands: COMMANDS.map((c) => ({ command: c.path.join(' '), summary: c.summary })) }, topHelp());
       return EXIT_OK;
     }
-    const found = find(words);
-    if (found === undefined) {
+    if (found === undefined || parsed === undefined) {
       const groups = [...new Set(COMMANDS.map((c) => c.path[0] as string))];
       if (groups.includes(words[0] as string)) {
         if (help) {
@@ -170,7 +180,7 @@ export async function run(argv: readonly string[], io: Io): Promise<number> {
       ctx.out({ ok: true, usage: found.command.usage }, commandHelp(found.command));
       return EXIT_OK;
     }
-    return await found.command.handler(ctx, parseArgs(args.slice(found.command.path.length), found.command.opts));
+    return await found.command.handler(ctx, parsed);
   } catch (e) {
     const err = describe(e);
     if (json) io.stderr(`${JSON.stringify({ ok: false, error: { code: err.code, message: err.message, ...(err.hint === undefined ? {} : { hint: err.hint }) } })}\n`);
