@@ -18,7 +18,8 @@ import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromObservedMatch } from '../lib/reconciliationLedger';
-import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+import { checkPageWithoutVault, createCurrentReconciliationVault, isReconciliationStorageUnavailable } from '../lib/reconciliationVault';
+import { currentReconciliationPresence } from '../lib/reconciliationPresence';
 import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
@@ -361,11 +362,22 @@ export function Scan(): ReactNode {
             }
           },
           onPageMatches: async (matches, page) => {
+            let evidence: ReturnType<typeof observations> | undefined;
             try {
-              const evidence = observations(matches);
-              await withReconciliation((vault) => vault.observeInvoicePayments(evidence, assertScopeCurrent, page));
+              evidence = observations(matches);
+              const pageEvidence = evidence;
+              await withReconciliation((vault) => vault.observeInvoicePayments(pageEvidence, assertScopeCurrent, page));
               return true;
-            } catch {
+            } catch (cause) {
+              // LATE-M1: storage that cannot open blocks the checkpoint only where a vault may exist for this scope. With
+              // `absent` recorded, the same page checks run against an empty vault, so a contradictory page still refuses.
+              if (evidence !== undefined && isReconciliationStorageUnavailable(cause) && currentReconciliationPresence(chainId, keyId) === 'absent') {
+                try {
+                  assertScopeCurrent();
+                  await checkPageWithoutVault(chainId, keyId, evidence, assertScopeCurrent, page);
+                  return true;
+                } catch { /* Refused like any other page failure below. */ }
+              }
               persistenceIssue = true;
               if (scopeIsCurrent()) setError(msg('ledger.late.persistence'));
               return false;
