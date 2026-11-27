@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
-import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, type ScanCursor, type ScannedAnnouncement } from './logs.js';
+import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, type ScanCursor } from './logs.js';
 import type { BlockRef, LogFilter, RpcClient, RpcLog } from './rpc.js';
 import type { Hex } from './types.js';
 
@@ -36,7 +36,7 @@ const word = (a: string): Hex => `0x${a.replace('0x', '').toLowerCase().padStart
 const bh = (n: number, fork = 0): Hex => `0x${(n + 1000 * fork + 1).toString(16).padStart(64, '0')}`;
 const { meta } = recipient();
 const PAY = payment(meta);
-const eph = `0x${Buffer.from(PAY.ephemeralPublicKey).toString('hex')}` as Hex;
+const eph: Hex = `0x${Buffer.from(PAY.ephemeralPublicKey).toString('hex')}`;
 const DATA = encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [eph, `0x${'ab'}${'00'.repeat(56)}` as Hex]);
 /** A 10-block window halves to one block in 3 refusals; with the router lane and its recheck that is 6 requests. */
 const STALL_BELOW = 7;
@@ -217,7 +217,7 @@ async function drain(s: Scenario): Promise<Drain> {
       expect(res.cursor.last.number).toBe(res.cursor.nextBlock - 1n);
       expect(res.cursor.last.hash).toBe(bh(Number(res.cursor.last.number)));
     }
-    for (const a of res.announcements as readonly ScannedAnnouncement[]) {
+    for (const a of res.announcements) {
       expect(a.blockNumber).toBeGreaterThanOrEqual(before.nextBlock);
       expect(a.blockNumber).toBeLessThan(res.cursor.nextBlock);
       ids.push(a.id);
@@ -295,7 +295,7 @@ describe('fetchAnnouncements seeded stress (window halving, 413, router lane, tr
       }
       // 413, -32602 and -32005 are all "ask for less": nothing but the refusal text differs.
       expect(outcomes[0]).toBe(outcomes[1]);
-      if (JSON.parse(outcomes[0] as string).errors.length === 0) expect(outcomes[0]).toBe(outcomes[2]);
+      if ((JSON.parse(outcomes[0] as string) as { errors: unknown[] }).errors.length === 0) expect(outcomes[0]).toBe(outcomes[2]);
     }
   });
 

@@ -151,7 +151,7 @@ describe('sweep destination rules, seeded fuzz against an independent oracle', (
         const at = int(r, 0, copy.length - 1);
         copy[at] = (Number.parseInt(copy[at] as string, 16) ^ (1 << int(r, 0, 7))).toString(16).padStart(2, '0');
       }
-      const tx = { ...base, data: `0x${copy.join('')}` as `0x${string}`, ...(r() < 0.3 ? { to: recase(r, base.to) } : {}) };
+      const tx = { ...base, data: `0x${copy.join('')}`, ...(r() < 0.3 ? { to: recase(r, base.to) } : {}) };
       const hostilePolicy: ReviewPolicy = r() < 0.2
         ? policy({ feeRecipient: FEE_RECIPIENT, maxDeadlineSeconds: pick(r, [0, -1, 1.5, 3600]) })
         : randomCase(r).policy;
