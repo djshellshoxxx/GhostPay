@@ -6,8 +6,8 @@ stay dormant and are not counted as outstanding.
 
 ## Candidate
 
-Branch `nodata/beautiful-heisenberg-25ikdy`, exact head recorded in the PR description. It composes `main` `6b323a99`
-(which already contains #745 and #747) with the open heads below, plus new qualification work. **It is a qualification
+Branch `nodata/beautiful-heisenberg-25ikdy`, exact head recorded in the PR description. It composes `main` `a7f9abf8`
+(which already contains #745, #747, #749, #750, #744 and #752) with the still-open heads below, plus new qualification work. **It is a qualification
 candidate, not a merge request.** Integration stays with the integration-lock holder; this record does not take the lock.
 
 | Source | Head merged | Notes |
@@ -16,9 +16,9 @@ candidate, not a merge request.** Integration stays with the integration-lock ho
 | #728 stack (#696 cover lookups, #717 offline drafts, audit F2/F3/F7) | `298257fd` | CI 40 pass, 2 fail: `ts-test (rest-2)` (see "Hosted CI note") |
 | #745, #747 | `84d95d62`, `1308f185` | now on `main` |
 | #742 (LATE-L1 replay, #569/#355 dispositions) | `28d369cc` | CI 41/0 |
-| #744 (audit fixes) | `214c1287` | owner has since moved the head to `e20569ae` (same embed fix, see below) |
+| #744 (audit fixes) | merged to `main` as `a7f9abf8` | this candidate first carried `214c1287`; it now carries `main`'s copy, including the owner's embed fix |
 | #665 (W5 independent verifier) | `db6f3da6` | `verification/**` only; about 15 MB of generated `run.json` evidence |
-| New: embed handshake fix | this branch | same logic as `60ce3508` on #744; take #744's copy when both land |
+| ~~New: embed handshake fix~~ | dropped | superseded by `60ce3508`, now on `main` through #744 (identical logic; the file equals `main`'s) |
 | New: ERC-20 end-to-end qualification | W1 | 5 anvil vitest files, 1 node:test, handoff |
 | New: Phase A fuzz and stress | W3 | 9 `*.fuzz.test.ts` files, one production fix |
 | New: Phase C repairs | W4 | draft slot privacy, retention wording, label |
@@ -35,7 +35,7 @@ Merge conflicts: only `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0). Re
 | #696 cover lookups, #717 offline checkout and drafts | **Implemented, unmerged** (#728) | Candidate carries Phase C repairs the #728 branch lacks (below). Rerun #728 CI (timing flake) |
 | #724 train | **Implemented, unmerged**, CI green | `#732` and `#726` show `dirty` on their own branches because #724 carries their content; close them after #724 lands |
 | #742 LATE-L1 replay | **Implemented, unmerged**, CI green | Product decision needed on a bound for the replay pin (D3) |
-| #744 audit fixes | **Implemented, unmerged**; hosted CI at `e20569ae` reported 40 pass, 0 fail (matched to the PR by timestamp, less certain) | F2/F3 hunks duplicate #728 and merged cleanly |
+| #744 audit fixes | **Merged** (`a7f9abf8`) | F2/F3 hunks duplicate #728 and merged cleanly in this candidate |
 | #665 independent verifier | **Implemented, unmerged**, CI 31/0 | 160 commits behind main; its finding F3 (attemptStatus wording) is unverified on current main |
 | #715 release exclusion | **Implemented in #724, unmerged** | Candidate lean build: 382 modules, zero stopped-product or `FUTURE` modules |
 | ERC-20 payment and recovery | **Qualified on local anvil** (this work) | Gap: browser Playwright ERC-20 journey (no token at the allowlisted address on the devnet script) |
@@ -88,7 +88,7 @@ Mutation checks: production code temporarily broken, tests went red, restored (4
 
 | Id | Severity | Finding | Status |
 |---|---|---|---|
-| EMB-1 | medium | #744 head `214c1287` carried a red embed test: a removed dialog's late handshake timeout still opened a popup | fixed here; the #744 owner fixed it equivalently as `60ce3508` |
+| EMB-1 | medium | #744 head `214c1287` carried a red embed test: a removed dialog's late handshake timeout still opened a popup | fixed here, then superseded: the #744 owner fixed it equivalently as `60ce3508` and #744 merged, so this candidate carries `main`'s copy |
 | FUZZ-D1 | low | `decodePaymentCalldata` threw a viem range error, not a typed `PREVIEW_MISMATCH`, for a permit `v` word wider than uint8 | fixed with a failing-first regression |
 | PHC-D1 | low | Draft slot was named from public keys (meta-address, signer key), so storage access confirmed "this profile holds a draft for seller X" | fixed: slot is `v3`, HKDF of the viewing key; `v2` slots are ignored and deleted |
 | PHC-D3 | low (review of `a052086d`) | The draft write committed in a later promise reaction than the codec's session check, so an explicit key clear between them recreated the purged draft (reproduced with the real codec: red before, green after) | fixed: `draftPurgeEpoch()` is captured at save start and rechecked immediately before `sessionStorage.setItem` (no await between); a purge ends the opt-in and reports `off`. Tests: clear between check and commit, clear while sealing, clear making the codec refuse, key replacement (old ciphertext stays in the old seller's slot, new slot untouched), navigation durability |
@@ -128,16 +128,19 @@ No high-severity finding was open at the end of this review. That is a statement
 44 s and 9 s on that runner, so the cause is a slow runner against a 2^17-cost KDF, not the diff (the change is a comment, F7).
 The file passes locally on the candidate. Rerun the job; do not skip or raise the test without review. The candidate's own run is evidence that a rerun passes.
 
-## Hosted CI on the candidate (head `298e56f7`)
+## Hosted CI on the candidate
 
-All 45 check runs completed: 42 success, 3 skipped (`Release gates` and the two publish-only jobs `Deploy to GitHub Pages`,
+Re-run on the head after the merge of `main` `a7f9abf8` (`cf2914a5`, same result as the earlier `298e56f7` run below): all
+45 check runs completed, 42 success, 3 skipped, 0 failed, including `ts-test (rest-2)` (a second pass).
+
+First full run, head `298e56f7`: all 45 check runs completed: 42 success, 3 skipped (`Release gates` and the two publish-only jobs `Deploy to GitHub Pages`,
 `Post-deployment smoke test`), 0 failed. Includes `ts-test (web)` and `ts-test (rest-2)`, `e2e (lean)` and `e2e (full)`,
 `lean-candidate`, the three `ghostid-native` variants, `contracts-*`, `integration (anvil + bitcoind regtest +
 solana-test-validator)`, `Pages artifact on anvil (browser)`, `beta acceptance (lib + cli + browser on anvil)`, `Build and
 verify the Pages site`, `Phone and tablet engines (lean)` and `(full)`, the CLI matrix on three operating systems, CodeQL and
 `secrets-and-egress`. `ts-test (rest-2)` passed here, including the two `invoice-schema` passphrase cases that timed out at
-60 s on #728's runner, which supports the slow-runner reading of that failure. A later docs-only commit sits on top of this
-head; `git diff 298e56f7 HEAD --stat` shows documentation only.
+60 s on #728's runner, which supports the slow-runner reading of that failure. Later commits on this branch are merges of `main` and
+documentation; the hosted run on `cf2914a5` covers the merged code tree.
 
 These are candidate-head runs, **not** release-SHA evidence: the Pages-on-anvil and beta-acceptance gates still need to be
 repeated on the final release SHA.
