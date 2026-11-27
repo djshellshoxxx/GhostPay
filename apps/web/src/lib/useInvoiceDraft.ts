@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { blankDraft, draftForForm, formCanShow, openDraft, readableDraftSlot, sealDraft, type DraftForm, type InvoiceDraft } from './invoiceDraft';
-import { purgeLegacyInvoiceDrafts } from './invoiceDraftSlots';
+import { draftPurgeEpoch, purgeLegacyInvoiceDrafts } from './invoiceDraftSlots';
 import { tokenChoices } from './invoiceCreate';
 import type { SessionPublic } from './session';
 
@@ -67,12 +67,20 @@ export function useInvoiceDraft(
     if (slot === undefined) return;
     enabled.current = true;
     setStatus('saving');
+    const epoch = draftPurgeEpoch();
+    // An explicit clear of the seller keys removed every draft after this write began: it ends the opt-in, whatever stage
+    // the write had reached, and nothing sealed before the clear may be stored (no await between this check and setItem).
+    const purged = (): boolean => draftPurgeEpoch() !== epoch;
+    const cleared = (): void => { enabled.current = false; if (mounted.current) setStatus('off'); };
     const pending: Promise<void> = sealDraft(slot, draftForForm(value, shows.current)).then((raw) => {
       if (latestWrite.get(slot) !== pending) return;
+      if (purged()) { cleared(); return; }
       sessionStorage.setItem(slot, raw);
       if (mounted.current) setStatus('saved');
     }).catch(() => {
-      if (latestWrite.get(slot) === pending && mounted.current) setStatus('saveFailed');
+      if (latestWrite.get(slot) !== pending) return;
+      if (purged()) cleared();
+      else if (mounted.current) setStatus('saveFailed');
     }).finally(() => { if (latestWrite.get(slot) === pending) latestWrite.delete(slot); });
     latestWrite.set(slot, pending);
   };

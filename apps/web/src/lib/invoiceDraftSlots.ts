@@ -9,7 +9,9 @@ export const DRAFT_SLOT_PREFIX = 'ghostpay.invoice-draft.v3.';
 /**
  * v2 named a slot from the meta-address and the invoice-signing key, both public, so anyone able to read tab storage could
  * confirm that this profile belongs to that seller and holds a draft. A v2 record is never read or migrated: it is deleted
- * when a Create invoice view opens for a loaded seller, and when the seller keys are cleared. (v1 belongs to the unmerged
+ * when a Create invoice view opens for a loaded seller, and when the seller keys are cleared. The v2 format exists only on
+ * the unmerged #717/#728 branches (never on `main`, and Pages publishes `main` only), so this is a deliberate break of an
+ * unreleased format, not a migration of shipped data. (v1 belongs to the unmerged
  * #604 format; this build neither reads, overwrites nor deletes it.)
  */
 export const LEGACY_DRAFT_SLOT_PREFIX = 'ghostpay.invoice-draft.v2.';
@@ -36,7 +38,16 @@ export function purgeLegacyInvoiceDrafts(): void {
   removeMatching((name) => name.startsWith(LEGACY_DRAFT_SLOT_PREFIX));
 }
 
+/**
+ * Counts explicit purges. A write that began before a purge captures the count and refuses to commit once it moved, so a
+ * ciphertext sealed before "clear keys" cannot recreate a draft that the clear just removed (the commit runs in a later
+ * promise reaction than the codec's own session check).
+ */
+let purgeEpoch = 0;
+export const draftPurgeEpoch = (): number => purgeEpoch;
+
 /** Deletes every draft record of this tab, current and legacy, without needing the seller keys that sealed them. */
 export function purgeInvoiceDrafts(): void {
+  purgeEpoch++;
   removeMatching((name) => name.startsWith(DRAFT_SLOT_PREFIX) || name.startsWith(LEGACY_DRAFT_SLOT_PREFIX));
 }
