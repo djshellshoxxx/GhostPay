@@ -1,0 +1,1403 @@
+{
+  "checkpoint": "2026-11-27T12Z",
+  "main": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+  "prior": "93824ab6ba8d46acdefcf022b4e5e559dd40b4ef",
+  "openPRCount": 155,
+  "pullRequests": [
+    {
+      "number": 753,
+      "head": "94b6b5f86bd836461c54cd3f5c5783c731687110",
+      "ref": "test/erc20-pages-recovery-20261127-27c1",
+      "base": "main",
+      "base_sha": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+      "title": "test: qualify ERC-20 Pages payment and fresh-browser recovery",
+      "draft": true
+    },
+    {
+      "number": 751,
+      "head": "cf2914a58273c03d2f1ee17268cd639b591c4252",
+      "ref": "nodata/beautiful-heisenberg-25ikdy",
+      "base": "main",
+      "base_sha": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+      "title": "[Qualification candidate, do not merge as-is] Composed candidate: #724, #728, #742, #744, #665 + ERC-20 qualification, fuzz and Phase C repairs",
+      "draft": true
+    },
+    {
+      "number": 742,
+      "head": "f80a322c7fc4cab5439be5c6164c1ce0b7470990",
+      "ref": "claude/loving-brown-v8dlp6",
+      "base": "main",
+      "base_sha": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+      "title": "LATE-L1 reconciliation replay; #569/#355 masking dispositions with receipt-file and quick-hide focus fixes",
+      "draft": true
+    },
+    {
+      "number": 732,
+      "head": "8fc4c2f5ee072b59948dce0ba72e254de6b435cd",
+      "ref": "automation/20261126T2118Z/bug/invoice-link-invalid-host",
+      "base": "main",
+      "base_sha": "3c324239cd2c0c4d22c547afcc0f67d5e154cc8f",
+      "title": "fix(payment-uri): reject browser-invalid invoice link hosts",
+      "draft": true
+    },
+    {
+      "number": 728,
+      "head": "9222e597b008d31caa667ec974a50f8c157652bd",
+      "ref": "claude/consolidation-stack-20261126",
+      "base": "main",
+      "base_sha": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+      "title": "Consolidation stack 2: #696, #717 and audit fixes F2/F3/F7",
+      "draft": true
+    },
+    {
+      "number": 726,
+      "head": "e721985ad9258f2e9c6ce7d0cdcc5cf87146db71",
+      "ref": "automation/20261126T1728Z/bug/exact-payment-tolerance",
+      "base": "main",
+      "base_sha": "c9177f57bc7293fa7a461cfc663c38cc7fe63bf2",
+      "title": "fix(ux-flow): validate tolerance on exact payments",
+      "draft": true
+    },
+    {
+      "number": 724,
+      "head": "8a51927264a992cdfd6f2602e8452c19f6c1f734",
+      "ref": "finish/privacy-preview-resume-20261126-9d8f",
+      "base": "main",
+      "base_sha": "a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053",
+      "title": "fix(privacy): finish preview retention on page return",
+      "draft": true
+    },
+    {
+      "number": 722,
+      "head": "c87fe94a571d528cc5eb7fb25b9717224ad81c3e",
+      "ref": "nodata/inspiring-shannon-2ehl3u",
+      "base": "main",
+      "base_sha": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "title": "docs(user): beta exclusion notice and locale-completion claim",
+      "draft": true
+    },
+    {
+      "number": 720,
+      "head": "4f84e8190b31e9f86004c2d716dbd0b424b44776",
+      "ref": "claude/vibrant-cori-scu18b",
+      "base": "main",
+      "base_sha": "601f20955b435eede448c6d82d8315705d7e381d",
+      "title": "Router: payERC20WithPermitAndBuffer entry point (spec 13 section 2, ADR-0030); L2-I4 two-provider manifest read-back",
+      "draft": true
+    },
+    {
+      "number": 717,
+      "head": "367a3b30b1feb5c31c0727fc6fc435162067063c",
+      "ref": "claude/offline-drafts-successor-20261126",
+      "base": "main",
+      "base_sha": "601f20955b435eede448c6d82d8315705d7e381d",
+      "title": "Offline-aware checkout and opt-in encrypted invoice drafts (successor of #604/#591)",
+      "draft": true
+    },
+    {
+      "number": 715,
+      "head": "1fcadbff48c0840b2ca9ea291f5d849e38a969bd",
+      "ref": "nodata/optimistic-maxwell-epuo8f",
+      "base": "main",
+      "base_sha": "194e225cc115f894650b2e9ef3390854241e4143",
+      "title": "Keep workspace future-only cores out of the lean site; record applied owner decisions",
+      "draft": true
+    },
+    {
+      "number": 713,
+      "head": "1d9a6b053e98ddb196304e608b23b2d52437dff7",
+      "ref": "automation/20261126/bug/i18n-exact-extension-negotiation",
+      "base": "main",
+      "base_sha": "8c0b110d8043b8895aae1422226ac6cafdab40a2",
+      "title": "fix(i18n): prefer exact supported locale extension tags",
+      "draft": true
+    },
+    {
+      "number": 696,
+      "head": "1b097132e5f1636d3d770a8612534fbdd34b99ee",
+      "ref": "claude/w-match-cover-20261125",
+      "base": "main",
+      "base_sha": "5880576a131b8457f128a21e8973d6658d16a838",
+      "title": "feat(web): opt-in cover lookups hide which announcements matched from the RPC",
+      "draft": true
+    },
+    {
+      "number": 678,
+      "head": "6dd9732382f782ddb4cd26d47f0893498973d25d",
+      "ref": "nodata/eloquent-shannon-gfv6t9",
+      "base": "main",
+      "base_sha": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "title": "P13 confidential amounts: fuzz, stress, QA, security audit and bug-search fixes",
+      "draft": true
+    },
+    {
+      "number": 665,
+      "head": "db6f3da67737346c28edf2ed9d8bae44e86bce56",
+      "ref": "nodata/elegant-tesla-kpeojx",
+      "base": "main",
+      "base_sha": "601f20955b435eede448c6d82d8315705d7e381d",
+      "title": "W5: independent black-box payment-state verifier (interrupted payment, reload, reconciliation)",
+      "draft": false
+    },
+    {
+      "number": 653,
+      "head": "2021b0b4c72ea8a16b6c14bd21a03d27ee82b5df",
+      "ref": "claude/serene-hawking-kjd54q",
+      "base": "main",
+      "base_sha": "8aca5a06a9435dd30e40378ba606da3c68f94863",
+      "title": "feat(light-indexer): optional reference service for the public /v1/logs announcement API",
+      "draft": true
+    },
+    {
+      "number": 643,
+      "head": "c13070f8e0bbfc2f3b49bde3d67313861118246e",
+      "ref": "nodata/gracious-pascal-vdb581",
+      "base": "main",
+      "base_sha": "f18e8c0c949459f6ecbe8d2c6d71ea208a6d160f",
+      "title": "metadata-hardening: complete and harden the standalone package",
+      "draft": true
+    },
+    {
+      "number": 639,
+      "head": "6adf71f7256f05d06284f0d4c7b52fd93391e60c",
+      "ref": "nodata/magical-volta-z6taog",
+      "base": "main",
+      "base_sha": "e7e981095b07a05c7727bf9fafb0a0fec7e4fc36",
+      "title": "docs: repository housekeeping, README repairs and maintenance reports",
+      "draft": true
+    },
+    {
+      "number": 636,
+      "head": "0d548b9acb9236cb09c150e36be21596a01423d6",
+      "ref": "nodata/brave-meitner-974y9e",
+      "base": "main",
+      "base_sha": "9d92472a46a4e37f847472276d77e3b4ce158e80",
+      "title": "Merge the merchant dashboard disabled (off by default, excluded from beta/v1.0)",
+      "draft": true
+    },
+    {
+      "number": 632,
+      "head": "0036fe1656579e0e9551bb9ae07cc63d802fb667",
+      "ref": "automation/20261124T2237Z/qa/disclosure-firefox-reflow",
+      "base": "automation/20261124T2037Z/qa/disclosure-signer-pin-gate",
+      "base_sha": "c484f833560aef8e8c798a71228d92e10fe5a877",
+      "title": "test(wallet): recover reviewed Firefox reflow fixture from #613",
+      "draft": true
+    },
+    {
+      "number": 621,
+      "head": "98065511df4b5315db665366ee941bfbf4578d06",
+      "ref": "claude/nifty-bohr-5ra2ap-dormant-371",
+      "base": "main",
+      "base_sha": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+      "title": "[HELD: owner stop 2026-11-25] Land #371 dormant F04/F05/F10 module base on main",
+      "draft": true
+    },
+    {
+      "number": 614,
+      "head": "c03598fe5923ddee8f9276c794b3197c501b2004",
+      "ref": "integration/near-finished-20261124",
+      "base": "main",
+      "base_sha": "c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063",
+      "title": "[HOLD] Complete near-finished fiat, countdown, POS and QR branches",
+      "draft": false
+    },
+    {
+      "number": 613,
+      "head": "17fa04b0ad4af4d88739bcffd9042d76d27c8237",
+      "ref": "investigate/privacy-569-firefox-20261124",
+      "base": "fix/286-global-mask-document",
+      "base_sha": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401",
+      "title": "test(privacy): complete native Firefox reflow repair",
+      "draft": true
+    },
+    {
+      "number": 609,
+      "head": "00078ed6a2561e948fae50593ab9eb36d5f47be9",
+      "ref": "resume/receipt-retention-tor-fixture-20261124",
+      "base": "feature/287-receipt-timestamp-retention",
+      "base_sha": "19a11f90db0bcf84c94a0b883a310e103ce8878a",
+      "title": "test(hosting): finish timestamp-retention browser qualification",
+      "draft": false
+    },
+    {
+      "number": 604,
+      "head": "2f2c282e4e88e32fb54648864bb9ed51c8307880",
+      "ref": "finish/offline-completion-20261124",
+      "base": "main",
+      "base_sha": "706188000c38b3dde5a3a362370a530870aa7587",
+      "title": "Finish interrupted-payment and encrypted offline draft branches",
+      "draft": true
+    },
+    {
+      "number": 602,
+      "head": "8d8fe2f0986bc5796dae2081ef34602c6a9db703",
+      "ref": "finish/recurring-m4-qualification-20261124",
+      "base": "feature/f10-durable-cas-m4-20261122",
+      "base_sha": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627",
+      "title": "Finish recurring-state M4 native qualification",
+      "draft": true
+    },
+    {
+      "number": 592,
+      "head": "e9025d72f1408ec48e6d1ca29a5361a55175ec31",
+      "ref": "codex/spec-03-fiat-price-feeds",
+      "base": "main",
+      "base_sha": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+      "title": "[HOLD] Complete spec 03 fiat quote validation and enforce feed qualification",
+      "draft": true
+    },
+    {
+      "number": 591,
+      "head": "49862e2d3b4832f1f52714f5bc1bc551af2fe54f",
+      "ref": "codex/offline-interrupted-invoice",
+      "base": "main",
+      "base_sha": "f76904301cff0b24d65ea4e31cbf37d470db4d95",
+      "title": "Recover encrypted invoice drafts and handle interrupted Pages payments",
+      "draft": true
+    },
+    {
+      "number": 587,
+      "head": "19a11f90db0bcf84c94a0b883a310e103ce8878a",
+      "ref": "feature/287-receipt-timestamp-retention",
+      "base": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "base_sha": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "title": "Complete local invoice and payment receipt timestamp retention",
+      "draft": true
+    },
+    {
+      "number": 569,
+      "head": "c30283d28ec15f0c4fddb8a80d1c5f60ee590401",
+      "ref": "fix/286-global-mask-document",
+      "base": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "base_sha": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "title": "Close hidden-DOM disclosure in global Pages privacy masking (#286)",
+      "draft": true
+    },
+    {
+      "number": 559,
+      "head": "0419d3609caeba7857fefdd9f19f884adeff5646",
+      "ref": "feature/p08-local-history-coverage",
+      "base": "future/p08-linkability-analysis",
+      "base_sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "title": "Distinguish missing local history from complete empty history (P08-A04)",
+      "draft": true
+    },
+    {
+      "number": 558,
+      "head": "d242926030fea856e7a368639c059e472e9e9c6b",
+      "ref": "qualification/p06-existing-role-inventory-20261123",
+      "base": "future/p06-key-role-separation",
+      "base_sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "title": "Map existing key operations to P06 roles for offline review",
+      "draft": true
+    },
+    {
+      "number": 544,
+      "head": "4b077d2b13f956cfcf9bce1726f929cca40c7394",
+      "ref": "test/ghostpay-first-sign-after-sleep",
+      "base": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "base_sha": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "title": "test(web): verify the first invoice signature after sleep",
+      "draft": false
+    },
+    {
+      "number": 526,
+      "head": "111c3de7fc586734dd5dddb213242faa9c352f6a",
+      "ref": "docs/ghostpay-live-census-20261123",
+      "base": "main",
+      "base_sha": "8ddb344973e80b8e1eda6821e970ee6a2b808b29",
+      "title": "docs: refresh GhostPay branch and PR census",
+      "draft": true
+    },
+    {
+      "number": 493,
+      "head": "fb9c4b6f618f80b2d9f2b2aff3d1f2fa41e06558",
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-f6308e442e",
+      "base": "main",
+      "base_sha": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "title": "deps: bump the npm-minor-patch group across 1 directory with 11 updates",
+      "draft": false
+    },
+    {
+      "number": 492,
+      "head": "592b99417039b7bba588235c40418f368f09ebb4",
+      "ref": "dependabot/github_actions/actions-8158e918cd",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "ci: bump the actions group across 1 directory with 3 updates",
+      "draft": false
+    },
+    {
+      "number": 471,
+      "head": "d068ffd41637de364310b2117d737153d4da3fd8",
+      "ref": "audit/ghostpay-r41-semantic-backfill-20261122-1400Z",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "fix(consolidation): R41–R55 source-pinned histories, ledger transition and retired-ref safety",
+      "draft": true
+    },
+    {
+      "number": 469,
+      "head": "fd3abbc297febe54f6539b801cd752d6f4d9e4f8",
+      "ref": "audit/ghostpay-r40-semantic-branch-dispositions-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R40 verify 44 donor dispositions, record scanner race",
+      "draft": true
+    },
+    {
+      "number": 468,
+      "head": "cb63ec21cbac15b0a665b61ada37a9f0662ff79a",
+      "ref": "automation/20261122-r11/audit/mythril-evidence-summary",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "feat(audit): source-pinned, fail-closed Mythril artifact evidence summary",
+      "draft": true
+    },
+    {
+      "number": 466,
+      "head": "87eb78767567c9aa58bce10c0c020f282d1491c7",
+      "ref": "audit/ghostpay-r39-uncapped-branch-triage-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "feat(audit): uncapped Git-tree branch provenance scanner and R39 recovery ledger",
+      "draft": true
+    },
+    {
+      "number": 464,
+      "head": "4f529cbb152916dfd2f3283b224d321533ec5a2d",
+      "ref": "audit/ghostpay-r38-source-census-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(audit): R38 exhaustive branch and PR SHA census plus beta handoff",
+      "draft": true
+    },
+    {
+      "number": 459,
+      "head": "ecfe65666b510d9adfc51902880ee7ac5f419baa",
+      "ref": "audit/ghostpay-scheme2-completion-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(policy): source-pinned Scheme-2 completion and recovery-authority matrix",
+      "draft": true
+    },
+    {
+      "number": 457,
+      "head": "300c9d215b01f30c0eee53f58bcb6aba85ebbd5b",
+      "ref": "docs/f05-receipt-assurance-coverage-20261122",
+      "base": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "base_sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "title": "docs(f05): pin receipt-assurance coverage and completion gates",
+      "draft": true
+    },
+    {
+      "number": 456,
+      "head": "9e8a619cc2ce2688c16c89d16df4aeb7959bc627",
+      "ref": "feature/f10-durable-cas-m4-20261122",
+      "base": "feature/f10-reviewed-preparation-m3-20261121",
+      "base_sha": "7079eedfc67180c9a0012c7154758e41fe6208c9",
+      "title": "feat(f10): encrypted recurring snapshot CAS and safe reviewed reservation (M4, stacked draft)",
+      "draft": true
+    },
+    {
+      "number": 455,
+      "head": "74b9f85523f75c473b6fc65e5b44e75bac3f1fd9",
+      "ref": "audit/ghostpay-fund-recovery-expiry-20261122-p0",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(audit): source-pin P0 fund recovery, expiry and refund safety gaps",
+      "draft": true
+    },
+    {
+      "number": 448,
+      "head": "8251eaa0813af7d2fc056ed432d43c6e762cf6c0",
+      "ref": "audit/ghostpay-r33-514-branch-pr-qualification-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R33 515-branch SHA audit, 206-PR inventory and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 445,
+      "head": "bd1bc845bb855686ca48922baacc057c1c40dee2",
+      "ref": "audit/ghostpay-r32-census-and-ci-gates-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R32 branch-head ledger, qualified wallet test and donor ancestry",
+      "draft": true
+    },
+    {
+      "number": 442,
+      "head": "4bfaffa5d44f70e86cd63a026a6d919e95cc1d2b",
+      "ref": "audit/ct-c-2-fee-event-forensics-20261121",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "test(confidential): diagnose CT-C-2 fee-byte log collision",
+      "draft": true
+    },
+    {
+      "number": 438,
+      "head": "745004a16dbb712a1085d3e7377d9abe951e9599",
+      "ref": "audit/ghostpay-r30-504-reconciliation-20261122",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R30 504-branch/196-PR SHA census and security gate triage",
+      "draft": true
+    },
+    {
+      "number": 436,
+      "head": "cbf6edbb5471dd085c233fdf0b8c35c6e4fc3362",
+      "ref": "automation/20261122/tor-scan-saved-message-contract-r29",
+      "base": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base_sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "title": "test(tor): assert the actual localized scan-privacy save confirmation",
+      "draft": false
+    },
+    {
+      "number": 428,
+      "head": "2e8e2fde366f10915daabc157b55b6772e5da730",
+      "ref": "audit/ghostpay-r24-494-ci-triage-20261121",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R24 495-branch census, qualified PR reviews and donor triage",
+      "draft": true
+    },
+    {
+      "number": 410,
+      "head": "0bd06cbbdfc3b449fd56237b385d0b3d084f317d",
+      "ref": "automation/20261121T1439Z/bug/qr-print-policy-boolean",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "fix(web): preserve bearer QR warning for malformed protection flags",
+      "draft": true
+    },
+    {
+      "number": 408,
+      "head": "4aea5f7ed3dec4b328bd01594bf61cca35c72ab9",
+      "ref": "audit/ghostpay-r15-475-delta-20261121",
+      "base": "audit/ghostpay-r13-capped-lineage-20261121",
+      "base_sha": "bb668e18b1bad2e92811c22ca57cb019b1b4b281",
+      "title": "docs(consolidation): R15 475-branch delta, security-donor overlap and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 403,
+      "head": "bb668e18b1bad2e92811c22ca57cb019b1b4b281",
+      "ref": "audit/ghostpay-r13-capped-lineage-20261121",
+      "base": "audit/ghostpay-r12-delta-20261121-0507",
+      "base_sha": "2eb64d0a19e172ca02abe10a191b7d711962cb52",
+      "title": "docs(consolidation): classify capped branch ancestry and resume 470-head R13 census",
+      "draft": true
+    },
+    {
+      "number": 401,
+      "head": "2eb64d0a19e172ca02abe10a191b7d711962cb52",
+      "ref": "audit/ghostpay-r12-delta-20261121-0507",
+      "base": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+      "base_sha": "80dd9eb9669fba0171a037b0b690d17a7e2b655e",
+      "title": "docs(consolidation): R12 468-branch source-pinned delta and CI handoff",
+      "draft": true
+    },
+    {
+      "number": 396,
+      "head": "7079eedfc67180c9a0012c7154758e41fe6208c9",
+      "ref": "feature/f10-reviewed-preparation-m3-20261121",
+      "base": "feature/f10-lifecycle-m2-20261121",
+      "base_sha": "20a353d28e1aac89216ba2e8980000477307bf03",
+      "title": "feat(f10): stage single-use reviewed invoice references (M3)",
+      "draft": true
+    },
+    {
+      "number": 391,
+      "head": "20a353d28e1aac89216ba2e8980000477307bf03",
+      "ref": "feature/f10-lifecycle-m2-20261121",
+      "base": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "base_sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "title": "feat(f10): guarded recurring-plan lifecycle (M2, stacked draft)",
+      "draft": true
+    },
+    {
+      "number": 386,
+      "head": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "ref": "fix/ghostpay-signer-pin-continue-20261121-r11",
+      "base": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "base_sha": "df0e715686bc42d270617692a7e310a8b362e840",
+      "title": "test(web): require no actionable Continue after revoked signer pin",
+      "draft": true
+    },
+    {
+      "number": 383,
+      "head": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "ref": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "base": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base_sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "title": "Add explicit invoice registration-time cleanup without deleting records",
+      "draft": true
+    },
+    {
+      "number": 382,
+      "head": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+      "ref": "repair/ghostpay-btc-lifecycle-20261121-5ceb",
+      "base": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base_sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "title": "Recover Bitcoin lifecycle consent and checked worker results",
+      "draft": true
+    },
+    {
+      "number": 381,
+      "head": "df0e715686bc42d270617692a7e310a8b362e840",
+      "ref": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "base": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "base_sha": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "title": "test(a11y): exclude closed disclosure geometry while preserving visible reflow checks",
+      "draft": true
+    },
+    {
+      "number": 380,
+      "head": "93824ab6ba8d46acdefcf022b4e5e559dd40b4ef",
+      "ref": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "Continue the authoritative consolidation ledger with verified source and CI evidence",
+      "draft": true
+    },
+    {
+      "number": 378,
+      "head": "c493df9e210f6227471864a623ee536cc9483a3a",
+      "ref": "audit/ghostpay-main-447-census-20261121-r9",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "docs(consolidation): R9 exhaustive 447-branch exact-current-main census and semantic handoff",
+      "draft": true
+    },
+    {
+      "number": 373,
+      "head": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "ref": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "base": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base_sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "title": "ci: qualify recovery privacy flows in Firefox and WebKit",
+      "draft": true
+    },
+    {
+      "number": 372,
+      "head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "ref": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "base": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "base_sha": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "title": "fix: compose independent key recovery with privacy and custody guards",
+      "draft": true
+    },
+    {
+      "number": 371,
+      "head": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "ref": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "base": "main",
+      "base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "title": "[HOLD] Consolidate dormant F04/F05/F10 modules and repair CI gates",
+      "draft": true
+    },
+    {
+      "number": 367,
+      "head": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "ref": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "Compose idle recovery, current-main fixes, scan deduplication and wallet regressions",
+      "draft": true
+    },
+    {
+      "number": 365,
+      "head": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "ref": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "merge(web): consolidate idle backup and receipt work with main and Scan fixes",
+      "draft": true
+    },
+    {
+      "number": 363,
+      "head": "260caca240f9944c05ce8951a154193709e30a56",
+      "ref": "integration/ghostpay-tor-qualified-20261121",
+      "base": "main",
+      "base_sha": "aec179910c39081d820396409ff3139ff2264132",
+      "title": "Qualify static Tor hosting with pinned identities and recovery checks",
+      "draft": true
+    },
+    {
+      "number": 361,
+      "head": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "ref": "integrate/ghostpay-export-recovery-acceptance-20261121-539818",
+      "base": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "base_sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "title": "test(recovery): recover application export interoperability coverage",
+      "draft": true
+    },
+    {
+      "number": 358,
+      "head": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "ref": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "base": "main",
+      "base_sha": "aec179910c39081d820396409ff3139ff2264132",
+      "title": "feat(coordination): reconcile captured GhostPay branches and claims",
+      "draft": true
+    },
+    {
+      "number": 356,
+      "head": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+      "ref": "repair/ghostpay-settings-import-expectations-20261121-539818",
+      "base": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "base_sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "title": "test(settings): correct partial-import relayer URL expectations",
+      "draft": true
+    },
+    {
+      "number": 355,
+      "head": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "ref": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "base": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "base_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "title": "test(web): preserve quick-hide focus regressions above privacy repair",
+      "draft": true
+    },
+    {
+      "number": 354,
+      "head": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "ref": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "base": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "base_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "title": "fix(web): restore privacy-safe focus after wallet disclosure",
+      "draft": true
+    },
+    {
+      "number": 353,
+      "head": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "ref": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "test(web): preserve unsaved settings drafts across partial imports (GP-BUG-04)",
+      "draft": true
+    },
+    {
+      "number": 352,
+      "head": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "ref": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "base": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "base_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "title": "test(devnet): enforce wallet journal concealment until renewed consent",
+      "draft": true
+    },
+    {
+      "number": 349,
+      "head": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+      "ref": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "fix(web): validate saved Sweep journals with strict JSON",
+      "draft": true
+    },
+    {
+      "number": 348,
+      "head": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "ref": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "base": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "title": "test(privacy): align wallet context and reviewed RPC inventory",
+      "draft": true
+    },
+    {
+      "number": 346,
+      "head": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "ref": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "base": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "title": "test(web): verify payment exports with standalone recovery",
+      "draft": true
+    },
+    {
+      "number": 344,
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "ref": "fix/ghostpay-request-file-async-20261120-r3",
+      "base": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "base_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "title": "Synchronize request-file passphrase test with real decryption completion",
+      "draft": true
+    },
+    {
+      "number": 343,
+      "head": "5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5",
+      "ref": "docs/ghostpay-coordination-ledger-20261120",
+      "base": "main",
+      "base_sha": "bfebea0acf213a113d2740366fd592042661ca67",
+      "title": "docs(coordination): reconcile 423 branches and 123 PR claims",
+      "draft": true
+    },
+    {
+      "number": 341,
+      "head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "ref": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "base": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "title": "fix(privacy): retain sweep reuse warnings on all seven enabled EVM testnets (GP-BUG-06)",
+      "draft": true
+    },
+    {
+      "number": 336,
+      "head": "410353a23631234aa888e46f38df22291c699a26",
+      "ref": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "base": "feature/ghostpay-retention-focus-20261120",
+      "base_sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "title": "Fix wallet disclosure steps in devnet acceptance journeys",
+      "draft": true
+    },
+    {
+      "number": 335,
+      "head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "ref": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "base": "fix/ghostpay-backup-preflight-20261120-r2",
+      "base_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "title": "fix(web): bind archive completion to the signed receipt",
+      "draft": true
+    },
+    {
+      "number": 333,
+      "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "ref": "fix/ghostpay-backup-preflight-20261120-r2",
+      "base": "integration/ghostpay-idle-session-20261120-r2",
+      "base_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "title": "fix(web): finish backup preflight and durable-write ownership",
+      "draft": true
+    },
+    {
+      "number": 327,
+      "head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "ref": "feature/ghostpay-retention-focus-20261120",
+      "base": "feature/ghostpay-retention-completion-20261120",
+      "base_sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "title": "Reconcile retention preferences when returning to a tab",
+      "draft": true
+    },
+    {
+      "number": 326,
+      "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "ref": "feature/ghostpay-retention-completion-20261120",
+      "base": "work/ghostpay-required-v11-candidate-20261120",
+      "base_sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "title": "Add opt-in payment proof preview cleanup",
+      "draft": true
+    },
+    {
+      "number": 324,
+      "head": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "ref": "future/f10-private-recurring",
+      "base": "main",
+      "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "title": "feat(f10): add bounded recurring-invoice previews",
+      "draft": true
+    },
+    {
+      "number": 323,
+      "head": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "ref": "future/f05-ghostproof",
+      "base": "main",
+      "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "title": "feat(f05): add offline receipt assurance review",
+      "draft": true
+    },
+    {
+      "number": 320,
+      "head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "ref": "fix/ghostpay-tor-qualification-20261120",
+      "base": "main",
+      "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "title": "Complete static Tor qualification inputs and exact origin assertions",
+      "draft": true
+    },
+    {
+      "number": 312,
+      "head": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+      "ref": "audit/bugcheck-core-latest-20261120",
+      "base": "main",
+      "base_sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "title": "docs: record core and latest-feature bugcheck audit",
+      "draft": true
+    },
+    {
+      "number": 309,
+      "head": "e9643073be74dac54c2875143501451812763f9c",
+      "ref": "audit/ghostpay-qa-stress-20261119",
+      "base": "main",
+      "base_sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "title": "docs(qa): read-only GhostPay QA, stress findings and repair handoff",
+      "draft": true
+    },
+    {
+      "number": 308,
+      "head": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "ref": "feat/ghostpay-tor-completion-20261119",
+      "base": "main",
+      "base_sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "title": "Complete static Tor hosting preparation and qualification gates",
+      "draft": true
+    },
+    {
+      "number": 307,
+      "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "ref": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base": "main",
+      "base_sha": "bfebea0acf213a113d2740366fd592042661ca67",
+      "title": "Consolidate reviewed fixes and complete invoice, backup, print and Tor features",
+      "draft": true
+    },
+    {
+      "number": 304,
+      "head": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "ref": "evidence/ghostpay-completion-20261120",
+      "base": "integration/ghostpay-completion-20261120",
+      "base_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "title": "docs: preserve verified recovery, artifacts and final worker handoffs",
+      "draft": true
+    },
+    {
+      "number": 303,
+      "head": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "ref": "fix/ghostpay-format-validation-20261120",
+      "base": "integration/ghostpay-completion-20261120",
+      "base_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "title": "fix(web): qualify amount-parser runtime guards on consolidated source",
+      "draft": true
+    },
+    {
+      "number": 302,
+      "head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ref": "integration/ghostpay-completion-20261120",
+      "base": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "title": "fix: consolidate QR, receipt and Pages validation repairs",
+      "draft": true
+    },
+    {
+      "number": 300,
+      "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "ref": "feat/ghostpay-privacy-quick-hide-20261120",
+      "base": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "base_sha": "d6819796a9542acc488b896786faffe83b913d9b",
+      "title": "feat(web): add one-way privacy quick-hide shortcut and button",
+      "draft": true
+    },
+    {
+      "number": 299,
+      "head": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "ref": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "base": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "base_sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "title": "docs: checkpoint receipt repair, clipboard qualification and security gates",
+      "draft": true
+    },
+    {
+      "number": 298,
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "ref": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "base": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "title": "fix(web): bind RPC receipts to the submitted transaction hash",
+      "draft": true
+    },
+    {
+      "number": 296,
+      "head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "ref": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "base": "automation/20261119T073600Z/coordinator/integration-lock",
+      "base_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "title": "docs: preserve verified engineering cycle and consolidation evidence",
+      "draft": true
+    },
+    {
+      "number": 295,
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "ref": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "base": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "base_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "title": "test(web): complete unverified QR and flag-combination coverage",
+      "draft": true
+    },
+    {
+      "number": 294,
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "ref": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "base": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "title": "fix(qr-exchange): preserve idle deadline after rejected conflicts",
+      "draft": true
+    },
+    {
+      "number": 292,
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "ref": "fix/ghostpay-pages-integrity-gate-20261120",
+      "base": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "title": "Gate Pages artifact promotion and qualify adversarial security fixtures",
+      "draft": true
+    },
+    {
+      "number": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "ref": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "base": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "title": "fix(web): reject non-string QR classification keys before coercion",
+      "draft": true
+    },
+    {
+      "number": 278,
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "ref": "release/ghostpay-beta-qualification-20261119",
+      "base": "main",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+      "draft": true
+    },
+    {
+      "number": 275,
+      "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "ref": "repair/ghostpay-270-policy-fixture-20261119",
+      "base": "codex/ghostpay-consolidation-followthrough-20261119",
+      "base_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "title": "test(policy-scheme): repair mismatched-leaf Anvil fixture",
+      "draft": true
+    },
+    {
+      "number": 273,
+      "head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "ref": "codex/ghostpay-consolidation-records-20261119",
+      "base": "main",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "title": "Preserve complete consolidation records and recovered documentation history",
+      "draft": true
+    },
+    {
+      "number": 270,
+      "head": "73545f63112910d46002718354ab5e99f8652e1f",
+      "ref": "codex/ghostpay-consolidation-followthrough-20261119",
+      "base": "codex/ghostpay-feature-consolidation-20261119",
+      "base_sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "title": "Harden canonical arrays and skip unsupported scanner schemes",
+      "draft": true
+    },
+    {
+      "number": 269,
+      "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "ref": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "base": "codex/ghostpay-feature-consolidation-20261119",
+      "base_sha": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+      "draft": true
+    },
+    {
+      "number": 264,
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "ref": "integration/ghostpay-master-consolidation-20261118",
+      "base": "main",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+      "draft": true
+    },
+    {
+      "number": 263,
+      "head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "ref": "maintenance/ghostpay-branch-audit-20261119",
+      "base": "main",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "title": "Record current branch audit, recovery evidence and consolidation checkpoint",
+      "draft": true
+    },
+    {
+      "number": 262,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "ref": "codex/ghostpay-feature-consolidation-20261119",
+      "base": "main",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+      "draft": true
+    },
+    {
+      "number": 261,
+      "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "ref": "automation/20261119T073600Z/coordinator/integration-lock",
+      "base": "main",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+      "draft": true
+    },
+    {
+      "number": 260,
+      "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "ref": "integration/ghostpay-recovery-reconciled-20261119",
+      "base": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "base_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+      "draft": true
+    },
+    {
+      "number": 259,
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "ref": "integration/ghostpay-docs-recovery-20261119",
+      "base": "main",
+      "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "title": "Recover historical documentation and reconcile current Pages guidance",
+      "draft": true
+    },
+    {
+      "number": 256,
+      "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "ref": "integration/ghostpay-idle-session-completion-20261119",
+      "base": "main",
+      "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+      "draft": true
+    },
+    {
+      "number": 255,
+      "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "ref": "integration/ghostpay-mythril-security-closure-20261118",
+      "base": "main",
+      "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+      "draft": true
+    },
+    {
+      "number": 254,
+      "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "ref": "chatgpt/btc-spentness-private-scan-20261118",
+      "base": "main",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+      "draft": true
+    },
+    {
+      "number": 253,
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "ref": "repair/ghostpay-pr-87-20261119",
+      "base": "main",
+      "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "title": "fix(net-harness): reject decoded SOCKS chunks in major dependency candidate",
+      "draft": true
+    },
+    {
+      "number": 251,
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "ref": "codex/network-isolation-complete-20261119",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "feat(privacy): enforce browser network authorization and cancellation",
+      "draft": true
+    },
+    {
+      "number": 249,
+      "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "ref": "chatgpt/ghostpay-tm-hardening-20261118",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+      "draft": true
+    },
+    {
+      "number": 248,
+      "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "ref": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "base": "main",
+      "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "title": "Complete private seller scan checkpoints and durable discovery",
+      "draft": true
+    },
+    {
+      "number": 246,
+      "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "ref": "chatgpt/ghostpay-remaining-work-20261119",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "Complete remaining GhostPay fixes and reviewed completion ledger",
+      "draft": true
+    },
+    {
+      "number": 243,
+      "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "ref": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "feat(web): complete selected invoice signer pin validation",
+      "draft": true
+    },
+    {
+      "number": 240,
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "ref": "chatgpt/spec18-recovery-completion-20261118",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "draft": true
+    },
+    {
+      "number": 239,
+      "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "ref": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "base": "integration/ghostpay-pages-completion-20261118",
+      "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+      "draft": true
+    },
+    {
+      "number": 238,
+      "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "ref": "integration/ghostpay-pages-completion-20261118",
+      "base": "main",
+      "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "title": "Consolidate Pages beta security, privacy, and recovery",
+      "draft": true
+    },
+    {
+      "number": 233,
+      "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "ref": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "base": "privacy/hardening-recommendations",
+      "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+      "draft": true
+    },
+    {
+      "number": 232,
+      "head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "ref": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "base": "main",
+      "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "title": "docs: preserve beta execution results, source pins and remaining gates",
+      "draft": true
+    },
+    {
+      "number": 230,
+      "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "ref": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "base": "privacy/hardening-recommendations",
+      "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+      "draft": true
+    },
+    {
+      "number": 229,
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "ref": "chatgpt/ghostpay-recovery-review-20261118",
+      "base": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "base_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+      "draft": true
+    },
+    {
+      "number": 228,
+      "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "ref": "chatgpt/ghostpay-own-node-guard-20261118",
+      "base": "privacy/hardening-recommendations",
+      "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+      "draft": true
+    },
+    {
+      "number": 226,
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "ref": "chatgpt/ghostpay-sonar-review-20261118",
+      "base": "nodata/jolly-rubin-u4zd45",
+      "base_sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "title": "fix(audit): contain static helper symlinks and malformed requests",
+      "draft": true
+    },
+    {
+      "number": 225,
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "ref": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "base": "claude/ghostpay-consolidation-9xhtxg-security",
+      "base_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+      "draft": true
+    },
+    {
+      "number": 224,
+      "head": "1054daabc5cabe958466ec144582d76137b54910",
+      "ref": "nodata/jolly-rubin-u4zd45",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+      "draft": true
+    },
+    {
+      "number": 223,
+      "head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "ref": "nodata/doc-sweep-20261118",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "docs: sync docs with current code (2026-11-18)",
+      "draft": true
+    },
+    {
+      "number": 222,
+      "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "ref": "privacy/hardening-recommendations",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "privacy: implement threat-model recommendations TM1-TM15",
+      "draft": true
+    },
+    {
+      "number": 221,
+      "head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "ref": "nodata/wizardly-allen-qwol6u",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+      "draft": true
+    },
+    {
+      "number": 218,
+      "head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "ref": "claude/exciting-brown-7v69cr",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+      "draft": true
+    },
+    {
+      "number": 217,
+      "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "ref": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+      "draft": true
+    },
+    {
+      "number": 215,
+      "head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "ref": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+      "draft": true
+    },
+    {
+      "number": 213,
+      "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+      "draft": true
+    },
+    {
+      "number": 212,
+      "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "ref": "claude/ghostpay-consolidation-9xhtxg-security",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+      "draft": true
+    },
+    {
+      "number": 211,
+      "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "ref": "nodata/wonderful-darwin-kd1h22",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+      "draft": true
+    },
+    {
+      "number": 209,
+      "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "ref": "claude/ghostpay-completion-audit-ot5jjm",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "Completion run 2026-11-18: claims + integration",
+      "draft": true
+    },
+    {
+      "number": 205,
+      "head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "ref": "nodata/zealous-hopper-lr0nxe",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+      "draft": true
+    },
+    {
+      "number": 160,
+      "head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "ref": "chatgpt/pages-release-gate-audit-20261114",
+      "base": "integration/consolidated-2026-11-14",
+      "base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "title": "docs(pages): source-pinned integration and release-gate inventory",
+      "draft": true
+    },
+    {
+      "number": 153,
+      "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "ref": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "base": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "base_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+      "draft": true
+    },
+    {
+      "number": 140,
+      "head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "ref": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "base": "claude/ghostpay-github-pages-up6cj6",
+      "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+      "draft": true
+    },
+    {
+      "number": 139,
+      "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "ref": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "base": "claude/ghostpay-github-pages-up6cj6",
+      "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+      "draft": true
+    },
+    {
+      "number": 87,
+      "head": "812bbfba8172a28081eff4f442cc530fd516a9dd",
+      "ref": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "base": "main",
+      "base_sha": "694857731aa96d224ba6f83d2e4cf28d77bc35e3",
+      "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+      "draft": false
+    },
+    {
+      "number": 82,
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "ref": "codex/setup-autonomous-agent-20261104",
+      "base": "main",
+      "base_sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "title": "Configure OpenAI autonomous development workflow and prompts",
+      "draft": true
+    },
+    {
+      "number": 52,
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "ref": "automation/ghostpay-parallel-four-agents-20261103",
+      "base": "main",
+      "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+      "draft": true
+    },
+    {
+      "number": 51,
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "ref": "automation/ghostpay-recurrent-backlog-20261103",
+      "base": "main",
+      "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "title": "ci: continue GhostPay API-funded backlog development twice daily",
+      "draft": false
+    }
+  ]
+}
