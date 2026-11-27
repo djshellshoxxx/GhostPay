@@ -9,6 +9,21 @@ repairs on top of #717), the draft hint and cover label keys in the four locale 
 #747, now on main). Does not claim any of those PRs' own files. Acceptance: see the handoff; hosted CI on the exact head.
 
 ---
+# Consolidation stack 2 (#728): repair-train merge, replacement status, qualification port (2026-11-27 UTC)
+
+Worker: newghostpay-e3 worker W1; existing branch `claude/consolidation-stack-20261126`, previous head `298257fd`.
+Merges repair train #724 head `8a519272` (contains main `a7f9abf8`). Owned paths: `resolveReplacements` in
+`apps/web/src/lib/attemptStatus.ts` with its test; ported from donor `nodata/beautiful-heisenberg-25ikdy` (#751,
+read-only): `invoiceDraft*`, `useInvoiceDraft*`, the draft purge in `session.ts`, the draft hint and cover label in the
+four locales, `privacyWording.test.ts`, the two label matches in `Settings.test.tsx`, `docs/pages/README.md`,
+`docs/research/privacy-rpc-call-graph.md`, `docs/user/privacy-limits.md`, the draft, offline-checkout, scan and
+log-paging fuzz tests, the `decodePaymentCalldata` re-encode guard in `packages/chain-adapters/src/router.ts` with its
+fuzz test, `walletDisclosure.callsites.test.ts`; cover cases in `scanClient.checkpoint.test.ts`; this entry. Not taken:
+#665, #742 and the ERC-20 suites. Acceptance: each fix has a regression test that fails without it; all PR checks green
+at the exact head; no gate, dependency, contract or activation change; merge stays with the integration-lock holder.
+Review follow-up on `9222e597` (findings N1-N5): connection-loss handling in `apps/web/src/views/Pay.tsx`, a
+wallet-request notification on `grantApproval` in `apps/web/src/lib/payExec.ts`, and `Pay.offline.test.tsx`,
+`Pay.offlineHandoff.test.tsx` and `Pay.offline.fuzz.test.tsx`. Journal, post-broadcast and terminal behaviour unchanged.
 
 # Consolidation stack 2: current-main merge and payment lifecycle fixes (2026-11-27 UTC)
 
@@ -83,6 +98,7 @@ Problem: verifying a matched router payment sends receipt and transaction lookup
 Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
 Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
 Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+
 # Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
 
 Worker: local Claude Code maintenance/audit session on the existing merged branch

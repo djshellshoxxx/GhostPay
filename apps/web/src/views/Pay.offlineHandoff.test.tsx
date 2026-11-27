@@ -4,6 +4,7 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readAttempts } from '../lib/duplicateAttemptJournal';
 import { clearSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
@@ -43,6 +44,30 @@ class OneSendWallet extends MockWallet {
       return Promise.reject(Object.assign(new Error('user rejected'), { code: 4001 }));
     }
     return super.request(args);
+  }
+}
+
+/** A wallet with account events, whose next request of one method can be held and then settled by the test. */
+class ControlledWallet extends MockWallet {
+  public held: { readonly resolve: () => void; readonly reject: (error: Error) => void } | undefined;
+  private holding: string | undefined;
+  private readonly listeners = new Map<string, Set<() => void>>();
+  public on(event: string, listener: () => void): void {
+    const set = this.listeners.get(event) ?? new Set<() => void>();
+    set.add(listener); this.listeners.set(event, set);
+  }
+  public removeListener(event: string, listener: () => void): void { this.listeners.get(event)?.delete(listener); }
+  public emit(event: string): void { for (const listener of [...(this.listeners.get(event) ?? [])]) listener(); }
+  public hold(method: string): void { this.holding = method; this.held = undefined; }
+  public override request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+    if (args.method !== this.holding) return super.request(args);
+    this.holding = undefined;
+    return new Promise((resolve, reject) => {
+      this.held = {
+        resolve: () => { super.request(args).then(resolve, reject); },
+        reject: (error) => { this.calls.push({ method: args.method, params: args.params }); reject(error); },
+      };
+    });
   }
 }
 
@@ -141,5 +166,146 @@ describe('Pay: a connection loss before the wallet is asked', () => {
     await waitFor(() => { expect(screen.getAllByText(OFFLINE).length).toBeGreaterThan(0); });
     expect(asked(wallet, 'eth_sendTransaction')).toBe(1);
     expect(revoke()).toBeTruthy();
+  });
+});
+
+const RETRY = 'Retry chain verification';
+const WAIT = { timeout: 10_000 };
+const APPROVE = 'Approve exactly, then send payment in my wallet';
+const SEND = 'Send payment in my wallet';
+
+/** Up to the open Send review: the exact-approval path (no allowance) or the direct payment (allowance already there). */
+async function toSendReview(wallet: MockWallet, step: 'approval' | 'payment'): Promise<ReturnType<typeof userEvent.setup>> {
+  const user = await toWalletList(wallet, () => word(step === 'approval' ? 0n : 10n ** 12n));
+  await connect(user);
+  await user.click(await screen.findByRole('button', { name: 'Prepare payment' }, WAIT));
+  await user.click(await screen.findByRole('button', { name: step === 'approval' ? APPROVE : SEND }, WAIT));
+  await screen.findByRole('dialog', { name: 'Review wallet disclosure' }, WAIT);
+  return user;
+}
+
+/** Back on the review: the offline reason and the explicit retry, with nothing left to prepare, connect or send. */
+async function expectReview(): Promise<void> {
+  expect(await screen.findByRole('button', { name: RETRY }, WAIT)).toBeTruthy();
+  expect(screen.getByText(OFFLINE)).toBeTruthy();
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  for (const name of [/Connect Mock Wallet/, 'Prepare payment', SEND, APPROVE]) expect(screen.queryByRole('button', { name })).toBeNull();
+}
+
+describe('Pay: a connection loss while the Send review is open', () => {
+  it.each(['payment', 'approval'] as const)('sends nothing for the %s step approved after the browser reconnected', async (step) => {
+    const wallet = new MockWallet();
+    const user = await toSendReview(wallet, step);
+    connectivity(false);
+    connectivity(true);
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await dialogClosed();
+    await expectReview();
+    expect(asked(wallet, 'eth_sendTransaction')).toBe(0);
+    expect(readAttempts()).toEqual([]);
+  });
+
+  it('sends no payment after a confirmed approval when the connection dropped during its review, and keeps the allowance', async () => {
+    const wallet = new OneSendWallet();
+    const user = await toWalletList(wallet, () => word((wallet.sent?.['to'] as string | undefined)?.toLowerCase() === USDC ? 10n ** 12n : 0n));
+    await connect(user);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }, WAIT));
+    await user.click(await screen.findByRole('button', { name: APPROVE }, WAIT));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByText('Revoke approval', undefined, WAIT);
+    await screen.findByRole('dialog', { name: 'Review wallet disclosure' }, WAIT);
+    connectivity(false);
+    connectivity(true);
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await dialogClosed();
+    expect(await screen.findByText(/Approval was confirmed, but no payment was sent/, undefined, WAIT)).toBeTruthy();
+    expect(asked(wallet, 'eth_sendTransaction')).toBe(1); // The approval only.
+    expect(screen.getByRole('button', { name: 'Revoke approval' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: RETRY })).toBeNull();
+  });
+});
+
+describe('Pay: a connection loss that surfaces as another error during Send', () => {
+  it.each(['payment', 'approval'] as const)('returns the %s step to the explicit chain check when the wallet was asked for nothing', async (step) => {
+    const wallet = new ControlledWallet();
+    const user = await toSendReview(wallet, step);
+    wallet.hold('eth_accounts'); // The account recheck just before the hand-off.
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await waitFor(() => { expect(wallet.held).toBeDefined(); }, WAIT);
+    connectivity(false);
+    connectivity(true);
+    await act(async () => { wallet.held?.reject(new Error('wallet read failed')); await Promise.resolve(); });
+    await expectReview();
+    expect(asked(wallet, 'eth_sendTransaction')).toBe(0);
+    expect(readAttempts()).toEqual([]);
+  });
+
+  it('keeps the wallet answer when the approval request itself fails across a connection loss', async () => {
+    const wallet = new ControlledWallet();
+    const user = await toSendReview(wallet, 'approval');
+    wallet.hold('eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await waitFor(() => { expect(wallet.held).toBeDefined(); }, WAIT);
+    connectivity(false);
+    connectivity(true);
+    await act(async () => { wallet.held?.reject(Object.assign(new Error('user rejected'), { code: 4001 })); await Promise.resolve(); });
+    expect(await screen.findByText('You rejected the request in your wallet.', undefined, WAIT)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: RETRY })).toBeNull();
+    expect(asked(wallet, 'eth_sendTransaction')).toBe(1);
+  });
+});
+
+describe('Pay: a wallet change after a connection loss during work in flight', () => {
+  const ORDERS = [['while offline', true], ['after reconnecting', false]] as const;
+
+  /** After the explicit retry the context is current again: a later wallet change goes back to the wallet list. */
+  async function expectRecovery(user: ReturnType<typeof userEvent.setup>, wallet: ControlledWallet): Promise<void> {
+    await user.click(screen.getByRole('button', { name: RETRY }));
+    const proceed = screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' });
+    await waitFor(() => { expect(proceed.disabled).toBe(false); }, WAIT);
+    await user.click(proceed);
+    await connect(user);
+    await screen.findByRole('button', { name: 'Prepare payment' }, WAIT);
+    act(() => { wallet.emit('accountsChanged'); });
+    expect(await screen.findByRole('button', { name: /Connect Mock Wallet/ }, WAIT)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: RETRY })).toBeNull();
+  }
+
+  it.each(ORDERS)('returns a preparation to the explicit chain check when the wallet changes %s', async (_, changesOffline) => {
+    const wallet = new ControlledWallet();
+    let hold = false;
+    let release: (() => void) | undefined;
+    const user = await toWalletList(wallet, () => {
+      if (!hold) return word(10n ** 12n);
+      hold = false;
+      return new Promise((resolve) => { release = () => { resolve(word(10n ** 12n)); }; });
+    });
+    await connect(user);
+    const prepare = await screen.findByRole('button', { name: 'Prepare payment' }, WAIT);
+    hold = true;
+    await user.click(prepare);
+    await waitFor(() => { expect(release).toBeDefined(); }, WAIT);
+    connectivity(false);
+    if (!changesOffline) connectivity(true);
+    act(() => { wallet.emit('accountsChanged'); });
+    if (changesOffline) connectivity(true);
+    await act(async () => { release?.(); await Promise.resolve(); });
+    await expectReview();
+    expect(asked(wallet, 'eth_signTypedData_v4') + asked(wallet, 'eth_sendTransaction')).toBe(0);
+    await expectRecovery(user, wallet);
+  });
+
+  it.each(ORDERS)('returns a send under review to the explicit chain check when the wallet changes %s', async (_, changesOffline) => {
+    const wallet = new ControlledWallet();
+    const user = await toSendReview(wallet, 'payment');
+    connectivity(false);
+    if (!changesOffline) connectivity(true);
+    act(() => { wallet.emit('chainChanged'); });
+    if (changesOffline) connectivity(true);
+    await dialogClosed();
+    await expectReview();
+    expect(asked(wallet, 'eth_sendTransaction')).toBe(0);
+    expect(readAttempts()).toEqual([]);
+    await expectRecovery(user, wallet);
   });
 });

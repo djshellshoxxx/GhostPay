@@ -251,6 +251,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
+  // Counts connection losses: wallet work that has not reached the wallet never continues across one.
+  const connectionLosses = useRef(0);
+  // That count when the current context was verified on the chain.
+  const contextLosses = useRef(0);
 
   const fragment = app.fragment;
   const pinned = app.settings.pinnedSigners;
@@ -346,6 +350,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setReceiptError(undefined);
     setReceiptTrustedKey('');
     setCtx(undefined);
+    setCtxError(undefined);
     setBuilt(undefined);
     setBuiltFor(undefined);
     setBuiltForContext(undefined);
@@ -428,8 +433,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
   const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff };
   // A disconnected route cannot observe the wallet. Drop the private reopening capability when leaving checkout.
   useEffect(() => () => {
     const checkout = latest.current;
@@ -489,10 +494,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setPhase('input');
     } else {
       const open = latest.current.parsed;
-      if (open !== undefined && terminalFor.current !== open.invoice && latest.current.ctx === undefined) {
+      const reopenable = open !== undefined && terminalFor.current !== open.invoice;
+      if (reopenable && latest.current.ctx === undefined) {
         // Nothing to prepare from (the connection dropped first, for example): back to the review, keeping its error and
         // explicit chain check. Nothing resumes by itself.
         setPhase('review');
+      } else if (reopenable && !latest.current.handedOff && (!browserOnline() || connectionLosses.current !== contextLosses.current)) {
+        // The context was kept only for work in flight when the connection dropped. That work ends here, and the context
+        // is not reused.
+        returnToReview();
       } else {
         setCtxError(undefined);
         setPhase(open === undefined ? 'input' : 'ready');
@@ -567,6 +577,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
       if (!current()) return undefined;
+      contextLosses.current = connectionLosses.current;
       setCtx(c);
       setCtxError(undefined);
       return c;
@@ -577,8 +588,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       return undefined;
     }
   }, [app, services]);
-  // Counts connection losses: wallet work that has not reached the wallet never continues across one.
-  const connectionLosses = useRef(0);
   const captureConnection = (): { readonly lost: () => boolean; readonly assert: () => void } => {
     const losses = connectionLosses.current;
     const lost = (): boolean => !browserOnline() || connectionLosses.current !== losses;
@@ -1042,6 +1051,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     let paymentWalletRequested = paymentMayHaveBeenSent;
     // Set only by this attempt's own wallet hand-off: its errors already describe their (unknown) outcome.
     let requestedThisAttempt = false;
+    // The same for this attempt's approval request, which may end without a hash.
+    let approvalRequested = false;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
@@ -1061,7 +1072,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
-          });
+          }, () => { approvalRequested = true; });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
           guard();
@@ -1097,8 +1108,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         }
         let earlierRequest = paymentWalletRequested;
         try { earlierRequest ||= paymentAttemptRecorded(invoice); } catch { /* The original storage error is shown below. */ }
-        // Refused before this payer's wallet was asked for anything: the chain is checked again before another try.
-        if (isOfflineRefusal(e) && !earlierRequest && actualAllowance === undefined && approvalBroadcastHash === undefined) {
+        // Refused, or failed across a connection loss, before this payer's wallet was asked for anything: the chain is
+        // checked again before another try.
+        if ((isOfflineRefusal(e) || connection.lost()) && !approvalRequested && !earlierRequest && actualAllowance === undefined && approvalBroadcastHash === undefined) {
           returnToReview();
           return;
         }

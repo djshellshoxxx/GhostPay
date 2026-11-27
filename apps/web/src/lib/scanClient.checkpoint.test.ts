@@ -1130,6 +1130,31 @@ describe.each([['off', false], ['on', true]] as const)('PRIV-06: checkpoint owne
     expect(store.current).toEqual(kind === 'write' ? foreign : undefined);
   });
 
+  it('a lagging second provider is never caught up, and the resumed run catches up from the saved replay tail', async () => {
+    const f = covered();
+    const strangers = new Set(f.logs.filter((l) => !f.made.some((m) => m.log === l)).map((l) => l.transactionHash!.toLowerCase()));
+    const store = spyStore();
+    const primary = chainWith(HEAD, f.logs);
+    const inner = chainWith(11_000, f.logs);
+    const behind: MockRpc = { ...inner, getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : inner.getBlock(n)) };
+    const first = await attempt(f, { client: primary, secondaryClient: behind, matchCover, checkpoints: store.store, maxPages: 4 });
+    expect(first.error).toBeUndefined();
+    expect(first.result?.discrepancies).toEqual([]);
+    expect(first.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
+    expect(first.progress.every((p) => !p.caughtUp)).toBe(true);
+    const resumeAt = cursorAt(11_001 - small.finalityDepth);
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt]);
+    // The case is real in both modes: strangers' receipts are read exactly when cover is on.
+    expect(primary.calls.some((c) => c.method === 'eth_getTransactionReceipt' && strangers.has(String(c.params[0]).toLowerCase()))).toBe(matchCover);
+
+    const second = await attempt(f, { client: chainWith(HEAD, f.logs), secondaryClient: chainWith(HEAD, f.logs), cursor: resumeAt, matchCover, checkpoints: store.store, maxPages: 2 });
+    expect(second.error).toBeUndefined();
+    expect(second.result?.secondaryLag).toBeUndefined();
+    expect(second.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[BigInt(HEAD) + 1n, true]]);
+    expect(new Set([...idsOf(first.matches), ...idsOf(second.matches)])).toEqual(new Set(f.truth));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt, P3]);
+  });
+
   it('an unreadable slot is never replaced while every payment is still found and recorded', async () => {
     const f = covered();
     const map = new Map<string, string>();
@@ -1189,5 +1214,7 @@ describe.each([['off', false], ['on', true]] as const)('PRIV-06: checkpoint owne
     expect(idsOf(out.matches)).toEqual(f.made.map((m) => `${forkHash(Number(BigInt(m.log.blockNumber)))}:100`));
     expect(savedCalls(store)).toEqual(lost ? [foreign] : [cursorAt(5000, forkHash), cursorAt(10_000, forkHash), cursorAt(11_991, forkHash)]);
     expect(store.current).toEqual(lost ? foreign : cursorAt(11_991, forkHash));
+    // Coverage of the fetched range is independent of who owns the saved checkpoint.
+    expect(out.progress.at(-1)).toMatchObject({ nextBlock: BigInt(HEAD) + 1n, caughtUp: true });
   });
 });

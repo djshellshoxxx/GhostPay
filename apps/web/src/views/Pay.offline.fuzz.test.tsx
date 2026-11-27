@@ -8,6 +8,8 @@
 // the browser is offline; while offline the page offers no enabled Connect, Prepare, Continue or Send; reconnecting alone
 // verifies nothing and sends nothing (the chain is read again only after an explicit retry); at most one payment is ever
 // sent per invoice. Every roll comes from the seed; only the UI's own async timing between rolls is not under its control.
+// Whatever a walk went through, it then ends online with the payer pressing what is offered until the wallet is asked to
+// pay, followed by one more connection loss: so every walk really sends, exactly once, and the send limit is exercised.
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -145,6 +147,32 @@ async function walk(seed: number): Promise<Walk> {
   await settle(120);
   invariants();
   expect(sentBefore).toBeLessThanOrEqual(1);
+
+  // Completion: from wherever the walk ended, a payer who is online again can pay. The furthest offered step goes first.
+  const sends = (): number => wallet.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+  const press = ['send', 'prepare', 'connect', 'retry', 'continue'] as const;
+  const offeredNow = (): HTMLButtonElement | undefined => press.map((k) => button(nameOf[k])).find(enabled) ?? undefined;
+  if (!online) connectivity(true);
+  for (let step = 0; sends() === 0; step++) {
+    expect(step, `seed ${String(seed)}: no send reached (${actions.join(',')})`).toBeLessThan(40);
+    await waitFor(() => { expect(sends() > 0 || offeredNow() !== undefined).toBe(true); }, { timeout: 10_000 });
+    const next = sends() > 0 ? undefined : offeredNow();
+    if (next !== undefined) await user.click(next);
+    await settle(100);
+  }
+  // One more loss and return, then whatever is still offered: nothing sends a second time.
+  connectivity(false);
+  await settle();
+  invariants();
+  connectivity(true);
+  await settle();
+  for (let step = 0; step < 3; step++) {
+    const next = offeredNow();
+    if (next !== undefined) await user.click(next);
+    await settle(100);
+  }
+  invariants();
+  expect(sends(), `seed ${String(seed)}: exactly one payment (${actions.join(',')})`).toBe(1);
   return { wallet, actions, rpcReads };
 }
 
@@ -155,24 +183,23 @@ const WALKS_PER_SEED = 4;
 describe('Pay offline checkout, seeded action walks', () => {
   for (const base of SEEDS) {
     it(`seed ${String(base)}: ${String(WALKS_PER_SEED)} walks never ask the wallet while offline or offer a send offline`, async () => {
-      let asked = 0;
+      let sent = 0;
       for (let i = 0; i < WALKS_PER_SEED; i++) {
         const out = await walk(base * 100 + i);
-        asked += out.wallet.calls.length;
         if (out.wallet.calls.some((c) => c.method === 'eth_requestAccounts')) reached.connected++;
-        if (out.wallet.calls.some((c) => c.method === 'eth_sendTransaction')) reached.sent++;
+        if (out.wallet.sent !== undefined) sent++;
         cleanup();
         window.sessionStorage.clear();
         online = true;
       }
-      // Informational: how often the walks actually reached the wallet at all.
-      expect(asked).toBeGreaterThanOrEqual(0);
+      reached.sent += sent;
+      expect(sent, 'every walk reached the wallet with a payment').toBe(WALKS_PER_SEED);
     }, 240_000);
   }
 
   it('the walks reached the wallet and a send while online, so the offline checks above were not vacuous', () => {
     expect(reached.connected).toBeGreaterThan(0);
-    expect(reached.sent).toBeLessThanOrEqual(SEEDS.length * WALKS_PER_SEED);
+    expect(reached.sent).toBeGreaterThan(0);
   });
 
   it('is reproducible: a seed fixes every roll of the walk (the UI timing between rolls is the only free variable)', () => {
