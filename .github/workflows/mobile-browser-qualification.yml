@@ -10,6 +10,10 @@ on:
       - 'apps/web/e2e/devices*.spec.ts'
       - 'apps/web/e2e/flows.spec.ts'
       - 'apps/web/e2e/qr-camera.spec.ts'
+      # The browser self-check footer and its probes, qualified in each mobile engine.
+      - 'apps/web/e2e/browser-checks.spec.ts'
+      - 'apps/web/src/lib/browserChecks.ts'
+      - 'apps/web/src/components/BrowserChecks.tsx'
       # What devices-mobile-restore runs through in each engine: its helpers and vector, the restore view and session,
       # the camera and QR components, the keystore codec, and the lockfile that pins the browser engines.
       - 'apps/web/e2e/helpers.ts'

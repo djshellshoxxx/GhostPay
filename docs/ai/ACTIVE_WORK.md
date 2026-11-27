@@ -1,3 +1,13 @@
+# Browser self-check: mobile WebKit qualification (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `8c0b110d`). The two
+earlier self-check entries below are complete: #703 merged as `6c3acdd5` and #719 merged as `5b65ca3a`. Owned paths:
+`apps/web/playwright.mobile.config.ts` (testMatch and grep only), the path filter of
+`.github/workflows/mobile-browser-qualification.yml`, one row of `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md`, the
+follow-up list in `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry. Acceptance: the existing
+`browser-checks.spec.ts` passes unchanged in the four mobile engine projects (two WebKit, two Chromium) for lean and
+full builds in hosted CI; no other spec, workflow step, permission or dependency changes.
+
 # REV-I5: roll back an unsent wallet attempt when the journal mirror write fails after the IndexedDB commit — 2026-11-26 UTC
 
 Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (restarted from main `8c0b110d` after #723
