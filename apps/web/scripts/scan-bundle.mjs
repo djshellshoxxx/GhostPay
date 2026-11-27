@@ -58,6 +58,16 @@ const PRESERVED_CODE_MARKERS = [
   { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
 ];
 
+/**
+ * Legacy text-manifest scheme (SEC-14 / D-09): sha256/ed25519 text signatures under this domain, and unsigned-dev
+ * acceptance on testnets. The app trusts only bundled, release-signed manifests; neither string may reach any build.
+ */
+const LEGACY_MANIFEST_MARKERS = [
+  // The acceptance-path warning itself; the views' generic "UNSIGNED DEV MANIFEST: testnet only." label is display text.
+  { marker: 'no release key is pinned, so this deployment manifest is not authenticated', reason: 'unsigned-dev manifest acceptance (chain-adapters UNSIGNED_DEV_WARNING)' },
+  { marker: 'GhostPay-deployment-manifest-v1', reason: 'legacy text-manifest signing domain (chain-adapters MANIFEST_SIGNING_DOMAIN)' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -144,6 +154,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
         scanInnerHtml(text, r, problems);
         for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
           if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
+        for (const { marker, reason } of LEGACY_MANIFEST_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: legacy text-manifest marker "${marker}" (${reason}) must not ship`);
         }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);

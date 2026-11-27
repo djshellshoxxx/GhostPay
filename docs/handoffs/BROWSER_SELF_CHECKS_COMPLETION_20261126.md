@@ -50,7 +50,11 @@ payment gating, network egress and release gates are unchanged. The checks still
 
 ## Deeper follow-ups (not in scope)
 
-- Native WebKit/Firefox/mobile-device qualification of the footer (Playwright device projects emulate Chromium only).
+- Firefox qualification of the footer: no repository workflow installs Firefox. WebKit and Android Chromium engines
+  run `browser-checks.spec.ts` in the `Mobile browser qualification` workflow (iPhone SE, iPad Mini, Pixel 7, Galaxy Tab
+  S4 profiles, lean and full). That is engine emulation in CI, not a physical device or Safari itself.
+- Hardware acceptance on real phones, including private windows and blocked site data (see
+  `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md`).
 - Native-speaker review of the new reviewed-only explanation strings for es/ja/ar.
 
 ## Review and verification

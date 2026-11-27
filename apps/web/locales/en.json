@@ -899,6 +899,7 @@
     "scan.routerOnly": "{single, select, yes {Block {list} held} other {Blocks {list} held}} more announcements than one RPC response may carry (likely announcement spam). Payments posted through the GhostPay router were still checked there, but announcements there that were not posted by the GhostPay router were skipped, so a direct payment in {single, select, yes {that block} other {those blocks}} would not be listed.",
     "scan.routerOnly.more": "{shown} and {count} more",
     "scan.done.finished": "Finished. {scanned} announcements checked, {found} payments found.",
+    "scan.done.indexerCaveat": "An indexer can omit announcements even when block hashes match. These results may be missing payments.",
     "scan.done.limit": "Stopped at the safety limit. {scanned} announcements checked, {found} payments found.",
     "scan.done.cancelled": "Cancelled. {scanned} announcements checked.",
     "scan.done.cancelledEarly": "Cancelled. The scan stopped before completing.",

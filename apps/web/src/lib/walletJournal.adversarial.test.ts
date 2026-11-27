@@ -1038,6 +1038,88 @@ describe('default browser journal: authoritative IndexedDB snapshot, localStorag
     expect(sends(log)).toBe(0);
   });
 
+  it('REV-I5: a mirror write that fails after the IndexedDB commit rolls the unsent record back, so a retry may proceed', async () => {
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    const toLocal = Storage.prototype.setItem.bind(window.localStorage);
+    const toSession = Storage.prototype.setItem.bind(window.sessionStorage);
+    let mirrorFails = true;
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, k: string, v: string) {
+      if (this !== window.localStorage) { toSession(k, v); return; }
+      if (k === ATTEMPT_JOURNAL_KEY && mirrorFails) throw new DOMException('quota', 'QuotaExceededError');
+      toLocal(k, v);
+    });
+    await expect(sendViaWallet(s, txOf(1), undefined, pay(1))).rejects.toThrow(JOURNAL_ERROR);
+    expect(sends(log)).toBe(0);
+    // The wallet was never asked: the committed `unknown` record would only block a legitimate retry (QA-5's rule).
+    expect(await committedRecords()).toEqual([]);
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBeNull();
+    mirrorFails = false;
+    setItem.mockRestore();
+    const retry = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    await expect(sendViaWallet(retry, txOf(1), undefined, pay(1))).resolves.toMatch(/^0x[0-9a-f]{64}$/);
+    expect(sends(log)).toBe(1);
+    expect((await committedRecords()).map((r) => r.key)).toEqual([keyOf(1)]);
+  });
+
+  it('REV-I5: if the rollback itself cannot commit, the unsent record stays and a retry is still refused', async () => {
+    const inner = memoryIndexedDb();
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    let committedOnce = false;
+    // The attempt's own commit succeeds; every later IndexedDB write (the rollback) fails.
+    vi.stubGlobal('indexedDB', faultyIdb(inner, 'put-throws', () => committedOnce, () => { committedOnce = true; }));
+    const toLocal = Storage.prototype.setItem.bind(window.localStorage);
+    const toSession = Storage.prototype.setItem.bind(window.sessionStorage);
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, k: string, v: string) {
+      if (this !== window.localStorage) { toSession(k, v); return; }
+      if (k === ATTEMPT_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
+      toLocal(k, v);
+    });
+    await expect(sendViaWallet(s, txOf(1), undefined, pay(1))).rejects.toThrow(JOURNAL_ERROR);
+    expect(committedOnce).toBe(true);
+    expect(sends(log)).toBe(0);
+    setItem.mockRestore();
+    vi.stubGlobal('indexedDB', inner);
+    // Refusing a retry is the safe direction: the record is kept, still `unknown`, and blocks the invoice.
+    expect((await committedRecords()).map((r) => [r.key, r.status])).toEqual([[keyOf(1), 'unknown']]);
+    const retry = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    const again = await sendViaWallet(retry, txOf(1), undefined, pay(1)).catch((e: unknown) => e);
+    expect(again).toMatchObject({ message: expect.stringMatching(DUPLICATE_ERROR) as unknown });
+    expect(sends(log)).toBe(0);
+  });
+
+  it('REV-I5: a refused duplicate never rolls back the record that already holds the invoice', async () => {
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    await sendViaWallet(s, txOf(1), undefined, pay(1));
+    const before = await committedRecords();
+    expect(before.map((r) => [r.key, r.status])).toEqual([[keyOf(1), 'submitted']]);
+    const again = await sendViaWallet(s, txOf(1), undefined, pay(1)).catch((e: unknown) => e);
+    expect(again).toMatchObject({ message: expect.stringMatching(DUPLICATE_ERROR) as unknown });
+    expect(sends(log)).toBe(1);
+    expect(await committedRecords()).toEqual(before);
+  });
+
+  it('REV-I5: with an existing mirror, a failed mirror write after the commit still leaves only the earlier records', async () => {
+    const log: SendEntry[] = [];
+    const s = await sessionFor(tabWallet({ account: accountOf(0), log }));
+    await sendViaWallet(s, txOf(1), undefined, pay(1));
+    const before = await committedRecords();
+    const mirrorBefore = window.localStorage.getItem(ATTEMPT_JOURNAL_KEY);
+    const toLocal = Storage.prototype.setItem.bind(window.localStorage);
+    const toSession = Storage.prototype.setItem.bind(window.sessionStorage);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, k: string, v: string) {
+      if (this !== window.localStorage) { toSession(k, v); return; }
+      if (k === ATTEMPT_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
+      toLocal(k, v);
+    });
+    await expect(sendViaWallet(s, txOf(2), undefined, pay(2))).rejects.toThrow(JOURNAL_ERROR);
+    expect(sends(log)).toBe(1);
+    expect(await committedRecords()).toEqual(before);
+    expect(window.localStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(mirrorBefore);
+  });
+
   // QA-4: once a snapshot is committed, updateBrowserJournal reads `saved ?? local`, so a record present only in the
   // localStorage mirror (written by a pre-IndexedDB build still open in another tab, or any writer that bypasses
   // IndexedDB) is ignored: its invoice is sent again, and mirror() then overwrites the mirror, dropping that record and its

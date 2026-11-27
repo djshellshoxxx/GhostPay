@@ -155,6 +155,8 @@ export interface RelayedSweepInput {
   readonly nowSeconds: () => number;
   readonly fetchFn?: FetchFn;
   readonly randomNonce?: () => bigint;
+  /** Revalidates the caller's live review before key derivation, signatures and pre-handoff continuations. */
+  readonly assertReviewCurrent?: () => void;
   /**
    * Called with the signed order's on-chain identity immediately before it is posted to the relayer. It must persist
    * the lock; if it throws, nothing is posted and the error propagates.
@@ -175,6 +177,9 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
   // Validate before deriving the one-time key or doing any signing work. The quote is rechecked after each await.
   checkQuote();
   const assertSessionUnchanged = captureSessionGuard();
+  const assertCurrent = (): void => { assertSessionUnchanged(); i.assertReviewCurrent?.(); };
+  // A loaded session does not authorize a review that the user has since changed or cancelled.
+  assertCurrent();
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const deadline = BigInt(readNow() + 20 * 60);
@@ -210,10 +215,10 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       readNow(),
     );
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const sweepSig = await signSweep(td, secret);
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const ptd = await buildPermit(i.rpc, {
       chainId: i.target.chainId,
       token: i.target.token,
@@ -223,7 +228,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       deadline,
     });
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     guardTypedData(
       ptd,
       {
@@ -240,14 +245,14 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       readNow(),
     );
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const permit = await signPermit(ptd, secret);
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     zeroize(secret);
     // This is the last pre-broadcast checkpoint. Do not reject after submitSweep resolves: the relayer may
     // already have accepted the signed order even if the seller session was locked while the request was in flight.
-    assertSessionUnchanged();
+    assertCurrent();
     checkQuote();
     i.onBeforeHandoff?.({ relayer: i.manifest.sweepRelayer, nonce: order.nonce, deadline: Number(deadline) });
     return await submitSweep(
@@ -285,6 +290,8 @@ export interface DirectSweepInput {
    * replace the recorded one but never add a second transfer. Refused once a transaction with this nonce is mined.
    */
   readonly replaceNonce?: number;
+  /** Revalidates the caller's live review before key derivation, signatures and pre-handoff continuations. */
+  readonly assertReviewCurrent?: () => void;
   /**
    * Called with the `unknown-after-handoff` attempt immediately before the signed bytes are handed to the RPC. It must
    * persist the lock; if it throws, nothing is broadcast and the error propagates.
@@ -561,16 +568,24 @@ async function sweepNonce(i: DirectSweepInput): Promise<number> {
 /** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */
 export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResult> {
   const assertSessionUnchanged = captureSessionGuard();
+  const assertCurrent = (): void => { assertSessionUnchanged(); i.assertReviewCurrent?.(); };
+  // A loaded session does not authorize a review that the user has since changed or cancelled.
+  assertCurrent();
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const { owner, chainId, token } = i.target;
     const gasPrice = parseQuantity(await i.rpc.request('eth_gasPrice', []));
-    assertSessionUnchanged();
+    assertCurrent();
     const { maxFeePerGas, maxPriorityFeePerGas: priority } = sweepFeeFields(gasPrice);
     const nonce = await sweepNonce(i);
-    assertSessionUnchanged();
+    assertCurrent();
     const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
-    assertSessionUnchanged();
+    assertCurrent();
+    // The native amount is the balance the user explicitly reviewed. A new deposit or withdrawal must require a
+    // fresh balance read and consent instead of silently changing the amount this signing action will sweep.
+    if (token === 'native' && nativeBalance !== i.amount) {
+      throw new UserFacingError({ key: 'error.sweep.yourRPCReturnedAnUnexpectedBalance' });
+    }
     let to: Address;
     let data: Hex = '0x';
     let value: bigint;
@@ -581,7 +596,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       // A contract or EIP-7702 destination needs more than 21 000 gas, and Arbitrum's estimate includes its L1 cost.
       // Estimated with the largest value this sweep could send.
       const est = await estimateGas(i.rpc, { from: owner, to, value: nativeBalance - TRANSFER_GAS * maxFeePerGas });
-      assertSessionUnchanged();
+      assertCurrent();
       gas = est <= TRANSFER_GAS ? TRANSFER_GAS : (est * 12n) / 10n;
       const gasCost = gas * maxFeePerGas;
       if (nativeBalance <= gasCost) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
@@ -589,7 +604,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
       // largest value it can carry: the value only shrinks, so the encoding never grows.
       const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data });
-      assertSessionUnchanged();
+      assertCurrent();
       if (nativeBalance <= gasCost + reserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
       value = nativeBalance - gasCost - reserve;
       // The review below caps gas * fee at a share of the amount moved; the L1 data fee counts towards that share too.
@@ -601,7 +616,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       value = 0n;
       data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [i.destination, i.amount] });
       const est = await estimateGas(i.rpc, { from: owner, to, data });
-      assertSessionUnchanged();
+      assertCurrent();
       gas = (est * 12n) / 10n;
       if (nativeBalance < gas * maxFeePerGas) {
         throw new UserFacingError({ key: 'error.sweep.theStealthAddressHasNoNativeCoinForGasUse' });
@@ -609,7 +624,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
       // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
       const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data });
-      assertSessionUnchanged();
+      assertCurrent();
       if (nativeBalance < gas * maxFeePerGas + reserve) {
         throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });
       }
@@ -645,11 +660,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     // Dry run with the gas limit that is signed, where the node supports it: a transfer that would revert is never signed
     // (S3-09, S3-19). A node that cannot run it is reported to the caller as a warning, not a refusal (L2-F1).
     const simulation = await simulateCall(i.rpc, { from: owner, to, data, value, gas }, token !== 'native');
-    assertSessionUnchanged();
+    assertCurrent();
     // Check immediately before using the secret to sign, and again before handing the raw transaction to the RPC.
-    assertSessionUnchanged();
+    assertCurrent();
     const sig = await signDigest(keccak256(serializeTransaction(unsigned)), secret);
-    assertSessionUnchanged();
+    assertCurrent();
     const raw = serializeTransaction(unsigned, { r: sig.r, s: sig.s, yParity: sig.v - 27 });
     zeroize(secret);
     const sent = token === 'native' ? value : i.amount;
@@ -657,7 +672,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     const expectedHash = keccak256(raw);
     const attempt: DirectSweepAttempt = { chainId, owner, nonce, destination: i.destination, asset: token, amount: sent, expectedHash, status: 'unknown-after-handoff' };
     // Last pre-handoff checkpoint: a failure up to here means the signed bytes never left this page.
-    assertSessionUnchanged();
+    assertCurrent();
     i.onBeforeHandoff?.(attempt);
     let hash: unknown;
     try {
