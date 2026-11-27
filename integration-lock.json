@@ -1,13 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "released",
-  "owner": "chatgpt-bug-round-756",
-  "token": "12b6c312951a493fb31b5bbe16f614a9",
-  "generation": 74,
+  "status": "held",
+  "owner": "claude-newghostpay-e3",
+  "token": "4982a507c9f12ef091d93bc2df59f499",
+  "generation": 75,
   "base_sha": "485e04ba3ae93d96e695023e670f2cebbf0b9cb6",
-  "acquired_at": "2026-11-27T18:19:48Z",
-  "heartbeat_at": "2026-11-27T18:20:45Z",
-  "expires_at": "2026-11-27T18:20:45Z",
-  "transport": "git-ref-nonforce-cas",
-  "released_at": "2026-11-27T18:20:45Z"
+  "acquired_at": "2026-11-27T19:13:17.000Z",
+  "heartbeat_at": "2026-11-27T19:13:17.000Z",
+  "expires_at": "2026-11-27T19:58:17.000Z",
+  "transport": "git-push-nonforce"
 }
